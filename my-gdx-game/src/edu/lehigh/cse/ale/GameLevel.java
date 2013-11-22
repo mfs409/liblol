@@ -10,12 +10,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.TimeUtils;
-
-import edu.lehigh.cse.ale.PhysicsSprite;
 
 
 // TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
@@ -91,9 +87,9 @@ public class GameLevel implements MyScreen {
 		// first we update the world. For simplicity we use the delta time //
 		// provided by the Graphics instance. Normally you'll want to fix the //
 		// time step.
-		long start = TimeUtils.nanoTime();
+		// long start = TimeUtils.nanoTime();
 		_world.step(Gdx.graphics.getDeltaTime(), 8, 3);
-		float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
+		// float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
 
 		// next we clear the color buffer and set the camera matrices
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

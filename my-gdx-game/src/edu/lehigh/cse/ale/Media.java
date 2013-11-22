@@ -1,21 +1,17 @@
 package edu.lehigh.cse.ale;
 
-import java.io.IOException;
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeType.Bitmap;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.esotericsoftware.tablelayout.BaseTableLayout.Debug;
 
 /**
- * The MediaFactory provides a mechanism for registering all of our _images and
- * _sounds
+ * The MediaFactory provides a mechanism for registering all of our images and
+ * sounds
  */
 public class Media {
 	/**

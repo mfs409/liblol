@@ -26,8 +26,6 @@ public class MyGdxGame extends ALE {
             Hero h = Hero.makeAsCircle(4, 17, 3, "greenball.png");
             // h.setMoveByTilting();
 
-            
-            
             // finally, let's draw a circular destination
             // Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
             // Level.setVictoryDestination(1);
@@ -45,4 +43,13 @@ public class MyGdxGame extends ALE {
 	public ALEConfiguration config() {
 		return new Config();
 	}
+
+	/**
+	 * Mandatory method.  Don't change this.
+	 */
+	@Override
+	public SplashConfiguration splashConfig() {
+		return new SplashConfig();
+	}
+
 }

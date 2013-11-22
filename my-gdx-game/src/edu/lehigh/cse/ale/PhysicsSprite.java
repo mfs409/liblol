@@ -249,10 +249,6 @@ public abstract class PhysicsSprite {
         // Level._physics.destroyBody(_physBody);
     }
 
-    ///// STOPPED AT POINT OF COPYING MOTION FUNCTIONALITY
-    
-    
-
     /**
      * Returns the X coordinate of this entity
      * 
@@ -260,8 +256,7 @@ public abstract class PhysicsSprite {
      */
     public float getXPosition()
     {
-        // return _sprite.getX();
-    	return 0;
+    	return _physBody.getPosition().y;
     }
 
     /**
@@ -271,7 +266,7 @@ public abstract class PhysicsSprite {
      */
     public float getYPosition()
     {
-        return 0; //return _sprite.getY();
+        return _physBody.getPosition().x; //return _sprite.getY();
     }
 
     /**
@@ -281,7 +276,7 @@ public abstract class PhysicsSprite {
      */
     public float getWidth()
     {
-    	return 0; //return _sprite.getWidth();
+    	return _width;
     }
 
     /**
@@ -291,7 +286,7 @@ public abstract class PhysicsSprite {
      */
     public float getHeight()
     {
-    	return 0; //return _sprite.getHeight();
+    	return _height;
     }
 
 

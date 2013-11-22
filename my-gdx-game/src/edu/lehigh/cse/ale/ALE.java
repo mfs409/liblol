@@ -20,6 +20,10 @@ public abstract class ALE implements ApplicationListener, InputProcessor {
 
 	public ALEConfiguration _config;
 
+	public SplashConfiguration _splashConfig;
+	
+	abstract public SplashConfiguration splashConfig();
+	
 	abstract public ALEConfiguration config();
 
 	/*
@@ -44,6 +48,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor {
 	public void create() {
 		// get configuration
 		_config = config();
+		_splashConfig = splashConfig();
 
 		// for handling back presses
 		Gdx.input.setInputProcessor(this);
