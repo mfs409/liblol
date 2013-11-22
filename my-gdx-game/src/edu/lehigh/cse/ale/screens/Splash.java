@@ -11,13 +11,33 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeBitmapFontData;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import edu.lehigh.cse.ale.ALE;
 
-public class Splash implements MyScreen
-{
+public class Splash implements MyScreen {
+	// these are helpers for placing the buttons easily / nicely. Note that
+	// coordinates are in camera pixels, not world meters
+	static final int PLAY_X = 213;
+	static final int PLAY_Y = 241;
+	static final int PLAY_WIDTH = 56;
+	static final int PLAY_HEIGHT = 22;
+	static final int HELP_X = 211;
+	static final int HELP_Y = 189;
+	static final int HELP_WIDTH = 58;
+	static final int HELP_HEIGHT = 22;
+	static final int QUIT_X = 213;
+	static final int QUIT_Y = 137;
+	static final int QUIT_WIDTH = 45;
+	static final int QUIT_HEIGHT = 22;
+	static final int TITLE_X = 157;
+	static final int TITLE_Y = 293;
+	static final int TITLE_WIDTH = 166;
+	static final int TITLE_HEIGHT = 22;
+
 	/**
 	 * Since we're going to create other screens via this screen, we need a
 	 * reference to the game...
@@ -30,18 +50,17 @@ public class Splash implements MyScreen
 	OrthographicCamera _camera;
 
 	/**
-	 * Camera Dimensions
-	 */
-	int CAMERA_WIDTH;
-	int CAMERA_HEIGHT;
-
-	/**
-	 * The Play Button
+	 * A rectangle for tracking when the Play button is pressed
 	 */
 	Rectangle _play;
 
 	/**
-	 * The Quit Button
+	 * A rectangle for tracking when the Help button is pressed
+	 */
+	Rectangle _help;
+
+	/**
+	 * A rectangle for tracking when the Quit button is pressed
 	 */
 	Rectangle _quit;
 
@@ -58,7 +77,7 @@ public class Splash implements MyScreen
 	TextureRegion _tr;
 
 	BitmapFont _font;
-	
+
 	/**
 	 * Set up the splash screen
 	 * 
@@ -69,34 +88,37 @@ public class Splash implements MyScreen
 		// save a reference to the game
 		_game = game;
 
-		CAMERA_WIDTH = _game._config.getScreenWidth();
-		CAMERA_HEIGHT = _game._config.getScreenHeight();
+		int CAMERA_WIDTH = _game._config.getScreenWidth();
+		int CAMERA_HEIGHT = _game._config.getScreenHeight();
 
-		// configure the camera
+		// configure the camera, center it on the screen
 		_camera = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 		_camera.position.set(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2, 0);
 
-		// set up the play button
-		_play = new Rectangle(0, CAMERA_HEIGHT / 2, CAMERA_WIDTH,
-				CAMERA_HEIGHT / 2);
-
-		// set up the quit button
-		_quit = new Rectangle(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT / 2);
+		// set up the play, help, and quit buttons
+		// NB: voodoo on the Y due to peculiarity of font rendering
+		_play = new Rectangle(PLAY_X, PLAY_Y - PLAY_HEIGHT, PLAY_WIDTH,
+				PLAY_HEIGHT);
+		_help = new Rectangle(HELP_X, HELP_Y - HELP_HEIGHT, HELP_WIDTH,
+				HELP_HEIGHT);
+		_quit = new Rectangle(QUIT_X, QUIT_Y - QUIT_HEIGHT, QUIT_WIDTH,
+				QUIT_HEIGHT);
 
 		// prepare for touches
 		_touchVec = new Vector3();
 
 		// set up our images
-		_tr = new TextureRegion(new Texture(
-				Gdx.files.internal("data/splash.png")));
+		_tr = new TextureRegion(new Texture(Gdx.files.internal("data/"
+				+ _game._config.getSplashBackground())));
 
-		_font = new BitmapFont(Gdx.files.internal("data/arial-15.fnt"), false);
-		_font.setColor(Color.WHITE);
-		_font.setScale(2);
-
+		// NB: cleaner way of doing fonts.  Not tested on Android yet...
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/arial.ttf"));
+		_font = generator.generateFont(30, FreeTypeFontGenerator.DEFAULT_CHARS, false);
+		generator.dispose();
+		
 		// and our sprite batcher
 		_batcher = new SpriteBatch();
-		
+
 		// config music?
 		if (_game._config.getSplashMusic() != null) {
 			_game.setMusic("data/tune.ogg", true);
@@ -108,7 +130,7 @@ public class Splash implements MyScreen
 		// for now, stick everything in here...
 
 		_game.playMusic();
-		
+
 		// was there a touch?
 		if (Gdx.input.justTouched()) {
 			// translate the touch into _touchVec
@@ -129,15 +151,18 @@ public class Splash implements MyScreen
 		_camera.update();
 		_batcher.setProjectionMatrix(_camera.combined);
 
-		_batcher.enableBlending();
+		int CAMERA_WIDTH = _game._config.getScreenWidth();
+		int CAMERA_HEIGHT = _game._config.getScreenHeight();
+
 		_batcher.begin();
+		_batcher.enableBlending();
 		_batcher.draw(_tr, 0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		_batcher.end();
 
 		// Render some text... for this we have to set the projection matrix
 		// again, so we work in pixel coordinates
-		_batcher.getProjectionMatrix().setToOrtho2D(0, 0,
-				Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		// _batcher.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		_batcher.setProjectionMatrix(_camera.combined);
 		_batcher.begin();
 
 		// [TODO]: these need to be externalized... it also wouldn't hurt to
@@ -147,18 +172,26 @@ public class Splash implements MyScreen
 		float h = _font.getBounds("test").height;
 		_font.draw(_batcher, "Demo Game", CAMERA_WIDTH / 2 - w / 2,
 				CAMERA_HEIGHT - 5 - h);
-
 		w = _font.getBounds("Play").width;
-		_font.draw(_batcher, "Play", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
-				- 5 - h - 30 - h);
+		// _font.draw(_batcher, "Play", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
+		// - 5 - h - 30 - h);
+		_font.draw(_batcher, "Play", PLAY_X, PLAY_Y);
+		Gdx.app.log("play", "w=" + w + ", h=" + h + ", x="
+				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
+				+ (CAMERA_HEIGHT - 5 - h - 30 - h));
 
 		w = _font.getBounds("Help").width;
 		_font.draw(_batcher, "Help", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
 				- 5 - h - 30 - h - 30 - h);
-
+		Gdx.app.log("help", "w=" + w + ", h=" + h + ", x="
+				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
+				+ (CAMERA_HEIGHT - 5 - h - 30 - h - 30 - h));
 		w = _font.getBounds("Quit").width;
 		_font.draw(_batcher, "Quit", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
 				- 5 - h - 30 - h - 30 - h - 30 - h);
+		Gdx.app.log("quit", "w=" + w + ", h=" + h + ", x="
+				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
+				+ (CAMERA_HEIGHT - 5 - h - 30 - h - 30 - h - 30 - h));
 		_batcher.end();
 	}
 

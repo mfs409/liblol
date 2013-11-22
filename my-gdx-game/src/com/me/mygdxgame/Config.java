@@ -6,11 +6,6 @@ import edu.lehigh.cse.ale.ALEConfiguration;
 
 public class Config extends ALEConfiguration {
 	@Override
-	public String getPlayButtonText() {
-		return "Play";
-	}
-
-	@Override
 	public int getNumLevels() {
 		return 73;
 	}
@@ -34,6 +29,11 @@ public class Config extends ALEConfiguration {
 	@Override
 	public String getTitle() {
 		return "ALE Demo Game";
+	}
+
+	@Override
+	public String getPlayButtonText() {
+		return "Play";
 	}
 
 	@Override

@@ -23,9 +23,11 @@ public class MyGdxGame extends ALE {
 
             // now let's create a hero, and indicate that the hero can move by
             // tilting the phone.
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = Hero.makeAsCircle(4, 17, 3, "greenball.png");
             // h.setMoveByTilting();
 
+            
+            
             // finally, let's draw a circular destination
             // Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
             // Level.setVictoryDestination(1);

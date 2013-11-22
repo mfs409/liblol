@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -119,10 +120,10 @@ public class Chooser implements MyScreen {
 		_touchVec = new Vector3();
 
 		// create a font
-		_font = new BitmapFont(Gdx.files.internal("data/arial-15.fnt"), false);
-		_font.setColor(Color.WHITE);
-		// TODO: have a properly scaled font, instead of this ugliness
-		_font.setScale(2);
+		// NB: cleaner way of doing fonts.  Not tested on Android yet...
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/arial.ttf"));
+		_font = generator.generateFont(30, FreeTypeFontGenerator.DEFAULT_CHARS, false);
+		generator.dispose();
 
 		// and our renderers
 		_batcher = new SpriteBatch();
