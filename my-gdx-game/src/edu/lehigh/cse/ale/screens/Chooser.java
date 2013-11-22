@@ -9,13 +9,14 @@ import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import edu.lehigh.cse.ale.ALE;
+import edu.lehigh.cse.ale.Media;
+
 
 public class Chooser implements MyScreen {
 	// for managing the camera...
@@ -120,10 +121,7 @@ public class Chooser implements MyScreen {
 		_touchVec = new Vector3();
 
 		// create a font
-		// NB: cleaner way of doing fonts.  Not tested on Android yet...
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/arial.ttf"));
-		_font = generator.generateFont(30, FreeTypeFontGenerator.DEFAULT_CHARS, false);
-		generator.dispose();
+		_font = Media.getFont("data/arial.ttf", 30);
 
 		// and our renderers
 		_batcher = new SpriteBatch();
@@ -162,7 +160,7 @@ public class Chooser implements MyScreen {
 		_srend.begin(ShapeType.Filled);
 		_srend.setColor(.4f, .4f, .4f, 0.9f);
 		for (LevelSprite ls : levels) {
-			if (ls.l > ALE._unlockLevel) {
+			if (ls.l > ALE._unlockLevel && !_game._config.getDeveloperUnlock()) {
 				_srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4,
 						ls.r.height - 4);
 			}
@@ -216,7 +214,7 @@ public class Chooser implements MyScreen {
 		// translate the touch into _touchVec
 		_camera.unproject(_touchVec.set(x, y, 0));
 		for (LevelSprite ls : levels) {
-			if (ls.l <= ALE._unlockLevel) {
+			if (ls.l <= ALE._unlockLevel || _game._config.getDeveloperUnlock()) {
 				if (ls.r.contains(_touchVec.x, _touchVec.y)) {
 					// [TODO] action goes here...
 					_game.doPlayLevel(ls.l);

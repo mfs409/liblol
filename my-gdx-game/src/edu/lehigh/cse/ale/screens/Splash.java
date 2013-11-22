@@ -3,7 +3,6 @@ package edu.lehigh.cse.ale.screens;
 // TODO: clean code; fix button rectangles; make help work; test sound once we fix back buttons
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,12 +10,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeBitmapFontData;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import edu.lehigh.cse.ale.ALE;
+import edu.lehigh.cse.ale.Media;
+
 
 public class Splash implements MyScreen {
 	// these are helpers for placing the buttons easily / nicely. Note that
@@ -76,8 +75,6 @@ public class Splash implements MyScreen {
 
 	TextureRegion _tr;
 
-	BitmapFont _font;
-
 	/**
 	 * Set up the splash screen
 	 * 
@@ -111,11 +108,6 @@ public class Splash implements MyScreen {
 		_tr = new TextureRegion(new Texture(Gdx.files.internal("data/"
 				+ _game._config.getSplashBackground())));
 
-		// NB: cleaner way of doing fonts.  Not tested on Android yet...
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/arial.ttf"));
-		_font = generator.generateFont(30, FreeTypeFontGenerator.DEFAULT_CHARS, false);
-		generator.dispose();
-		
 		// and our sprite batcher
 		_batcher = new SpriteBatch();
 
@@ -161,33 +153,33 @@ public class Splash implements MyScreen {
 
 		// Render some text... for this we have to set the projection matrix
 		// again, so we work in pixel coordinates
-		// _batcher.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		_batcher.setProjectionMatrix(_camera.combined);
 		_batcher.begin();
 
 		// [TODO]: these need to be externalized... it also wouldn't hurt to
 		// have objects to store these text entities, so that we can precompute
 		// more and set up the rectangles correctly...
-		float w = _font.getBounds("Demo Game").width;
-		float h = _font.getBounds("test").height;
-		_font.draw(_batcher, "Demo Game", CAMERA_WIDTH / 2 - w / 2,
+		BitmapFont f = Media.getFont("data/arial.ttf", 30);
+		float w = f.getBounds("Demo Game").width;
+		float h = f.getBounds("test").height;
+		f.draw(_batcher, "Demo Game", CAMERA_WIDTH / 2 - w / 2,
 				CAMERA_HEIGHT - 5 - h);
-		w = _font.getBounds("Play").width;
+		w = f.getBounds("Play").width;
 		// _font.draw(_batcher, "Play", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
 		// - 5 - h - 30 - h);
-		_font.draw(_batcher, "Play", PLAY_X, PLAY_Y);
+		f.draw(_batcher, "Play", PLAY_X, PLAY_Y);
 		Gdx.app.log("play", "w=" + w + ", h=" + h + ", x="
 				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
 				+ (CAMERA_HEIGHT - 5 - h - 30 - h));
 
-		w = _font.getBounds("Help").width;
-		_font.draw(_batcher, "Help", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
+		w = f.getBounds("Help").width;
+		f.draw(_batcher, "Help", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
 				- 5 - h - 30 - h - 30 - h);
 		Gdx.app.log("help", "w=" + w + ", h=" + h + ", x="
 				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
 				+ (CAMERA_HEIGHT - 5 - h - 30 - h - 30 - h));
-		w = _font.getBounds("Quit").width;
-		_font.draw(_batcher, "Quit", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
+		w = f.getBounds("Quit").width;
+		f.draw(_batcher, "Quit", CAMERA_WIDTH / 2 - w / 2, CAMERA_HEIGHT
 				- 5 - h - 30 - h - 30 - h - 30 - h);
 		Gdx.app.log("quit", "w=" + w + ", h=" + h + ", x="
 				+ (CAMERA_WIDTH / 2 - w / 2) + ", y=, "
@@ -197,7 +189,7 @@ public class Splash implements MyScreen {
 
 	@Override
 	public void dispose() {
-		_font.dispose();
+
 	}
 
 	@Override

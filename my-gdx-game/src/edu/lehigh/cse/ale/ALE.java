@@ -11,11 +11,11 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.me.mygdxgame.Level1;
 
 import edu.lehigh.cse.ale.screens.Chooser;
 import edu.lehigh.cse.ale.screens.MyScreen;
 import edu.lehigh.cse.ale.screens.Splash;
+
 
 public abstract class ALE implements ApplicationListener, InputProcessor {
 
@@ -171,6 +171,9 @@ public abstract class ALE implements ApplicationListener, InputProcessor {
 			return;
 		_screen.hide();
 		_screen.dispose();
+		
+		// TODO: dispose of all fonts, textureregions, etc...
+		
 	}
 
 	@Override

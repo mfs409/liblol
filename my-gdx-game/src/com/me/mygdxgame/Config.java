@@ -74,7 +74,7 @@ public class Config extends ALEConfiguration {
 
 	@Override
 	public boolean getDeveloperUnlock() {
-		return false;
+		return true;
 	}
 
 	@Override
