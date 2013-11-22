@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale.screens;
+package edu.lehigh.cse.ale;
 
 // TODO: clean code; fix button rectangles; make help work; test sound once we fix back buttons
 

@@ -29,7 +29,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import edu.lehigh.cse.ale.screens.MyScreen;
+import edu.lehigh.cse.ale.MyScreen;
 
 public class Level2 implements MyScreen {
 

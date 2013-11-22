@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-import edu.lehigh.cse.ale.screens.MyScreen;
+import edu.lehigh.cse.ale.MyScreen;
 
 public class Level1 implements MyScreen {
 

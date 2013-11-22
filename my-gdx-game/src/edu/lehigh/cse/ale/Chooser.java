@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale.screens;
+package edu.lehigh.cse.ale;
 
 // TODO: comments, and clean up naming, add cheat button, verify return values (i.e., false)
 

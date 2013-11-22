@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale.screens;
+package edu.lehigh.cse.ale;
 
 // TODO: this is going to be the hardest part...
 

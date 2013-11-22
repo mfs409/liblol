@@ -1,8 +1,5 @@
 package edu.lehigh.cse.ale;
 
-import edu.lehigh.cse.ale.screens.GameLevel;
-
-
 public class Level {
 	static GameLevel _current;
 	

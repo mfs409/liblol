@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale.screens;
+package edu.lehigh.cse.ale;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;

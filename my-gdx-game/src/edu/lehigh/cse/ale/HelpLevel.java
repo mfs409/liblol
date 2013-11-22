@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale.screens;
+package edu.lehigh.cse.ale;
 
 public class HelpLevel implements MyScreen
 {

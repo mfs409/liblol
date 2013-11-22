@@ -12,11 +12,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 
-import edu.lehigh.cse.ale.screens.Chooser;
-import edu.lehigh.cse.ale.screens.MyScreen;
-import edu.lehigh.cse.ale.screens.Splash;
-
-
 public abstract class ALE implements ApplicationListener, InputProcessor {
 
 	/*
