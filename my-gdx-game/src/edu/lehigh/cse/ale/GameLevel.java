@@ -70,7 +70,7 @@ public class GameLevel implements MyScreen {
 		// looks at (0,16) (that's where the middle of the
 		// screen will be located).
 		_camera = new OrthographicCamera(width, height);
-		_camera.position.set(0, 16, 0); // TODO: is this what we need?
+		_camera.position.set(width/2, height/2, 0);
 
 		// next we create the box2d debug renderer
 		_debugRender = new Box2DDebugRenderer();
@@ -79,11 +79,17 @@ public class GameLevel implements MyScreen {
 		_spriteRender = new SpriteBatch();
 	
 		_sprites  = new ArrayList<PhysicsSprite>();
+		
+		Tilt.reset();
+		
 	}
 
 	@Override
 	public void render(float delta) {
 
+		// handle accelerometer stuff
+		Tilt.handleTilt();
+		
 		// first we update the world. For simplicity we use the delta time //
 		// provided by the Graphics instance. Normally you'll want to fix the //
 		// time step.

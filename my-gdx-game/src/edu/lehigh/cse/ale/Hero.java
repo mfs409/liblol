@@ -37,7 +37,7 @@ public class Hero extends PhysicsSprite{
 
 	public static Hero makeAsCircle(float x, float y, float r, String imgName)
 	{
-		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal("data/badlogicsmall.jpg")));
+		TextureRegion tr = Media.getImage(imgName);
 		Hero h = new Hero(tr, r*2, r*2);
 		
 		// NB: this is a circle... really!

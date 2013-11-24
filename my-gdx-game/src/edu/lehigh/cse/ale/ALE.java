@@ -57,6 +57,9 @@ public abstract class ALE implements ApplicationListener, InputProcessor {
 		// get number of unlocked levels
 		readUnlocked();
 
+		// Load Resources
+		nameResources();
+		
 		// show the splash screen
 		doSplash();
 	}

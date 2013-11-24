@@ -21,38 +21,6 @@ public class Config extends ALEConfiguration {
 	}
 
 	@Override
-	@Deprecated
-	public String getIconText() {
-		return null;
-	}
-
-	@Override
-	public String getTitle() {
-		return "ALE Demo Game";
-	}
-
-	@Override
-	public String getPlayButtonText() {
-		return "Play";
-	}
-
-	@Override
-	public String getHelpButtonText() {
-		return "Help";
-	}
-
-	@Override
-	public String getQuitButtonText() {
-		return "Quit";
-	}
-
-	@Override
-	@Deprecated
-	public String getOrientation() {
-		return null;
-	}
-
-	@Override
 	public int getNumHelpScenes() {
 		return 0;
 	}

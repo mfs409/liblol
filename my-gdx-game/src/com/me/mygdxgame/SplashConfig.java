@@ -2,11 +2,28 @@ package com.me.mygdxgame;
 
 import edu.lehigh.cse.ale.SplashConfiguration;
 
-// TODO: extend SplashConfiguration to handle font name and font size, and the actual text
+// TODO: extend SplashConfiguration to handle font name/color/size, and the actual text
 
 // TODO: then extend this so that we can query to get width and height via queries to SplashConfiguration
 
 public class SplashConfig extends SplashConfiguration {
+
+	public String getTitle() {
+		return "ALE Demo Game";
+	}
+
+	public String getPlayButtonText() {
+		return "Play";
+	}
+
+	public String getHelpButtonText() {
+		return "Help";
+	}
+
+	public String getQuitButtonText() {
+		return "Quit";
+	}
+
 	public int getPlayX() {
 		return 213;
 	}

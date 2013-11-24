@@ -289,6 +289,41 @@ public abstract class PhysicsSprite {
     	return _height;
     }
 
+    /**
+     * Internal method for updating an entity's velocity, so that we can handle its direction correctly
+     * 
+     * @param x 
+     *          The new x velocity
+     * @param y 
+     *          The new y velocity
+     */
+    void updateVelocity(float x, float y) 
+    {
+        _physBody.setLinearVelocity(x, y);
+        
+        // TODO: support reverse face
+        // manage changing direction of entity
+        //if (_reverseFace && x != 0)
+        //    _sprite.setFlippedHorizontal(x < 0);
+    }
 
+    boolean _isTilt;
+    
+    /**
+     * Indicate that the _sprite should move with the tilt of the phone
+     */
+    public void setMoveByTilting()
+    {
+        if (!_isTilt) {
+            // make sure it is moveable, add it to the list of tilt entities
+            // TODO
+        	// makeMoveable();
+            synchronized (Tilt._accelEntities) {
+                Tilt._accelEntities.add(this);
+            }
+            _isTilt = true;
+            // turn off sensor behavior, so this collides with stuff...
+            _physBody.getFixtureList().get(0).setSensor(false);
+        }
+    }   
 }
-

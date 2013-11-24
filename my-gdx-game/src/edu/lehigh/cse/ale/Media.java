@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -112,37 +113,11 @@ public class Media {
 	 *            folder). This should be of the form "image.png", and should be
 	 *            of type "png".
 	 */
-	/*
 	static public void registerImage(String imgName) {
-		AssetManager am = ALE._self.getAssets();
-		Bitmap b = null;
-		try {
-			b = BitmapFactory.decodeStream(am.open(imgName));
-		} catch (Exception e) {
-			Debug.d("Error loading image file "
-					+ imgName
-					+ " ... your program will probably crash when you try to use it.  Is the file in your assets?");
-			return;
-		}
-		int width = b.getWidth();
-		int height = b.getHeight();
-
-		if (width > 2048)
-			Debug.d("Image file " + imgName + " has a width of " + width
-					+ "... that's probably too big!");
-		if (height > 2048)
-			Debug.d("Image file " + imgName + " has a height of " + height
-					+ "... that's probably too big!");
-
-		BitmapTextureAtlas bta = new BitmapTextureAtlas(
-				ALE._self.getTextureManager(), width, height,
-				TextureOptions.DEFAULT);
-		TiledTextureRegion ttr = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(bta, ALE._self, imgName, 0, 0, 1, 1);
-		_images.put(imgName, ttr);
-		ALE._self.getEngine().getTextureManager().loadTexture(bta);
+		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal("data/"+imgName)));
+		_images.put(imgName, tr);
 	}
-*/
+
 	/**
 	 * Register an animatable image file, so that it can be used later. The
 	 * difference between regular _images and animatable _images is that
