@@ -25,6 +25,8 @@ public class MyGdxGame extends ALE
         Media.registerImage("mustardball.png");
         Media.registerImage("red.png");
         Media.registerImage("msg1.png");
+
+        // TODO: register music for splash
     }
 
     @Override
@@ -101,8 +103,6 @@ public class MyGdxGame extends ALE
             // elasticity, and friction
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            // new: add a pop-up message that shows for one second at the
-            // beginning of the level
             PopUpScene.showTextTimed("Reach the destination\nto win this level.", 1);
         }
 
@@ -129,11 +129,13 @@ public class MyGdxGame extends ALE
 
             // now let's draw two heroes who can both move by tilting, and
             // who both have density and friction
+            //
+            // NB: less density, so faster movement
             Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-            h1.setPhysics(1, 0, 0.6f);
+            h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
             Hero h2 = Hero.makeAsCircle(14, 7, 3, 3, "greenball.png");
-            h2.setPhysics(1, 0, 0.6f);
+            h2.setPhysics(.1f, 0, 0.6f);
             h2.setMoveByTilting();
 
             // notice that now we will make two destinations, each of which
@@ -167,10 +169,10 @@ public class MyGdxGame extends ALE
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 46, 32, "red.png", 1, .3f, 1);
             Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-            h1.setPhysics(1, 0, 0.6f);
+            h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
             Hero h2 = Hero.makeAsCircle(14, 7, 3, 3, "greenball.png");
-            h2.setPhysics(1, 0, 0.6f);
+            h2.setPhysics(.1f, 0, 0.6f);
             h2.setMoveByTilting();
 
             // now let's make a destination, but indicate that it can hold TWO
@@ -201,19 +203,23 @@ public class MyGdxGame extends ALE
          * @whatsnew: using tilt as velocity instead of tilt as force
          */
         else if (whichLevel == 6) {
-            /*
-             * // configure a basic level, just like the start of level 2:
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // change the behavior or tilt Tilt.setAsVelocity(true);
-             * 
-             * // and print a popup to tell the user what's going on...
-             * PopUpScene.showTextTimed("A different way\nto use tilt.", 1);
-             */
+
+            // configure a basic level, just like the start of level 2:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // change the behavior or tilt
+            Tilt.setAsVelocity(true);
+
+            // and print a popup to tell the user what's going on...
+            PopUpScene.showTextTimed("A different way\nto use tilt.", 1);
+
         }
 
         /**
