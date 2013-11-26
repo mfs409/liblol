@@ -13,7 +13,7 @@ public class Hero extends PhysicsSprite{
 
 	public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
 	{
-		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal("data/badlogicsmall.jpg")));
+	    TextureRegion tr = Media.getImage(imgName);
 		Hero h = new Hero(tr, width, height);
 		h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
 		Level._current._sprites.add(h);

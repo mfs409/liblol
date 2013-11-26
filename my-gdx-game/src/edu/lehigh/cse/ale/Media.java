@@ -118,7 +118,7 @@ public class Media {
 	 *            of type "png".
 	 */
 	static public void registerImage(String imgName) {
-		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal("data/"+imgName)));
+		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
 		_images.put(imgName, tr);
 	}
 

@@ -127,7 +127,7 @@ public class GameLevel implements MyScreen
             _spriteRender.begin();
             // TODO: there's something screwy when we run this on a phone... it
             // works fine on desktop though...
-            BitmapFont f = Media.getFont("data/arial.ttf", 30);
+            BitmapFont f = Media.getFont("arial.ttf", 30);
             String msg = Level._textYouWon;
             float w = f.getBounds(msg).width;
             float h = f.getBounds(msg).height;
@@ -329,7 +329,7 @@ public class GameLevel implements MyScreen
             int camWidth = _game._config.getScreenWidth();
             int camHeight = _game._config.getScreenHeight();
 
-            BitmapFont f = Media.getFont("data/arial.ttf", _popupSize);
+            BitmapFont f = Media.getFont("arial.ttf", _popupSize);
             String msg = _popupText;
             float w = f.getMultiLineBounds(msg).width;
             float h = f.getMultiLineBounds(msg).height;

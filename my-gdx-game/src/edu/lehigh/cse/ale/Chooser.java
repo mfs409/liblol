@@ -122,7 +122,7 @@ public class Chooser implements MyScreen {
 		_touchVec = new Vector3();
 
 		// create a font
-		_font = Media.getFont("data/arial.ttf", 30);
+		_font = Media.getFont("arial.ttf", 30);
 
 		// and our renderers
 		_batcher = new SpriteBatch();

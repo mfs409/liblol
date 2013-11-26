@@ -97,7 +97,7 @@ public class Destination extends PhysicsSprite {
 	public static Destination makeAsCircle(float x, float y, float width,
 			float height, String imgName) {
 		TextureRegion tr = new TextureRegion(new Texture(
-				Gdx.files.internal("data/" + imgName)));
+				Gdx.files.internal(imgName)));
 		float radius = (width > height) ? width : height;
 		Destination d = new Destination(radius * 2, radius * 2, tr);
 
