@@ -3,10 +3,7 @@ package edu.lehigh.cse.ale;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class Hero extends PhysicsSprite{
 
@@ -18,47 +15,71 @@ public class Hero extends PhysicsSprite{
 	{
 		TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal("data/badlogicsmall.jpg")));
 		Hero h = new Hero(tr, width, height);
-		
-		// NB: this is not a circle... it's a box...
-		PolygonShape boxPoly = new PolygonShape();
-		boxPoly.setAsBox(width/2, height/2);
-		BodyDef boxBodyDef = new BodyDef();
-		boxBodyDef.type = BodyType.DynamicBody;
-		boxBodyDef.position.x = x;
-		boxBodyDef.position.y = y;
-		h._physBody = Level._current._world.createBody(boxBodyDef);
-		h._physBody.createFixture(boxPoly, 1);
-		// link the body to the sprite
-		h._physBody.setUserData(h);
-		boxPoly.dispose();
+		h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
 		Level._current._sprites.add(h);
 		return h;
 	}
 
-	public static Hero makeAsCircle(float x, float y, float r, String imgName)
+	public static Hero makeAsCircle(float x, float y, float width, float height, String imgName)
 	{
 		TextureRegion tr = Media.getImage(imgName);
-		Hero h = new Hero(tr, r*2, r*2);
-		
-		// NB: this is a circle... really!
-		CircleShape c = new CircleShape();
-		c.setRadius(r);
-		BodyDef boxBodyDef = new BodyDef();
-		boxBodyDef.type = BodyType.DynamicBody;
-		boxBodyDef.position.x = x;
-		boxBodyDef.position.y = y;
-		h._physBody = Level._current._world.createBody(boxBodyDef);
-		h._physBody.createFixture(c, 1);
-		// link the body to the sprite
-		h._physBody.setUserData(h);
-		c.dispose();
+		float radius = (width>height)?width:height;
+		Hero h = new Hero(tr, radius*2, radius*2);
+		h.setCirclePhysics(0,0,0,BodyType.DynamicBody, false, x, y, radius);
 		Level._current._sprites.add(h);
 		return h;
 	}
 
 	@Override
 	void onCollide(PhysicsSprite other) {
-		// TODO Auto-generated method stub
+        // NB: we currently ignore (other._psType == SpriteId.PROJECTILE)
+//        if (other._psType == SpriteId.ENEMY)
+//            onCollideWithEnemy((Enemy) other);
+        //else 
+		if (other._psType == SpriteId.DESTINATION)
+            onCollideWithDestination((Destination) other);
+        else if (other._psType == SpriteId.OBSTACLE)
+            onCollideWithObstacle((Obstacle) other);
+        //else if (other._psType == SpriteId.SVG)
+        //    onCollideWithSVG(other);
+        //else if (other._psType == SpriteId.GOODIE)
+        //    onCollideWithGoodie((Goodie) other);
+
+        // one last thing: if the hero was "norotate", then patch up any rotation that happened to its _physics body by
+        // mistake:
+		// TODO: do we still need this?
+        //if (!_canRotate)
+        //    _physBody.setTransform(_physBody.getPosition(), 0);
 		
 	}
+
+    /**
+     * Dispatch method for handling Hero collisions with Destinations
+     * 
+     * @param d
+     *            The destination with which this hero collided
+     */
+    private void onCollideWithDestination(Destination d)
+    {
+        // only do something if the hero has enough goodies of each type and there's room in the destination
+        if ((Score._goodiesCollected1 >= d._activationScore1) 
+                && (Score._goodiesCollected2 >= d._activationScore2)
+                && (Score._goodiesCollected3 >= d._activationScore3)
+                && (Score._goodiesCollected4 >= d._activationScore4)
+                && (d._holding < d._capacity)
+                && _visible)
+        {
+            // hide the hero quietly, since the destination might make a sound
+            scheduleRemove(true);
+            d._holding++;
+            if (d._arrivalSound != null)
+                d._arrivalSound.play();
+            Score.onDestinationArrive();
+        }
+    }
+    
+    private void onCollideWithObstacle(Obstacle o)
+    {
+    }
+
 }

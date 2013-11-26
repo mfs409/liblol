@@ -93,6 +93,7 @@ public class Chooser implements MyScreen {
 		// figure out number of rows and columns...
 		int camWidth = _game._config.getScreenWidth();
 		int camHeight = _game._config.getScreenHeight();
+		// TODO: externalize these constants?
 		int hGutter = 15;
 		int vGutter = 15;
 		

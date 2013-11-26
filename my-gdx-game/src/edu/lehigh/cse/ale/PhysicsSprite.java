@@ -2,7 +2,11 @@ package edu.lehigh.cse.ale;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public abstract class PhysicsSprite {
 
@@ -37,20 +41,20 @@ public abstract class PhysicsSprite {
     /**
      * Track the image to display
      */
-    public TextureRegion _tr;
+    TextureRegion _tr;
     
     /**
      * Type of this PhysicsSprite; useful for disambiguation in collision detection
      */
-    protected SpriteId _psType;
+    SpriteId _psType;
 
     /**
      * Text that user can modify to hold additional information
      */
     String             _infoText = "";
 
-    public float _width;
-    public float _height;
+    float _width;
+    float _height;
     
     PhysicsSprite(TextureRegion tr, SpriteId id, float width, float height)
     {
@@ -95,7 +99,7 @@ public abstract class PhysicsSprite {
     /**
      * Physics body for this object
      */
-    public Body             _physBody  = null;
+    Body             _physBody;
 
     /**
      * Track whether the underlying body is a circle or box
@@ -129,15 +133,32 @@ public abstract class PhysicsSprite {
      * @param isProjectile
      *            Is this a bullet
      */
-    void setBoxPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile)
+    void setBoxPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile, float x, float y)
     {
-        // FixtureDef fd = PhysicsFactory.createFixtureDef(density, elasticity, friction, false);
-        // _physBody = PhysicsFactory.createBoxBody(Level._physics, _sprite, type, fd);
-        if (isProjectile)
+    	// NB: this is not a circle... it's a box...
+		PolygonShape boxPoly = new PolygonShape();
+		boxPoly.setAsBox(_width/2, _height/2);
+		BodyDef boxBodyDef = new BodyDef();
+		boxBodyDef.type = type;
+		boxBodyDef.position.x = x;
+		boxBodyDef.position.y = y;
+		_physBody = Level._current._world.createBody(boxBodyDef);
+
+		FixtureDef fd = new FixtureDef();
+		fd.density = density;
+		fd.restitution = elasticity;
+		fd.friction = friction;
+		fd.shape = boxPoly;
+		// NB: could use fd.filter to prevent some from colliding with others...
+		_physBody.createFixture(fd);
+
+		// link the body to the sprite
+		_physBody.setUserData(this);
+		boxPoly.dispose();
+	
+		if (isProjectile)
             _physBody.setBullet(true);
-        // _pc = new PhysicsConnector(_sprite, _physBody, true, _canRotate);
-        // Level._physics.registerPhysicsConnector(_pc);
-        _physBody.setUserData(this);
+
         // remember this is a box
         _isCircle = false;
     }
@@ -156,20 +177,34 @@ public abstract class PhysicsSprite {
      * @param isProjectile
      *            Is this a bullet
      */
-    void setCirclePhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile)
+    void setCirclePhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile, float x, float y, float r)
     {
-        // define the _fixture and body
-        // FixtureDef fd = PhysicsFactory.createFixtureDef(density, elasticity, friction, false);
-        // _physBody = PhysicsFactory.createCircleBody(Level._physics, _sprite, type, fd);
-        if (isProjectile)
-            _physBody.setBullet(true);
-        // connect sprite and _fixture
-        // _pc = new PhysicsConnector(_sprite, _physBody, true, _canRotate);
-        // Level._physics.registerPhysicsConnector(_pc);
-        // attach this to the body for collision callbacks
-        _physBody.setUserData(this);
-        // remember this is a circle
         _isCircle = true;
+
+		// NB: this is a circle... really!
+		CircleShape c = new CircleShape();
+		c.setRadius(r);
+		BodyDef boxBodyDef = new BodyDef();
+		boxBodyDef.type = type;
+		boxBodyDef.position.x = x;
+		boxBodyDef.position.y = y;
+		_physBody = Level._current._world.createBody(boxBodyDef);
+
+		FixtureDef fd = new FixtureDef();
+		fd.density = density;
+		fd.restitution = elasticity;
+		fd.friction = friction;
+		fd.shape = c;
+		// NB: could use fd.filter to prevent some from colliding with others...
+		_physBody.createFixture(fd);
+		c.dispose();
+		
+		if (isProjectile)
+            _physBody.setBullet(true);
+		
+		// link the body to the sprite
+        _physBody.setUserData(this);
+		
     }
 
     /**
@@ -196,6 +231,12 @@ public abstract class PhysicsSprite {
      */
     public void setPhysics(float density, float elasticity, float friction)
     {
+        _physBody.getFixtureList().get(0).setDensity(density);
+        _physBody.resetMassData();
+        _physBody.getFixtureList().get(0).setRestitution(elasticity);
+        _physBody.getFixtureList().get(0).setFriction(friction);
+        
+        /*
         // get information from previous body
         boolean wasSensor = _physBody.getFixtureList().get(0).isSensor();
         boolean _isBullet = _physBody.isBullet();
@@ -203,13 +244,15 @@ public abstract class PhysicsSprite {
 
         // delete old body, make a new body
         deletePhysicsBody();
-        if (_isCircle)
-            setCirclePhysics(density, elasticity, friction, _t, _isBullet);
-        else
-            setBoxPhysics(density, elasticity, friction, _t, _isBullet);
+        // TODO
+        //if (_isCircle)
+        //    setCirclePhysics(density, elasticity, friction, _t, _isBullet);
+        //else
+        //    setBoxPhysics(density, elasticity, friction, _t, _isBullet);
         // patch up if it was a sensor
         if (wasSensor)
             setCollisionEffect(false);
+            */
     }
 
     /**
@@ -217,6 +260,8 @@ public abstract class PhysicsSprite {
      */
     public void disableRotation()
     {
+    	// TODO: is this all we need?
+    	_physBody.setFixedRotation(true);
         // set a flag, copy key parameters
         _canRotate = false;
         boolean wasSensor = _physBody.getFixtureList().get(0).isSensor();
@@ -227,10 +272,11 @@ public abstract class PhysicsSprite {
         BodyType _t = _physBody.getType();
         // remove old body, create new body of appropriate type
         deletePhysicsBody();
-        if (_isCircle)
-            setCirclePhysics(_density, _elasticity, _friction, _t, _isBullet);
-        else
-            setBoxPhysics(_density, _elasticity, _friction, _t, _isBullet);
+        // TODO:
+        //if (_isCircle)
+        //    setCirclePhysics(_density, _elasticity, _friction, _t, _isBullet);
+        //else
+        //    setBoxPhysics(_density, _elasticity, _friction, _t, _isBullet);
         // patch up if it was a sensor
         if (wasSensor)
             setCollisionEffect(false);
@@ -326,4 +372,44 @@ public abstract class PhysicsSprite {
             _physBody.getFixtureList().get(0).setSensor(false);
         }
     }   
+
+    boolean _visible = true;
+    boolean _deleteQuietly;
+    /**
+     * Make an entity disappear
+     * 
+     * @param quiet
+     *            True if the disappear sound should not be played
+     */
+    public void scheduleRemove(boolean quiet)
+    {
+        // set it invisible immediately, so that future calls know to ignore this PhysicsSprite
+        _visible = false;
+        _deleteQuietly = quiet;
+        Level._current._deletions.add(this);
+    }
+    
+    public void remove () 
+    {
+        _physBody.setActive(false);
+    	// TODO
+    	/*
+        _sprite.setVisible(false);
+        if (_disappearAnimateCells != null) {
+            float x = _sprite.getX() + _disappearAnimateOffset.x;
+            float y = _sprite.getY() + _disappearAnimateOffset.y;
+            TiledTextureRegion ttr = Media.getImage(_disappearAnimateImageName);
+            AnimatedSprite as = new AnimatedSprite(x, y, _disappearAnimateWidth, _disappearAnimateHeight, ttr,
+                    ALE._self.getVertexBufferObjectManager());
+            Level._current.attachChild(as);
+            as.animate(_disappearAnimateDurations, _disappearAnimateCells, false);
+        }
+        // play a sound when we hit this thing?
+        if (_disappearSound != null && !quiet)
+            _disappearSound.play();
+        // disable the _physics body
+        _physBody.setActive(false);
+        */
+    }
+
 }

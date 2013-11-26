@@ -156,14 +156,11 @@ public class Tilt {
 			else if (Gdx.input.isKeyPressed(Keys.DPAD_DOWN))
 				yGravity = -15f;
 		}
-		Gdx.app.log("tilt", "x,y = " + xGravity + ", " + yGravity);
 
 		// get gravity from accelerometer
 		// TODO: there is a hidden "times 10" multiplier in here... comment it...
-		xGravity *= _gravityMultiplier * 10;
-		yGravity *= _gravityMultiplier * 10;
-
-		Gdx.app.log("tilt'", "x,y = " + xGravity + ", " + yGravity);
+		xGravity *= _gravityMultiplier;
+		yGravity *= _gravityMultiplier;
 
 		// ensure -10 <= x <= 10
 		xGravity = (xGravity > 10*_xGravityMax) ? 10*_xGravityMax : xGravity;

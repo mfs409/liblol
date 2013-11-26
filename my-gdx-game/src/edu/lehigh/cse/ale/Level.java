@@ -13,6 +13,38 @@ public class Level {
     
 	static GameLevel _current;
 	
+    /**
+     * Text to display when the _current level is won
+     */
+    static String      _textYouWon;
+
+    /**
+     * Text to display when the _current level is lost
+     */
+    static String      _textYouLost;
+
+    /**
+     * Specify the text to display when the _current level is won
+     * 
+     * @param text
+     *            The text to display
+     */
+    public static void setWinText(String text)
+    {
+        _textYouWon = text;
+    }
+
+    /**
+     * Specify the text to display when the _current level is lost
+     * 
+     * @param text
+     *            The text to display
+     */
+    public static void setLoseText(String text)
+    {
+        _textYouLost = text;
+    }
+	
 	/**
 	 * Create a new empty level, and set its camera
 	 * 
@@ -21,8 +53,11 @@ public class Level {
 	 */
 	public static void configure(int width, int height)
 	{
-		_current = new GameLevel(width, height);
-	}
+		_current = new GameLevel(width, height, ALE._game);
+
+        Level._textYouWon = "Next Level";
+        Level._textYouLost = "Try Again";
+}
 	
     /**
      * Describes how a level is won
@@ -47,5 +82,4 @@ public class Level {
         _victoryType = VictoryType.DESTINATION;
         _victoryHeroCount = howMany;
     }
-
 }

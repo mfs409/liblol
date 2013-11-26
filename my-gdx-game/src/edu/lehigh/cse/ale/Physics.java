@@ -1,6 +1,5 @@
 package edu.lehigh.cse.ale;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -24,11 +23,29 @@ public class Physics {
 			public void beginContact(Contact contact) {
 				Object a = contact.getFixtureA().getBody().getUserData();
 				Object b = contact.getFixtureB().getBody().getUserData();
+				
+
+                // we only do more if both are GFObjects
+                if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
+                    return;
+
+                // filter so that the one with the smaller type handles the
+                // collision
+                PhysicsSprite gfoA = (PhysicsSprite) a;
+                PhysicsSprite gfoB = (PhysicsSprite) b;
+                if (gfoA._psType._id > gfoB._psType._id)
+                    gfoB.onCollide(gfoA);
+                else
+                    gfoA.onCollide(gfoB);
+                // at this point, we should check for win/loss
+
+/*				
 				if (a == null)
 					return;
 				if (b == null)
 					return;
 				Gdx.app.log("collide", a.toString() + " hit " + b.toString());
+				*/
 			}
 
 			@Override

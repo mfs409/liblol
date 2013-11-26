@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
  * The MediaFactory provides a mechanism for registering all of our images and
  * sounds
  */
-public class Media {
+public class Media {    
 	/**
 	 * Making fonts can get expensive... to lighten the load, we'll cache any
 	 * fonts we make
@@ -43,13 +43,17 @@ public class Media {
 		
 		// check if we've already got this font
 		BitmapFont f = _fonts.get(key);
-		if (f != null)
+		if (f != null) {
+			// reset to white
+			f.setColor(1,1,1,1);
 			return f;
+		}
 		
 		// NB: cleaner way of doing fonts
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
 		f = generator.generateFont(fontSize, FreeTypeFontGenerator.DEFAULT_CHARS, false);
 		generator.dispose();
+		_fonts.put(key,  f);
 		return f;
 	}
 	

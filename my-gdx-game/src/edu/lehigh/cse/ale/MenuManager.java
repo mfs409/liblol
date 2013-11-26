@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+import com.badlogic.gdx.Gdx;
+
 // this will probably roll into score
 
 public class MenuManager {
@@ -92,8 +94,12 @@ public class MenuManager {
      */
     static void winLevel()
     {
+    	Gdx.app.log("Win", "You Won!");
+    	// set game over, and the renderer will handle the rest...
+    	GameLevel._currLevel._gameOver = true;
+    	
     	/*
-        ALE._self.levelCompleteTrigger(true);
+        ALE._currLevel._game.levelCompleteTrigger(true);
         if (Level._gameOver)
             return;
         Level._gameOver = true;
