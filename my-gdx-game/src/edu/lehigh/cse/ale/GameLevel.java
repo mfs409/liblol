@@ -58,6 +58,7 @@ public class GameLevel implements MyScreen
 
     // the camera
     private OrthographicCamera _gameCam;
+
     private OrthographicCamera _hudCam;
 
     // box2d debug renderer
@@ -123,7 +124,10 @@ public class GameLevel implements MyScreen
             int camWidth = _game._config.getScreenWidth();
             int camHeight = _game._config.getScreenHeight();
 
-            _spriteRender.setProjectionMatrix(_hudCam.combined);//.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            _spriteRender.setProjectionMatrix(_hudCam.combined);// .getProjectionMatrix().setToOrtho2D(0,
+                                                                // 0,
+                                                                // Gdx.graphics.getWidth(),
+                                                                // Gdx.graphics.getHeight());
             _spriteRender.begin();
             // TODO: there's something screwy when we run this on a phone... it
             // works fine on desktop though...
@@ -131,7 +135,8 @@ public class GameLevel implements MyScreen
             String msg = Level._textYouWon;
             float w = f.getBounds(msg).width;
             float h = f.getBounds(msg).height;
-            // f.draw(_spriteRender, msg, Gdx.graphics.getWidth() / 2 - w / 2, Gdx.graphics.getHeight() / 2 + h / 2);
+            // f.draw(_spriteRender, msg, Gdx.graphics.getWidth() / 2 - w / 2,
+            // Gdx.graphics.getHeight() / 2 + h / 2);
             f.draw(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
             _spriteRender.end();
             return;
@@ -142,7 +147,10 @@ public class GameLevel implements MyScreen
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             _hudCam.update();
 
-            _spriteRender.setProjectionMatrix(_hudCam.combined);//.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            _spriteRender.setProjectionMatrix(_hudCam.combined);// .getProjectionMatrix().setToOrtho2D(0,
+                                                                // 0,
+                                                                // Gdx.graphics.getWidth(),
+                                                                // Gdx.graphics.getHeight());
             _spriteRender.begin();
             doPopUp();
             _spriteRender.end();
@@ -203,7 +211,8 @@ public class GameLevel implements MyScreen
          * 
          * _debugRenderer.render(_world, _camera.combined);
          * 
-         * _world.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
+         * _world.step(BOX_STEP, BOX_VELOCITY_ITERATIONS,
+         * BOX_POSITION_ITERATIONS);
          */
 
     }
@@ -334,8 +343,7 @@ public class GameLevel implements MyScreen
             float w = f.getMultiLineBounds(msg).width;
             float h = f.getMultiLineBounds(msg).height;
             f.setColor(_popupRed, _popupGreen, _popupBlue, 1);
-            f.drawMultiLine(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h
-                    / 2);
+            f.drawMultiLine(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
         }
     }
 }

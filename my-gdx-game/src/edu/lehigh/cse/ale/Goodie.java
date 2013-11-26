@@ -1,5 +1,6 @@
 package edu.lehigh.cse.ale;
 
-public class Goodie {
+public class Goodie
+{
 
 }

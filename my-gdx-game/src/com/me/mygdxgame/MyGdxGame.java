@@ -181,7 +181,7 @@ public class MyGdxGame extends ALE
             d.setHeroCount(2);
             // let's also say that whenever a hero reaches the destination, a
             // sound will play
-            
+
             // TODO: this doesn't work yet
             d.setArrivalSound("hipitch.ogg");
 

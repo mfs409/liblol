@@ -1,6 +1,7 @@
 package edu.lehigh.cse.ale;
 
-// TODO: comments, and clean up naming, add cheat button, verify return values (i.e., false)
+// TODO: comments, and clean up naming, add cheat button, verify return values
+// (i.e., false)
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -17,231 +18,246 @@ import com.badlogic.gdx.math.Vector3;
 import edu.lehigh.cse.ale.ALE;
 import edu.lehigh.cse.ale.Media;
 
+public class Chooser implements MyScreen
+{
+    // for managing the camera...
 
-public class Chooser implements MyScreen {
-	// for managing the camera...
+    // TODO: this first vector is redundant with touchVec
+    final Vector3 curr  = new Vector3();
 
-	// TODO: this first vector is redundant with touchVec
-	final Vector3 curr = new Vector3();
-	final Vector3 last = new Vector3(-1, -1, -1);
-	final Vector3 delta = new Vector3();
+    final Vector3 last  = new Vector3(-1, -1, -1);
 
-	/**
-	 * A helper class for tracking where the buttons are, since we don't have an
-	 * easy way to know which lines are touched.
-	 * 
-	 * @author spear
-	 * 
-	 *         TODO: replace with just rectangles in an indexed array...
-	 */
-	class LevelSprite {
-		Rectangle r;
-		String t;
-		int l;
+    final Vector3 delta = new Vector3();
 
-		LevelSprite(int x, int y, int w, int h, int level) {
-			r = new Rectangle(x, y, w, h);
-			l = level;
-			t = "" + l;
-		}
-	}
+    /**
+     * A helper class for tracking where the buttons are, since we don't have an
+     * easy way to know which lines are touched.
+     * 
+     * @author spear
+     * 
+     *         TODO: replace with just rectangles in an indexed array...
+     */
+    class LevelSprite
+    {
+        Rectangle r;
 
-	/**
-	 * For handling touches
-	 */
-	Vector3 _touchVec;
+        String    t;
 
-	/**
-	 * All the level boxes we drew
-	 */
-	LevelSprite[] levels;
+        int       l;
 
-	/**
-	 * Since we're going to create other screens via this screen, we need a
-	 * reference to the game...
-	 */
-	ALE _game;
+        LevelSprite(int x, int y, int w, int h, int level)
+        {
+            r = new Rectangle(x, y, w, h);
+            l = level;
+            t = "" + l;
+        }
+    }
 
-	/**
-	 * The camera we will use
-	 */
-	OrthographicCamera _camera;
+    /**
+     * For handling touches
+     */
+    Vector3            _touchVec;
 
-	/**
-	 * For rendering
-	 */
-	SpriteBatch _batcher;
+    /**
+     * All the level boxes we drew
+     */
+    LevelSprite[]      levels;
 
-	BitmapFont _font;
+    /**
+     * Since we're going to create other screens via this screen, we need a
+     * reference to the game...
+     */
+    ALE                _game;
 
-	ShapeRenderer _srend;
+    /**
+     * The camera we will use
+     */
+    OrthographicCamera _camera;
 
-	// TODO: externalize these constants?
-	static int bWidth = 60;
-	static int bHeight = 60;
+    /**
+     * For rendering
+     */
+    SpriteBatch        _batcher;
 
-	float cameraCapY;
+    BitmapFont         _font;
 
-	public Chooser(ALE game) {
-		// save a reference to the game
-		_game = game;
+    ShapeRenderer      _srend;
 
-		int numLevels = _game._config.getNumLevels();
-		
-		levels = new LevelSprite[numLevels];
+    // TODO: externalize these constants?
+    static int         bWidth  = 60;
 
-		// figure out number of rows and columns...
-		int camWidth = _game._config.getScreenWidth();
-		int camHeight = _game._config.getScreenHeight();
-		// TODO: externalize these constants?
-		int hGutter = 15;
-		int vGutter = 15;
-		
-		// we want to have gutter, box, gutter, box, ..., where the last box (+
-		// margin) is scroll space
-		int columns = camWidth / (hGutter + bWidth) - 1;
-		int rows = numLevels / columns + ((numLevels % columns > 0) ? 1 : 0);
+    static int         bHeight = 60;
 
-		// now make data for tracking the boxes
-		for (int i = 0; i < numLevels; ++i) {
-			int mycol = i % columns;
-			int myrow = rows - i / columns - 1;
-			levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter),
-					vGutter + myrow * (bHeight + vGutter), bWidth, bHeight,
-					1 + i);
-		}
+    float              cameraCapY;
 
-		// figure out the boundary for the camera
-		cameraCapY = levels[0].r.y + bHeight - camHeight / 2 + vGutter;
+    public Chooser(ALE game)
+    {
+        // save a reference to the game
+        _game = game;
 
-		// configure the camera
-		_camera = new OrthographicCamera(camWidth, camHeight);
-		_camera.position.set(camWidth / 2, cameraCapY, 0);
+        int numLevels = _game._config.getNumLevels();
 
-		// prepare for touches
-		_touchVec = new Vector3();
+        levels = new LevelSprite[numLevels];
 
-		// create a font
-		_font = Media.getFont("arial.ttf", 30);
+        // figure out number of rows and columns...
+        int camWidth = _game._config.getScreenWidth();
+        int camHeight = _game._config.getScreenHeight();
+        // TODO: externalize these constants?
+        int hGutter = 15;
+        int vGutter = 15;
 
-		// and our renderers
-		_batcher = new SpriteBatch();
-		_srend = new ShapeRenderer();
-	}
+        // we want to have gutter, box, gutter, box, ..., where the last box (+
+        // margin) is scroll space
+        int columns = camWidth / (hGutter + bWidth) - 1;
+        int rows = numLevels / columns + ((numLevels % columns > 0) ? 1 : 0);
 
-	@Override
-	public void render(float delta) {
+        // now make data for tracking the boxes
+        for (int i = 0; i < numLevels; ++i) {
+            int mycol = i % columns;
+            int myrow = rows - i / columns - 1;
+            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter),
+                    bWidth, bHeight, 1 + i);
+        }
 
-		int camWidth = _game._config.getScreenWidth();
-		int camHeight = _game._config.getScreenHeight();
+        // figure out the boundary for the camera
+        cameraCapY = levels[0].r.y + bHeight - camHeight / 2 + vGutter;
 
-		// keep camera in foreground layer bounds
-		_camera.position.x = camWidth / 2;
-		if (_camera.position.y < camHeight / 2)
-			_camera.position.y = camHeight / 2;
-		else if (_camera.position.y > cameraCapY)
-			_camera.position.y = cameraCapY;
-		_camera.update();
+        // configure the camera
+        _camera = new OrthographicCamera(camWidth, camHeight);
+        _camera.position.set(camWidth / 2, cameraCapY, 0);
 
-		// clear the screen
-		GLCommon gl = Gdx.gl;
-		gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        // prepare for touches
+        _touchVec = new Vector3();
 
-		// draw squares...
-		_srend.setProjectionMatrix(_camera.combined);
-		_srend.begin(ShapeType.Line);
-		_srend.setColor(Color.BLUE);
-		for (LevelSprite ls : levels) {
-			_srend.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
-			_srend.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
-		}
-		_srend.end();
+        // create a font
+        _font = Media.getFont("arial.ttf", 30);
 
-		_srend.begin(ShapeType.Filled);
-		_srend.setColor(.4f, .4f, .4f, 0.9f);
-		for (LevelSprite ls : levels) {
-			if (ls.l > ALE._unlockLevel && !_game._config.getDeveloperUnlock()) {
-				_srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4,
-						ls.r.height - 4);
-			}
-		}
-		_srend.end();
+        // and our renderers
+        _batcher = new SpriteBatch();
+        _srend = new ShapeRenderer();
+    }
 
-		_batcher.setProjectionMatrix(_camera.combined);
-		_batcher.begin();
-		for (LevelSprite ls : levels) {
-			float x = _font.getBounds(ls.t).width;
-			float y = _font.getBounds(ls.t).height;
-			_font.draw(_batcher, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y
-					+ bHeight - y);
-		}
-		_batcher.end();
-	}
+    @Override
+    public void render(float delta)
+    {
 
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-	}
+        int camWidth = _game._config.getScreenWidth();
+        int camHeight = _game._config.getScreenHeight();
 
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-	}
+        // keep camera in foreground layer bounds
+        _camera.position.x = camWidth / 2;
+        if (_camera.position.y < camHeight / 2)
+            _camera.position.y = camHeight / 2;
+        else if (_camera.position.y > cameraCapY)
+            _camera.position.y = cameraCapY;
+        _camera.update();
 
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-	}
+        // clear the screen
+        GLCommon gl = Gdx.gl;
+        gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
+        gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-	}
+        // draw squares...
+        _srend.setProjectionMatrix(_camera.combined);
+        _srend.begin(ShapeType.Line);
+        _srend.setColor(Color.BLUE);
+        for (LevelSprite ls : levels) {
+            _srend.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
+            _srend.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
+        }
+        _srend.end();
 
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-	}
+        _srend.begin(ShapeType.Filled);
+        _srend.setColor(.4f, .4f, .4f, 0.9f);
+        for (LevelSprite ls : levels) {
+            if (ls.l > ALE._unlockLevel && !_game._config.getDeveloperUnlock()) {
+                _srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
+            }
+        }
+        _srend.end();
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
+        _batcher.setProjectionMatrix(_camera.combined);
+        _batcher.begin();
+        for (LevelSprite ls : levels) {
+            float x = _font.getBounds(ls.t).width;
+            float y = _font.getBounds(ls.t).height;
+            _font.draw(_batcher, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
+        }
+        _batcher.end();
+    }
 
-	// TODO: connect to actual level drawer...
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int newParam) {
-		// translate the touch into _touchVec
-		_camera.unproject(_touchVec.set(x, y, 0));
-		for (LevelSprite ls : levels) {
-			if (ls.l <= ALE._unlockLevel || _game._config.getDeveloperUnlock()) {
-				if (ls.r.contains(_touchVec.x, _touchVec.y)) {
-					// [TODO] action goes here...
-					_game.doPlayLevel(ls.l);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    @Override
+    public void resize(int width, int height)
+    {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		_camera.unproject(curr.set(x, y, 0));
-		if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
-			_camera.unproject(delta.set(last.x, last.y, 0));
-			delta.sub(curr);
-			_camera.position.add(delta.x, delta.y, 0);
-		}
-		last.set(x, y, 0);
-		return false;
-	}
+    @Override
+    public void show()
+    {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
-		// clear drag event
-		last.set(-1, -1, -1);
-		return false;
-	}
+    @Override
+    public void hide()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void pause()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void resume()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void dispose()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    // TODO: connect to actual level drawer...
+    @Override
+    public boolean touchDown(int x, int y, int pointer, int newParam)
+    {
+        // translate the touch into _touchVec
+        _camera.unproject(_touchVec.set(x, y, 0));
+        for (LevelSprite ls : levels) {
+            if (ls.l <= ALE._unlockLevel || _game._config.getDeveloperUnlock()) {
+                if (ls.r.contains(_touchVec.x, _touchVec.y)) {
+                    // [TODO] action goes here...
+                    _game.doPlayLevel(ls.l);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int x, int y, int pointer)
+    {
+        _camera.unproject(curr.set(x, y, 0));
+        if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
+            _camera.unproject(delta.set(last.x, last.y, 0));
+            delta.sub(curr);
+            _camera.position.add(delta.x, delta.y, 0);
+        }
+        last.set(x, y, 0);
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int x, int y, int pointer, int button)
+    {
+        // clear drag event
+        last.set(-1, -1, -1);
+        return false;
+    }
 }

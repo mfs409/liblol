@@ -17,24 +17,28 @@ public class Score
     static int _heroesDefeated;
 
     /**
-     * Count of the goodies (with score 1) that have been collected in this level
+     * Count of the goodies (with score 1) that have been collected in this
+     * level
      * 
      * TODO: switch to a vector of goodie types
      */
     static int _goodiesCollected1;
 
     /**
-     * Count of the goodies (with score 2) that have been collected in this level
+     * Count of the goodies (with score 2) that have been collected in this
+     * level
      */
     static int _goodiesCollected2;
 
     /**
-     * Count of the goodies (with score 3) that have been collected in this level
+     * Count of the goodies (with score 3) that have been collected in this
+     * level
      */
     static int _goodiesCollected3;
 
     /**
-     * Count of the goodies (with score 4) that have been collected in this level
+     * Count of the goodies (with score 4) that have been collected in this
+     * level
      */
     static int _goodiesCollected4;
 
@@ -78,7 +82,7 @@ public class Score
     /*
      * METHODS CALLED WHEN AN ENTITY IS REMOVED
      */
-    
+
     /**
      * Use this to inform the level that a hero has been defeated
      * 
@@ -87,42 +91,45 @@ public class Score
      */
     static void defeatHero(Enemy e)
     {
-    	// TODO
-    	/*
-        _heroesDefeated++;
-        if (_heroesDefeated == Score._heroesCreated)
-            MenuManager.loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : Level._textYouLost);
-            */
+        // TODO
+        /*
+         * _heroesDefeated++;
+         * if (_heroesDefeated == Score._heroesCreated)
+         * MenuManager.loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText
+         * : Level._textYouLost);
+         */
     }
 
     /**
      * Use this to inform the level that a goodie has been collected by the hero
      * 
-     * @param g The goodie that was collected
+     * @param g
+     *            The goodie that was collected
      * 
      * @deprecated Use onGoodieCollected[1-4]() instead
      */
     @Deprecated
     static void onGoodieCollected(Goodie g)
     {
-    	/*
-        // Update any/all goodie counts
-        _goodiesCollected1 += g._score1;
-        _goodiesCollected2 += g._score2;
-        _goodiesCollected3 += g._score3;
-        _goodiesCollected4 += g._score4;
-
-        // possibly win the level, but only if we win on goodie count and all four counts are high enoug
-        if (Level._victoryType != Level.VictoryType.GOODIECOUNT) 
-            return;
-        if ((Level._victoryGoodie1Count <= _goodiesCollected1) 
-                && (Level._victoryGoodie2Count <= _goodiesCollected2)
-                && (Level._victoryGoodie3Count <= _goodiesCollected3)
-                && (Level._victoryGoodie4Count <= _goodiesCollected4)) 
-        {
-            MenuManager.winLevel();
-        }
-        */
+        /*
+         * // Update any/all goodie counts
+         * _goodiesCollected1 += g._score1;
+         * _goodiesCollected2 += g._score2;
+         * _goodiesCollected3 += g._score3;
+         * _goodiesCollected4 += g._score4;
+         * 
+         * // possibly win the level, but only if we win on goodie count and all
+         * four counts are high enoug
+         * if (Level._victoryType != Level.VictoryType.GOODIECOUNT)
+         * return;
+         * if ((Level._victoryGoodie1Count <= _goodiesCollected1)
+         * && (Level._victoryGoodie2Count <= _goodiesCollected2)
+         * && (Level._victoryGoodie3Count <= _goodiesCollected3)
+         * && (Level._victoryGoodie4Count <= _goodiesCollected4))
+         * {
+         * MenuManager.winLevel();
+         * }
+         */
     }
 
     /**
@@ -144,24 +151,25 @@ public class Score
      */
     static void onDefeatEnemy()
     {
-    	/*
-        // update the count of defeated enemies
-        _enemiesDefeated++;
-
-        // if we win by defeating enemies, see if we've defeated enough of them:
-        boolean win = false;
-        if (Level._victoryType == Level.VictoryType.ENEMYCOUNT) {
-            // -1 means "defeat all enemies"
-            if (Level._victoryEnemyCount == -1)
-                win = _enemiesDefeated == _enemiesCreated;
-            else
-                win = _enemiesDefeated >= Level._victoryEnemyCount;
-        }
-        if (win)
-            MenuManager.winLevel();
-            */
+        /*
+         * // update the count of defeated enemies
+         * _enemiesDefeated++;
+         * 
+         * // if we win by defeating enemies, see if we've defeated enough of
+         * them:
+         * boolean win = false;
+         * if (Level._victoryType == Level.VictoryType.ENEMYCOUNT) {
+         * // -1 means "defeat all enemies"
+         * if (Level._victoryEnemyCount == -1)
+         * win = _enemiesDefeated == _enemiesCreated;
+         * else
+         * win = _enemiesDefeated >= Level._victoryEnemyCount;
+         * }
+         * if (win)
+         * MenuManager.winLevel();
+         */
     }
-    
+
     /*
      * MANUAL SCORE MANIPULATION
      */
@@ -236,7 +244,8 @@ public class Score
     }
 
     /**
-     * Manually increment the number of goodies of type 1 that have been collected.
+     * Manually increment the number of goodies of type 1 that have been
+     * collected.
      */
     public static void incrementGoodiesCollected1()
     {
@@ -244,7 +253,8 @@ public class Score
     }
 
     /**
-     * Manually increment the number of goodies of type 2 that have been collected.
+     * Manually increment the number of goodies of type 2 that have been
+     * collected.
      */
     public static void incrementGoodiesCollected2()
     {
@@ -252,7 +262,8 @@ public class Score
     }
 
     /**
-     * Manually increment the number of goodies of type 3 that have been collected.
+     * Manually increment the number of goodies of type 3 that have been
+     * collected.
      */
     public static void incrementGoodiesCollected3()
     {
@@ -260,7 +271,8 @@ public class Score
     }
 
     /**
-     * Manually increment the number of goodies of type 4 that have been collected.
+     * Manually increment the number of goodies of type 4 that have been
+     * collected.
      */
     public static void incrementGoodiesCollected4()
     {
@@ -312,7 +324,7 @@ public class Score
 
     /**
      * Getter for number of goodies of type 4 that have been collected.
-    * 
+     * 
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected4()

@@ -3,7 +3,8 @@ package edu.lehigh.cse.ale;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-public class PopUpScene {
+public class PopUpScene
+{
 
     /**
      * Print a message on a black background, and wait for a timer to expire
@@ -20,7 +21,8 @@ public class PopUpScene {
     }
 
     /**
-     * Print a message on a black background, and wait for a timer to expire. This version of the method adds the
+     * Print a message on a black background, and wait for a timer to expire.
+     * This version of the method adds the
      * ability to customize the font
      * 
      * @param message
@@ -38,25 +40,41 @@ public class PopUpScene {
      */
     static public void showTextTimed(String message, float duration, int red, int green, int blue, int fontSize)
     {
-    	
-    	Level._current.setPopUp(message, red, green, blue, fontSize);
-    	Timer.schedule(new Task(){@Override public void run(){Level._current._showPopUp = false;}}, duration);
-/*
-    	CameraScene child = configurePopup(false, duration);
-        Text t = new Text(0, 0, Util.makeFont(red, green, blue, fontSize), message, ALE._self
-                .getVertexBufferObjectManager());
-        float w = t.getWidth();
-        float h = t.getHeight();
-        t.setPosition(Configuration.getCameraWidth() / 2 - w / 2, Configuration.getCameraHeight() / 2 - h / 2);
-        child.attachChild(t);
-        Level._current.setChildSceneModal(child);
-        */
+
+        Level._current.setPopUp(message, red, green, blue, fontSize);
+        Timer.schedule(new Task()
+        {
+            @Override
+            public void run()
+            {
+                Level._current._showPopUp = false;
+            }
+        }, duration);
+        /*
+         * CameraScene child = configurePopup(false, duration);
+         * Text t = new Text(0, 0, Util.makeFont(red, green, blue, fontSize),
+         * message, ALE._self
+         * .getVertexBufferObjectManager());
+         * float w = t.getWidth();
+         * float h = t.getHeight();
+         * t.setPosition(Configuration.getCameraWidth() / 2 - w / 2,
+         * Configuration.getCameraHeight() / 2 - h / 2);
+         * child.attachChild(t);
+         * Level._current.setChildSceneModal(child);
+         */
     }
 
     static public void showImageTimed(String imgName, float duration, float x, float y, float width, float height)
     {
         Level._current.setPopUpImage(Media.getImage(imgName), x, y, width, height);
-        Timer.schedule(new Task(){@Override public void run(){Level._current._showPopUp = false;}}, duration);
+        Timer.schedule(new Task()
+        {
+            @Override
+            public void run()
+            {
+                Level._current._showPopUp = false;
+            }
+        }, duration);
     }
-	
+
 }

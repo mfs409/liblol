@@ -1,44 +1,45 @@
 package edu.lehigh.cse.ale;
 
-public abstract class SplashConfiguration {
-	
-	abstract public String getTitle();
+public abstract class SplashConfiguration
+{
 
-	abstract public String getPlayButtonText();
+    abstract public String getTitle();
 
-	abstract public String getHelpButtonText();
+    abstract public String getPlayButtonText();
 
-	abstract public String getQuitButtonText();
+    abstract public String getHelpButtonText();
 
-	abstract public int getPlayX();
+    abstract public String getQuitButtonText();
 
-	abstract public int getPlayY();
+    abstract public int getPlayX();
 
-	abstract public int getPlayWidth();
+    abstract public int getPlayY();
 
-	abstract public int getPlayHeight();
+    abstract public int getPlayWidth();
 
-	abstract public int getHelpX();
+    abstract public int getPlayHeight();
 
-	abstract public int getHelpY();
+    abstract public int getHelpX();
 
-	abstract public int getHelpWidth();
+    abstract public int getHelpY();
 
-	abstract public int getHelpHeight();
+    abstract public int getHelpWidth();
 
-	abstract public int getQuitX();
+    abstract public int getHelpHeight();
 
-	abstract public int getQuitY();
+    abstract public int getQuitX();
 
-	abstract public int getQuitWidth();
+    abstract public int getQuitY();
 
-	abstract public int getQuitHeight();
+    abstract public int getQuitWidth();
 
-	abstract public int getTitleX();
+    abstract public int getQuitHeight();
 
-	abstract public int getTitleY();
+    abstract public int getTitleX();
 
-	abstract public int getTitleWidth();
+    abstract public int getTitleY();
 
-	abstract public int getTitleHeight();
+    abstract public int getTitleWidth();
+
+    abstract public int getTitleHeight();
 }

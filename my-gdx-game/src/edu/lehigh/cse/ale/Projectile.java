@@ -1,5 +1,6 @@
 package edu.lehigh.cse.ale;
 
-public class Projectile {
+public class Projectile
+{
 
 }

@@ -81,7 +81,6 @@ public class Splash implements MyScreen
         _camera.position.set(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2, 0);
 
         // set up the play, help, and quit buttons
-        // NB: voodoo on the Y due to peculiarity of font rendering
         _play = new Rectangle(_game._splashConfig.getPlayX(), _game._splashConfig.getPlayY()
                 - _game._splashConfig.getPlayHeight(), _game._splashConfig.getPlayWidth(),
                 _game._splashConfig.getPlayHeight());
