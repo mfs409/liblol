@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: COMPLETED PORT FROM ALE
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;

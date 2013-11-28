@@ -1,5 +1,6 @@
 package edu.lehigh.cse.ale;
 
+import java.io.IOException;
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
@@ -219,20 +220,9 @@ public class Media
      *            folder). This should be of the form "sound.ogg", and should be
      *            of type "ogg".
      */
-    /*
-     * static public void registerSound(String soundName) {
-     * try {
-     * Sound s = SoundFactory.createSoundFromAsset(ALE._self.getEngine()
-     * .getSoundManager(), ALE._self, soundName);
-     * _sounds.put(soundName, s);
-     * } catch (IOException e) {
-     * Gdx.app.log(
-     * "ERROR",
-     * "Error encountered while trying to load audio file "
-     * + soundName
-     * + ".  Common causes include a misspelled file name, an incorrect path, "
-     * + "or an invalid file type.");
-     * }
-     * }
-     */
+    static public void registerSound(String soundName)
+    {
+        Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
+        _sounds.put(soundName, s);
+    }
 }

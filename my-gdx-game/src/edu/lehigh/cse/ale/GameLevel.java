@@ -5,6 +5,9 @@ package edu.lehigh.cse.ale;
 // TODO: I don't understand something about cameras, because font rendering on
 // Android differs from font rendering on Desktop
 
+// TODO: should this be merged with Level? I'm inclined toward "no", simply
+// because we don't want to expose all this in games
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -12,9 +15,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -22,12 +26,36 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class GameLevel implements MyScreen
 {
-
+    /**
+     * A simple wrapper for when we want stuff to happen
+     */
+    abstract static class PendingEvent
+    {
+        abstract void go();
+        boolean _done;
+        Rectangle _range;
+        boolean _onlyOnce;
+        void disable() {_done = true;}
+        void enable() {_done = false;}
+    }
+    
     // for now, just one list of everything we need to render...
     public ArrayList<PhysicsSprite> _sprites;
 
-    public ArrayList<PhysicsSprite> _deletions;
+    public ArrayList<PendingEvent> _events;
 
+    public ArrayList<PendingEvent> _controls;
+    
+    
+    void addTouchEvent(float x, float y, float width,
+            float height, boolean onlyOnce, PendingEvent action)
+    {
+        action._range = new Rectangle(x, y, width, height);
+        action._onlyOnce = onlyOnce;
+        action.enable();
+        _controls.add(action);
+    }
+    
     /*
      * INTERNAL CLASSES
      */
@@ -104,19 +132,21 @@ public class GameLevel implements MyScreen
 
         // A place for everything we draw...
         _sprites = new ArrayList<PhysicsSprite>();
-        _deletions = new ArrayList<PhysicsSprite>();
-
+        _events = new ArrayList<PendingEvent>();
+        _controls = new ArrayList<PendingEvent>();
+        
         // reset tilt control...
         Tilt.reset();
-        Score.reset();
+        
+        // reset scores
+        Score.reset();        
     }
 
     @Override
     public void render(float delta)
     {
-
+        /*
         if (_gameOver) {
-
             // NB: if the game is over, don't advance the physics world!
             // next we clear the color buffer and set the camera matrices
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -129,30 +159,22 @@ public class GameLevel implements MyScreen
                                                                 // Gdx.graphics.getWidth(),
                                                                 // Gdx.graphics.getHeight());
             _spriteRender.begin();
-            // TODO: there's something screwy when we run this on a phone... it
-            // works fine on desktop though...
             BitmapFont f = Media.getFont("arial.ttf", 30);
             String msg = Level._textYouWon;
             float w = f.getBounds(msg).width;
             float h = f.getBounds(msg).height;
-            // f.draw(_spriteRender, msg, Gdx.graphics.getWidth() / 2 - w / 2,
-            // Gdx.graphics.getHeight() / 2 + h / 2);
             f.draw(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
             _spriteRender.end();
             return;
         }
-
-        if (_showPopUp) {
+    */
+        if (PopUpScene._showPopUp) {
             // next we clear the color buffer and set the camera matrices
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             _hudCam.update();
-
-            _spriteRender.setProjectionMatrix(_hudCam.combined);// .getProjectionMatrix().setToOrtho2D(0,
-                                                                // 0,
-                                                                // Gdx.graphics.getWidth(),
-                                                                // Gdx.graphics.getHeight());
+            _spriteRender.setProjectionMatrix(_hudCam.combined);
             _spriteRender.begin();
-            doPopUp();
+            PopUpScene.show(_spriteRender, _game);
             _spriteRender.end();
             return;
         }
@@ -167,11 +189,10 @@ public class GameLevel implements MyScreen
         _world.step(Gdx.graphics.getDeltaTime(), 8, 3);
         // float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
 
-        // handle deletions outside of the world step loop
-        for (PhysicsSprite ps : _deletions) {
-            ps.remove();
-        }
-        _deletions.clear();
+        // now handle any events that occurred on account of the world movement
+        for (PendingEvent pe : _events)
+            pe.go();
+        _events.clear();
 
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -257,11 +278,23 @@ public class GameLevel implements MyScreen
     {
     }
 
+    private Vector3 _touchVec = new Vector3();
     @Override
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
+        // TODO: factor this out correctly
         if (_gameOver) {
             _game.doPlayLevel(ALE._currLevel + 1);
+        }
+        for (PendingEvent pe : _controls) {
+            if (!pe._done) {
+                _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                if (pe._range.contains(_touchVec.x, _touchVec.y)) {
+                    if (pe._onlyOnce)
+                        pe.disable();
+                    pe.go();
+                }
+            }
         }
         // TODO Auto-generated method stub
         return false;
@@ -279,71 +312,5 @@ public class GameLevel implements MyScreen
     {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    boolean _showPopUp;
-
-    String  _popupText;
-
-    float   _popupRed;
-
-    float   _popupGreen;
-
-    float   _popupBlue;
-
-    int     _popupSize;
-
-    void setPopUp(String msg, int red, int green, int blue, int size)
-    {
-        _popupText = msg;
-        _popupRed = red;
-        _popupGreen = green;
-        _popupBlue = blue;
-        _popupRed /= 256;
-        _popupGreen /= 256;
-        _popupBlue /= 256;
-        _popupSize = size;
-        _showPopUp = true;
-    }
-
-    TextureRegion _popUpImgTr;
-
-    float         _popUpImgX;
-
-    float         _popUpImgY;
-
-    float         _popUpImgW;
-
-    float         _popUpImgH;
-
-    void setPopUpImage(TextureRegion tr, float x, float y, float width, float height)
-    {
-        _popUpImgTr = tr;
-        _popUpImgX = x;
-        _popUpImgY = y;
-        _popUpImgW = width;
-        _popUpImgH = height;
-        _showPopUp = true;
-    }
-
-    void doPopUp()
-    {
-        if (_popUpImgTr != null) {
-            // TODO: width and height are a problem here...
-            _spriteRender.draw(_popUpImgTr, _popUpImgX, _popUpImgY, 0, 0, _popUpImgW, _popUpImgH, 1, 1, 0);
-        }
-        // TODO: there's something screwy when we run this on a phone... it
-        // works fine on desktop though...
-        if (_popupText != null) {
-            int camWidth = _game._config.getScreenWidth();
-            int camHeight = _game._config.getScreenHeight();
-
-            BitmapFont f = Media.getFont("arial.ttf", _popupSize);
-            String msg = _popupText;
-            float w = f.getMultiLineBounds(msg).width;
-            float h = f.getMultiLineBounds(msg).height;
-            f.setColor(_popupRed, _popupGreen, _popupBlue, 1);
-            f.drawMultiLine(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
-        }
     }
 }

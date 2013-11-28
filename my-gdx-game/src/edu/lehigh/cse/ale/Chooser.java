@@ -3,6 +3,8 @@ package edu.lehigh.cse.ale;
 // TODO: comments, and clean up naming, add cheat button, verify return values
 // (i.e., false)
 
+// TODO: there is a nasty bug in how things display.  It only shows when there are less than 21 levels.
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;

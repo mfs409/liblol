@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: I THINK THIS IS COMPLETELY PORTED
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -206,6 +208,5 @@ public class Destination extends PhysicsSprite
     public void setArrivalSound(String soundName)
     {
         _arrivalSound = Media.getSound(soundName);
-    }
-
+    }    
 }

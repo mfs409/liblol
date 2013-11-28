@@ -1,5 +1,6 @@
 package edu.lehigh.cse.ale;
 
+
 public class Score
 {
     /*
@@ -91,13 +92,9 @@ public class Score
      */
     static void defeatHero(Enemy e)
     {
-        // TODO
-        /*
-         * _heroesDefeated++;
-         * if (_heroesDefeated == Score._heroesCreated)
-         * MenuManager.loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText
-         * : Level._textYouLost);
-         */
+        _heroesDefeated++;
+        if (_heroesDefeated == Score._heroesCreated)
+            MenuManager.loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : Level._textYouLost);
     }
 
     /**
@@ -105,10 +102,7 @@ public class Score
      * 
      * @param g
      *            The goodie that was collected
-     * 
-     * @deprecated Use onGoodieCollected[1-4]() instead
      */
-    @Deprecated
     static void onGoodieCollected(Goodie g)
     {
         /*

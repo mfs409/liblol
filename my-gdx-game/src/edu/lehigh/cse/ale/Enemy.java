@@ -146,7 +146,7 @@ public class Enemy extends PhysicsSprite
         public void defeat(boolean increaseScore)
         {
             // remove the enemy from the screen
-            scheduleRemove(false);
+            remove(false);
 
             // possibly update score
             if (increaseScore)

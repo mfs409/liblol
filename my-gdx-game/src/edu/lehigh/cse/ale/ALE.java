@@ -1,8 +1,10 @@
 package edu.lehigh.cse.ale;
 
-// No edits until we have level-to-level transitions and/or help screens
-
 // TODO: handle public stuff once we get rid of screens package
+
+// TODO: are we going to support LiveEdit?
+
+// TODO: rename from ALE to something else... lol (Lehigh Overlay for LibGDX)?
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -173,7 +175,6 @@ public abstract class ALE implements ApplicationListener, InputProcessor
             _mode = Modes.SPLASH;
             // TODO: should we be destroying, or re-showing, the Screen?
             setScreen(new Splash(this));
-            // ALE._self.getEngine().setScene(Splash.draw(_menuFont));
         }
     }
 
@@ -209,9 +210,10 @@ public abstract class ALE implements ApplicationListener, InputProcessor
         _screen.dispose();
 
         // TODO: dispose of all fonts, textureregions, etc...
-        Media._fonts.clear(); // if we get rid of all references to fonts, we'll
-                              // recreate appropriately for the new gdx context
-                              // on resume
+        
+        // if we get rid of all references to fonts, we'll recreate
+        // appropriately for the new gdx context on resume
+        Media._fonts.clear(); 
     }
 
     @Override
@@ -303,7 +305,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     /**
      * The name of the app preference
      * 
-     * TODO: before releasing a game, you should modify this
+     * TODO: before releasing a game, you should modify this... maybe put it in config?
      */
     static private final String PREFS = "edu.lehigh.cse.ale.prefs";
 

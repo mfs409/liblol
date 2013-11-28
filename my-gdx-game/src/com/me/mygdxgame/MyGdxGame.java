@@ -1,5 +1,7 @@
 package com.me.mygdxgame;
 
+// STATUS: working on level 7, need enemy collision support...
+
 import edu.lehigh.cse.ale.ALE;
 import edu.lehigh.cse.ale.ALEConfiguration;
 import edu.lehigh.cse.ale.Destination;
@@ -24,9 +26,12 @@ public class MyGdxGame extends ALE
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");
         Media.registerImage("red.png");
+        Media.registerImage("redball.png");
         Media.registerImage("msg1.png");
+        Media.registerImage("msg2.png");
+        Media.registerImage("splash.png");
 
-        // TODO: register music for splash
+        Media.registerSound("hipitch.ogg");
     }
 
     @Override
@@ -179,10 +184,9 @@ public class MyGdxGame extends ALE
             // heroes
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             d.setHeroCount(2);
+
             // let's also say that whenever a hero reaches the destination, a
             // sound will play
-
-            // TODO: this doesn't work yet
             d.setArrivalSound("hipitch.ogg");
 
             // Indicate that two heroes have to reach destinations in order to
@@ -235,21 +239,23 @@ public class MyGdxGame extends ALE
          * @whatsnew: a pop-up message that stays until it is pressed
          */
         else if (whichLevel == 7) {
-            /*
-             * // configure a basic level, just like the start of level 2:
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // draw an enemy: Enemy e = Enemy.makeAsCircle(250, 250, 20, 20,
-             * "redball.png"); e.setPhysics(1.0f, 0.3f, 0.6f);
-             * 
-             * // display a message that stays until it is pressed
-             * PopUpScene.showTextAndWait
-             * ("Avoid the enemy and\nreach the destination");
-             */
+            // TODO: handle enemy collisions
+            // configure a basic level, just like the start of level 2:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // draw an enemy:
+            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+
+            // display a message that stays until it is pressed
+            PopUpScene.showTextAndWait("Avoid the enemy and\nreach the destination");
         }
 
         /**
@@ -339,28 +345,32 @@ public class MyGdxGame extends ALE
          */
         else if (whichLevel == 10) {
             /*
-             * // configure a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1); Hero h = Hero.makeAsCircle(40, 70, 30, 30,
-             * "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * // update: let's make the destination rotate: Destination d =
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * d.setRotationSpeed(1); Level.setVictoryDestination(1);
-             * 
-             * // update: draw an enemy who moves via tilt Enemy e3 =
-             * Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
-             * e3.setPhysics(1.0f, 0.3f, 0.6f); e3.setMoveByTilting();
-             * 
-             * // show a messgae that must be touched in order to remove it
-             * PopUpScene.showImageAndWait("msg2.png", 10, 10);
-             * 
-             * // configure some sounds Level.setWinSound("winsound.ogg");
-             * Level.setLoseSound("losesound.ogg"); Level.setMusic("tune.ogg");
-             * 
-             * // custom text for when the level is lost
-             * Level.setLoseText("Better luck next time...");
-             */
+              // configure a basic level 
+            Level.configure(460, 320);
+            Physics.configure(0, 0);
+              Tilt.enable(10, 10); 
+              Util.drawBoundingBox(0, 0, 460, 320,
+              "red.png", 1, .3f, 1); 
+              Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
+              
+              // update: let's make the destination rotate: 
+              Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+              d.setRotationSpeed(1); 
+              Level.setVictoryDestination(1);
+              
+              // update: draw an enemy who moves via tilt 
+              Enemy e3 = Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
+              e3.setPhysics(1.0f, 0.3f, 0.6f); e3.setMoveByTilting();
+              
+              // show a messgae that must be touched in order to remove it
+              PopUpScene.showImageAndWait("msg2.png", 10, 10, 460, 320);
+              
+              // configure some sounds Level.setWinSound("winsound.ogg");
+              Level.setLoseSound("losesound.ogg"); Level.setMusic("tune.ogg");
+              
+              // custom text for when the level is lost
+              Level.setLoseText("Better luck next time...");
+              */
         }
 
         /**

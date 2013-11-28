@@ -115,6 +115,8 @@ public class Splash implements MyScreen
         _game.playMusic();
 
         // was there a touch?
+        //
+        // TODO: why is this here, and not in TouchDown?
         if (Gdx.input.justTouched()) {
             // translate the touch into _touchVec
             _camera.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
