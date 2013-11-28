@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: NOT STARTED
+
 public class Background
 {
     /**

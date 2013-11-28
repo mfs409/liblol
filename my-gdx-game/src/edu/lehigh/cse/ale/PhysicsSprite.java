@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: in progress
+
 // TODO: enable arbitrary polygon creation?
 
 import com.badlogic.gdx.audio.Sound;
@@ -248,7 +250,7 @@ public abstract class PhysicsSprite
         _physBody.resetMassData();
         _physBody.getFixtureList().get(0).setRestitution(elasticity);
         _physBody.getFixtureList().get(0).setFriction(friction);
-
+        
         /*
          * // get information from previous body
          * boolean wasSensor = _physBody.getFixtureList().get(0).isSensor();

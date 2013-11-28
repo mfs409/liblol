@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// TODO: comment and explain this
+
 public abstract class SplashConfiguration
 {
 

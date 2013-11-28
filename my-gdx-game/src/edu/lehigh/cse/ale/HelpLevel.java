@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: Not Started
+
 public class HelpLevel implements MyScreen
 {
 
@@ -185,4 +187,34 @@ public class HelpLevel implements MyScreen
         ALE._self._helpScene._current.attachChild(t);
     }
     */
- }
+
+    /*
+     * HELP LEVELS
+     */
+
+    /**
+     * Track the _current help scene being displayed
+     */
+    static private int          _currHelp;
+
+    /**
+     * Advance to the next help scene
+     */
+    /*
+     * static void nextHelp()
+     * {
+     * if (_currHelp < Configuration.getHelpScenes()) {
+     * _mode = Modes.HELP;
+     * _currHelp++;
+     * ALE._self.configureHelpScene(_currHelp);
+     * ALE._self.getEngine().setScene(ALE._self._helpScene._current);
+     * }
+     * else {
+     * _currHelp = 0;
+     * _mode = Modes.SPLASH;
+     * ALE._self.getEngine().setScene(Splash.draw(_menuFont));
+     * }
+     * }
+     */
+
+}

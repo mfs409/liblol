@@ -267,26 +267,27 @@ public class MyGdxGame extends ALE
          * @whatsnew: make a moveable enemy and attach a fixed path to it
          */
         else if (whichLevel == 8) {
-            /*
-             * // configure a basic level, just like the start of level 2:
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // draw an enemy that can move Enemy e = Enemy.makeAsCircle(250,
-             * 250, 20, 20, "redball.png"); e.setPhysics(1.0f, 0.3f, 0.6f);
-             * 
-             * // attach a path to the enemy. It starts at (250, 250) and moves
-             * to // (250, 20). This means it has *2* points on its route.
-             * Notice that // it isn't going to move quite as we'd like
-             * e.setRoute(new Route(2).to(250, 250).to(250, 20), 2, true);
-             * 
-             * // display a message that stays until it is pressed
-             * PopUpScene.showTextAndWait
-             * ("Avoid the enemy and\nreach the destination");
-             */
+            // configure a basic level, just like the start of level 2:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // draw an enemy that can move
+            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+
+            // attach a path to the enemy. It starts at (250, 250) and moves to
+            // (250, 20). This means it has *2* points on its route. Notice that
+            // it isn't going to move quite as we'd like
+            e.setRoute(new Route(2).to(25, 25).to(25, 2), 2, true);
+
+            // display a message that stays until it is pressed
+            PopUpScene.showTextAndWait("Avoid the enemy and\nreach the destination");
         }
 
         /**

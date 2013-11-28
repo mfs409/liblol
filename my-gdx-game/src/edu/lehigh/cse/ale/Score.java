@@ -1,8 +1,118 @@
 package edu.lehigh.cse.ale;
 
+// ALE PORT STATUS: COMPLETE
+
+import com.badlogic.gdx.utils.Timer;
+
+import edu.lehigh.cse.ale.GameLevel.PendingEvent;
 
 public class Score
 {
+    /*
+     * MANAGE WINNING AND LOSING LEVELS
+     */
+
+    /**
+     * When a level ends in failure, this is how we shut it down, print a
+     * message, and then let the user resume it
+     * 
+     * @param loseText
+     *            Text to print when the level is lost
+     */
+    static void loseLevel(String loseText)
+    {
+        // Prevent multiple calls from behaving oddly
+        if (Level._gameOver)
+            return;
+        Level._gameOver = true;
+
+        // Run the level-complete trigger
+        ALE._game.levelCompleteTrigger(false);
+
+        if (Level._loseSound != null)
+            Level._loseSound.play();
+
+        // drop everything from the hud
+        GameLevel._currLevel._controls.clear();
+
+        // TODO: For now, we'll just (ab)use the setPopUp feature... need to
+        // make it more orthogonal eventually...
+        //
+        // NB: we can call setpopupimage too, which would make this all
+        // "just work" for ALE, though still not orthogonal
+        PopUpScene.setPopUp(loseText, 255, 255, 255, 32);
+        if (Level._backgroundYouLost != null) {
+            PopUpScene.setPopUpImage(Media.getImage(Level._backgroundYouLost), 0, 0,
+                    ALE._game._config.getScreenWidth(), ALE._game._config.getScreenHeight());
+        }
+        // NB: timers really need to be stored somewhere, so we can stop/start
+        // them without resorting to this coarse mechanism
+        Timer.instance().clear();
+        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+                ALE._game._config.getScreenHeight(), true, new PendingEvent()
+                {
+                    public void go()
+                    {
+                        PopUpScene._showPopUp = false;
+                        ALE._game.doPlayLevel(ALE._currLevel);
+                    }
+                });
+    }
+
+    /**
+     * When a level is won, this is how we end the scene and allow a transition
+     * to the next level
+     */
+    static void winLevel()
+    {
+        // Prevent multiple calls from behaving oddly
+        if (Level._gameOver)
+            return;
+        Level._gameOver = true;
+
+        // Run the level-complete trigger
+        ALE._game.levelCompleteTrigger(true);
+
+        if (Level._winSound != null)
+            Level._winSound.play();
+
+        if (ALE._unlockLevel == ALE._currLevel) {
+            ALE._unlockLevel++;
+            ALE.saveUnlocked();
+        }
+
+        // drop everything from the hud
+        GameLevel._currLevel._controls.clear();
+
+        // TODO: For now, we'll just (ab)use the setPopUp feature... need to
+        // make it more orthogonal eventually...
+        //
+        // NB: we can call setpopupimage too, which would make this all
+        // "just work" for ALE, though still not orthogonal
+        PopUpScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
+        if (Level._backgroundYouWon != null) {
+            PopUpScene.setPopUpImage(Media.getImage(Level._backgroundYouWon), 0, 0, ALE._game._config.getScreenWidth(),
+                    ALE._game._config.getScreenHeight());
+        }
+        // NB: timers really need to be stored somewhere, so we can stop/start
+        // them without resorting to this coarse mechanism
+        Timer.instance().clear();
+        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+                ALE._game._config.getScreenHeight(), true, new PendingEvent()
+                {
+                    public void go()
+                    {
+                        PopUpScene._showPopUp = false;
+                        if (ALE._currLevel == ALE._game._config.getNumLevels())
+                            ALE._game.doChooser();
+                        else {
+                            ALE._currLevel++;
+                            ALE._game.doPlayLevel(ALE._currLevel);
+                        }
+                    }
+                });
+    }
+
     /*
      * BASIC SUPPORT
      */
@@ -94,7 +204,7 @@ public class Score
     {
         _heroesDefeated++;
         if (_heroesDefeated == Score._heroesCreated)
-            MenuManager.loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : Level._textYouLost);
+            loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : Level._textYouLost);
     }
 
     /**
@@ -105,25 +215,24 @@ public class Score
      */
     static void onGoodieCollected(Goodie g)
     {
-        /*
-         * // Update any/all goodie counts
-         * _goodiesCollected1 += g._score1;
-         * _goodiesCollected2 += g._score2;
-         * _goodiesCollected3 += g._score3;
-         * _goodiesCollected4 += g._score4;
-         * 
-         * // possibly win the level, but only if we win on goodie count and all
-         * four counts are high enoug
-         * if (Level._victoryType != Level.VictoryType.GOODIECOUNT)
-         * return;
-         * if ((Level._victoryGoodie1Count <= _goodiesCollected1)
-         * && (Level._victoryGoodie2Count <= _goodiesCollected2)
-         * && (Level._victoryGoodie3Count <= _goodiesCollected3)
-         * && (Level._victoryGoodie4Count <= _goodiesCollected4))
-         * {
-         * MenuManager.winLevel();
-         * }
-         */
+
+        // Update any/all goodie counts
+        _goodiesCollected1 += g._score1;
+        _goodiesCollected2 += g._score2;
+        _goodiesCollected3 += g._score3;
+        _goodiesCollected4 += g._score4;
+
+        // possibly win the level, but only if we win on goodie count and all
+        // four counts are high enoug
+        if (Level._victoryType != Level.VictoryType.GOODIECOUNT)
+            return;
+        if ((Level._victoryGoodie1Count <= _goodiesCollected1) && (Level._victoryGoodie2Count <= _goodiesCollected2)
+                && (Level._victoryGoodie3Count <= _goodiesCollected3)
+                && (Level._victoryGoodie4Count <= _goodiesCollected4))
+        {
+            winLevel();
+        }
+
     }
 
     /**
@@ -137,7 +246,7 @@ public class Score
         // check if the level is complete
         _destinationArrivals++;
         if ((Level._victoryType == Level.VictoryType.DESTINATION) && (_destinationArrivals >= Level._victoryHeroCount))
-            MenuManager.winLevel();
+            winLevel();
     }
 
     /**
@@ -145,23 +254,21 @@ public class Score
      */
     static void onDefeatEnemy()
     {
-        /*
-         * // update the count of defeated enemies
-         * _enemiesDefeated++;
-         * 
-         * // if we win by defeating enemies, see if we've defeated enough of
-         * them:
-         * boolean win = false;
-         * if (Level._victoryType == Level.VictoryType.ENEMYCOUNT) {
-         * // -1 means "defeat all enemies"
-         * if (Level._victoryEnemyCount == -1)
-         * win = _enemiesDefeated == _enemiesCreated;
-         * else
-         * win = _enemiesDefeated >= Level._victoryEnemyCount;
-         * }
-         * if (win)
-         * MenuManager.winLevel();
-         */
+
+        // update the count of defeated enemies
+        _enemiesDefeated++;
+
+        // if we win by defeating enemies, see if we've defeated enough of them:
+        boolean win = false;
+        if (Level._victoryType == Level.VictoryType.ENEMYCOUNT) {
+            // -1 means "defeat all enemies"
+            if (Level._victoryEnemyCount == -1)
+                win = _enemiesDefeated == _enemiesCreated;
+            else
+                win = _enemiesDefeated >= Level._victoryEnemyCount;
+        }
+        if (win)
+            winLevel();
     }
 
     /*

@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: in progress
+
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// NB: full import from ALE
+// STATUS: STARTED, INCOMPLETE
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -34,7 +34,6 @@ public class Enemy extends PhysicsSprite
         super(tr, SpriteId.ENEMY, width, height);
         Score._enemiesCreated++;
     }
-
     
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
     {

@@ -2,7 +2,7 @@ package edu.lehigh.cse.ale;
 
 // STATUS: this needs to be commented, and it would be nice if we could have a
 // more robust pop-up builder, but in terms of prior ALE functionality, this is
-// complete
+// satisfactory
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

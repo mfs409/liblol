@@ -1,6 +1,8 @@
 package edu.lehigh.cse.ale;
 
-// TODO: clean code; make help work
+// Status: help is not functional yet
+
+// TODO: clean up code
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;

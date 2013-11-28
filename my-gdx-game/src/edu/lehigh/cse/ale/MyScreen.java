@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: this should become unnecessary once we factor out input processing
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 

@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: not started
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;

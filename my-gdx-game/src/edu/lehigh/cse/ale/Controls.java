@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: not started, but GameLevel has some useful support
+
 public class Controls
 {
     /*

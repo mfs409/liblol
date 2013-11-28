@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: in progress
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.audio.Music;
@@ -171,24 +173,6 @@ public class Level
         // Let the camera follow this hero, save it as most recently created hero
         ALE._self._camera.setChaseEntity(hero._sprite);
         _lastHero = hero;
-    }
-
-    /**
-     * Hide all heroes
-     * 
-     * This is called at the end of a level, so that the gameplay doesn't do odd things after the game is over
-     */
-    /*
-    static void hideAllHeroes()
-    {
-        for (Hero h : Level._heroes) {
-            h._sprite.setVisible(false);
-            h._physBody.setActive(false);
-        }
-        Hero h = Level._lastHero;
-        if (h != null)
-            h._sprite.clearUpdateHandlers();
-        Level._lastHero = null;
     }
 
     /*

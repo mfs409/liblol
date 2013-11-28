@@ -1,10 +1,11 @@
 package edu.lehigh.cse.ale;
 
+// STATUS: not started
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 /**

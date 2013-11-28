@@ -1,6 +1,7 @@
 package edu.lehigh.cse.ale;
 
-import java.io.IOException;
+// STATUS: in progress
+
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
