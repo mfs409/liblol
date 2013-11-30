@@ -9,7 +9,6 @@ import com.badlogic.gdx.audio.Sound;
 
 public class Level
 {
-
     /**
      * these are the ways you can complete a level: you can reach the
      * destination, you can collect enough stuff, or you
@@ -20,8 +19,6 @@ public class Level
     {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     };
-
-    static GameLevel _current;
 
     /**
      * Text to display when the _current level is won
@@ -65,11 +62,12 @@ public class Level
      */
     public static void configure(int width, int height)
     {
-        _current = new GameLevel(width, height, ALE._game);
+        GameLevel._currLevel = new GameLevel(width, height, ALE._game);
         _gameOver = false;
         // TODO: make orthogonal
         PopUpScene._popUpImgTr = null;
         PopUpScene._popupText = null;
+        // TODO: make it so there is no popup if these are null
         Level._textYouWon = "Next Level";
         Level._textYouLost = "Try Again";
     }
@@ -99,9 +97,11 @@ public class Level
         _victoryHeroCount = howMany;
     }
 
+    public static void setCameraChase(PhysicsSprite ps)
+    {
+        GameLevel._currLevel._chase = ps;
+    }
 
-
-    
     /*
      * INTERNAL CLASSES
      */
@@ -388,7 +388,7 @@ public class Level
     public static void setMusic(String musicName)
     {
         Music m = Media.getMusic(musicName);
-        _music = m;
+        GameLevel._currLevel._music = m;
     }
 
     /*

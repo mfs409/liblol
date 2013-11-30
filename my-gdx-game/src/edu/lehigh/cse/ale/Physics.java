@@ -19,10 +19,10 @@ public class Physics
     {
         // we instantiate a new World with a proper gravity vector
         // and tell it to sleep when possible.
-        Level._current._world = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        GameLevel._currLevel._world = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
         // set up the collision handler
-        Level._current._world.setContactListener(new ContactListener()
+        GameLevel._currLevel._world.setContactListener(new ContactListener()
         {
             // quick demo to show that we can manage collisions just like in ALE
 
@@ -54,7 +54,7 @@ public class Physics
                 // ever run and push it into a delay handler, we instead delay
                 // the handling of the collision until after the physics step
                 // completes
-                Level._current._events.add(new PendingEvent()
+                GameLevel._currLevel._events.add(new PendingEvent()
                 {
                     public void go()
                     {

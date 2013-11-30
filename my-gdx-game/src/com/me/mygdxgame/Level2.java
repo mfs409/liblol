@@ -221,7 +221,7 @@ public class Level2 implements MyScreen {
 			def.collideConnected = true;
 			def.target.set(testPoint.x, testPoint.y);
 			def.maxForce = 1000.0f * hitBody.getMass();
-
+			
 			mouseJoint = (MouseJoint) world.createJoint(def);
 			hitBody.setAwake(true);
 		} else {

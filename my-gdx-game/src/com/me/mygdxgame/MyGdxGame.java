@@ -1,21 +1,14 @@
 package com.me.mygdxgame;
 
-// STATUS: working on level 7, need enemy collision support...
+// TODO: are all boxes and circles being drawn to the correct proportion? Our
+// Obstacles are... not sure about others... and the ctors aren't consistent!
 
-import edu.lehigh.cse.ale.ALE;
-import edu.lehigh.cse.ale.ALEConfiguration;
-import edu.lehigh.cse.ale.Destination;
-import edu.lehigh.cse.ale.Enemy;
-import edu.lehigh.cse.ale.Hero;
-import edu.lehigh.cse.ale.Level;
-import edu.lehigh.cse.ale.Media;
-import edu.lehigh.cse.ale.Obstacle;
-import edu.lehigh.cse.ale.Physics;
-import edu.lehigh.cse.ale.PopUpScene;
-import edu.lehigh.cse.ale.Projectile;
-import edu.lehigh.cse.ale.SplashConfiguration;
-import edu.lehigh.cse.ale.Tilt;
-import edu.lehigh.cse.ale.Util;
+// STATUS: ready to start working on level 14
+
+// NB: the 'getx' and 'gety' methods of physicssprite return center coords of
+// body, not coords of the bottom left of the sprite
+
+import edu.lehigh.cse.ale.*;
 
 public class MyGdxGame extends ALE
 {
@@ -27,11 +20,16 @@ public class MyGdxGame extends ALE
         Media.registerImage("mustardball.png");
         Media.registerImage("red.png");
         Media.registerImage("redball.png");
+        Media.registerImage("blueball.png");
+        Media.registerImage("purpleball.png");
         Media.registerImage("msg1.png");
         Media.registerImage("msg2.png");
         Media.registerImage("splash.png");
 
         Media.registerSound("hipitch.ogg");
+        Media.registerSound("losesound.ogg");
+
+        Media.registerMusic("tune.ogg", true);
     }
 
     @Override
@@ -239,7 +237,6 @@ public class MyGdxGame extends ALE
          * @whatsnew: a pop-up message that stays until it is pressed
          */
         else if (whichLevel == 7) {
-            // TODO: handle enemy collisions
             // configure a basic level, just like the start of level 2:
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -272,18 +269,19 @@ public class MyGdxGame extends ALE
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // draw an enemy that can move
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
-            e.setPhysics(1.0f, 0.3f, 0.6f);
+            Enemy e = Enemy.makeAsCircle(25, 5, 2, 2, "redball.png");
+            e.setPhysics(100.0f, 0.3f, 0.6f);
 
-            // attach a path to the enemy. It starts at (250, 250) and moves to
-            // (250, 20). This means it has *2* points on its route. Notice that
+            // attach a path to the enemy. It starts at (25, 25) and moves to
+            // (25, 2). This means it has *2* points on its route. Notice that
             // it isn't going to move quite as we'd like
+            
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 2, true);
 
             // display a message that stays until it is pressed
@@ -300,28 +298,29 @@ public class MyGdxGame extends ALE
          *            we get cleaner movement
          */
         else if (whichLevel == 9) {
-            /*
-             * // configure a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1); Hero h = Hero.makeAsCircle(40, 70, 30, 30,
-             * "greenball.png"); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // draw an enemy that can move Enemy e = Enemy.makeAsCircle(250,
-             * 250, 20, 20, "redball.png"); e.setPhysics(1.0f, 0.3f, 0.6f);
-             * 
-             * // attach a path to the enemy. This time, we add a third point,
-             * // which is the same as the starting point. This will give us a
-             * // nicer sort of movement. Also note the diagonal movement.
-             * e.setRoute(new Route(3).to(250, 250).to(120, 20).to(250, 250), 2,
-             * true); // note that any number of points is possible... you could
-             * have // extremely complex shapes!
-             * 
-             * // display a message that stays until it is pressed
-             * PopUpScene.showTextAndWait
-             * ("Avoid the enemy and\nreach the destination");
-             */
+            // configure a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // draw an enemy that can move
+            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+
+            // attach a path to the enemy. This time, we add a third point,
+            // which is the same as the starting point. This will give us a
+            // nicer sort of movement. Also note the diagonal movement.
+            e.setRoute(new Route(3).to(25, 25).to(12, 2).to(25, 25), 2, true);
+            // note that any number of points is possible... you could have
+            // extremely complex shapes!
+
+            // display a message that stays until it is pressed
+            PopUpScene.showTextAndWait("Avoid the enemy and\nreach the destination");
         }
 
         /**
@@ -345,33 +344,34 @@ public class MyGdxGame extends ALE
          * @whatsnew: there is a custom message when the level is lost
          */
         else if (whichLevel == 10) {
-            /*
-              // configure a basic level 
-            Level.configure(460, 320);
+            // configure a basic level
+            Level.configure(48, 32);
             Physics.configure(0, 0);
-              Tilt.enable(10, 10); 
-              Util.drawBoundingBox(0, 0, 460, 320,
-              "red.png", 1, .3f, 1); 
-              Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-              
-              // update: let's make the destination rotate: 
-              Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-              d.setRotationSpeed(1); 
-              Level.setVictoryDestination(1);
-              
-              // update: draw an enemy who moves via tilt 
-              Enemy e3 = Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
-              e3.setPhysics(1.0f, 0.3f, 0.6f); e3.setMoveByTilting();
-              
-              // show a messgae that must be touched in order to remove it
-              PopUpScene.showImageAndWait("msg2.png", 10, 10, 460, 320);
-              
-              // configure some sounds Level.setWinSound("winsound.ogg");
-              Level.setLoseSound("losesound.ogg"); Level.setMusic("tune.ogg");
-              
-              // custom text for when the level is lost
-              Level.setLoseText("Better luck next time...");
-              */
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(0.1f, 0, 0.6f);
+            h.setMoveByTilting();
+
+            // update: let's make the destination rotate:
+            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            d.setRotationSpeed(1);
+            Level.setVictoryDestination(1);
+
+            // update: draw an enemy who moves via tilt
+            Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            e3.setPhysics(1.0f, 0.3f, 0.6f);
+            e3.setMoveByTilting();
+
+            // show a message that must be touched in order to remove it
+            PopUpScene.showImageAndWait("msg2.png", 10, 10, 460, 320);
+
+            // configure some sounds Level.setWinSound("winsound.ogg");
+            Level.setLoseSound("losesound.ogg");
+            Level.setMusic("tune.ogg");
+
+            // custom text for when the level is lost
+            Level.setLoseText("Better luck next time...");
         }
 
         /**
@@ -388,24 +388,28 @@ public class MyGdxGame extends ALE
          *            shows the hero
          */
         else if (whichLevel == 11) {
-            /*
-             * // make the level really big Level.configure(4000, 3000, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 4000, 3000,
-             * "red.png", 0, 0, 0);
-             * 
-             * PopUpScene.showTextTimed("Press left to zoom out\nright to zoom in"
-             * , 1);
-             * 
-             * // put the hero and destination far apart Hero h =
-             * Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(3290, 2810, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // add zoom buttons Controls.addZoomInButton(230, 0, 230, 320,
-             * "invis.png", 4); Controls.addZoomOutButton(0, 0, 230, 320,
-             * "invis.png", .125f);
-             */
+
+            // make the level really big
+            Level.configure(400, 300);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 400, 300, "red.png", 0, 0, 0);
+
+            PopUpScene.showTextTimed("Press left to zoom out\nright to zoom in", 1);
+
+            // put the hero and destination far apart
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(329, 281, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // add zoom buttons
+            Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
+            Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
+            
+            // chase the hero with the camera
+            Level.setCameraChase(h);
         }
 
         /**
@@ -419,39 +423,42 @@ public class MyGdxGame extends ALE
          * @whatsnew: examples of box vs. circle physics
          */
         else if (whichLevel == 12) {
-            /*
-             * // configure a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1);
-             * 
-             * // add a hero and destination Hero h = Hero.makeAsCircle(40, 70,
-             * 30, 30, "greenball.png"); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // let's draw an obstacle whose underlying shape is a box, but
-             * whose // picture is a circle. This can be odd... our hero can
-             * roll around // an invisible corner on this obstacle Obstacle o1 =
-             * Obstacle.makeAsBox(0, 0, 35, 35, "purpleball.png");
-             * o1.setPhysics(1, 0, 1);
-             * 
-             * // now let's draw an obstacle whose shape and picture are both //
-             * circles. The hero rolls around this nicely. Obstacle o2 =
-             * Obstacle.makeAsCircle(100, 100, 35, 35, "purpleball.png");
-             * o2.setPhysics(1, 0, 1);
-             * 
-             * // now let's draw a wall using circle physics and a stretched //
-             * rectangular // picture. This wall will do really funny things
-             * Obstacle o3 = Obstacle.makeAsCircle(200, 300, 60, 5, "red.png");
-             * o3.setPhysics(1, 0, 1);
-             * 
-             * // now let's draw a rectangular wall the right way, as a box
-             * Obstacle o4 = Obstacle.makeAsBox(340, 20, 5, 200, "red.png");
-             * o4.setPhysics(1, 0, 1);
-             * 
-             * // print a popup about this level PopUpScene.showTextTimed(
-             * "An obstacle's appearance may\nnot match its physics", 1);
-             */
+            // configure a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
+            // add a hero and destination
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // let's draw an obstacle whose underlying shape is a box, but whose
+            // picture is a circle. This can be odd... our hero can roll around
+            // an invisible corner on this obstacle
+            Obstacle o1 = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            o1.setPhysics(1, 0, 1);
+
+            // now let's draw an obstacle whose shape and picture are both
+            // circles. The hero rolls around this nicely.
+            Obstacle o2 = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            o2.setPhysics(1, 0, 1);
+
+            // now let's draw a wall using circle physics and a stretched
+            // rectangular
+            // picture. This wall will do really funny things
+            Obstacle o3 = Obstacle.makeAsCircle(20, 25, 6, 0.5f, "red.png");
+            o3.setPhysics(1, 0, 1);
+
+            // now let's draw a rectangular wall the right way, as a box
+            Obstacle o4 = Obstacle.makeAsBox(34, 2, 0.5f, 20, "red.png");
+            o4.setPhysics(1, 0, 1);
+
+            // print a popup about this level
+            PopUpScene.showTextTimed("An obstacle's appearance may\nnot match its physics", 1);
         }
 
         /**
@@ -461,20 +468,20 @@ public class MyGdxGame extends ALE
          *               to show how friction and elasticity can do interesting
          *               things.
          */
-        else if (whichLevel == 13) {
-            /*
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed
-             * ("These obstacles have\ndifferent physics\nparameters", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Obstacle o1 = Obstacle.makeAsCircle(0, 0, 35, 35,
-             * "purpleball.png"); o1.setPhysics(0, 100, 0); Obstacle o2 =
-             * Obstacle.makeAsCircle(100, 100, 35, 35, "purpleball.png");
-             * o2.setPhysics(10, 0, 100); Level.setVictoryDestination(1);
-             */
+        else if (whichLevel == 13) {            
+            Level.configure(48, 32);Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextTimed("These obstacles have\ndifferent physics\nparameters", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Obstacle o1 = Obstacle.makeAsCircle(0, 0, 3.5f, 3.5f, "purpleball.png");
+            o1.setPhysics(0, 100, 0);
+            Obstacle o2 = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            o2.setPhysics(10, 0, 100);
+            Level.setVictoryDestination(1);
         }
 
         /**

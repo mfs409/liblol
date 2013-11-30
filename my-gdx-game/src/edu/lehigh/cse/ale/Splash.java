@@ -5,6 +5,7 @@ package edu.lehigh.cse.ale;
 // TODO: clean up code
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -103,9 +104,8 @@ public class Splash implements MyScreen
         _batcher = new SpriteBatch();
 
         // config music?
-        // TODO: put string into config
         if (_game._config.getSplashMusic() != null) {
-            _game.setMusic("tune.ogg", true);
+            _music = Media.getMusic(_game._config.getSplashMusic());
         }
     }
 
@@ -114,7 +114,7 @@ public class Splash implements MyScreen
     {
         // for now, stick everything in here...
 
-        _game.playMusic();
+        playMusic();
 
         // was there a touch?
         //
@@ -166,10 +166,44 @@ public class Splash implements MyScreen
         _batcher.end();
     }
 
+    /*
+     * MUSIC MANAGEMENT
+     */
+
+    Music _music;
+
+    boolean      _musicPlaying = false;
+
+    public void playMusic()
+    {
+        if (!_musicPlaying) {
+            _musicPlaying = true;
+            _music.play();
+        }
+    }
+
+    public void pauseMusic()
+    {
+        if (_musicPlaying) {
+            _musicPlaying = false;
+            _music.pause();
+        }
+    }
+
+    public void stopMusic()
+    {
+        if (_musicPlaying) {
+            _musicPlaying = false;
+            _music.stop();
+        }
+    }
+
+    
+    
     @Override
     public void dispose()
     {
-
+        stopMusic();
     }
 
     @Override
@@ -185,6 +219,7 @@ public class Splash implements MyScreen
     @Override
     public void hide()
     {
+        pauseMusic();
     }
 
     @Override

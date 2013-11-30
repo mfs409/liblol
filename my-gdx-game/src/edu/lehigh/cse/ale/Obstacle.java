@@ -71,8 +71,7 @@ public class Obstacle extends PhysicsSprite
     {
         Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        o._physBody.getFixtureList().get(0).setSensor(false);
-        Level._current._sprites.add(o);
+        GameLevel._currLevel._sprites.add(o);
         return o;
     }
 
@@ -93,10 +92,10 @@ public class Obstacle extends PhysicsSprite
      */
     public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName)
     {
-        Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
         float radius = (width > height) ? width : height;
-        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius);
-        Level._current._sprites.add(o);
+        Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
+        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        GameLevel._currLevel._sprites.add(o);
         return o;
     }
 

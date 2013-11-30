@@ -127,7 +127,6 @@ public abstract class ALE implements ApplicationListener, InputProcessor
 
     public void doChooser()
     {
-        pauseMusic();
         _currLevel = 0;
         _currHelp = 0;
         _mode = Modes.CHOOSE;
@@ -140,20 +139,16 @@ public abstract class ALE implements ApplicationListener, InputProcessor
         _currHelp = 0;
         _mode = Modes.PLAY;
         configureLevel(which);
-        setScreen(Level._current);
+        setScreen(GameLevel._currLevel);
     }
 
     public void doHelpLevel()
     {
-        pauseMusic();
     }
 
     public void doQuit()
     {
-        if (_musicPlaying) {
-            _musicPlaying = false;
-            _music.stop();
-        }
+        _screen.dispose();
         Gdx.app.exit();
     }
 
@@ -263,37 +258,6 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     }
 
     /*
-     * MUSIC MANAGEMENT
-     */
-
-    static Music _music;
-
-    boolean      _musicPlaying = false;
-
-    public void setMusic(String filename, boolean loop)
-    {
-        // TODO: connect to an asset manager, to avoid re-creating every time
-        _music = Gdx.audio.newMusic(Gdx.files.internal(filename));
-        _music.setLooping(loop);
-    }
-
-    public void playMusic()
-    {
-        if (!_musicPlaying) {
-            _musicPlaying = true;
-            _music.play();
-        }
-    }
-
-    public void pauseMusic()
-    {
-        if (_musicPlaying) {
-            _musicPlaying = false;
-            _music.pause();
-        }
-    }
-
-    /*
      * SAVING PROGRESS THROUGH LEVELS
      */
 
@@ -340,8 +304,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
         if (keycode == Keys.BACK || keycode == Keys.ESCAPE) {
             // if we're looking at main menu, then exit
             if (_mode == Modes.SPLASH) {
-                if (_musicPlaying)
-                    _music.stop();
+                _screen.dispose();
                 Gdx.app.exit();
                 return false;
             }

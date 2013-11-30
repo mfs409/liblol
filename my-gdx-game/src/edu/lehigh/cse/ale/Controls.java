@@ -1,5 +1,10 @@
 package edu.lehigh.cse.ale;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+
+import edu.lehigh.cse.ale.GameLevel.PendingEvent;
+
 // STATUS: not started, but GameLevel has some useful support
 
 public class Controls
@@ -1332,27 +1337,25 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      * @param maxZoom
-     *            Maximum zoom. 4 is usually a good default
+     *            Maximum zoom. 8 is usually a good default
      */
-    /*public static void addZoomInButton(int x, int y, int width, int height, String imgName, final float maxZoom)
+    public static void addZoomOutButton(float x, float y, float width, float height, String imgName, final float maxZoom)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        GameLevel.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void go()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    float curr_zoom = ALE._self._camera.getZoomFactor();
-                    if (curr_zoom < maxZoom)
-                        ALE._self._camera.setZoomFactor(curr_zoom * 2);
-                    return true;
-                }
-                return false;
+                float curzoom = GameLevel._currLevel._gameCam.zoom;
+                if (curzoom < maxZoom)
+                    GameLevel._currLevel._gameCam.zoom *= 2;
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        GameLevel._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1371,26 +1374,24 @@ public class Controls
      * @param minZoom
      *            Minimum zoom. 0.25f is usually a good default
      */
-    /*public static void addZoomOutButton(int x, int y, int width, int height, String imgName, final float minZoom)
+    public static void addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        GameLevel.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void go()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    float curr_zoom = ALE._self._camera.getZoomFactor();
-                    if (curr_zoom > minZoom)
-                        ALE._self._camera.setZoomFactor(curr_zoom / 2);
-                    return true;
-                }
-                return false;
+                float curzoom = GameLevel._currLevel._gameCam.zoom;
+                if (curzoom > minZoom)
+                    GameLevel._currLevel._gameCam.zoom /= 2;
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
-    }
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        GameLevel._currLevel._controls.add(pe);        
+        }
 
     /**
      * Add a button that rotates the hero

@@ -40,7 +40,7 @@ public class Enemy extends PhysicsSprite
         TextureRegion tr = Media.getImage(imgName);
         Enemy e = new Enemy(width, height, tr);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._current._sprites.add(e);
+        GameLevel._currLevel._sprites.add(e);
         return e;
     }
 
@@ -50,7 +50,7 @@ public class Enemy extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Enemy e = new Enemy(radius * 2, radius * 2, tr);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius);
-        Level._current._sprites.add(e);
+        GameLevel._currLevel._sprites.add(e);
         return e;
     }
 

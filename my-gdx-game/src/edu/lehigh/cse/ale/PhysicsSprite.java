@@ -152,9 +152,9 @@ public abstract class PhysicsSprite
         boxPoly.setAsBox(_width / 2, _height / 2);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
-        boxBodyDef.position.x = x;
-        boxBodyDef.position.y = y;
-        _physBody = Level._current._world.createBody(boxBodyDef);
+        boxBodyDef.position.x = x+_width/2;
+        boxBodyDef.position.y = y+_height/2;
+        _physBody = GameLevel._currLevel._world.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -199,9 +199,9 @@ public abstract class PhysicsSprite
         c.setRadius(r);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
-        boxBodyDef.position.x = x;
-        boxBodyDef.position.y = y;
-        _physBody = Level._current._world.createBody(boxBodyDef);
+        boxBodyDef.position.x = x + _width/2;
+        boxBodyDef.position.y = y + _height/2;
+        _physBody = GameLevel._currLevel._world.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -379,11 +379,9 @@ public abstract class PhysicsSprite
     {
         if (!_isTilt) {
             // make sure it is moveable, add it to the list of tilt entities
-            // TODO
-            // makeMoveable();
-            synchronized (Tilt._accelEntities) {
-                Tilt._accelEntities.add(this);
-            }
+            if (_physBody.getType() != BodyType.DynamicBody)
+                _physBody.setType(BodyType.DynamicBody);
+            Tilt._accelEntities.add(this);
             _isTilt = true;
             // turn off sensor behavior, so this collides with stuff...
             _physBody.getFixtureList().get(0).setSensor(false);
@@ -503,7 +501,7 @@ public abstract class PhysicsSprite
     /**
      * Does this entity follow a route?
      */
-    private boolean   _isRoute     = false;
+    boolean   _isRoute     = false;
 
     /**
      * Rather than pooling Vector2 objects, we keep one around for use when dealing with routes
@@ -624,21 +622,82 @@ public abstract class PhysicsSprite
      * 
      * @param route
      *            The route to follow.
-     * @param duration
-     *            Time it takes to complete the route
+     * @param velocity
+     *            speed at which to travel
      * @param loop
      *            Should this route loop continuously
-     *//*
-    public void setRoute(Route route, float duration, boolean loop)
+     */
+    Route _myRoute;
+    float _routeVelocity;
+    boolean _routeLoop;
+    public void setRoute(Route route, float velocity, boolean loop)
     {
-        // ensure this is a moveable entity
-        makeMoveable();
+        // This must be a KinematicBody!
+        _physBody.setType(BodyType.KinematicBody);
 
-        if (loop)
-            _sprite.registerEntityModifier(new LoopEntityModifier(new PathModifier(duration, route)));
-        else
-            _sprite.registerEntityModifier(new PathModifier(duration, route));
+        // save parameters
         _isRoute = true;
+        _myRoute = route;
+        _routeVelocity = velocity;
+        _routeLoop = loop;
+        
+        // this is how we initialize a route driver:
+        // first, move to the starting point
+        _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
+        // second, indicate that we are working on goal #1, and set velocity
+        _nextRouteGoal = 1;
+        _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+        // third, make sure we get updated
+        GameLevel._currLevel._routes.add(this);
+        // and indicate that we aren't all done yet
+        _routeDone = false;
+    }
+
+    boolean _routeDone;
+    int _nextRouteGoal;
+    
+    /**
+     * Internal method for figuring out where we need to go next when driving a route
+     * 
+     * Note: we move the center to each goal
+     */
+    void routeDriver()
+    {
+        // quit if we're done and we don't loop
+        if (_routeDone)
+            return;
+        // if we haven't passed the goal, keep going.  we tell if we've passed the goal by comparing the magnitudes of the vectors from source to here and from goal to here
+        float sx = _myRoute._xIndices[_nextRouteGoal - 1] - _physBody.getPosition().x;
+        float sy = _myRoute._yIndices[_nextRouteGoal - 1] - _physBody.getPosition().y;
+        float gx= _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
+        float gy = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+        boolean sameXSign = (gx >= 0 && sx >= 0) || (gx<=0&&sx<=0);
+        boolean sameYSign = (gy >= 0 && sy >= 0) || (gy<=0&&sy<=0);
+        if (((gx == gy)&&(gx == 0)) || (sameXSign && sameYSign)) {
+            _nextRouteGoal++;
+            if (_nextRouteGoal == _myRoute._points) {
+                // reset if it's a loop, else terminate Route
+                if (_routeLoop) {
+                    _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
+                    _nextRouteGoal = 1;
+                    _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+                    return;
+                }
+                else {
+                    _routeDone = true;
+                    return;
+                }
+            }
+            else {
+                // advance to next point
+                _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+                return;
+            }   
+        }
+        else {
+            // NB: if we get here, we didn't need to change the velocity
+            return;
+        }
     }
 
     /**
@@ -646,10 +705,13 @@ public abstract class PhysicsSprite
      * 
      * @param duration
      *            Time it takes to complete one rotation
-     *//*
+     */
     public void setRotationSpeed(float duration)
     {
-        _sprite.registerEntityModifier(new LoopEntityModifier(new RotationModifier(duration, 0, 360)));
+        if (_physBody.getType() == BodyType.StaticBody)
+            _physBody.setType(BodyType.KinematicBody);
+        _physBody.setAngularVelocity(duration);
+        //_sprite.registerEntityModifier(new LoopEntityModifier(new RotationModifier(duration, 0, 360)));
     }
 
     /**

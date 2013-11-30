@@ -4,9 +4,6 @@ package edu.lehigh.cse.ale;
 
 import java.util.Random;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-
 public class Util
 {
     /**
@@ -52,28 +49,18 @@ public class Util
     static public void drawBoundingBox(int x0, int y0, int x1, int y1, String imgName, float density, float elasticity,
             float friction)
     {
+        // draw four rectangles and we're good
+        Obstacle b = Obstacle.makeAsBox(x0-1, y0-1, Math.abs(x0-x1)+2, 1, imgName);
+        b.setPhysics(density, elasticity, friction);
 
-        // TODO: Why do we need the factor of 2 everywhere?
+        Obstacle t = Obstacle.makeAsBox(x0-1, y1, Math.abs(x0-x1)+2, 1, imgName);
+        t.setPhysics(density, elasticity, friction);
 
-        // get the image by name. Note that we could animate it ;)
-        TextureRegion ttr = Media.getImage(imgName);
-        // draw four rectangles, give them physics and attach them to the scene
-        Obstacle b = new Obstacle(2 * Math.abs(x0 - x1), 0.5f, ttr);
-        b.setBoxPhysics(density, elasticity, friction, BodyType.StaticBody, false, x0, y0);
-        // b.disableRotation();
-        Level._current._sprites.add(b);
-        Obstacle t = new Obstacle(2 * Math.abs(x0 - x1), 0.5f, ttr);
-        t.setBoxPhysics(density, elasticity, friction, BodyType.StaticBody, false, x0, y1);
-        // t.disableRotation();
-        Level._current._sprites.add(t);
-        Obstacle l = new Obstacle(0.5f, 2 * Math.abs(y0 - y1), ttr);
-        l.setBoxPhysics(density, elasticity, friction, BodyType.StaticBody, false, x0, y0);
-        // l.disableRotation();
-        Level._current._sprites.add(l);
-        Obstacle r = new Obstacle(0.5f, 2 * Math.abs(y0 - y1), ttr);
-        r.setBoxPhysics(density, elasticity, friction, BodyType.StaticBody, false, x1, y0);
-        // r.disableRotation();
-        Level._current._sprites.add(r);
+        Obstacle l = Obstacle.makeAsBox(x0-1, y0-1, 1, Math.abs(y0 - y1)+2, imgName);
+        l.setPhysics(density, elasticity, friction);
+
+        Obstacle r = Obstacle.makeAsBox(x1, y0-1, 1, Math.abs(y0-y1)+2, imgName);
+        r.setPhysics(density, elasticity, friction);
     }
 
     /**

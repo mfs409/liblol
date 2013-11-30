@@ -4,6 +4,12 @@ package edu.lehigh.cse.ale;
 
 public class Route
 {
+    float [] _xIndices;
+    float [] _yIndices;
+    float _velocity;
+    int _size;
+    int _points;
+    
     /**
      * Define a new path, by specifying the number of points in the path
      * 
@@ -12,12 +18,15 @@ public class Route
      */
     public Route(int numberOfPoints)
     {
-        // TODO
-        // super(numberOfPoints);
+        // NB: it doesn't make sense to have a route with only one point!
+        assert(numberOfPoints > 1);
+        _size = numberOfPoints;
+        _xIndices = new float[_size];
+        _yIndices = new float[_size];
     }
 
     /**
-     * Add a new point to a path by giving its (x,y) coordinates
+     * Add a new point to a path by giving (x,y) coordinates for where the center of the object ought to move
      * 
      * @param x
      *            X value of the new coordinate
@@ -27,8 +36,9 @@ public class Route
      */
     public Route to(float x, float y)
     {
-        // TODO: // super.to(x, y);
+        _xIndices[_points] = x;
+        _yIndices[_points] = y;
+        _points++;
         return this;
     }
-
 }

@@ -192,24 +192,14 @@ public class Media
      *            either true or false, to indicate whether the song should
      *            repeat when it reaches the end
      */
-    /*
-     * static public void registerMusic(String musicName, boolean loop) {
-     * try {
-     * Music m = MusicFactory.createMusicFromAsset(ALE._self.getEngine()
-     * .getMusicManager(), ALE._self, musicName);
-     * m.setLooping(loop);
-     * _tunes.put(musicName, m);
-     * } catch (final IOException e) {
-     * Gdx.app.log(
-     * "ERROR",
-     * "Error encountered while trying to load audio file "
-     * + musicName
-     * + ".  Common causes include a misspelled file name, an incorrect path, "
-     * + "or an invalid file type.");
-     * }
-     * }
-     */
-
+    static public void registerMusic(String musicName, boolean loop)
+    {
+        // TODO: connect to an asset manager, to avoid re-creating every time
+        Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
+        m.setLooping(loop);
+        _tunes.put(musicName, m);
+    }
+     
     /**
      * Register a sound file, so that it can be used later.
      * 

@@ -85,7 +85,7 @@ public class Destination extends PhysicsSprite
         Destination d = new Destination(width, height, tr);
         d.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
         d._physBody.getFixtureList().get(0).setSensor(true);
-        Level._current._sprites.add(d);
+        GameLevel._currLevel._sprites.add(d);
         return d;
     }
 
@@ -96,7 +96,7 @@ public class Destination extends PhysicsSprite
         Destination d = new Destination(radius * 2, radius * 2, tr);
         d.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius);
         d._physBody.getFixtureList().get(0).setSensor(true);
-        Level._current._sprites.add(d);
+        GameLevel._currLevel._sprites.add(d);
         return d;
     }
 

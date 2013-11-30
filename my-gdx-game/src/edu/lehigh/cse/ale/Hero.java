@@ -21,7 +21,7 @@ public class Hero extends PhysicsSprite
         TextureRegion tr = Media.getImage(imgName);
         Hero h = new Hero(tr, width, height);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level._current._sprites.add(h);
+        GameLevel._currLevel._sprites.add(h);
         return h;
     }
 
@@ -31,7 +31,7 @@ public class Hero extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Hero h = new Hero(tr, radius * 2, radius * 2);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius);
-        Level._current._sprites.add(h);
+        GameLevel._currLevel._sprites.add(h);
         return h;
     }
 
