@@ -40,16 +40,15 @@ public class Hero extends PhysicsSprite
     {
         // NB: we currently ignore (other._psType == SpriteId.PROJECTILE)
         if (other._psType == SpriteId.ENEMY)
-         onCollideWithEnemy((Enemy) other);
-        else
-        if (other._psType == SpriteId.DESTINATION)
+            onCollideWithEnemy((Enemy) other);
+        else if (other._psType == SpriteId.DESTINATION)
             onCollideWithDestination((Destination) other);
         else if (other._psType == SpriteId.OBSTACLE)
             onCollideWithObstacle((Obstacle) other);
-         else if (other._psType == SpriteId.SVG)
-         onCollideWithSVG(other);
-         else if (other._psType == SpriteId.GOODIE)
-             onCollideWithGoodie((Goodie) other);
+        else if (other._psType == SpriteId.SVG)
+            onCollideWithSVG(other);
+        else if (other._psType == SpriteId.GOODIE)
+            onCollideWithGoodie((Goodie) other);
 
         // one last thing: if the hero was "norotate", then patch up any
         // rotation that happened to its _physics body by

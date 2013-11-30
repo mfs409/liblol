@@ -32,7 +32,9 @@ import com.badlogic.gdx.physics.box2d.World;
 public class GameLevel implements MyScreen
 {
     /**
-     * A simple wrapper for when we want stuff to happen
+     * A simple wrapper for when we want stuff to happen. We're going to abuse
+     * this type as a generic way to do everything we need to do regarding
+     * delayed actions, hud updates, buttons, etc.
      */
     abstract static class PendingEvent
     {

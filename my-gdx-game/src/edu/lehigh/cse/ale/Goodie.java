@@ -3,6 +3,7 @@ package edu.lehigh.cse.ale;
 // STATUS: not started
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Goodie extends PhysicsSprite
 {
@@ -10,13 +11,82 @@ public class Goodie extends PhysicsSprite
      * BASIC FUNCTIONALITY
      */
 
-    // TODO: this is not valid
-    Goodie(TextureRegion tr, SpriteId id, float width, float height)
+    /**
+     * Internal constructor to build a Goodie
+     * 
+     * This should never be invoked directly. Instead, use the 'addXXX' methods
+     * of the Object class.
+     * 
+     * @param x
+     *            X position of top left corner
+     * @param y
+     *            Y position of top left corner
+     * @param width
+     *            width of this Obstacle
+     * @param height
+     *            height of this Obstacle
+     * @param tr
+     *            image to use for this Obstacle
+     */
+    protected Goodie(float width, float height, TextureRegion tr)
     {
-        super(tr, id, width, height);
-        // TODO Auto-generated constructor stub
+        super(tr, SpriteId.GOODIE, width, height);
+        _score1 = 1;
+        _score2 = 0;
+        _score3 = 0;
+        _score4 = 0;
     }
 
+    /**
+     * Draw a goodie with an underlying box shape
+     * 
+     * @param x
+     *            X coordinate of top left corner
+     * @param y
+     *            Y coordinate of top left corner
+     * @param width
+     *            Width of the image
+     * @param height
+     *            Height of the image
+     * @param imgName
+     *            Name of image file to use
+     * @return The obstacle, so that it can be further modified
+     */
+    public static Goodie makeAsBox(float x, float y, float width, float height, String imgName)
+    {
+        Goodie g = new Goodie(width, height, Media.getImage(imgName));
+        g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
+        g._physBody.getFixtureList().get(0).setSensor(true);
+        GameLevel._currLevel._sprites.add(g);
+        return g;
+    }
+
+    /**
+     * Draw a goodie with an underlying circle shape
+     * 
+     * @param x
+     *            X coordinate of top left corner
+     * @param y
+     *            Y coordinate of top left corner
+     * @param width
+     *            Width of the image
+     * @param height
+     *            Height of the image
+     * @param imgName
+     *            Name of image file to use
+     * @return The obstacle, so that it can be further modified
+     */
+    public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName)
+    {
+        float radius = (width > height) ? width : height;
+        Goodie g = new Goodie(width, height, Media.getImage(imgName));
+        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        g._physBody.getFixtureList().get(0).setSensor(true);
+        GameLevel._currLevel._sprites.add(g);
+        return g;
+    }
+
+ 
     /**
      * The "score" of this goodie... it is the amount that will be added to the score when this goodie is collected.
      * 
@@ -43,79 +113,6 @@ public class Goodie extends PhysicsSprite
      */
     int _score4;
     
-    /**
-     * Create a basic goodie. This code should never be called directly. Use addXXX methods instead
-     * 
-     * @param x
-     *            X coordinate of top left corner
-     * @param y
-     *            Y coordinate of top left corner
-     * @param width
-     *            Width of the image
-     * @param height
-     *            Height of the image
-     * @param ttr
-     *            Image to display
-     */
-/*    private Goodie(float x, float y, float width, float height, TiledTextureRegion ttr)
-    {
-        super(x, y, width, height, ttr, SpriteId.GOODIE);
-        // the default is to just have a score1, and nothing else
-        _score1 = 1;
-        _score2 = 0;
-        _score3 = 0;
-        _score4 = 0;
-    }
-
-    /**
-     * Add a simple Goodie who uses a box as its _fixture
-     * 
-     * @param x
-     *            X coordinate of top left corner
-     * @param y
-     *            Y coordinate of top left corner
-     * @param width
-     *            Width of the image
-     * @param height
-     *            Height of the image
-     * @param imgName
-     *            Name of image file to use
-     * 
-     * @return The goodie, so that we can update its properties
-     */
-  /*  public static Goodie makeAsBox(float x, float y, float width, float height, String imgName)
-    {
-        Goodie goodie = new Goodie(x, y, width, height, Media.getImage(imgName));
-        goodie.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false);
-        goodie.setCollisionEffect(false);
-        Level._current.attachChild(goodie._sprite);
-        return goodie;
-    }
-
-    /**
-     * Add a simple Goodie who uses a circle as its _fixture
-     * 
-     * @param x
-     *            X coordinate of top left corner
-     * @param y
-     *            Y coordinate of top left corner
-     * @param width
-     *            Width of the image
-     * @param height
-     *            Height of the image
-     * @param imgName
-     *            Name of image file to use
-     * 
-     * @return The goodie, so that we can update its properties
-     */
-    /*public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName)
-    {
-        Goodie goodie = new Goodie(x, y, width, height, Media.getImage(imgName));
-        goodie.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false);
-        goodie.setCollisionEffect(false);
-        Level._current.attachChild(goodie._sprite);
-        return goodie;
-    }
 
     /**
      * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
@@ -229,5 +226,4 @@ public class Goodie extends PhysicsSprite
     {
         _invincibilityDuration = duration;
     }
-
 }

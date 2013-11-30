@@ -502,31 +502,35 @@ public class MyGdxGame extends ALE
          * @whatsnew: display the goodie count on the heads-up display
          */
         else if (whichLevel == 14) {
-            /*
-             * // set up a basic level with a tilt-based hero
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting(); // now let's add
-             * some stationary goodies. Note that the default is // for goodies
-             * to have a circle as their shape, and to not cause a // change in
-             * the hero's behavior at the time when a collision // occurs... we
-             * can play with this later :) Goodie.makeAsCircle(0, 300, 10, 10,
-             * "blueball.png"); Goodie.makeAsCircle(0, 150, 10, 10,
-             * "blueball.png");
-             * 
-             * // here we create a destination. Note that we now set its
-             * activation score to 2, so that you must // collect two goodies
-             * before the destination will "work" Destination d =
-             * Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
-             * d.setActivationScore(2);
-             * 
-             * Level.setVictoryDestination(1);
-             * 
-             * // let's put a display on the screen to see how many goodies
-             * we've collected Controls.addGoodieCount(2, "Goodies", 220, 280);
-             * PopUpScene.showTextTimed("You must collect\ntwo blue balls", 1);
-             */
+            
+            // set up a basic level with a tilt-based hero
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            // now let's add some stationary goodies. Note that the default is
+            // for goodies to have a circle as their shape, and to not cause a
+            // change in the hero's behavior at the time when a collision
+            // occurs... we can play with this later :)
+            Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
+            Goodie.makeAsCircle(0, 15, 1, 1, "blueball.png");
+
+            // here we create a destination. Note that we now set its activation
+            // score to 2, so that you must
+            // collect two goodies before the destination will "work"
+            Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            d.setActivationScore(2);
+
+            Level.setVictoryDestination(1);
+
+            // let's put a display on the screen to see how many goodies we've
+            // collected
+            Controls.addGoodieCount(2, "Goodies", 220, 280);
+            PopUpScene.showTextTimed("You must collect\ntwo blue balls", 1);
+             
         }
 
         /**
