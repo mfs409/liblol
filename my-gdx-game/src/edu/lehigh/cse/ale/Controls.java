@@ -1,6 +1,5 @@
 package edu.lehigh.cse.ale;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 import edu.lehigh.cse.ale.GameLevel.PendingEvent;

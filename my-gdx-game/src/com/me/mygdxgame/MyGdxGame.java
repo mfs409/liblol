@@ -12,7 +12,6 @@ import edu.lehigh.cse.ale.*;
 
 public class MyGdxGame extends ALE
 {
-
     @Override
     public void nameResources()
     {
@@ -165,7 +164,6 @@ public class MyGdxGame extends ALE
          * @whatsnew: when the hero reaches the destination, we play a sound
          */
         else if (whichLevel == 5) {
-
             // begin by configuring the level and heroes just like in level 4
             Level.configure(46, 32);
             Physics.configure(0, 0);
@@ -223,7 +221,6 @@ public class MyGdxGame extends ALE
 
             // and print a popup to tell the user what's going on...
             PopUpScene.showTextTimed("A different way\nto use tilt.", 1);
-
         }
 
         /**
@@ -405,6 +402,10 @@ public class MyGdxGame extends ALE
             Level.setVictoryDestination(1);
 
             // add zoom buttons
+            
+            // TODO: chase shapes + zoom can lead to funny behaviors (e.g., try
+            // zooming in when we're in bottom left corner; a solution is to
+            // incorporate zoom into the computations in the chase shape code
             Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
             

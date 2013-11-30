@@ -504,11 +504,6 @@ public abstract class PhysicsSprite
     boolean   _isRoute     = false;
 
     /**
-     * Rather than pooling Vector2 objects, we keep one around for use when dealing with routes
-     */
-    private Vector2   _routeVector = new Vector2();
-
-    /**
      * When we make a sprite moveable, we need to be sure it has a DynamicBody...
      *//*
     void makeMoveable()
