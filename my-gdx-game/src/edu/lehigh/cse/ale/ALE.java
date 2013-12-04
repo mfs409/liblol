@@ -138,7 +138,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
         _currHelp = 0;
         _mode = Modes.PLAY;
         configureLevel(which);
-        setScreen(GameLevel._currLevel);
+        setScreen(Level._currLevel);
     }
 
     public void doHelpLevel()

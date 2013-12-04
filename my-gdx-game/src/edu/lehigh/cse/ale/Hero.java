@@ -2,15 +2,21 @@ package edu.lehigh.cse.ale;
 
 // STATUS: in progress...
 
+// TODO: be sure that whenever possible, we've moved funcitonality into PhysicsSprite
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 
+import edu.lehigh.cse.ale.Level.HudEntity;
+
 public class Hero extends PhysicsSprite
 {
 
-    Hero(TextureRegion tr, float width, float height)
+    Hero(float width, float height, TextureRegion tr)
     {
         super(tr, SpriteId.HERO, width, height);
         Score._heroesCreated++;
@@ -18,20 +24,18 @@ public class Hero extends PhysicsSprite
 
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
-        Hero h = new Hero(tr, width, height);
+        Hero h = new Hero(width, height, Media.getImage(imgName));
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        GameLevel._currLevel._sprites.add(h);
+        Level._currLevel._sprites.add(h);
         return h;
     }
 
     public static Hero makeAsCircle(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
         float radius = (width > height) ? width : height;
-        Hero h = new Hero(tr, radius * 2, radius * 2);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius);
-        GameLevel._currLevel._sprites.add(h);
+        Hero h = new Hero(width, height, Media.getImage(imgName));
+        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius/2);
+        Level._currLevel._sprites.add(h);
         return h;
     }
 
@@ -96,18 +100,15 @@ public class Hero extends PhysicsSprite
             return;
         }
         // TODO
-        /*
         // handle hero invincibility
-        if (_invincibleUntil > ALE._self.getEngine().getSecondsElapsedTotal()) {
+        if (_invincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
             if (e._immuneToInvincibility)
                 return;
             e.defeat(true);
         }
-        */
         // defeat by _crawling?
-        // else 
-        if (_crawling && e._defeatByCrawl) {
+        else if (_crawling && e._defeatByCrawl) {
             e.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
@@ -243,18 +244,41 @@ public class Hero extends PhysicsSprite
         _strength += g._strengthBoost;
 
         // deal with invincibility
-        // TODO:
-        /*
         if (g._invincibilityDuration > 0) {
-            float newExpire = ALE._self.getEngine().getSecondsElapsedTotal() + g._invincibilityDuration;
-            if (newExpire > _invincibleUntil)
-                _invincibleUntil = newExpire;
+            if (_invincibleRemaining == 0) {
+                // register an invincibility update handler
+                Level._currLevel._spriteUpdates.add(new HudEntity()
+                {
+                    // this one is a no-op
+                    //
+                    // TODO: refactor so that we have a type other than HudEntity for this
+                    @Override
+                    void render(SpriteBatch sb)
+                    {
+                    }
+
+                    @Override
+                    void update()
+                    {
+                        _invincibleRemaining -= Gdx.graphics.getDeltaTime();
+                        if (_invincibleRemaining < 0) {
+                            _invincibleRemaining = 0;
+                            _enabled = false;
+                        }
+                    }
+                });
+            }
+            // update the time to end invincibility
+            _invincibleRemaining += g._invincibilityDuration;
+            
+            /*
+             TODO: deal with invincibility animation
             if (_invincibleAnimateDurations != null) {
                 _sprite.animate(_invincibleAnimateDurations, _invincibleAnimateCells, true);
                 _glowing = true;
             }
+            */
         }
-        */
 
         // deal with animation changes due to goodie count
         // TODO:
@@ -616,7 +640,7 @@ public class Hero extends PhysicsSprite
     /**
      * Time when the hero's invincibility runs out
      */
-    private float   _invincibleUntil = 0;
+    private float   _invincibleRemaining = 0;
 
     /**
      * Track whether there is a playing invincibility animation right now

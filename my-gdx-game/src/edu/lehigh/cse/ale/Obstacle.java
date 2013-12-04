@@ -71,7 +71,7 @@ public class Obstacle extends PhysicsSprite
     {
         Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        GameLevel._currLevel._sprites.add(o);
+        Level._currLevel._sprites.add(o);
         return o;
     }
 
@@ -95,22 +95,8 @@ public class Obstacle extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
-        GameLevel._currLevel._sprites.add(o);
+        Level._currLevel._sprites.add(o);
         return o;
-    }
-
-    /**
-     * Call this on an Obstacle to rotate it. Note that this works best on
-     * boxes.
-     * 
-     * @param rotation
-     *            amount to rotate the Obstacle (in degrees)
-     */
-    public void setRotation(float rotation)
-    {
-        // rotate it
-        _physBody.setTransform(_physBody.getPosition(), rotation);
-        // _sprite.setRotation(rotation);
     }
 
     /*

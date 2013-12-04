@@ -1,10 +1,17 @@
 package edu.lehigh.cse.ale;
 
+// TODO: there is a lot of redundant code related to font management and text creation 
+
+// STATUS: in progress
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-import edu.lehigh.cse.ale.GameLevel.PendingEvent;
+import edu.lehigh.cse.ale.Level.HudEntity;
+import edu.lehigh.cse.ale.Level.PendingEvent;
 
-// STATUS: not started, but GameLevel has some useful support
 
 public class Controls
 {
@@ -13,35 +20,21 @@ public class Controls
      */
 
     /**
-     * heads-up display where we place buttons
-     */
-    // static HUD           _hud;
-
-    /**
-     * A flag for disabling timers (e.g., when the game is over)
-     */
-    static boolean       _timerActive;
-
-    /**
      * Store the duration between when the program started and when the _current level started, so that we can reuse the
      * timer from one level to the next
      */
-    private static float _timerDelta;
-
+    private static float _countDownRemaining;
+    
+    /**
+     * Store the amount of stopwatch that has transpired
+     */
+    private static float _stopWatchProgress;
+    
     /**
      * Controls is a pure static class, and should never be constructed explicitly
      */
     private Controls()
     {
-    }
-
-    /**
-     * When we win or lose a game, we need to reset the HUD to get rid of all the buttons currently on the HUD
-     */
-    /*    static void resetHUD()
-    {
-        _hud = new HUD();
-        ALE._self._camera.setHUD(_hud);
     }
 
     /*
@@ -54,11 +47,20 @@ public class Controls
      * @param delta
      *            The amount of time to add before the timer expires
      */
-    /*    public static void updateTimerExpiration(float delta)
+    public static void updateTimerExpiration(float delta)
     {
-        _timerDelta += delta;
+        _countDownRemaining += delta;
     }
 
+    static void updateTimerForPause(float delta)
+    {
+        _countDownRemaining += delta;
+        // TODO: how do we deal with pausing? This next line isn't needed, but a
+        // pause screen could change that...
+        //
+        // _stopWatchProgress -= delta;
+    }
+    
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in defeat
      *
@@ -71,7 +73,7 @@ public class Controls
      * @param y
      *            The y coordinate where the timer should be drawn
      */
-    /*    public static void addCountdown(float timeout, String text, int x, int y)
+      public static void addCountdown(float timeout, String text, int x, int y)
     {
         addCountdown(timeout, text, x, y, 255, 255, 255, 32);
     }
@@ -98,46 +100,68 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addCountdown(final float timeout, final String text, int x, int y, int red, int green, int blue,
-            int size)
-    {
-        Font f = Util.makeFont(red, green, blue, size);
+      public static void addCountdown(final float timeout, final String text, final int x, final int y, final int red, final int green, final int blue,
+              int size)
+      {
+          _countDownRemaining = timeout; 
+          final BitmapFont bf = Media.getFont("arial.ttf", size);
+          HudEntity he = new HudEntity(){
+              @Override
+              void render(SpriteBatch sb)
+              {
+                  // handle color
+                  float r = red;
+                  float g = green;
+                  float b = blue;
+                  r = r/256;
+                  g = g/256;
+                  b = b/256;
+                  bf.setColor(r, g, b, 1);
 
-        // figure out how much time between right now, and when the program
-        // started.
-        _timerDelta = ALE._self.getEngine().getSecondsElapsedTotal();
+                  _countDownRemaining -= Gdx.graphics.getDeltaTime();
 
-        // turn on the timer
-        _timerActive = true;
+                  if (_countDownRemaining > 0) {
+                      // get elapsed time for this level
+                      String newtext = "" + (int)_countDownRemaining;
+                      bf.draw(sb, newtext, x, y);
+                  }
+                  else {
+                      Score.loseLevel(text);
+                  }
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
+      }
 
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", "XXXX".length(), ALE._self.getVertexBufferObjectManager());
+      /**
+       * Print the frames per second
+       * 
+       * @param x
+       * @param y
+       * @param red
+       * @param green
+       * @param blue
+       * @param size
+       */
+      public static void addFPS(final int x, final int y, final int red, final int green, final int blue, int size)
+      {
+          final BitmapFont bf = Media.getFont("arial.ttf", size);
+          HudEntity he = new HudEntity(){
+              @Override
+              void render(SpriteBatch sb)
+              {
+                  // handle color
+                  float r = red;
+                  float g = green;
+                  float b = blue;
+                  bf.setColor(r/256, g/256, b/256, 1);
+                  bf.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
+      }
 
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
-            {
-                // get the elapsed time for this level
-                float newtext = ALE._self.getEngine().getSecondsElapsedTotal() - _timerDelta;
-                newtext = timeout - newtext;
-                // figure out if time is up
-                if (newtext < 0) {
-                    newtext = 0;
-                    MenuManager.loseLevel(text);
-                }
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText("" + (int) newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // Add the text to the HUD
-        ALE._self._camera.getHUD().attachChild(elapsedText);
-    }
-
+      
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in victory
      *
@@ -227,8 +251,8 @@ public class Controls
      *
      * @deprecated Use addGoodieCount[1-4]() instead
      */
-    //@Deprecated
-    /*    public static void addGoodieCount(int max, String text, int x, int y)
+    @Deprecated
+        public static void addGoodieCount(int max, String text, int x, int y)
     {
         addGoodieCount1(max, text, x, y, 255, 255, 255, 32);
     }
@@ -257,8 +281,8 @@ public class Controls
      *
      * @deprecated Use addGoodieCount[1-4]() instead
      */
-    //@Deprecated
-    /*    public static void addGoodieCount(int max, final String text, int x, int y, int red, int green, int blue, int size)
+    @Deprecated
+        public static void addGoodieCount(int max, final String text, int x, int y, int red, int green, int blue, int size)
     {
         addGoodieCount1(max, text, x, y, red, green, blue, size);
     }
@@ -283,37 +307,30 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addGoodieCount1(int max, final String text, int x, int y, int red, int green, int blue, int size)
+    public static void addGoodieCount1(int max, final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // turn on the timer
-        _timerActive = true;
-
+        // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXX/XXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
             @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
+            void render(SpriteBatch sb)
             {
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
+
                 // get elapsed time for this level
                 String newtext = "" + Score._goodiesCollected1 + suffix;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+                bf.draw(sb, newtext, x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -558,7 +575,7 @@ public class Controls
      * @param y
      *            The y coordinate where the stopwatch should be drawn
      */
-    /*    static public void addStopwatch(int x, int y)
+    static public void addStopwatch(int x, int y)
     {
         addStopwatch(x, y, 255, 255, 255, 32);
     }
@@ -581,37 +598,30 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    static public void addStopwatch(int x, int y, int red, int green, int blue, int size)
+    static public void addStopwatch(final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // figure out how much time between right now, and when the program started
-        _timerDelta = ALE._self.getEngine().getSecondsElapsedTotal();
-
-        // turn on the timer
-        _timerActive = true;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", "XXXX".length(), ALE._self.getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
+        _stopWatchProgress = 0;
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
             @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
+            void render(SpriteBatch sb)
             {
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
+                
+                _stopWatchProgress += Gdx.graphics.getDeltaTime();
                 // get elapsed time for this level
-                float newtext = ALE._self.getEngine().getSecondsElapsedTotal() - _timerDelta;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText("" + (int) newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+                String newtext = "" + (int)_stopWatchProgress;
+                bf.draw(sb, newtext, x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -624,10 +634,10 @@ public class Controls
      * @param y
      *            The y coordinate where the text should be drawn
      */
-    /*    static public void addStrengthMeter(String text, int x, int y)
+    static public void addStrengthMeter(String text, int x, int y, Hero h)
     {
         // forward to the more powerful method...
-        addStrengthMeter(text, x, y, 255, 255, 255, 32);
+        addStrengthMeter(text, x, y, 255, 255, 255, 32, h);
     }
 
     /**
@@ -649,8 +659,29 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    static public void addStrengthMeter(final String text, int x, int y, int red, int green, int blue, int size)
+    static public void addStrengthMeter(final String text, final int x, final int y, final int red, final int green, final int blue, int size, final Hero h)
     {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
+            @Override
+            void render(SpriteBatch sb)
+            {
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
+
+                // get elapsed time for this level
+                String newtext = "" + h._strength + " " + text;
+                bf.draw(sb, newtext, x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
+/*
         Font f = Util.makeFont(red, green, blue, size);
 
         // turn on the timer
@@ -681,6 +712,7 @@ public class Controls
 
         // add the text to the _hud
         ALE._self._camera.getHUD().attachChild(elapsedText);
+        */
     }
 
     /**
@@ -1340,13 +1372,13 @@ public class Controls
      */
     public static void addZoomOutButton(float x, float y, float width, float height, String imgName, final float maxZoom)
     {
-        GameLevel.PendingEvent pe = new PendingEvent() {
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
             void go()
             {
-                float curzoom = GameLevel._currLevel._gameCam.zoom;
+                float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom < maxZoom)
-                    GameLevel._currLevel._gameCam.zoom *= 2;
+                    Level._currLevel._gameCam.zoom *= 2;
             }
         };
         if (!imgName.equals(""))
@@ -1354,7 +1386,7 @@ public class Controls
         pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
-        GameLevel._currLevel._controls.add(pe);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1375,13 +1407,13 @@ public class Controls
      */
     public static void addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom)
     {
-        GameLevel.PendingEvent pe = new PendingEvent() {
+        PendingEvent pe = new PendingEvent() {
             @Override
             void go()
             {
-                float curzoom = GameLevel._currLevel._gameCam.zoom;
+                float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom > minZoom)
-                    GameLevel._currLevel._gameCam.zoom /= 2;
+                    Level._currLevel._gameCam.zoom /= 2;
             }
         };
         if (!imgName.equals(""))
@@ -1389,8 +1421,8 @@ public class Controls
         pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
-        GameLevel._currLevel._controls.add(pe);        
-        }
+        Level._currLevel._controls.add(pe);        
+    }
 
     /**
      * Add a button that rotates the hero

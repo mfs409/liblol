@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.ale.GameLevel.PendingEvent;
+import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public class PopUpScene
 {
@@ -112,7 +112,7 @@ public class PopUpScene
     static public void showTextAndWait(String message, int red, int green, int blue, int fontSize)
     {
         setPopUp(message, red, green, blue, fontSize);
-        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
                 ALE._game._config.getScreenHeight(), true, new PendingEvent()
                 {
                     public void go()
@@ -137,7 +137,7 @@ public class PopUpScene
     static public void showImageAndWait(String imgName, float x, float y, float width, float height)
     {
         setPopUpImage(Media.getImage(imgName), x, y, width, height);
-        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
                 ALE._game._config.getScreenHeight(), true, new PendingEvent()
                 {
                     public void go()

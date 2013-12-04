@@ -4,7 +4,7 @@ package edu.lehigh.cse.ale;
 
 import com.badlogic.gdx.utils.Timer;
 
-import edu.lehigh.cse.ale.GameLevel.PendingEvent;
+import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public class Score
 {
@@ -33,7 +33,7 @@ public class Score
             Level._loseSound.play();
 
         // drop everything from the hud
-        GameLevel._currLevel._controls.clear();
+        Level._currLevel._controls.clear();
 
         // TODO: For now, we'll just (ab)use the setPopUp feature... need to
         // make it more orthogonal eventually...
@@ -48,7 +48,7 @@ public class Score
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
-        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
                 ALE._game._config.getScreenHeight(), true, new PendingEvent()
                 {
                     public void go()
@@ -82,7 +82,7 @@ public class Score
         }
 
         // drop everything from the hud
-        GameLevel._currLevel._controls.clear();
+        Level._currLevel._controls.clear();
 
         // TODO: For now, we'll just (ab)use the setPopUp feature... need to
         // make it more orthogonal eventually...
@@ -97,7 +97,7 @@ public class Score
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
-        GameLevel._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
+        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
                 ALE._game._config.getScreenHeight(), true, new PendingEvent()
                 {
                     public void go()

@@ -48,6 +48,8 @@ public class Media
         BitmapFont f = _fonts.get(key);
         if (f != null) {
             // reset to white
+            //
+            // TODO: we're going to have trouble with multiple colors for the same screen at some point... what to do?
             f.setColor(1, 1, 1, 1);
             return f;
         }

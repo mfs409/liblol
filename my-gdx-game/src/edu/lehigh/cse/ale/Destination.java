@@ -81,22 +81,20 @@ public class Destination extends PhysicsSprite
 
     public static Destination makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
-        Destination d = new Destination(width, height, tr);
-        d.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
+        Destination d = new Destination(width, height, Media.getImage(imgName));
+        d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         d._physBody.getFixtureList().get(0).setSensor(true);
-        GameLevel._currLevel._sprites.add(d);
+        Level._currLevel._sprites.add(d);
         return d;
     }
 
     public static Destination makeAsCircle(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
         float radius = (width > height) ? width : height;
-        Destination d = new Destination(radius * 2, radius * 2, tr);
-        d.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius);
+        Destination d = new Destination(radius * 2, radius * 2, Media.getImage(imgName));
+        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         d._physBody.getFixtureList().get(0).setSensor(true);
-        GameLevel._currLevel._sprites.add(d);
+        Level._currLevel._sprites.add(d);
         return d;
     }
 

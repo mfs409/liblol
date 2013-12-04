@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 
-import edu.lehigh.cse.ale.GameLevel.PendingEvent;
+import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public class Physics
 {
@@ -19,10 +19,10 @@ public class Physics
     {
         // we instantiate a new World with a proper gravity vector
         // and tell it to sleep when possible.
-        GameLevel._currLevel._world = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        Level._currLevel._world = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
         // set up the collision handler
-        GameLevel._currLevel._world.setContactListener(new ContactListener()
+        Level._currLevel._world.setContactListener(new ContactListener()
         {
             // quick demo to show that we can manage collisions just like in ALE
 
@@ -54,7 +54,7 @@ public class Physics
                 // ever run and push it into a delay handler, we instead delay
                 // the handling of the collision until after the physics step
                 // completes
-                GameLevel._currLevel._events.add(new PendingEvent()
+                Level._currLevel._events.add(new PendingEvent()
                 {
                     public void go()
                     {

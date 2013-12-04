@@ -154,7 +154,7 @@ public abstract class PhysicsSprite
         boxBodyDef.type = type;
         boxBodyDef.position.x = x+_width/2;
         boxBodyDef.position.y = y+_height/2;
-        _physBody = GameLevel._currLevel._world.createBody(boxBodyDef);
+        _physBody = Level._currLevel._world.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -201,7 +201,7 @@ public abstract class PhysicsSprite
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + _width/2;
         boxBodyDef.position.y = y + _height/2;
-        _physBody = GameLevel._currLevel._world.createBody(boxBodyDef);
+        _physBody = Level._currLevel._world.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -393,6 +393,22 @@ public abstract class PhysicsSprite
     boolean _deleteQuietly;
 
     /**
+     * Call this on an Entity to rotate it. Note that this works best on
+     * boxes.
+     * 
+     * @param rotation
+     *            amount to rotate the Entity (in degrees)
+     */
+    public void setRotation(float rotation)
+    {
+        // rotate it
+        // 
+        // NB: the javadocs say "radians", but this appears to want rotation in degrees
+        _physBody.setTransform(_physBody.getPosition(), rotation);
+    }
+
+
+    /**
      * Make an entity disappear
      * 
      * @param quiet
@@ -405,6 +421,11 @@ public abstract class PhysicsSprite
         _visible = false;
         _deleteQuietly = quiet;
         _physBody.setActive(false);
+        
+     // play a sound when we hit this thing?
+         if (_disappearSound != null && !quiet)
+         _disappearSound.play();
+        
         // TODO
         /*
          * _sprite.setVisible(false);
@@ -419,9 +440,7 @@ public abstract class PhysicsSprite
          * as.animate(_disappearAnimateDurations, _disappearAnimateCells,
          * false);
          * }
-         * // play a sound when we hit this thing?
-         * if (_disappearSound != null && !quiet)
-         * _disappearSound.play();
+         * 
          * // disable the _physics body
          * _physBody.setActive(false);
          */
@@ -502,28 +521,6 @@ public abstract class PhysicsSprite
      * Does this entity follow a route?
      */
     boolean   _isRoute     = false;
-
-    /**
-     * When we make a sprite moveable, we need to be sure it has a DynamicBody...
-     *//*
-    void makeMoveable()
-    {
-        // if the body is not dynamic, copy all parameters, re-create the body as Dynamic
-        if (_physBody.getType() != BodyType.DynamicBody) {
-            float _density = _physBody.getFixtureList().get(0).getDensity();
-            float _elasticity = _physBody.getFixtureList().get(0).getRestitution();
-            float _friction = _physBody.getFixtureList().get(0).getFriction();
-            boolean _isBullet = _physBody.isBullet();
-            boolean isSensor = _physBody.getFixtureList().get(0).isSensor();
-            deletePhysicsBody();
-            if (_isCircle)
-                setCirclePhysics(_density, _elasticity, _friction, BodyType.DynamicBody, _isBullet);
-            else
-                setBoxPhysics(_density, _elasticity, _friction, BodyType.DynamicBody, _isBullet);
-            if (isSensor)
-                setCollisionEffect(false);
-        }
-    }
 
     /**
      * Sometimes it is useful to make a sprite kinematic instead of dynamic
@@ -625,6 +622,7 @@ public abstract class PhysicsSprite
     Route _myRoute;
     float _routeVelocity;
     boolean _routeLoop;
+    Vector2 _routeVec = new Vector2();
     public void setRoute(Route route, float velocity, boolean loop)
     {
         // This must be a KinematicBody!
@@ -641,9 +639,13 @@ public abstract class PhysicsSprite
         _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
         // second, indicate that we are working on goal #1, and set velocity
         _nextRouteGoal = 1;
-        _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
+        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+        _routeVec.nor();
+        _routeVec.mul(_routeVelocity);
+        _physBody.setLinearVelocity(_routeVec);
         // third, make sure we get updated
-        GameLevel._currLevel._routes.add(this);
+        Level._currLevel._routes.add(this);
         // and indicate that we aren't all done yet
         _routeDone = false;
     }
@@ -675,7 +677,12 @@ public abstract class PhysicsSprite
                 if (_routeLoop) {
                     _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
                     _nextRouteGoal = 1;
-                    _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
+                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+                    _routeVec.nor();
+                    _routeVec.mul(_routeVelocity);
+                    _physBody.setLinearVelocity(_routeVec);
+
                     return;
                 }
                 else {
@@ -685,7 +692,11 @@ public abstract class PhysicsSprite
             }
             else {
                 // advance to next point
-                _physBody.setLinearVelocity(_myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x, _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y);
+                _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
+                _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+                _routeVec.nor();
+                _routeVec.mul(_routeVelocity);
+                _physBody.setLinearVelocity(_routeVec);
                 return;
             }   
         }
@@ -838,18 +849,23 @@ public abstract class PhysicsSprite
      * Call this on an entity to make it draggable.
      * 
      * Be careful when dragging things. If they are small, they will be hard to touch.
-     * 
-     * @param canMove
-     *            true if the obstacle can move as a result of collisions with other things, false otherwise.
-     *//*
-    public void setCanDrag(boolean canMove)
+     */
+    public void setCanDrag()
     {
-        if (canMove)
-            makeMoveable();
         _isDrag = true;
-        makeTouchable();
     }
 
+    void handleTouchDown(float x, float y)
+    {
+        // TODO: not sure what this should do yet...
+    }
+    
+    void handleTouchDrag(float x, float y)
+    {
+        if (_isDrag)
+            _physBody.setTransform(x, y, _physBody.getAngle());
+    }
+    
     /**
      * Indicate that this entity can be flicked on the screen
      * 
@@ -866,16 +882,6 @@ public abstract class PhysicsSprite
         // NB: this will cause Framework to call to Obstacle which will call to
         // PhysicsSprite
         Level._current.setOnSceneTouchListener(ALE._self);
-    }
-
-    /**
-     * Turn on touch handling for this sprite, so that a handler will run whenever it is touched
-     *//*
-    private void makeTouchable()
-    {
-        Level._current.registerTouchArea(_sprite);
-        Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
     }
 
     /**

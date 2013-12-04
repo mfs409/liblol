@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: not started
+// STATUS: Done?
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -57,7 +57,7 @@ public class Goodie extends PhysicsSprite
         Goodie g = new Goodie(width, height, Media.getImage(imgName));
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         g._physBody.getFixtureList().get(0).setSensor(true);
-        GameLevel._currLevel._sprites.add(g);
+        Level._currLevel._sprites.add(g);
         return g;
     }
 
@@ -82,7 +82,7 @@ public class Goodie extends PhysicsSprite
         Goodie g = new Goodie(width, height, Media.getImage(imgName));
         g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         g._physBody.getFixtureList().get(0).setSensor(true);
-        GameLevel._currLevel._sprites.add(g);
+        Level._currLevel._sprites.add(g);
         return g;
     }
 

@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: STARTED, INCOMPLETE
+// STATUS: IN PROGRESS
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -37,20 +37,18 @@ public class Enemy extends PhysicsSprite
     
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
-        Enemy e = new Enemy(width, height, tr);
+        Enemy e = new Enemy(width, height, Media.getImage(imgName));
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        GameLevel._currLevel._sprites.add(e);
+        Level._currLevel._sprites.add(e);
         return e;
     }
-
+    
     public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName)
     {
-        TextureRegion tr = Media.getImage(imgName);
         float radius = (width > height) ? width : height;
-        Enemy e = new Enemy(radius * 2, radius * 2, tr);
-        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius);
-        GameLevel._currLevel._sprites.add(e);
+        Enemy e = new Enemy(radius, radius, Media.getImage(imgName));
+        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        Level._currLevel._sprites.add(e);
         return e;
     }
 
