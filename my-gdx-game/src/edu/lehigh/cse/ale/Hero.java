@@ -5,6 +5,7 @@ package edu.lehigh.cse.ale;
 // TODO: be sure that whenever possible, we've moved funcitonality into PhysicsSprite
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -197,10 +198,8 @@ public class Hero extends PhysicsSprite
         // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors should not enable
         // jumps for the hero.
         // TODO:
-        /*
         if ((_inAir || _allowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor() && !o._noJumpReenable)
             stopJump();
-    */
         
         // handle sticky obstacles
         if (o.isSticky) {
@@ -224,7 +223,7 @@ public class Hero extends PhysicsSprite
         // all we do is record that the hero is not in the air anymore, and is
         // not in a jump animation anymore
         // TODO:
-        // stopJump();
+        stopJump();
     }
 
     /**
@@ -403,18 +402,20 @@ public class Hero extends PhysicsSprite
     /**
      * Sound to play when a jump occurs
      */
-    // private Sound   _jumpSound;
+    private Sound   _jumpSound;
 
     /**
      * Make the hero jump, unless it is in the air
      */
-    /*
     void jump()
     {
+        // TODO:
+        /*
         if (_weldJoint != null) {
             Level._physics.destroyJoint(_weldJoint);
             _weldJoint = null;
         }
+        */
         if (_inAir)
             return;
         Vector2 v = _physBody.getLinearVelocity();
@@ -423,8 +424,11 @@ public class Hero extends PhysicsSprite
         updateVelocity(v);
         if (!_allowMultiJump)
             _inAir = true;
+        // TODO
+        /*
         if (_jumpAnimateDurations != null)
             _sprite.animate(_jumpAnimateDurations, _jumpAnimateCells, true);
+            */
         if (_jumpSound != null)
             _jumpSound.play();
     }
@@ -432,15 +436,17 @@ public class Hero extends PhysicsSprite
     /**
      * Stop the jump animation for a hero, and make it eligible to jump again
      */
-    /*
     void stopJump()
     {
         if (_inAir || _allowMultiJump) {
             _inAir = false;
+            /*
+            TODO
             if (_defaultAnimateCells != null)
                 _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
             else
                 _sprite.stopAnimation(0);
+                */
         }
     }
 
@@ -469,13 +475,21 @@ public class Hero extends PhysicsSprite
     /**
      * Indicate that touching this hero should make it jump
      */
-    /*
+    
     public void setTouchToJump()
     {
         _isTouchJump = true;
-        Level._current.registerTouchArea(_sprite);
     }
 
+    @Override
+    void handleTouchDown(float x, float y)
+    {
+        if (_isTouchJump)
+            jump();
+        else
+            super.handleTouchDown(x, y);
+    }
+    
     /**
      * Register an animation sequence, so that this hero can have a custom animation while jumping
      * 
@@ -496,7 +510,6 @@ public class Hero extends PhysicsSprite
      * @param soundName
      *            The name of the sound file to use
      */
-    /*
     public void setJumpSound(String soundName)
     {
         _jumpSound = Media.getSound(soundName);
@@ -736,44 +749,6 @@ public class Hero extends PhysicsSprite
      */
 
 
-    /*
-     * ADVANCED CAMERA SUPPORT
-     */
-
-    /**
-     * When the camera follows the hero without centering the hero, this gives us the difference between the hero and
-     * camera
-     */
-    private Vector2 _cameraOffset = new Vector2(0, 0);
-
-    /**
-     * Make the camera follow the hero, but without centering the hero on the screen
-     * 
-     * @param x
-     *            Amount of x distance between hero and center
-     * @param y
-     *            Amount of y distance between hero and center
-     */
-    /*
-    public void setCameraOffset(float x, float y)
-    {
-        ALE._self._camera.setChaseEntity(null);
-        _cameraOffset.x = x;
-        _cameraOffset.y = y;
-        _sprite.registerUpdateHandler(new IUpdateHandler()
-        {
-            @Override
-            public void onUpdate(float arg0)
-            {
-                ALE._self._camera.setCenter(_sprite.getX() + _cameraOffset.x, _sprite.getY() + _cameraOffset.y);
-            }
-
-            @Override
-            public void reset()
-            {
-            }
-        });
-    }
 
     /*
      * COLLISION SUPPORT
@@ -813,10 +788,10 @@ public class Hero extends PhysicsSprite
         if (!e.isActionDown())
             return false;
         // jump?
-        if (_isTouchJump) {
-            jump();
-            return true;
-        }
+        // if (_isTouchJump) {
+        //    jump();
+        //    return true;
+        //}
         // start moving?
         if (_isTouchAndGo) {
             _hover = false;

@@ -64,24 +64,31 @@ public class Level implements MyScreen
      * A simple wrapper for when we want stuff to happen. We're going to abuse
      * this type as a generic way to do everything we need to do regarding
      * delayed actions, hud updates, buttons, etc.
+     * 
+     * TODO: split this into one for HUD entries, and one for plain old actions
      */
     abstract static class PendingEvent
     {
         abstract void go();
-
+        abstract void onDownPress();
+        abstract void onUpPress();
+        
         boolean   _done;
 
         Rectangle _range;
 
+        // TODO: should not be necessary, since we have a _done flag
         boolean   _onlyOnce;
 
         TextureRegion tr;
-        
+
+        // TODO: remove
         void disable()
         {
             _done = true;
         }
 
+        // TODO: remove
         void enable()
         {
             _done = false;
@@ -386,8 +393,7 @@ public class Level implements MyScreen
             for (PendingEvent pe : _controls)
                 _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
             _shapeRender.end();
-        }
-        
+        }        
     }
 
     static class ParallaxLayer
@@ -440,9 +446,12 @@ public class Level implements MyScreen
                 }
             }
             else if (pl._yRepeat) {
+                // TODO: vertical repeat... note that we don't support vertical
+                // and horizontal repeat... should we? 'twould allow for easy
+                // tiled backgrounds...
             }
             else {
-                // TODO: untested!
+                // probably the background layer...
                 _spriteRender.draw(pl._tr, -pl._tr.getRegionWidth()/2,  0);
             }
             _spriteRender.end();            
@@ -453,8 +462,8 @@ public class Level implements MyScreen
     {
         if (_chase == null)
             return;
-        float x = _chase._physBody.getWorldCenter().x;
-        float y = _chase._physBody.getWorldCenter().y;
+        float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
+        float y = _chase._physBody.getWorldCenter().y+_chase._cameraOffset.y;
         // if x or y is too close to 0,0, stick with minimum acceptable values
         if (x < _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2)
             x = _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2;
@@ -479,7 +488,7 @@ public class Level implements MyScreen
     @Override
     public void show()
     {
-       }
+    }
 
     @Override
     public void hide()
@@ -534,7 +543,7 @@ public class Level implements MyScreen
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
                     if (pe._onlyOnce)
                         pe.disable();
-                    pe.go();
+                    pe.onDownPress();
                     return false;
                 }
             }
@@ -580,14 +589,15 @@ public class Level implements MyScreen
     @Override
     public boolean touchDragged(int x, int y, int pointer)
     {
+        // deal with scribble?
         if (Level._scribbleMode) {
             _touchVec.set(x, y, 0);
             _gameCam.unproject(_touchVec);
             Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
             return false;
         }
-        
-        
+
+        // deal with drag?
         if (_hitSprite != null) {
             _touchVec.set(x, y, 0);
             _gameCam.unproject(_touchVec);
@@ -600,6 +610,21 @@ public class Level implements MyScreen
     @Override
     public boolean touchUp(int x, int y, int pointer, int button)
     {
+        // check for HUD touch:
+        //
+        // TODO: is this order correct?  Should HUD always come first?
+        for (PendingEvent pe : _controls) {
+            if (!pe._done) {
+                _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                if (pe._range.contains(_touchVec.x, _touchVec.y)) {
+                    if (pe._onlyOnce)
+                        pe.disable();
+                    pe.onUpPress();
+                    return false;
+                }
+            }
+        }
+
         if (Level._scribbleMode) {
             Obstacle.doScribbleUp();
             return false;
@@ -711,47 +736,9 @@ public class Level implements MyScreen
      */
 
     /**
-     * Width of this level
-     */
-    static int                   _width;
-
-    /**
-     * Height of this level
-     */
-    static int                   _height;
-
-    /**
-     * Basic world gravity in X dimension. Usually 0.
-     */
-    static float                    _initXGravity;
-
-    /**
-     * Basic world gravity in Y dimension. Usually 0, unless we have a side scroller with jumping
-     */
-    static float                    _initYGravity;
-
-    /**
      * Track if we are playing (false) or not
      */
     static boolean               _gameOver;
-
-    /**
-     * Store all heroes, so that we can hide them all at the end of a level
-     */
-    static ArrayList<Hero> _heroes       = new ArrayList<Hero>();
-
-    /**
-     * Track everything that defies gravity
-     */
-    static ArrayList<PhysicsSprite> _noGravity = new ArrayList<PhysicsSprite>();
-    
-    /**
-     * Track the last hero that was created
-     * 
-     * In levels with only one hero (most games), this lets us keep track of the hero to operate with when we jump,
-     * crawl, throw, etc
-     */
-    static Hero            _lastHero;
 
     /**
      * Track if we are in scribble mode or not

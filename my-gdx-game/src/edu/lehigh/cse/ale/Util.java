@@ -125,14 +125,11 @@ public class Util
         Renderable r = new Renderable()
         {
             final TextureRegion tr = Media.getImage(imgName);
-
             @Override
             void render(SpriteBatch sb)
             {
-                sb.draw(tr, x, y, 0,
-                        0, width, height, 1, 1, 0);
+                sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
-            
         };
         Level._currLevel._pix_minus_two.add(r);
     }

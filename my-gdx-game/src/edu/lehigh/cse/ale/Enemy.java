@@ -252,8 +252,10 @@ public class Enemy extends PhysicsSprite
 
             // one last thing: if the enemy was "norotate", then patch up any rotation that happened to its _physics body by
             // mistake:
-            if (!_canRotate)
-                _physBody.setTransform(_physBody.getPosition(), 0);
+            
+            // TODO: I don't think we need this anymore...
+            //if (!_canRotate)
+            //    _physBody.setTransform(_physBody.getPosition(), 0);
         }
 
         /**

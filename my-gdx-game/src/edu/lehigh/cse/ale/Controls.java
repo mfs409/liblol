@@ -8,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import edu.lehigh.cse.ale.Level.HudEntity;
 import edu.lehigh.cse.ale.Level.PendingEvent;
@@ -771,27 +773,6 @@ public class Controls
      */
 
     /**
-     * Add a button that moves the hero downward
-     *
-     * @param x
-     *            X coordinate of top left corner of the button
-     * @param y
-     *            Y coordinate of top left corner of the button
-     * @param width
-     *            Width of the button
-     * @param height
-     *            Height of the button
-     * @param imgName
-     *            Name of the image to use for this button
-     * @param rate
-     *            Rate at which the hero moves
-     */
-    /*    public static void addDownButton(int x, int y, int width, int height, String imgName, final int rate)
-    {
-        Controls.addDownButton(x, y, width, height, imgName, rate, Level._lastHero);
-    }
-
-    /**
      * Add a button that moves an entity downward
      *
      * @param x
@@ -809,55 +790,40 @@ public class Controls
      * @param entity
      *            The entity to move downward
      */
-    /*    public static void addDownButton(int x, int y, int width, int height, String imgName, final int rate,
+    public static void addDownButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.KinematicBody);
+        
+        PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.y = rate;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.y = 0;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.y = -rate;
+                entity.updateVelocity(v);
             }
 
-        };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
-    }
+            @Override
+            void go()
+            {   
+            }
 
-    /**
-     * Add a button that moves the hero upward
-     *
-     * @param x
-     *            X coordinate of top left corner of the button
-     * @param y
-     *            Y coordinate of top left corner of the button
-     * @param width
-     *            Width of the button
-     * @param height
-     *            Height of the button
-     * @param imgName
-     *            Name of the image to use for this button
-     * @param rate
-     *            Rate at which the hero moves
-     */
-    /*    public static void addUpButton(int x, int y, int width, int height, String imgName, final int rate)
-    {
-        addUpButton(x, y, width, height, imgName, rate, Level._lastHero);
+            @Override
+            void onUpPress()
+            {    
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.y = 0;
+                entity.updateVelocity(v);
+            }
+        };
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -878,55 +844,40 @@ public class Controls
      * @param entity
      *            The entity to move
      */
-    /*    public static void addUpButton(int x, int y, int width, int height, String imgName, final int rate,
+    public static void addUpButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.KinematicBody);
+        
+        PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.y = -1 * rate;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.y = 0;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.y = rate;
+                entity.updateVelocity(v);
             }
 
-        };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
-    }
+            @Override
+            void go()
+            {   
+            }
 
-    /**
-     * Add a button that moves the hero left
-     *
-     * @param x
-     *            X coordinate of top left corner of the button
-     * @param y
-     *            Y coordinate of top left corner of the button
-     * @param width
-     *            Width of the button
-     * @param height
-     *            Height of the button
-     * @param imgName
-     *            Name of the image to use for this button
-     * @param rate
-     *            Rate at which the hero moves
-     */
-    /*    public static void addLeftButton(int x, int y, int width, int height, String imgName, final int rate)
-    {
-        addLeftButton(x, y, width, height, imgName, rate, Level._lastHero);
+            @Override
+            void onUpPress()
+            {    
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.y = 0;
+                entity.updateVelocity(v);
+            }
+        };
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -947,54 +898,40 @@ public class Controls
      * @param entity
      *            The entity that should move left when the button is pressed
      */
-    /*    public static void addLeftButton(int x, int y, int width, int height, String imgName, final int rate,
+    public static void addLeftButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.KinematicBody);
+        
+        PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = -1 * rate;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = 0;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = -rate;
+                entity.updateVelocity(v);
+            }
+
+            @Override
+            void go()
+            {   
+            }
+
+            @Override
+            void onUpPress()
+            {    
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = 0;
+                entity.updateVelocity(v);
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
-    }
-
-    /**
-     * Add a button that moves the hero right
-     *
-     * @param x
-     *            X coordinate of top left corner of the button
-     * @param y
-     *            Y coordinate of top left corner of the button
-     * @param width
-     *            Width of the button
-     * @param height
-     *            Height of the button
-     * @param imgName
-     *            Name of the image to use for this button
-     * @param rate
-     *            Rate at which the hero moves
-     */
-    /*    public static void addRightButton(int x, int y, int width, int height, String imgName, final int rate)
-    {
-        addRightButton(x, y, width, height, imgName, rate, Level._lastHero);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1015,33 +952,40 @@ public class Controls
      * @param entity
      *            The entity that should move right when the button is pressed
      */
-    /*    public static void addRightButton(int x, int y, int width, int height, String imgName, final int rate,
+    public static void addRightButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.KinematicBody);
+        
+        PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = rate;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = 0;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = rate;
+                entity.updateVelocity(v);
+            }
+
+            @Override
+            void go()
+            {   
+            }
+
+            @Override
+            void onUpPress()
+            {    
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = 0;
+                entity.updateVelocity(v);
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1067,8 +1011,8 @@ public class Controls
      *            Rate (Y) at which the entity moves when the button is not pressed
      * @param entity
      *            The entity that should move left when the button is pressed
-     */
-    /*    public static void addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
+     *//*
+        public static void addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
             final int rateDownY, final int rateUpX, final int rateUpY, final PhysicsSprite entity)
     {
         entity.makeMoveable();
@@ -1202,20 +1146,31 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*    public static void addJumpButton(int x, int y, int width, int height, String imgName)
+    public static void addJumpButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                Level._lastHero.jump();
-                return true;
+                h.jump();
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._onlyOnce = false;
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1374,11 +1329,21 @@ public class Controls
     {
         Level.PendingEvent pe = new PendingEvent() {
             @Override
-            void go()
+            void onDownPress()
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom < maxZoom)
                     Level._currLevel._gameCam.zoom *= 2;
+            }
+
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
             }
         };
         if (!imgName.equals(""))
@@ -1409,11 +1374,21 @@ public class Controls
     {
         PendingEvent pe = new PendingEvent() {
             @Override
-            void go()
+            void onDownPress()
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom > minZoom)
                     Level._currLevel._gameCam.zoom /= 2;
+            }
+
+            @Override
+            void go()
+            {   
+            }
+
+            @Override
+            void onUpPress()
+            {    
             }
         };
         if (!imgName.equals(""))

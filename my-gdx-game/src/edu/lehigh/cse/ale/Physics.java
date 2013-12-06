@@ -61,6 +61,16 @@ public class Physics
                     {
                         _a.onCollide(_b);
                     }
+
+                    @Override
+                    void onDownPress()
+                    {
+                    }
+
+                    @Override
+                    void onUpPress()
+                    {
+                    }
                 });
             }
 

@@ -56,6 +56,16 @@ public class Score
                         PopUpScene._showPopUp = false;
                         ALE._game.doPlayLevel(ALE._game._currLevel);
                     }
+
+                    @Override
+                    void onDownPress()
+                    {
+                    }
+
+                    @Override
+                    void onUpPress()
+                    {
+                    }
                 });
     }
 
@@ -110,6 +120,16 @@ public class Score
                             ALE._game.doPlayLevel(ALE._game._currLevel);
                         }
                     }
+                    @Override
+                    void onDownPress()
+                    {
+                    }
+
+                    @Override
+                    void onUpPress()
+                    {
+                    }
+
                 });
     }
 

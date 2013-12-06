@@ -1,6 +1,6 @@
 package com.me.mygdxgame;
 
-//STATUS: level 32 is in progress...
+//STATUS: on level 36, need to handle canfacebackwards...  doing it right will require refactoring the render loop...
 
 // TODO: does music and transition work correctly when there is only one level?
 
@@ -17,6 +17,8 @@ package com.me.mygdxgame;
 // TODO: level 28 accelerometer trick no longer applies. Altering the order of
 // popup and accel in Level.render() would restore the behavior, but the
 // behavior is actually not desirable.
+
+// TODO: test if x and y parallax works as expected (swimming level?)
 
 // NB: the 'getx' and 'gety' methods of physicssprite return center coords of
 // body, not coords of the bottom left of the sprite
@@ -41,6 +43,7 @@ public class MyGdxGame extends ALE
         Media.registerImage("msg1.png");
         Media.registerImage("msg2.png");
         Media.registerImage("splash.png");
+        Media.registerImage("invis.png"); // TODO: make it so that we can just use "" as invis...
         
         Media.registerImage("mid.png");
         Media.registerImage("front.png");
@@ -54,7 +57,8 @@ public class MyGdxGame extends ALE
         Media.registerSound("losesound.ogg");
         Media.registerSound("slowdown.ogg");
         Media.registerSound("woowoowoo.ogg");
-
+        Media.registerSound("fwapfwap.ogg");
+        
         Media.registerMusic("tune.ogg", true);
     }
 
@@ -93,6 +97,7 @@ public class MyGdxGame extends ALE
 
             // new: add a bounding box so the hero can't fall off the screen
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // new: change the text that we display when the level is won
             Level.setWinText("Good job!");
@@ -1256,26 +1261,12 @@ public class MyGdxGame extends ALE
 
             // now paint the background blue
             Level.setColor(0, 0, 255);
-            // put in a picture that scrolls at half the speed of the hero
-            
-            Level.addHorizontalLayer(0, 1, "back.png", 0);
-            
+            // put in a picture that scrolls at half the speed of the hero in the x direction (ignore y scrolling for now)
             Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
-            
-            // TMP
-            Level.addHorizontalLayer(1.2f, 1, "front.png", 15);
-            
-            /*
-            // draw a picture as a background layer, and give it a "-20" scroll
-            // rate
-            Background.addLayer("mid.png", -20, 0, 116);
-            // now indicate that the hero scroll rate is "20"
-            Background.setScrollFactor(20);
-             */
-            
+
             // make an obstacle that hovers...
             Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
-            // o.setHover(100, 100);
+            o.setHover(100, 100);
         }
 
         /**
@@ -1291,29 +1282,34 @@ public class MyGdxGame extends ALE
          * @whatsnew: jump sounds
          */
         else if (whichLevel == 33) {
-            /*
-             * // set up a standard side scroller with tilt: Level.configure(3 *
-             * 460, 320, 0, 10); Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press the hero to\nmake it jump", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make a hero Hero h = Hero.makeAsCircle(20, 20, 30, 30,
-             * "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * // this says that touching makes the hero jump
-             * h.setTouchToJump(); // this is the force of a jump. remember that
-             * up is negative, not positive. h.setJumpImpulses(0, -10); // the
-             * sound to play when we jump h.setJumpSound("fwapfwap.ogg");
-             * 
-             * // set up our background again, but add a few more layers
-             * Background.setColor(0, 0, 255); // this layer has a scroll factor
-             * of 0... it won't move Background.addLayer("back.png", 0, 0, 0);
-             * Background.addLayer("mid.png", -20, 0, 116); // this layer has a
-             * scroll factor of -40... it moves fast
-             * Background.addLayer("front.png", -40, 0, 0);
-             * Background.setScrollFactor(20);
-             */
+            
+              // set up a standard side scroller with tilt: 
+            Level.configure(3 *
+              48, 32);Physics.configure(0, -10); Tilt.enable(10, 0);
+              PopUpScene.showTextTimed("Press the hero to\nmake it jump", 1);
+              Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+              Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+              Level.setVictoryDestination(1);
+              
+              // make a hero 
+              Hero h = Hero.makeAsCircle(2, 2, 3, 3,
+              "greenball.png"); h.setPhysics(.1f, 0, 0.6f); h.setMoveByTilting();
+              // this says that touching makes the hero jump
+              h.setTouchToJump(); 
+              // this is the force of a jump. remember that up is positive. 
+              h.setJumpImpulses(0, -10); 
+              // the sound to play when we jump 
+              h.setJumpSound("fwapfwap.ogg");
+              
+              // set up our background again, but add a few more layers
+              Level.setColor(0, 0, 255); 
+              // this layer has a scroll factor of 0... it won't move 
+              Level.addHorizontalLayer(0, 1, "back.png", 0);
+              // this layer moves at half the speed of the hero
+              Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
+              // this layer is faster than the hero
+              Level.addHorizontalLayer(1.25f, 1, "front.png", 20);
+              Level.setCameraChase(h);
         }
 
         /**
@@ -1334,38 +1330,42 @@ public class MyGdxGame extends ALE
          * @whatsnew: jump button on the HUD
          */
         else if (whichLevel == 34) {
-            /*
-             * // set up a side scroller, but don't turn on tilt
-             * Level.configure(3 * 460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Press anywhere to jump", 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // note: the bounding box does not have friction, and neither
-             * does the hero Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png",
-             * 1, 0, 0);
-             * 
-             * // make a hero, but don't let it rotate: Hero h =
-             * Hero.makeAsBox(20, 250, 30, 70, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0); // give the hero a
-             * fixed velocity h.addVelocity(10, 0); // center the camera a
-             * little ahead of the hero, so he is not centered
-             * h.setCameraOffset(150, 0); // enable jumping h.setJumpImpulses(0,
-             * -10);
-             * 
-             * // set up the background Background.setColor(0, 0, 255);
-             * Background.addLayer("mid.png", -20, 0, 116);
-             * Background.setScrollFactor(20);
-             * 
-             * // draw a jump button that covers the whole screen
-             * Controls.addJumpButton(0, 0, 460, 320, "invis.png");
-             * 
-             * // if the hero jumps over the destination, we have a problem. To
-             * fix it, let's put an // invisible enemy right after the
-             * destination, so that if the hero misses the // destination, it
-             * hits the enemy and we can start over Enemy.makeAsBox(1300, 0, 5,
-             * 320, "invis.png");
-             */
+            // set up a side scroller, but don't turn on tilt
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            PopUpScene.showTextTimed("Press anywhere to jump", 1);
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // note: the bounding box does not have friction, and neither does
+            // the hero
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 0, 0, 0);
+
+            // make a hero, but don't let it rotate:
+            Hero h = Hero.makeAsCircle(2, 0, 3, 7, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0);
+            // give the hero a fixed velocity
+            h.addVelocity(25, 0);
+            // center the camera a little ahead of the hero, so he is not
+            // centered
+            h.setCameraOffset(15, 0);
+            // enable jumping
+            h.setJumpImpulses(0, 10);
+            Level.setCameraChase(h);
+            // set up the background
+            Level.setColor(0, 0, 255);
+            Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
+
+            // draw a jump button that covers the whole screen
+            Controls.addJumpButton(0, 0, 480, 320, "", h);
+
+            // if the hero jumps over the destination, we have a problem. To fix
+            // it, let's put an
+            // invisible enemy right after the destination, so that if the hero
+            // misses the
+            // destination, it hits the enemy and we can start over
+            Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
         }
 
         /**
@@ -1378,25 +1378,28 @@ public class MyGdxGame extends ALE
          *               swimming or controlling a helicopter.
          */
         else if (whichLevel == 35) {
-            /*
-             * // set up a standard side scroller without tilt Level.configure(3
-             * * 460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Multi-jump is enabled", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 0);
-             * Hero h = Hero.makeAsBox(20, 250, 30, 70, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0); // the hero now has
-             * multijump, with small jumps: h.setMultiJumpOn();
-             * h.setCameraOffset(150, 0); h.setJumpImpulses(0, -2);
-             * h.addVelocity(5, 0);
-             * 
-             * // this is all the same as before, to include the invisible enemy
-             * Background.setColor(0, 0, 255); Background.addLayer("mid.png",
-             * -20, 0, 116); Background.setScrollFactor(20);
-             * Controls.addJumpButton(0, 0, 460, 320, "invis.png");
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Enemy.makeAsBox(1300, 0, 5, 320, "invis.png");
-             * Level.setVictoryDestination(1);
-             */
+            
+              // set up a standard side scroller without tilt 
+            Level.configure(3
+              * 48, 32);Physics.configure(0, -10);
+              PopUpScene.showTextTimed("Multi-jump is enabled", 1);
+              Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+              Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
+              h.disableRotation(); h.setPhysics(1, 0, 0); 
+              // the hero now has multijump, with small jumps: 
+              h.setMultiJumpOn();
+              Level.setCameraChase(h);
+              h.setCameraOffset(15, 0); 
+              h.setJumpImpulses(0, 2);
+              h.addVelocity(5, 0);
+              
+              // this is all the same as before, to include the invisible enemy
+              Level.setColor(0, 0, 255); 
+              Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
+              Controls.addJumpButton(0, 0, 480, 320, "", h);
+              Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+              Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
+              Level.setVictoryDestination(1);
         }
 
         /**
@@ -1409,29 +1412,33 @@ public class MyGdxGame extends ALE
          * @whatsnew: the hero can face backwards when it moves backwards
          */
         else if (whichLevel == 36) {
-            /*
-             * // set up a basic side scroller without tilt Level.configure(3 *
-             * 460, 320, 0, 0);
-             * PopUpScene.showTextTimed("Press screen borders\nto move the hero"
-             * , 1); Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0,
-             * 1); Hero h = Hero.makeAsCircle(20, 290, 30, 30, "stars.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setCanFaceBackwards(); // this lets the hero flip its image
-             * when it moves backwards Destination.makeAsCircle(1200, 310, 10,
-             * 10, "mustardball.png"); Level.setVictoryDestination(1);
-             * Background.setColor(0, 0, 255); Background.addLayer("mid.png",
-             * -20, 0, 116); Background.setScrollFactor(20);
-             * 
-             * // let's draw an enemy, just in case anyone wants to try to go to
-             * the top left corner Enemy e = Enemy.makeAsCircle(30, 30, 30, 30,
-             * "redball.png"); e.setPhysics(1, 1, 1);
-             * 
-             * // draw some buttons for moving the hero
-             * Controls.addLeftButton(0, 50, 50, 220, "invis.png", 5);
-             * Controls.addRightButton(410, 50, 50, 220, "invis.png", 5);
-             * Controls.addUpButton(50, 0, 360, 50, "invis.png", 5);
-             * Controls.addDownButton(50, 270, 360, 50, "invis.png", 5);
-             */
+              // set up a basic side scroller without tilt 
+            Level.configure(3 *
+              48, 32);Physics.configure(0, 0);
+              PopUpScene.showTextTimed("Press screen borders\nto move the hero"
+              , 1); Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0,
+              1); Hero h = Hero.makeAsCircle(2, 0, 3, 3, "stars.png");
+              h.disableRotation(); h.setPhysics(.1f, 0, 0.6f);
+              
+              // TODO:
+              h.setCanFaceBackwards(); // this lets the hero flip its image when it moves backwards 
+
+              
+              Level.setCameraChase(h);
+              Destination.makeAsCircle(120, 31, 1,
+              1, "mustardball.png"); Level.setVictoryDestination(1);
+
+              Level.setColor(0, 0, 255); 
+              Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
+              
+              // let's draw an enemy, just in case anyone wants to try to go to the top left corner 
+              Enemy.makeAsCircle(3, 27, 3, 3, "redball.png"); 
+              
+              // draw some buttons for moving the hero
+              Controls.addLeftButton(0, 50, 50, 220, "invis.png", 15, h);
+              Controls.addRightButton(430, 50, 50, 220, "invis.png", 15, h);
+              Controls.addUpButton(50, 270, 380, 50, "invis.png", 15, h);
+              Controls.addDownButton(50, 0, 380, 50, "invis.png", 15, h);
         }
 
         /**

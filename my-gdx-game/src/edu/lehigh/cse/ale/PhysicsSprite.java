@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -21,7 +22,6 @@ import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public abstract class PhysicsSprite
 {
-
     /*
      * INTERNAL CLASSES
      */
@@ -120,11 +120,6 @@ public abstract class PhysicsSprite
      * Track whether the underlying body is a circle or box
      */
     protected boolean _isCircle;
-
-    /**
-     * Remember if this _physics body can rotate
-     */
-    protected boolean _canRotate = true;
 
     /**
      * Each descendant defines this to address any custom logic that we need to
@@ -280,26 +275,7 @@ public abstract class PhysicsSprite
      */
     public void disableRotation()
     {
-        // TODO: is this all we need?
         _physBody.setFixedRotation(true);
-        // set a flag, copy key parameters
-        _canRotate = false;
-        boolean wasSensor = _physBody.getFixtureList().get(0).isSensor();
-        float _density = _physBody.getFixtureList().get(0).getDensity();
-        float _elasticity = _physBody.getFixtureList().get(0).getRestitution();
-        float _friction = _physBody.getFixtureList().get(0).getFriction();
-        boolean _isBullet = _physBody.isBullet();
-        BodyType _t = _physBody.getType();
-        // remove old body, create new body of appropriate type
-        deletePhysicsBody();
-        // TODO:
-        // if (_isCircle)
-        // setCirclePhysics(_density, _elasticity, _friction, _t, _isBullet);
-        // else
-        // setBoxPhysics(_density, _elasticity, _friction, _t, _isBullet);
-        // patch up if it was a sensor
-        if (wasSensor)
-            setCollisionEffect(false);
     }
 
     /**
@@ -557,11 +533,12 @@ public abstract class PhysicsSprite
      *            Velocity in X dimension
      * @param y
      *            Velocity in Y dimension
-     *//*
+     */
     public void addVelocity(float x, float y)
     {
         // ensure this is a moveable entity
-        makeMoveable();
+        if (_physBody.getType() == BodyType.StaticBody)
+            _physBody.setType(BodyType.KinematicBody);
 
         // Add to the velocity of the entity
         Vector2 v = _physBody.getLinearVelocity();
@@ -1547,30 +1524,13 @@ public abstract class PhysicsSprite
     /**
      * A vector for computing _hover placement
      */
-    private Vector2 _hoverVector = new Vector2();
+    private Vector3 _hoverVector = new Vector3();
 
     /**
      * For hovering in the Y dimension but not the X dimension
      */
     private Vector2 _gravityDefy;
     
-    /**
-     * Hook for custom logic whenever a PhysicSprite's underlying AnimatedSprite calls onManagedUpdate... this will
-     * often be overloaded, so be sure to call back to it from any onSpriteManagedUpdate
-     *//*
-    protected void onSpriteManagedUpdate()
-    {
-        if (_hover) {
-            float x = _hoverX + ALE._self._camera.getCenterX() - Configuration.getCameraWidth() / 2;
-            float y = _hoverY + ALE._self._camera.getCenterY() - Configuration.getCameraHeight() / 2;
-
-            _hoverVector.x = x;
-            _hoverVector.y = y;
-            _hoverVector.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
-            _physBody.setTransform(_hoverVector, _physBody.getAngle());
-        }
-    }
-
     /**
      * Indicate that this entity should _hover at a specific location on the screen, rather than being placed at some
      * point on the level itself. Note that the coordinates to this command are the center position of the hovering
@@ -1580,15 +1540,38 @@ public abstract class PhysicsSprite
      *            the X coordinate where the entity should appear
      * @param y
      *            the Y coordinate where the entity should appear
-     *//*
+     */
     public void setHover(int x, int y)
     {
         // make the entity kinematic, so gravity doesn't affect it but it still participates in collisions
-        makeKinematic();
+        // makeKinematic();
         // save the parameters
         _hoverX = x;
         _hoverY = y;
         _hover = true;
+        
+        Level._currLevel._repeatEvents.add(new PendingEvent(){
+            @Override
+            void go()
+            {
+                if (!_hover)
+                    return;
+                _hoverVector.x = _hoverX;
+                _hoverVector.y = _hoverY;
+                _hoverVector.z = 0;
+                Level._currLevel._gameCam.unproject(_hoverVector);
+                _physBody.setTransform(_hoverVector.x,  _hoverVector.y, _physBody.getAngle());
+            }
+            @Override
+            void onDownPress()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+});
     }
 
     /**
@@ -1601,9 +1584,12 @@ public abstract class PhysicsSprite
      */
     public void setGravityDefy(float x, float y) 
     {
+        // TODO
+        /*
         _physBody.setBullet(true);
         _gravityDefy = new Vector2(x, y);
         Level._noGravity.add(this);
+        */
     }
     
     /**
@@ -1751,7 +1737,17 @@ public abstract class PhysicsSprite
 
                 // set Enemy velocity accordingly
                 updateVelocity(_chaseVector);
-            }});
+            }
+            @Override
+            void onDownPress()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+});
     }
 
     /**
@@ -1782,6 +1778,41 @@ public abstract class PhysicsSprite
                     double angle = Math.atan2(_rotationVector.y, _rotationVector.x) - Math.atan2(-1, 0);
                     _physBody.setTransform(_physBody.getPosition(), (float) angle);
                 }
-            }});
+            }
+            @Override
+            void onDownPress()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+});
     }   
+
+    /*
+     * ADVANCED CAMERA SUPPORT
+     */
+
+    /**
+     * When the camera follows the hero without centering the hero, this gives us the difference between the hero and
+     * camera
+     */
+    Vector2 _cameraOffset = new Vector2(0, 0);
+
+    /**
+     * Make the camera follow the hero, but without centering the hero on the screen
+     * 
+     * @param x
+     *            Amount of x distance between hero and center
+     * @param y
+     *            Amount of y distance between hero and center
+     */
+    public void setCameraOffset(float x, float y)
+    {
+        _cameraOffset.x = x;
+        _cameraOffset.y = y;
+    }
+
 }

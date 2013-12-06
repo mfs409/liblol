@@ -121,6 +121,15 @@ public class PopUpScene
                         _popupText = null;
                         _popUpImgTr = null;
                     }
+                    @Override
+                    void onDownPress()
+                    {
+                    }
+
+                    @Override
+                    void onUpPress()
+                    {
+                    }
                 });
     }
 
@@ -145,6 +154,15 @@ public class PopUpScene
                         _showPopUp = false;
                         _popupText = null;
                         _popUpImgTr = null;
+                    }
+                    @Override
+                    void onDownPress()
+                    {
+                    }
+
+                    @Override
+                    void onUpPress()
+                    {
                     }
                 });
     }
