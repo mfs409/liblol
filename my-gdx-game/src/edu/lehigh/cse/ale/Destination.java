@@ -91,7 +91,7 @@ public class Destination extends PhysicsSprite
     public static Destination makeAsCircle(float x, float y, float width, float height, String imgName)
     {
         float radius = (width > height) ? width : height;
-        Destination d = new Destination(radius * 2, radius * 2, Media.getImage(imgName));
+        Destination d = new Destination(radius, radius, Media.getImage(imgName));
         d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         d._physBody.getFixtureList().get(0).setSensor(true);
         Level._currLevel._sprites.add(d);

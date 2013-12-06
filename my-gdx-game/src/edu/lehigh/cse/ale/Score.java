@@ -54,7 +54,7 @@ public class Score
                     public void go()
                     {
                         PopUpScene._showPopUp = false;
-                        ALE._game.doPlayLevel(ALE._currLevel);
+                        ALE._game.doPlayLevel(ALE._game._currLevel);
                     }
                 });
     }
@@ -76,9 +76,9 @@ public class Score
         if (Level._winSound != null)
             Level._winSound.play();
 
-        if (ALE._unlockLevel == ALE._currLevel) {
-            ALE._unlockLevel++;
-            ALE.saveUnlocked();
+        if (ALE._game._unlockLevel == ALE._game._currLevel) {
+            ALE._game._unlockLevel++;
+            ALE._game.saveUnlocked();
         }
 
         // drop everything from the hud
@@ -103,11 +103,11 @@ public class Score
                     public void go()
                     {
                         PopUpScene._showPopUp = false;
-                        if (ALE._currLevel == ALE._game._config.getNumLevels())
+                        if (ALE._game._currLevel == ALE._game._config.getNumLevels())
                             ALE._game.doChooser();
                         else {
-                            ALE._currLevel++;
-                            ALE._game.doPlayLevel(ALE._currLevel);
+                            ALE._game._currLevel++;
+                            ALE._game.doPlayLevel(ALE._game._currLevel);
                         }
                     }
                 });

@@ -4,6 +4,11 @@ package edu.lehigh.cse.ale;
 
 import java.util.Random;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import edu.lehigh.cse.ale.Level.Renderable;
+
 public class Util
 {
     /**
@@ -79,17 +84,22 @@ public class Util
      *            Height of this picture
      * @param imgName
      *            Name of the picture to display
-     *//*
-    public static void drawPicture(int x, int y, int width, int height, String imgName)
+     */
+    public static void drawPicture(final int x, final int y, final int width, final int height, final String imgName)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager());
-        Level._current.attachChild(s);
+        Renderable r = new Renderable()
+        {
+            final TextureRegion tr = Media.getImage(imgName);
 
-        // TODO: can we use one of these to control where a new decoration goes?
-        // _current.getFirstChild();
-        // _current.getLastChild();
-
+            @Override
+            void render(SpriteBatch sb)
+            {
+                sb.draw(tr, x, y, 0,
+                        0, width, height, 1, 1, 0);
+            }
+            
+        };
+        Level._currLevel._pix.add(r);
     }
 
     /**
@@ -109,18 +119,22 @@ public class Util
      *            Height of this picture
      * @param imgName
      *            Name of the picture to display
-     *//*
-    public static void drawPictureBehindScene(int x, int y, int width, int height, String imgName)
+     */
+    public static void drawPictureBehindScene(final float x, final float y, final float width, final float height, final String imgName)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager());
-        // attach to back, instead of front... note that this requires us to
-        // sort children in order to change the order in which they are
-        // rendered, and that it assumes we're setting the ZIndex of all
-        // PhysicsSprites to 1.
-        s.setZIndex(0);
-        Level._current.attachChild(s);
-        Level._current.sortChildren();
+        Renderable r = new Renderable()
+        {
+            final TextureRegion tr = Media.getImage(imgName);
+
+            @Override
+            void render(SpriteBatch sb)
+            {
+                sb.draw(tr, x, y, 0,
+                        0, width, height, 1, 1, 0);
+            }
+            
+        };
+        Level._currLevel._pix_minus_two.add(r);
     }
 
     /**

@@ -1,10 +1,10 @@
 package edu.lehigh.cse.ale;
 
-// TODO: this is going to be the hardest part...
-
 // TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
 
 // TODO: do we want to fixed-step the physics world?
+
+// TODO: does zoom work with parallax?
 
 // STATUS: in progress
 
@@ -21,19 +21,45 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
-import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 
 public class Level implements MyScreen
 {
+    /**
+     * Custom camera that can do parallax... taken directly from GDX tests
+     */
+    class ParallaxCamera extends OrthographicCamera {
+        Matrix4 parallaxView = new Matrix4();
+        Matrix4 parallaxCombined = new Matrix4();
+        Vector3 tmp = new Vector3();
+        Vector3 tmp2 = new Vector3();
+
+        public ParallaxCamera(float viewportWidth, float viewportHeight)
+        {
+            super(viewportWidth, viewportHeight);
+        }
+
+        public Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY)
+        {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
+        }
+    }
+
     /**
      * A simple wrapper for when we want stuff to happen. We're going to abuse
      * this type as a generic way to do everything we need to do regarding
@@ -70,19 +96,35 @@ public class Level implements MyScreen
         void update(){}
     }
     
+    abstract static class Renderable
+    {
+        abstract void render(SpriteBatch sb);
+    }
+
+    abstract static class MyEvent
+    {
+        abstract void onTimePassed(float elapsed);
+    }
+    
     // for now, just one list of everything we need to render...
     public ArrayList<PhysicsSprite> _sprites;
 
     // TODO: come up with a better plan for these various collections...
     public ArrayList<HudEntity> _spriteUpdates;
     
-    public ArrayList<PendingEvent>  _events;
+    public ArrayList<PendingEvent>  _oneTimeEvents;
 
     public ArrayList<PendingEvent>  _controls;
 
     public ArrayList<PhysicsSprite> _routes;
     
     public ArrayList<HudEntity> _hudEntries;
+    
+    public ArrayList<Renderable> _pix;
+
+    public ArrayList<Renderable> _pix_minus_two;
+    
+    public ArrayList<PendingEvent> _repeatEvents;
     
     void addTouchEvent(float x, float y, float width, float height, boolean onlyOnce, PendingEvent action)
     {
@@ -100,11 +142,11 @@ public class Level implements MyScreen
      * BASIC LEVEL CONFIGURATION
      */
 
-    // the camera
+    // the cameras
     OrthographicCamera _gameCam;
-
     OrthographicCamera _hudCam;
-
+    ParallaxCamera _bgCam;
+    
     // box2d debug renderer
     private Box2DDebugRenderer _debugRender;
 
@@ -143,11 +185,10 @@ public class Level implements MyScreen
         // looks at (0,16) (that's where the middle of the
         // screen will be located).
         
-        _gameCam = new OrthographicCamera(_game._config.getScreenWidth()/10, _game._config.getScreenHeight()/10);
+        _gameCam = new OrthographicCamera(_game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO, _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO);
         _gameCam.position.set(width / 2, height / 2, 0);
         // default camera position is with (0,0) in the bottom left...
-        // TODO: externalize the '10' to a PIXELS_PER_METER constant
-        _gameCam.position.set(_game._config.getScreenWidth()/10/2, _game._config.getScreenHeight()/10/2, 0);
+        _gameCam.position.set(_game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2, _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2, 0);
         _gameCam.zoom = 1;
 
         // the hudcam is easy... it's the size of the screen, and is independent of the world
@@ -156,6 +197,10 @@ public class Level implements MyScreen
         _hudCam = new OrthographicCamera(camWidth, camHeight);
         _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
+        // the bgcam is like the hudcam
+        _bgCam = new ParallaxCamera(camWidth, camHeight);
+        _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
+        
         // next we create the box2d debug renderer
         _debugRender = new Box2DDebugRenderer();
 
@@ -166,12 +211,14 @@ public class Level implements MyScreen
         
         // A place for everything we draw...
         _sprites = new ArrayList<PhysicsSprite>();
-        _events = new ArrayList<PendingEvent>();
+        _oneTimeEvents = new ArrayList<PendingEvent>();
         _spriteUpdates = new ArrayList<HudEntity>();
         _controls = new ArrayList<PendingEvent>();
         _routes = new ArrayList<PhysicsSprite>();
         _hudEntries = new ArrayList<HudEntity>();
-        
+        _repeatEvents = new ArrayList<PendingEvent>();
+        _pix = new ArrayList<Renderable>();
+        _pix_minus_two = new ArrayList<Renderable>();
         // reset tilt control...
         Tilt.reset();
 
@@ -180,6 +227,21 @@ public class Level implements MyScreen
         
         // TODO: remove this:
         Controls.addFPS(400, 15, 200, 200, 100, 12);
+        
+        _bgRed = 0;
+        _bgGreen = 0;
+        _bgBlue = 0;
+    }
+  
+    float _bgRed;
+    float _bgGreen;
+    float _bgBlue;
+    
+    static public void setColor(int red, int green, int blue)
+    {
+        _currLevel._bgRed = ((float)red)/255;
+        _currLevel._bgGreen = ((float)green)/255;
+        _currLevel._bgBlue = ((float)blue)/255;
     }
 
     /*
@@ -218,12 +280,14 @@ public class Level implements MyScreen
     public void render(float delta)
     {
         playMusic();
-        
+
+
         // Custom code path for when there is a popup... popups incude the text
         // we show when starting the level, and the text we show when ending the
         // level
         if (PopUpScene._showPopUp) {
             // next we clear the color buffer and set the camera matrices
+            Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             _hudCam.update();
             _spriteRender.setProjectionMatrix(_hudCam.combined);
@@ -234,7 +298,7 @@ public class Level implements MyScreen
             return;
         }
 
-        // handle accelerometer stuff
+        // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
         Tilt.handleTilt();
 
         // handle routes
@@ -253,9 +317,13 @@ public class Level implements MyScreen
         // float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
 
         // now handle any events that occurred on account of the world movement
-        for (PendingEvent pe : _events)
+        for (PendingEvent pe : _oneTimeEvents)
             pe.go();
-        _events.clear();
+        _oneTimeEvents.clear();
+
+        // now do repeat events
+        for (PendingEvent pe : _repeatEvents)
+            pe.go();
 
         // now do any sprite updates
         for (HudEntity he : _spriteUpdates)
@@ -263,13 +331,25 @@ public class Level implements MyScreen
                 he.update();
         
         // next we clear the color buffer and set the camera matrices
+        Gdx.gl.glClearColor(_bgRed, _bgGreen, _bgBlue, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        // prepare the main camera... we do it here, so that the parallax code knows where to draw...
         adjustCamera();
         _gameCam.update();
 
+        // do the parallax background
+        doParallaxLayers();
+        
         // next we render each box via the SpriteBatch
         _spriteRender.setProjectionMatrix(_gameCam.combined);
         _spriteRender.begin();
+        
+        for (Renderable r : _pix_minus_two)
+            r.render(_spriteRender);
+        // TODO: this should be merged with the _sprites...
+        for (Renderable r : _pix)
+            r.render(_spriteRender);
         for (PhysicsSprite ps : _sprites) {
             if (ps._visible) {
                 Vector2 pos = ps._physBody.getPosition();
@@ -310,6 +390,65 @@ public class Level implements MyScreen
         
     }
 
+    static class ParallaxLayer
+    {
+        float _xSpeed;
+        float _ySpeed;
+        TextureRegion _tr;
+        float _xOffset;
+        float _yOffset;
+        boolean _xRepeat;
+        boolean _yRepeat;
+        
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset)
+        {
+            _xSpeed = xSpeed;
+            _ySpeed = ySpeed;
+            _tr = tr;
+            _xOffset = xOffset;
+            _yOffset = yOffset;
+        }        
+    }
+    
+    ArrayList<ParallaxLayer> _layers = new ArrayList<ParallaxLayer>();
+    
+    static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset)
+    {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName), 0, yOffset*Physics.PIXEL_METER_RATIO);
+        pl._xRepeat = xSpeed != 0;
+        _currLevel._layers.add(pl);
+    }
+    
+    void doParallaxLayers()
+    {
+        // center camera on _gameCam's camera
+        float x = _gameCam.position.x;
+        float y = _gameCam.position.y;
+        _bgCam.position.set(x, y, 0);
+        _bgCam.update();
+        
+        for (ParallaxLayer pl : _layers) {
+            _spriteRender.setProjectionMatrix(_bgCam.calculateParallaxMatrix(pl._xSpeed*Physics.PIXEL_METER_RATIO, pl._ySpeed*Physics.PIXEL_METER_RATIO));
+            _spriteRender.begin();
+            if (pl._xRepeat) {
+                int i = -(int)pl._tr.getRegionWidth()/2;
+                while (i/Physics.PIXEL_METER_RATIO < x + _camBoundX) {
+                    // TODO: verify that GDX culls... otherwise, we should manually cull...
+                    _spriteRender.draw(pl._tr,  i,  0+pl._yOffset);
+                    // Gdx.app.log("parallax", x+" "+_width + " " + pl._tr.getRegionWidth() + " " + i);
+                    i+=pl._tr.getRegionWidth();
+                }
+            }
+            else if (pl._yRepeat) {
+            }
+            else {
+                // TODO: untested!
+                _spriteRender.draw(pl._tr, -pl._tr.getRegionWidth()/2,  0);
+            }
+            _spriteRender.end();            
+        }        
+    }
+    
     void adjustCamera()
     {
         if (_chase == null)
@@ -317,18 +456,16 @@ public class Level implements MyScreen
         float x = _chase._physBody.getWorldCenter().x;
         float y = _chase._physBody.getWorldCenter().y;
         // if x or y is too close to 0,0, stick with minimum acceptable values
-        // TODO: remove constants
-        if (x < _game._config.getScreenWidth()/10/2)
-            x = _game._config.getScreenWidth()/10/2;
-        if (y < _game._config.getScreenHeight()/10/2)
-            y = _game._config.getScreenHeight()/10/2;
+        if (x < _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2)
+            x = _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2;
+        if (y < _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2)
+            y = _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2;
         
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        // TODO: remove constants
-        if (x > _camBoundX - _game._config.getScreenWidth()/10/2)
-            x = _camBoundX - _game._config.getScreenWidth()/10/2;
-        if (y > _camBoundY - _game._config.getScreenHeight()/10/2)
-            y = _camBoundY - _game._config.getScreenHeight()/10/2;
+        if (x > _camBoundX - _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2)
+            x = _camBoundX - _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2;
+        if (y > _camBoundY - _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2)
+            y = _camBoundY - _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2;
 
         // update the camera
         _gameCam.position.set(x, y, 0); 
@@ -368,19 +505,21 @@ public class Level implements MyScreen
 
     private Vector3 _touchVec = new Vector3();
 
-    PhysicsSprite hitSprite = null;
+    PhysicsSprite _hitSprite = null;
     // instantiate the callback here, so we don't irritate the GC
     QueryCallback callback = new QueryCallback() {
 
         @Override
         public boolean reportFixture(Fixture fixture) {
-            // if the hit point is inside the fixture of the body // we report
-            // it
+            // if the hit point is inside the fixture of the body we report it
             if (fixture.testPoint(_touchVec.x, _touchVec.y)) {
-                hitSprite = (PhysicsSprite)fixture.getBody().getUserData();
-                return false;
-            } else
-                return true;
+                PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
+                if (hs._visible) {
+                    _hitSprite = hs;
+                    return false;
+                }
+            }
+            return true;
         }
     };
 
@@ -405,41 +544,72 @@ public class Level implements MyScreen
         _touchVec.set(x, y, 0);
         _gameCam.unproject(_touchVec);
 
-        // ask the world which bodies are within the given // bounding box
-        // around the mouse pointer
-        hitSprite = null;
+        // ask the world which bodies are within the given bounding box around
+        // the mouse pointer
+        _hitSprite = null;
         _world.QueryAABB(callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f,
                 _touchVec.x + 0.1f, _touchVec.y + 0.1f);
 
         
-        // if we hit something we create a new mouse joint
-        // and attach it to the hit body.
-        if (hitSprite != null) {
+        // if we hit something we forward an event to it
+        if (_hitSprite != null) {
             Gdx.app.log("hit", "x ="+_touchVec.x+", y ="+_touchVec.y);
-            hitSprite.handleTouchDown(_touchVec.x, _touchVec.y);
+            _hitSprite.handleTouchDown(_touchVec.x, _touchVec.y);
+            return false;
         }
         else {
             Gdx.app.log("nohit", "x ="+_touchVec.x+", y ="+_touchVec.y);
         }
+        // no sprite touch... if we have a poke entity, use it
+        if (PhysicsSprite._currentPokeSprite != null)
+            PhysicsSprite._currentPokeSprite.finishPoke(_touchVec.x, _touchVec.y);
+        // deal with scribbles
+        if (Level._scribbleMode) {
+            if (Level._scribbleMode) {
+                _touchVec.set(x, y, 0);
+                _gameCam.unproject(_touchVec);
+                Obstacle.doScribbleDown(_touchVec.x, _touchVec.y);
+                return false;
+            }
+
+        }
         return false;
     }
 
+    // TODO: we should have a collection of handlers instead of this nastiness...
     @Override
     public boolean touchDragged(int x, int y, int pointer)
     {
-        if (hitSprite == null) 
+        if (Level._scribbleMode) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
             return false;
-
-        _touchVec.set(x, y, 0);
-        _gameCam.unproject(_touchVec);
-        hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
+        }
         
+        
+        if (_hitSprite != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
+            return false;
+        }
         return false;
     }
 
     @Override
     public boolean touchUp(int x, int y, int pointer, int button)
     {
+        if (Level._scribbleMode) {
+            Obstacle.doScribbleUp();
+            return false;
+        }
+        if (PhysicsSprite._flickEntity != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            PhysicsSprite.flickDone(_touchVec.x, _touchVec.y);
+            return false;
+        }
         return false;
     }
 

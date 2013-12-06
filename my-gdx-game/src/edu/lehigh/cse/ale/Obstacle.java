@@ -2,10 +2,12 @@ package edu.lehigh.cse.ale;
 
 // STATUS: in progress
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 /**
  * Obstacles are entities that change the hero's velocity upon a collision
@@ -582,61 +584,12 @@ public class Obstacle extends PhysicsSprite
         // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
     }
 
-    /*
-     * POKE SUPPORT
-     * 
-     * TODO: move this into PhysicsSprite, then refactor the onTouch handlers
-     */
 
-    /**
-     * When a _sprite is poked, we record it here so that we know who to move on
-     * the next screen touch
-     */
-    protected static Obstacle    _currentPokeSprite;
-
-    /**
-     * Rather than use a Vector2 pool, we'll keep a vector around for all poke
-     * operations
-     */
-    private final static Vector2 _pokeVector       = new Vector2();
-
-    /**
-     * Track if the object is pokeable
-     */
-    private boolean              _isPoke           = false;
-
-    /**
-     * When a _sprite is poked, remember the time, because rapid double-clicks
-     * cause deletion
-     */
-    private static float         _lastPokeTime;
-
-    /**
-     * Tunable constant for how much time between pokes constitutes a
-     * "double click"
-     */
-    private final static float   _pokeDeleteThresh = 0.5f;
-
-    /**
-     * Call this on an Obstacle to make it pokeable
-     * 
-     * Poke the Obstacle, then poke the screen, and the Obstacle will move to
-     * the location that was pressed. Poke the
-     * Obstacle twice in rapid succession to delete the Obstacle.
-     */
-    public void setPokeable()
-    {
-        _isPoke = true;
-
-        // TODO
-        // Level._current.registerTouchArea(_sprite);
-        // Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-        // Level._current.setOnSceneTouchListener(ALE._self);
-    }
 
     /*
      * SCRIBBLE SUPPORT
+     * 
+     * TODO: refactor into Level, use a callback?
      */
 
     /**
@@ -682,12 +635,12 @@ public class Obstacle extends PhysicsSprite
     /**
      * Width of the picture being drawn via scribbling
      */
-    static int             _scribbleWidth;
+    static float             _scribbleWidth;
 
     /**
      * Height of the picture being drawn via scribbling
      */
-    static int             _scribbleHeight;
+    static float             _scribbleHeight;
 
     /**
      * Track if the scribble objects move, or are stationary
@@ -715,7 +668,7 @@ public class Obstacle extends PhysicsSprite
      *            Can the individual items that are drawn move on account of
      *            collisions?
      */
-    public static void setScribbleOn(String imgName, float duration, int width, int height, float density,
+    public static void setScribbleOn(String imgName, float duration, float width, float height, float density,
             float elasticity, float friction, boolean moveable)
     {
         _scribbleTime = duration;
@@ -727,18 +680,13 @@ public class Obstacle extends PhysicsSprite
         _scribbleFriction = friction;
 
         // turn on scribble mode, reset scribble status vars
-        // TODO:
-        // Level._scribbleMode = true;
+        Level._scribbleMode = true;
         _scribbleDown = false;
         _scribbleX = -1000;
         _scribbleY = -1000;
         _scribbleMoveable = moveable;
         // register the scribble picture
         _scribblePic = imgName;
-        // turn on touch handling for this scene
-        // Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-        // Level._current.setOnSceneTouchListener(ALE._self);
     }
 
     /**
@@ -750,81 +698,89 @@ public class Obstacle extends PhysicsSprite
      * @param event
      *            The screen touch event
      */
-    private static void doScribble(/* final TouchEvent event */)
+    static void doScribbleDown(float x, float y)
     {
-        /*
-         * // remember if we made an obstacle
-         * Obstacle o = null;
-         * // is this an initial press to start scribbling?
-         * if (event.getAction() == TouchEvent.ACTION_DOWN) {
-         * if (!_scribbleDown) {
-         * // turn on scribbling, draw an obstacle
-         * _scribbleDown = true;
-         * _scribbleX = event.getX();
-         * _scribbleY = event.getY();
-         * o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth,
-         * _scribbleHeight, _scribblePic);
-         * o.setPhysics(_scribbleDensity, _scribbleElasticity,
-         * _scribbleFriction);
-         * if (_scribbleMoveable)
-         * o.makeMoveable();
-         * }
-         * }
-         * // is this a finger drag?
-         * else if (event.getAction() == TouchEvent.ACTION_MOVE) {
-         * if (_scribbleDown) {
-         * // figure out if we're far enough away from the last object to
-         * // warrant drawing something new
-         * float newX = event.getX();
-         * float newY = event.getY();
-         * float xDist = _scribbleX - newX;
-         * float yDist = _scribbleY - newY;
-         * float hSquare = xDist * xDist + yDist * yDist;
-         * // NB: we're using euclidian distance, but we're comparing
-         * // squares instead of square roots
-         * if (hSquare > (2.5f * 2.5f)) {
-         * _scribbleX = newX;
-         * _scribbleY = newY;
-         * o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth,
-         * _scribbleHeight, _scribblePic);
-         * o.setPhysics(_scribbleDensity, _scribbleElasticity,
-         * _scribbleFriction);
-         * if (_scribbleMoveable)
-         * o.makeMoveable();
-         * }
-         * }
-         * }
-         * // is this a release event?
-         * else if (event.getAction() == TouchEvent.ACTION_UP) {
-         * if (_scribbleDown) {
-         * // reset scribble vars
-         * _scribbleDown = false;
-         * _scribbleX = -1000;
-         * _scribbleY = -1000;
-         * }
-         * }
-         * // if we drew something, then we will set a timer so that it
-         * disappears
-         * // in a few seconds
-         * if (o != null) {
-         * // standard hack: make a final of the object, so we can reference it
-         * // in the callback
-         * final Obstacle o2 = o;
-         * // set up a timer to run in a few seconds
-         * TimerHandler th = new TimerHandler(_scribbleTime, false, new
-         * ITimerCallback()
-         * {
-         * 
-         * @Override
-         * public void onTimePassed(TimerHandler pTimerHandler)
-         * {
-         * o2._sprite.setVisible(false);
-         * o2._physBody.setActive(false);
-         * }
-         * });
-         * Level._current.registerUpdateHandler(th);
-         * }
-         */
+        // remember if we made an obstacle
+        Obstacle o = null;
+        // is this an initial press to start scribbling?
+        if (!_scribbleDown) {
+            // turn on scribbling, draw an obstacle
+            _scribbleDown = true;
+            _scribbleX = x;
+            _scribbleY = y;
+            Gdx.app.log("scrib", "making");
+            o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth, _scribbleHeight, _scribblePic);
+            o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
+            if (_scribbleMoveable)
+                o._physBody.setType(BodyType.DynamicBody);
+        }
+        // if we drew something, then we will set a timer so that it disappears
+        // in a few seconds
+        if (o != null) {
+            final Obstacle o2 = o;
+            Timer.schedule(new Task()
+            {
+                @Override
+                public void run()
+                {
+                    o2._visible = false;
+                    o2._physBody.setActive(false);
+                }
+            }, _scribbleTime);
+        }
+    }
+
+    // TODO: lots of redundancy with doScribbleDown...
+    static void doScribbleDrag(float x, float y)
+    {
+        // remember if we made an obstacle
+        Obstacle o = null;
+        if (_scribbleDown) {
+            // figure out if we're far enough away from the last object to
+            // warrant drawing something new
+            float newX = x;
+            float newY = y;
+            float xDist = _scribbleX - newX;
+            float yDist = _scribbleY - newY;
+            float hSquare = xDist * xDist + yDist * yDist;
+            // NB: we're using euclidian distance, but we're comparing
+            // squares instead of square roots
+            if (hSquare > (2.5f * 2.5f)) {
+                _scribbleX = newX;
+                _scribbleY = newY;
+                o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth, _scribbleHeight, _scribblePic);
+                o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
+                if (_scribbleMoveable)
+                    o._physBody.setType(BodyType.DynamicBody);
+            }
+        }
+
+        // if we drew something, then we will set a timer so that it disappears
+        // in a few seconds
+        if (o != null) {
+            // standard hack: make a final of the object, so we can reference it
+            // in the callback
+            final Obstacle o2 = o;
+            Timer.schedule(new Task()
+            {
+                @Override
+                public void run()
+                {
+                    o2._visible = false;
+                    o2._physBody.setActive(false);
+                }
+            }, _scribbleTime);
+        }
+    }
+
+    static void doScribbleUp()
+    {
+        if (_scribbleDown) {
+            // reset scribble vars
+            _scribbleDown = false;
+            _scribbleX = -1000;
+            _scribbleY = -1000;
+        }
     }
 
     /*
@@ -837,19 +793,14 @@ public class Obstacle extends PhysicsSprite
     private Sound   _collideSound;
 
     /**
-     * how long to delay between attempts to play the collide sound
+     * how long to delay (in nanoseconds) between attempts to play the collide sound
      */
-    private float   _collideSoundDelay;
+    private long   _collideSoundDelay;
 
     /**
      * Time of last collision sound
      */
-    private float   _lastCollideSoundTime;
-
-    /**
-     * a sound to play when the obstacle is touched
-     */
-    protected Sound _touchSound;
+    private long  _lastCollideSoundTime;
 
     /**
      * Indicate that when the hero collides with this obstacle, we should make a
@@ -858,12 +809,12 @@ public class Obstacle extends PhysicsSprite
      * @param sound
      *            The name of the sound file to play
      * @param delay
-     *            How long to wait before playing the sound again
+     *            How long to wait before playing the sound again, in milliseconds
      */
-    public void setCollideSound(String sound, float delay)
+    public void setCollideSound(String sound, long delay)
     {
         _collideSound = Media.getSound(sound);
-        _collideSoundDelay = delay;
+        _collideSoundDelay = delay * 1000000;
     }
 
     /**
@@ -876,32 +827,14 @@ public class Obstacle extends PhysicsSprite
             return;
 
         // Make sure we have waited long enough
-        // TODO:
-        // float now = ALE._self.getEngine().getSecondsElapsedTotal();
-        // if (now < _lastCollideSoundTime + _collideSoundDelay)
-        // return;
-        // _lastCollideSoundTime = now;
-        // _collideSound.play();
+        long now = System.nanoTime();
+        if (now < _lastCollideSoundTime + _collideSoundDelay)
+        return;
+        _lastCollideSoundTime = now;
+        _collideSound.play();
     }
 
-    /**
-     * Indicate that when the player touches this obstacle, we should make a
-     * sound
-     * 
-     * @param sound
-     *            The name of the sound file to play
-     */
-    public void setTouchSound(String sound)
-    {
-        // save the sound
-        _touchSound = Media.getSound(sound);
 
-        // turn on the touch handler
-        // TODO:
-        // Level._current.registerTouchArea(_sprite);
-        // Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-    }
 
     /*
      * TOUCH-TO-THROW
@@ -964,18 +897,6 @@ public class Obstacle extends PhysicsSprite
          * if (Level._physics != null) {
          * switch (event.getAction()) {
          * case TouchEvent.ACTION_DOWN:
-         * if (_currentPokeSprite != null) {
-         * if (Configuration.isVibrationOn())
-         * ALE._self.getEngine().vibrate(100);
-         * // move the object
-         * _pokeVector.set(event.getX() /
-         * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, event.getY()
-         * / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
-         * _currentPokeSprite._physBody.setTransform(_pokeVector,
-         * _currentPokeSprite._physBody.getAngle());
-         * _currentPokeSprite = null;
-         * return true;
-         * }
          * }
          * 
          * // if we are here, there wasn't an ACTION_DOWN that we processed for
@@ -1024,35 +945,6 @@ public class Obstacle extends PhysicsSprite
          * return true;
          * }
          * 
-         * // if the object is a poke object, things are a bit more complicated
-         * if (_isPoke) {
-         * // only act on depress, not on release or drag
-         * if (e.getAction() == MotionEvent.ACTION_DOWN) {
-         * if (Configuration.isVibrationOn())
-         * ALE._self.getEngine().vibrate(100);
-         * float time = ALE._self.getEngine().getSecondsElapsedTotal();
-         * if (this == Obstacle._currentPokeSprite) {
-         * // double touch
-         * if ((time - _lastPokeTime) < _pokeDeleteThresh) {
-         * // hide _sprite, disable _physics, make not touchable
-         * _physBody.setActive(false);
-         * Level._current.unregisterTouchArea(_sprite);
-         * _sprite.setVisible(false);
-         * }
-         * // repeat single-touch
-         * else {
-         * _lastPokeTime = time;
-         * }
-         * }
-         * // new single touch
-         * else {
-         * // record the active _sprite
-         * _currentPokeSprite = this;
-         * _lastPokeTime = time;
-         * }
-         * }
-         * return true;
-         * }
          * 
          * // if this is a touch trigger, call the touchtrigger code
          * if (_isTouchTrigger && e.isActionDown()) {

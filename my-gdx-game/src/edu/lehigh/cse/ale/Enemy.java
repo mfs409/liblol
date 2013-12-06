@@ -151,7 +151,7 @@ public class Enemy extends PhysicsSprite
 
             // handle defeat triggers
             if (_isTrigger)
-                ALE._game.onEnemyDefeatTrigger(_defeatTriggerID, ALE._currLevel, this);
+                ALE._game.onEnemyDefeatTrigger(_defeatTriggerID, ALE._game._currLevel, this);
         }
 
         /**
@@ -192,37 +192,6 @@ public class Enemy extends PhysicsSprite
             //Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
         }
 
-        /*
-         * SUPPORT FOR CHASING THE HERO
-         */
-
-        /**
-         * If this enemy is supposed to chase the hero, this determines the velocity with which it chases
-         */
-        private float         _chaseMultiplier = 0;
-
-        /**
-         * An internal vector for supporting chase enemies
-         */
-        private final Vector2 _chaseVector     = new Vector2();
-
-        /**
-         * Time of last call to onSpriteManagedUpdate, used so we don't update chasing too frequently
-         */
-        private float         _lastOSMU        = 0;
-
-        /**
-         * Specify that this enemy is supposed to chase the hero
-         * 
-         * @param speed
-         *            The speed with which the enemy chases the hero
-         */
-        public void setChaseSpeed(float speed)
-        {
-            // TODO:
-            // makeMoveable();
-            _chaseMultiplier = speed;
-        }
 
         /*
          * CALLBACK SUPPORT
@@ -319,7 +288,7 @@ public class Enemy extends PhysicsSprite
                     */
                 }
                 else {
-                    ALE._game.onEnemyCollideTrigger(o._enemyTriggerID, ALE._currLevel, o, this);
+                    ALE._game.onEnemyCollideTrigger(o._enemyTriggerID, ALE._game._currLevel, o, this);
                 }
             }
 

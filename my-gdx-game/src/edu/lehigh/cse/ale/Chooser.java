@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// TODO: comments, and clean up naming, add cheat button, verify return values
+// TODO: comments, and clean up naming, verify return values
 // (i.e., false)
 
 // TODO: there is a nasty bug in how things display.  It only shows when there are less than 21 levels.
@@ -35,9 +35,7 @@ public class Chooser implements MyScreen
      * A helper class for tracking where the buttons are, since we don't have an
      * easy way to know which lines are touched.
      * 
-     * @author spear
-     * 
-     *         TODO: replace with just rectangles in an indexed array...
+     * TODO: replace with just rectangles in an indexed array...
      */
     class LevelSprite
     {
@@ -172,7 +170,7 @@ public class Chooser implements MyScreen
         _srend.begin(ShapeType.Filled);
         _srend.setColor(.4f, .4f, .4f, 0.9f);
         for (LevelSprite ls : levels) {
-            if (ls.l > ALE._unlockLevel && !_game._config.getDeveloperUnlock()) {
+            if (ls.l > ALE._game._unlockLevel && !_game._config.getDeveloperUnlock()) {
                 _srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
             }
         }
@@ -231,7 +229,7 @@ public class Chooser implements MyScreen
         // translate the touch into _touchVec
         _camera.unproject(_touchVec.set(x, y, 0));
         for (LevelSprite ls : levels) {
-            if (ls.l <= ALE._unlockLevel || _game._config.getDeveloperUnlock()) {
+            if (ls.l <= ALE._game._unlockLevel || _game._config.getDeveloperUnlock()) {
                 if (ls.r.contains(_touchVec.x, _touchVec.y)) {
                     // [TODO] action goes here...
                     _game.doPlayLevel(ls.l);

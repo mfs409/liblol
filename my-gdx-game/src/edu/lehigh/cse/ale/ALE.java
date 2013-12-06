@@ -103,17 +103,17 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     /**
      * The current mode of the program
      */
-    public static Modes _mode;
+    public Modes _mode;
 
     /**
      * The _current level being played
      */
-    static int          _currLevel;
+    int          _currLevel;
 
     /**
      * Track the _current help scene being displayed
      */
-    static private int  _currHelp;
+    private int  _currHelp;
 
     public void doSplash()
     {
@@ -263,22 +263,22 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     /**
      * ID of the highest level that is unlocked
      */
-    public static int           _unlockLevel;
+    public int           _unlockLevel;
 
     /**
      * The name of the app preference
      * 
      * TODO: before releasing a game, you should modify this... maybe put it in config?
      */
-    static private final String PREFS = "edu.lehigh.cse.ale.prefs";
+    private final String PREFS = "edu.lehigh.cse.ale.prefs";
 
     /**
      * save the value of 'unlocked' so that the next time we play, we don't have
      * to start at level 0
      */
-    static void saveUnlocked()
+    void saveUnlocked()
     {
-        Preferences prefs = Gdx.app.getPreferences(PREFS);
+        Preferences prefs = Gdx.app.getPreferences(_game.PREFS);
         prefs.putInteger("unlock", _unlockLevel);
         prefs.flush();
     }
@@ -286,10 +286,10 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     /**
      * read the _current value of 'unlocked' to know how many levels to unlock
      */
-    static void readUnlocked()
+    void readUnlocked()
     {
         Preferences prefs = Gdx.app.getPreferences(PREFS);
-        _unlockLevel = prefs.getInteger("unlock", 1);
+        _game._unlockLevel = prefs.getInteger("unlock", 1);
     }
 
     /*

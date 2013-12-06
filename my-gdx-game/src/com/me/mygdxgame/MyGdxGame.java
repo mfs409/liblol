@@ -1,13 +1,29 @@
 package com.me.mygdxgame;
 
-// TODO: are all ctors for Entities consistent?
+//STATUS: level 32 is in progress...
 
-// STATUS: ready to start working on level 24
+// TODO: does music and transition work correctly when there is only one level?
+
+// TODO: should we use center points everywhere, instead of bottom left corners?
+// This would help in Level 29 (scribble), where we currently don't quite draw
+// in the right place.
+
+// TODO: move scribble out of Obstacle, turn it into a callback?
+
+// TODO: should there ever be int parameters?
+
+// TODO: level 27 is done, except that it uses an animated image incorrectly...
+
+// TODO: level 28 accelerometer trick no longer applies. Altering the order of
+// popup and accel in Level.render() would restore the behavior, but the
+// behavior is actually not desirable.
 
 // NB: the 'getx' and 'gety' methods of physicssprite return center coords of
 // body, not coords of the bottom left of the sprite
 
 // TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone  (see level 20)
+
+// TODO: should have ability to chase in X, Y, or Both
 
 import edu.lehigh.cse.ale.*;
 
@@ -25,8 +41,16 @@ public class MyGdxGame extends ALE
         Media.registerImage("msg1.png");
         Media.registerImage("msg2.png");
         Media.registerImage("splash.png");
+        
+        Media.registerImage("mid.png");
+        Media.registerImage("front.png");
+        Media.registerImage("back.png");
+        
+        // TODO: this image does not work correctly yet...
+        Media.registerImage("stars.png");
 
         Media.registerSound("hipitch.ogg");
+        Media.registerSound("lowpitch.ogg");
         Media.registerSound("losesound.ogg");
         Media.registerSound("slowdown.ogg");
         Media.registerSound("woowoowoo.ogg");
@@ -266,7 +290,7 @@ public class MyGdxGame extends ALE
         else if (whichLevel == 8) {
             // configure a basic level, just like the start of level 2:
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Physics.configure(0, -10);
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
@@ -282,7 +306,7 @@ public class MyGdxGame extends ALE
             // (25, 2). This means it has *2* points on its route. Notice that
             // it isn't going to move quite as we'd like
             
-            e.setRoute(new Route(2).to(25, 25).to(25, 2), 2, true);
+            e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
             // display a message that stays until it is pressed
             PopUpScene.showTextAndWait("Avoid the enemy and\nreach the destination");
@@ -410,6 +434,7 @@ public class MyGdxGame extends ALE
             // zooming in when we're in bottom left corner; a solution is to
             // incorporate zoom into the computations in the chase shape code, 
             // though andengine doesn't do this...
+            
             Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
             
@@ -957,28 +982,32 @@ public class MyGdxGame extends ALE
          *            influence on the physics of the game
          */
         else if (whichLevel == 24) {
-            /*
-             * // a basic level: Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1);
-             * PopUpScene.showTextTimed("Touch the obstacle\nto select, then" +
-             * "\ntouch a destination", 1);
-             * 
-             * // draw a picture Util.drawPicture(0, 0, 460, 320,
-             * "greenball.png");
-             * 
-             * // draw the hero and destination after the picture, so that the
-             * picture is behind/below // them... Hero h = Hero.makeAsCircle(40,
-             * 70, 30, 30, "greenball.png"); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // make a pokeable obstacle Obstacle o = Obstacle.makeAsBox(0, 0,
-             * 35, 35, "purpleball.png"); o.setPhysics(0, 100, 0);
-             * o.setPokeable();
-             */
-        }
+            // a basic level:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            PopUpScene.showTextTimed("Touch the obstacle\nto select, then" + "\ntouch a destination", 1);
 
+            // draw a picture.  Note that for now, pictures all go behind the scene
+            //
+            // TODO: this mechanism needs to change, or we need to alter how we do renderables
+            Util.drawPicture(0, 0, 48, 32, "greenball.png");
+
+            // draw the hero and destination after the picture, so that the
+            // picture is behind/below them...
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a pokeable obstacle
+            Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            o.setPhysics(0, 100, 0);
+            o.setPokeable();
+        }
+        
         /**
          * @level: 25
          * 
@@ -990,23 +1019,28 @@ public class MyGdxGame extends ALE
          *            hero
          */
         else if (whichLevel == 25) {
-            /*
-             * // basic setup Level.configure(460, 320, 0, 0); Tilt.enable(10,
-             * 10); PopUpScene.showTextTimed("The enemy will chase you", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // create an enemy who chases the hero Enemy e3 =
-             * Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
-             * e3.setPhysics(1.0f, 0.3f, 0.6f); e3.setChaseSpeed(2);
-             * 
-             * // draw a picture late within this block of code, but still cause
-             * // the picture to be drawn behind everything else
-             * Util.drawPictureBehindScene(0, 0, 460, 320, "greenball.png");
-             */
+            // basic setup
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextTimed("The enemy will chase you", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // create an enemy who chases the hero
+            Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            e3.setPhysics(.1f, 0.3f, 0.6f);            
+            e3.setChaseSpeed(8, h);
+
+            // draw a picture late within this block of code, but still cause
+            // the picture to be drawn behind everything else
+            
+            // TODO:
+            Util.drawPictureBehindScene(0, 0, 48, 32, "greenball.png");
         }
 
         /**
@@ -1021,22 +1055,24 @@ public class MyGdxGame extends ALE
          * 
          */
         else if (whichLevel == 26) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Touch the purple ball \nor collide with it"
-             * , 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // set up our obstacle so that collision and touch make it play
-             * sounds Obstacle o = Obstacle.makeAsCircle(100, 100, 35, 35,
-             * "purpleball.png"); o.setPhysics(1, 0, 1);
-             * o.setTouchSound("lowpitch.ogg"); o.setCollideSound("hipitch.ogg",
-             * 2);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextTimed("Touch the purple ball \nor collide with it", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // set up our obstacle so that collision and touch make it play
+            // sounds
+            Obstacle o = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            o.setPhysics(1, 0, 1);
+            o.setTouchSound("lowpitch.ogg");
+            o.setCollideSound("hipitch.ogg", 2000);
         }
 
         /**
@@ -1048,18 +1084,21 @@ public class MyGdxGame extends ALE
          * @whatsnew: heroes whose rotation changes with their direction
          */
         else if (whichLevel == 27) {
-            /*
-             * // set up a big screen Level.configure(4 * 460, 2 * 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextTimed(
-             * "The star rotates in\nthe direction of movement", 1);
-             * Util.drawBoundingBox(0, 0, 4 * 460, 2 * 320, "red.png", 1, 0, 1);
-             * Destination.makeAsCircle(290, 600, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // set up a hero who rotates in the direction of movement Hero h
-             * = Hero.makeAsCircle(20, 20, 30, 30, "stars.png"); h.setPhysics(1,
-             * 0, 0.6f); h.setRotationByDirection(); h.setMoveByTilting();
-             */
+            // set up a big screen
+            Level.configure(4 * 48, 2 * 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextTimed("The star rotates in\nthe direction of movement", 1);
+            Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(29, 60, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // set up a hero who rotates in the direction of movement
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setRotationByDirection();
+            h.setMoveByTilting();
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1078,22 +1117,23 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew: paths that go off screen
          */
-        else if (whichLevel == 28) {
-            /*
-             * // set up a regular level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextAndWait(
-             * "Reach the destination\nto win the game.\n\n(tap to start)");
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(215, 290, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(215, 10, 20, 20, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // this enemy starts from off-screen Enemy e =
-             * Enemy.makeAsCircle(10, -200, 440, 440, "redball.png");
-             * e.setDefeatHeroText("Ha Ha Ha"); e.setRoute(new Route(3).to(10,
-             * -900).to(10, 260).to(10, -200), 3, true);
-             */
+        else if (whichLevel == 28) {            
+            // set up a regular level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextAndWait("Reach the destination\nto win the game.\n\n(tap to start)");
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // this enemy starts from off-screen
+            Enemy e = Enemy.makeAsCircle(1, -20, 44, 44, "redball.png");
+            e.setDefeatHeroText("Ha Ha Ha");
+            e.setRoute(new Route(3).to(1, -90).to(1, 26).to(1, -20), 30, true);
         }
 
         /**
@@ -1105,21 +1145,22 @@ public class MyGdxGame extends ALE
          * @whatsnew: scribblemode for drawing obstacles on the screen
          */
         else if (whichLevel == 29) {
-            /*
-             * // set up a basic level: Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextTimed(
-             * "Draw on the screen\nto make obstacles appear", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(215, 290, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(215, 10, 20, 20, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // turn on 'scribble mode'. Be sure to play with the last
-             * parameter to see the difference between scribbles // that can
-             * move and that can't move Obstacle.setScribbleOn("purpleball.png",
-             * 3, 15, 15, 0, 0, 0, false);
-             */
+            // set up a basic level:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PopUpScene.showTextTimed("Draw on the screen\nto make obstacles appear", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // turn on 'scribble mode'. Be sure to play with the last parameter
+            // to see the difference between scribbles
+            // that can move and that can't move
+            Obstacle.setScribbleOn("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true);
         }
 
         /**
@@ -1137,18 +1178,19 @@ public class MyGdxGame extends ALE
          * @whatsnew: using flick to move the hero
          */
         else if (whichLevel == 30) {
-            /*
-             * // create a level with a constant force downward in the Y
-             * dimension Level.configure(460, 320, 0, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * 
-             * // create a hero who we can flick Hero h = Hero.makeAsCircle(40,
-             * 270, 30, 30, "stars.png"); h.setPhysics(1, 0, 0.6f);
-             * h.setFlickable(.1f);
-             * 
-             * // set up a destination Destination.makeAsCircle(300, 100, 25,
-             * 25, "mustardball.png"); Level.setVictoryDestination(1);
-             */
+            // create a level with a constant force downward in the Y dimension
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
+            // create a hero who we can flick
+            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setFlickable(1f);
+
+            // set up a destination
+            Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
+            Level.setVictoryDestination(1);
         }
 
         /**
@@ -1167,17 +1209,20 @@ public class MyGdxGame extends ALE
          *            side scroller
          */
         else if (whichLevel == 31) {
-            /*
-             * // make a long level but not a tall level, and provide a constant
-             * downward force: Level.configure(3 * 460, 320, 0, 10); // turn on
-             * tilt, but only in the X dimension Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Side scroller / tilt demo", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             */
+            // make a long level but not a tall level, and provide a constant
+            // downward force:
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            // turn on tilt, but only in the X dimension
+            Tilt.enable(10, 0);
+            PopUpScene.showTextTimed("Side scroller / tilt demo", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1195,25 +1240,42 @@ public class MyGdxGame extends ALE
          *            despite the fact that the screen is scrolling
          */
         else if (whichLevel == 32) {
+            // start by repeating the previous level:
+            Level.configure(30 * 48, 32);
+            Physics.configure(0, -10);
+            // turn on tilt, but only in the X dimension
+            Tilt.enable(10, 0);
+            PopUpScene.showTextTimed("Side scroller / tilt demo", 1);
+            Util.drawBoundingBox(0, 0, 30 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(30*48-5, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+            Level.setCameraChase(h);
+
+            // now paint the background blue
+            Level.setColor(0, 0, 255);
+            // put in a picture that scrolls at half the speed of the hero
+            
+            Level.addHorizontalLayer(0, 1, "back.png", 0);
+            
+            Level.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            
+            // TMP
+            Level.addHorizontalLayer(1.2f, 1, "front.png", 15);
+            
             /*
-             * // start by repeating the previous level: Level.configure(3 *
-             * 460, 320, 0, 10); // turn on tilt, but only in the X dimension
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Side scroller / tilt demo", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1); // now paint the background blue
-             * Background.setColor(0, 0, 255); // draw a picture as a background
-             * layer, and give it a "-20" scroll rate
-             * Background.addLayer("mid.png", -20, 0, 116); // now indicate that
-             * the hero scroll rate is "20" Background.setScrollFactor(20);
-             * 
-             * // make an obstacle that hovers... Obstacle o =
-             * Obstacle.makeAsCircle(100, 100, 50, 50, "blueball.png");
-             * o.setHover(100, 100);
+            // draw a picture as a background layer, and give it a "-20" scroll
+            // rate
+            Background.addLayer("mid.png", -20, 0, 116);
+            // now indicate that the hero scroll rate is "20"
+            Background.setScrollFactor(20);
              */
+            
+            // make an obstacle that hovers...
+            Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
+            // o.setHover(100, 100);
         }
 
         /**
@@ -1550,23 +1612,23 @@ public class MyGdxGame extends ALE
          * @whatsnew: vertical background colors and images
          */
         else if (whichLevel == 42) {
-            /*
-             * // set up a level where tilt only makes the hero move up and down
-             * Level.configure(460, 4 * 320, 0, 0); Tilt.enable(0, 10);
-             * PopUpScene.showTextTimed("Vertical scroller demo", 1);
-             * Util.drawBoundingBox(0, 0, 460, 4 * 320, "red.png", 1, 0, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(20, 1200, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // set up a vertical scrolling background
-             * Background.setColorVertical(255, 0, 255);
-             * Background.addLayerVertical("back.png", 0, 0, 0);
-             * Background.addLayerVertical("mid.png", -20, 0, 116);
-             * Background.addLayerVertical("front.png", -40, 0, 0);
-             * Background.setScrollFactor(-20);
-             */
+            
+              // set up a level where tilt only makes the hero move up and down
+              Level.configure(48, 4 * 32);Physics.configure(0, 0); Tilt.enable(0, 10);
+              PopUpScene.showTextTimed("Vertical scroller demo", 1);
+              Util.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
+              Hero h = Hero.makeAsCircle(2, 120, 3, 3, "greenball.png");
+              h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
+              Destination.makeAsCircle(20, 2, 1, 1, "mustardball.png");
+              Level.setVictoryDestination(1);
+              Level.setCameraChase(h);
+              
+              // set up a vertical scrolling background
+              //Background.setColorVertical(255, 0, 255);
+              //Background.addLayerVertical("back.png", 0, 0, 0);
+              //Background.addLayerVertical("mid.png", -20, 0, 116);
+              //Background.addLayerVertical("front.png", -40, 0, 0);
+              //Background.setScrollFactor(-20);
         }
 
         /**

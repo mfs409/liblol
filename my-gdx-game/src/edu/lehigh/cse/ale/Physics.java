@@ -14,7 +14,8 @@ import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public class Physics
 {
-
+    static final float PIXEL_METER_RATIO = 10;
+    
     public static void configure(float defaultXGravity, float defaultYGravity)
     {
         // we instantiate a new World with a proper gravity vector
@@ -54,7 +55,7 @@ public class Physics
                 // ever run and push it into a delay handler, we instead delay
                 // the handling of the collision until after the physics step
                 // completes
-                Level._currLevel._events.add(new PendingEvent()
+                Level._currLevel._oneTimeEvents.add(new PendingEvent()
                 {
                     public void go()
                     {

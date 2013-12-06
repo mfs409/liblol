@@ -110,6 +110,7 @@ public class Projectile extends PhysicsSprite
      * @param ttr
      *            animatable image to display as the projectile
      */
+    // TODO: change to width, height, textureregion
     private Projectile(float x, float y, float width, float height, TextureRegion ttr)
     {
         super(ttr, SpriteId.PROJECTILE, width, height);

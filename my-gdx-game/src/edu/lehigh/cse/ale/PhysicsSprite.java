@@ -4,6 +4,9 @@ package edu.lehigh.cse.ale;
 
 // TODO: enable arbitrary polygon creation?
 
+// TODO: get rid of static fields in this class?
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +16,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+
+import edu.lehigh.cse.ale.Level.PendingEvent;
 
 public abstract class PhysicsSprite
 {
@@ -638,6 +643,8 @@ public abstract class PhysicsSprite
         // first, move to the starting point
         _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
         // second, indicate that we are working on goal #1, and set velocity
+        // TODO: this needs to be in one place, instead of duplicated elsewhere
+        // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
         _nextRouteGoal = 1;
         _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
         _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
@@ -793,7 +800,7 @@ public abstract class PhysicsSprite
     /**
      * Track the entity being flicked
      */
-    private static PhysicsSprite _flickEntity;
+    static PhysicsSprite _flickEntity;
 
     /**
      * Internal vector for computing flicks, so that we don't need to use a Vector pool
@@ -855,9 +862,63 @@ public abstract class PhysicsSprite
         _isDrag = true;
     }
 
+    /**
+     * a sound to play when the obstacle is touched
+     */
+    protected Sound _touchSound;
+
+    /**
+     * Indicate that when the player touches this obstacle, we should make a
+     * sound
+     * 
+     * @param sound
+     *            The name of the sound file to play
+     */
+    public void setTouchSound(String sound)
+    {
+        // save the sound
+        _touchSound = Media.getSound(sound);
+    }
+
+
+    
     void handleTouchDown(float x, float y)
     {
-        // TODO: not sure what this should do yet...
+        if (_touchSound != null)
+            _touchSound.play();
+
+        if (_isFlick) {
+            registerInitialFlick(x, y);
+            return;
+        }
+
+        
+        if (_isPoke) {
+            // TODO:
+             //if (ALE._game._config.getVibration())
+             //    ALE._self.getEngine().vibrate(100);
+
+            long time = System.nanoTime();
+             
+            if (this == _currentPokeSprite) {
+                
+                 // double touch
+                 if ((time - _lastPokeTime) < _pokeDeleteThresh) {
+                     // hide sprite, disable physics
+                     _physBody.setActive(false);
+                     _visible = false;
+                 }
+                 // repeat single-touch
+                 else {
+                     _lastPokeTime = time;
+                     Gdx.app.log("poke", ""+time);
+                 }
+            }
+            else {
+            _currentPokeSprite = this;
+            _lastPokeTime = time;
+            }
+        }
     }
     
     void handleTouchDrag(float x, float y)
@@ -866,22 +927,63 @@ public abstract class PhysicsSprite
             _physBody.setTransform(x, y, _physBody.getAngle());
     }
     
+    /*
+     * POKE SUPPORT
+     */
+
+    /**
+     * When a _sprite is poked, we record it here so that we know who to move on
+     * the next screen touch
+     */
+    protected static PhysicsSprite    _currentPokeSprite;
+
+    /**
+     * Rather than use a Vector2 pool, we'll keep a vector around for all poke
+     * operations
+     */
+    private final static Vector2 _pokeVector       = new Vector2();
+
+    /**
+     * Track if the object is pokeable
+     */
+    private boolean              _isPoke           = false;
+
+    /**
+     * When a _sprite is poked, remember the time, because rapid double-clicks
+     * cause deletion
+     */
+    private static long         _lastPokeTime;
+
+    /**
+     * Tunable constant for how much time between pokes constitutes a
+     * "double click"... this is in nanoseconds, so it's half a second
+     */
+    private final static long   _pokeDeleteThresh = 500000000;
+
+    /**
+     * Call this on an Obstacle to make it pokeable
+     * 
+     * Poke the Obstacle, then poke the screen, and the Obstacle will move to
+     * the location that was pressed. Poke the
+     * Obstacle twice in rapid succession to delete the Obstacle.
+     */
+    public void setPokeable()
+    {
+        _isPoke = true;
+    }
+    
     /**
      * Indicate that this entity can be flicked on the screen
      * 
      * @param _dampFactor
      *            A value that is multiplied by the vector for the flick, to affect speed
-     *//*
+     */
     public void setFlickable(float dampFactor)
     {
-        makeMoveable();
+        if (_physBody.getType() != BodyType.DynamicBody)
+            _physBody.setType(BodyType.DynamicBody);
         _isFlick = true;
         _flickDampener = dampFactor;
-
-        makeTouchable();
-        // NB: this will cause Framework to call to Obstacle which will call to
-        // PhysicsSprite
-        Level._current.setOnSceneTouchListener(ALE._self);
     }
 
     /**
@@ -893,18 +995,35 @@ public abstract class PhysicsSprite
      *            The x coordinate of where on the _sprite the touch occurred
      * @param y
      *            The y coordinate of where on the _sprite the touch occurred
-     *//*
-    private void registerInitialFlick(TouchEvent e, float x, float y)
+     */
+    // TODO: remove params?
+    private void registerInitialFlick(float x, float y)
     {
-        if (e.getAction() == TouchEvent.ACTION_DOWN) {
-            ALE._self.getEngine().vibrate(100);
-            // don't forget to translate the touch into a screen coordinate
-            _flickStartX = x + _sprite.getX();
-            _flickStartY = y + _sprite.getY();
-            _flickEntity = this;
+        // TODO:
+        // ALE._self.getEngine().vibrate(100);
+           
+        // don't forget to translate the touch into a screen coordinate
+        _flickStartX = _physBody.getPosition().x;//  + _sprite.getX();
+        _flickStartY = _physBody.getPosition().y;
+        _flickEntity = this;
+    }
+
+    static void flickDone(float x, float y)
+    {
+        if (_flickEntity != null) {
+            // if the entity was hovering, stop hovering
+            _flickEntity._hover = false;
+            // compute velocity for the flick
+            _flickVector.x = (x - _flickStartX) * _flickEntity._flickDampener;
+            _flickVector.y = (y - _flickStartY) * _flickEntity._flickDampener;
+            _flickEntity.updateVelocity(_flickVector);
+            // clear the flick, so we don't have strange "memory"
+            // issues...
+            _flickEntity = null;
         }
     }
 
+    
     /**
      * Indicate that we should not "forget" a poke-path entity after we've done one movement with it
      */
@@ -913,6 +1032,21 @@ public abstract class PhysicsSprite
         _keepPokeEntity = true;
     }
 
+    void finishPoke(float x, float y)
+    {
+        if (_currentPokeSprite != null) {
+            // TODO:
+            // if (Configuration.isVibrationOn())
+            // ALE._self.getEngine().vibrate(100);
+
+            // move the object
+            _currentPokeSprite._physBody.setTransform(x, y, _currentPokeSprite._physBody.getAngle());
+            
+            // forget the object
+            _currentPokeSprite = null;
+         }
+    }
+    
     /**
      * Handle a scene touch that corresponds to the release of a flick object
      * 
@@ -927,22 +1061,6 @@ public abstract class PhysicsSprite
         if (Level._physics != null) {
             // only do this if we have a valid scene, valid _physics, a valid
             // _flickEntity, and an UP action
-            if (_flickEntity != null) {
-                if (te.getAction() == TouchEvent.ACTION_UP) {
-                    // if the entity was hovering, stop hovering
-                    _flickEntity._hover = false;
-                    // make sure the entity is now a DynamicBody
-                    _flickEntity.makeMoveable();
-                    // compute velocity for the flick
-                    _flickVector.x = (te.getX() - _flickStartX) * _flickEntity._flickDampener;
-                    _flickVector.y = (te.getY() - _flickStartY) * _flickEntity._flickDampener;
-                    _flickEntity.updateVelocity(_flickVector);
-                    // clear the flick, so we don't have strange "memory"
-                    // issues...
-                    _flickEntity = null;
-                    return true;
-                }
-            }
             // only do this if we're making a poke path
             else if (_pokePathEntity != null) {
                 if (te.getAction() == TouchEvent.ACTION_DOWN || (_pokePathEntity._pokeChaseMode && te.getAction() == TouchEvent.ACTION_MOVE)) {
@@ -1073,10 +1191,6 @@ public abstract class PhysicsSprite
             _dragVector.y = newY;
             _physBody.setTransform(_dragVector.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT),
                     _physBody.getAngle());
-            return true;
-        }
-        else if (_isFlick) {
-            registerInitialFlick(e, x, y);
             return true;
         }
         else if (_isPokePath && e.isActionDown()) {
@@ -1584,31 +1698,90 @@ public abstract class PhysicsSprite
     {
         makeMoveable();
     }
+ 
+    /*
+     * SUPPORT FOR CHASING THE HERO
+     */
 
     /**
-     * Make an entity disappear
-     * 
-     * @param quiet
-     *            True if the disappear sound should not be played
-     *//*
-    public void remove(boolean quiet)
-    {
-        _sprite.setVisible(false);
-        if (_disappearAnimateCells != null) {
-            float x = _sprite.getX() + _disappearAnimateOffset.x;
-            float y = _sprite.getY() + _disappearAnimateOffset.y;
-            TiledTextureRegion ttr = Media.getImage(_disappearAnimateImageName);
-            AnimatedSprite as = new AnimatedSprite(x, y, _disappearAnimateWidth, _disappearAnimateHeight, ttr,
-                    ALE._self.getVertexBufferObjectManager());
-            Level._current.attachChild(as);
-            as.animate(_disappearAnimateDurations, _disappearAnimateCells, false);
-        }
-        // play a sound when we hit this thing?
-        if (_disappearSound != null && !quiet)
-            _disappearSound.play();
-        // disable the _physics body
-        _physBody.setActive(false);
-    }
-    */
+     * If this enemy is supposed to chase the hero, this determines the velocity with which it chases
+     */
+    private float         _chaseMultiplier = 0;
+
+    /**
+     * An internal vector for supporting chase enemies
+     */
+    private final Vector2 _chaseVector     = new Vector2();
+
+    private PhysicsSprite _chaseTarget;
     
+    /**
+     * Specify that this enemy is supposed to chase the hero
+     * 
+     * @param speed
+     *            The speed with which the enemy chases the hero
+     */
+    public void setChaseSpeed(float speed, PhysicsSprite ps)
+    {
+        _physBody.setType(BodyType.DynamicBody);
+        _chaseMultiplier = speed;
+        _chaseTarget = ps;
+        Level._currLevel._repeatEvents.add(new PendingEvent(){
+            @Override
+            void go()
+            {
+                // don't chase something that isn't visible
+                if (!_chaseTarget._visible)
+                    return;
+                // don't run if this sprite isn't visible
+                if (!_visible)
+                    return;
+
+                // chase the _chaseTarget
+                Gdx.app.log("chase", "updating chase velocity");
+                // compute vector between hero and enemy
+                _chaseVector.x = _chaseTarget._physBody.getPosition().x - _physBody.getPosition().x;
+                _chaseVector.y = _chaseTarget._physBody.getPosition().y - _physBody.getPosition().y;
+
+                // normalize it and then multiply by speed
+                _chaseVector.nor();
+                _chaseVector.x *= (_chaseMultiplier);
+                // TODO: disable y position chasing for sidescrolling games?
+                _chaseVector.y *= (_chaseMultiplier);
+
+                // set Enemy velocity accordingly
+                updateVelocity(_chaseVector);
+            }});
+    }
+
+    /**
+     * A flag to indicate that the hero should rotate to always appear to be facing in the direction it is traveling
+     */
+    private boolean       _rotateByDirection;
+
+    /**
+     * A temporary vector for the _rotateByDirection computation
+     */
+    private final Vector2 _rotationVector = new Vector2();
+
+    /**
+     * Indicate that this hero's rotation should be determined by the direction in which it is traveling
+     */
+    public void setRotationByDirection()
+    {
+        _rotateByDirection = true;
+
+        Level._currLevel._repeatEvents.add(new PendingEvent(){
+            @Override
+            void go()
+            {
+                // handle rotating the hero based on the direction it faces
+                if (_rotateByDirection && _visible) {
+                    _rotationVector.x = _physBody.getLinearVelocity().x;
+                    _rotationVector.y = _physBody.getLinearVelocity().y;
+                    double angle = Math.atan2(_rotationVector.y, _rotationVector.x) - Math.atan2(-1, 0);
+                    _physBody.setTransform(_physBody.getPosition(), (float) angle);
+                }
+            }});
+    }   
 }

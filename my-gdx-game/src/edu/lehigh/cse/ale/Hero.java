@@ -132,6 +132,7 @@ public class Hero extends PhysicsSprite
     private void onCollideWithObstacle(Obstacle o)
     {
         // do we need to play a sound?
+        // TODO: should we call this from anywhere else?
         o.playCollideSound();
 
         // TODO
@@ -734,23 +735,6 @@ public class Hero extends PhysicsSprite
      * ADVANCED POSITIONING FUNCTIONALITY
      */
 
-    /**
-     * A flag to indicate that the hero should rotate to always appear to be facing in the direction it is traveling
-     */
-    private boolean       _rotateByDirection;
-
-    /**
-     * A temporary vector for the _rotateByDirection computation
-     */
-    private final Vector2 _rotationVector = new Vector2();
-
-    /**
-     * Indicate that this hero's rotation should be determined by the direction in which it is traveling
-     */
-    public void setRotationByDirection()
-    {
-        _rotateByDirection = true;
-    }
 
     /*
      * ADVANCED CAMERA SUPPORT
@@ -878,13 +862,6 @@ public class Hero extends PhysicsSprite
             _throwingUntil = 0;
         }
 
-        // handle rotating the hero based on the direction it faces
-        if (_rotateByDirection) {
-            _rotationVector.x = _physBody.getLinearVelocity().x;
-            _rotationVector.y = _physBody.getLinearVelocity().y;
-            double angle = Math.atan2(_rotationVector.y, _rotationVector.x) - Math.atan2(-1, 0);
-            _sprite.setRotation(180 / (3.1415926f) * (float) angle);
-        }
         super.onSpriteManagedUpdate();
     }
     */

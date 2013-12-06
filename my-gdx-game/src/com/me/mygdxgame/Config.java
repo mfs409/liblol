@@ -49,5 +49,4 @@ public class Config extends ALEConfiguration {
 	public boolean showDebugBoxes() {
 		return true;
 	}
-
 }
