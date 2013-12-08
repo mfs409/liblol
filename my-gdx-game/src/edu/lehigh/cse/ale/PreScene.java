@@ -1,18 +1,20 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: this needs to be commented, and it would be nice if we could have a
+// TODO: Could be cleaner... refactor is due.
+
+// TODO: this needs to be commented, and it would be nice if we could have a
 // more robust pop-up builder, but in terms of prior ALE functionality, this is
 // satisfactory
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.ale.Level.PendingEvent;
-
-public class PopUpScene
+public class PreScene
 {
 
     /**
@@ -55,11 +57,16 @@ public class PopUpScene
             @Override
             public void run()
             {
-                _showPopUp = false;
-                _popupText = null;
-                _popUpImgTr = null;
+                done();
             }
         }, duration);
+    }
+
+    private static void done()
+    {
+        _showPopUp = false;
+        _popupText = null;
+        _popUpImgTr = null;
     }
 
     static public void showImageTimed(String imgName, float duration, float x, float y, float width, float height)
@@ -70,9 +77,7 @@ public class PopUpScene
             @Override
             public void run()
             {
-                _showPopUp = false;
-                _popupText = null;
-                _popUpImgTr = null;
+                done();
             }
         }, duration);
     }
@@ -112,25 +117,6 @@ public class PopUpScene
     static public void showTextAndWait(String message, int red, int green, int blue, int fontSize)
     {
         setPopUp(message, red, green, blue, fontSize);
-        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
-                ALE._game._config.getScreenHeight(), true, new PendingEvent()
-                {
-                    public void go()
-                    {
-                        _showPopUp = false;
-                        _popupText = null;
-                        _popUpImgTr = null;
-                    }
-                    @Override
-                    void onDownPress()
-                    {
-                    }
-
-                    @Override
-                    void onUpPress()
-                    {
-                    }
-                });
     }
 
     /**
@@ -146,38 +132,33 @@ public class PopUpScene
     static public void showImageAndWait(String imgName, float x, float y, float width, float height)
     {
         setPopUpImage(Media.getImage(imgName), x, y, width, height);
-        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
-                ALE._game._config.getScreenHeight(), true, new PendingEvent()
-                {
-                    public void go()
-                    {
-                        _showPopUp = false;
-                        _popupText = null;
-                        _popUpImgTr = null;
-                    }
-                    @Override
-                    void onDownPress()
-                    {
-                    }
-
-                    @Override
-                    void onUpPress()
-                    {
-                    }
-                });
     }
 
-    static boolean _showPopUp;
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return true if the event was unhandled
+     */
+    public static boolean onTouch(int x, int y)
+    {
+        if (!_showPopUp)
+            return true;
+        done();
+        return false;
+    }
 
-    static String  _popupText;
+    private static boolean _showPopUp;
 
-    static float   _popupRed;
+    private static String  _popupText;
 
-    static float   _popupGreen;
+    private static float   _popupRed;
 
-    static float   _popupBlue;
+    private static float   _popupGreen;
 
-    static int     _popupSize;
+    private static float   _popupBlue;
+
+    private static int     _popupSize;
 
     static void setPopUp(String msg, int red, int green, int blue, int size)
     {
@@ -189,7 +170,7 @@ public class PopUpScene
         _popupGreen /= 256;
         _popupBlue /= 256;
         _popupSize = size;
-        _showPopUp = true;        
+        _showPopUp = true;
     }
 
     static TextureRegion _popUpImgTr;
@@ -212,8 +193,25 @@ public class PopUpScene
         _showPopUp = true;
     }
 
-    static void show(SpriteBatch _spriteRender, ALE _game)
+    static void reset()
     {
+        PreScene._popUpImgTr = null;
+        PreScene._popupText = null;
+        _showPopUp = false;
+    }
+
+    static boolean show(SpriteBatch _spriteRender, ALE _game)
+    {
+        if (!_showPopUp)
+            return false;
+
+        // next we clear the color buffer and set the camera matrices
+        Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Level._currLevel._hudCam.update();
+        _spriteRender.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        _spriteRender.begin();
+
         if (_popUpImgTr != null)
             _spriteRender.draw(_popUpImgTr, _popUpImgX, _popUpImgY, 0, 0, _popUpImgW, _popUpImgH, 1, 1, 0);
         if (_popupText != null) {
@@ -227,5 +225,10 @@ public class PopUpScene
             f.setColor(_popupRed, _popupGreen, _popupBlue, 1);
             f.drawMultiLine(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
         }
+
+        _spriteRender.end();
+        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
+        return true;
+
     }
 }

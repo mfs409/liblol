@@ -8,7 +8,9 @@ package edu.lehigh.cse.ale;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -19,8 +21,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import edu.lehigh.cse.ale.Level.PendingEvent;
+import edu.lehigh.cse.ale.Level.Renderable;
 
-public abstract class PhysicsSprite
+public abstract class PhysicsSprite implements Renderable
 {
     /*
      * INTERNAL CLASSES
@@ -75,7 +78,11 @@ public abstract class PhysicsSprite
     PhysicsSprite(TextureRegion tr, SpriteId id, float width, float height)
     {
         _psType = id;
-        _tr = tr;
+        // minor hack so that we can have invalid png files for invisible images
+        if (tr != null)
+            // TODO: this is not going to work when we add animations, but it's
+            // necessary for now to get flipped sprites to work.
+            _tr = new TextureRegion(tr.getTexture());
         _width = width;
         _height = height;
     }
@@ -628,8 +635,6 @@ public abstract class PhysicsSprite
         _routeVec.nor();
         _routeVec.mul(_routeVelocity);
         _physBody.setLinearVelocity(_routeVec);
-        // third, make sure we get updated
-        Level._currLevel._routes.add(this);
         // and indicate that we aren't all done yet
         _routeDone = false;
     }
@@ -1815,4 +1820,33 @@ public abstract class PhysicsSprite
         _cameraOffset.y = y;
     }
 
+    boolean _flipped;
+    
+    @Override
+    public void render(SpriteBatch _spriteRender)
+    {
+        if (_visible) {
+            // possibly run a route update
+            if (_isRoute && _visible)
+                routeDriver();
+
+            // now draw this sprite
+            Vector2 pos = _physBody.getPosition();
+            if (_reverseFace && _physBody.getLinearVelocity().x < 0) {
+                if (!_flipped) {
+                    _tr.flip(true, false);
+                    _flipped = true;
+                }
+            }
+            else if (_reverseFace && _physBody.getLinearVelocity().x > 0) {
+                if (_flipped) {
+                    _tr.flip(true,  false);
+                    _flipped = false;
+                }
+            }
+            if (_tr != null)
+                _spriteRender.draw(_tr, pos.x - _width / 2, pos.y - _height / 2, _width / 2, _height / 2,
+                        _width, _height, 1, 1, MathUtils.radiansToDegrees * _physBody.getAngle());
+        }
+    }
 }

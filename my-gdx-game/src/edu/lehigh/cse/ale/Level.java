@@ -20,10 +20,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -77,70 +75,36 @@ public class Level implements MyScreen
 
         Rectangle _range;
 
-        // TODO: should not be necessary, since we have a _done flag
-        boolean   _onlyOnce;
-
         TextureRegion tr;
-
-        // TODO: remove
-        void disable()
-        {
-            _done = true;
-        }
-
-        // TODO: remove
-        void enable()
-        {
-            _done = false;
-        }
     }
 
     abstract static class HudEntity
     {
-        boolean _enabled = true;
-        abstract void render(SpriteBatch sb);
-        // override this!
-        void update(){}
-    }
-    
-    abstract static class Renderable
-    {
         abstract void render(SpriteBatch sb);
     }
-
-    abstract static class MyEvent
+    
+    interface Renderable
     {
-        abstract void onTimePassed(float elapsed);
+        void render(SpriteBatch sb);
     }
-    
-    // for now, just one list of everything we need to render...
-    public ArrayList<PhysicsSprite> _sprites;
 
-    // TODO: come up with a better plan for these various collections...
-    public ArrayList<HudEntity> _spriteUpdates;
-    
-    public ArrayList<PendingEvent>  _oneTimeEvents;
-
-    public ArrayList<PendingEvent>  _controls;
-
-    public ArrayList<PhysicsSprite> _routes;
-    
-    public ArrayList<HudEntity> _hudEntries;
-    
-    public ArrayList<Renderable> _pix;
-
+    // Eventually we need an array of 5 different renderables, for the 5
+    // indices. Note that we push some other logic into the render loop via
+    // these...
+    public ArrayList<Renderable> _sprites;
     public ArrayList<Renderable> _pix_minus_two;
-    
-    public ArrayList<PendingEvent> _repeatEvents;
-    
-    void addTouchEvent(float x, float y, float width, float height, boolean onlyOnce, PendingEvent action)
-    {
-        action._range = new Rectangle(x, y, width, height);
-        action._onlyOnce = onlyOnce;
-        action.enable();
-        _controls.add(action);
-    }
 
+    // Two types of events: those that run on the next render, and those that
+    // run on every render. Note that events do not have a sprite or render
+    // action attached to them
+    public ArrayList<PendingEvent>  _oneTimeEvents;
+    public ArrayList<PendingEvent> _repeatEvents;
+
+    // TODO: can we get by with just one list, where there are Control objects,
+    // each of which has optional render, touchDown, and a touchUp methods?
+    public ArrayList<PendingEvent>  _controls;
+    public ArrayList<HudEntity> _hudEntries;    
+    
     /*
      * INTERNAL CLASSES
      */
@@ -163,7 +127,8 @@ public class Level implements MyScreen
 
     // debug only
     private ShapeRenderer _shapeRender;
-    
+
+    // This is the sprite that the camera chases
     PhysicsSprite _chase;
     
     // box2d world
@@ -208,24 +173,25 @@ public class Level implements MyScreen
         _bgCam = new ParallaxCamera(camWidth, camHeight);
         _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
         
-        // next we create the box2d debug renderer
-        _debugRender = new Box2DDebugRenderer();
-
-        // next we create a SpriteBatch and a font
+        // next we create a renderer for drawing sprites
         _spriteRender = new SpriteBatch();
 
+        // next we create the box2d debug renderer, and the shape debug renderer
+        _debugRender = new Box2DDebugRenderer();
         _shapeRender = new ShapeRenderer();
-        
-        // A place for everything we draw...
-        _sprites = new ArrayList<PhysicsSprite>();
-        _oneTimeEvents = new ArrayList<PendingEvent>();
-        _spriteUpdates = new ArrayList<HudEntity>();
-        _controls = new ArrayList<PendingEvent>();
-        _routes = new ArrayList<PhysicsSprite>();
-        _hudEntries = new ArrayList<HudEntity>();
-        _repeatEvents = new ArrayList<PendingEvent>();
-        _pix = new ArrayList<Renderable>();
+
+        // A place for everything we draw... need 5 eventually
+        _sprites = new ArrayList<Renderable>();
         _pix_minus_two = new ArrayList<Renderable>();
+
+        // collections for all the event handlers
+        _oneTimeEvents = new ArrayList<PendingEvent>();
+        _repeatEvents = new ArrayList<PendingEvent>();
+
+        // TODO: refactor... these are for displaying hud stuff, and for detecting touches of hud stuff
+        _controls = new ArrayList<PendingEvent>();
+        _hudEntries = new ArrayList<HudEntity>();
+
         // reset tilt control...
         Tilt.reset();
 
@@ -234,22 +200,10 @@ public class Level implements MyScreen
         
         // TODO: remove this:
         Controls.addFPS(400, 15, 200, 200, 100, 12);
-        
-        _bgRed = 0;
-        _bgGreen = 0;
-        _bgBlue = 0;
+
+        Background.reset();
     }
-  
-    float _bgRed;
-    float _bgGreen;
-    float _bgBlue;
-    
-    static public void setColor(int red, int green, int blue)
-    {
-        _currLevel._bgRed = ((float)red)/255;
-        _currLevel._bgGreen = ((float)green)/255;
-        _currLevel._bgBlue = ((float)blue)/255;
-    }
+
 
     /*
      * MUSIC MANAGEMENT
@@ -288,31 +242,24 @@ public class Level implements MyScreen
     {
         playMusic();
 
-
-        // Custom code path for when there is a popup... popups incude the text
-        // we show when starting the level, and the text we show when ending the
-        // level
-        if (PopUpScene._showPopUp) {
-            // next we clear the color buffer and set the camera matrices
-            Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            _hudCam.update();
-            _spriteRender.setProjectionMatrix(_hudCam.combined);
-            _spriteRender.begin();
-            PopUpScene.show(_spriteRender, _game);
-            _spriteRender.end();
-            Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
+        // are we supposed to show a pre-scene?
+        if (PreScene.show(_spriteRender, _game))
             return;
-        }
 
+        // is the game over, such that we should be showing a post-scene?
+        if (PostScene.show(_spriteRender, _game))
+            return;
+        
         // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
         Tilt.handleTilt();
 
         // handle routes
+        /*
         for (PhysicsSprite ps : _routes) {
             if (ps._isRoute && ps._visible)
                 ps.routeDriver();
         }
+        */
         
         // TODO: do we want to do fixed steps?  See Level1.java?
         
@@ -332,13 +279,8 @@ public class Level implements MyScreen
         for (PendingEvent pe : _repeatEvents)
             pe.go();
 
-        // now do any sprite updates
-        for (HudEntity he : _spriteUpdates)
-            if (he._enabled)
-                he.update();
-        
         // next we clear the color buffer and set the camera matrices
-        Gdx.gl.glClearColor(_bgRed, _bgGreen, _bgBlue, 1);
+        Gdx.gl.glClearColor(Background._bgRed, Background._bgGreen, Background._bgBlue, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         // prepare the main camera... we do it here, so that the parallax code knows where to draw...
@@ -346,7 +288,7 @@ public class Level implements MyScreen
         _gameCam.update();
 
         // do the parallax background
-        doParallaxLayers();
+        Background.doParallaxLayers(_spriteRender);
         
         // next we render each box via the SpriteBatch
         _spriteRender.setProjectionMatrix(_gameCam.combined);
@@ -354,16 +296,8 @@ public class Level implements MyScreen
         
         for (Renderable r : _pix_minus_two)
             r.render(_spriteRender);
-        // TODO: this should be merged with the _sprites...
-        for (Renderable r : _pix)
+        for (Renderable r : _sprites) {
             r.render(_spriteRender);
-        for (PhysicsSprite ps : _sprites) {
-            if (ps._visible) {
-                Vector2 pos = ps._physBody.getPosition();
-                float angle = MathUtils.radiansToDegrees * ps._physBody.getAngle();
-                _spriteRender.draw(ps._tr, pos.x - ps._width / 2, pos.y - ps._height / 2, ps._width / 2,
-                        ps._height / 2, ps._width, ps._height, 1, 1, angle);
-            }
         }
         _spriteRender.end();
 
@@ -396,67 +330,6 @@ public class Level implements MyScreen
         }        
     }
 
-    static class ParallaxLayer
-    {
-        float _xSpeed;
-        float _ySpeed;
-        TextureRegion _tr;
-        float _xOffset;
-        float _yOffset;
-        boolean _xRepeat;
-        boolean _yRepeat;
-        
-        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset)
-        {
-            _xSpeed = xSpeed;
-            _ySpeed = ySpeed;
-            _tr = tr;
-            _xOffset = xOffset;
-            _yOffset = yOffset;
-        }        
-    }
-    
-    ArrayList<ParallaxLayer> _layers = new ArrayList<ParallaxLayer>();
-    
-    static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset)
-    {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName), 0, yOffset*Physics.PIXEL_METER_RATIO);
-        pl._xRepeat = xSpeed != 0;
-        _currLevel._layers.add(pl);
-    }
-    
-    void doParallaxLayers()
-    {
-        // center camera on _gameCam's camera
-        float x = _gameCam.position.x;
-        float y = _gameCam.position.y;
-        _bgCam.position.set(x, y, 0);
-        _bgCam.update();
-        
-        for (ParallaxLayer pl : _layers) {
-            _spriteRender.setProjectionMatrix(_bgCam.calculateParallaxMatrix(pl._xSpeed*Physics.PIXEL_METER_RATIO, pl._ySpeed*Physics.PIXEL_METER_RATIO));
-            _spriteRender.begin();
-            if (pl._xRepeat) {
-                int i = -(int)pl._tr.getRegionWidth()/2;
-                while (i/Physics.PIXEL_METER_RATIO < x + _camBoundX) {
-                    // TODO: verify that GDX culls... otherwise, we should manually cull...
-                    _spriteRender.draw(pl._tr,  i,  0+pl._yOffset);
-                    // Gdx.app.log("parallax", x+" "+_width + " " + pl._tr.getRegionWidth() + " " + i);
-                    i+=pl._tr.getRegionWidth();
-                }
-            }
-            else if (pl._yRepeat) {
-                // TODO: vertical repeat... note that we don't support vertical
-                // and horizontal repeat... should we? 'twould allow for easy
-                // tiled backgrounds...
-            }
-            else {
-                // probably the background layer...
-                _spriteRender.draw(pl._tr, -pl._tr.getRegionWidth()/2,  0);
-            }
-            _spriteRender.end();            
-        }        
-    }
     
     void adjustCamera()
     {
@@ -536,13 +409,17 @@ public class Level implements MyScreen
     @Override
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
+        // should we forward to PreScene or PostScene?
+        if (!PreScene.onTouch(x, y))
+            return false;
+        if (!PostScene.onTouch(x, y))
+            return false;
+        
         // check for HUD touch:
         for (PendingEvent pe : _controls) {
             if (!pe._done) {
                 _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
-                    if (pe._onlyOnce)
-                        pe.disable();
                     pe.onDownPress();
                     return false;
                 }
@@ -617,8 +494,6 @@ public class Level implements MyScreen
             if (!pe._done) {
                 _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
-                    if (pe._onlyOnce)
-                        pe.disable();
                     pe.onUpPress();
                     return false;
                 }
@@ -693,10 +568,12 @@ public class Level implements MyScreen
     {
         _currLevel = new Level(width, height, ALE._game);
         _gameOver = false;
-        // TODO: make orthogonal
-        PopUpScene._popUpImgTr = null;
-        PopUpScene._popupText = null;
+
+        PreScene.reset();
+        PostScene.reset();
+
         // TODO: make it so there is no popup if these are null
+        // TODO: move to postscene
         Level._textYouWon = "Next Level";
         Level._textYouLost = "Try Again";
     }

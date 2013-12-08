@@ -2,9 +2,9 @@ package edu.lehigh.cse.ale;
 
 // ALE PORT STATUS: COMPLETE
 
-import com.badlogic.gdx.utils.Timer;
+// TODO: need to refactor and simplify... first two methods could go in PostScene
 
-import edu.lehigh.cse.ale.Level.PendingEvent;
+import com.badlogic.gdx.utils.Timer;
 
 public class Score
 {
@@ -40,33 +40,15 @@ public class Score
         //
         // NB: we can call setpopupimage too, which would make this all
         // "just work" for ALE, though still not orthogonal
-        PopUpScene.setPopUp(loseText, 255, 255, 255, 32);
+        PostScene.setPopUp(loseText, 255, 255, 255, 32);
         if (Level._backgroundYouLost != null) {
-            PopUpScene.setPopUpImage(Media.getImage(Level._backgroundYouLost), 0, 0,
+            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouLost), 0, 0,
                     ALE._game._config.getScreenWidth(), ALE._game._config.getScreenHeight());
         }
+        PostScene._win = false;
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
-        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
-                ALE._game._config.getScreenHeight(), true, new PendingEvent()
-                {
-                    public void go()
-                    {
-                        PopUpScene._showPopUp = false;
-                        ALE._game.doPlayLevel(ALE._game._currLevel);
-                    }
-
-                    @Override
-                    void onDownPress()
-                    {
-                    }
-
-                    @Override
-                    void onUpPress()
-                    {
-                    }
-                });
     }
 
     /**
@@ -99,38 +81,15 @@ public class Score
         //
         // NB: we can call setpopupimage too, which would make this all
         // "just work" for ALE, though still not orthogonal
-        PopUpScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
+        PostScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
         if (Level._backgroundYouWon != null) {
-            PopUpScene.setPopUpImage(Media.getImage(Level._backgroundYouWon), 0, 0, ALE._game._config.getScreenWidth(),
+            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouWon), 0, 0, ALE._game._config.getScreenWidth(),
                     ALE._game._config.getScreenHeight());
         }
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
-        Level._currLevel.addTouchEvent(0, 0, ALE._game._config.getScreenWidth(),
-                ALE._game._config.getScreenHeight(), true, new PendingEvent()
-                {
-                    public void go()
-                    {
-                        PopUpScene._showPopUp = false;
-                        if (ALE._game._currLevel == ALE._game._config.getNumLevels())
-                            ALE._game.doChooser();
-                        else {
-                            ALE._game._currLevel++;
-                            ALE._game.doPlayLevel(ALE._game._currLevel);
-                        }
-                    }
-                    @Override
-                    void onDownPress()
-                    {
-                    }
-
-                    @Override
-                    void onUpPress()
-                    {
-                    }
-
-                });
+        PostScene._win = true;
     }
 
     /*

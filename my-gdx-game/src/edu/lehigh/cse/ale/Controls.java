@@ -13,10 +13,22 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import edu.lehigh.cse.ale.Level.HudEntity;
 import edu.lehigh.cse.ale.Level.PendingEvent;
+import edu.lehigh.cse.ale.Level.Renderable;
 
 
 public class Controls
 {
+    class Control implements Renderable
+    {
+
+        @Override
+        public void render(SpriteBatch sb)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    }
+        
     /*
      * BASIC FUNCTIONALITY
      */
@@ -820,7 +832,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -874,7 +885,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -928,7 +938,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -982,7 +991,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1108,28 +1116,31 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*    public static void addCrawlButton(int x, int y, int width, int height, String imgName)
+    public static void addCrawlButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress()
             {
-                Hero h = Level._lastHero;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    h.crawlOn();
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    h.crawlOff();
-                    return true;
-                }
-                return false;
+                h.crawlOn();
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+                h.crawlOff();
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName);
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);
     }
 
     /**
@@ -1167,7 +1178,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1348,7 +1358,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1393,7 +1402,6 @@ public class Controls
         };
         if (!imgName.equals(""))
             pe.tr = Media.getImage(imgName);
-        pe._onlyOnce = false;
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        

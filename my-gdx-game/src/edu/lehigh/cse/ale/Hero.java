@@ -12,8 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 
-import edu.lehigh.cse.ale.Level.HudEntity;
-
 public class Hero extends PhysicsSprite
 {
 
@@ -245,29 +243,7 @@ public class Hero extends PhysicsSprite
 
         // deal with invincibility
         if (g._invincibilityDuration > 0) {
-            if (_invincibleRemaining == 0) {
-                // register an invincibility update handler
-                Level._currLevel._spriteUpdates.add(new HudEntity()
-                {
-                    // this one is a no-op
-                    //
-                    // TODO: refactor so that we have a type other than HudEntity for this
-                    @Override
-                    void render(SpriteBatch sb)
-                    {
-                    }
-
-                    @Override
-                    void update()
-                    {
-                        _invincibleRemaining -= Gdx.graphics.getDeltaTime();
-                        if (_invincibleRemaining < 0) {
-                            _invincibleRemaining = 0;
-                            _enabled = false;
-                        }
-                    }
-                });
-            }
+            
             // update the time to end invincibility
             _invincibleRemaining += g._invincibilityDuration;
             
@@ -484,10 +460,20 @@ public class Hero extends PhysicsSprite
     @Override
     void handleTouchDown(float x, float y)
     {
-        if (_isTouchJump)
+        if (_isTouchJump) {
             jump();
-        else
+        }
+        else if (_isTouchAndGo) {
+            _hover = false;
+            if (_physBody.getType() != BodyType.DynamicBody)
+                _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
+            addVelocity(_xVelocityTouchGo, _yVelocityTouchGo);
+            // turn off _isTouchAndGo, so we can't double-touch
+            _isTouchAndGo = false;
+        }
+        else {
             super.handleTouchDown(x, y);
+        }
     }
     
     /**
@@ -608,29 +594,29 @@ public class Hero extends PhysicsSprite
     /**
      * Put the hero in crawl mode
      */
-    /*
     void crawlOn()
     {
         _crawling = true;
-        _physBody.setTransform(_physBody.getPosition(), 3.14159f / 2);
-        _sprite.setRotation(90);
-        if (_crawlAnimateDurations != null)
-            _sprite.animate(_crawlAnimateDurations, _crawlAnimateCells, true);
+        _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
+        //_sprite.setRotation(90);
+        // TODO:
+        // if (_crawlAnimateDurations != null)
+        //    _sprite.animate(_crawlAnimateDurations, _crawlAnimateCells, true);
     }
 
     /**
      * Take the hero out of crawl mode
      */
-    /*
     void crawlOff()
     {
         _crawling = false;
         _physBody.setTransform(_physBody.getPosition(), 0);
-        _sprite.setRotation(0);
-        if (_defaultAnimateCells != null)
-            _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-        else
-            _sprite.stopAnimation(0);
+        // _sprite.setRotation(0);
+        // TODO:
+//        if (_defaultAnimateCells != null)
+//            _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
+//        else
+//            _sprite.stopAnimation(0);
     }
 
     /**
@@ -840,4 +826,18 @@ public class Hero extends PhysicsSprite
         super.onSpriteManagedUpdate();
     }
     */
+
+    @Override
+    public void render(SpriteBatch _spriteRender)
+    {
+        // on each hero render, update invincibility status
+        if (_invincibleRemaining > 0) {
+            _invincibleRemaining -= Gdx.graphics.getDeltaTime();
+            if (_invincibleRemaining < 0) {
+                _invincibleRemaining = 0;
+            }
+        }
+        
+        super.render(_spriteRender);
+    }
 }

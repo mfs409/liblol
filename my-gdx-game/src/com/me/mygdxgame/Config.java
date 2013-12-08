@@ -7,7 +7,7 @@ import edu.lehigh.cse.ale.ALEConfiguration;
 public class Config extends ALEConfiguration {
 	@Override
 	public int getNumLevels() {
-		return 73;
+		return 80;
 	}
 
 	@Override
