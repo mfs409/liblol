@@ -463,7 +463,7 @@ public class Hero extends PhysicsSprite
         }
         // throw a projectile?
         else if (_isTouchThrow) {
-            Projectile.throwFixed(_physBody.getPosition().x, _physBody.getPosition().y);
+            Projectile.throwFixed(_physBody.getPosition().x, _physBody.getPosition().y, this);
         }
 
         else {
@@ -507,12 +507,7 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: cells involved in animation for throwing
      */
-    private int[]   _throwAnimateCells;
-
-    /**
-     * Animation support: durations for jumping throwing
-     */
-    private long[]  _throwAnimateDurations;
+    private Animation _throwAnimation;
 
     /**
      * Animation support: seconds that constitute a throw action
@@ -522,7 +517,7 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: how long until we stop showing the throw animation
      */
-    private float   _throwingUntil;
+    private float   _throwAnimationTimeRemaining;
 
     /**
      * Indicate that touching this hero should make it throw a projectile
@@ -535,12 +530,11 @@ public class Hero extends PhysicsSprite
     /**
      * Internal method to make the hero's throw animation play while it is throwing a projectile
      */
-    /*
     void doThrowAnimation()
     {
-        if (_throwAnimateDurations != null) {
-            _sprite.animate(_throwAnimateDurations, _throwAnimateCells, false);
-            _throwingUntil = ALE._self.getEngine().getSecondsElapsedTotal() + _throwAnimateTotalLength;
+        if (_throwAnimation != null) {
+            _currentAnimation = _throwAnimation;
+            _throwAnimationTimeRemaining = _throwAnimateTotalLength;
         }
     }
 
@@ -552,14 +546,13 @@ public class Hero extends PhysicsSprite
      * @param durations
      *            How long to show each cell
      */
-    public void setThrowAnimation(int cells[], long durations[])
+    public void setThrowAnimation(Animation a)
     {
-        _throwAnimateCells = cells;
-        _throwAnimateDurations = durations;
+        _throwAnimation = a;
         // compute the length of the throw sequence, so that we can get our
         // timer right for restoring the default animation
         _throwAnimateTotalLength = 0;
-        for (long l : durations)
+        for (long l : a._durations)
             _throwAnimateTotalLength += l;
         _throwAnimateTotalLength /= 1000; // convert to seconds
     }
@@ -806,14 +799,6 @@ public class Hero extends PhysicsSprite
             _glowing = false;
         }
 
-        // determine when to turn off throw animations
-        if ((_throwingUntil != 0) && (_throwingUntil < now)) {
-            if (_defaultAnimateCells != null)
-                _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-            else
-                _sprite.stopAnimation(0);
-            _throwingUntil = 0;
-        }
 
         super.onSpriteManagedUpdate();
     }
@@ -822,6 +807,17 @@ public class Hero extends PhysicsSprite
     @Override
     public void render(SpriteBatch _spriteRender, float delta)
     {
+        // determine when to turn off throw animations
+        if (_throwAnimationTimeRemaining > 0) {
+            _throwAnimationTimeRemaining -= delta;
+            if (_throwAnimationTimeRemaining < 0) {
+                _throwAnimationTimeRemaining = 0;
+                _currentAnimation = _defaultAnimation;
+                _currAnimationFrame = 0;
+                _currAnimationTime = 0;
+            }
+        }
+
         // on each hero render, update invincibility status
         if (_invincibleRemaining > 0) {
             _invincibleRemaining -= delta;

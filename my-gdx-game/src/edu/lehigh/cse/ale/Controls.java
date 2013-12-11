@@ -1154,7 +1154,7 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
-                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y);
+                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
             }
             @Override
             void go()
@@ -1194,7 +1194,7 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
-                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y);
+                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
             }
             @Override
             void go()
@@ -1238,7 +1238,7 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
-                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y);
+                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
             }
             @Override
             void go()
@@ -1281,7 +1281,7 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
-                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y);
+                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
             }
             @Override
             void go()

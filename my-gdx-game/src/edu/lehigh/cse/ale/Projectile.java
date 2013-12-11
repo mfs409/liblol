@@ -276,9 +276,6 @@ public class Projectile extends PhysicsSprite
         //_negGravity.x = -Level._initXGravity;
         //_negGravity.y = -Level._initYGravity;
         _range = 1000;
-        // zero out animation
-        _animationCells = null;
-        _animationDurations = null;
         _throwSound = null;
         _projectileDisappearSound = null;
         _projectilesRemaining = -1;
@@ -339,16 +336,6 @@ public class Projectile extends PhysicsSprite
      */
 
     /**
-     * Order in which to display cells when the projectile is animated
-     */
-    private static int[]  _animationCells;
-
-    /**
-     * Durations during which cells are displayed when the projectile is animated
-     */
-    private static long[] _animationDurations;
-
-    /**
      * Specify how projectiles should be animated
      * 
      * @param frames
@@ -356,10 +343,10 @@ public class Projectile extends PhysicsSprite
      * @param durations
      *            time to display each frame
      */
-    public static void setAnimation(int[] frames, long[] durations)
+    public static void setAnimation(Animation a)
     {
-        _animationCells = frames;
-        _animationDurations = durations;
+        for (Projectile p : _pool)
+            p.setDefaultAnimation(a);
     }
 
     /*
@@ -409,7 +396,7 @@ public class Projectile extends PhysicsSprite
      * @param yy
      *            y coordinate of the top left corner of the thrower
      */
-    static void throwFixed(float xx, float yy)
+    static void throwFixed(float xx, float yy, Hero h)
     {
         // have we reached our limit?
         if (_projectilesRemaining == 0)
@@ -460,8 +447,7 @@ public class Projectile extends PhysicsSprite
         b._disappearSound = _projectileDisappearSound;
 
         // now animate the hero to do the throw:
-        // TODO
-        // Level._lastHero.doThrowAnimation();
+        h.doThrowAnimation();
     }
 
     /**
@@ -476,7 +462,7 @@ public class Projectile extends PhysicsSprite
      * @param toY
      *            y coordinate of the point at which to throw
      */
-    static void throwAt(float heroX, float heroY, float toX, float toY)
+    static void throwAt(float heroX, float heroY, float toX, float toY, Hero h)
     {
         // TODO: be sure to use rangeFrom!
 
@@ -552,8 +538,7 @@ public class Projectile extends PhysicsSprite
         b._disappearSound = _projectileDisappearSound;
 
         // now animate the hero to do the throw:
-        // TODO
-//        Level._lastHero.doThrowAnimation();
+        h.doThrowAnimation();
     }
 
     /*

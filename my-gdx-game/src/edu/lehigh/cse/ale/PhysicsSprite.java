@@ -1798,17 +1798,17 @@ public abstract class PhysicsSprite implements Renderable
                 //
                 // TODO: we can simplify this code
                 if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
-                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
                 }
                 // are we on the last frame, with no loop? If so, stay where we are...
                 else if (_currAnimationFrame == _currentAnimation._nextCell - 1 && !_currentAnimation._loop) {
-                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
                 }
                 // else advance, reset, go
                 else {
                     _currAnimationFrame = (_currAnimationFrame + 1) % _currentAnimation._nextCell;
                     _currAnimationTime = 0;
-                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
                 }
             }
             

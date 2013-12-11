@@ -47,6 +47,7 @@ public class MyGdxGame extends ALE
     @Override
     public void nameResources()
     {
+        // load regular (non-animated) images
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");
         Media.registerImage("red.png");
@@ -58,20 +59,17 @@ public class MyGdxGame extends ALE
         Media.registerImage("splash.png");
         Media.registerImage("greyball.png");
 
-        // TODO: make it so that we can just use "" as invis...
-        // Status: should be good, need to test
-        Media.registerImage("invis.png");
-
         // parallax stuff
         Media.registerImage("mid.png");
         Media.registerImage("front.png");
         Media.registerImage("back.png");
 
-        // TODO: these images do not work correctly yet...
+        // animated images
         Media.registerAnimatableImage("stars.png", 8, 1);
         Media.registerAnimatableImage("flystar.png", 2, 1);
         Media.registerAnimatableImage("starburst.png", 4, 1);
-
+        Media.registerAnimatableImage("colorstar.png", 8, 1);
+        
         // sounds
         Media.registerSound("hipitch.ogg");
         Media.registerSound("lowpitch.ogg");
@@ -79,6 +77,7 @@ public class MyGdxGame extends ALE
         Media.registerSound("slowdown.ogg");
         Media.registerSound("woowoowoo.ogg");
         Media.registerSound("fwapfwap.ogg");
+        Media.registerSound("winsound.ogg");
 
         // Background music
         Media.registerMusic("tune.ogg", true);
@@ -2073,7 +2072,7 @@ public class MyGdxGame extends ALE
          * @whatsnew: projectile animations
          * 
          * @whatsnew: animations when the hero throws a projectile
-         *  /
+         */
         else if (whichLevel == 52) {
             // set up a basic level
             Level.configure(48, 32);
@@ -2081,26 +2080,22 @@ public class MyGdxGame extends ALE
             Tilt.enable(10, 10);
             PreScene.showTextTimed("Press the hero\nto make it\nthrow a ball", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up our hero
-            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "colorstar.png");
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "colorstar.png");
             h.setPhysics(1, 0, 0.6f);
             h.setTouchToThrow();
             h.setMoveByTilting();
 
             // set up an animation when the hero throws:
-            int tCells[] = { 3, 4 };
-            long tDurations[] = { 100, 500 };
-            h.setThrowAnimation(tCells, tDurations);
+            h.setThrowAnimation(new Animation("colorstar.png", 2, false).to(3, 100).to(4,  500));
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
-            Projectile.configure(100, 10, 10, "flystar.png", 0, -10, 20, -5, 1);
-            int pCells[] = { 0, 1 };
-            long pDurations[] = { 100, 100 };
-            Projectile.setAnimation(pCells, pDurations);
+            Projectile.configure(100, 1, 1, "flystar.png", 0, 10, 0, -.5f, 1);
+            Projectile.setAnimation(new Animation("flystar.png", 2, true).to(0, 100).to(1, 100));
         }
 
         /**
