@@ -244,13 +244,14 @@ public class Hero extends PhysicsSprite
             // update the time to end invincibility
             _invincibleRemaining += g._invincibilityDuration;
             
-            /*
-             TODO: deal with invincibility animation
-            if (_invincibleAnimateDurations != null) {
-                _sprite.animate(_invincibleAnimateDurations, _invincibleAnimateCells, true);
+            // invincible animation
+            if (_invincibleAnimation != null) {
+                // TODO: make next 3 lines a method!
+                _currentAnimation = _invincibleAnimation;
+                _currAnimationFrame = 0;
+                _currAnimationTime = 0;
                 _glowing = true;
             }
-            */
         }
 
         // deal with animation changes due to goodie count
@@ -635,12 +636,7 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: cells involved in animation for invincibility
      */
-    private int[]   _invincibleAnimateCells;
-
-    /**
-     * Animation support: durations for invincibility animation
-     */
-    private long[]  _invincibleAnimateDurations;
+    private Animation   _invincibleAnimation;
 
     /**
      * Register an animation sequence, so that this hero can have a custom animation while invincible
@@ -650,10 +646,9 @@ public class Hero extends PhysicsSprite
      * @param durations
      *            How long to show each cell
      */
-    public void setInvincibleAnimation(int[] cells, long[] durations)
+    public void setInvincibleAnimation(Animation a)
     {
-        _invincibleAnimateCells = cells;
-        _invincibleAnimateDurations = durations;
+        _invincibleAnimation = a;
     }
 
     /*
@@ -822,8 +817,15 @@ public class Hero extends PhysicsSprite
         if (_invincibleRemaining > 0) {
             _invincibleRemaining -= delta;
             if (_invincibleRemaining < 0) {
+                Gdx.app.log("invince", "over");
                 _invincibleRemaining = 0;
-                // TODO: reset animation
+                // reset animation
+                if (_glowing) {
+                    _currentAnimation = _defaultAnimation;
+                    _currAnimationFrame = 0;
+                    _currAnimationTime = 0;
+                    _glowing = false;
+                }
             }
         }
         

@@ -2114,7 +2114,7 @@ public class MyGdxGame extends ALE
          * @whatsnew: enemies that do damage even when the hero is invincible
          * 
          * @whatsnew: display a picture when the level is won
-         *  /
+         */
         else if (whichLevel == 53) {
             // set up a basic level
             Level.configure(48, 32);
@@ -2122,24 +2122,20 @@ public class MyGdxGame extends ALE
             Tilt.enable(10, 10);
             PreScene.showTextTimed("The blue ball will\nmake you invincible\nfor 15 seconds", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
+            Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make an animated hero, and also give it an invincibility
             // animation
-            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "colorstar.png");
-            h.setPhysics(1, 0, 0.6f);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "colorstar.png");
+            h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            int[] cells = { 0, 1, 2, 3 };
-            long[] durations = { 300, 300, 300, 300 };
-            h.setDefaultAnimation(cells, durations);
-            int[] icells = { 4, 5, 6, 7 };
-            long[] idurations = { 100, 100, 100, 100 };
-            h.setInvincibleAnimation(icells, idurations);
+            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0,300).to(1,300).to(2,300).to(3,300));
+            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100).to(7, 100));
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
-                Enemy e = Enemy.makeAsCircle(50 * i + 10, 250, 20, 20, "redball.png");
+                Enemy e = Enemy.makeAsCircle(5 * i + 1, 25, 2, 2, "redball.png");
                 e.setPhysics(1.0f, 0.3f, 0.6f);
                 e.setRotationSpeed(1);
                 e.setDamage(4);
@@ -2156,17 +2152,17 @@ public class MyGdxGame extends ALE
                     e.setResistInvincibility();
             }
             // neat trick: this enemy does zero damage, but slows the hero down.
-            Enemy e = Enemy.makeAsCircle(300, 200, 20, 20, "redball.png");
+            Enemy e = Enemy.makeAsCircle(30, 20, 2, 2, "redball.png");
             e.setPhysics(10, 0.3f, 0.6f);
             e.setMoveByTilting();
             e.setDamage(0);
 
             // add a goodie that makes the hero invincible
-            Goodie g = Goodie.makeAsCircle(300, 300, 10, 10, "blueball.png");
+            Goodie g = Goodie.makeAsCircle(30, 30, 1, 1, "blueball.png");
             g.setInvincibilityDuration(15);
-            g.setRoute(new Route(3).to(300, 300).to(100, 100).to(300, 300), 5, true);
+            g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
-            Controls.addGoodieCount(0, "Goodies", 220, 280);
+            Controls.addGoodieCount1(0, "Goodies", 220, 280);
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture
