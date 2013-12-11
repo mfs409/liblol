@@ -602,7 +602,7 @@ public abstract class PhysicsSprite implements Renderable
         _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
         _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
         _routeVec.nor();
-        _routeVec.mul(_routeVelocity);
+        _routeVec.scl(_routeVelocity);
         _physBody.setLinearVelocity(_routeVec);
         // and indicate that we aren't all done yet
         _routeDone = false;
@@ -638,7 +638,7 @@ public abstract class PhysicsSprite implements Renderable
                     _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
                     _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
                     _routeVec.nor();
-                    _routeVec.mul(_routeVelocity);
+                    _routeVec.scl(_routeVelocity);
                     _physBody.setLinearVelocity(_routeVec);
 
                     return;
@@ -653,7 +653,7 @@ public abstract class PhysicsSprite implements Renderable
                 _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
                 _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
                 _routeVec.nor();
-                _routeVec.mul(_routeVelocity);
+                _routeVec.scl(_routeVelocity);
                 _physBody.setLinearVelocity(_routeVec);
                 return;
             }   
@@ -1228,10 +1228,16 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * The currently running animation
      */
-    Animation _currentAnimation;
-    int _currAnimationFrame;
-    float _currAnimationTime;
+    private Animation _currentAnimation;
+    private int _currAnimationFrame;
+    private float _currAnimationTime;
     
+    void setCurrentAnimation(Animation a)
+    {
+        _currentAnimation = a;
+        _currAnimationFrame = 0;
+        _currAnimationTime = 0;
+    }
     
     /**
      * Animation support: the cells of the disappearance animation
@@ -1271,7 +1277,7 @@ public abstract class PhysicsSprite implements Renderable
     {
         _defaultAnimation = a;
         // we'll assume we're using the default animation as our first animation...
-        _currentAnimation = _defaultAnimation;
+        setCurrentAnimation(_defaultAnimation);
     }
 
     /**

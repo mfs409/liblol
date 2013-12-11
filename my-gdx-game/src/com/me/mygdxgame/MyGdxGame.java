@@ -1,6 +1,8 @@
 package com.me.mygdxgame;
 
-// STATUS: ready to start 52
+// STATUS: working on 58
+
+// TODO: test mult-touch on level 54
 
 // TODO: once everything works, aggressively comment and reduce visibility as much as possible
 
@@ -2181,43 +2183,38 @@ public class MyGdxGame extends ALE
          * @whatsnew: crawl animation
          * 
          * @whatsnew: show a picture when the level is lost
-         *  /
+         */
         else if (whichLevel == 54) {
             // make a simple level:
-            Level.configure(3 * 48, 32, 0, 10);
-            PreScene
-                    .showTextTimed("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.", 1);
+            Level.configure(3 * 48, 32); Physics.configure(0, -10);
+            PreScene.showTextTimed("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
-            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero with fixed velocity, and give it crawl and jump
             // animations
-            Hero h = Hero.makeAsBox(20, 250, 30, 70, "stars.png");
+            Hero h = Hero.makeAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
-            h.addVelocity(5, 0);
-            int hcells[] = { 0, 1, 2, 3 };
-            long hplan[] = { 100, 300, 300, 100 };
-            h.setCrawlAnimation(hcells, hplan);
-            int jcells[] = { 4, 5, 6, 7 };
-            long jplan[] = { 200, 200, 200, 200 };
-            h.setJumpAnimation(jcells, jplan);
+            h.addVelocity(15, 0);
+            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0,100).to(1,300).to(2, 300).to(3, 100));
+            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
 
             // enable hero jumping and crawling
             h.setJumpImpulses(0, -10);
-            Controls.addJumpButton(0, 0, 230, 320, "invis.png");
-            Controls.addCrawlButton(231, 0, 460, 320, "invis.png");
+            Controls.addJumpButton(0, 0, 240, 320, "", h);
+            Controls.addCrawlButton(241, 0, 480, 320, "", h);
 
             // add an enemy we can defeat via crawling, just for fun. It should
-            // be defeated even by
-            // a "jump crawl"
-            Enemy e = Enemy.makeAsCircle(1100, 270, 50, 50, "redball.png");
+            // be defeated even by a "jump crawl"
+            Enemy e = Enemy.makeAsCircle(110, 1, 5, 5, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setDefeatByCrawl();
 
             // include a picture on the "try again" screen
             Level.setBackgroundLoseImage("splash.png");
             Level.setLoseText("Oh well...");
+            Level.setCameraChase(h);
         }
 
         /**
@@ -2228,7 +2225,7 @@ public class MyGdxGame extends ALE
          *               changes via goodie count. This can, for example, allow
          *               a hero to change (e.g., get healthier)
          *               by swapping through images as goodies are collected
-         *  /
+         */
         else if (whichLevel == 55) {
             // set up a basic level with a bunch of goodies
             Level.configure(48, 32);
@@ -2236,14 +2233,14 @@ public class MyGdxGame extends ALE
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             for (int i = 0; i < 8; ++i)
-                Goodie.makeAsCircle(50 + 20 * i, 50 + 20 * i, 20, 20, "blueball.png");
-            Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-            d.setActivationScore(8);
+                Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
+            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            d.setActivationScore(8, 0, 0, 0);
             Level.setVictoryDestination(1);
 
             // Note: colorstar.png has 8 cells...
-            Hero h = Hero.makeAsCircle(40, 270, 30, 30, "colorstar.png");
-            h.setPhysics(1, 0, 0.6f);
+            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "colorstar.png");
+            h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             // set up the animation by matching the cell in the image to a
             // specific goodie count.
@@ -2253,9 +2250,9 @@ public class MyGdxGame extends ALE
             //
             // note: no change for goodie count 3, and remember that 0 is the
             // default picture so it's showing already
-            int counts[] = { 1, 2, 4, 5, 6, 7, 8 };
-            int cells[] = { 2, 1, 3, 4, 5, 6, 7 };
-            h.setAnimateByGoodieCount(counts, cells);
+            //
+            // Note: this is ugly, because we are matching the frames, but duration is actually the goodie count
+            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2).to(4, 3).to(5, 4).to(6, 5).to(7, 6).to(3, 8));
         }
 
         /**
@@ -2272,7 +2269,7 @@ public class MyGdxGame extends ALE
          *            of these obstacles to disappear after defeating an enemy
          * 
          * @whatsnew: moveable obstacles
-         *  /
+         */
         else if (whichLevel == 56) {
             // make a basic level, but increase the speed of gravity updates
             Level.configure(48, 32);
@@ -2281,7 +2278,7 @@ public class MyGdxGame extends ALE
             Tilt.setGravityMultiplier(3);
             PreScene.showTextTimed("You can defeat\ntwo enemies with\nthe blue ball", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
 
@@ -2290,35 +2287,35 @@ public class MyGdxGame extends ALE
             Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20, 255, 0, 0, 10);
 
             // make a moveable obstacle that can defeat enemies
-            Obstacle o = Obstacle.makeAsCircle(100, 20, 40, 40, "blueball.png");
-            o.setPhysics(1, 0, 0.6f);
+            Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
+            o.setPhysics(.1f, 0, 0.6f);
             o.setMoveByTilting();
             o.setEnemyCollisionTrigger(0, 0);
 
             // make a small obstacle that can also defeat enemies, but doesn't
             // disappear
-            Obstacle o2 = Obstacle.makeAsCircle(5, 5, 20, 20, "blueball.png");
+            Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
             o2.setEnemyCollisionTrigger(0, 1);
 
             // this enemy has a triggerID of 1... no obstacle will defeat it
-            Enemy e = Enemy.makeAsCircle(400, 20, 40, 40, "redball.png");
+            Enemy e = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
             e.setPhysics(1, 0, 0.6f);
             e.setMoveByTilting();
 
             // This enemy also has a triggerID of 1... no obstacle will defeat
             // it
-            Enemy e1 = Enemy.makeAsCircle(400, 20, 40, 40, "redball.png");
+            Enemy e1 = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
             e1.setPhysics(1, 0, 0.6f);
 
             // these enemies have class 7... our obstacles will defeat them
-            Enemy e2 = Enemy.makeAsCircle(400, 220, 40, 40, "redball.png");
+            Enemy e2 = Enemy.makeAsCircle(40, 22, 4, 4, "redball.png");
             e2.setPhysics(1, 0, 0.6f);
             e2.setMoveByTilting();
             e2.setInfoText("weak");
 
-            Enemy e3 = Enemy.makeAsCircle(400, 120, 40, 40, "redball.png");
+            Enemy e3 = Enemy.makeAsCircle(40, 12, 4, 4, "redball.png");
             e3.setPhysics(1, 0, 0.6f);
             e3.setMoveByTilting();
             e3.setInfoText("weak");
@@ -2333,31 +2330,31 @@ public class MyGdxGame extends ALE
          * @description: this level shows an odd way of moving the hero. There's
          *               friction on the floor, so it can only
          *               move by tilting while the hero is in the air
-         *  /
+         */
         else if (whichLevel == 57) {
             // set up a side scroller level, but give the bounding box some
             // friction
-            Level.configure(3 * 48, 32, 0, 10);
+            Level.configure(3 * 48, 32);Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a box hero with friction... it won't roll on the floor, so
             // it's stuck!
-            Hero h = Hero.makeAsBox(20, 20, 30, 30, "stars.png");
+            Hero h = Hero.makeAsBox(2, 2, 3, 3, "stars.png");
             h.disableRotation();
-            h.setPhysics(1, 0, 0.6f);
+            h.setPhysics(.1f, 0, 5);
             h.setTouchToJump();
             h.setMoveByTilting();
-            h.setJumpImpulses(0, -10);
+            h.setJumpImpulses(0, 15);
 
+            Level.setCameraChase(h);
+            
             // draw a background
             Background.setColor(0, 0, 255);
-            Background.addLayer("mid.png", -20, 0, 116);
-            Background.setScrollFactor(20);
-        }
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);        }
 
         /**
          * @level: 58
@@ -2375,25 +2372,26 @@ public class MyGdxGame extends ALE
          * @whatsnew: make projectiles that have a randomly selected image
          * 
          * @whatsnew: show how many shots are left
-         *  /
+         */
         else if (whichLevel == 58) {
             // make a simple level with left/right tilt and Y gravity
-            Level.configure(48, 32, 0, 10);
+            Level.configure(48, 32);Physics.configure(0, 10);
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(40, 270, 30, 30, "greenball.png");
+            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
 
             // make an obstacle that causes the hero to throw obstacles
-            Obstacle o = Obstacle.makeAsCircle(350, 5, 50, 50, "purpleball.png");
+            Obstacle o = Obstacle.makeAsCircle(35, .5f, 5, 5, "purpleball.png");
             o.setCollisionEffect(false);
             o.setTouchToThrow();
 
             // set up our projectiles
-            Projectile.configure(3, 4, 10, "colorstar.png", 0, -10, 20, -5, 2);
+            Projectile.configure(3, .4f, 1, "colorstar.png", 0, 15, 2, -.5f, 2);
             Projectile.setNumberOfProjectiles(20); // there are only 20... throw
                                                    // them carefully
+            // TODO: stopped here
             Projectile.setImageRange(8); // pick a random picture between cell 0
                                          // and cell 7 of
                                          // colorstar.png
@@ -3466,14 +3464,22 @@ public class MyGdxGame extends ALE
     @Override
     public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e)
     {
-        /*
-         * if (whichLevel == 56) { if (e.getInfoText() == "weak") return; if (id
-         * == 0) { e.defeat(true); o.remove(true); } if (id == 1) {
-         * e.defeat(true); } }
-         * 
-         * if (whichLevel == 65) { if (e.getInfoText() == "weak") {
-         * e.defeat(true); } }
-         */
+        if (whichLevel == 56) {
+            if (e.getInfoText() == "weak")
+                return;
+            if (id == 0) {
+                e.defeat(true);
+                o.remove(true);
+            }
+            if (id == 1) {
+                e.defeat(true);
+            }
+        }
+        if (whichLevel == 65) {
+            if (e.getInfoText() == "weak") {
+                e.defeat(true);
+            }
+        }
     }
 
     /**

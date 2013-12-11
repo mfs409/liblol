@@ -4,6 +4,10 @@ package edu.lehigh.cse.ale;
 
 // TODO: be sure that whenever possible, we've moved funcitonality into PhysicsSprite
 
+// TODO: the decisions about what animation to display are very ad-hoc. We could
+// use a combination of boolean flags, plus some other data, to make a
+// reasonable decision in a function.
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -246,32 +250,24 @@ public class Hero extends PhysicsSprite
             
             // invincible animation
             if (_invincibleAnimation != null) {
-                // TODO: make next 3 lines a method!
-                _currentAnimation = _invincibleAnimation;
-                _currAnimationFrame = 0;
-                _currAnimationTime = 0;
+                setCurrentAnimation(_invincibleAnimation);
                 _glowing = true;
             }
         }
 
         // deal with animation changes due to goodie count
-        // TODO:
-        /*
-        if (_isAnimateByGoodieCount) {
+        //
+        // TODO: if we jump, we lose this info... make it more orthogonal?
+        if (_goodieCountAnimation != null) {
             int goodies = Score._goodiesCollected1;
-            for (int i = 0; i < _animateByGoodieCountCounts.length; ++i) {
-                if (_animateByGoodieCountCounts[i] == goodies) {
-                    _sprite.setCurrentTileIndex(_animateByGoodieCountCells[i]);
+            for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {
+                if (_goodieCountAnimation._durations[i] == goodies) {
+                    _tr = _goodieCountAnimation._cells[_goodieCountAnimation._frames[i]];
                     break;
                 }
             }
         }
-        */
     }
-
-    
-    
-    
     
     /*
      * BASIC FUNCTIONALITY
@@ -394,10 +390,7 @@ public class Hero extends PhysicsSprite
         if (!_allowMultiJump)
             _inAir = true;
         if (_jumpAnimation != null) {
-            Gdx.app.log("animate", "switch to jump");
-            _currentAnimation = _jumpAnimation;
-            _currAnimationFrame = 0;
-            _currAnimationTime = 0;
+            setCurrentAnimation(_jumpAnimation);
         }
         if (_jumpSound != null)
             _jumpSound.play();
@@ -411,9 +404,7 @@ public class Hero extends PhysicsSprite
         if (_inAir || _allowMultiJump) {
             _inAir = false;
             // note: we don't need to worry about if the hero has a default animation... if it's null, everything will still be OK
-            _currentAnimation = _defaultAnimation;
-            _currAnimationFrame = 0;
-            _currAnimationTime = 0;
+            setCurrentAnimation(_defaultAnimation);
         }
     }
 
@@ -534,7 +525,7 @@ public class Hero extends PhysicsSprite
     void doThrowAnimation()
     {
         if (_throwAnimation != null) {
-            _currentAnimation = _throwAnimation;
+            setCurrentAnimation(_throwAnimation);
             _throwAnimationTimeRemaining = _throwAnimateTotalLength;
         }
     }
@@ -570,12 +561,7 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: cells involved in animation for _crawling
      */
-    private int[]   _crawlAnimateCells;
-
-    /**
-     * Animation support: durations for crawl animation
-     */
-    private long[]  _crawlAnimateDurations;
+    private Animation   _crawlAnimation;
 
     /**
      * Put the hero in crawl mode
@@ -584,10 +570,8 @@ public class Hero extends PhysicsSprite
     {
         _crawling = true;
         _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
-        //_sprite.setRotation(90);
-        // TODO:
-        // if (_crawlAnimateDurations != null)
-        //    _sprite.animate(_crawlAnimateDurations, _crawlAnimateCells, true);
+        if (_crawlAnimation != null)
+            setCurrentAnimation(_crawlAnimation);
     }
 
     /**
@@ -597,12 +581,7 @@ public class Hero extends PhysicsSprite
     {
         _crawling = false;
         _physBody.setTransform(_physBody.getPosition(), 0);
-        // _sprite.setRotation(0);
-        // TODO:
-//        if (_defaultAnimateCells != null)
-//            _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-//        else
-//            _sprite.stopAnimation(0);
+        setCurrentAnimation(_defaultAnimation);
     }
 
     /**
@@ -613,10 +592,9 @@ public class Hero extends PhysicsSprite
      * @param durations
      *            How long to show each cell
      */
-    public void setCrawlAnimation(int[] cells, long[] durations)
+    public void setCrawlAnimation(Animation a)
     {
-        _crawlAnimateCells = cells;
-        _crawlAnimateDurations = durations;
+        _crawlAnimation = a;
     }
 
     /*
@@ -682,17 +660,7 @@ public class Hero extends PhysicsSprite
     /**
      * Flag for tracking if we change the animation cell based on the goodie count
      */
-    private boolean _isAnimateByGoodieCount       = false;
-
-    /**
-     * the goodie counts that correspond to image changes
-     */
-    private int     _animateByGoodieCountCounts[] = null;
-
-    /**
-     * The cell to show for the corresponding goodie count
-     */
-    private int     _animateByGoodieCountCells[]  = null;
+    private Animation _goodieCountAnimation;
 
     /**
      * Indicate that this hero should change its animation cell depending on how many (type-1) goodies have been collected
@@ -703,11 +671,9 @@ public class Hero extends PhysicsSprite
      *            An array of the cells of the hero's animation sequence to display. These should correspond to the
      *            entries in counts
      */
-    public void setAnimateByGoodieCount(int counts[], int cells[])
+    public void setAnimateByGoodieCount(Animation a)
     {
-        _isAnimateByGoodieCount = true;
-        _animateByGoodieCountCounts = counts;
-        _animateByGoodieCountCells = cells;
+        _goodieCountAnimation = a;
     }
 
     /*
@@ -807,9 +773,7 @@ public class Hero extends PhysicsSprite
             _throwAnimationTimeRemaining -= delta;
             if (_throwAnimationTimeRemaining < 0) {
                 _throwAnimationTimeRemaining = 0;
-                _currentAnimation = _defaultAnimation;
-                _currAnimationFrame = 0;
-                _currAnimationTime = 0;
+                setCurrentAnimation(_defaultAnimation);
             }
         }
 
@@ -821,9 +785,7 @@ public class Hero extends PhysicsSprite
                 _invincibleRemaining = 0;
                 // reset animation
                 if (_glowing) {
-                    _currentAnimation = _defaultAnimation;
-                    _currAnimationFrame = 0;
-                    _currAnimationTime = 0;
+                    setCurrentAnimation(_defaultAnimation);
                     _glowing = false;
                 }
             }
