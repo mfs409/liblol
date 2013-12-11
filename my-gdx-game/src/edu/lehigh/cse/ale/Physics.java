@@ -3,6 +3,7 @@ package edu.lehigh.cse.ale;
 // STATUS: possibly complete (pass-through stuff not yet tested)
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -63,7 +64,7 @@ public class Physics
                     }
 
                     @Override
-                    void onDownPress()
+                    void onDownPress(Vector3 v)
                     {
                     }
 

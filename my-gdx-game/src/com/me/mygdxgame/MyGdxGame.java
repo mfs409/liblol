@@ -1,33 +1,44 @@
 package com.me.mygdxgame;
 
-// STATUS: ready to start 41
+// STATUS: ready to start 52
+
+// TODO: once everything works, aggressively comment and reduce visibility as much as possible
+
+// TODO: produce helpful error messages at all the common mistake points (especially animation and filenames)
+
+// TODO: don't forget to do the help levels at some points
+
+// TODO: make sure that all Gdx.app.log messages are removed, except those for mistake points
 
 // TODO: does music and transition work correctly when there is only one level?
 
-// TODO: should we use center points everywhere, instead of bottom left corners?
-// This would help in Level 29 (scribble), where we currently don't quite draw
-// in the right place.
+// TODO: Menu is horribly broken for < 20 levels
 
-// TODO: move scribble out of Obstacle, turn it into a callback?
+// TODO: the 'getx' and 'gety' methods of physicssprite used to return center
+// coords of body, not coords of the bottom left of the sprite... verify that
+// we've got this fixed everywhere. 
 
-// TODO: should there ever be int parameters?
+// TODO: move scribble out of Obstacle, turn it into a callback?  Maybe a last-ditch control callback?
 
-// TODO: level 27 is done, except that it uses an animated image incorrectly...
+// TODO: revisit int vs. float parameters
+
+// TODO: explore use of sleeping vs. destroying physics bodies
 
 // TODO: level 28 accelerometer trick no longer applies. Altering the order of
 // popup and accel in Level.render() would restore the behavior, but the
 // behavior is actually not desirable.
 
-// TODO: test if x and y parallax works as expected (swimming level?)
+// TODO: test if x and y parallax works as expected (swimming level with >32 Y?)
 
-// NB: the 'getx' and 'gety' methods of physicssprite return center coords of
-// body, not coords of the bottom left of the sprite
-
-// TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone  (see level 20)
+// TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone (see
+// level 20)
 
 // TODO: should have ability to chase in X, Y, or Both
 
-// TODO: does hovering hero + touchandgo work?
+// TODO: levels 44 and 45 have the same throw behavior right now, because we
+// don't use input polling to allow for 'hold == down' behavior... should we
+// change that? Note: problem also for 46 and 47, and it would be nice to have
+// this for velocity in some cases.  See https://code.google.com/p/libgdx/wiki/InputPolling
 
 import edu.lehigh.cse.ale.*;
 
@@ -45,19 +56,21 @@ public class MyGdxGame extends ALE
         Media.registerImage("msg1.png");
         Media.registerImage("msg2.png");
         Media.registerImage("splash.png");
-        
-        // TODO: make it so that we can just use "" as invis...  
+        Media.registerImage("greyball.png");
+
+        // TODO: make it so that we can just use "" as invis...
         // Status: should be good, need to test
-        Media.registerImage("invis.png"); 
-        
+        Media.registerImage("invis.png");
+
         // parallax stuff
         Media.registerImage("mid.png");
         Media.registerImage("front.png");
         Media.registerImage("back.png");
-        
+
         // TODO: these images do not work correctly yet...
-        Media.registerImage("stars.png");
-        Media.registerImage("flystar.png");
+        Media.registerAnimatableImage("stars.png", 8, 1);
+        Media.registerAnimatableImage("flystar.png", 2, 1);
+        Media.registerAnimatableImage("starburst.png", 4, 1);
 
         // sounds
         Media.registerSound("hipitch.ogg");
@@ -66,7 +79,7 @@ public class MyGdxGame extends ALE
         Media.registerSound("slowdown.ogg");
         Media.registerSound("woowoowoo.ogg");
         Media.registerSound("fwapfwap.ogg");
-        
+
         // Background music
         Media.registerMusic("tune.ogg", true);
     }
@@ -74,7 +87,18 @@ public class MyGdxGame extends ALE
     @Override
     public void configureLevel(int whichLevel)
     {
-        // TODO: where are comments from ALE?
+        /**
+         * @level: 1
+         * 
+         * @description: In this level, all we have is a hero (the green ball)
+         *               who needs to make it to the destination
+         *               (a mustard colored ball). The game is configured to use
+         *               tilt to control the hero.
+         * 
+         * @whatsnew: control a hero with tilt
+         * 
+         * @whatsnew: win by reaching a destination
+         */
         if (whichLevel == 1) {
             // set the screen to 48 meters by 32 meters
             Level.configure(48, 32);
@@ -95,8 +119,24 @@ public class MyGdxGame extends ALE
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
         }
-        
-        // TODO: where are comments from ALE?
+
+        /**
+         * @level: 2
+         * 
+         * @description: In this level, we add a few features to level 1 to make
+         *               it a bit more playable. Note, though,
+         *               that since nothing has physics properties attached to
+         *               it, the behavior when the ball crashes
+         *               into the bounding box doesn't really feel right.
+         * 
+         * @whatsnew: draw a bounding box around the level, so the hero can't
+         *            fall into infinity
+         * 
+         * @whatsnew: custom text when the level is won
+         * 
+         * @whatsnew: a pop up scene shows for one second at the start of the
+         *            level
+         */
         else if (whichLevel == 2) {
             // start by setting everything up just like in level 1
             Level.configure(48, 32);
@@ -321,7 +361,7 @@ public class MyGdxGame extends ALE
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
             // it isn't going to move quite as we'd like
-            
+
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
             // display a message that stays until it is pressed
@@ -445,15 +485,15 @@ public class MyGdxGame extends ALE
             Level.setVictoryDestination(1);
 
             // add zoom buttons
-            
+
             // TODO: chase shapes + zoom can lead to funny behaviors (e.g., try
             // zooming in when we're in bottom left corner; a solution is to
-            // incorporate zoom into the computations in the chase shape code, 
+            // incorporate zoom into the computations in the chase shape code,
             // though andengine doesn't do this...
-            
+
             Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
-            
+
             // chase the hero with the camera
             Level.setCameraChase(h);
         }
@@ -514,8 +554,9 @@ public class MyGdxGame extends ALE
          *               to show how friction and elasticity can do interesting
          *               things.
          */
-        else if (whichLevel == 13) {            
-            Level.configure(48, 32);Physics.configure(0, 0);
+        else if (whichLevel == 13) {
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
             Tilt.enable(10, 10);
             PreScene.showTextTimed("These obstacles have\ndifferent physics\nparameters", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -547,7 +588,7 @@ public class MyGdxGame extends ALE
          * @whatsnew: display the goodie count on the heads-up display
          */
         else if (whichLevel == 14) {
-            
+
             // set up a basic level with a tilt-based hero
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -560,6 +601,9 @@ public class MyGdxGame extends ALE
             // for goodies to have a circle as their shape, and to not cause a
             // change in the hero's behavior at the time when a collision
             // occurs... we can play with this later :)
+            //
+            // Note that goodies can have one of 4 "counts". By default, a
+            // goodie counts as type 1.
             Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
             Goodie.makeAsCircle(0, 15, 1, 1, "blueball.png");
 
@@ -567,15 +611,15 @@ public class MyGdxGame extends ALE
             // score to 2, so that you must
             // collect two goodies before the destination will "work"
             Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
-            d.setActivationScore(2);
+            d.setActivationScore(2, 0, 0, 0);
 
             Level.setVictoryDestination(1);
 
             // let's put a display on the screen to see how many goodies we've
             // collected
-            Controls.addGoodieCount(2, "Goodies", 220, 280);
+            Controls.addGoodieCount1(2, "Goodies", 220, 280);
             PreScene.showTextTimed("You must collect\ntwo blue balls", 1);
-             
+
         }
 
         /**
@@ -605,7 +649,7 @@ public class MyGdxGame extends ALE
             // make a destination that moves, and that requires one goodie to be
             // collected before it works
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            d.setActivationScore(1);
+            d.setActivationScore(1, 0, 0, 0);
             d.setRoute(new Route(3).to(29, 6).to(29, 26).to(29, 6), 4, true);
             Level.setVictoryDestination(1);
 
@@ -619,7 +663,7 @@ public class MyGdxGame extends ALE
             g.setRoute(new Route(5).to(5, 5).to(5, 25).to(25, 25).to(9, 9).to(5, 5), 10, true);
 
             // draw a goodie counter in light blue with a 12-point font
-            Controls.addGoodieCount(0, "Goodies", 220, 280, 60, 70, 255, 12);
+            Controls.addGoodieCount1(0, "Goodies", 220, 280, 60, 70, 255, 12);
         }
 
         /**
@@ -651,10 +695,10 @@ public class MyGdxGame extends ALE
             Goodie.makeAsCircle(20.5f, 4.5f, 1, 1, "blueball.png");
 
             // indicate that we win by collecting enough goodies
-            Level.setVictoryGoodies(5); // put the goodie count on the screen
-            Controls.addGoodieCount(5, "Goodies", 220, 280);
+            Level.setVictoryGoodies(5, 0, 0, 0); 
+            // put the goodie count on the screen
+            Controls.addGoodieCount1(5, "Goodies", 220, 280);
             // put a countdown on the screen
-            
             Controls.addCountdown(15, "Time Up!", 400, 50);
         }
 
@@ -872,7 +916,7 @@ public class MyGdxGame extends ALE
          *               little while...
          * 
          * @whatsnew: Invincibility from a goodie
-         *
+         * 
          * @whatsnew: Print FPS to the screen
          */
         else if (whichLevel == 21) {
@@ -904,8 +948,8 @@ public class MyGdxGame extends ALE
             // enemies is just for fun...
             Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
-            Controls.addGoodieCount(0, "Goodies", 220, 280);
-            
+            Controls.addGoodieCount1(0, "Goodies", 220, 280);
+
             Controls.addFPS(400, 15, 200, 200, 100, 12);
         }
 
@@ -919,8 +963,8 @@ public class MyGdxGame extends ALE
          *            collecting a goodie
          */
         else if (whichLevel == 22) {
-            
-              // basic configuration 
+
+            // basic configuration
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -930,21 +974,21 @@ public class MyGdxGame extends ALE
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
-            d.setActivationScore(7);
+            d.setActivationScore(7, 0, 0, 0);
             Level.setVictoryDestination(1);
 
             // create some goodies with special values
             Goodie g1 = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
-            g1.setScore(-2);
+            g1.setScore(-2, 0, 0, 0);
             Goodie g2 = Goodie.makeAsCircle(0, 15, 1, 1, "blueball.png");
-            g2.setScore(7);
+            g2.setScore(7, 0, 0, 0);
 
             // create some regular goodies
             Goodie.makeAsCircle(30, 30, 1, 1, "blueball.png");
             Goodie.makeAsCircle(35, 30, 1, 1, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
-            Controls.addGoodieCount(0, "Progress", 220, 280);
+            Controls.addGoodieCount1(0, "Progress", 220, 280);
         }
 
         /**
@@ -1005,9 +1049,9 @@ public class MyGdxGame extends ALE
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             PreScene.showTextTimed("Touch the obstacle\nto select, then" + "\ntouch a destination", 1);
 
-            // draw a picture.  Note that for now, pictures all go behind the scene
+            // draw a picture
             //
-            // TODO: this mechanism needs to change, or we need to alter how we do renderables
+            // TODO: Test if z indices work
             Util.drawPicture(0, 0, 48, 32, "greenball.png");
 
             // draw the hero and destination after the picture, so that the
@@ -1023,7 +1067,7 @@ public class MyGdxGame extends ALE
             o.setPhysics(0, 100, 0);
             o.setPokeable();
         }
-        
+
         /**
          * @level: 25
          * 
@@ -1049,12 +1093,12 @@ public class MyGdxGame extends ALE
 
             // create an enemy who chases the hero
             Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
-            e3.setPhysics(.1f, 0.3f, 0.6f);            
+            e3.setPhysics(.1f, 0.3f, 0.6f);
             e3.setChaseSpeed(8, h);
 
             // draw a picture late within this block of code, but still cause
             // the picture to be drawn behind everything else
-            
+
             // TODO:
             Util.drawPictureBehindScene(0, 0, 48, 32, "greenball.png");
         }
@@ -1124,7 +1168,7 @@ public class MyGdxGame extends ALE
          *               custom motion path can allow things to violate the laws
          *               of physics and pass through other things. The second is
          *               that motion paths can go off-screen. The third is that
-         *               PopUpScene is not benign. The only way to win this
+         *               PreScene is not benign. The only way to win this
          *               level is to hold the phone a certain way, wait three
          *               seconds, and then press the message. While the phone is
          *               held, some gravitational force can be "built up", so
@@ -1133,7 +1177,7 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew: paths that go off screen
          */
-        else if (whichLevel == 28) {            
+        else if (whichLevel == 28) {
             // set up a regular level
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -1266,13 +1310,14 @@ public class MyGdxGame extends ALE
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(30*48-5, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(30 * 48 - 5, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
             Level.setCameraChase(h);
 
             // now paint the background blue
             Background.setColor(0, 0, 255);
-            // put in a picture that scrolls at half the speed of the hero in the x direction (ignore y scrolling for now)
+            // put in a picture that scrolls at half the speed of the hero in
+            // the x direction (ignore y scrolling for now)
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // make an obstacle that hovers...
@@ -1293,34 +1338,36 @@ public class MyGdxGame extends ALE
          * @whatsnew: jump sounds
          */
         else if (whichLevel == 33) {
-            
-              // set up a standard side scroller with tilt: 
-            Level.configure(3 *
-              48, 32);Physics.configure(0, -10); Tilt.enable(10, 0);
-              PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
-              Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-              Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-              Level.setVictoryDestination(1);
-              
-              // make a hero 
-              Hero h = Hero.makeAsCircle(2, 2, 3, 3,
-              "greenball.png"); h.setPhysics(.1f, 0, 0.6f); h.setMoveByTilting();
-              // this says that touching makes the hero jump
-              h.setTouchToJump(); 
-              // this is the force of a jump. remember that up is positive. 
-              h.setJumpImpulses(0, 10); 
-              // the sound to play when we jump 
-              h.setJumpSound("fwapfwap.ogg");
-              
-              // set up our background again, but add a few more layers
-              Background.setColor(0, 0, 255); 
-              // this layer has a scroll factor of 0... it won't move 
-              Background.addHorizontalLayer(0, 1, "back.png", 0);
-              // this layer moves at half the speed of the hero
-              Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
-              // this layer is faster than the hero
-              Background.addHorizontalLayer(1.25f, 1, "front.png", 20);
-              Level.setCameraChase(h);
+
+            // set up a standard side scroller with tilt:
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a hero
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            // this says that touching makes the hero jump
+            h.setTouchToJump();
+            // this is the force of a jump. remember that up is positive.
+            h.setJumpImpulses(0, 10);
+            // the sound to play when we jump
+            h.setJumpSound("fwapfwap.ogg");
+
+            // set up our background again, but add a few more layers
+            Background.setColor(0, 0, 255);
+            // this layer has a scroll factor of 0... it won't move
+            Background.addHorizontalLayer(0, 1, "back.png", 0);
+            // this layer moves at half the speed of the hero
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            // this layer is faster than the hero
+            Background.addHorizontalLayer(1.25f, 1, "front.png", 20);
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1376,7 +1423,7 @@ public class MyGdxGame extends ALE
             // invisible enemy right after the destination, so that if the hero
             // misses the
             // destination, it hits the enemy and we can start over
-            Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
+            Enemy.makeAsBox(130, 0, .5f, 32, "");
         }
 
         /**
@@ -1389,28 +1436,29 @@ public class MyGdxGame extends ALE
          *               swimming or controlling a helicopter.
          */
         else if (whichLevel == 35) {
-            
-              // set up a standard side scroller without tilt 
-            Level.configure(3
-              * 48, 32);Physics.configure(0, -10);
-              PreScene.showTextTimed("Multi-jump is enabled", 1);
-              Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-              Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
-              h.disableRotation(); h.setPhysics(1, 0, 0); 
-              // the hero now has multijump, with small jumps: 
-              h.setMultiJumpOn();
-              Level.setCameraChase(h);
-              h.setCameraOffset(15, 0); 
-              h.setJumpImpulses(0, 2);
-              h.addVelocity(5, 0);
-              
-              // this is all the same as before, to include the invisible enemy
-              Background.setColor(0, 0, 255); 
-              Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
-              Controls.addJumpButton(0, 0, 480, 320, "", h);
-              Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-              Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
-              Level.setVictoryDestination(1);
+
+            // set up a standard side scroller without tilt
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            PreScene.showTextTimed("Multi-jump is enabled", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0);
+            // the hero now has multijump, with small jumps:
+            h.setMultiJumpOn();
+            Level.setCameraChase(h);
+            h.setCameraOffset(15, 0);
+            h.setJumpImpulses(0, 2);
+            h.addVelocity(5, 0);
+
+            // this is all the same as before, to include the invisible enemy
+            Background.setColor(0, 0, 255);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Controls.addJumpButton(0, 0, 480, 320, "", h);
+            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Enemy.makeAsBox(130, 0, .5f, 32, "");
+            Level.setVictoryDestination(1);
         }
 
         /**
@@ -1428,16 +1476,13 @@ public class MyGdxGame extends ALE
             Physics.configure(0, 0);
             PreScene.showTextTimed("Press screen borders\nto move the hero", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 0, 3, 3, "flystar.png");
+            Hero h = Hero.makeAsCircle(2, 0, 3, 3, "stars.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
 
             // this lets the hero flip its image when it moves backwards
-            h.setCanFaceBackwards(); 
+            h.setCanFaceBackwards();
 
-            // Ensure that just the hero's sprite flips:
-            Obstacle.makeAsCircle(4, 26, 5, 5, "flystar.png");
-            
             Level.setCameraChase(h);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
@@ -1450,10 +1495,10 @@ public class MyGdxGame extends ALE
             Enemy.makeAsCircle(3, 27, 3, 3, "redball.png");
 
             // draw some buttons for moving the hero
-            Controls.addLeftButton(0, 50, 50, 220, "invis.png", 15, h);
-            Controls.addRightButton(430, 50, 50, 220, "invis.png", 15, h);
-            Controls.addUpButton(50, 270, 380, 50, "invis.png", 15, h);
-            Controls.addDownButton(50, 0, 380, 50, "invis.png", 15, h);
+            Controls.addLeftButton(0, 50, 50, 220, "", 15, h);
+            Controls.addRightButton(430, 50, 50, 220, "", 15, h);
+            Controls.addUpButton(50, 270, 380, 50, "", 15, h);
+            Controls.addDownButton(50, 0, 380, 50, "", 15, h);
         }
 
         /**
@@ -1465,9 +1510,10 @@ public class MyGdxGame extends ALE
          */
         else if (whichLevel == 37) {
             // TODO: this is actually done... mark as complete once 36 is done
-            
+
             // set up a basic side-scroller
-            Level.configure(3 * 48, 32);Physics.configure(0, 0);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, 0);
             PreScene.showTextTimed("Press screen borders\nto move up and down", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             // be careful about friction!
@@ -1482,9 +1528,9 @@ public class MyGdxGame extends ALE
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
             h.addVelocity(10, 0);
-            
+
             Level.setCameraChase(h);
-            
+
             // draw an enemy to avoid, and one at the end
             Enemy.makeAsCircle(53, 28, 3, 3, "redball.png");
             Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
@@ -1506,7 +1552,7 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew:
          */
-        else if (whichLevel == 38) {  
+        else if (whichLevel == 38) {
             // basic configuration:
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
@@ -1612,30 +1658,33 @@ public class MyGdxGame extends ALE
          * @whatsnew: speed booster obstacles
          */
         else if (whichLevel == 41) {
-            /*
-             * // set up a basic level with a fixed velocity hero and a
-             * destination Level.configure(10 * 460, 320, 0, 0);
-             * PopUpScene.showTextTimed("Speed boosters and reducers", 1);
-             * Util.drawBoundingBox(0, 0, 10 * 460, 320, "invis.png", 1, 0, 1);
-             * Hero h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * Destination.makeAsCircle(4500, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1); h.addVelocity(10, 0);
-             * Background.setColor(0, 0, 255); Background.addLayer("mid.png",
-             * -20, 0, 116); Background.setScrollFactor(20);
-             * 
-             * // place a speed-up obstacle that lasts for 1 second Obstacle o1
-             * = Obstacle.makeAsCircle(400, 300, 40, 40, "purpleball.png");
-             * o1.setSpeedBoost(10, 0, 1);
-             * 
-             * // place a slow-down obstacle that lasts for 3 seconds Obstacle
-             * o2 = Obstacle.makeAsCircle(1200, 300, 40, 60, "purpleball.png");
-             * o2.setSpeedBoost(-5, 0, 3);
-             * 
-             * // place a permanent +3 speedup obstacle Obstacle o3 =
-             * Obstacle.makeAsCircle(2400, 300, 40, 40, "purpleball.png");
-             * o3.setSpeedBoost(3, 0, -1);
-             */
+            // set up a basic level with a fixed velocity hero and a destination
+            Level.configure(10 * 48, 32);
+            Physics.configure(0, 0);
+            PreScene.showTextTimed("Speed boosters and reducers", 1);
+            Util.drawBoundingBox(0, 0, 10 * 480, 320, "invis.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 0, 3, 3, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0.6f);
+            Destination.makeAsCircle(450, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+            h.addVelocity(10, 0);
+            Background.setColor(0, 0, 255);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+
+            // place a speed-up obstacle that lasts for 2 seconds
+            Obstacle o1 = Obstacle.makeAsCircle(40, 1, 4, 4, "purpleball.png");
+            o1.setSpeedBoost(20, 0, 2);
+
+            // place a slow-down obstacle that lasts for 3 seconds
+            Obstacle o2 = Obstacle.makeAsCircle(120, 1, 4, 6, "purpleball.png");
+            o2.setSpeedBoost(-9, 0, 3);
+
+            // place a permanent +3 speedup obstacle
+            Obstacle o3 = Obstacle.makeAsCircle(240, 1, 4, 4, "purpleball.png");
+            o3.setSpeedBoost(20, 0, -1);
+
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1647,88 +1696,96 @@ public class MyGdxGame extends ALE
          * @whatsnew: vertical background colors and images
          */
         else if (whichLevel == 42) {
-            
-              // set up a level where tilt only makes the hero move up and down
-              Level.configure(48, 4 * 32);Physics.configure(0, 0); Tilt.enable(0, 10);
-              PreScene.showTextTimed("Vertical scroller demo", 1);
-              Util.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
-              Hero h = Hero.makeAsCircle(2, 120, 3, 3, "greenball.png");
-              h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-              Destination.makeAsCircle(20, 2, 1, 1, "mustardball.png");
-              Level.setVictoryDestination(1);
-              Level.setCameraChase(h);
-              
-              // set up a vertical scrolling background
-              //Background.setColorVertical(255, 0, 255);
-              //Background.addLayerVertical("back.png", 0, 0, 0);
-              //Background.addLayerVertical("mid.png", -20, 0, 116);
-              //Background.addLayerVertical("front.png", -40, 0, 0);
-              //Background.setScrollFactor(-20);
+            // set up a level where tilt only makes the hero move up and down
+            Level.configure(48, 4 * 32);
+            Physics.configure(0, 0);
+            Tilt.enable(0, 10);
+            PreScene.showTextTimed("Vertical scroller demo", 1);
+            Util.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 120, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsBox(0, 2, 48, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+            Level.setCameraChase(h);
+
+            // set up a vertical scrolling background
+            Background.setColor(255, 0, 255);
+            Background.addVerticalLayer(1, 0, "back.png", 0);
+            Background.addVerticalLayer(1, .5f, "mid.png", 0);
+            Background.addVerticalLayer(1, 1, "front.png", 0);
         }
 
         /**
          * @level: 43
          * 
          * @description: the next few levels demonstrate support for throwing
-         *               projectiles. In this level, we throw projectiles by
-         *               touching the hero
+         *               projectiles. In this level, we throw
+         *               projectiles by touching the hero
          * 
          * @whatsnew: throw a projectile by touching the hero
          */
         else if (whichLevel == 43) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextTimed(
-             * "Press the hero\nto make it throw\nprojectiles", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // create a hero, and indicate that touching it makes it throw
-             * projectiles Hero h = Hero.makeAsCircle(40, 70, 30, 30,
-             * "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setTouchToThrow();
-             * h.setMoveByTilting();
-             * 
-             * // configure a pool of projectiles. be sure to hover the mouse
-             * over 'configure' to see what all // the parameters do. In
-             * particular, note how the projectiles fly out of the hero, and //
-             * how many can be on screen at any time Projectile.configure(3, 10,
-             * 10, "greyball.png", 0, -10, 20, -5, 1);
-             */
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Press the hero\nto make it throw\nprojectiles", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // create a hero, and indicate that touching it makes it throw
+            // projectiles
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setTouchToThrow();
+            h.setMoveByTilting();
+
+            // configure a pool of projectiles. be sure to hover the mouse over
+            // 'configure' to see what all the parameters do. In particular,
+            // note how the projectiles fly out of the hero, and how many can be
+            // on screen at any time
+            Projectile.configure(3, 1, 1, "greyball.png", 0, 10, 1, .5f, 1);
         }
 
         /**
          * @level: 44
          * 
          * @description: this is another demo of how throwing projectiles works.
-         *               Like the previous demo, it doesn't actually use
-         *               projectiles for anything, it is just to show how to get
-         *               some different behaviors in terms of how the
-         *               projectiles move.
+         *               Like the previous demo, it doesn't
+         *               actually use projectiles for anything, it is just to
+         *               show how to get some different behaviors
+         *               in terms of how the projectiles move.
          * 
          * @whatsnew: limiting the range of projectiles
          * 
          * @whatsnew: throw projectiles by touching the screen
          */
         else if (whichLevel == 44) {
-            /*
-             * // set up a basic tilt level Level.configure(3 * 460, 320, 0,
-             * 10); Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a gray\nball",
-             * 1); Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, .3f,
-             * 1); Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(1200, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // set up a pool of projectiles, but now once the projectiles
-             * move more than 250x20 away // from the hero, they disappear
-             * Projectile.configure(100, 10, 10, "greyball.png", 30, 0, 40, 0,
-             * 1); Projectile.setRange(250, 20);
-             * 
-             * // add a button for throwing projectiles
-             * Controls.addThrowButton(0, 0, 460, 320, "invis.png");
-             */
+            // set up a basic tilt level
+            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press anywhere\nto throw a gray\nball", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 30, 3, 3, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // set up a pool of projectiles, but now once the projectiles move
+            // more than 250x20 away
+            // from the hero, they disappear
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
+            Projectile.setRange(25);
+
+            // add a button for throwing projectiles
+            //
+            // TODO: this should throw as long as it's held down... and we should support the same for other controls...
+            Controls.addThrowButton(0, 0, 480, 320, "invis.png", h);
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1743,30 +1800,35 @@ public class MyGdxGame extends ALE
          * @whatsnew: holding the button doesn't make multiple shots fire
          */
         else if (whichLevel == 45) {
-            /*
-             * // set up a simple, small level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1);
-             * PopUpScene.showTextTimed("Defeat all enemies\nto win", 1); Hero h
-             * = Hero.makeAsCircle(40, 270, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * // set up our projectiles... note that the last parameter means
-             * that projectiles each do // 2 units of damage
-             * Projectile.configure(3, 4, 10, "greyball.png", 0, -10, 20, -5,
-             * 2);
-             * 
-             * // draw a few enemies... note that they have different amounts of
-             * damage Enemy e = Enemy.makeAsCircle(250, 250, 20, 20,
-             * "redball.png"); e.setPhysics(1.0f, 0.3f, 0.6f);
-             * e.setRotationSpeed(1); for (int i = 10; i < 200; i += 50) { Enemy
-             * ee = Enemy.makeAsCircle(i, i, 20, 20, "redball.png");
-             * ee.setPhysics(1.0f, 0.3f, 0.6f); ee.setDamage(i / 10); }
-             * Level.setVictoryEnemyCount();
-             * 
-             * // this button only throws one projectile per press...
-             * Controls.addSingleThrowButton(0, 0, 460, 320, "invis.png");
-             */
+            // set up a simple, small level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            PreScene.showTextTimed("Defeat all enemies\nto win", 1);
+            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+
+            // set up our projectiles... note that the last parameter means that
+            // projectiles each do
+            // 2 units of damage
+            Projectile.configure(3, .4f, .1f, "greyball.png", 0, 10, .2f, -.5f, 2);
+
+            // draw a few enemies... note that they have different amounts of
+            // damage
+            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+            e.setRotationSpeed(1);
+            for (int i = 1; i < 20; i += 5) {
+                Enemy ee = Enemy.makeAsCircle(i, i+5, 2, 2, "redball.png");
+                ee.setPhysics(1.0f, 0.3f, 0.6f);
+                ee.setDamage(i);
+            }
+            Level.setVictoryEnemyCount();
+
+            // this button only throws one projectile per press...
+            Controls.addSingleThrowButton(0, 0, 480, 320, "invis.png", h);
         }
 
         /**
@@ -1778,115 +1840,123 @@ public class MyGdxGame extends ALE
          * @whatsnew: the "vector throw" mechanism
          */
         else if (whichLevel == 46) {
-            /*
-             * // set up a simple level Level.configure(3 * 460, 320, 0, 10);
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a ball", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(1200, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // draw a button for throwing projectiles in many directions
-             * Controls.addVectorThrowButton(0, 0, 460, 320, "invis.png");
-             * 
-             * // set up our pool of projectiles. The main challenge here is
-             * that the farther from the // hero we press, the faster the
-             * projectile goes, so we multiply the velocity by .3 to // slow it
-             * down a bit Projectile.configure(100, 10, 10, "greyball.png", 30,
-             * 0, 40, 0, 1); Projectile.setProjectileVectorDampeningFactor(.3f);
-             * Projectile.setRange(460, 320);
-             */
+            // set up a simple level
+            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // draw a button for throwing projectiles in many directions
+            Controls.addVectorThrowButton(0, 0, 480, 320, "invis.png", h);
+
+            // set up our pool of projectiles. The main challenge here is that
+            // the farther from the hero we press, the faster the projectile
+            // goes, so we multiply the velocity by .8 to slow it down a bit
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 0, 1);
+            Projectile.setProjectileVectorDampeningFactor(.8f);
+            Projectile.setRange(30);
+
+            Level.setCameraChase(h);
         }
 
         /**
          * @level: 47
          * 
          * @description: this level shows that with the "vector" projectiles, we
-         *               can still have gravity affect the projectiles. This is
-         *               very good for basketball-style games.
+         *               can still have gravity affect the
+         *               projectiles. This is very good for basketball-style
+         *               games.
          * 
          * @whatsnew: holding the screen no longer throws multiple projectiles
          *            in that direction
          * 
-         * @whatsnew: projectiles can be prevented from disappearign when they
+         * @whatsnew: projectiles can be prevented from disappearing when they
          *            collide with certain types of obstacles
          */
         else if (whichLevel == 47) {
-            /*
-             * // set up a basic level Level.configure(3 * 460, 320, 0, 10);
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a ball", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(1200, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // the only differences here are that we turn gravity back on for
-             * the projectiles, and // we use a "single throw" button
-             * Controls.addVectorSingleThrowButton(0, 0, 460, 320, "invis.png");
-             * Projectile.configure(100, 10, 10, "greyball.png", 30, 0, 40, 0,
-             * 1); Projectile.setProjectileVectorDampeningFactor(.1f);
-             * Projectile.setRange(460, 320);
-             * Projectile.setProjectileGravityOn(); Obstacle o =
-             * Obstacle.makeAsBox(100, 10, 20, 20, "red.png"); // This is a
-             * rather complex trick: we can specify that when a projectile
-             * collides with things, it is allowed // to bounce off of them, and
-             * that when it collides with /this/ obstacle, we want custom code
-             * to run. The // custom code appears below, as
-             * onProjectileCollideTrigger, and when it is called, our id (the
-             * first "0") // will be passed along to the code, along with the
-             * specific obstacle and projectile that were involved in // the
-             * collision. The default is that when a projectile hits one of
-             * these special obstacles, it doesn't // automatically disappear,
-             * because in that code you could say "p.remove(true)" if that was
-             * the behavior you // wanted. So, by default, it doesn't disappear,
-             * and instead we get the projectile bouncing off of the //
-             * obstacle, but not off of anything else.
-             * Projectile.enableCollisionsForProjectiles();
-             * o.setProjectileCollisionTrigger(0, 0);
-             */
+            // set up a basic level
+            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.disableRotation(); // Remember: disableRotation doesn't work well if we have mass...
+            h.setPhysics(0, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // the only differences here are that we turn gravity back on for
+            // the projectiles, and
+            // we use a "single throw" button
+            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "invis.png", h);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
+            Projectile.setProjectileVectorDampeningFactor(.8f);
+            Projectile.setRange(40);
+            Projectile.setProjectileGravityOn();
+            Obstacle o = Obstacle.makeAsBox(10, 20, 2, 2, "red.png");
+            // This is a rather complex trick: we can specify that when a
+            // projectile collides with things, it is allowed
+            // to bounce off of them, and that when it collides with /this/
+            // obstacle, we want custom code to run. The
+            // custom code appears below, as onProjectileCollideTrigger, and
+            // when it is called, our id (the first "0")
+            // will be passed along to the code, along with the specific
+            // obstacle and projectile that were involved in
+            // the collision. The default is that when a projectile hits one of
+            // these special obstacles, it doesn't
+            // automatically disappear, because in that code you could say
+            // "p.remove(true)" if that was the behavior you
+            // wanted. So, by default, it doesn't disappear, and instead we get
+            // the projectile bouncing off of the
+            // obstacle, but not off of anything else.
+            Projectile.enableCollisionsForProjectiles();
+            o.setProjectileCollisionTrigger(0, 0, 0, 0, 0);
+            Level.setCameraChase(h);
         }
 
         /**
          * @level: 48
          * 
          * @description: this level shows how enemies can reproduce. This can
-         *               simulate cancer cells, or fire on a building. We do
-         *               this by using a timer connected to an enemy. Whenever
-         *               the timer goes off, we will have access to the enemy so
-         *               that we can copy it.
+         *               simulate cancer cells, or fire on a
+         *               building. We do this by using a timer connected to an
+         *               enemy. Whenever the timer goes off, we
+         *               will have access to the enemy so that we can copy it.
          * 
          * @whatsnew: enemy timer triggers
          * 
          * @whatsnew: sound when the projectile is thrown
          */
         else if (whichLevel == 48) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 0); PopUpScene.showTextTimed(
-             * "Throw balls at \nthe enemies before\nthey reproduce", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setTouchToThrow();
-             * h.setMoveByTilting();
-             * 
-             * // configure a pool of projectiles Projectile.configure(100, 10,
-             * 10, "greyball.png", 0, -10, 20, -5, 1);
-             * Projectile.setThrowSound("fwapfwap.ogg");
-             * Projectile.setProjectileDisappearSound("slowdown.ogg");
-             * 
-             * // draw an enemy that reproduces. be sure to read the parameters,
-             * as this will produce // two children every two seconds, until two
-             * reproductions occur... the children // reproduce too, but they
-             * don't start at 2... Enemy e = Enemy.makeAsCircle(230, 20, 10, 10,
-             * "redball.png"); e.setDisappearSound("lowpitch.ogg");
-             * Level.setEnemyTimerTrigger(2, 2, e);
-             * Level.setVictoryEnemyCount(); Controls.addDefeatedCount(0,
-             * "Enemies Defeated", 20, 20);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Throw balls at \nthe enemies before\nthey reproduce", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setTouchToThrow();
+            h.setMoveByTilting();
+
+            // configure a pool of projectiles
+            Projectile.configure(100, .5f, .5f, "greyball.png", 0, 10, 2, -.5f, 1);
+            Projectile.setThrowSound("fwapfwap.ogg");
+            Projectile.setProjectileDisappearSound("slowdown.ogg");
+
+            // draw an enemy that reproduces via a timer trigger
+            Enemy e = Enemy.makeAsCircle(23, 20, 1, 1, "redball.png");
+            e.setDisappearSound("lowpitch.ogg");
+            Level.setEnemyTimerTrigger(2, 2, e);
+            Level.setVictoryEnemyCount();
+            Controls.addDefeatedCount(0, "Enemies Defeated", 20, 20);
         }
 
         /**
@@ -1896,21 +1966,24 @@ public class MyGdxGame extends ALE
          *               when they are moveable
          */
         else if (whichLevel == 49) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("These enemies are\nreally tricky", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 290, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make our initial enemy Enemy e = Enemy.makeAsCircle(230, 20,
-             * 10, 10, "redball.png"); e.setPhysics(1.0f, 0.3f, 0.6f);
-             * e.setMoveByTilting(); // warning: "6" is going to lead to 127
-             * enemies eventually... Level.setEnemyTimerTrigger(6, 2, e);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("These enemies are\nreally tricky", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(29, 29, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make our initial enemy
+            Enemy e = Enemy.makeAsCircle(23, 2, 1, 1, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+            e.setMoveByTilting();
+            // warning: "6" is going to lead to 127 enemies eventually...
+            Level.setEnemyTimerTrigger(6, 2, e);
         }
 
         /**
@@ -1920,23 +1993,26 @@ public class MyGdxGame extends ALE
          *               have a default animation.
          * 
          * @whatsnew: the hero has an animation in this level, which makes it
-         *            look like a star with streamers underneath it
+         *            look like a star with streamers underneath
+         *            it
          */
         else if (whichLevel == 50) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextTimed("Make a wish!", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // this hero will be animated: Hero h = Hero.makeAsCircle(40, 70,
-             * 30, 30, "stars.png"); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); // this says that we scroll through the 0,
-             * 1, 2, and 3 cells of the image, and we show // each for 200
-             * milliseconds int cells[] = { 0, 1, 2, 3 }; long plan[] = { 200,
-             * 200, 200, 200 }; h.setDefaultAnimation(cells, plan);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Make a wish!", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // this hero will be animated:
+            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            // this says that we scroll through the 0, 1, 2, and 3 cells of the
+            // image, and we show each for 200 milliseconds
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1,200).to(2,200).to(3,200));
         }
 
         /**
@@ -1950,39 +2026,43 @@ public class MyGdxGame extends ALE
          * @whatsnew: disappearance animation
          */
         else if (whichLevel == 51) {
-            /*
-             * // make a tilt sidescroller Level.configure(3 * 460, 320, 0, 10);
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press the hero to\nmake it jump", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Background.setColor(0, 0, 255); Background.addLayer("mid.png",
-             * -20, 0, 116); Background.setScrollFactor(20);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make a hero, and give it two animations: one for when it is in
-             * the air, and another // for the rest of the time. Note that both
-             * sets of images must be cells from the same // .png file Hero h =
-             * Hero.makeAsCircle(20, 20, 30, 30, "stars.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setJumpImpulses(0, -10); h.setTouchToJump();
-             * h.setMoveByTilting();
-             * 
-             * int cells[] = { 0, 1, 2, 3 }; long plan[] = { 200, 200, 200, 200
-             * }; h.setDefaultAnimation(cells, plan); int jcells[] = { 4, 5, 6,
-             * 7 }; long jplan[] = { 200, 200, 200, 200 };
-             * h.setJumpAnimation(jcells, jplan);
-             * 
-             * // create a goodie that has a disappearance animation. Note that
-             * this can be a totally // different image than its regular
-             * appearance... that's OK, because once we touch the // entity, it
-             * disappears and the animation just plays once in the background.
-             * Note, too, // that the final cell is blank, so that we don't
-             * leave a residue on the screen. Goodie g =
-             * Goodie.makeAsCircle(150, 230, 50, 50, "stars.png"); int
-             * gonecells[] = { 2, 1, 0, 3 }; g.setDisappearAnimation(gonecells,
-             * plan, "starburst.png", 10, 0, 50, 50);
-             */
+            // make a tilt sidescroller
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Background.setColor(0, 0, 255);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a hero, and give it two animations: one for when it is in
+            // the air, and another
+            // for the rest of the time. Note that both sets of images must be
+            // cells from the same
+            // .png file
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setJumpImpulses(0, 20);
+            h.setTouchToJump();
+            h.setMoveByTilting();
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1,200).to(2,200).to(3,200));
+            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5,200).to(6,200).to(7,200));
+
+            // create a goodie that has a disappearance animation. Note that
+            // this can be a totally
+            // different image than its regular appearance... that's OK, because
+            // once we touch the
+            // entity, it disappears and the animation just plays once in the
+            // background. Note, too,
+            // that the final cell is blank, so that we don't leave a residue on
+            // the screen.
+            
+            Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "stars.png");
+            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200).to(0, 200).to(3, 200), 1, 0, 5, 5);
+            Level.setCameraChase(h);
         }
 
         /**
@@ -1993,38 +2073,44 @@ public class MyGdxGame extends ALE
          * @whatsnew: projectile animations
          * 
          * @whatsnew: animations when the hero throws a projectile
-         */
+         *  /
         else if (whichLevel == 52) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Press the hero\nto make it\nthrow a ball"
-             * , 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // set up our hero Hero h = Hero.makeAsCircle(40, 70, 30, 30,
-             * "colorstar.png"); h.setPhysics(1, 0, 0.6f); h.setTouchToThrow();
-             * h.setMoveByTilting();
-             * 
-             * // set up an animation when the hero throws: int tCells[] = { 3,
-             * 4 }; long tDurations[] = { 100, 500 };
-             * h.setThrowAnimation(tCells, tDurations);
-             * 
-             * // make a projectile pool and give an animation pattern for the
-             * projectiles Projectile.configure(100, 10, 10, "flystar.png", 0,
-             * -10, 20, -5, 1); int pCells[] = { 0, 1 }; long pDurations[] = {
-             * 100, 100 }; Projectile.setAnimation(pCells, pDurations);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Press the hero\nto make it\nthrow a ball", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // set up our hero
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "colorstar.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setTouchToThrow();
+            h.setMoveByTilting();
+
+            // set up an animation when the hero throws:
+            int tCells[] = { 3, 4 };
+            long tDurations[] = { 100, 500 };
+            h.setThrowAnimation(tCells, tDurations);
+
+            // make a projectile pool and give an animation pattern for the
+            // projectiles
+            Projectile.configure(100, 10, 10, "flystar.png", 0, -10, 20, -5, 1);
+            int pCells[] = { 0, 1 };
+            long pDurations[] = { 100, 100 };
+            Projectile.setAnimation(pCells, pDurations);
         }
 
         /**
          * @level: 53
          * 
          * @description: this level explores invincibility animation. While
-         *               we're at it, we make some enemies that aren't affected
-         *               by invincibility, and some that can even damage the
-         *               hero while they are invincible.
+         *               we're at it, we make some enemies that
+         *               aren't affected by invincibility, and some that can
+         *               even damage the hero while they are
+         *               invincible.
          * 
          * @whatsnew: invincibility animation
          * 
@@ -2033,224 +2119,263 @@ public class MyGdxGame extends ALE
          * @whatsnew: enemies that do damage even when the hero is invincible
          * 
          * @whatsnew: display a picture when the level is won
-         */
+         *  /
         else if (whichLevel == 53) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); PopUpScene.showTextTimed(
-             * "The blue ball will\nmake you invincible\nfor 15 seconds", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make an animated hero, and also give it an invincibility
-             * animation Hero h = Hero.makeAsCircle(20, 20, 30, 30,
-             * "colorstar.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * int[] cells = { 0, 1, 2, 3 }; long[] durations = { 300, 300, 300,
-             * 300 }; h.setDefaultAnimation(cells, durations); int[] icells = {
-             * 4, 5, 6, 7 }; long[] idurations = { 100, 100, 100, 100 };
-             * h.setInvincibleAnimation(icells, idurations);
-             * 
-             * // make some enemies for (int i = 0; i < 5; ++i) { Enemy e =
-             * Enemy.makeAsCircle(50 * i + 10, 250, 20, 20, "redball.png");
-             * e.setPhysics(1.0f, 0.3f, 0.6f); e.setRotationSpeed(1);
-             * e.setDamage(4); e.setDisappearSound("hipitch.ogg");
-             * 
-             * // The first enemy we create will harm the hero even if the hero
-             * is invincible if (i == 0) e.setImmuneToInvincibility(); // the
-             * second enemy will not be harmed by invincibility, but won't harm
-             * an // invincible hero if (i == 1) e.setResistInvincibility(); }
-             * // neat trick: this enemy does zero damage, but slows the hero
-             * down. Enemy e = Enemy.makeAsCircle(300, 200, 20, 20,
-             * "redball.png"); e.setPhysics(10, 0.3f, 0.6f);
-             * e.setMoveByTilting(); e.setDamage(0);
-             * 
-             * // add a goodie that makes the hero invincible Goodie g =
-             * Goodie.makeAsCircle(300, 300, 10, 10, "blueball.png");
-             * g.setInvincibilityDuration(15); g.setRoute(new Route(3).to(300,
-             * 300).to(100, 100).to(300, 300), 5, true);
-             * g.setRotationSpeed(0.25f); Controls.addGoodieCount(0, "Goodies",
-             * 220, 280);
-             * 
-             * // draw a picture when the level is won, and don't print text...
-             * this particular picture // isn't very useful
-             * Level.setBackgroundWinImage("splash.png"); Level.setWinText("");
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("The blue ball will\nmake you invincible\nfor 15 seconds", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make an animated hero, and also give it an invincibility
+            // animation
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "colorstar.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            int[] cells = { 0, 1, 2, 3 };
+            long[] durations = { 300, 300, 300, 300 };
+            h.setDefaultAnimation(cells, durations);
+            int[] icells = { 4, 5, 6, 7 };
+            long[] idurations = { 100, 100, 100, 100 };
+            h.setInvincibleAnimation(icells, idurations);
+
+            // make some enemies
+            for (int i = 0; i < 5; ++i) {
+                Enemy e = Enemy.makeAsCircle(50 * i + 10, 250, 20, 20, "redball.png");
+                e.setPhysics(1.0f, 0.3f, 0.6f);
+                e.setRotationSpeed(1);
+                e.setDamage(4);
+                e.setDisappearSound("hipitch.ogg");
+
+                // The first enemy we create will harm the hero even if the hero
+                // is invincible
+                if (i == 0)
+                    e.setImmuneToInvincibility();
+                // the second enemy will not be harmed by invincibility, but
+                // won't harm an
+                // invincible hero
+                if (i == 1)
+                    e.setResistInvincibility();
+            }
+            // neat trick: this enemy does zero damage, but slows the hero down.
+            Enemy e = Enemy.makeAsCircle(300, 200, 20, 20, "redball.png");
+            e.setPhysics(10, 0.3f, 0.6f);
+            e.setMoveByTilting();
+            e.setDamage(0);
+
+            // add a goodie that makes the hero invincible
+            Goodie g = Goodie.makeAsCircle(300, 300, 10, 10, "blueball.png");
+            g.setInvincibilityDuration(15);
+            g.setRoute(new Route(3).to(300, 300).to(100, 100).to(300, 300), 5, true);
+            g.setRotationSpeed(0.25f);
+            Controls.addGoodieCount(0, "Goodies", 220, 280);
+
+            // draw a picture when the level is won, and don't print text...
+            // this particular picture
+            // isn't very useful
+            Level.setBackgroundWinImage("splash.png");
+            Level.setWinText("");
         }
 
         /**
          * @level: 54
          * 
          * @description: demonstrate crawl animation, and also show that on
-         *               multitouch phones, we can "crawl" in the air while
-         *               jumping.
+         *               multitouch phones, we can "crawl" in the air
+         *               while jumping.
          * 
          * @whatsnew: crawl animation
          * 
          * @whatsnew: show a picture when the level is lost
-         */
+         *  /
         else if (whichLevel == 54) {
-            /*
-             * // make a simple level: Level.configure(3 * 460, 320, 0, 10);
-             * PopUpScene
-             * .showTextTimed("Press the left side of\nthe screen to crawl\n" +
-             * "or the right side\nto jump.", 1); Util.drawBoundingBox(0, 0, 3 *
-             * 460, 320, "red.png", 1, .3f, 0); Destination.makeAsCircle(1200,
-             * 310, 10, 10, "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // make a hero with fixed velocity, and give it crawl and jump
-             * animations Hero h = Hero.makeAsBox(20, 250, 30, 70, "stars.png");
-             * h.setPhysics(1, 0, 0); h.addVelocity(5, 0);
-             * 
-             * int hcells[] = { 0, 1, 2, 3 }; long hplan[] = { 100, 300, 300,
-             * 100 }; h.setCrawlAnimation(hcells, hplan); int jcells[] = { 4, 5,
-             * 6, 7 }; long jplan[] = { 200, 200, 200, 200 };
-             * h.setJumpAnimation(jcells, jplan);
-             * 
-             * // enable hero jumping and crawling h.setJumpImpulses(0, -10);
-             * Controls.addJumpButton(0, 0, 230, 320, "invis.png");
-             * Controls.addCrawlButton(231, 0, 460, 320, "invis.png");
-             * 
-             * // add an enemy we can defeat via crawling, just for fun. It
-             * should be defeated even by // a "jump crawl" Enemy e =
-             * Enemy.makeAsCircle(1100, 270, 50, 50, "redball.png");
-             * e.setPhysics(1.0f, 0.3f, 0.6f); e.setDefeatByCrawl();
-             * 
-             * // include a picture on the "try again" screen
-             * Level.setBackgroundLoseImage("splash.png");
-             * Level.setLoseText("Oh well...");
-             */
+            // make a simple level:
+            Level.configure(3 * 48, 32, 0, 10);
+            PreScene
+                    .showTextTimed("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
+            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a hero with fixed velocity, and give it crawl and jump
+            // animations
+            Hero h = Hero.makeAsBox(20, 250, 30, 70, "stars.png");
+            h.setPhysics(1, 0, 0);
+            h.addVelocity(5, 0);
+            int hcells[] = { 0, 1, 2, 3 };
+            long hplan[] = { 100, 300, 300, 100 };
+            h.setCrawlAnimation(hcells, hplan);
+            int jcells[] = { 4, 5, 6, 7 };
+            long jplan[] = { 200, 200, 200, 200 };
+            h.setJumpAnimation(jcells, jplan);
+
+            // enable hero jumping and crawling
+            h.setJumpImpulses(0, -10);
+            Controls.addJumpButton(0, 0, 230, 320, "invis.png");
+            Controls.addCrawlButton(231, 0, 460, 320, "invis.png");
+
+            // add an enemy we can defeat via crawling, just for fun. It should
+            // be defeated even by
+            // a "jump crawl"
+            Enemy e = Enemy.makeAsCircle(1100, 270, 50, 50, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+            e.setDefeatByCrawl();
+
+            // include a picture on the "try again" screen
+            Level.setBackgroundLoseImage("splash.png");
+            Level.setLoseText("Oh well...");
         }
 
         /**
          * @level: 55
          * 
          * @description: This isn't quite the same as animation, but it's nice.
-         *               We can indicate that a hero's image changes via goodie
-         *               count. This can, for example, allow a hero to change
-         *               (e.g., get healthier) by swapping through images as
-         *               goodies are collected
-         */
+         *               We can indicate that a hero's image
+         *               changes via goodie count. This can, for example, allow
+         *               a hero to change (e.g., get healthier)
+         *               by swapping through images as goodies are collected
+         *  /
         else if (whichLevel == 55) {
-            /*
-             * // set up a basic level with a bunch of goodies
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); for
-             * (int i = 0; i < 8; ++i) Goodie.makeAsCircle(50 + 20 * i, 50 + 20
-             * * i, 20, 20, "blueball.png"); Destination d =
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * d.setActivationScore(8); Level.setVictoryDestination(1);
-             * 
-             * // Note: colorstar.png has 8 cells... Hero h =
-             * Hero.makeAsCircle(40, 270, 30, 30, "colorstar.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting(); // set up the
-             * animation by matching the cell in the image to a specific goodie
-             * count. // That is, when the count is 1, we show picture 2. When
-             * the count is 2, we show picture // 1, etc. // // note: no change
-             * for goodie count 3, and remember that 0 is the // default picture
-             * so it's showing already int counts[] = { 1, 2, 4, 5, 6, 7, 8 };
-             * int cells[] = { 2, 1, 3, 4, 5, 6, 7 };
-             * h.setAnimateByGoodieCount(counts, cells);
-             */
+            // set up a basic level with a bunch of goodies
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            for (int i = 0; i < 8; ++i)
+                Goodie.makeAsCircle(50 + 20 * i, 50 + 20 * i, 20, 20, "blueball.png");
+            Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            d.setActivationScore(8);
+            Level.setVictoryDestination(1);
+
+            // Note: colorstar.png has 8 cells...
+            Hero h = Hero.makeAsCircle(40, 270, 30, 30, "colorstar.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            // set up the animation by matching the cell in the image to a
+            // specific goodie count.
+            // That is, when the count is 1, we show picture 2. When the count
+            // is 2, we show picture
+            // 1, etc.
+            //
+            // note: no change for goodie count 3, and remember that 0 is the
+            // default picture so it's showing already
+            int counts[] = { 1, 2, 4, 5, 6, 7, 8 };
+            int cells[] = { 2, 1, 3, 4, 5, 6, 7 };
+            h.setAnimateByGoodieCount(counts, cells);
         }
 
         /**
          * @level: 56
          * 
          * @description: demonstrate that obstacles can defeat enemies, and that
-         *               we can use this feature to have obstacles that only
-         *               defeat certain "marked" enemies
+         *               we can use this feature to have
+         *               obstacles that only defeat certain "marked" enemies
          * 
          * @whatsnew: gravity multiplier, to make the forces happen more quickly
          * 
          * @whatsnew: use of enemyCollisionTrigger to make some obstacles able
-         *            to defeat some enemies, and enable some of these obstacles
-         *            to disappear after defeating an enemy
+         *            to defeat some enemies, and enable some
+         *            of these obstacles to disappear after defeating an enemy
          * 
          * @whatsnew: moveable obstacles
-         */
+         *  /
         else if (whichLevel == 56) {
-            /*
-             * // make a basic level, but increase the speed of gravity updates
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Tilt.setGravityMultiplier(3); PopUpScene.showTextTimed(
-             * "You can defeat\ntwo enemies with\nthe blue ball", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, 0, 1); Hero h
-             * = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * // put an enemy defeated count on the screen, in red with a small
-             * font Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20,
-             * 255, 0, 0, 10);
-             * 
-             * // make a moveable obstacle that can defeat enemies Obstacle o =
-             * Obstacle.makeAsCircle(100, 20, 40, 40, "blueball.png");
-             * o.setPhysics(1, 0, 0.6f); o.setMoveByTilting();
-             * o.setEnemyCollisionTrigger(0, 0);
-             * 
-             * // make a small obstacle that can also defeat enemies, but
-             * doesn't disappear Obstacle o2 = Obstacle.makeAsCircle(5, 5, 20,
-             * 20, "blueball.png"); o2.setPhysics(1, 0, 0.6f);
-             * o2.setMoveByTilting(); o2.setEnemyCollisionTrigger(0, 1);
-             * 
-             * // this enemy has a triggerID of 1... no obstacle will defeat it
-             * Enemy e = Enemy.makeAsCircle(400, 20, 40, 40, "redball.png");
-             * e.setPhysics(1, 0, 0.6f); e.setMoveByTilting();
-             * 
-             * // This enemy also has a triggerID of 1... no obstacle will
-             * defeat it Enemy e1 = Enemy.makeAsCircle(400, 20, 40, 40,
-             * "redball.png"); e1.setPhysics(1, 0, 0.6f);
-             * 
-             * // these enemies have class 7... our obstacles will defeat them
-             * Enemy e2 = Enemy.makeAsCircle(400, 220, 40, 40, "redball.png");
-             * e2.setPhysics(1, 0, 0.6f); e2.setMoveByTilting();
-             * e2.setInfoText("weak");
-             * 
-             * Enemy e3 = Enemy.makeAsCircle(400, 120, 40, 40, "redball.png");
-             * e3.setPhysics(1, 0, 0.6f); e3.setMoveByTilting();
-             * e3.setInfoText("weak");
-             * 
-             * // win by defeating enemies Level.setVictoryEnemyCount(2);
-             */
+            // make a basic level, but increase the speed of gravity updates
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Tilt.setGravityMultiplier(3);
+            PreScene.showTextTimed("You can defeat\ntwo enemies with\nthe blue ball", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+
+            // put an enemy defeated count on the screen, in red with a small
+            // font
+            Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20, 255, 0, 0, 10);
+
+            // make a moveable obstacle that can defeat enemies
+            Obstacle o = Obstacle.makeAsCircle(100, 20, 40, 40, "blueball.png");
+            o.setPhysics(1, 0, 0.6f);
+            o.setMoveByTilting();
+            o.setEnemyCollisionTrigger(0, 0);
+
+            // make a small obstacle that can also defeat enemies, but doesn't
+            // disappear
+            Obstacle o2 = Obstacle.makeAsCircle(5, 5, 20, 20, "blueball.png");
+            o2.setPhysics(1, 0, 0.6f);
+            o2.setMoveByTilting();
+            o2.setEnemyCollisionTrigger(0, 1);
+
+            // this enemy has a triggerID of 1... no obstacle will defeat it
+            Enemy e = Enemy.makeAsCircle(400, 20, 40, 40, "redball.png");
+            e.setPhysics(1, 0, 0.6f);
+            e.setMoveByTilting();
+
+            // This enemy also has a triggerID of 1... no obstacle will defeat
+            // it
+            Enemy e1 = Enemy.makeAsCircle(400, 20, 40, 40, "redball.png");
+            e1.setPhysics(1, 0, 0.6f);
+
+            // these enemies have class 7... our obstacles will defeat them
+            Enemy e2 = Enemy.makeAsCircle(400, 220, 40, 40, "redball.png");
+            e2.setPhysics(1, 0, 0.6f);
+            e2.setMoveByTilting();
+            e2.setInfoText("weak");
+
+            Enemy e3 = Enemy.makeAsCircle(400, 120, 40, 40, "redball.png");
+            e3.setPhysics(1, 0, 0.6f);
+            e3.setMoveByTilting();
+            e3.setInfoText("weak");
+
+            // win by defeating enemies
+            Level.setVictoryEnemyCount(2);
         }
 
         /**
          * @level: 57
          * 
          * @description: this level shows an odd way of moving the hero. There's
-         *               friction on the floor, so it can only move by tilting
-         *               while the hero is in the air
-         */
+         *               friction on the floor, so it can only
+         *               move by tilting while the hero is in the air
+         *  /
         else if (whichLevel == 57) {
-            /*
-             * // set up a side scroller level, but give the bounding box some
-             * friction Level.configure(3 * 460, 320, 0, 10); Tilt.enable(10,
-             * 0); PopUpScene.showTextTimed("Press the hero to\nmake it jump",
-             * 1); Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make a box hero with friction... it won't roll on the floor,
-             * so it's stuck! Hero h = Hero.makeAsBox(20, 20, 30, 30,
-             * "stars.png"); h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setTouchToJump(); h.setMoveByTilting(); h.setJumpImpulses(0,
-             * -10);
-             * 
-             * // draw a background Background.setColor(0, 0, 255);
-             * Background.addLayer("mid.png", -20, 0, 116);
-             * Background.setScrollFactor(20);
-             */
+            // set up a side scroller level, but give the bounding box some
+            // friction
+            Level.configure(3 * 48, 32, 0, 10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a box hero with friction... it won't roll on the floor, so
+            // it's stuck!
+            Hero h = Hero.makeAsBox(20, 20, 30, 30, "stars.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0.6f);
+            h.setTouchToJump();
+            h.setMoveByTilting();
+            h.setJumpImpulses(0, -10);
+
+            // draw a background
+            Background.setColor(0, 0, 255);
+            Background.addLayer("mid.png", -20, 0, 116);
+            Background.setScrollFactor(20);
         }
 
         /**
          * @level: 58
          * 
          * @description: this level shows that we can put an obstacle on the
-         *               screen and use it to make the hero throw projectiles.
-         *               It also shows that we can make entities that shrink
-         *               over time... growth is possible too, with a negative
-         *               value.
+         *               screen and use it to make the hero throw
+         *               projectiles. It also shows that we can make entities
+         *               that shrink over time... growth is
+         *               possible too, with a negative value.
          * 
          * @whatsnew: limit the total number of projectiles that can be thrown
          * 
@@ -2259,98 +2384,107 @@ public class MyGdxGame extends ALE
          * @whatsnew: make projectiles that have a randomly selected image
          * 
          * @whatsnew: show how many shots are left
-         */
+         *  /
         else if (whichLevel == 58) {
-            /*
-             * // make a simple level with left/right tilt and Y gravity
-             * Level.configure(460, 320, 0, 10); Tilt.enable(10, 0);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 270, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * // make an obstacle that causes the hero to throw obstacles
-             * Obstacle o = Obstacle.makeAsCircle(350, 5, 50, 50,
-             * "purpleball.png"); o.setCollisionEffect(false);
-             * o.setTouchToThrow();
-             * 
-             * // set up our projectiles Projectile.configure(3, 4, 10,
-             * "colorstar.png", 0, -10, 20, -5, 2);
-             * Projectile.setNumberOfProjectiles(20); // there are only 20...
-             * throw them carefully Projectile.setImageRange(8); // pick a
-             * random picture between cell 0 and cell 7 of // colorstar.png //
-             * show how many shots are left
-             * Controls.addProjectileCount("projectiles left", 5, 5, 255, 255,
-             * 255, 12);
-             * 
-             * // draw a bunch of enemies to defeat Enemy e =
-             * Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
-             * e.setPhysics(1.0f, 0.3f, 0.6f); e.setRotationSpeed(1); for (int i
-             * = 10; i < 200; i += 50) { Enemy e1 = Enemy.makeAsCircle(i, i, 20,
-             * 20, "redball.png"); e1.setPhysics(1.0f, 0.3f, 0.6f); }
-             * 
-             * // draw an obstacle that shrinks over time Obstacle o2 =
-             * Obstacle.makeAsBox(20, 300, 420, 18, "red.png");
-             * o2.setShrinkOverTime(50, 1); Level.setVictoryEnemyCount(5);
-             */
+            // make a simple level with left/right tilt and Y gravity
+            Level.configure(48, 32, 0, 10);
+            Tilt.enable(10, 0);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(40, 270, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+
+            // make an obstacle that causes the hero to throw obstacles
+            Obstacle o = Obstacle.makeAsCircle(350, 5, 50, 50, "purpleball.png");
+            o.setCollisionEffect(false);
+            o.setTouchToThrow();
+
+            // set up our projectiles
+            Projectile.configure(3, 4, 10, "colorstar.png", 0, -10, 20, -5, 2);
+            Projectile.setNumberOfProjectiles(20); // there are only 20... throw
+                                                   // them carefully
+            Projectile.setImageRange(8); // pick a random picture between cell 0
+                                         // and cell 7 of
+                                         // colorstar.png
+            // show how many shots are left
+            Controls.addProjectileCount("projectiles left", 5, 5, 255, 255, 255, 12);
+
+            // draw a bunch of enemies to defeat
+            Enemy e = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+            e.setRotationSpeed(1);
+            for (int i = 10; i < 200; i += 50) {
+                Enemy e1 = Enemy.makeAsCircle(i, i, 20, 20, "redball.png");
+                e1.setPhysics(1.0f, 0.3f, 0.6f);
+            }
+
+            // draw an obstacle that shrinks over time
+            Obstacle o2 = Obstacle.makeAsBox(20, 300, 420, 18, "red.png");
+            o2.setShrinkOverTime(50, 1);
+            Level.setVictoryEnemyCount(5);
         }
 
         /**
          * @level: 59
          * 
          * @description: this level shows that we can make a hero in the air
-         *               rotate. Rotation doesn't do anything, but it looks
-         *               nice...
+         *               rotate. Rotation doesn't do anything, but
+         *               it looks nice...
          * 
          * @whatsnew: rotation buttons
          * 
          * @whatsnew: this level relies on being able to jump after touching a
          *            side wall
-         */
+         *  /
         else if (whichLevel == 59) {
-            /*
-             * // make a simple level Level.configure(460, 320, 0, 10);
-             * Tilt.enable(10, 0); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 1, .3f, 1); Destination.makeAsCircle(300, 100, 25, 25,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // make the hero jumpable, so that we can see it spin in the air
-             * Hero h = Hero.makeAsCircle(40, 270, 30, 30, "stars.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * h.setJumpImpulses(0, -10); h.setTouchToJump();
-             * 
-             * // add rotation buttons Controls.addRotateButton(0, 0, 80, 80,
-             * "invis.png", -.5f); Controls.addRotateButton(380, 0, 80, 80,
-             * "invis.png", .5f);
-             */
+            // make a simple level
+            Level.configure(48, 32, 0, 10);
+            Tilt.enable(10, 0);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(300, 100, 25, 25, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make the hero jumpable, so that we can see it spin in the air
+            Hero h = Hero.makeAsCircle(40, 270, 30, 30, "stars.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            h.setJumpImpulses(0, -10);
+            h.setTouchToJump();
+
+            // add rotation buttons
+            Controls.addRotateButton(0, 0, 80, 80, "invis.png", -.5f);
+            Controls.addRotateButton(380, 0, 80, 80, "invis.png", .5f);
         }
 
         /**
          * @level 60
          * 
          * @description: we can attach movement buttons to any moveable entity,
-         *               so in this case, we attach it to an obstacle to get an
-         *               arkanoid-like effect.
+         *               so in this case, we attach it to an
+         *               obstacle to get an arkanoid-like effect.
          * 
          * @whatsnew: attaching left/right buttons to an obstacle instead of
          *            controlling the last hero created
-         */
+         *  /
         else if (whichLevel == 60) {
-            /*
-             * // make a simple level Level.configure(460, 320, 0, 0);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 0, 0, 0);
-             * Destination.makeAsCircle(300, 100, 25, 25, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make a hero who is always moving... note there is no friction,
-             * anywhere, and the hero // is elastic... it won't ever stop...
-             * Hero h = Hero.makeAsCircle(40, 40, 30, 30, "greenball.png");
-             * h.setPhysics(0, 1, 0); h.addVelocity(0, 10);
-             * 
-             * // make an obstacle and then connect it to some controls Obstacle
-             * o = Obstacle.makeAsBox(20, 309, 40, 10, "red.png");
-             * Controls.addLeftButton(0, 0, 230, 320, "invis.png", 5, o);
-             * Controls.addRightButton(230, 0, 230, 320, "invis.png", 5, o);
-             */
+            // make a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            Destination.makeAsCircle(300, 100, 25, 25, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a hero who is always moving... note there is no friction,
+            // anywhere, and the hero
+            // is elastic... it won't ever stop...
+            Hero h = Hero.makeAsCircle(40, 40, 30, 30, "greenball.png");
+            h.setPhysics(0, 1, 0);
+            h.addVelocity(0, 10);
+
+            // make an obstacle and then connect it to some controls
+            Obstacle o = Obstacle.makeAsBox(20, 309, 40, 10, "red.png");
+            Controls.addLeftButton(0, 0, 230, 320, "invis.png", 5, o);
+            Controls.addRightButton(230, 0, 230, 320, "invis.png", 5, o);
         }
 
         /**
@@ -2360,39 +2494,43 @@ public class MyGdxGame extends ALE
          *               disappear after timers expire
          * 
          * @whatsnew: use of disappearDelay and appearanceDelay
-         */
+         *  /
         else if (whichLevel == 61) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Things will appear \nand disappear...",
-             * 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // create an enemy that will quietly disappear after 2 seconds
-             * Enemy e1 = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
-             * e1.setPhysics(1.0f, 0.3f, 0.6f); e1.setRotationSpeed(1);
-             * e1.setDisappearDelay(2, true);
-             * 
-             * // create an enemy that will appear after 3 seconds Enemy e2 =
-             * Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
-             * e2.setPhysics(1.0f, 0.3f, 0.6f); e2.setRoute(new Route(3).to(350,
-             * 250).to(150, 250).to(350, 250), 3, true); e2.setAppearDelay(3);
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Things will appear \nand disappear...", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // create an enemy that will quietly disappear after 2 seconds
+            Enemy e1 = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
+            e1.setPhysics(1.0f, 0.3f, 0.6f);
+            e1.setRotationSpeed(1);
+            e1.setDisappearDelay(2, true);
+
+            // create an enemy that will appear after 3 seconds
+            Enemy e2 = Enemy.makeAsCircle(350, 250, 20, 20, "redball.png");
+            e2.setPhysics(1.0f, 0.3f, 0.6f);
+            e2.setRoute(new Route(3).to(350, 250).to(150, 250).to(350, 250), 3, true);
+            e2.setAppearDelay(3);
         }
 
         /**
          * @level: 62
          * 
          * @description: this level demonstrates the use of timer triggers. We
-         *               can use timers to make more of the level appear over
-         *               time. In this case, we'll chain the timer triggers
-         *               together, so that we can get more and more things to
-         *               develop. Be sure to look at the onTimeTrigger code to
-         *               see how the rest of this level works.
+         *               can use timers to make more of the level
+         *               appear over time. In this case, we'll chain the timer
+         *               triggers together, so that we can get
+         *               more and more things to develop. Be sure to look at the
+         *               onTimeTrigger code to see how the rest
+         *               of this level works.
          * 
          * @whatsnew: destinations and goodies with fixed velocities
          * 
@@ -2401,36 +2539,40 @@ public class MyGdxGame extends ALE
          * @whatsnew: enemy who can be dragged around
          * 
          * @whatsnew: timer triggers
-         */
+         *  /
         else if (whichLevel == 62) {
-            /*
-             * // create a level that has a hero, but nothing else
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * PopUpScene.showTextAndWait("There's nothing to\ndo... yet");
-             * 
-             * // note: there's no destination yet, but we still say it's how to
-             * win... we'll get a // destination in this level after a few
-             * timers run... Level.setVictoryDestination(1);
-             * 
-             * // now set a timer trigger. after three seconds, the
-             * onTimerTrigger() method will run, // with level=62 and id=0
-             * Level.setTimerTrigger(0, 3);
-             */
+            // create a level that has a hero, but nothing else
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            PreScene.showTextAndWait("There's nothing to\ndo... yet");
+
+            // note: there's no destination yet, but we still say it's how to
+            // win... we'll get a
+            // destination in this level after a few timers run...
+            Level.setVictoryDestination(1);
+
+            // now set a timer trigger. after three seconds, the
+            // onTimerTrigger() method will run,
+            // with level=62 and id=0
+            Level.setTimerTrigger(0, 3);
         }
 
         /**
          * @level: 63
          * 
          * @description: this level shows triggers that run on a collision. In
-         *               this case, it lets us draw out the next part of the
-         *               level later, instead of drawing the whole thing right
-         *               now. In a real level, we'd draw a few screens at a
-         *               time, and not put the trigger obstacle at the end of a
-         *               screen, so that we'd never see the drawing of stuff
-         *               taking place, but for this demo, that's actually a nice
+         *               this case, it lets us draw out the next
+         *               part of the level later, instead of drawing the whole
+         *               thing right now. In a real level, we'd
+         *               draw a few screens at a time, and not put the trigger
+         *               obstacle at the end of a screen, so that
+         *               we'd never see the drawing of stuff taking place, but
+         *               for this demo, that's actually a nice
          *               effect. Be sure to look at onCollideTrigger for more
          *               details.
          * 
@@ -2440,26 +2582,28 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew: collision triggers that depend on collecting enough
          *            goodies before they work
-         */
+         *  /
         else if (whichLevel == 63) {
-            /*
-             * // make a tilt level with just a hero Level.configure(3 * 460,
-             * 320, 0, 0); Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Keep going right!", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * Controls.addGoodieCount(0, "Goodies", 220, 280);
-             * Level.setVictoryDestination(1);
-             * 
-             * // this obstacle is a collision trigger... when the hero hits it,
-             * the next part of the // level appears. Note, too, that it
-             * disappears when the hero hits it, so we can play a // sound if we
-             * want... Obstacle o = Obstacle.makeAsBox(300, 0, 10, 320,
-             * "purpleball.png"); o.setPhysics(1, 0, 1);
-             * o.setHeroCollisionTrigger(0, 0);
-             * o.setDisappearSound("hipitch.ogg");
-             */
+            // make a tilt level with just a hero
+            Level.configure(3 * 48, 32, 0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Keep going right!", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            Controls.addGoodieCount(0, "Goodies", 220, 280);
+            Level.setVictoryDestination(1);
+
+            // this obstacle is a collision trigger... when the hero hits it,
+            // the next part of the
+            // level appears. Note, too, that it disappears when the hero hits
+            // it, so we can play a
+            // sound if we want...
+            Obstacle o = Obstacle.makeAsBox(300, 0, 10, 320, "purpleball.png");
+            o.setPhysics(1, 0, 1);
+            o.setHeroCollisionTrigger(0, 0);
+            o.setDisappearSound("hipitch.ogg");
         }
 
         /**
@@ -2470,161 +2614,178 @@ public class MyGdxGame extends ALE
          *               onTouchTrigger() method for more details
          * 
          * @whatsnew: touchtrigger obstacles
-         */
+         *  /
         else if (whichLevel == 64) {
-            /*
-             * // set up a basic level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Activate and then \ntouch the obstacle"
-             * , 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * 
-             * // make a destination... notice that it needs a lot more goodies
-             * than are on the // screen... Destination d =
-             * Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
-             * d.setActivationScore(3); Level.setVictoryDestination(1);
-             * 
-             * // draw an obstacle, make it a touch trigger, and then draw the
-             * goodie we need to get in // order to activate the obstacle
-             * Obstacle o = Obstacle.makeAsCircle(100, 5, 30, 30,
-             * "purpleball.png"); o.setPhysics(1, 0, 1); o.setTouchTrigger(1,
-             * 39); // I picked '39' arbitrarily...
-             * o.setDisappearSound("hipitch.ogg"); Goodie g =
-             * Goodie.makeAsCircle(0, 300, 10, 10, "blueball.png");
-             * g.setDisappearSound("lowpitch.ogg");
-             */
+            // set up a basic level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Activate and then \ntouch the obstacle", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+
+            // make a destination... notice that it needs a lot more goodies
+            // than are on the
+            // screen...
+            Destination d = Destination.makeAsCircle(290, 10, 10, 10, "mustardball.png");
+            d.setActivationScore(3);
+            Level.setVictoryDestination(1);
+
+            // draw an obstacle, make it a touch trigger, and then draw the
+            // goodie we need to get in
+            // order to activate the obstacle
+            Obstacle o = Obstacle.makeAsCircle(100, 5, 30, 30, "purpleball.png");
+            o.setPhysics(1, 0, 1);
+            o.setTouchTrigger(1, 39); // I picked '39' arbitrarily...
+            o.setDisappearSound("hipitch.ogg");
+            Goodie g = Goodie.makeAsCircle(0, 300, 10, 10, "blueball.png");
+            g.setDisappearSound("lowpitch.ogg");
         }
 
         /**
          * @level: 65
          * 
          * @description: this level shows how to use enemy defeat triggers.
-         *               There are four ways to defeat an enemy, so we enable
-         *               all mechanisms in this level, to see if they all work
-         *               to cause enemy triggers to run the onEnemyTrigger code.
-         *               Another important point here is that the IDs don't need
-         *               to be unique for *any* triggers. We can use the same ID
-         *               every time...
+         *               There are four ways to defeat an enemy, so
+         *               we enable all mechanisms in this level, to see if they
+         *               all work to cause enemy triggers to run
+         *               the onEnemyTrigger code. Another important point here
+         *               is that the IDs don't need to be unique
+         *               for *any* triggers. We can use the same ID every
+         *               time...
          * 
          * @whatsnew: use enemy defeat triggers
          * 
          * @whatsnew: the trigger code uses random number generation to place a
-         *            reward goodie whenever an enemy is defeated
-         */
+         *            reward goodie whenever an enemy is
+         *            defeated
+         *  /
         else if (whichLevel == 65) {
-            /*
-             * // draw a simple level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10); Util.drawBoundingBox(0, 0, 460, 320,
-             * "red.png", 0, 0, 0);
-             * 
-             * // give the hero strength, so that we can use him to defeat an
-             * enemy // as a test of enemy triggers Hero h =
-             * Hero.makeAsCircle(120, 120, 40, 40, "greenball.png");
-             * h.setStrength(3); h.setMoveByTilting();
-             * 
-             * // enable throwing projectiles, so that we can test enemy
-             * triggers // again h.setTouchToThrow(); Projectile.configure(100,
-             * 10, 10, "greyball.png", 30, 0, 40, 0, 1);
-             * 
-             * // add an obstacle that has a collision trigger Obstacle o =
-             * Obstacle.makeAsCircle(300, 100, 50, 50, "blueball.png");
-             * o.setPhysics(1000, 0, 0); o.setCanDrag(true);
-             * o.setEnemyCollisionTrigger(0, 0);
-             * 
-             * // now draw our enemies... we need enough to be able to test that
-             * // all five defeat mechanisms work. Enemy e1 =
-             * Enemy.makeAsCircle(50, 50, 10, 10, "redball.png");
-             * e1.setDefeatTrigger(0);
-             * 
-             * Enemy e2 = Enemy.makeAsCircle(5, 5, 20, 20, "redball.png");
-             * e2.setDefeatTrigger(0); e2.setInfoText("weak");
-             * 
-             * Enemy e3 = Enemy.makeAsCircle(400, 30, 10, 10, "redball.png");
-             * e3.setDefeatTrigger(0);
-             * 
-             * Enemy e4 = Enemy.makeAsCircle(250, 250, 10, 10, "redball.png");
-             * e4.setDefeatTrigger(0); e4.setDisappearOnTouch();
-             * 
-             * Enemy e5 = Enemy.makeAsCircle(250, 290, 10, 10, "redball.png");
-             * e5.setDefeatTrigger(0);
-             * 
-             * // a goodie, so we can do defeat by invincibility Goodie g1 =
-             * Goodie.makeAsCircle(200, 290, 10, 10, "purpleball.png");
-             * g1.setInvincibilityDuration(15);
-             * 
-             * // win by defeating enemies Level.setVictoryEnemyCount();
-             */
+            // draw a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+
+            // give the hero strength, so that we can use him to defeat an enemy
+            // as a test of enemy triggers
+            Hero h = Hero.makeAsCircle(120, 120, 40, 40, "greenball.png");
+            h.setStrength(3);
+            h.setMoveByTilting();
+
+            // enable throwing projectiles, so that we can test enemy triggers
+            // again
+            h.setTouchToThrow();
+            Projectile.configure(100, 10, 10, "greyball.png", 30, 0, 40, 0, 1);
+
+            // add an obstacle that has a collision trigger
+            Obstacle o = Obstacle.makeAsCircle(300, 100, 50, 50, "blueball.png");
+            o.setPhysics(1000, 0, 0);
+            o.setCanDrag(true);
+            o.setEnemyCollisionTrigger(0, 0);
+
+            // now draw our enemies... we need enough to be able to test that
+            // all five defeat mechanisms work.
+            Enemy e1 = Enemy.makeAsCircle(50, 50, 10, 10, "redball.png");
+            e1.setDefeatTrigger(0);
+
+            Enemy e2 = Enemy.makeAsCircle(5, 5, 20, 20, "redball.png");
+            e2.setDefeatTrigger(0);
+            e2.setInfoText("weak");
+
+            Enemy e3 = Enemy.makeAsCircle(400, 30, 10, 10, "redball.png");
+            e3.setDefeatTrigger(0);
+
+            Enemy e4 = Enemy.makeAsCircle(250, 250, 10, 10, "redball.png");
+            e4.setDefeatTrigger(0);
+            e4.setDisappearOnTouch();
+
+            Enemy e5 = Enemy.makeAsCircle(250, 290, 10, 10, "redball.png");
+            e5.setDefeatTrigger(0);
+
+            // a goodie, so we can do defeat by invincibility
+            Goodie g1 = Goodie.makeAsCircle(200, 290, 10, 10, "purpleball.png");
+            g1.setInvincibilityDuration(15);
+
+            // win by defeating enemies
+            Level.setVictoryEnemyCount();
         }
 
         /**
          * @level: 66
          * 
          * @description: This level shows how we can use live-edit mode to allow
-         *               the programmer to adjust entities' configurations
-         *               without having to re-build the program.
+         *               the programmer to adjust entities'
+         *               configurations without having to re-build the program.
          * 
          *               Note: this is only useful during development, as a
-         *               time-saving technique. Be sure to turn off live edit in
-         *               a level once you're sure the initial positions and
-         *               sizes are satisfactory.
+         *               time-saving technique. Be sure to turn off
+         *               live edit in a level once you're sure the initial
+         *               positions and sizes are satisfactory.
          * 
          * @whatsnew: live edit mode
-         */
+         *  /
         else if (whichLevel == 66) {
-            /*
-             * // configure a basic level like level 7, but with the hero in
-             * liveedit mode: Level.configure(460, 320, 0, 0); Tilt.enable(10,
-             * 10); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); h.setLiveEdit();
-             * 
-             * // make the destination liveedit Destination d =
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * d.setLiveEdit(); Level.setVictoryDestination(1);
-             * 
-             * // draw an enemy who moves, and who is liveedit Enemy e =
-             * Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
-             * e.setPhysics(1.0f, 0.3f, 0.6f); e.setMoveByTilting();
-             * e.setLiveEdit();
-             * 
-             * // add a goodie and an obstacle Obstacle o =
-             * Obstacle.makeAsBox(90, 90, 80, 10, "purpleball.png");
-             * o.setLiveEdit(); Goodie g = Goodie.makeAsCircle(300, 200, 5, 5,
-             * "blueball.png"); g.setLiveEdit();
-             * 
-             * // display a message that stays until it is pressed
-             * PopUpScene.showTextAndWait
-             * ("Press entities to change\ntheir configuration");
-             */
+            // configure a basic level like level 7, but with the hero in
+            // liveedit mode:
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+            h.setMoveByTilting();
+            h.setLiveEdit();
+
+            // make the destination liveedit
+            Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            d.setLiveEdit();
+            Level.setVictoryDestination(1);
+
+            // draw an enemy who moves, and who is liveedit
+            Enemy e = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
+            e.setPhysics(1.0f, 0.3f, 0.6f);
+            e.setMoveByTilting();
+            e.setLiveEdit();
+
+            // add a goodie and an obstacle
+            Obstacle o = Obstacle.makeAsBox(90, 90, 80, 10, "purpleball.png");
+            o.setLiveEdit();
+            Goodie g = Goodie.makeAsCircle(300, 200, 5, 5, "blueball.png");
+            g.setLiveEdit();
+
+            // display a message that stays until it is pressed
+            PreScene.showTextAndWait("Press entities to change\ntheir configuration");
         }
 
         /**
          * @level: 67
          * 
          * @description: This level shows how to use countdown timers to win a
-         *               level, tests some color features, and introduces a
-         *               vector throw mechanism with fixed velocity
-         */
+         *               level, tests some color features, and
+         *               introduces a vector throw mechanism with fixed velocity
+         *  /
         else if (whichLevel == 67) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a ball", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero.makeAsBox(1, 300, 450, 18, "greenball.png");
-             * Controls.addWinCountdown(25, 5, 5, 192, 192, 192, 16);
-             * Level.setVictoryDestination(1);
-             * 
-             * // draw a button for throwing projectiles in many directions
-             * Controls.addVectorThrowButton(0, 0, 460, 320, "invis.png");
-             * 
-             * // set up our pool of projectiles. The main challenge here is
-             * that the farther from the // hero we press, the faster the
-             * projectile goes, so we multiply the velocity by .3 to // slow it
-             * down a bit Projectile.configure(100, 10, 10, "greyball.png", 30,
-             * 0, 229, -1, 1); Projectile.setRange(460, 320);
-             * Projectile.setFixedVectorThrowVelocity(5);
-             */
+            // set up a simple level
+            Level.configure(48, 32, 0, 10);
+            PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero.makeAsBox(1, 300, 450, 18, "greenball.png");
+            Controls.addWinCountdown(25, 5, 5, 192, 192, 192, 16);
+            Level.setVictoryDestination(1);
+
+            // draw a button for throwing projectiles in many directions
+            Controls.addVectorThrowButton(0, 0, 460, 320, "invis.png");
+
+            // set up our pool of projectiles. The main challenge here is that
+            // the farther from the
+            // hero we press, the faster the projectile goes, so we multiply the
+            // velocity by .3 to
+            // slow it down a bit
+            Projectile.configure(100, 10, 10, "greyball.png", 30, 0, 229, -1, 1);
+            Projectile.setRange(48, 32);
+            Projectile.setFixedVectorThrowVelocity(5);
         }
 
         /**
@@ -2634,23 +2795,28 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew: setCanFall to allow an entity to be subject to gravity
          *            without having a pre-set motion
-         */
+         *            
+         *
+         *  /
+        // TODO: test hover + touchAndGo
         else if (whichLevel == 68) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a ball", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsBox(215, 235, 30, 30, "greenball.png"); // note
-             * that if we did hover, then flickable, this would not work
-             * correctly, because setFlickable will // re-enable gravity on the
-             * hero after setHover temporarily disables it.
-             * h.setFlickable(0.7f); h.setHover(215, 250); // place an enemy,
-             * let it fall Enemy e = Enemy.makeAsCircle(215, 5, 30, 30,
-             * "redball.png"); e.setCanFall();
-             * 
-             * Destination.makeAsCircle(50, 50, 50, 50, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             */
+            // set up a simple level
+            Level.configure(48, 32, 0, 10);
+            PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsBox(215, 235, 30, 30, "greenball.png");
+            // note that if we did hover, then flickable, this would not work
+            // correctly, because setFlickable will
+            // re-enable gravity on the hero after setHover temporarily disables
+            // it.
+            h.setFlickable(0.7f);
+            h.setHover(215, 250);
+            // place an enemy, let it fall
+            Enemy e = Enemy.makeAsCircle(215, 5, 30, 30, "redball.png");
+            e.setCanFall();
+
+            Destination.makeAsCircle(50, 50, 50, 50, "mustardball.png");
+            Level.setVictoryDestination(1);
         }
 
         /**
@@ -2660,27 +2826,32 @@ public class MyGdxGame extends ALE
          *               to be able to jump again
          * 
          * @whatsnew: obstacles that don't re-enable jumping
-         */
+         *  /
         else if (whichLevel == 69) {
-            /*
-             * // set up a standard side scroller with tilt: Level.configure(3 *
-             * 460, 320, 0, 10); Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Press the hero to\nmake it jump", 1);
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // make a hero Hero h = Hero.makeAsCircle(20, 20, 30, 30,
-             * "greenball.png"); h.setPhysics(1, 0, 0.6f); h.setMoveByTilting();
-             * // this says that touching makes the hero jump
-             * h.setTouchToJump(); // this is the force of a jump. remember that
-             * up is negative, not positive. h.setJumpImpulses(0, -10);
-             * 
-             * // draw a few walls Obstacle.makeAsBox(100, 300, 100, 10,
-             * "red.png"); // hero can jump while on this obstacle Obstacle o =
-             * Obstacle.makeAsBox(400, 300, 100, 10, "red.png");
-             * o.setReJump(false); // hero can't jump while on this obstacle
-             */
+            // set up a standard side scroller with tilt:
+            Level.configure(3 * 48, 32, 0, 10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // make a hero
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            // this says that touching makes the hero jump
+            h.setTouchToJump();
+            // this is the force of a jump. remember that up is negative, not
+            // positive.
+            h.setJumpImpulses(0, -10);
+
+            // draw a few walls
+            Obstacle.makeAsBox(100, 300, 100, 10, "red.png"); // hero can jump
+                                                              // while on this
+                                                              // obstacle
+            Obstacle o = Obstacle.makeAsBox(400, 300, 100, 10, "red.png");
+            o.setReJump(false); // hero can't jump while on this obstacle
         }
 
         /**
@@ -2689,18 +2860,19 @@ public class MyGdxGame extends ALE
          * @description: A test of the PokePath feature
          * 
          * @whatsnew: setPokePath to move an entity along a path
-         */
+         *  /
         else if (whichLevel == 70) {
-            /*
-             * // start by setting everything up just like in level 1
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10); Hero h =
-             * Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); h.setPokePath(4);
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1); Util.drawBoundingBox(0, 0, 460,
-             * 320, "red.png", 0, 0, 0); PopUpScene.showTextTimed(
-             * "Poke the hero, then\n where you want it\nto go.", 1);
-             */
+            // start by setting everything up just like in level 1
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+            h.setMoveByTilting();
+            h.setPokePath(4);
+            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            PreScene.showTextTimed("Poke the hero, then\n where you want it\nto go.", 1);
         }
 
         /**
@@ -2711,20 +2883,21 @@ public class MyGdxGame extends ALE
          * @whatsnew: setPokeVelocity to move an entity along a path
          * 
          * @whatsnew: draw an image directly onto the heads-up display
-         */
+         *  /
         else if (whichLevel == 71) {
-            /*
-             * // start by setting everything up just like in level 1
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10); Hero h =
-             * Hero.makeAsCircle(40, 70, 30, 30, "stars.png");
-             * h.setCanFaceBackwards(); h.setPokeVelocity(4);
-             * 
-             * Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-             * Controls.addImage(40, 40, 40, 40, "red.png");
-             * Level.setVictoryDestination(1); Util.drawBoundingBox(0, 0, 460,
-             * 320, "red.png", 0, 0, 0); PopUpScene.showTextTimed(
-             * "Poke the hero, then\n where you want it\nto go.", 1);
-             */
+            // start by setting everything up just like in level 1
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "stars.png");
+            h.setCanFaceBackwards();
+            h.setPokeVelocity(4);
+
+            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Controls.addImage(40, 40, 40, 40, "red.png");
+            Level.setVictoryDestination(1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            PreScene.showTextTimed("Poke the hero, then\n where you want it\nto go.", 1);
         }
 
         /**
@@ -2733,71 +2906,82 @@ public class MyGdxGame extends ALE
          * @description: This level tests sticky obstacles
          * 
          * @whatsnew: sticky obstacles. Note that the obstacle must have more
-         *            density than the hero for these to work correctly.
-         */
+         *            density than the hero for these to work
+         *            correctly.
+         *  /
         else if (whichLevel == 72) {
-            /*
-             * // set up a basic side scroller without tilt Level.configure(460,
-             * 320, 0, 10);
-             * PopUpScene.showTextTimed("Press screen borders\nto move the hero"
-             * , 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, 0, 1);
-             * Hero h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
-             * h.disableRotation(); // the hero can jump h.setJumpImpulses(0,
-             * -5); h.setTouchToJump(); h.setPhysics(1, 0, 0);
-             * 
-             * // create a destination Destination.makeAsCircle(200, 150, 10,
-             * 10, "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * Obstacle o = Obstacle.makeAsBox(100, 300, 80, 5, "red.png");
-             * o.setRoute(new Route(5).to(100, 300).to(50, 250).to(100,
-             * 200).to(150, 250).to(100, 300), 10, true); o.setPhysics(100, 0,
-             * 1f); o.setSticky();
-             * 
-             * // draw some buttons for moving the hero
-             * Controls.addLeftButton(0, 50, 50, 220, "invis.png", 5);
-             * Controls.addRightButton(410, 50, 50, 220, "invis.png", 5);
-             */
+            // set up a basic side scroller without tilt
+            Level.configure(48, 32, 0, 10);
+            PreScene.showTextTimed("Press screen borders\nto move the hero", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(20, 290, 30, 30, "greenball.png");
+            h.disableRotation();
+            // the hero can jump
+            h.setJumpImpulses(0, -5);
+            h.setTouchToJump();
+            h.setPhysics(1, 0, 0);
+
+            // create a destination
+            Destination.makeAsCircle(200, 150, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            Obstacle o = Obstacle.makeAsBox(100, 300, 80, 5, "red.png");
+            o.setRoute(new Route(5).to(100, 300).to(50, 250).to(100, 200).to(150, 250).to(100, 300), 10, true);
+            o.setPhysics(100, 0, 1f);
+            o.setSticky();
+
+            // draw some buttons for moving the hero
+            Controls.addLeftButton(0, 50, 50, 220, "invis.png", 5);
+            Controls.addRightButton(410, 50, 50, 220, "invis.png", 5);
         }
 
         /**
          * @level: 73
          * 
          * @description: this level shows how to throw projectiles that rotate
-         *               correctly, and how to add one-sided entities
+         *               correctly, and how to add one-sided
+         *               entities
          * 
          * @whatsnew: setRotateVectorThrow
          * 
          * @whatsnew: setOneSided
-         */
+         *  /
         else if (whichLevel == 73) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Press anywhere\nto throw a ball", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); Destination.makeAsCircle(420, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // draw a button for throwing projectiles in many directions
-             * Controls.addVectorThrowButton(0, 0, 460, 320, "invis.png");
-             * 
-             * // set up our pool of projectiles. The main challenge here is
-             * that the farther from the // hero we press, the faster the
-             * projectile goes, so we multiply the velocity by .3 to // slow it
-             * down a bit Projectile.configure(100, 10, 30, "red.png", 30, 0,
-             * 40, 0, 1); Projectile.setFixedVectorThrowVelocity(10);
-             * Projectile.setRange(460, 320); Projectile.setRotateVectorThrow();
-             * 
-             * // create a box that is easy to fall into, but hard to get out of
-             * Obstacle top = Obstacle.makeAsBox(100, 100, 100, 2, "red.png");
-             * top.setOneSided(2); Obstacle left = Obstacle.makeAsBox(100, 100,
-             * 2, 100, "red.png"); left.setOneSided(1); Obstacle right =
-             * Obstacle.makeAsBox(200, 100, 2, 100, "red.png");
-             * right.setOneSided(3); Obstacle bottom = Obstacle.makeAsBox(100,
-             * 250, 100, 2, "red.png"); bottom.setOneSided(0);
-             */
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(420, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // draw a button for throwing projectiles in many directions
+            Controls.addVectorThrowButton(0, 0, 460, 320, "invis.png");
+
+            // set up our pool of projectiles. The main challenge here is that
+            // the farther from the
+            // hero we press, the faster the projectile goes, so we multiply the
+            // velocity by .3 to
+            // slow it down a bit
+            Projectile.configure(100, 10, 30, "red.png", 30, 0, 40, 0, 1);
+            Projectile.setFixedVectorThrowVelocity(10);
+            Projectile.setRange(48, 32);
+            Projectile.setRotateVectorThrow();
+
+            // create a box that is easy to fall into, but hard to get out of
+            Obstacle top = Obstacle.makeAsBox(100, 100, 100, 2, "red.png");
+            top.setOneSided(2);
+            Obstacle left = Obstacle.makeAsBox(100, 100, 2, 100, "red.png");
+            left.setOneSided(1);
+            Obstacle right = Obstacle.makeAsBox(200, 100, 2, 100, "red.png");
+            right.setOneSided(3);
+            Obstacle bottom = Obstacle.makeAsBox(100, 250, 100, 2, "red.png");
+            bottom.setOneSided(0);
         }
 
         /**
@@ -2814,41 +2998,43 @@ public class MyGdxGame extends ALE
          * @whatsnew: triggers with multiple types of goodies in the activation
          * 
          * @whatsnew: adding to the countdown timer via updateTimerExpiration
-         */
+         *  /
         else if (whichLevel == 74) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("Green, Red, and Grey\nballs are goodies"
-             * , 1); Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1);
-             * Hero h = Hero.makeAsCircle(20, 20, 30, 30, "stars.png");
-             * h.setMoveByTilting();
-             * 
-             * // the destination requires lots of goodies of different types
-             * Destination d = Destination.makeAsCircle(420, 310, 10, 10,
-             * "mustardball.png"); d.setActivationScore1(1);
-             * d.setActivationScore2(1); d.setActivationScore3(3);
-             * Level.setVictoryDestination(1);
-             * 
-             * Controls.addGoodieCount1(0, "blue", 10, 10, 0, 255, 255, 16);
-             * Controls.addGoodieCount2(0, "green", 10, 40, 0, 255, 255, 16);
-             * Controls.addGoodieCount3(0, "red", 10, 70, 0, 255, 255, 16);
-             * 
-             * Controls.addCountdown(100, "", 250, 10);
-             * 
-             * for (int i = 0; i < 3; ++i) { Goodie b = Goodie.makeAsCircle(100
-             * * i, 300, 10, 10, "blueball.png"); b.setScore1(1); Goodie g =
-             * Goodie.makeAsCircle(100 * i + 25, 300, 10, 10, "greenball.png");
-             * g.setScore2(1); g.setScore1(0); // or else it counts as blue,
-             * too... Goodie r = Goodie.makeAsCircle(100 * i + 60, 300, 10, 10,
-             * "redball.png"); r.setScore3(1); r.setScore1(0); // or else it
-             * counts as blue, too...
-             * 
-             * }
-             * 
-             * Obstacle o = Obstacle.makeAsBox(400, 0, 5, 200, "red.png");
-             * o.setHeroCollisionTrigger(0, 1, 1, 1, 0);
-             */
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("Green, Red, and Grey\nballs are goodies", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "stars.png");
+            h.setMoveByTilting();
+
+            // the destination requires lots of goodies of different types
+            Destination d = Destination.makeAsCircle(420, 310, 10, 10, "mustardball.png");
+            d.setActivationScore1(1);
+            d.setActivationScore2(1);
+            d.setActivationScore3(3);
+            Level.setVictoryDestination(1);
+
+            Controls.addGoodieCount1(0, "blue", 10, 10, 0, 255, 255, 16);
+            Controls.addGoodieCount2(0, "green", 10, 40, 0, 255, 255, 16);
+            Controls.addGoodieCount3(0, "red", 10, 70, 0, 255, 255, 16);
+
+            Controls.addCountdown(100, "", 250, 10);
+
+            for (int i = 0; i < 3; ++i) {
+                Goodie b = Goodie.makeAsCircle(100 * i, 300, 10, 10, "blueball.png");
+                b.setScore1(1);
+                Goodie g = Goodie.makeAsCircle(100 * i + 25, 300, 10, 10, "greenball.png");
+                g.setScore2(1);
+                g.setScore1(0); // or else it counts as blue, too...
+                Goodie r = Goodie.makeAsCircle(100 * i + 60, 300, 10, 10, "redball.png");
+                r.setScore3(1);
+                r.setScore1(0); // or else it counts as blue, too...
+            }
+
+            Obstacle o = Obstacle.makeAsBox(400, 0, 5, 200, "red.png");
+            o.setHeroCollisionTrigger(0, 1, 1, 1, 0);
         }
 
         /**
@@ -2857,27 +3043,27 @@ public class MyGdxGame extends ALE
          * @description: this level shows passthrough objects
          * 
          * @whatsnew: setting passthrough
-         */
+         *  /
         else if (whichLevel == 75) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 0);
-             * Tilt.enable(10, 10);
-             * PopUpScene.showTextTimed("You can walk through the wall", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 20, 30, 30, "stars.png");
-             * h.setMoveByTilting(); h.setPassThrough(7); // make sure obstacle
-             * has same value
-             * 
-             * // the destination requires lots of goodies of different types
-             * Destination d = Destination.makeAsCircle(420, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * Enemy e = Enemy.makeAsCircle(420, 10, 50, 40, "red.png");
-             * e.setChaseSpeed(1);
-             * 
-             * Obstacle o = Obstacle.makeAsBox(400, 0, 5, 200, "red.png");
-             * o.setPassThrough(7);
-             */
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.showTextTimed("You can walk through the wall", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "stars.png");
+            h.setMoveByTilting();
+            h.setPassThrough(7); // make sure obstacle has same value
+
+            // the destination requires lots of goodies of different types
+            Destination d = Destination.makeAsCircle(420, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            Enemy e = Enemy.makeAsCircle(420, 10, 50, 40, "red.png");
+            e.setChaseSpeed(1);
+
+            Obstacle o = Obstacle.makeAsBox(400, 0, 5, 200, "red.png");
+            o.setPassThrough(7);
         }
 
         /**
@@ -2886,35 +3072,37 @@ public class MyGdxGame extends ALE
          * @description: Demonstrate the use of a turbo boost button
          * 
          * @whatsnew: Controls.addTurboButton
-         */
+         *  /
         else if (whichLevel == 76) {
-            /*
-             * // set up a side scroller, but don't turn on tilt
-             * Level.configure(3 * 460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Press anywhere to speed up", 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // note: the bounding box does not have friction, and neither
-             * does the hero Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png",
-             * 1, 0, 0);
-             * 
-             * // make a hero, but don't let it rotate: Hero h =
-             * Hero.makeAsBox(20, 250, 30, 70, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0); // give the hero a
-             * fixed velocity h.addVelocity(4, 0); // center the camera a little
-             * ahead of the hero, so he is not centered h.setCameraOffset(150,
-             * 0);
-             * 
-             * // set up the background Background.setColor(0, 0, 255);
-             * Background.addLayer("mid.png", -20, 0, 116);
-             * Background.setScrollFactor(20);
-             * 
-             * // draw a turbo boost button that covers the whole screen... make
-             * sure its "up" speeds match the hero // velocity
-             * Controls.addTurboButton(0, 0, 460, 320, "invis.png", 15, 0, 4, 0,
-             * h);
-             */
+            // set up a side scroller, but don't turn on tilt
+            Level.configure(3 * 48, 32, 0, 10);
+            PreScene.showTextTimed("Press anywhere to speed up", 1);
+            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // note: the bounding box does not have friction, and neither does
+            // the hero
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+
+            // make a hero, but don't let it rotate:
+            Hero h = Hero.makeAsBox(20, 250, 30, 70, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0);
+            // give the hero a fixed velocity
+            h.addVelocity(4, 0);
+            // center the camera a little ahead of the hero, so he is not
+            // centered
+            h.setCameraOffset(150, 0);
+
+            // set up the background
+            Background.setColor(0, 0, 255);
+            Background.addLayer("mid.png", -20, 0, 116);
+            Background.setScrollFactor(20);
+
+            // draw a turbo boost button that covers the whole screen... make
+            // sure its "up" speeds match the hero
+            // velocity
+            Controls.addTurboButton(0, 0, 460, 320, "invis.png", 15, 0, 4, 0, h);
         }
 
         /**
@@ -2924,56 +3112,58 @@ public class MyGdxGame extends ALE
          *               release
          * 
          * @whatsnew: Controls.addDampenedMotionButton
-         */
+         *  /
         else if (whichLevel == 77) {
-            /*
-             * // set up a side scroller, but don't turn on tilt
-             * Level.configure(3 * 460, 320, 0, 10);
-             * PopUpScene.showTextTimed("Press anywhere to speed up", 1);
-             * Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
-             * Level.setVictoryDestination(1);
-             * 
-             * // note: the bounding box has friction, so the hero will glide
-             * Util.drawBoundingBox(0, 0, 3 * 460, 320, "red.png", 1, 0, 0);
-             * 
-             * // make a hero, but don't let it rotate: Hero h =
-             * Hero.makeAsBox(20, 250, 30, 70, "greenball.png"); // center the
-             * camera a little ahead of the hero, so he is not centered
-             * h.setCameraOffset(150, 0);
-             * 
-             * // set up the background Background.setColor(0, 0, 255);
-             * Background.addLayer("mid.png", -20, 0, 116);
-             * Background.setScrollFactor(20);
-             * 
-             * // draw a turbo boost button that covers the whole screen... make
-             * sure its "up" speeds match the hero // velocity
-             * Controls.addDampenedMotionButton(0, 0, 460, 320, "invis.png", 10,
-             * 0, 4, h);
-             */
+            // set up a side scroller, but don't turn on tilt
+            Level.configure(3 * 48, 32, 0, 10);
+            PreScene.showTextTimed("Press anywhere to speed up", 1);
+            Destination.makeAsCircle(1200, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // note: the bounding box has friction, so the hero will glide
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+
+            // make a hero, but don't let it rotate:
+            Hero h = Hero.makeAsBox(20, 250, 30, 70, "greenball.png");
+            // center the camera a little ahead of the hero, so he is not
+            // centered
+            h.setCameraOffset(150, 0);
+
+            // set up the background
+            Background.setColor(0, 0, 255);
+            Background.addLayer("mid.png", -20, 0, 116);
+            Background.setScrollFactor(20);
+
+            // draw a turbo boost button that covers the whole screen... make
+            // sure its "up" speeds match the hero
+            // velocity
+            Controls.addDampenedMotionButton(0, 0, 460, 320, "invis.png", 10, 0, 4, h);
         }
 
         /**
          * @level: 78
          * 
          * @description: Demonstrate how onesided and triggers interact
-         */
+         *  /
         else if (whichLevel == 78) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 10);
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Does autojump work?", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); h.setJumpImpulses(0, -10);
-             * h.setTouchToJump(); Destination.makeAsCircle(420, 310, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * 
-             * // create a box that is easy to fall into, but hard to get out of
-             * Obstacle bottom = Obstacle.makeAsBox(100, 250, 100, 2,
-             * "red.png"); bottom.setOneSided(0);
-             * bottom.setHeroCollisionTrigger(0, 0);
-             */
+            // set up a simple level
+            Level.configure(48, 32, 0, 10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Does autojump work?", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            h.setJumpImpulses(0, -10);
+            h.setTouchToJump();
+            Destination.makeAsCircle(420, 310, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+
+            // create a box that is easy to fall into, but hard to get out of
+            Obstacle bottom = Obstacle.makeAsBox(100, 250, 100, 2, "red.png");
+            bottom.setOneSided(0);
+            bottom.setHeroCollisionTrigger(0, 0);
         }
 
         /**
@@ -2992,21 +3182,23 @@ public class MyGdxGame extends ALE
          * 
          * @whatsnew: Controls.addTriggerControl for an on-screen button that
          *            runs custom code
-         */
+         *  /
         else if (whichLevel == 79) {
-            /*
-             * // start by setting everything up just like in level 1
-             * Level.configure(460, 320, 0, 0); Tilt.enable(10, 10); Hero h =
-             * Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-             * h.setMoveByTilting(); h.setPokePath(4);
-             * h.setPokePathFixedVelocity(4); h.setKeepPokeEntity();
-             * h.setPokeChaseMode(); Destination.makeAsCircle(290, 60, 10, 10,
-             * "mustardball.png"); Level.setVictoryDestination(1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 0, 0, 0);
-             * PopUpScene
-             * .showTextTimed("Poke the hero, then\n where you want it\nto go.",
-             * 1); Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
-             */
+            // start by setting everything up just like in level 1
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+            h.setMoveByTilting();
+            h.setPokePath(4);
+            h.setPokePathFixedVelocity(4);
+            h.setKeepPokeEntity();
+            h.setPokeChaseMode();
+            Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+            Level.setVictoryDestination(1);
+            Util.drawBoundingBox(0, 0, 48, 320, "red.png", 0, 0, 0);
+            PreScene.showTextTimed("Poke the hero, then\n where you want it\nto go.", 1);
+            Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
         }
 
         /**
@@ -3017,18 +3209,23 @@ public class MyGdxGame extends ALE
          * @whatsnew: setGravityDefy
          */
         else if (whichLevel == 80) {
-            /*
-             * // set up a simple level Level.configure(460, 320, 0, 10);
-             * Tilt.enable(10, 0);
-             * PopUpScene.showTextTimed("Testing Gravity Defy?", 1);
-             * Util.drawBoundingBox(0, 0, 460, 320, "red.png", 1, .3f, 1); Hero
-             * h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
-             * h.disableRotation(); h.setPhysics(1, 0, 0.6f);
-             * h.setMoveByTilting(); h.setJumpImpulses(0, -10);
-             * h.setTouchToJump(); Destination d = Destination.makeAsCircle(420,
-             * 140, 10, 10, "mustardball.png"); d.setAbsoluteVelocity(-2, 0);
-             * d.setGravityDefy(0, -10f); Level.setVictoryDestination(1);
-             */
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.showTextTimed("Testing Gravity Defy?", 1);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(20, 20, 30, 30, "greenball.png");
+            h.disableRotation();
+            h.setPhysics(1, 0, 0.6f);
+            h.setMoveByTilting();
+            h.setJumpImpulses(0, -10);
+            h.setTouchToJump();
+            Destination d = Destination.makeAsCircle(420, 140, 10, 10, "mustardball.png");
+            // TODO:
+            // d.setAbsoluteVelocity(-2, 0);
+            d.setGravityDefy(0, -10f);
+            Level.setVictoryDestination(1);
         }
 
     }
@@ -3125,7 +3322,7 @@ public class MyGdxGame extends ALE
          * oo.setHeroCollisionTrigger(3, 3); Goodie.makeAsCircle(1050, 10, 10,
          * 10, "blueball.png"); o.remove(false); } // well done... now print a
          * message and make the destination else if (id == 3) {
-         * PopUpScene.showTextTimed("The destination is\nnow available", 1);
+         * PreScene.showTextTimed("The destination is\nnow available", 1);
          * Destination.makeAsCircle(1200, 200, 20, 20, "mustardball.png");
          * o.remove(false); } } else if (whichLevel == 74) { // add 15 seconds
          * to the timer Controls.updateTimerExpiration(15); }
@@ -3172,7 +3369,7 @@ public class MyGdxGame extends ALE
         /*
          * // here's the code for level 62 if (whichLevel == 62) { // after
          * first trigger, print a message, draw an enemy, register a new timer
-         * if (id == 0) { PopUpScene.showTextTimed("Ooh... a draggable enemy",
+         * if (id == 0) { PreScene.showTextTimed("Ooh... a draggable enemy",
          * 1, 255, 255, 0, 12);
          * 
          * // make a draggable enemy Enemy e3 = Enemy.makeAsCircle(350, 250, 20,
@@ -3181,13 +3378,13 @@ public class MyGdxGame extends ALE
          * 
          * Level.setTimerTrigger(1, 3); } // after second trigger, draw an enemy
          * who disappears on touch, register a new timer else if (id == 1) {
-         * PopUpScene.showTextTimed("Touch the enemy and it will go away", 1,
+         * PreScene.showTextTimed("Touch the enemy and it will go away", 1,
          * 255, 0, 255, 12); Enemy e4 = Enemy.makeAsCircle(350, 50, 20, 20,
          * "redball.png"); e4.setPhysics(1.0f, 0.3f, 0.6f);
          * e4.setDisappearOnTouch(); Level.setTimerTrigger(2, 3); } // after
          * third trigger, draw an enemy, a goodie, and a destination, all with
          * fixed // velocity else if (id == 2) {
-         * PopUpScene.showTextTimed("Now you can see the rest of the level", 1,
+         * PreScene.showTextTimed("Now you can see the rest of the level", 1,
          * 255, 255, 0, 12);
          * 
          * Destination d = Destination.makeAsCircle(290, 60, 10, 10,
@@ -3214,26 +3411,33 @@ public class MyGdxGame extends ALE
     @Override
     public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e)
     {
-        /*
-         * if (whichLevel == 48) { // the ID represents the number of remaining
-         * reproductions for the current enemy (e), so that we don't //
-         * reproduce forever (note that we could, if we wanted to...) Enemy left
-         * = Enemy.makeAsCircle(e.getXPosition() - 20 * id, e.getYPosition() +
-         * 20 * id, e.getWidth(), e.getHeight(), "redball.png");
-         * left.setDisappearSound("lowpitch.ogg"); Enemy right =
-         * Enemy.makeAsCircle(e.getXPosition() + 20 * id, e.getYPosition() + 20
-         * * id, e.getWidth(), e.getHeight(), "redball.png");
-         * right.setDisappearSound("lowpitch.ogg"); if (id > 0) {
-         * Level.setEnemyTimerTrigger(id - 1, 2, left);
-         * Level.setEnemyTimerTrigger(id - 1, 2, e);
-         * Level.setEnemyTimerTrigger(id - 1, 2, right); } } else if (whichLevel
-         * == 49) { // in this case, every enemy will produce one offspring on
-         * each timer Enemy e2 = Enemy.makeAsCircle(e.getXPosition(),
-         * e.getYPosition(), e.getWidth(), e.getHeight(), "redball.png");
-         * e2.setPhysics(1.0f, 0.3f, 0.6f); e2.setMoveByTilting(); if (id > 0) {
-         * Level.setEnemyTimerTrigger(id - 1, 2, e);
-         * Level.setEnemyTimerTrigger(id - 1, 2, e2); } }
-         */
+        if (whichLevel == 48) {
+            // the ID represents the number of remaining reproductions for the
+            // current enemy (e), so that we don't reproduce forever (note that
+            // we could, if we wanted to...)
+            Enemy left = Enemy.makeAsCircle(e.getXPosition() - 2 * id, e.getYPosition() + 2 * id, e.getWidth(),
+                    e.getHeight(), "redball.png");
+            left.setDisappearSound("lowpitch.ogg");
+            Enemy right = Enemy.makeAsCircle(e.getXPosition() + 2 * id, e.getYPosition() + 2 * id, e.getWidth(),
+                    e.getHeight(), "redball.png");
+            right.setDisappearSound("lowpitch.ogg");
+            if (id > 0) {
+                Level.setEnemyTimerTrigger(id - 1, 2, left);
+                Level.setEnemyTimerTrigger(id - 1, 2, e);
+                Level.setEnemyTimerTrigger(id - 1, 2, right);
+            }
+        }
+        else if (whichLevel == 49) { 
+            // in this case, every enemy will produce one offspring on each timer
+            Enemy e2 = Enemy.makeAsCircle(e.getXPosition(), e.getYPosition(), e.getWidth(), e.getHeight(),
+                    "redball.png");
+            e2.setPhysics(1.0f, 0.3f, 0.6f);
+            e2.setMoveByTilting();
+            if (id > 0) {
+                Level.setEnemyTimerTrigger(id - 1, 2, e);
+                Level.setEnemyTimerTrigger(id - 1, 2, e2);
+            }
+        }
     }
 
     /**
@@ -3250,7 +3454,7 @@ public class MyGdxGame extends ALE
     {
         /*
          * if (whichLevel == 65) {
-         * PopUpScene.showTextTimed("good job, here's a prize", .6f, 88, 226,
+         * PreScene.showTextTimed("good job, here's a prize", .6f, 88, 226,
          * 160, 16); // use random numbers to figure out where to draw a goodie
          * as a reward Goodie.makeAsCircle(Util.getRandom(439),
          * Util.getRandom(299), 20, 20, "blueball.png"); }
@@ -3327,7 +3531,7 @@ public class MyGdxGame extends ALE
     public void onControlPressTrigger(int id, int whichLevel)
     {
         /*
-         * if (id == 747) PopUpScene.showTextTimed("Hello", 1);
+         * if (id == 747) PreScene.showTextTimed("Hello", 1);
          */
     }
 

@@ -60,7 +60,7 @@ public class PostScene
      */
     static public void showImageAndWait(String imgName, float x, float y, float width, float height)
     {
-        setPopUpImage(Media.getImage(imgName), x, y, width, height);
+        setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
     }
 
     private static boolean _showPopUp;

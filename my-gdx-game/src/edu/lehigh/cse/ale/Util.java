@@ -105,10 +105,10 @@ public class Util
     {
         Renderable r = new Renderable()
         {
-            final TextureRegion tr = Media.getImage(imgName);
+            final TextureRegion tr = Media.getImage(imgName)[0];
 
             @Override
-            public void render(SpriteBatch sb)
+            public void render(SpriteBatch sb, float delta)
             {
                 sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
@@ -142,10 +142,10 @@ public class Util
     {
         Renderable r = new Renderable()
         {
-            final TextureRegion tr = Media.getImage(imgName);
+            final TextureRegion tr = Media.getImage(imgName)[0];
 
             @Override
-            public void render(SpriteBatch sb)
+            public void render(SpriteBatch sb, float delta)
             {
                 sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }

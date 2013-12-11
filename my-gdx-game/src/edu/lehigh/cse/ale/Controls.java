@@ -9,26 +9,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import edu.lehigh.cse.ale.Level.HudEntity;
 import edu.lehigh.cse.ale.Level.PendingEvent;
-import edu.lehigh.cse.ale.Level.Renderable;
-
 
 public class Controls
 {
-    class Control implements Renderable
-    {
-
-        @Override
-        public void render(SpriteBatch sb)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-    }
-        
     /*
      * BASIC FUNCTIONALITY
      */
@@ -262,44 +250,13 @@ public class Controls
      *            The x coordinate where the text should be drawn
      * @param y
      *            The y coordinate where the text should be drawn
-     *
-     * @deprecated Use addGoodieCount[1-4]() instead
      */
-    @Deprecated
-        public static void addGoodieCount(int max, String text, int x, int y)
+      public static void addGoodieCount1(int max, String text, int x, int y)
     {
         addGoodieCount1(max, text, x, y, 255, 255, 255, 32);
     }
 
-    /**
-     * Add a count of the current number of goodies of type 1, with extra features for describing the appearance of the
-     * font
-     *
-     * @param max
-     *            If this is > 0, then the message wil be of the form XX/max instead of just XX
-     * @param text
-     *            The text to display after the number of goodies
-     * @param x
-     *            The x coordinate where the text should be drawn
-     * @param y
-     *            The y coordinate where the text should be drawn
-     * @param red
-     *            A value between 0 and 255, indicating the red portion of the font color
-     * @param green
-     *            A value between 0 and 255, indicating the green portion of the font color
-     * @param blue
-     *            A value between 0 and 255, indicating the blue portion of the font color
-     * @param size
-     *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
-     *            screen
-     *
-     * @deprecated Use addGoodieCount[1-4]() instead
-     */
-    @Deprecated
-        public static void addGoodieCount(int max, final String text, int x, int y, int red, int green, int blue, int size)
-    {
-        addGoodieCount1(max, text, x, y, red, green, blue, size);
-    }
+  
     /**
      * Add a count of the current number of goodies of type 1, with extra features for describing the appearance of the font
      *
@@ -521,7 +478,7 @@ public class Controls
      * @param y
      *            The y coordinate where the text should be drawn
      */
-    /*    public static void addDefeatedCount(int max, String text, int x, int y)
+    public static void addDefeatedCount(int max, String text, int x, int y)
     {
         addDefeatedCount(max, text, x, y, 255, 255, 255, 32);
     }
@@ -548,37 +505,30 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addDefeatedCount(int max, final String text, int x, int y, int red, int green, int blue, int size)
+    public static void addDefeatedCount(int max, final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // turn on the timer
-        _timerActive = true;
-
+        // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXX/XXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
             @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
+            void render(SpriteBatch sb)
             {
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
+
                 // get elapsed time for this level
                 String newtext = "" + Score._enemiesDefeated + suffix;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+                bf.draw(sb, newtext, x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -810,7 +760,7 @@ public class Controls
         
         PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = -rate;
@@ -831,7 +781,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -863,7 +813,7 @@ public class Controls
         
         PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = rate;
@@ -884,7 +834,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -916,7 +866,7 @@ public class Controls
         
         PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = -rate;
@@ -937,7 +887,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -969,7 +919,7 @@ public class Controls
         
         PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rate;
@@ -990,7 +940,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1120,7 +1070,7 @@ public class Controls
     {
         Level.PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 h.crawlOn();
             }
@@ -1137,7 +1087,7 @@ public class Controls
 
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);
@@ -1161,7 +1111,7 @@ public class Controls
     {
         Level.PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 vv)
             {
                 h.jump();
             }
@@ -1177,7 +1127,7 @@ public class Controls
 
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1197,20 +1147,31 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*    public static void addThrowButton(int x, int y, int width, int height, String imgName)
+    public static void addThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        // TODO: this should keep throwing if we hold...
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                Projectile.throwFixed(Level._lastHero._sprite.getX(), Level._lastHero._sprite.getY());
-                return true;
+                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y);
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1227,22 +1188,30 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*    public static void addSingleThrowButton(int x, int y, int width, int height, String imgName)
+    public static void addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                if (!e.isActionDown())
-                    return false;
-                Projectile.throwFixed(Level._lastHero._sprite.getX(), Level._lastHero._sprite.getY());
-                return true;
+                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y);
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1262,23 +1231,31 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*    public static void addVectorThrowButton(int x, int y, int width, int height, String imgName)
+    public static void addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        // TODO: this should keep throwing if we hold...
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                // move the x,y coordinates based on the camera center
-                x = x + ALE._self._camera.getCenterX() - Configuration.getCameraWidth() / 2;
-                y = y + ALE._self._camera.getCenterY() - Configuration.getCameraHeight() / 2;
-                Projectile.throwAt(Level._lastHero._sprite.getX(), Level._lastHero._sprite.getY(), x, y);
-                return true;
+                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y);
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1298,25 +1275,30 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    /*public static void addVectorSingleThrowButton(int x, int y, int width, int height, String imgName)
+    public static void addVectorSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        Level.PendingEvent pe = new PendingEvent() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                if (!e.isActionDown())
-                    return false;
-                // move the x,y coordinates based on the camera center
-                x = x + ALE._self._camera.getCenterX() - Configuration.getCameraWidth() / 2;
-                y = y + ALE._self._camera.getCenterY() - Configuration.getCameraHeight() / 2;
-                Projectile.throwAt(Level._lastHero._sprite.getX(), Level._lastHero._sprite.getY(), x, y);
-                return true;
+                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y);
             }
+            @Override
+            void go()
+            {
+            }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1339,7 +1321,7 @@ public class Controls
     {
         Level.PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 v)
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom < maxZoom)
@@ -1357,7 +1339,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -1383,7 +1365,7 @@ public class Controls
     {
         PendingEvent pe = new PendingEvent() {
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 v)
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom > minZoom)
@@ -1401,7 +1383,7 @@ public class Controls
             }
         };
         if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName);
+            pe.tr = Media.getImage(imgName)[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        

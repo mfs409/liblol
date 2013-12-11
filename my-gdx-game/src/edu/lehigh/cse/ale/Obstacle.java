@@ -2,9 +2,12 @@ package edu.lehigh.cse.ale;
 
 // STATUS: in progress
 
+// TODO: scribble time of -1 should leave things on the screen forever...
+
+// TODO: we should really make this so that there are simply callbacks and far fewer static fields
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -12,7 +15,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 /**
  * Obstacles are entities that change the hero's velocity upon a collision
  * 
- * There are many flavors of obstacles. They can have a _physics shape that is
+ * There are many flavors of obstacles. They can have a physics shape that is
  * circular or square. They can have default
  * collision behavior or custom behavior. They can be moved by dragging. They
  * can move by touching the object and then
@@ -49,9 +52,9 @@ public class Obstacle extends PhysicsSprite
      * @param tr
      *            image to use for this Obstacle
      */
-    protected Obstacle(float width, float height, TextureRegion tr)
+    protected Obstacle(float width, float height, String imgName)
     {
-        super(tr, SpriteId.OBSTACLE, width, height);
+        super(imgName, SpriteId.OBSTACLE, width, height);
     }
 
     /**
@@ -71,7 +74,7 @@ public class Obstacle extends PhysicsSprite
      */
     public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
+        Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         Level._currLevel._sprites.add(o);
         return o;
@@ -95,7 +98,7 @@ public class Obstacle extends PhysicsSprite
     public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName)
     {
         float radius = (width > height) ? width : height;
-        Obstacle o = new Obstacle(width, height, Media.getImage(imgName));
+        Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         Level._currLevel._sprites.add(o);
         return o;
@@ -485,25 +488,6 @@ public class Obstacle extends PhysicsSprite
      * Make the object a trigger object, so that custom code will run when a
      * projectile hits it.
      * 
-     * @param activationGoodies
-     *            Number of goodies that must be collected before this trigger
-     *            works
-     * @param id
-     *            identifier for the trigger
-     * @deprecated Use 5-paramter version of the function instead
-     */
-    @Deprecated
-    public void setProjectileCollisionTrigger(int activationGoodies, int id)
-    {
-        _projectileTriggerID = id;
-        _isProjectileCollideTrigger = true;
-        _projectileTriggerActivation1 = activationGoodies;
-    }
-
-    /**
-     * Make the object a trigger object, so that custom code will run when a
-     * projectile hits it.
-     * 
      * @param id
      *            identifier for the trigger
      * @param activationGoodies1
@@ -709,7 +693,7 @@ public class Obstacle extends PhysicsSprite
             _scribbleX = x;
             _scribbleY = y;
             Gdx.app.log("scrib", "making");
-            o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth, _scribbleHeight, _scribblePic);
+            o = makeAsCircle(_scribbleX - _scribbleWidth/2, _scribbleY - _scribbleHeight/2, _scribbleWidth, _scribbleHeight, _scribblePic);
             o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
             if (_scribbleMoveable)
                 o._physBody.setType(BodyType.DynamicBody);
@@ -748,7 +732,7 @@ public class Obstacle extends PhysicsSprite
             if (hSquare > (2.5f * 2.5f)) {
                 _scribbleX = newX;
                 _scribbleY = newY;
-                o = makeAsCircle(_scribbleX, _scribbleY, _scribbleWidth, _scribbleHeight, _scribblePic);
+                o = makeAsCircle(_scribbleX - _scribbleWidth/2, _scribbleY - _scribbleHeight/2, _scribbleWidth, _scribbleHeight, _scribblePic);
                 o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
                 if (_scribbleMoveable)
                     o._physBody.setType(BodyType.DynamicBody);

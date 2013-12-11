@@ -2,6 +2,7 @@ package edu.lehigh.cse.ale;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -49,11 +50,18 @@ public class Background
     
     static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset)
     {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName), 0, yOffset*Physics.PIXEL_METER_RATIO);
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset*Physics.PIXEL_METER_RATIO);
         pl._xRepeat = xSpeed != 0;
         _layers.add(pl);
     }
     
+    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset)
+    {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset*Physics.PIXEL_METER_RATIO, 0);
+        pl._yRepeat = ySpeed != 0;
+        _layers.add(pl);
+    }
+
     static void doParallaxLayers(SpriteBatch renderer)
     {
         // center camera on _gameCam's camera
@@ -69,22 +77,32 @@ public class Background
                 int i = -(int)pl._tr.getRegionWidth()/2;
                 while (i/Physics.PIXEL_METER_RATIO < x + Level._currLevel._camBoundX) {
                     // TODO: verify that GDX culls... otherwise, we should manually cull...
-                    renderer.draw(pl._tr,  i,  0+pl._yOffset);
+                    renderer.draw(pl._tr,  i, pl._yOffset);
                     // Gdx.app.log("parallax", x+" "+_width + " " + pl._tr.getRegionWidth() + " " + i);
                     i+=pl._tr.getRegionWidth();
                 }
             }
             else if (pl._yRepeat) {
-                // TODO: vertical repeat... note that we don't support vertical
-                // and horizontal repeat... should we? 'twould allow for easy
-                // tiled backgrounds...
+                int i = 0;//-(int)pl._tr.getRegionHeight()/2;
+                while (i/Physics.PIXEL_METER_RATIO < y + Level._currLevel._camBoundY) {
+                    // TODO: verify that GDX culls... otherwise, we should manually cull...
+                    
+                    // TODO: not sure why the -2 is needed in the next line to get it to center, but it works...
+                    renderer.draw(pl._tr, pl._xOffset, i);
+                    i+=pl._tr.getRegionHeight();
+                }
+                // TODO: we don't support vertical and horizontal repeat...
+                // should we? 'twould allow for easytiled backgrounds...
             }
-            else {
-                // probably the background layer...
-                renderer.draw(pl._tr, -pl._tr.getRegionWidth()/2,  0);
+            else if (pl._xSpeed == 0){
+                // horizontal background layer
+                renderer.draw(pl._tr, -pl._tr.getRegionWidth()/2 + pl._xOffset, pl._yOffset);
+            }
+            else if (pl._ySpeed == 0) {
+                // vertical background layer
+                renderer.draw(pl._tr, pl._xOffset, -pl._tr.getRegionHeight()/2 + pl._yOffset);
             }
             renderer.end();            
         }        
     }
-
 }

@@ -7,23 +7,24 @@ package edu.lehigh.cse.ale;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 public class Hero extends PhysicsSprite
 {
 
-    Hero(float width, float height, TextureRegion tr)
+    Hero(float width, float height, String imgName)
     {
-        super(tr, SpriteId.HERO, width, height);
+        super(imgName, SpriteId.HERO, width, height);
         Score._heroesCreated++;
     }
 
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        Hero h = new Hero(width, height, Media.getImage(imgName));
+        Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
         Level._currLevel._sprites.add(h);
         return h;
@@ -32,7 +33,7 @@ public class Hero extends PhysicsSprite
     public static Hero makeAsCircle(float x, float y, float width, float height, String imgName)
     {
         float radius = (width > height) ? width : height;
-        Hero h = new Hero(width, height, Media.getImage(imgName));
+        Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius/2);
         Level._currLevel._sprites.add(h);
         return h;
@@ -175,21 +176,17 @@ public class Hero extends PhysicsSprite
             if (o._speedBoostDuration > 0) {
                 final Obstacle oo = o;
                 // set up a timer to shut off the boost
-                // TODO:
-                /*
-                TimerHandler t = new TimerHandler(o._speedBoostDuration, false, new ITimerCallback()
+                Timer.schedule(new Task()
                 {
                     @Override
-                    public void onTimePassed(TimerHandler th)
+                    public void run()
                     {
                         Vector2 v = _physBody.getLinearVelocity();
                         v.x -= oo._speedBoostX;
                         v.y -= oo._speedBoostY;
                         updateVelocity(v);
                     }
-                });
-                Level._current.registerUpdateHandler(t);
-                */
+                }, o._speedBoostDuration);
             }
         }
 
@@ -368,12 +365,7 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: cells involved in animation for jumping
      */
-    private int[]   _jumpAnimateCells;
-
-    /**
-     * Animation support: durations for jumping animation
-     */
-    private long[]  _jumpAnimateDurations;
+    private Animation   _jumpAnimation;
 
     /**
      * Sound to play when a jump occurs
@@ -400,11 +392,12 @@ public class Hero extends PhysicsSprite
         updateVelocity(v);
         if (!_allowMultiJump)
             _inAir = true;
-        // TODO
-        /*
-        if (_jumpAnimateDurations != null)
-            _sprite.animate(_jumpAnimateDurations, _jumpAnimateCells, true);
-            */
+        if (_jumpAnimation != null) {
+            Gdx.app.log("animate", "switch to jump");
+            _currentAnimation = _jumpAnimation;
+            _currAnimationFrame = 0;
+            _currAnimationTime = 0;
+        }
         if (_jumpSound != null)
             _jumpSound.play();
     }
@@ -416,13 +409,10 @@ public class Hero extends PhysicsSprite
     {
         if (_inAir || _allowMultiJump) {
             _inAir = false;
-            /*
-            TODO
-            if (_defaultAnimateCells != null)
-                _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-            else
-                _sprite.stopAnimation(0);
-                */
+            // note: we don't need to worry about if the hero has a default animation... if it's null, everything will still be OK
+            _currentAnimation = _defaultAnimation;
+            _currAnimationFrame = 0;
+            _currAnimationTime = 0;
         }
     }
 
@@ -471,6 +461,11 @@ public class Hero extends PhysicsSprite
             // turn off _isTouchAndGo, so we can't double-touch
             _isTouchAndGo = false;
         }
+        // throw a projectile?
+        else if (_isTouchThrow) {
+            Projectile.throwFixed(_physBody.getPosition().x, _physBody.getPosition().y);
+        }
+
         else {
             super.handleTouchDown(x, y);
         }
@@ -484,10 +479,9 @@ public class Hero extends PhysicsSprite
      * @param durations
      *            How long to show each cell
      */
-    public void setJumpAnimation(int[] cells, long[] durations)
+    public void setJumpAnimation(Animation a)
     {
-        _jumpAnimateCells = cells;
-        _jumpAnimateDurations = durations;
+        _jumpAnimation = a;
     }
 
     /**
@@ -533,11 +527,9 @@ public class Hero extends PhysicsSprite
     /**
      * Indicate that touching this hero should make it throw a projectile
      */
-    /*
     public void setTouchToThrow()
     {
         _isTouchThrow = true;
-        Level._current.registerTouchArea(_sprite);
     }
 
     /**
@@ -828,16 +820,17 @@ public class Hero extends PhysicsSprite
     */
 
     @Override
-    public void render(SpriteBatch _spriteRender)
+    public void render(SpriteBatch _spriteRender, float delta)
     {
         // on each hero render, update invincibility status
         if (_invincibleRemaining > 0) {
-            _invincibleRemaining -= Gdx.graphics.getDeltaTime();
+            _invincibleRemaining -= delta;
             if (_invincibleRemaining < 0) {
                 _invincibleRemaining = 0;
+                // TODO: reset animation
             }
         }
         
-        super.render(_spriteRender);
+        super.render(_spriteRender, delta);
     }
 }

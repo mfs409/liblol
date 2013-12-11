@@ -2,7 +2,6 @@ package edu.lehigh.cse.ale;
 
 // STATUS: IN PROGRESS
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -29,15 +28,15 @@ public class Enemy extends PhysicsSprite
      *            true if this should use a circle underneath for its collision
      *            detection, and false if a box should be used
      */
-    private Enemy(float width, float height, TextureRegion tr)
+    private Enemy(float width, float height, String imgName)
     {
-        super(tr, SpriteId.ENEMY, width, height);
+        super(imgName, SpriteId.ENEMY, width, height);
         Score._enemiesCreated++;
     }
     
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        Enemy e = new Enemy(width, height, Media.getImage(imgName));
+        Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         Level._currLevel._sprites.add(e);
         return e;
@@ -46,7 +45,7 @@ public class Enemy extends PhysicsSprite
     public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName)
     {
         float radius = (width > height) ? width : height;
-        Enemy e = new Enemy(radius, radius, Media.getImage(imgName));
+        Enemy e = new Enemy(radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         Level._currLevel._sprites.add(e);
         return e;
@@ -246,9 +245,8 @@ public class Enemy extends PhysicsSprite
             if (other._psType == SpriteId.OBSTACLE)
                 onCollideWithObstacle((Obstacle) other);
             // collision with projectiles
-            // TODO:
-            // if (other._psType == SpriteId.PROJECTILE)
-                // onCollideWithProjectile((Projectile) other);
+            if (other._psType == SpriteId.PROJECTILE)
+                onCollideWithProjectile((Projectile) other);
 
             // one last thing: if the enemy was "norotate", then patch up any rotation that happened to its _physics body by
             // mistake:
@@ -312,8 +310,9 @@ public class Enemy extends PhysicsSprite
          */
         private void onCollideWithProjectile(Projectile p)
         {
-            // TODO
-            /*
+            // only work with active projectiles
+            if (!p._visible)
+                return;
             // compute damage to determine if the enemy is defeated
             _damage -= Projectile._strength;
             if (_damage <= 0) {
@@ -326,7 +325,6 @@ public class Enemy extends PhysicsSprite
                 // hide the projectile
                 p.remove(false);
             }
-            */
         }
 
         /*

@@ -37,7 +37,7 @@ public class Media
     /**
      * Store the images used by this game
      */
-    static private final Hashtable<String, TextureRegion> _images = new Hashtable<String, TextureRegion>();
+    static private final Hashtable<String, TextureRegion[]> _images = new Hashtable<String, TextureRegion[]>();
 
     public static BitmapFont getFont(String fontFileName, int fontSize)
     {
@@ -103,9 +103,9 @@ public class Media
      * @return a TiledTextureRegion object that can be used to create
      *         AnimatedSprites
      */
-    static TextureRegion getImage(String imgName)
+    static TextureRegion[] getImage(String imgName)
     {
-        TextureRegion ret = _images.get(imgName);
+        TextureRegion[] ret = _images.get(imgName);
         if (ret == null)
             Gdx.app.log("ERROR", "Error retreiving image " + imgName + " ... your program is probably about to crash");
         return ret;
@@ -124,7 +124,8 @@ public class Media
      */
     static public void registerImage(String imgName)
     {
-        TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
+        TextureRegion[] tr = new TextureRegion[1];
+        tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
         _images.put(imgName, tr);
     }
 
@@ -145,41 +146,23 @@ public class Media
      *            cells, then cellColumns should be the number of columns in the
      *            grid. Otherwise, it should be 1.
      */
-    /*
-     * static public void registerAnimatableImage(String imgName, int
-     * cellColumns) {
-     * AssetManager am = ALE._self.getAssets();
-     * Bitmap b = null;
-     * try {
-     * b = BitmapFactory.decodeStream(am.open(imgName));
-     * } catch (Exception e) {
-     * Debug.d("Error loading image file "
-     * + imgName
-     * +
-     * " ... your program will probably crash when you try to use it.  Is the file in your assets?"
-     * );
-     * return;
-     * }
-     * int width = b.getWidth();
-     * int height = b.getHeight();
-     * 
-     * if (width > 2048)
-     * Debug.d("Image file " + imgName + " has a width of " + width
-     * + "... that's probably too big!");
-     * if (height > 2048)
-     * Debug.d("Image file " + imgName + " has a height of " + height
-     * + "... that's probably too big!");
-     * 
-     * BitmapTextureAtlas bta = new BitmapTextureAtlas(
-     * ALE._self.getTextureManager(), width, height,
-     * TextureOptions.DEFAULT);
-     * TiledTextureRegion ttr = BitmapTextureAtlasTextureRegionFactory
-     * .createTiledFromAsset(bta, ALE._self, imgName, 0, 0,
-     * cellColumns, 1);
-     * _images.put(imgName, ttr);
-     * ALE._self.getEngine().getTextureManager().loadTexture(bta);
-     * }
-     */
+    static public void registerAnimatableImage(String imgName, int columns, int rows)
+    {
+        Texture t = new Texture(Gdx.files.internal(imgName));
+        int width = t.getWidth() / columns;
+        int height = t.getHeight() / rows;
+        TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
+        TextureRegion [] trs = new TextureRegion[columns * rows];
+        int index = 0;
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                trs[index] = trgrid[i][j];
+                index++;
+            }
+        }
+        _images.put(imgName, trs);
+    }
+
     /**
      * Register a _music file, so that it can be used later.
      * 

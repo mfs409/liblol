@@ -2,7 +2,6 @@ package edu.lehigh.cse.ale;
 
 // STATUS: Done?
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Goodie extends PhysicsSprite
@@ -28,9 +27,9 @@ public class Goodie extends PhysicsSprite
      * @param tr
      *            image to use for this Obstacle
      */
-    protected Goodie(float width, float height, TextureRegion tr)
+    protected Goodie(float width, float height, String imgName)
     {
-        super(tr, SpriteId.GOODIE, width, height);
+        super(imgName, SpriteId.GOODIE, width, height);
         _score1 = 1;
         _score2 = 0;
         _score3 = 0;
@@ -54,7 +53,7 @@ public class Goodie extends PhysicsSprite
      */
     public static Goodie makeAsBox(float x, float y, float width, float height, String imgName)
     {
-        Goodie g = new Goodie(width, height, Media.getImage(imgName));
+        Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         g._physBody.getFixtureList().get(0).setSensor(true);
         Level._currLevel._sprites.add(g);
@@ -79,7 +78,7 @@ public class Goodie extends PhysicsSprite
     public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName)
     {
         float radius = (width > height) ? width : height;
-        Goodie g = new Goodie(width, height, Media.getImage(imgName));
+        Goodie g = new Goodie(width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
         g._physBody.getFixtureList().get(0).setSensor(true);
         Level._currLevel._sprites.add(g);
@@ -119,62 +118,14 @@ public class Goodie extends PhysicsSprite
      * 
      * @param value
      *            The number of points that are added to the score when the goodie is collected
-     * 
-     * @deprecated use setScore[1-4]() instead
      */
-    @Deprecated
-    public void setScore(int value)
+    public void setScore(int v1, int v2, int v3, int v4)
     {
         // save this value
-        _score1 = value;
-    }
-
-    /**
-     * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
-     * 
-     * @param value
-     *            The number of points that are added to score #1 when the goodie is collected
-     */
-    public void setScore1(int value)
-    {
-        // save this value
-        _score1 = value;
-    }
-
-    /**
-     * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
-     * 
-     * @param value
-     *            The number of points that are added to score #2 when the goodie is collected
-     */
-    public void setScore2(int value)
-    {
-        // save this value
-        _score2 = value;
-    }
-
-    /**
-     * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
-     * 
-     * @param value
-     *            The number of points that are added to score #3 when the goodie is collected
-     */
-    public void setScore3(int value)
-    {
-        // save this value
-        _score3 = value;
-    }
-
-    /**
-     * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
-     * 
-     * @param value
-     *            The number of points that are added to score #4 when the goodie is collected
-     */
-    public void setScore4(int value)
-    {
-        // save this value
-        _score4 = value;
+        _score1 = v1;
+        _score2 = v2;
+        _score3 = v3;
+        _score4 = v4;
     }
 
     /*

@@ -1,10 +1,11 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: not started
+// STATUS: in progress
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 /**
  * Projectiles are entities that can be thrown from the hero's location in order to remove enemies
@@ -27,7 +28,7 @@ public class Projectile extends PhysicsSprite
     /**
      * The force that is applied to a projectile to negate gravity
      */
-    private static final Vector2 _negGravity = new Vector2();
+    // private static final Vector2 _negGravity = new Vector2();
 
     /**
      * The velocity of a projectile when it is thrown
@@ -44,8 +45,13 @@ public class Projectile extends PhysicsSprite
      * We have to be careful in side-scrollers, or else projectiles can continue traveling off-screen forever. This
      * field lets us cap the distance away from the hero that a projectile can travel before we make it disappear.
      */
-    private static final Vector2 _range      = new Vector2();
+    private static float _range;
 
+    /**
+     * This is the initial point of the throw
+     */
+    private static final Vector2 _rangeFrom = new Vector2();
+    
     /**
      * The initial position of a projectile.
      */
@@ -65,11 +71,6 @@ public class Projectile extends PhysicsSprite
      * If this is > 0, it specifies the range of cells that can be used as the projectile image
      */
     private static int           _randomizeProjectileSprites;
-
-    /**
-     * Indicate that projectile gravity is enabled (default is false)
-     */
-    private static boolean       _gravityEnabled;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
@@ -111,12 +112,14 @@ public class Projectile extends PhysicsSprite
      *            animatable image to display as the projectile
      */
     // TODO: change to width, height, textureregion
-    private Projectile(float x, float y, float width, float height, TextureRegion ttr)
+    private Projectile(float x, float y, float width, float height, String imgName)
     {
-        super(ttr, SpriteId.PROJECTILE, width, height);
-        // TODO: // setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true);
+        super(imgName, SpriteId.PROJECTILE, width, height);
+        float radius = (width > height) ? width : height;
+        setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius/2);
         setCollisionEffect(false);
         disableRotation();
+        Level._currLevel._sprites.add(this);
     }
 
     /**
@@ -128,10 +131,9 @@ public class Projectile extends PhysicsSprite
      * @param y
      *            Maximum y distance from the hero that a projectile can travel
      */
-    public static void setRange(float x, float y)
+    public static void setRange(float distance)
     {
-        _range.x = x;
-        _range.y = y;
+        _range = distance;
     }
 
     /**
@@ -140,7 +142,8 @@ public class Projectile extends PhysicsSprite
      */
     public static void setProjectileGravityOn()
     {
-        _gravityEnabled = true;
+        for (Projectile p : _pool)
+            p._physBody.setGravityScale(1);
     }
 
     /**
@@ -249,20 +252,18 @@ public class Projectile extends PhysicsSprite
      *            projectile
      * @param _strength
      *            specifies the amount of _damage that a projectile does to an enemy
-     *//*
+     */
     public static void configure(int size, float width, float height, String imgName, float velocityX, float velocityY,
             float offsetX, float offsetY, int strength)
     {
-        // configure the image to use
-        TiledTextureRegion ttr = Media.getImage(imgName);
         // set up the pool
         _pool = new Projectile[size];
+        // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            _pool[i] = new Projectile(-100, -100, width, height, ttr);
-            _pool[i]._sprite.setVisible(false);
+            _pool[i] = new Projectile(-100 - i*width, -100 - i*height, width, height, imgName);
+            _pool[i]._visible = false;
             _pool[i]._physBody.setBullet(true);
             _pool[i]._physBody.setActive(false);
-            Level._current.attachChild(_pool[i]._sprite);
         }
         _nextIndex = 0;
         _poolSize = size;
@@ -272,16 +273,14 @@ public class Projectile extends PhysicsSprite
         _velocity.y = velocityY;
         _offset.x = offsetX;
         _offset.y = offsetY;
-        _negGravity.x = -Level._initXGravity;
-        _negGravity.y = -Level._initYGravity;
-        _range.x = 1000;
-        _range.y = 1000;
+        //_negGravity.x = -Level._initXGravity;
+        //_negGravity.y = -Level._initYGravity;
+        _range = 1000;
         // zero out animation
         _animationCells = null;
         _animationDurations = null;
         _throwSound = null;
         _projectileDisappearSound = null;
-        _gravityEnabled = false;
         _projectilesRemaining = -1;
         _randomizeProjectileSprites = 0;
         _sensorProjectiles = true;
@@ -378,8 +377,6 @@ public class Projectile extends PhysicsSprite
      */
     protected void onCollide(PhysicsSprite other)
     {
-        // TODO:
-        /*
         // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle) other;
@@ -389,8 +386,8 @@ public class Projectile extends PhysicsSprite
                     && (o._projectileTriggerActivation3 <= Score._goodiesCollected3)
                     && (o._projectileTriggerActivation4 <= Score._goodiesCollected4)) 
             {
-                ALE._self.onProjectileCollideTrigger(o._projectileTriggerID,
-                        MenuManager._currLevel, o, this);
+                ALE._game.onProjectileCollideTrigger(o._projectileTriggerID,
+                        ALE._game._currLevel, o, this);
                 return;
             }
         }
@@ -398,7 +395,6 @@ public class Projectile extends PhysicsSprite
         if (other._physBody.getFixtureList().get(0).isSensor())
             return;
         remove(false);
-        */
     }
 
     /*
@@ -412,7 +408,7 @@ public class Projectile extends PhysicsSprite
      *            x coordinate of the top left corner of the thrower
      * @param yy
      *            y coordinate of the top left corner of the thrower
-     *//*
+     */
     static void throwFixed(float xx, float yy)
     {
         // have we reached our limit?
@@ -423,11 +419,11 @@ public class Projectile extends PhysicsSprite
             _projectilesRemaining--;
 
         // is there an available projectile?
-        if (_pool[_nextIndex]._sprite.isVisible())
+        if (_pool[_nextIndex]._visible)
             return;
         // calculate offset for starting position of projectile
-        float x = xx + _offset.x;
-        float y = yy + _offset.y;
+        _rangeFrom.x = xx + _offset.x;
+        _rangeFrom.y = yy + _offset.y;
         // get the next projectile
         Projectile b = _pool[_nextIndex];
 
@@ -435,15 +431,18 @@ public class Projectile extends PhysicsSprite
         b.setCollisionEffect(!_sensorProjectiles);
 
         // set its _sprite
-        if (Projectile._randomizeProjectileSprites > 0)
-            b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
+        // TODO
+        //
+        // if (Projectile._randomizeProjectileSprites > 0)
+        //    b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
 
         _nextIndex = (_nextIndex + 1) % _poolSize;
 
         // put the projectile on the screen and place it in the _physics world
-        _position.x = x;
-        _position.y = y;
-        _position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        //
+        // TODO: do we need _position?
+        _position.x = _rangeFrom.x;
+        _position.y = _rangeFrom.y;
         b._physBody.setActive(true);
         b._physBody.setTransform(_position, 0);
 
@@ -451,16 +450,18 @@ public class Projectile extends PhysicsSprite
         b.updateVelocity(_velocity);
 
         // make the projectile visible
-        b._sprite.setVisible(true);
-        if (_animationCells != null) {
-            b._sprite.animate(_animationDurations, _animationCells, true);
-        }
+        b._visible = true;
+        // TODO
+        // if (_animationCells != null) {
+        //    b._sprite.animate(_animationDurations, _animationCells, true);
+        // }
         if (_throwSound != null)
             _throwSound.play();
         b._disappearSound = _projectileDisappearSound;
 
         // now animate the hero to do the throw:
-        Level._lastHero.doThrowAnimation();
+        // TODO
+        // Level._lastHero.doThrowAnimation();
     }
 
     /**
@@ -474,9 +475,11 @@ public class Projectile extends PhysicsSprite
      *            x coordinate of the point at which to throw
      * @param toY
      *            y coordinate of the point at which to throw
-     *//*
+     */
     static void throwAt(float heroX, float heroY, float toX, float toY)
     {
+        // TODO: be sure to use rangeFrom!
+
         // have we reached our limit?
         if (_projectilesRemaining == 0)
             return;
@@ -485,11 +488,11 @@ public class Projectile extends PhysicsSprite
             _projectilesRemaining--;
 
         // is there an available projectile?
-        if (_pool[_nextIndex]._sprite.isVisible())
+        if (_pool[_nextIndex]._visible)
             return;
         // calculate offset for starting position of projectile
-        float x = heroX + _offset.x;
-        float y = heroY + _offset.y;
+        _rangeFrom.x = heroX + _offset.x;
+        _rangeFrom.y = heroY + _offset.y;
         // get the next projectile
         Projectile b = _pool[_nextIndex];
 
@@ -497,15 +500,16 @@ public class Projectile extends PhysicsSprite
         b.setCollisionEffect(!_sensorProjectiles);
 
         // set its _sprite
-        if (Projectile._randomizeProjectileSprites > 0) {
-            b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
-        }
+        // TODO
+//        if (Projectile._randomizeProjectileSprites > 0) {
+//            b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
+//        }
 
         _nextIndex = (_nextIndex + 1) % _poolSize;
         // put the projectile on the screen and place it in the _physics world
-        _position.x = x;
-        _position.y = y;
-        _position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        _position.x = _rangeFrom.x;
+        _position.y = _rangeFrom.y;
+        //_position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
         b._physBody.setActive(true);
         b._physBody.setTransform(_position, 0);
 
@@ -534,20 +538,22 @@ public class Projectile extends PhysicsSprite
         // rotate the projectile
         if (_rotateVectorThrow) {
             double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x) - Math.atan2(-1, 0);
-            b._sprite.setRotation(180 / (3.1415926f) * (float) angle);
+            // TODO: b._sprite.setRotation(180 / (3.1415926f) * (float) angle);
         }
         
         // make the projectile visible
-        b._sprite.setVisible(true);
-        if (_animationCells != null) {
-            b._sprite.animate(_animationDurations, _animationCells, true);
-        }
+        b._visible = true;
+        // TODO:
+//        if (_animationCells != null) {
+//            b._sprite.animate(_animationDurations, _animationCells, true);
+//        }
         if (_throwSound != null)
             _throwSound.play();
         b._disappearSound = _projectileDisappearSound;
 
         // now animate the hero to do the throw:
-        Level._lastHero.doThrowAnimation();
+        // TODO
+//        Level._lastHero.doThrowAnimation();
     }
 
     /*
@@ -556,7 +562,21 @@ public class Projectile extends PhysicsSprite
 
     /**
      * Internal method for negating gravity in side scrollers and for enforcing the projectile range
-     *//*
+     */
+    @Override
+    public void render(SpriteBatch sb, float delta)
+    {
+        // eliminate the projectile quietly if it has traveled too far
+        float dx = Math.abs(_physBody.getPosition().x - _rangeFrom.x);
+        float dy = Math.abs(_physBody.getPosition().y - _rangeFrom.y);
+        if (dx * dx + dy * dy > _range * _range) {
+            remove(true);
+            _physBody.setActive(false);
+            return;
+        }               
+        super.render(sb, delta);
+    }
+    /*
     protected void onSpriteManagedUpdate()
     {
         // eliminate the projectile quietly if it has traveled too far

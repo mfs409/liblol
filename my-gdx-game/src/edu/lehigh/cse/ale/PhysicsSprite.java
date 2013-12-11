@@ -6,7 +6,10 @@ package edu.lehigh.cse.ale;
 
 // TODO: get rid of static fields in this class?
 
-import com.badlogic.gdx.Gdx;
+// TODO: can we get rid of Vector2 objects and instead use the x and y directly?
+
+// TODO: add vibration support
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -75,14 +78,14 @@ public abstract class PhysicsSprite implements Renderable
 
     float         _height;
 
-    PhysicsSprite(TextureRegion tr, SpriteId id, float width, float height)
+    PhysicsSprite(String imgName, SpriteId id, float width, float height)
     {
         _psType = id;
         // minor hack so that we can have invalid png files for invisible images
-        if (tr != null)
-            // TODO: this is not going to work when we add animations, but it's
-            // necessary for now to get flipped sprites to work.
-            _tr = new TextureRegion(tr.getTexture());
+        TextureRegion[] tra = Media.getImage(imgName);
+        if (tra != null) {
+            _tr = new TextureRegion(tra[0]);
+        }
         _width = width;
         _height = height;
     }
@@ -306,7 +309,7 @@ public abstract class PhysicsSprite implements Renderable
      */
     public float getXPosition()
     {
-        return _physBody.getPosition().y;
+        return _physBody.getPosition().x - _width/2;
     }
 
     /**
@@ -316,7 +319,7 @@ public abstract class PhysicsSprite implements Renderable
      */
     public float getYPosition()
     {
-        return _physBody.getPosition().x; // return _sprite.getY();
+        return _physBody.getPosition().y - _height/2; // return _sprite.getY();
     }
 
     /**
@@ -409,31 +412,20 @@ public abstract class PhysicsSprite implements Renderable
         _visible = false;
         _deleteQuietly = quiet;
         _physBody.setActive(false);
-        
-     // play a sound when we hit this thing?
-         if (_disappearSound != null && !quiet)
-         _disappearSound.play();
-        
-        // TODO
-        /*
-         * _sprite.setVisible(false);
-         * if (_disappearAnimateCells != null) {
-         * float x = _sprite.getX() + _disappearAnimateOffset.x;
-         * float y = _sprite.getY() + _disappearAnimateOffset.y;
-         * TiledTextureRegion ttr = Media.getImage(_disappearAnimateImageName);
-         * AnimatedSprite as = new AnimatedSprite(x, y, _disappearAnimateWidth,
-         * _disappearAnimateHeight, ttr,
-         * ALE._self.getVertexBufferObjectManager());
-         * Level._current.attachChild(as);
-         * as.animate(_disappearAnimateDurations, _disappearAnimateCells,
-         * false);
-         * }
-         * 
-         * // disable the _physics body
-         * _physBody.setActive(false);
-         */
-    }
 
+        // play a sound when we hit this thing?
+        if (_disappearSound != null && !quiet)
+            _disappearSound.play();
+
+        // This is a bit slimy... we draw an obstacle here, so that we have a clean hook into the animation system, but we disable its physics 
+        if (_disappearAnimation != null) {
+            float x = getXPosition() + _disappearAnimateOffset.x;
+            float y = getYPosition() + _disappearAnimateOffset.y;
+            Obstacle o = Obstacle.makeAsBox(x, y, _disappearAnimateWidth, _disappearAnimateHeight, "");
+            o._physBody.setActive(false);
+            o.setDefaultAnimation(_disappearAnimation);
+        }
+    }
     
     
     /*
@@ -508,30 +500,7 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * Does this entity follow a route?
      */
-    boolean   _isRoute     = false;
-
-    /**
-     * Sometimes it is useful to make a sprite kinematic instead of dynamic
-     *//*
-    void makeKinematic()
-    {
-        // if the body is not kinematic, copy all parameters, re-create the body as kinematic
-        if (_physBody.getType() != BodyType.KinematicBody) {
-            float _density = _physBody.getFixtureList().get(0).getDensity();
-            float _elasticity = _physBody.getFixtureList().get(0).getRestitution();
-            float _friction = _physBody.getFixtureList().get(0).getFriction();
-            boolean _isBullet = _physBody.isBullet();
-            boolean isSensor = _physBody.getFixtureList().get(0).isSensor();
-            deletePhysicsBody();
-            if (_isCircle)
-                setCirclePhysics(_density, _elasticity, _friction, BodyType.KinematicBody, _isBullet);
-            else
-                setBoxPhysics(_density, _elasticity, _friction, BodyType.KinematicBody, _isBullet);
-            if (isSensor)
-                setCollisionEffect(false);
-        }
-    }
-
+    private boolean   _isRoute     = false;
 
     /**
      * Add velocity to this entity
@@ -861,8 +830,6 @@ public abstract class PhysicsSprite implements Renderable
         // save the sound
         _touchSound = Media.getSound(sound);
     }
-
-
     
     void handleTouchDown(float x, float y)
     {
@@ -893,7 +860,6 @@ public abstract class PhysicsSprite implements Renderable
                  // repeat single-touch
                  else {
                      _lastPokeTime = time;
-                     Gdx.app.log("poke", ""+time);
                  }
             }
             else {
@@ -1257,26 +1223,22 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * Animation support: the cells of the default animation
      */
-    int[]         _defaultAnimateCells;
+    Animation _defaultAnimation;
+    
     /**
-     * Animation support: the durations for the default animation
+     * The currently running animation
      */
-    long[]        _defaultAnimateDurations;
-
+    Animation _currentAnimation;
+    int _currAnimationFrame;
+    float _currAnimationTime;
+    
+    
     /**
      * Animation support: the cells of the disappearance animation
      */
-    int[]         _disappearAnimateCells;
+    Animation         _disappearAnimation;
 
-    /**
-     * Animation support: the durations for the disappearance animation
-     */
-    long[]        _disappearAnimateDurations;
-    /**
-     * Animation support: name of the image to use for a disappearance animation
-     */
-    String        _disappearAnimateImageName;
-
+ 
     /**
      * Animation support: the offset for placing the disappearance animation relative to the disappearing _sprite
      */
@@ -1304,12 +1266,12 @@ public abstract class PhysicsSprite implements Renderable
      *            which cells of the _sprite to show
      * @param durations
      *            duration for each cell
-     *//*
-    public void setDefaultAnimation(int[] cells, long[] durations)
+     */
+    public void setDefaultAnimation(Animation a)
     {
-        _defaultAnimateCells = cells;
-        _defaultAnimateDurations = durations;
-        _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
+        _defaultAnimation = a;
+        // we'll assume we're using the default animation as our first animation...
+        _currentAnimation = _defaultAnimation;
     }
 
     /**
@@ -1330,12 +1292,9 @@ public abstract class PhysicsSprite implements Renderable
      * @param height
      *            Height of the animation image
      */
-    public void setDisappearAnimation(int[] cells, long[] durations, String imageName, float offsetX, float offsetY,
-            float width, float height)
+    public void setDisappearAnimation(Animation a, float offsetX, float offsetY, float width, float height)
     {
-        _disappearAnimateCells = cells;
-        _disappearAnimateDurations = durations;
-        _disappearAnimateImageName = imageName;
+        _disappearAnimation = a;
         _disappearAnimateOffset.x = offsetX;
         _disappearAnimateOffset.y = offsetY;
         _disappearAnimateWidth = width;
@@ -1568,7 +1527,7 @@ public abstract class PhysicsSprite implements Renderable
                 _physBody.setTransform(_hoverVector.x,  _hoverVector.y, _physBody.getAngle());
             }
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 v)
             {
             }
 
@@ -1729,7 +1688,6 @@ public abstract class PhysicsSprite implements Renderable
                     return;
 
                 // chase the _chaseTarget
-                Gdx.app.log("chase", "updating chase velocity");
                 // compute vector between hero and enemy
                 _chaseVector.x = _chaseTarget._physBody.getPosition().x - _physBody.getPosition().x;
                 _chaseVector.y = _chaseTarget._physBody.getPosition().y - _physBody.getPosition().y;
@@ -1744,7 +1702,7 @@ public abstract class PhysicsSprite implements Renderable
                 updateVelocity(_chaseVector);
             }
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 v)
             {
             }
 
@@ -1780,12 +1738,12 @@ public abstract class PhysicsSprite implements Renderable
                 if (_rotateByDirection && _visible) {
                     _rotationVector.x = _physBody.getLinearVelocity().x;
                     _rotationVector.y = _physBody.getLinearVelocity().y;
-                    double angle = Math.atan2(_rotationVector.y, _rotationVector.x) - Math.atan2(-1, 0);
+                    double angle = Math.atan2(_rotationVector.y, _rotationVector.x) + Math.atan2(-1, 0);
                     _physBody.setTransform(_physBody.getPosition(), (float) angle);
                 }
             }
             @Override
-            void onDownPress()
+            void onDownPress(Vector3 v)
             {
             }
 
@@ -1823,29 +1781,53 @@ public abstract class PhysicsSprite implements Renderable
     boolean _flipped;
     
     @Override
-    public void render(SpriteBatch _spriteRender)
+    public void render(SpriteBatch _spriteRender, float delta)
     {
         if (_visible) {
             // possibly run a route update
             if (_isRoute && _visible)
                 routeDriver();
 
+            // choose the default TextureRegion to show... this is how we animate
+            TextureRegion tr = _tr;
+            // If we've got an in-flight animation, switch to it
+            if (_currentAnimation != null) {
+                _currAnimationTime += delta;
+                long millis = (long)(1000*_currAnimationTime);
+                // are we still in this frame?
+                //
+                // TODO: we can simplify this code
+                if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
+                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                }
+                // are we on the last frame, with no loop? If so, stay where we are...
+                else if (_currAnimationFrame == _currentAnimation._nextCell - 1 && !_currentAnimation._loop) {
+                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                }
+                // else advance, reset, go
+                else {
+                    _currAnimationFrame = (_currAnimationFrame + 1) % _currentAnimation._nextCell;
+                    _currAnimationTime = 0;
+                    _tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+                }
+            }
+            
             // now draw this sprite
             Vector2 pos = _physBody.getPosition();
             if (_reverseFace && _physBody.getLinearVelocity().x < 0) {
                 if (!_flipped) {
-                    _tr.flip(true, false);
+                    tr.flip(true, false);
                     _flipped = true;
                 }
             }
             else if (_reverseFace && _physBody.getLinearVelocity().x > 0) {
                 if (_flipped) {
-                    _tr.flip(true,  false);
+                    tr.flip(true,  false);
                     _flipped = false;
                 }
             }
-            if (_tr != null)
-                _spriteRender.draw(_tr, pos.x - _width / 2, pos.y - _height / 2, _width / 2, _height / 2,
+            if (tr != null)
+                _spriteRender.draw(tr, pos.x - _width / 2, pos.y - _height / 2, _width / 2, _height / 2,
                         _width, _height, 1, 1, MathUtils.radiansToDegrees * _physBody.getAngle());
         }
     }

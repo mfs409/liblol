@@ -27,6 +27,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 public class Level implements MyScreen
 {
@@ -68,7 +70,7 @@ public class Level implements MyScreen
     abstract static class PendingEvent
     {
         abstract void go();
-        abstract void onDownPress();
+        abstract void onDownPress(Vector3 _vec);
         abstract void onUpPress();
         
         boolean   _done;
@@ -85,7 +87,7 @@ public class Level implements MyScreen
     
     interface Renderable
     {
-        void render(SpriteBatch sb);
+        void render(SpriteBatch sb, float elapsed);
     }
 
     // Eventually we need an array of 5 different renderables, for the 5
@@ -266,8 +268,7 @@ public class Level implements MyScreen
         // first we update the world. For simplicity we use the delta time
         // provided by the Graphics instance. Normally you'll want to fix the
         // time step.
-        // long start = TimeUtils.nanoTime();
-        _world.step(Gdx.graphics.getDeltaTime(), 8, 3);
+        _world.step(delta, 8, 3);
         // float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
 
         // now handle any events that occurred on account of the world movement
@@ -295,9 +296,9 @@ public class Level implements MyScreen
         _spriteRender.begin();
         
         for (Renderable r : _pix_minus_two)
-            r.render(_spriteRender);
+            r.render(_spriteRender, delta);
         for (Renderable r : _sprites) {
-            r.render(_spriteRender);
+            r.render(_spriteRender, delta);
         }
         _spriteRender.end();
 
@@ -420,7 +421,10 @@ public class Level implements MyScreen
             if (!pe._done) {
                 _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
-                    pe.onDownPress();
+                    // now convert the touch to world coordinates and pass to the control (useful for vector throw)
+                    _touchVec.set(x,y,0);
+                    _gameCam.unproject(_touchVec);
+                    pe.onDownPress(_touchVec);
                     return false;
                 }
             }
@@ -704,63 +708,16 @@ public class Level implements MyScreen
      * 
      * @param howMany
      *            Number of goodies that must be collected to win the level
-     * 
-     * @deprecated Use setVictoryGoodies[1-4]() instead
      */
-    @Deprecated
-    static public void setVictoryGoodies(int howMany)
+    static public void setVictoryGoodies(int type1, int type2, int type3, int type4)
     {
         _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie1Count = howMany;
+        _victoryGoodie1Count = type1;
+        _victoryGoodie2Count = type2;
+        _victoryGoodie3Count = type4;
+        _victoryGoodie4Count = type4;
     }
 
-    /**
-     * Indicate that the level is won by collecting enough goodies
-     * 
-     * @param howMany
-     *            Number of type-1 goodies that must be collected to win the level
-     */
-    static public void setVictoryGoodies1(int howMany)
-    {
-        _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie1Count = howMany;
-    }
-
-    /**
-     * Indicate that the level is won by collecting enough goodies
-     * 
-     * @param howMany
-     *            Number of type-2 goodies that must be collected to win the level
-     */
-    static public void setVictoryGoodies2(int howMany)
-    {
-        _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie2Count = howMany;
-    }
-
-    /**
-     * Indicate that the level is won by collecting enough goodies
-     * 
-     * @param howMany
-     *            Number of type-3 goodies that must be collected to win the level
-     */
-    static public void setVictoryGoodies3(int howMany)
-    {
-        _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie3Count = howMany;
-    }
-
-    /**
-     * Indicate that the level is won by collecting enough goodies
-     * 
-     * @param howMany
-     *            Number of type-4 goodies that must be collected to win the level
-     */
-    static public void setVictoryGoodies4(int howMany)
-    {
-        _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie4Count = howMany;
-    }
 
     /**
      * Specify the name of the image to use as the background when printing a message that the current level was won
@@ -965,21 +922,16 @@ public class Level implements MyScreen
      * @param e
      *            Enemy to be modified
      */
-    /*
-    public static void setEnemyTimerTrigger(int timerId, float howLong, Enemy e)
+    public static void setEnemyTimerTrigger(final int timerId, float howLong, final Enemy e)
     {
-        final int id = timerId;
-        final Enemy ee = e;
-        TimerHandler t = new TimerHandler(howLong, false, new ITimerCallback()
+        Timer.schedule(new Task()
         {
             @Override
-            public void onTimePassed(TimerHandler th)
+            public void run()
             {
                 if (!Level._gameOver)
-                    ALE._self.onEnemyTimeTrigger(id, MenuManager._currLevel, ee);
+                    ALE._game.onEnemyTimeTrigger(timerId, ALE._game._currLevel, e);
             }
-        });
-        Level._current.registerUpdateHandler(t);
+        }, howLong);
     }
-    */
 }

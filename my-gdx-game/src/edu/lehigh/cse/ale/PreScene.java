@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 public class PreScene
 {
-
     /**
      * Print a message on a black background, and wait for a timer to expire
      * 
@@ -71,7 +70,7 @@ public class PreScene
 
     static public void showImageTimed(String imgName, float duration, float x, float y, float width, float height)
     {
-        setPopUpImage(Media.getImage(imgName), x, y, width, height);
+        setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
         Timer.schedule(new Task()
         {
             @Override
@@ -131,7 +130,7 @@ public class PreScene
      */
     static public void showImageAndWait(String imgName, float x, float y, float width, float height)
     {
-        setPopUpImage(Media.getImage(imgName), x, y, width, height);
+        setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
     }
 
     /**
