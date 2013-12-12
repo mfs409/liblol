@@ -2,7 +2,7 @@ package edu.lehigh.cse.ale;
 
 // Status: help is not functional yet
 
-// TODO: clean up code
+// TODO: clean up code and comments
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;

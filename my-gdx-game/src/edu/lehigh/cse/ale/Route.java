@@ -1,6 +1,8 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: not started
+// TODO: are we setting center points or bottom-left points?  This will matter to pokepath stuff
+
+// TODO: clean up comments
 
 public class Route
 {

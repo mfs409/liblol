@@ -1,7 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// TODO: comments, and clean up naming, verify return values
-// (i.e., false)
+// TODO: comments, and clean up naming, verify return values (i.e., false)
 
 // TODO: there is a nasty bug in how things display.  It only shows when there are less than 21 levels.
 

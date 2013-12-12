@@ -2,18 +2,19 @@ package edu.lehigh.cse.ale;
 
 // TODO: there is a lot of redundant code related to font management and text creation 
 
-// STATUS: in progress
+// TODO: clean up comments
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import edu.lehigh.cse.ale.Level.HudEntity;
-import edu.lehigh.cse.ale.Level.PendingEvent;
+import edu.lehigh.cse.ale.Level.HudPress;
 
 public class Controls
 {
@@ -31,6 +32,8 @@ public class Controls
      * Store the amount of stopwatch that has transpired
      */
     private static float _stopWatchProgress;
+
+    private static float _winCountRemaining;
     
     /**
      * Controls is a pure static class, and should never be constructed explicitly
@@ -174,7 +177,7 @@ public class Controls
      * @param y
      *            The y coordinate where the timer should be drawn
      */
-    /*    public static void addWinCountdown(float timeout, int x, int y)
+    public static void addWinCountdown(float timeout, int x, int y)
     {
         addWinCountdown(timeout, x, y, 255, 255, 255, 32);
     }
@@ -199,44 +202,37 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addWinCountdown(final float timeout, int x, int y, int red, int green, int blue,
+    public static void addWinCountdown(final float timeout, final int x, final int y, final int red, final int green, final int blue,
             int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // figure out how much time between right now, and when the program
-        // started.
-        _timerDelta = ALE._self.getEngine().getSecondsElapsedTotal();
-
-        // turn on the timer
-        _timerActive = true;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", "XXXX".length(), ALE._self.getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
+        _winCountRemaining = timeout; 
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
             @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
+            void render(SpriteBatch sb)
             {
-                // get the elapsed time for this level
-                float newtext = ALE._self.getEngine().getSecondsElapsedTotal() - _timerDelta;
-                newtext = timeout - newtext;
-                // figure out if time is up
-                if (newtext < 0) {
-                    newtext = 0;
-                    MenuManager.winLevel();
-                }
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText("" + (int) newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
 
-        // Add the text to the HUD
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+                _winCountRemaining -= Gdx.graphics.getDeltaTime();
+
+                if (_winCountRemaining > 0) {
+                    // get elapsed time for this level
+                    String newtext = "" + (int)_winCountRemaining;
+                    bf.draw(sb, newtext, x, y);
+                }
+                else {
+                    Score.winLevel();
+                }
+          }            
+      };
+      Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -325,37 +321,30 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addGoodieCount2(int max, final String text, int x, int y, int red, int green, int blue, int size)
+ public static void addGoodieCount2(int max, final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
+     // The suffix to display after the goodie count:
+     final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
+     final BitmapFont bf = Media.getFont("arial.ttf", size);
+     HudEntity he = new HudEntity(){
+         @Override
+         void render(SpriteBatch sb)
+         {
+             // handle color
+             float r = red;
+             float g = green;
+             float b = blue;
+             r = r/256;
+             g = g/256;
+             b = b/256;
+             bf.setColor(r, g, b, 1);
 
-        // turn on the timer
-        _timerActive = true;
-
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXX/XXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
-            {
-                // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected2 + suffix;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+             // get elapsed time for this level
+             String newtext = "" + Score._goodiesCollected2 + suffix;
+             bf.draw(sb, newtext, x, y);
+         }            
+     };
+     Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -379,37 +368,31 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addGoodieCount3(int max, final String text, int x, int y, int red, int green, int blue, int size)
+ public static void addGoodieCount3(int max, final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
+     // The suffix to display after the goodie count:
+     final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
+     final BitmapFont bf = Media.getFont("arial.ttf", size);
+     HudEntity he = new HudEntity(){
+         @Override
+         void render(SpriteBatch sb)
+         {
+             // handle color
+             float r = red;
+             float g = green;
+             float b = blue;
+             r = r/256;
+             g = g/256;
+             b = b/256;
+             bf.setColor(r, g, b, 1);
 
-        // turn on the timer
-        _timerActive = true;
+             // get elapsed time for this level
+             String newtext = "" + Score._goodiesCollected3 + suffix;
+             bf.draw(sb, newtext, x, y);
+         }            
+     };
+     Level._currLevel._hudEntries.add(he);
 
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXX/XXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
-            {
-                // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected3 + suffix;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
     }
 
     /**
@@ -433,37 +416,30 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    /*    public static void addGoodieCount4(int max, final String text, int x, int y, int red, int green, int blue, int size)
+ public static void addGoodieCount4(int max, final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
+     // The suffix to display after the goodie count:
+     final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
+     final BitmapFont bf = Media.getFont("arial.ttf", size);
+     HudEntity he = new HudEntity(){
+         @Override
+         void render(SpriteBatch sb)
+         {
+             // handle color
+             float r = red;
+             float g = green;
+             float b = blue;
+             r = r/256;
+             g = g/256;
+             b = b/256;
+             bf.setColor(r, g, b, 1);
 
-        // turn on the timer
-        _timerActive = true;
-
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXX/XXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
-            {
-                // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected4 + suffix;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+             // get elapsed time for this level
+             String newtext = "" + Score._goodiesCollected4 + suffix;
+             bf.draw(sb, newtext, x, y);
+         }            
+     };
+     Level._currLevel._hudEntries.add(he);
     }
 
     /**
@@ -645,38 +621,6 @@ public class Controls
             }            
         };
         Level._currLevel._hudEntries.add(he);
-/*
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // turn on the timer
-        _timerActive = true;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXXX " + text).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
-            {
-                // get hero _strength
-                Hero h = Level._lastHero;
-                String newtext = "0";
-                if (h != null)
-                    newtext = "" + Level._lastHero._strength;
-
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext + " " + text);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
-        */
     }
 
     /**
@@ -697,37 +641,28 @@ public class Controls
      * @param size
      *            The size of the font
      */
-    /*    public static void addProjectileCount(String text, int x, int y, int red, int green, int blue, int size)
+    public static void addProjectileCount(final String text, final int x, final int y, final int red, final int green, final int blue, int size)
     {
-        Font f = Util.makeFont(red, green, blue, size);
-
-        // turn on the timer
-        _timerActive = true;
-
-        final String suffix = " " + text;
-
-        // make the text object to display
-        final Text elapsedText = new Text(x, y, f, "", ("XXXX" + suffix).length(), ALE._self
-                .getVertexBufferObjectManager());
-
-        // set up an autoupdate for the time every .05 seconds
-        TimerHandler HUDTimer = new TimerHandler(1 / 20.0f, true, new ITimerCallback()
-        {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        HudEntity he = new HudEntity(){
             @Override
-            public void onTimePassed(TimerHandler pTimerHandler)
+            void render(SpriteBatch sb)
             {
-                // get number of remaining projectiles
-                String newtext = "" + Projectile._projectilesRemaining + suffix;
+                // handle color
+                float r = red;
+                float g = green;
+                float b = blue;
+                r = r/256;
+                g = g/256;
+                b = b/256;
+                bf.setColor(r, g, b, 1);
 
-                // update the text
-                if (_timerActive)
-                    elapsedText.setText(newtext);
-            }
-        });
-        Level._current.registerUpdateHandler(HUDTimer);
-
-        // add the text to the _hud
-        ALE._self._camera.getHUD().attachChild(elapsedText);
+                // get elapsed time for this level
+                String newtext = "" + Projectile._projectilesRemaining + " " + text;
+                bf.draw(sb, newtext, x, y);
+            }            
+        };
+        Level._currLevel._hudEntries.add(he);
     }
 
     /*
@@ -758,18 +693,13 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.KinematicBody);
         
-        PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = -rate;
                 entity.updateVelocity(v);
-            }
-
-            @Override
-            void go()
-            {   
             }
 
             @Override
@@ -811,18 +741,13 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.KinematicBody);
         
-        PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = rate;
                 entity.updateVelocity(v);
-            }
-
-            @Override
-            void go()
-            {   
             }
 
             @Override
@@ -861,21 +786,21 @@ public class Controls
     public static void addLeftButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
+        // TODO: on Level 60, we want this to be a DynamicBody... can we do that
+        // universally, or is there a problem? I made it dynamic for now, ensure
+        // we don't actually want kinematic
+
+        // TODO: all these buttons should work while holding...
         if (entity._physBody.getType() == BodyType.StaticBody)
-            entity._physBody.setType(BodyType.KinematicBody);
+            entity._physBody.setType(BodyType.DynamicBody);
         
-        PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = -rate;
                 entity.updateVelocity(v);
-            }
-
-            @Override
-            void go()
-            {   
             }
 
             @Override
@@ -886,8 +811,10 @@ public class Controls
                 entity.updateVelocity(v);
             }
         };
-        if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName)[0];
+        // TODO: this is the *right* way to do images
+        TextureRegion[] trs = Media.getImage(imgName);
+        if (trs != null)
+            pe.tr = trs[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -914,21 +841,17 @@ public class Controls
     public static void addRightButton(int x, int y, int width, int height, String imgName, final float rate,
             final PhysicsSprite entity)
     {
+        // see left button for note on body type
         if (entity._physBody.getType() == BodyType.StaticBody)
-            entity._physBody.setType(BodyType.KinematicBody);
+            entity._physBody.setType(BodyType.DynamicBody);
         
-        PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rate;
                 entity.updateVelocity(v);
-            }
-
-            @Override
-            void go()
-            {   
             }
 
             @Override
@@ -939,8 +862,10 @@ public class Controls
                 entity.updateVelocity(v);
             }
         };
-        if (!imgName.equals(""))
-            pe.tr = Media.getImage(imgName)[0];
+        // TODO: this is the *right* way to do images
+        TextureRegion[] trs = Media.getImage(imgName);
+        if (trs != null)
+            pe.tr = trs[0];
         pe._done = false;
         pe._range = new Rectangle(x, y, width, height);        
         Level._currLevel._controls.add(pe);        
@@ -969,36 +894,41 @@ public class Controls
      *            Rate (Y) at which the entity moves when the button is not pressed
      * @param entity
      *            The entity that should move left when the button is pressed
-     *//*
-        public static void addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
+     */
+    public static void addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
             final int rateDownY, final int rateUpX, final int rateUpY, final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        // see left button for note on body type
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.DynamicBody);
+        
+        HudPress pe = new HudPress() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = rateDownX;
-                    v.y = rateDownY;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                if (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = rateUpX;
-                    v.y = rateUpY;
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = rateDownX;
+                v.y = rateDownY;
+                entity.updateVelocity(v);
+            }
+
+            @Override
+            void onUpPress()
+            {   
+                // TODO: do this on 'not pressing button anymore' too
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = rateUpX;
+                v.y = rateUpY;
+                entity.updateVelocity(v);
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        // TODO: this is the *right* way to do images
+        TextureRegion[] trs = Media.getImage(imgName);
+        if (trs != null)
+            pe.tr = trs[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1021,35 +951,37 @@ public class Controls
      * @param entity
      *            The entity that should move left when the button is pressed
      */
-    /*    public static void addDampenedMotionButton(int x, int y, int width, int height, String imgName, final float rateX,
+    public static void addDampenedMotionButton(int x, int y, int width, int height, String imgName, final float rateX,
             final float rateY, final float dampening, final PhysicsSprite entity)
     {
-        entity.makeMoveable();
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        // see left button for note on body type
+        if (entity._physBody.getType() == BodyType.StaticBody)
+            entity._physBody.setType(BodyType.DynamicBody);
+        
+        HudPress pe = new HudPress() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                // ensure the velocity is correct on down press
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Vector2 v = entity._physBody.getLinearVelocity();
-                    v.x = rateX;
-                    v.y = rateY;
-                    entity._physBody.setLinearDamping(0);
-                    entity.updateVelocity(v);
-                    return true;
-                }
-                else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    entity._physBody.setLinearDamping(dampening);
-                    return true;
-                }
-                // otherwise do nothing...  the entity will skid to a halt
-                return false;
+                Vector2 v = entity._physBody.getLinearVelocity();
+                v.x = rateX;
+                v.y = rateY;
+                entity._physBody.setLinearDamping(0);
+                entity.updateVelocity(v);
+            }
+
+            @Override
+            void onUpPress()
+            {   
+                entity._physBody.setLinearDamping(dampening);
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        // TODO: this is the *right* way to do images
+        TextureRegion[] trs = Media.getImage(imgName);
+        if (trs != null)
+            pe.tr = trs[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1068,15 +1000,11 @@ public class Controls
      */
     public static void addCrawlButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Level.PendingEvent pe = new PendingEvent() {
+        Level.HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 h.crawlOn();
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1109,15 +1037,11 @@ public class Controls
      */
     public static void addJumpButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 h.jump();
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1150,15 +1074,11 @@ public class Controls
     public static void addThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
         // TODO: this should keep throwing if we hold...
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1190,15 +1110,11 @@ public class Controls
      */
     public static void addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1234,15 +1150,11 @@ public class Controls
     public static void addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
         // TODO: this should keep throwing if we hold...
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1277,15 +1189,11 @@ public class Controls
      */
     public static void addVectorSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
-            }
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1319,18 +1227,13 @@ public class Controls
      */
     public static void addZoomOutButton(float x, float y, float width, float height, String imgName, final float maxZoom)
     {
-        Level.PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 v)
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom < maxZoom)
                     Level._currLevel._gameCam.zoom *= 2;
-            }
-
-            @Override
-            void go()
-            {
             }
 
             @Override
@@ -1363,18 +1266,13 @@ public class Controls
      */
     public static void addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom)
     {
-        PendingEvent pe = new PendingEvent() {
+        HudPress pe = new HudPress() {
             @Override
             void onDownPress(Vector3 v)
             {
                 float curzoom = Level._currLevel._gameCam.zoom;
                 if (curzoom > minZoom)
                     Level._currLevel._gameCam.zoom /= 2;
-            }
-
-            @Override
-            void go()
-            {   
             }
 
             @Override
@@ -1405,21 +1303,27 @@ public class Controls
      * @param rate
      *            Amount of rotation to apply to the hero on each press
      */
-    /*public static void addRotateButton(int x, int y, int width, int height, String imgName, final float rate)
+    public static void addRotateButton(int x, int y, int width, int height, String imgName, final float rate, final Hero h)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        // TODO: this should keep rotating if we hold...
+        HudPress pe = new HudPress() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                Hero h = Level._lastHero;
                 h.increaseRotation(rate);
-                return true;
             }
+
+            @Override
+            void onUpPress()
+            {
+            }
+
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1436,11 +1340,25 @@ public class Controls
      * @param imgName
      *            Name of the image to use
      */
-    /*public static void addImage(int x, int y, int width, int height, String imgName)
+    public static void addImage(int x, int y, int width, int height, String imgName)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager());
-        _hud.attachChild(s);
+        HudPress pe = new HudPress() {
+            @Override
+            void onDownPress(Vector3 vv)
+            {
+                // TODO: this should return true/false, so we know if we should propagate...
+            }
+            @Override
+            void onUpPress()
+            {
+                // TODO: this should return true/false, so we know if we should propagate...
+            }
+        };
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);        
     }
 
     /**
@@ -1459,20 +1377,23 @@ public class Controls
      * @param id
      *            An id to use for the trigger event
      */
-    /*public static void addTriggerControl(int x, int y, int width, int height, String imgName, final int id)
+    public static void addTriggerControl(int x, int y, int width, int height, String imgName, final int id)
     {
-        TiledTextureRegion ttr = Media.getImage(imgName);
-        AnimatedSprite s = new AnimatedSprite(x, y, width, height, ttr, ALE._self.getVertexBufferObjectManager())
-        {
+        HudPress pe = new HudPress() {
             @Override
-            public boolean onAreaTouched(TouchEvent e, float x, float y)
+            void onDownPress(Vector3 vv)
             {
-                ALE._self.onControlPressTrigger(id, MenuManager._currLevel);
-                return true;
+                ALE._game.onControlPressTrigger(id, ALE._game._currLevel);
+            }
+            @Override
+            void onUpPress()
+            {
             }
         };
-        _hud.attachChild(s);
-        _hud.registerTouchArea(s);
+        if (!imgName.equals(""))
+            pe.tr = Media.getImage(imgName)[0];
+        pe._done = false;
+        pe._range = new Rectangle(x, y, width, height);        
+        Level._currLevel._controls.add(pe);               
     }
-*/
 }

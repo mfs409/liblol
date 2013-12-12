@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// TODO: clean up comments
+
 // STATUS: this should become unnecessary once we factor out input processing
 
 import com.badlogic.gdx.ApplicationListener;

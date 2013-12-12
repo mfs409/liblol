@@ -1,9 +1,10 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: I THINK THIS IS COMPLETELY PORTED
+// TODO: clean up comments
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 public class Destination extends PhysicsSprite
 {
@@ -135,7 +136,7 @@ public class Destination extends PhysicsSprite
      * @param other
      *            Other object involved in this collision
      */
-    void onCollide(PhysicsSprite other)
+    void onCollide(PhysicsSprite other, Contact contact)
     {
     }
 

@@ -2,6 +2,8 @@ package edu.lehigh.cse.ale;
 
 // TODO: migrate stuff out of Level (text, sound, image) if it has to deal with end of game
 
+// TODO: clean up comments
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

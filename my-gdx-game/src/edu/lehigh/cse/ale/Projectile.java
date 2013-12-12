@@ -1,11 +1,15 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: in progress
+// TODO: clean up comments
+
+// TODO: I'm not thrilled with how we're handling the random projectile sprites...
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
  * Projectiles are entities that can be thrown from the hero's location in order to remove enemies
@@ -67,10 +71,7 @@ public class Projectile extends PhysicsSprite
      */
     static int                   _strength;
 
-    /**
-     * If this is > 0, it specifies the range of cells that can be used as the projectile image
-     */
-    private static int           _randomizeProjectileSprites;
+    static TextureRegion[] _imageSource;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
@@ -117,6 +118,8 @@ public class Projectile extends PhysicsSprite
         super(imgName, SpriteId.PROJECTILE, width, height);
         float radius = (width > height) ? width : height;
         setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius/2);
+        // TODO: does this get turned back on the right way elsewhere?
+        _physBody.setGravityScale(0);
         setCollisionEffect(false);
         disableRotation();
         Level._currLevel._sprites.add(this);
@@ -152,9 +155,9 @@ public class Projectile extends PhysicsSprite
      * @param range
      *            This number indicates the number of cells
      */
-    public static void setImageRange(int range)
+    public static void setImageSource(String imgName)
     {
-        _randomizeProjectileSprites = range;
+        _imageSource = Media.getImage(imgName);
     }
 
     /**
@@ -279,7 +282,7 @@ public class Projectile extends PhysicsSprite
         _throwSound = null;
         _projectileDisappearSound = null;
         _projectilesRemaining = -1;
-        _randomizeProjectileSprites = 0;
+        _imageSource = null;
         _sensorProjectiles = true;
     }
 
@@ -362,7 +365,7 @@ public class Projectile extends PhysicsSprite
      * @param other
      *            The other entity involved in the collision
      */
-    protected void onCollide(PhysicsSprite other)
+    protected void onCollide(PhysicsSprite other, Contact contact)
     {
         // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
@@ -418,10 +421,8 @@ public class Projectile extends PhysicsSprite
         b.setCollisionEffect(!_sensorProjectiles);
 
         // set its _sprite
-        // TODO
-        //
-        // if (Projectile._randomizeProjectileSprites > 0)
-        //    b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
+        if (Projectile._imageSource != null)
+            b._tr = _imageSource[Util.getRandom(_imageSource.length)];
 
         _nextIndex = (_nextIndex + 1) % _poolSize;
 
@@ -484,13 +485,7 @@ public class Projectile extends PhysicsSprite
 
         // reset its sensor
         b.setCollisionEffect(!_sensorProjectiles);
-
-        // set its _sprite
-        // TODO
-//        if (Projectile._randomizeProjectileSprites > 0) {
-//            b._sprite.stopAnimation(Util.getRandom(Projectile._randomizeProjectileSprites));
-//        }
-
+        
         _nextIndex = (_nextIndex + 1) % _poolSize;
         // put the projectile on the screen and place it in the _physics world
         _position.x = _rangeFrom.x;
@@ -524,6 +519,7 @@ public class Projectile extends PhysicsSprite
         // rotate the projectile
         if (_rotateVectorThrow) {
             double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x) - Math.atan2(-1, 0);
+            b._physBody.setTransform(b._physBody.getPosition(), (float) angle);
             // TODO: b._sprite.setRotation(180 / (3.1415926f) * (float) angle);
         }
         

@@ -1,6 +1,8 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: in progress
+// TODO: clean up comments
+
+// TODO: should we call them "sprite sheets"?
 
 import java.util.Hashtable;
 
@@ -179,7 +181,6 @@ public class Media
      */
     static public void registerMusic(String musicName, boolean loop)
     {
-        // TODO: connect to an asset manager, to avoid re-creating every time
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
         _tunes.put(musicName, m);

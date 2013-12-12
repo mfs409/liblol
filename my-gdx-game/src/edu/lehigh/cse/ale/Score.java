@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// ALE PORT STATUS: COMPLETE
+// TODO: clean up comments
 
 // TODO: need to refactor and simplify... first two methods could go in PostScene
 
@@ -29,8 +29,8 @@ public class Score
         // Run the level-complete trigger
         ALE._game.levelCompleteTrigger(false);
 
-        if (Level._loseSound != null)
-            Level._loseSound.play();
+        if (Level._currLevel._loseSound != null)
+            Level._currLevel._loseSound.play();
 
         // drop everything from the hud
         Level._currLevel._controls.clear();

@@ -2,11 +2,17 @@ package edu.lehigh.cse.ale;
 
 // TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
 
+// TODO: verify true/false returns from all things called from this... I don't think all our events are being chained correctly
+
 // TODO: do we want to fixed-step the physics world?
 
 // TODO: does zoom work with parallax?
 
-// STATUS: in progress
+// TODO: remove static fields (here and everywhere)?
+
+// TODO: clean up comments
+
+// TODO: zoom doesn't work right with bounds of big screens and chase heroes
 
 import java.util.ArrayList;
 
@@ -61,15 +67,21 @@ public class Level implements MyScreen
     }
 
     /**
-     * A simple wrapper for when we want stuff to happen. We're going to abuse
-     * this type as a generic way to do everything we need to do regarding
-     * delayed actions, hud updates, buttons, etc.
-     * 
-     * TODO: split this into one for HUD entries, and one for plain old actions
+     * Wrapper for actions that we generate and then want handled during the render loop
+     * @author Michael
+     *
      */
-    abstract static class PendingEvent
+    abstract static class Action
     {
         abstract void go();
+    }
+    
+    /**
+     * This is for handling hud presses... need to merge with HudEntity, if
+     * possible, and then subclass it in Controls
+     */
+    abstract static class HudPress
+    {
         abstract void onDownPress(Vector3 _vec);
         abstract void onUpPress();
         
@@ -99,12 +111,12 @@ public class Level implements MyScreen
     // Two types of events: those that run on the next render, and those that
     // run on every render. Note that events do not have a sprite or render
     // action attached to them
-    public ArrayList<PendingEvent>  _oneTimeEvents;
-    public ArrayList<PendingEvent> _repeatEvents;
+    public ArrayList<Action>  _oneTimeEvents;
+    public ArrayList<Action> _repeatEvents;
 
     // TODO: can we get by with just one list, where there are Control objects,
     // each of which has optional render, touchDown, and a touchUp methods?
-    public ArrayList<PendingEvent>  _controls;
+    public ArrayList<HudPress>  _controls;
     public ArrayList<HudEntity> _hudEntries;    
     
     /*
@@ -151,6 +163,7 @@ public class Level implements MyScreen
         _camBoundY = height;
         
         // TODO: update comments
+
         // setup the camera. In Box2D we operate on a
         // meter scale, pixels won't do it. So we use
         // an orthographic camera with a viewport of
@@ -187,11 +200,11 @@ public class Level implements MyScreen
         _pix_minus_two = new ArrayList<Renderable>();
 
         // collections for all the event handlers
-        _oneTimeEvents = new ArrayList<PendingEvent>();
-        _repeatEvents = new ArrayList<PendingEvent>();
+        _oneTimeEvents = new ArrayList<Action>();
+        _repeatEvents = new ArrayList<Action>();
 
         // TODO: refactor... these are for displaying hud stuff, and for detecting touches of hud stuff
-        _controls = new ArrayList<PendingEvent>();
+        _controls = new ArrayList<HudPress>();
         _hudEntries = new ArrayList<HudEntity>();
 
         // reset tilt control...
@@ -200,7 +213,7 @@ public class Level implements MyScreen
         // reset scores
         Score.reset();
         
-        // TODO: remove this:
+        // TODO: remove this, or flip a debug switch:
         Controls.addFPS(400, 15, 200, 200, 100, 12);
 
         Background.reset();
@@ -255,14 +268,6 @@ public class Level implements MyScreen
         // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
         Tilt.handleTilt();
 
-        // handle routes
-        /*
-        for (PhysicsSprite ps : _routes) {
-            if (ps._isRoute && ps._visible)
-                ps.routeDriver();
-        }
-        */
-        
         // TODO: do we want to do fixed steps?  See Level1.java?
         
         // first we update the world. For simplicity we use the delta time
@@ -272,12 +277,12 @@ public class Level implements MyScreen
         // float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
 
         // now handle any events that occurred on account of the world movement
-        for (PendingEvent pe : _oneTimeEvents)
+        for (Action pe : _oneTimeEvents)
             pe.go();
         _oneTimeEvents.clear();
 
         // now do repeat events
-        for (PendingEvent pe : _repeatEvents)
+        for (Action pe : _repeatEvents)
             pe.go();
 
         // next we clear the color buffer and set the camera matrices
@@ -311,7 +316,7 @@ public class Level implements MyScreen
         _spriteRender.setProjectionMatrix(_hudCam.combined);
         _spriteRender.begin();
         // do the buttons
-        for (PendingEvent pe : _controls) {
+        for (HudPress pe : _controls) {
             if (pe.tr != null)
                 _spriteRender.draw(pe.tr, pe._range.x, pe._range.y, 0,0, pe._range.width, pe._range.height, 1, 1, 0);
         }
@@ -325,7 +330,7 @@ public class Level implements MyScreen
             _shapeRender.setProjectionMatrix(_hudCam.combined);
             _shapeRender.begin(ShapeType.Line);
             _shapeRender.setColor(Color.RED);
-            for (PendingEvent pe : _controls)
+            for (HudPress pe : _controls)
                 _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
             _shapeRender.end();
         }        
@@ -417,7 +422,7 @@ public class Level implements MyScreen
             return false;
         
         // check for HUD touch:
-        for (PendingEvent pe : _controls) {
+        for (HudPress pe : _controls) {
             if (!pe._done) {
                 _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
@@ -453,8 +458,14 @@ public class Level implements MyScreen
         // no sprite touch... if we have a poke entity, use it
         if (PhysicsSprite._currentPokeSprite != null)
             PhysicsSprite._currentPokeSprite.finishPoke(_touchVec.x, _touchVec.y);
+        if (PhysicsSprite._pokeVelocityEntity != null) {
+            if (!PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, true, false, false))
+                return false;            
+        }
+        else if (PhysicsSprite._pokePathEntity != null)
+            PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, true, false, false);
         // deal with scribbles
-        if (Level._scribbleMode) {
+        else if (Level._scribbleMode) {
             if (Level._scribbleMode) {
                 _touchVec.set(x, y, 0);
                 _gameCam.unproject(_touchVec);
@@ -477,15 +488,28 @@ public class Level implements MyScreen
             Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
             return false;
         }
-
         // deal with drag?
         if (_hitSprite != null) {
             _touchVec.set(x, y, 0);
             _gameCam.unproject(_touchVec);
-            _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
-            return false;
+            if (_hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y))
+                return false;
         }
-        return false;
+        // no sprite touch... if we have a poke entity, use it
+        if (PhysicsSprite._pokePathEntity != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            if (!PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, true, false))
+                return false;
+        }
+        
+        if (PhysicsSprite._pokeVelocityEntity != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            if (!PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, true, false))
+                return false;            
+        }
+        return true;
     }
 
     @Override
@@ -494,7 +518,7 @@ public class Level implements MyScreen
         // check for HUD touch:
         //
         // TODO: is this order correct?  Should HUD always come first?
-        for (PendingEvent pe : _controls) {
+        for (HudPress pe : _controls) {
             if (!pe._done) {
                 _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
@@ -514,6 +538,20 @@ public class Level implements MyScreen
             PhysicsSprite.flickDone(_touchVec.x, _touchVec.y);
             return false;
         }
+        // no sprite touch... if we have a poke entity, use it
+        if (PhysicsSprite._pokePathEntity != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            if (PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, false, true))
+                return false;
+        }
+        // no sprite touch... if we have a poke entity, use it
+        if (PhysicsSprite._pokeVelocityEntity != null) {
+            _touchVec.set(x, y, 0);
+            _gameCam.unproject(_touchVec);
+            if (PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, false, true))
+                return false;
+        }
         return false;
     }
 
@@ -522,7 +560,6 @@ public class Level implements MyScreen
      * destination, you can collect enough stuff, or you
      * can get the number of enemies down to 0
      */
-    // TODO: duplicate with GameLevel?
     enum VictoryType
     {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
@@ -753,7 +790,7 @@ public class Level implements MyScreen
     /**
      * Sound to play when the level is lost
      */
-    static Sound _loseSound;
+    Sound _loseSound;
 
 
     /**
@@ -777,7 +814,7 @@ public class Level implements MyScreen
     public static void setLoseSound(String soundName)
     {
         Sound s = Media.getSound(soundName);
-        _loseSound = s;
+        _currLevel._loseSound = s;
     }
 
     /**
@@ -895,20 +932,15 @@ public class Level implements MyScreen
      * @param howLong
      *            How long to wait before the timer code runs
      */
-    /*
-    public static void setTimerTrigger(int timerId, float howLong)
+    public static void setTimerTrigger(final int timerId, float howLong)
     {
-        final int id = timerId;
-        TimerHandler t = new TimerHandler(howLong, false, new ITimerCallback()
-        {
+        Timer.schedule(new Task(){
             @Override
-            public void onTimePassed(TimerHandler th)
+            public void run()
             {
                 if (!Level._gameOver)
-                    ALE._self.onTimeTrigger(id, MenuManager._currLevel);
-            }
-        });
-        Level._current.registerUpdateHandler(t);
+                    ALE._game.onTimeTrigger(timerId, ALE._game._currLevel);
+            }}, howLong);
     }
 
     /**

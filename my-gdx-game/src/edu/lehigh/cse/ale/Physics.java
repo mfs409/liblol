@@ -1,9 +1,9 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: possibly complete (pass-through stuff not yet tested)
+// TODO: clean up comments
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 
-import edu.lehigh.cse.ale.Level.PendingEvent;
+import edu.lehigh.cse.ale.Level.Action;
 
 public class Physics
 {
@@ -27,7 +27,6 @@ public class Physics
         Level._currLevel._world.setContactListener(new ContactListener()
         {
             // quick demo to show that we can manage collisions just like in ALE
-
             @Override
             public void beginContact(Contact contact)
             {
@@ -49,6 +48,7 @@ public class Physics
                 }
                 final PhysicsSprite _a = gfoA;
                 final PhysicsSprite _b = gfoB;
+                final Contact _c = contact;
                 // NB: this is very important. This code runs when two bodies
                 // are in the act of colliding, during the physics world's step
                 // function. While the world is 'stepping', it is illegal to
@@ -56,21 +56,11 @@ public class Physics
                 // ever run and push it into a delay handler, we instead delay
                 // the handling of the collision until after the physics step
                 // completes
-                Level._currLevel._oneTimeEvents.add(new PendingEvent()
+                Level._currLevel._oneTimeEvents.add(new Action()
                 {
                     public void go()
                     {
-                        _a.onCollide(_b);
-                    }
-
-                    @Override
-                    void onDownPress(Vector3 v)
-                    {
-                    }
-
-                    @Override
-                    void onUpPress()
-                    {
+                        _a.onCollide(_b, _c);
                     }
                 });
             }
@@ -93,6 +83,8 @@ public class Physics
                 PhysicsSprite gfoA = (PhysicsSprite) a;
                 PhysicsSprite gfoB = (PhysicsSprite) b;
 
+                Gdx.app.log("contact", "presolve");
+                
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact
                 if (gfoA._passThroughId != 0 && gfoA._passThroughId == gfoB._passThroughId) {

@@ -6,6 +6,8 @@ package edu.lehigh.cse.ale;
 
 // TODO: should we allow drawing pngs over the SVG lines?  If so, we'll need to have a height parameter
 
+// TODO: clean up comments
+
 import java.io.IOException;
 import java.util.Random;
 
@@ -16,6 +18,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Array;
@@ -410,7 +413,7 @@ public class Util
         PhysicsSprite phony = new PhysicsSprite(null, SpriteId.SVG, len, .1f)
         {
             @Override
-            void onCollide(PhysicsSprite other)
+            void onCollide(PhysicsSprite other, Contact contact)
             {
             }
         };

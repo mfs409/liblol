@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// TODO: clean up comments
+
 // TODO: Could be cleaner... refactor is due.
 
 // TODO: this needs to be commented, and it would be nice if we could have a

@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: in progress...
+// TODO: clean up comments
 
 // TODO: be sure that whenever possible, we've moved funcitonality into PhysicsSprite
 
@@ -13,7 +13,11 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -44,7 +48,7 @@ public class Hero extends PhysicsSprite
     }
 
     @Override
-    void onCollide(PhysicsSprite other)
+    void onCollide(PhysicsSprite other, Contact contact)
     {
         // NB: we currently ignore (other._psType == SpriteId.PROJECTILE)
         if (other._psType == SpriteId.ENEMY)
@@ -52,7 +56,7 @@ public class Hero extends PhysicsSprite
         else if (other._psType == SpriteId.DESTINATION)
             onCollideWithDestination((Destination) other);
         else if (other._psType == SpriteId.OBSTACLE)
-            onCollideWithObstacle((Obstacle) other);
+            onCollideWithObstacle((Obstacle) other, contact);
         else if (other._psType == SpriteId.SVG)
             onCollideWithSVG(other);
         else if (other._psType == SpriteId.GOODIE)
@@ -133,16 +137,15 @@ public class Hero extends PhysicsSprite
      * @param o
      *            The obstacle with which this hero collided
      */
-    private void onCollideWithObstacle(Obstacle o)
+    private void onCollideWithObstacle(Obstacle o, Contact contact)
     {
         // do we need to play a sound?
         // TODO: should we call this from anywhere else?
         o.playCollideSound();
 
-        // TODO
         // reset rotation of hero if this obstacle is not a sensor
-        //if ((_currentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
-        //    increaseRotation(-_currentRotation);
+        if ((_currentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
+            increaseRotation(-_currentRotation);
 
         // Handle callback if this obstacle is a trigger
         if (o._isHeroCollideTrigger) {
@@ -152,12 +155,10 @@ public class Hero extends PhysicsSprite
                     && (o._heroTriggerActivation3 <= Score._goodiesCollected3)
                     && (o._heroTriggerActivation4 <= Score._goodiesCollected4)) 
             {
-                // TODO:
-                /*
-                ALE._self.onHeroCollideTrigger(o._heroTriggerID, MenuManager._currLevel, o,
-                        this);
+                if (contact.isEnabled())
+                    ALE._game.onHeroCollideTrigger(o._heroTriggerID, ALE._game._currLevel, o,
+                            this);
                 return;
-                */
             }
         }
 
@@ -196,18 +197,30 @@ public class Hero extends PhysicsSprite
 
         // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors should not enable
         // jumps for the hero.
-        // TODO:
         if ((_inAir || _allowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor() && !o._noJumpReenable)
             stopJump();
         
+        // TODO: This should not actually be called from BeginContact... it
+        // should be called from preSolve(). If we fix that, then I think we can
+        // remedy the issues in level 72, where moving breaks the joint but a
+        // new joint doesn't get built
+        
         // handle sticky obstacles
-        if (o.isSticky) {
-            // TODO:
-            /*
+        if ((o.isStickyTop && getYPosition() >= o.getYPosition()+o._height)
+            || (o.isStickyLeft && getXPosition()+_width <= o.getXPosition())
+            || (o.isStickyRight && getXPosition() >= o.getXPosition()+o._width)
+            || (o.isStickyBottom && getYPosition()+ _height <= o.getYPosition())
+                ) {
+            Vector2 v = contact.getWorldManifold().getPoints()[0];
+            _physBody.setLinearVelocity(0, 0);
+            DistanceJointDef d = new DistanceJointDef();
+            d.initialize(o._physBody, _physBody, v, v);
+            d.collideConnected = true;
+            _dJoint = (DistanceJoint)Level._currLevel._world.createJoint(d);
             WeldJointDef w = new WeldJointDef();
-            w.initialize(o._physBody, this._physBody, o._physBody.getWorldCenter());
-            _weldJoint = (WeldJoint) Level._physics.createJoint(w);
-            */
+            w.initialize(o._physBody,  _physBody,  v);
+            w.collideConnected = true;
+            _wJoint = (WeldJoint)Level._currLevel._world.createJoint(w);
         }
     }
 
@@ -449,13 +462,9 @@ public class Hero extends PhysicsSprite
             _hover = false;
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
-            addVelocity(_xVelocityTouchGo, _yVelocityTouchGo);
+            addVelocity(_xVelocityTouchGo, _yVelocityTouchGo, false);
             // turn off _isTouchAndGo, so we can't double-touch
             _isTouchAndGo = false;
-        }
-        // throw a projectile?
-        else if (_isTouchThrow) {
-            Projectile.throwFixed(_physBody.getPosition().x, _physBody.getPosition().y, this);
         }
 
         else {
@@ -491,10 +500,6 @@ public class Hero extends PhysicsSprite
      * THROW SUPPORT
      */
 
-    /**
-     * Does the hero throw a projectile when we touch it?
-     */
-    private boolean _isTouchThrow = false;
 
     /**
      * Animation support: cells involved in animation for throwing
@@ -510,14 +515,6 @@ public class Hero extends PhysicsSprite
      * Animation support: how long until we stop showing the throw animation
      */
     private float   _throwAnimationTimeRemaining;
-
-    /**
-     * Indicate that touching this hero should make it throw a projectile
-     */
-    public void setTouchToThrow()
-    {
-        _isTouchThrow = true;
-    }
 
     /**
      * Internal method to make the hero's throw animation play while it is throwing a projectile
@@ -644,13 +641,13 @@ public class Hero extends PhysicsSprite
      * @param delta
      *            How much to add to the _current rotation
      */
-    /*
     void increaseRotation(float delta)
     {
-        _currentRotation += delta;
-        _physBody.setAngularVelocity(0);
-        _physBody.setTransform(_physBody.getPosition(), _currentRotation);
-        _sprite.setRotation(_currentRotation);
+        if (_inAir) {
+            _currentRotation += delta;
+            _physBody.setAngularVelocity(0);
+            _physBody.setTransform(_physBody.getPosition(), _currentRotation);
+        }
     }
 
     /*
@@ -686,10 +683,6 @@ public class Hero extends PhysicsSprite
      * COLLISION SUPPORT
      */
 
-    /**
-     * Internal field to track if this hero is connected to an obstacle
-     */
-    WeldJoint _weldJoint;
 
 
     /*

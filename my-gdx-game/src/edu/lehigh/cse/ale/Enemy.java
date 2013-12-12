@@ -1,9 +1,10 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: IN PROGRESS
+// TODO: clean up comments
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 public class Enemy extends PhysicsSprite
 {
@@ -185,10 +186,6 @@ public class Enemy extends PhysicsSprite
         public void setDisappearOnTouch()
         {
             _disappearOnTouch = true;
-            // TODO
-            //Level._current.registerTouchArea(_sprite);
-            //Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-            //Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
         }
 
 
@@ -239,7 +236,7 @@ public class Enemy extends PhysicsSprite
          *            The other entity involved in the collision
          */
         @Override
-        void onCollide(PhysicsSprite other)
+        void onCollide(PhysicsSprite other, Contact contact)
         {
             // collision with obstacles
             if (other._psType == SpriteId.OBSTACLE)
@@ -395,17 +392,24 @@ public class Enemy extends PhysicsSprite
          * @param y
          *            Y position of the touch
          */
+        @Override
+        void handleTouchDown(float x, float y)
+        {
+            if (_disappearOnTouch) {
+//                if (Configuration.isVibrationOn())
+//                    ALE._self.getEngine().vibrate(100);
+                defeat(true);
+                return;
+            }
+         
+            super.handleTouchDown(x, y);
+        }
         // TODO:
         /*
         @Override
         protected boolean onSpriteAreaTouched(TouchEvent e, float x, float y)
         {
             // if the enemy is supposed to disappear when we touch it, then hide it right here
-            if (_disappearOnTouch) {
-                if (Configuration.isVibrationOn())
-                    ALE._self.getEngine().vibrate(100);
-                defeat(true);
-            }
             return super.onSpriteAreaTouched(e, x, y);
         }
         */

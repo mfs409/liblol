@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: in progress
+// TODO: clean up comments
 
 // TODO: scribble time of -1 should leave things on the screen forever...
 
@@ -9,6 +9,7 @@ package edu.lehigh.cse.ale;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -341,57 +342,6 @@ public class Obstacle extends PhysicsSprite
     int     _projectileTriggerID;
 
     /**
-     * Track if the object is a touch trigger
-     */
-    boolean _isTouchTrigger               = false;
-
-    /**
-     * Touch triggers can require certain Goodie counts in order to run
-     */
-    int     _touchTriggerActivation1      = 0;
-
-    /**
-     * Touch triggers can require certain Goodie counts in order to run
-     */
-    int     _touchTriggerActivation2      = 0;
-
-    /**
-     * Touch triggers can require certain Goodie counts in order to run
-     */
-    int     _touchTriggerActivation3      = 0;
-
-    /**
-     * Touch triggers can require certain Goodie counts in order to run
-     */
-    int     _touchTriggerActivation4      = 0;
-
-    /**
-     * An ID for each touch trigger object, in case it's useful
-     */
-    int     _touchTriggerID;
-
-    /**
-     * Make the object a trigger object, so that custom code will run when a
-     * hero runs over (or under) it
-     * 
-     * @param activationGoodies
-     *            Number of goodies that must be collected before this trigger
-     *            works
-     * @param id
-     *            identifier for the trigger
-     * 
-     * @deprecated Use setHeroCollisionTriger() (5 parameters) instead
-     */
-    @Deprecated
-    public void setHeroCollisionTrigger(int activationGoodies, int id)
-    {
-        _heroTriggerID = id;
-        _isHeroCollideTrigger = true;
-        _heroTriggerActivation1 = activationGoodies;
-        setCollisionEffect(false);
-    }
-
-    /**
      * Make the object a trigger object, so that custom code will run when a
      * hero runs over (or under) it
      * 
@@ -420,26 +370,6 @@ public class Obstacle extends PhysicsSprite
         _heroTriggerActivation3 = activationGoodies3;
         _heroTriggerActivation4 = activationGoodies4;
         setCollisionEffect(false);
-    }
-
-    /**
-     * Make the object a trigger object, so that custom code will run when a
-     * enemy runs over (or under) it
-     * 
-     * @param activationGoodies
-     *            Number of goodies that must be collected before this trigger
-     *            works
-     * @param id
-     *            identifier for the trigger
-     * 
-     * @deprecated Use 5-paramter version of this function instead
-     */
-    @Deprecated
-    public void setEnemyCollisionTrigger(int activationGoodies, int id)
-    {
-        _enemyTriggerID = id;
-        _isEnemyCollideTrigger = true;
-        _enemyTriggerActivation1 = activationGoodies;
     }
 
     /**
@@ -513,62 +443,6 @@ public class Obstacle extends PhysicsSprite
         _projectileTriggerActivation3 = activationGoodies3;
         _projectileTriggerActivation4 = activationGoodies4;
     }
-
-    /**
-     * Indicate that touching this object will cause some special code to run
-     * 
-     * @param activationGoodies
-     *            Number of goodies that must be collected before it works
-     * @param id
-     *            identifier for the trigger.
-     * @deprecated Use the 5-paramter version of this funciton instead
-     */
-    @Deprecated
-    public void setTouchTrigger(int activationGoodies, int id)
-    {
-        _touchTriggerID = id;
-        _isTouchTrigger = true;
-        _touchTriggerActivation1 = activationGoodies;
-        // TODO:
-        // Level._current.registerTouchArea(_sprite);
-        // Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-    }
-
-    /**
-     * Indicate that touching this object will cause some special code to run
-     * 
-     * @param id
-     *            identifier for the trigger.
-     * @param activationGoodies1
-     *            Number of type-1 goodies that must be collected before it
-     *            works
-     * @param activationGoodies2
-     *            Number of type-2 goodies that must be collected before it
-     *            works
-     * @param activationGoodies3
-     *            Number of type-3 goodies that must be collected before it
-     *            works
-     * @param activationGoodies4
-     *            Number of type-4 goodies that must be collected before it
-     *            works
-     */
-    public void setTouchTrigger(int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4)
-    {
-        _touchTriggerID = id;
-        _isTouchTrigger = true;
-        _touchTriggerActivation1 = activationGoodies1;
-        _touchTriggerActivation2 = activationGoodies2;
-        _touchTriggerActivation3 = activationGoodies3;
-        _touchTriggerActivation4 = activationGoodies4;
-        // TODO:
-        // Level._current.registerTouchArea(_sprite);
-        // Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-    }
-
-
 
     /*
      * SCRIBBLE SUPPORT
@@ -821,29 +695,6 @@ public class Obstacle extends PhysicsSprite
 
 
     /*
-     * TOUCH-TO-THROW
-     */
-
-    /**
-     * Track if touching this obstacle causes the hero to throw a projectile
-     */
-    boolean _isTouchToThrow = false;
-
-    /**
-     * Indicate that touching this obstacle will cause the hero to throw a
-     * projectile
-     */
-    public void setTouchToThrow()
-    {
-        _isTouchToThrow = true;
-        // turn on the touch handler
-        // TODO:
-        // Level._current.registerTouchArea(_sprite);
-        // /Level._current.setTouchAreaBindingOnActionDownEnabled(true);
-        // Level._current.setTouchAreaBindingOnActionMoveEnabled(true);
-    }
-
-    /*
      * COLLISION SUPPORT
      */
 
@@ -856,7 +707,7 @@ public class Obstacle extends PhysicsSprite
      * @param other
      *            The other entity involved in this collision
      */
-    void onCollide(PhysicsSprite other)
+    void onCollide(PhysicsSprite other, Contact contact)
     {
     }
 
@@ -930,19 +781,6 @@ public class Obstacle extends PhysicsSprite
          * }
          * 
          * 
-         * // if this is a touch trigger, call the touchtrigger code
-         * if (_isTouchTrigger && e.isActionDown()) {
-         * if ((_touchTriggerActivation1 <= Score._goodiesCollected1)
-         * && (_touchTriggerActivation2 <= Score._goodiesCollected2)
-         * && (_touchTriggerActivation3 <= Score._goodiesCollected3)
-         * && (_touchTriggerActivation4 <= Score._goodiesCollected4))
-         * {
-         * remove(false);
-         * ALE._self.onTouchTrigger(_touchTriggerID, MenuManager._currLevel,
-         * this);
-         * return true;
-         * }
-         * }
          * return super.onSpriteAreaTouched(e, x, y);
          */
         return false;
@@ -978,18 +816,5 @@ public class Obstacle extends PhysicsSprite
     public Obstacle getPeer()
     {
         return _peer;
-    }
-
-    /*
-     * PHYSICALLY CONNECTING OBSTACLES AND HEROES
-     */
-    boolean isSticky;
-
-    /**
-     * Make this obstacle sticky, so that a hero will stick to it
-     */
-    public void setSticky()
-    {
-        isSticky = true;
     }
 }

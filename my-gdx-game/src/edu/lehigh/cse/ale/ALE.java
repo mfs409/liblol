@@ -6,6 +6,8 @@ package edu.lehigh.cse.ale;
 
 // TODO: rename from ALE to something else... lol (Lehigh Overlay for LibGDX)?
 
+// TODO: clean up comments
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -43,7 +45,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
      */
     abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
 
-    abstract public void onTouchTrigger(int id, int whichLevel, Obstacle o);
+    abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
 
     abstract public void onTimeTrigger(int id, int whichLevel);
 

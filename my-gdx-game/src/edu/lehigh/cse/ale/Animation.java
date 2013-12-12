@@ -1,5 +1,7 @@
 package edu.lehigh.cse.ale;
 
+// TODO: clean up comments
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**

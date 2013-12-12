@@ -1,6 +1,6 @@
 package edu.lehigh.cse.ale;
 
-// STATUS: COMPLETED PORT FROM ALE
+// TODO: clean up comments
 
 import java.util.ArrayList;
 
@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Tilt
 {
-
     /*
      * BASIC FUNCTIONALITY
      */
