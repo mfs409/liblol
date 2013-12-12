@@ -1,2 +1,0 @@
-# Module com.me.mygdxgame.GwtDefinition
-# RPC service class, partial path of RPC policy file
