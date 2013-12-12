@@ -1,4 +1,4 @@
-package com.me.mygdxgame;
+package com.me.mylolgame;
 
 // TODO: reference file... delete this
 

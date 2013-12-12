@@ -1,4 +1,4 @@
-package com.me.mygdxgame;
+package com.me.mylolgame;
 
 import edu.lehigh.cse.ale.SplashConfiguration;
 

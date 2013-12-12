@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>my-gdx-game-desktop</name>
+	<name>my-lol-game-desktop</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -18,7 +18,7 @@
 		<link>
 			<name>assets</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/my-gdx-game-android/assets</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/my-lol-game-android/assets</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

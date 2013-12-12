@@ -1,4 +1,4 @@
-package com.me.mygdxgame;
+package com.me.mylolgame;
 
 // TODO: update all comments and clean up code formatting
 
@@ -8,7 +8,7 @@ package com.me.mygdxgame;
 
 // TODO: test double-touch to delete poke entity
 
-// TODO: test mult-touch on level 54
+// TODO: test mult-touch on level 54... may have to do with not using inputprocessor?  Check MultiTouch demo?
 
 // TODO: what do we do about liveedit (level 66)
 
@@ -54,7 +54,7 @@ package com.me.mygdxgame;
 
 import edu.lehigh.cse.ale.*;
 
-public class MyGdxGame extends ALE
+public class MyLolGame extends ALE
 {
     @Override
     public void nameResources()
