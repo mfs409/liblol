@@ -1,5 +1,7 @@
 package com.me.mygdxgame;
 
+// TODO: reference file... delete this
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;

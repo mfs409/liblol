@@ -1,5 +1,7 @@
 package com.me.mygdxgame;
 
+//TODO: reference file... delete this
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
