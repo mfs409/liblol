@@ -5,6 +5,8 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 public class Enemy extends PhysicsSprite
 {
@@ -258,20 +260,13 @@ public class Enemy extends PhysicsSprite
         if (o._isEnemyCollideTrigger && match) {
             // run the callback after a delay, or immediately?
             if (o._enemyCollideTriggerDelay > 0) {
-                // TODO
-                /*
-                 * final Enemy e = this;
-                 * TimerHandler t = new TimerHandler(o._enemyCollideTriggerDelay, false, new ITimerCallback()
-                 * {
-                 * 
-                 * @Override
-                 * public void onTimePassed(TimerHandler th)
-                 * {
-                 * ALE._self.onEnemyCollideTrigger(o._enemyTriggerID, MenuManager._currLevel, o, e);
-                 * }
-                 * });
-                 * Level._current.registerUpdateHandler(t);
-                 */
+                  final Enemy e = this;
+                  Timer.schedule(new Task(){
+                    @Override
+                    public void run()
+                    {
+                        LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, e);
+                    }}, o._enemyCollideTriggerDelay);
             }
             else {
                 LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, this);
@@ -283,8 +278,7 @@ public class Enemy extends PhysicsSprite
             Vector2 v = _physBody.getLinearVelocity();
             v.y += o._enemyYJumpImpulse;
             v.x += o._enemyXJumpImpulse;
-            // TODO
-            // updateVelocity(v);
+            updateVelocity(v);
         }
     }
 

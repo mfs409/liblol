@@ -2,7 +2,9 @@ package edu.lehigh.cse.lol;
 
 // TODO: comments, and clean up naming, verify return values (i.e., false)
 
-// TODO: there is a nasty bug in how things display. It only shows when there are less than 21 levels.
+// TODO: Redesign so that we don't have to scroll, and so that we don't have to rely on the back button
+
+// TODO: Provide configurable configuration?
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -51,11 +53,6 @@ public class Chooser implements Screen
     }
 
     /**
-     * For handling touches
-     */
-    Vector3            _touchVec;
-
-    /**
      * All the level boxes we drew
      */
     LevelSprite[]      levels;
@@ -81,9 +78,13 @@ public class Chooser implements Screen
     ShapeRenderer      _srend;
 
     // TODO: externalize these constants?
-    int                bWidth  = 60;
+    static final int   bWidth  = 60;
 
-    int                bHeight = 60;
+    static final int   bHeight = 60;
+
+    static final int   hGutter = 15;
+
+    static final int   vGutter = 15;
 
     float              cameraCapY;
 
@@ -94,15 +95,17 @@ public class Chooser implements Screen
 
         int numLevels = _game._config.getNumLevels();
 
+        
         levels = new LevelSprite[numLevels];
+
 
         // figure out number of rows and columns...
         int camWidth = _game._config.getScreenWidth();
         int camHeight = _game._config.getScreenHeight();
-        // TODO: externalize these constants?
-        int hGutter = 15;
-        int vGutter = 15;
 
+        int vpad = camHeight;
+
+        
         // we want to have gutter, box, gutter, box, ..., where the last box (+
         // margin) is scroll space
         int columns = camWidth / (hGutter + bWidth) - 1;
@@ -112,19 +115,16 @@ public class Chooser implements Screen
         for (int i = 0; i < numLevels; ++i) {
             int mycol = i % columns;
             int myrow = rows - i / columns - 1;
-            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter),
+            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter) + vpad,
                     bWidth, bHeight, 1 + i);
         }
 
         // figure out the boundary for the camera
         cameraCapY = levels[0].r.y + bHeight - camHeight / 2 + vGutter;
-
+        Gdx.app.log("cap", ""+cameraCapY);
         // configure the camera
         _camera = new OrthographicCamera(camWidth, camHeight);
         _camera.position.set(camWidth / 2, cameraCapY, 0);
-
-        // prepare for touches
-        _touchVec = new Vector3();
 
         // create a font
         _font = Media.getFont("arial.ttf", 30);
@@ -248,10 +248,10 @@ public class Chooser implements Screen
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
         // translate the touch into _touchVec
-        _camera.unproject(_touchVec.set(x, y, 0));
+        _camera.unproject(curr.set(x, y, 0));
         for (LevelSprite ls : levels) {
             if (ls.l <= LOL._game._unlockLevel || _game._config.getDeveloperUnlock()) {
-                if (ls.r.contains(_touchVec.x, _touchVec.y)) {
+                if (ls.r.contains(curr.x, curr.y)) {
                     _game.doPlayLevel(ls.l);
                     return true;
                 }

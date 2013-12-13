@@ -278,7 +278,6 @@ public class Obstacle extends PhysicsSprite
     /**
      * How long to wait before running trigger code.
      */
-    // TODO: not currently in use!
     float   _enemyCollideTriggerDelay     = 0;
 
     /**
