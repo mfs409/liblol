@@ -8,6 +8,8 @@ package edu.lehigh.cse.ale;
 // more robust pop-up builder, but in terms of prior ALE functionality, this is
 // satisfactory
 
+// TODO: get rid of statics
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -149,7 +151,7 @@ public class PreScene
         return false;
     }
 
-    private static boolean _showPopUp;
+    static boolean _showPopUp;
 
     private static String  _popupText;
 
@@ -230,6 +232,5 @@ public class PreScene
         _spriteRender.end();
         Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
-
     }
 }

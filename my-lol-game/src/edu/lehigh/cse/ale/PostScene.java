@@ -65,7 +65,7 @@ public class PostScene
         setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
     }
 
-    private static boolean _showPopUp;
+    static boolean _showPopUp;
 
     private static String  _popupText;
 

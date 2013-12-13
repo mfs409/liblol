@@ -18,7 +18,7 @@ package com.me.mylolgame;
 
 // TODO: produce helpful error messages at all the common mistake points (especially animation and filenames)
 
-// TODO: don't forget to do the help levels at some points
+// TODO: don't forget to do the help levels at some point
 
 // TODO: make sure that all Gdx.app.log messages are removed, except those for mistake points
 

@@ -81,9 +81,9 @@ public class Chooser implements Screen
     ShapeRenderer      _srend;
 
     // TODO: externalize these constants?
-    static int         bWidth  = 60;
+    int         bWidth  = 60;
 
-    static int         bHeight = 60;
+    int         bHeight = 60;
 
     float              cameraCapY;
 
@@ -245,11 +245,8 @@ public class Chooser implements Screen
             }
             lastTouches[i] = touchStates[i];
         }
-
-        
     }
     
-    // TODO: connect to actual level drawer...
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
         // translate the touch into _touchVec
@@ -257,7 +254,6 @@ public class Chooser implements Screen
         for (LevelSprite ls : levels) {
             if (ls.l <= ALE._game._unlockLevel || _game._config.getDeveloperUnlock()) {
                 if (ls.r.contains(_touchVec.x, _touchVec.y)) {
-                    // [TODO] action goes here...
                     _game.doPlayLevel(ls.l);
                     return true;
                 }

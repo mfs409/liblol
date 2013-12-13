@@ -2,7 +2,8 @@ package edu.lehigh.cse.ale;
 
 // TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
 
-// TODO: verify true/false returns from all things called from this... I don't think all our events are being chained correctly
+// TODO: verify true/false returns from all things called from this... I don't think all our events are being chained
+// correctly
 
 // TODO: do we want to fixed-step the physics world?
 
@@ -24,11 +25,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -37,17 +36,31 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.ale.Controls.Control;
+
 public class Level implements Screen
 {
     /**
      * Custom camera that can do parallax... taken directly from GDX tests
      */
-    class ParallaxCamera extends OrthographicCamera {
-        Matrix4 parallaxView = new Matrix4();
-        Matrix4 parallaxCombined = new Matrix4();
-        Vector3 tmp = new Vector3();
-        Vector3 tmp2 = new Vector3();
+    class ParallaxCamera extends OrthographicCamera
+    {
+        private Matrix4 parallaxView     = new Matrix4();
 
+        private Matrix4 parallaxCombined = new Matrix4();
+
+        private Vector3 tmp              = new Vector3();
+
+        private Vector3 tmp2             = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         * 
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
+         */
         public ParallaxCamera(float viewportWidth, float viewportHeight)
         {
             super(viewportWidth, viewportHeight);
@@ -69,35 +82,12 @@ public class Level implements Screen
 
     /**
      * Wrapper for actions that we generate and then want handled during the render loop
-     * @author Michael
-     *
      */
     abstract static class Action
     {
         abstract void go();
     }
-    
-    /**
-     * This is for handling hud presses... need to merge with HudEntity, if
-     * possible, and then subclass it in Controls
-     */
-    abstract static class HudPress
-    {
-        abstract void onDownPress(Vector3 _vec);
-        abstract void onUpPress();
-        
-        boolean   _done;
 
-        Rectangle _range;
-
-        TextureRegion tr;
-    }
-
-    abstract static class HudEntity
-    {
-        abstract void render(SpriteBatch sb);
-    }
-    
     interface Renderable
     {
         void render(SpriteBatch sb, float elapsed);
@@ -107,19 +97,20 @@ public class Level implements Screen
     // indices. Note that we push some other logic into the render loop via
     // these...
     public ArrayList<Renderable> _sprites;
+
     public ArrayList<Renderable> _pix_minus_two;
 
     // Two types of events: those that run on the next render, and those that
     // run on every render. Note that events do not have a sprite or render
     // action attached to them
-    public ArrayList<Action>  _oneTimeEvents;
-    public ArrayList<Action> _repeatEvents;
+    public ArrayList<Action>     _oneTimeEvents;
+
+    public ArrayList<Action>     _repeatEvents;
 
     // TODO: can we get by with just one list, where there are Control objects,
     // each of which has optional render, touchDown, and a touchUp methods?
-    public ArrayList<HudPress>  _controls;
-    public ArrayList<HudEntity> _hudEntries;    
-    
+    public ArrayList<Control>    _controls;
+
     /*
      * INTERNAL CLASSES
      */
@@ -129,40 +120,43 @@ public class Level implements Screen
      */
 
     // the cameras
-    OrthographicCamera _gameCam;
-    OrthographicCamera _hudCam;
-    ParallaxCamera _bgCam;
-    
+    OrthographicCamera           _gameCam;
+
+    OrthographicCamera           _hudCam;
+
+    ParallaxCamera               _bgCam;
+
     // box2d debug renderer
-    private Box2DDebugRenderer _debugRender;
+    private Box2DDebugRenderer   _debugRender;
 
     // a spritebatch and a font for text rendering and a Texture to draw our
     // boxes
-    private SpriteBatch        _spriteRender;
+    private SpriteBatch          _spriteRender;
 
     // debug only
-    private ShapeRenderer _shapeRender;
+    private ShapeRenderer        _shapeRender;
 
     // This is the sprite that the camera chases
-    PhysicsSprite _chase;
-    
+    PhysicsSprite                _chase;
+
     // box2d world
-    public World               _world;
+    public World                 _world;
 
-    static Level           _currLevel;
+    static Level                 _currLevel;
 
-    ALE                        _game;
+    ALE                          _game;
 
-    int _camBoundX;
-    int _camBoundY;
-    
+    int                          _camBoundX;
+
+    int                          _camBoundY;
+
     public Level(int width, int height, ALE game)
     {
         _game = game;
         _currLevel = this;
         _camBoundX = width;
         _camBoundY = height;
-        
+
         // TODO: update comments
 
         // setup the camera. In Box2D we operate on a
@@ -172,11 +166,13 @@ public class Level implements Screen
         // We also position the camera so that it
         // looks at (0,16) (that's where the middle of the
         // screen will be located).
-        
-        _gameCam = new OrthographicCamera(_game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO, _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO);
+
+        _gameCam = new OrthographicCamera(_game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO,
+                _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO);
         _gameCam.position.set(width / 2, height / 2, 0);
         // default camera position is with (0,0) in the bottom left...
-        _gameCam.position.set(_game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2, _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2, 0);
+        _gameCam.position.set(_game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
+                _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
         _gameCam.zoom = 1;
 
         // the hudcam is easy... it's the size of the screen, and is independent of the world
@@ -188,7 +184,7 @@ public class Level implements Screen
         // the bgcam is like the hudcam
         _bgCam = new ParallaxCamera(camWidth, camHeight);
         _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
-        
+
         // next we create a renderer for drawing sprites
         _spriteRender = new SpriteBatch();
 
@@ -205,14 +201,32 @@ public class Level implements Screen
         _repeatEvents = new ArrayList<Action>();
 
         // TODO: refactor... these are for displaying hud stuff, and for detecting touches of hud stuff
-        _controls = new ArrayList<HudPress>();
-        _hudEntries = new ArrayList<HudEntity>();
+        _controls = new ArrayList<Control>();
 
         // reset tilt control...
         Tilt.reset();
 
         // reset scores
         Score.reset();
+
+        callback    = new QueryCallback()
+        {
+
+            @Override
+            public boolean reportFixture(Fixture fixture)
+            {
+                // if the hit point is inside the fixture of the body we report it
+                if (fixture.testPoint(_touchVec.x, _touchVec.y)) {
+                    PhysicsSprite hs = (PhysicsSprite) fixture.getBody().getUserData();
+                    if (hs._visible) {
+                        _hitSprite = hs;
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
+
         
         // TODO: remove this, or flip a debug switch:
         Controls.addFPS(400, 15, 200, 200, 100, 12);
@@ -220,14 +234,13 @@ public class Level implements Screen
         Background.reset();
     }
 
-
     /*
      * MUSIC MANAGEMENT
      */
 
-    Music _music;
+    Music   _music;
 
-    boolean      _musicPlaying = false;
+    boolean _musicPlaying = false;
 
     public void playMusic()
     {
@@ -266,12 +279,12 @@ public class Level implements Screen
         // is the game over, such that we should be showing a post-scene?
         if (PostScene.show(_spriteRender, _game))
             return;
-        
+
         // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
         Tilt.handleTilt();
 
-        // TODO: do we want to do fixed steps?  See Level1.java?
-        
+        // TODO: do we want to do fixed steps? See Level1.java?
+
         // first we update the world. For simplicity we use the delta time
         // provided by the Graphics instance. Normally you'll want to fix the
         // time step.
@@ -290,18 +303,18 @@ public class Level implements Screen
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(Background._bgRed, Background._bgGreen, Background._bgBlue, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
+
         // prepare the main camera... we do it here, so that the parallax code knows where to draw...
         adjustCamera();
         _gameCam.update();
 
         // do the parallax background
         Background.doParallaxLayers(_spriteRender);
-        
+
         // next we render each box via the SpriteBatch
         _spriteRender.setProjectionMatrix(_gameCam.combined);
         _spriteRender.begin();
-        
+
         for (Renderable r : _pix_minus_two)
             r.render(_spriteRender, delta);
         for (Renderable r : _sprites) {
@@ -318,13 +331,9 @@ public class Level implements Screen
         _spriteRender.setProjectionMatrix(_hudCam.combined);
         _spriteRender.begin();
         // do the buttons
-        for (HudPress pe : _controls) {
-            if (pe.tr != null)
-                _spriteRender.draw(pe.tr, pe._range.x, pe._range.y, 0,0, pe._range.width, pe._range.height, 1, 1, 0);
+        for (Control c : _controls) {
+            c.render(_spriteRender);
         }
-        // do other stuff (e.g., text)
-        for (HudEntity he : _hudEntries)
-            he.render(_spriteRender);        
         _spriteRender.end();
 
         // render debug boxes for hud buttons
@@ -332,39 +341,39 @@ public class Level implements Screen
             _shapeRender.setProjectionMatrix(_hudCam.combined);
             _shapeRender.begin(ShapeType.Line);
             _shapeRender.setColor(Color.RED);
-            for (HudPress pe : _controls)
-                _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
+            for (Control pe : _controls)
+                if (pe._range != null)
+                    _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
             _shapeRender.end();
-        }        
+        }
     }
 
-    
     void adjustCamera()
     {
         if (_chase == null)
             return;
         float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
-        float y = _chase._physBody.getWorldCenter().y+_chase._cameraOffset.y;
+        float y = _chase._physBody.getWorldCenter().y + _chase._cameraOffset.y;
         // if x or y is too close to 0,0, stick with minimum acceptable values
-        if (x < _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2)
-            x = _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2;
-        if (y < _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2)
-            y = _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2;
-        
+        if (x < _game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2)
+            x = _game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2;
+        if (y < _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2)
+            y = _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2;
+
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > _camBoundX - _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2)
-            x = _camBoundX - _game._config.getScreenWidth()/Physics.PIXEL_METER_RATIO/2;
-        if (y > _camBoundY - _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2)
-            y = _camBoundY - _game._config.getScreenHeight()/Physics.PIXEL_METER_RATIO/2;
+        if (x > _camBoundX - _game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2)
+            x = _camBoundX - _game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2;
+        if (y > _camBoundY - _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2)
+            y = _camBoundY - _game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera
-        _gameCam.position.set(x, y, 0); 
+        _gameCam.position.set(x, y, 0);
     }
-    
+
     @Override
     public void resize(int width, int height)
     {
-       }
+    }
 
     @Override
     public void show()
@@ -375,17 +384,17 @@ public class Level implements Screen
     public void hide()
     {
         pauseMusic();
-       }
+    }
 
     @Override
     public void pause()
     {
-       }
+    }
 
     @Override
     public void resume()
     {
-       }
+    }
 
     @Override
     public void dispose()
@@ -393,76 +402,60 @@ public class Level implements Screen
         stopMusic();
     }
 
-    private Vector3 _touchVec = new Vector3();
+    private Vector3 _touchVec   = new Vector3();
 
-    PhysicsSprite _hitSprite = null;
+    PhysicsSprite   _hitSprite  = null;
+
     // instantiate the callback here, so we don't irritate the GC
-    QueryCallback callback = new QueryCallback() {
-
-        @Override
-        public boolean reportFixture(Fixture fixture) {
-            // if the hit point is inside the fixture of the body we report it
-            if (fixture.testPoint(_touchVec.x, _touchVec.y)) {
-                PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
-                if (hs._visible) {
-                    _hitSprite = hs;
-                    return false;
-                }
-            }
-            return true;
-        }
-    };
-
+    QueryCallback   callback;
+    
     // Here's a quick and dirty way to manage multitouch via polling
-    boolean [] lastTouches = new boolean[4];    
+    boolean[]       lastTouches = new boolean[4];
+
     void manageTouches()
     {
-        // poll for touches
-        // assume no more than 4 simultaneous touches
+        // poll for touches... we assume no more than 4 simultaneous touches
         boolean[] touchStates = new boolean[4];
         for (int i = 0; i < 4; ++i) {
             touchStates[i] = Gdx.input.isTouched(i);
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
-        if (touchStates[i] && lastTouches[i]) {
-                //Gdx.app.log("touch"+i, "is a hold");
-                touchDragged((int)x, (int)y, i);
-        }
+            if (touchStates[i] && lastTouches[i]) {
+                touchMove((int) x, (int) y, i);
+            }
             else if (touchStates[i] && !lastTouches[i]) {
-                //Gdx.app.log("touch"+i, "is a down");
-                touchDown((int)x, (int)y, i, 0);
+                touchDown((int) x, (int) y, i, 0);
             }
             else if (!touchStates[i] && lastTouches[i]) {
-                //Gdx.app.log("touch"+i, "is an up");
-                touchUp((int)x, (int)y, i, 0);
+                touchUp((int) x, (int) y, i, 0);
             }
             lastTouches[i] = touchStates[i];
         }
-
-        
     }
 
-    
     public boolean touchDown(int x, int y, int pointer, int button)
     {
-        Gdx.app.log("processing touch", "pointer = "+pointer);
         // should we forward to PreScene or PostScene?
+        if (Gdx.input.justTouched()) {
         if (!PreScene.onTouch(x, y))
             return false;
         if (!PostScene.onTouch(x, y))
             return false;
+        }
         
+        // swallow the touch if the popup is showing...
+        if (PreScene._showPopUp || PostScene._showPopUp)
+            return false;
+
         // check for HUD touch:
-        for (HudPress pe : _controls) {
-            if (!pe._done) {
-                _hudCam.unproject(_touchVec.set(x, y, 0));
-                if (pe._range.contains(_touchVec.x, _touchVec.y)) {
-                    // now convert the touch to world coordinates and pass to the control (useful for vector throw)
-                    _touchVec.set(x,y,0);
-                    _gameCam.unproject(_touchVec);
-                    pe.onDownPress(_touchVec);
-                    return false;
-                }
+        _hudCam.unproject(_touchVec.set(x, y, 0));
+        for (Control pe : _controls) {
+            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+                // now convert the touch to world coordinates and pass to the control (useful for vector throw)
+                _touchVec.set(x, y, 0);
+                _gameCam.unproject(_touchVec);
+                pe.onDownPress(_touchVec);
+                return false;
             }
         }
         // check for sprite touch
@@ -473,25 +466,23 @@ public class Level implements Screen
         // ask the world which bodies are within the given bounding box around
         // the mouse pointer
         _hitSprite = null;
-        _world.QueryAABB(callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f,
-                _touchVec.x + 0.1f, _touchVec.y + 0.1f);
+        _world.QueryAABB(callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f, _touchVec.y + 0.1f);
 
-        
         // if we hit something we forward an event to it
         if (_hitSprite != null) {
-            Gdx.app.log("hit", "x ="+_touchVec.x+", y ="+_touchVec.y);
+            Gdx.app.log("hit", "x =" + _touchVec.x + ", y =" + _touchVec.y);
             _hitSprite.handleTouchDown(_touchVec.x, _touchVec.y);
             return false;
         }
         else {
-            Gdx.app.log("nohit", "x ="+_touchVec.x+", y ="+_touchVec.y);
+            Gdx.app.log("nohit", "x =" + _touchVec.x + ", y =" + _touchVec.y);
         }
         // no sprite touch... if we have a poke entity, use it
         if (PhysicsSprite._currentPokeSprite != null)
             PhysicsSprite._currentPokeSprite.finishPoke(_touchVec.x, _touchVec.y);
         if (PhysicsSprite._pokeVelocityEntity != null) {
             if (!PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, true, false, false))
-                return false;            
+                return false;
         }
         else if (PhysicsSprite._pokePathEntity != null)
             PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, true, false, false);
@@ -509,8 +500,7 @@ public class Level implements Screen
     }
 
     // TODO: we should have a collection of handlers instead of this nastiness...
-
-    public boolean touchDragged(int x, int y, int pointer)
+    public boolean touchMove(int x, int y, int pointer)
     {
         // deal with scribble?
         if (Level._scribbleMode) {
@@ -533,24 +523,23 @@ public class Level implements Screen
             if (!PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, true, false))
                 return false;
         }
-        
+
         if (PhysicsSprite._pokeVelocityEntity != null) {
             _touchVec.set(x, y, 0);
             _gameCam.unproject(_touchVec);
             if (!PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, true, false))
-                return false;            
+                return false;
         }
         return true;
     }
 
-    
     public boolean touchUp(int x, int y, int pointer, int button)
     {
         // check for HUD touch:
         //
-        // TODO: is this order correct?  Should HUD always come first?
-        for (HudPress pe : _controls) {
-            if (!pe._done) {
+        // TODO: is this order correct? Should HUD always come first?
+        for (Control pe : _controls) {
+            if (pe._isTouchable) {
                 _hudCam.unproject(_touchVec.set(x, y, 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
                     pe.onUpPress();
@@ -599,12 +588,12 @@ public class Level implements Screen
     /**
      * Text to display when the _current level is won
      */
-    static String    _textYouWon;
+    static String _textYouWon;
 
     /**
      * Text to display when the _current level is lost
      */
-    static String    _textYouLost;
+    static String _textYouLost;
 
     /**
      * Specify the text to display when the _current level is won
@@ -687,65 +676,61 @@ public class Level implements Screen
     /**
      * Track if we are playing (false) or not
      */
-    static boolean               _gameOver;
+    static boolean _gameOver;
 
     /**
      * Track if we are in scribble mode or not
      */
-    static boolean         _scribbleMode = false;
-
+    static boolean _scribbleMode = false;
 
     /*
      * WINNING AND LOSING
      */
-
 
     /**
      * Supporting data for VictoryType
      * 
      * This is the number of type-1 goodies that must be collected
      */
-    static int         _victoryGoodie1Count;
-    
+    static int     _victoryGoodie1Count;
+
     /**
      * Supporting data for VictoryType
      * 
      * This is the number of type-2 goodies that must be collected
      */
-    static int         _victoryGoodie2Count;
+    static int     _victoryGoodie2Count;
 
     /**
      * Supporting data for VictoryType
      * 
      * This is the number of type-3 goodies that must be collected
      */
-    static int         _victoryGoodie3Count;
+    static int     _victoryGoodie3Count;
 
     /**
      * Supporting data for VictoryType
      * 
      * This is the number of type-4 goodies that must be collected
      */
-    static int         _victoryGoodie4Count;
+    static int     _victoryGoodie4Count;
 
     /**
      * Supporting data for VictoryType
      * 
      * This is the number of enemies that must be defeated
      */
-    static int         _victoryEnemyCount;
+    static int     _victoryEnemyCount;
 
     /**
      * Name of the _background image for the "you won" message
      */
-    static String      _backgroundYouWon;
+    static String  _backgroundYouWon;
 
     /**
      * Name of the _background image for the "you lost" message
      */
-    static String      _backgroundYouLost;
-
-
+    static String  _backgroundYouLost;
 
     /**
      * Indicate that the level is won by destroying all the enemies
@@ -786,7 +771,6 @@ public class Level implements Screen
         _victoryGoodie4Count = type4;
     }
 
-
     /**
      * Specify the name of the image to use as the background when printing a message that the current level was won
      * 
@@ -821,8 +805,7 @@ public class Level implements Screen
     /**
      * Sound to play when the level is lost
      */
-    Sound _loseSound;
-
+    Sound        _loseSound;
 
     /**
      * Set the sound to play when the level is won
@@ -879,82 +862,83 @@ public class Level implements Screen
      *            default gravity in the Y dimension. 0 unless the game is a side-scroller with jumping
      */
     /*
-    static public void configure(int width, int height, float initXGravity, float initYGravity)
-    {
-        // create a scene and a _physics world
-        _current = new Scene();
-        _gameOver = false;
-        _initXGravity = initXGravity;
-        _initYGravity = initYGravity;
-        Tilt.reset();
-        _width = width;
-        _height = height;
-
-        ALE._self._camera.setBoundsEnabled(true);
-        ALE._self._camera.setBounds(0, 0, width, height);
-
-        _physics = new FixedStepPhysicsWorld(60, new Vector2(_initXGravity, _initYGravity), false)
-        {
-            // the trick here is that if there is *either* a horizontal or
-            // vertical _background, we need to update it
-            @Override
-            public void onUpdate(float pSecondsElapsed)
-            {
-                for (PhysicsSprite g : _noGravity)
-                    g.defyGravity();
-                super.onUpdate(pSecondsElapsed);
-                if (Background._background != null)
-                    Background._background.setParallaxValue(ALE._self._camera.getCenterX() / Background._backgroundScrollFactor);
-                if (Background._vertBackground != null)
-                    Background._vertBackground.setParallaxValue(ALE._self._camera.getCenterY() / Background._backgroundScrollFactor);
-            }
-        };
-
-        // set handlers and listeners
-        _current.registerUpdateHandler(_physics);
-        _physics.setContactListener(ALE._self);
-
-        // reset the score
-        Score.reset();
-        
-        // clear list of heroes
-        _heroes.clear();
-        if (_lastHero != null)
-            _lastHero._sprite.clearUpdateHandlers();
-        _lastHero = null;
-
-        // clear antigravity entities
-        _noGravity.clear();
-        
-        // turn off scribble mode
-        _scribbleMode = false;
-
-        // reset the factories
-        Controls.resetHUD();
-
-        // set up defaults
-        ALE._self.configAccelerometer(false);
-        setVictoryDestination(1);
-        ALE._self._camera.setZoomFactorDirect(1);
-
-        // reset text
-        _textYouWon = "Next Level";
-        _textYouLost = "Try Again";
-
-        // Null out fields...
-        _winSound = null;
-        _loseSound = null;
-        _music = null;
-        Background._background = null;
-        Background._vertBackground = null;
-        _backgroundYouWon = null;
-        _backgroundYouLost = null;
-    }
-
-    /*
+     * static public void configure(int width, int height, float initXGravity, float initYGravity)
+     * {
+     * // create a scene and a _physics world
+     * _current = new Scene();
+     * _gameOver = false;
+     * _initXGravity = initXGravity;
+     * _initYGravity = initYGravity;
+     * Tilt.reset();
+     * _width = width;
+     * _height = height;
+     * 
+     * ALE._self._camera.setBoundsEnabled(true);
+     * ALE._self._camera.setBounds(0, 0, width, height);
+     * 
+     * _physics = new FixedStepPhysicsWorld(60, new Vector2(_initXGravity, _initYGravity), false)
+     * {
+     * // the trick here is that if there is *either* a horizontal or
+     * // vertical _background, we need to update it
+     * 
+     * @Override
+     * public void onUpdate(float pSecondsElapsed)
+     * {
+     * for (PhysicsSprite g : _noGravity)
+     * g.defyGravity();
+     * super.onUpdate(pSecondsElapsed);
+     * if (Background._background != null)
+     * Background._background.setParallaxValue(ALE._self._camera.getCenterX() / Background._backgroundScrollFactor);
+     * if (Background._vertBackground != null)
+     * Background._vertBackground.setParallaxValue(ALE._self._camera.getCenterY() / Background._backgroundScrollFactor);
+     * }
+     * };
+     * 
+     * // set handlers and listeners
+     * _current.registerUpdateHandler(_physics);
+     * _physics.setContactListener(ALE._self);
+     * 
+     * // reset the score
+     * Score.reset();
+     * 
+     * // clear list of heroes
+     * _heroes.clear();
+     * if (_lastHero != null)
+     * _lastHero._sprite.clearUpdateHandlers();
+     * _lastHero = null;
+     * 
+     * // clear antigravity entities
+     * _noGravity.clear();
+     * 
+     * // turn off scribble mode
+     * _scribbleMode = false;
+     * 
+     * // reset the factories
+     * Controls.resetHUD();
+     * 
+     * // set up defaults
+     * ALE._self.configAccelerometer(false);
+     * setVictoryDestination(1);
+     * ALE._self._camera.setZoomFactorDirect(1);
+     * 
+     * // reset text
+     * _textYouWon = "Next Level";
+     * _textYouLost = "Try Again";
+     * 
+     * // Null out fields...
+     * _winSound = null;
+     * _loseSound = null;
+     * _music = null;
+     * Background._background = null;
+     * Background._vertBackground = null;
+     * _backgroundYouWon = null;
+     * _backgroundYouLost = null;
+     * }
+     * 
+     * /*
      * TIMER TRIGGERS
      */
-    
+
     /**
      * Specify that you want some code to run after a fixed amount of time passes.
      * 
@@ -965,13 +949,15 @@ public class Level implements Screen
      */
     public static void setTimerTrigger(final int timerId, float howLong)
     {
-        Timer.schedule(new Task(){
+        Timer.schedule(new Task()
+        {
             @Override
             public void run()
             {
                 if (!Level._gameOver)
                     ALE._game.onTimeTrigger(timerId, ALE._game._currLevel);
-            }}, howLong);
+            }
+        }, howLong);
     }
 
     /**
