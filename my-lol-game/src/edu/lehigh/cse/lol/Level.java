@@ -110,11 +110,6 @@ public class Level implements Screen
     // TODO: can we get by with just one list, where there are Control objects,
     // each of which has optional render, touchDown, and a touchUp methods?
     public ArrayList<Control>    _controls;
-
-    /*
-     * INTERNAL CLASSES
-     */
-
     /*
      * BASIC LEVEL CONFIGURATION
      */
@@ -451,16 +446,14 @@ public class Level implements Screen
         for (Control pe : _controls) {
             if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the control (useful for vector throw)
-                _touchVec.set(x, y, 0);
-                _gameCam.unproject(_touchVec);
+                _gameCam.unproject(_touchVec.set(x, y, 0));
                 pe.onDownPress(_touchVec);
                 return false;
             }
         }
         // check for sprite touch
         // translate the mouse coordinates to world coordinates
-        _touchVec.set(x, y, 0);
-        _gameCam.unproject(_touchVec);
+        _gameCam.unproject(_touchVec.set(x, y, 0));
 
         // ask the world which bodies are within the given bounding box around
         // the mouse pointer
@@ -488,8 +481,7 @@ public class Level implements Screen
         // deal with scribbles
         else if (Level._scribbleMode) {
             if (Level._scribbleMode) {
-                _touchVec.set(x, y, 0);
-                _gameCam.unproject(_touchVec);
+                _gameCam.unproject(_touchVec.set(x, y, 0));
                 Obstacle.doScribbleDown(_touchVec.x, _touchVec.y);
                 return false;
             }
@@ -501,31 +493,23 @@ public class Level implements Screen
     // TODO: we should have a collection of handlers instead of this nastiness...
     public boolean touchMove(int x, int y, int pointer)
     {
+        _gameCam.unproject(_touchVec.set(x, y, 0));
         // deal with scribble?
         if (Level._scribbleMode) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
             return false;
         }
         // deal with drag?
         if (_hitSprite != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             if (_hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y))
                 return false;
         }
         // no sprite touch... if we have a poke entity, use it
         if (PhysicsSprite._pokePathEntity != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             if (!PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, true, false))
                 return false;
         }
-
         if (PhysicsSprite._pokeVelocityEntity != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             if (!PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, true, false))
                 return false;
         }
@@ -537,37 +521,31 @@ public class Level implements Screen
         // check for HUD touch:
         //
         // TODO: is this order correct? Should HUD always come first?
+        _hudCam.unproject(_touchVec.set(x, y, 0));
         for (Control pe : _controls) {
             if (pe._isTouchable) {
-                _hudCam.unproject(_touchVec.set(x, y, 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
                     pe.onUpPress();
                     return false;
                 }
             }
         }
-
+        _gameCam.unproject(_touchVec.set(x, y, 0));
         if (Level._scribbleMode) {
             Obstacle.doScribbleUp();
             return false;
         }
         if (PhysicsSprite._flickEntity != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             PhysicsSprite.flickDone(_touchVec.x, _touchVec.y);
             return false;
         }
         // no sprite touch... if we have a poke entity, use it
         if (PhysicsSprite._pokePathEntity != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             if (PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, false, true))
                 return false;
         }
         // no sprite touch... if we have a poke entity, use it
         if (PhysicsSprite._pokeVelocityEntity != null) {
-            _touchVec.set(x, y, 0);
-            _gameCam.unproject(_touchVec);
             if (PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, false, true))
                 return false;
         }
@@ -691,28 +669,7 @@ public class Level implements Screen
      * 
      * This is the number of type-1 goodies that must be collected
      */
-    static int     _victoryGoodie1Count;
-
-    /**
-     * Supporting data for VictoryType
-     * 
-     * This is the number of type-2 goodies that must be collected
-     */
-    static int     _victoryGoodie2Count;
-
-    /**
-     * Supporting data for VictoryType
-     * 
-     * This is the number of type-3 goodies that must be collected
-     */
-    static int     _victoryGoodie3Count;
-
-    /**
-     * Supporting data for VictoryType
-     * 
-     * This is the number of type-4 goodies that must be collected
-     */
-    static int     _victoryGoodie4Count;
+    static int     [] _victoryGoodieCount = new int[4];
 
     /**
      * Supporting data for VictoryType
@@ -764,10 +721,10 @@ public class Level implements Screen
     static public void setVictoryGoodies(int type1, int type2, int type3, int type4)
     {
         _victoryType = VictoryType.GOODIECOUNT;
-        _victoryGoodie1Count = type1;
-        _victoryGoodie2Count = type2;
-        _victoryGoodie3Count = type4;
-        _victoryGoodie4Count = type4;
+        _victoryGoodieCount[0] = type1;
+        _victoryGoodieCount[1] = type2;
+        _victoryGoodieCount[2] = type4;
+        _victoryGoodieCount[3] = type4;
     }
 
     /**

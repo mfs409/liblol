@@ -4,6 +4,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: work out the return values of presses
 
+// TODO: work on the 'hold to keep the action going' buttons
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

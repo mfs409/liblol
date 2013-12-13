@@ -1364,6 +1364,8 @@ public abstract class PhysicsSprite implements Renderable
         // make the entity kinematic, so gravity doesn't affect it but it still participates in collisions
         // makeKinematic();
         // save the parameters
+        //
+        // TODO: can we just use the _hoverVector without the x, y, and flag?
         _hoverX = x;
         _hoverY = y;
         _hover = true;

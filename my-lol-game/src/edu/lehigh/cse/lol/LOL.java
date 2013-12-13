@@ -110,16 +110,16 @@ public abstract class LOL extends Game implements ApplicationListener
     private Modes _mode;
 
     /**
-     * The _current level being played
+     * The current level being played
      */
     int           _currLevel;
 
     /**
-     * Track the _current help scene being displayed
+     * Track the current help scene being displayed
      */
-    private int   _currHelp;
+    int   _currHelp;
 
-    private void doSplash()
+    void doSplash()
     {
         // set the default display mode
         _currLevel = 0;
@@ -145,8 +145,13 @@ public abstract class LOL extends Game implements ApplicationListener
         setScreen(Level._currLevel);
     }
 
-    void doHelpLevel()
+    void doHelpLevel(int which)
     {
+        _currHelp = which;
+        _currLevel = 0;
+        _mode = Modes.HELP;
+        configureHelpScene(which);
+        setScreen(HelpLevel._currLevel);
     }
 
     void doQuit()

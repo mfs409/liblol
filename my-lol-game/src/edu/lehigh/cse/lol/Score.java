@@ -179,16 +179,14 @@ public class Score
             _goodiesCollected[i] += g._score[i];
 
         // possibly win the level, but only if we win on goodie count and all
-        // four counts are high enoug
+        // four counts are high enough
         if (Level._victoryType != Level.VictoryType.GOODIECOUNT)
             return;
-        if ((Level._victoryGoodie1Count <= _goodiesCollected[0]) && (Level._victoryGoodie2Count <= _goodiesCollected[1])
-                && (Level._victoryGoodie3Count <= _goodiesCollected[2])
-                && (Level._victoryGoodie4Count <= _goodiesCollected[3]))
-        {
+        boolean match = true;
+        for (int i = 0; i < 4; ++i)
+            match &= Level._victoryGoodieCount[i] <= _goodiesCollected[i];
+        if (match) 
             winLevel();
-        }
-
     }
 
     /**

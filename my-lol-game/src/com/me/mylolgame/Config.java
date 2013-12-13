@@ -27,7 +27,7 @@ public class Config extends LOLConfiguration
     @Override
     public int getNumHelpScenes()
     {
-        return 0;
+        return 2;
     }
 
     @Override

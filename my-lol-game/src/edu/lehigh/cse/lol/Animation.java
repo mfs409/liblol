@@ -29,6 +29,12 @@ public class Animation
         _nextCell = 0;
     }
 
+    // TODO: add this constructor
+    public Animation(String imgName, int timePerFrame, boolean repeat, int ... frameIndices)
+    {
+        
+    }
+    
     public Animation to(int frame, long duration)
     {
         _frames[_nextCell] = frame;

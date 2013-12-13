@@ -23,7 +23,6 @@ public class Chooser implements Screen
 {
     // for managing the camera...
 
-    // TODO: this first vector is redundant with touchVec
     final Vector3 curr  = new Vector3();
 
     final Vector3 last  = new Vector3(-1, -1, -1);
@@ -247,7 +246,6 @@ public class Chooser implements Screen
 
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
-        // translate the touch into _touchVec
         _camera.unproject(curr.set(x, y, 0));
         for (LevelSprite ls : levels) {
             if (ls.l <= LOL._game._unlockLevel || _game._config.getDeveloperUnlock()) {

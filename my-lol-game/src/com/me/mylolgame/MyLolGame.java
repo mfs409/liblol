@@ -55,6 +55,12 @@ package com.me.mylolgame;
 // == down' behavior... should we change that? Note: problem also for 46 and 47, and it would be nice to have this for
 // velocity in some cases. See https://code.google.com/p/libgdx/wiki/InputPolling
 
+// TODO: consider adding a wrapper to expose Box2d collision groups?
+
+// TODO: consider making the public interface use pixels instead of meters?
+
+// TODO: consider making a tool for proper sprite sheet manipulation
+
 import edu.lehigh.cse.lol.*;
 
 public class MyLolGame extends LOL
@@ -3279,38 +3285,38 @@ public class MyLolGame extends LOL
     @Override
     public void configureHelpScene(int whichScene)
     {
-        /*
-         * // Our first scene describes the color coding that we use for the //
-         * different entities in the game if (whichScene == 1) {
-         * HelpScene.configure(0, 0, 0); HelpScene.drawText(100, 5,
-         * "The levels of this game demonstrate\nthe features of ALE");
-         * 
-         * HelpScene.drawPicture(50, 60, 30, 30, "greenball.png");
-         * HelpScene.drawText(100, 60, "This is a hero");
-         * 
-         * HelpScene.drawPicture(50, 100, 30, 30, "blueball.png");
-         * HelpScene.drawText(100, 100, "This is an object you can collect");
-         * 
-         * HelpScene.drawPicture(50, 140, 30, 30, "redball.png");
-         * HelpScene.drawText(100, 140, "This is an enemy.  Beware!");
-         * 
-         * HelpScene.drawPicture(50, 180, 30, 30, "mustardball.png");
-         * HelpScene.drawText(100, 180,
-         * "This is a destination that the\nhero(s) must reach");
-         * 
-         * HelpScene.drawPicture(50, 220, 30, 30, "purpleball.png");
-         * HelpScene.drawText(100, 220,
-         * "This is an obstacle you can \ncollide with");
-         * 
-         * HelpScene.drawPicture(50, 260, 30, 30, "greyball.png");
-         * HelpScene.drawText(100, 260, "This is a projectile you can throw"); }
-         * // Our second help scene is just here to show that it is possible to
-         * // have more than one help scene. else if (whichScene == 2) {
-         * HelpScene.configure(255, 255, 0); HelpScene.drawText(100, 5,
-         * "Be sure to read the ALEDemoGame.java code\n" +
-         * "while you play, so you can see\n" + "how the game works", 55, 110,
-         * 165, 14); }
-         */
+
+        // Our first scene describes the color coding that we use for the
+        // different entities in the game
+        if (whichScene == 1) {
+            HelpLevel.configure(0, 0, 0);
+            HelpLevel.drawText(100, 5, "The levels of this game demonstrate\nthe features of ALE");
+
+            HelpLevel.drawPicture(50, 60, 30, 30, "greenball.png");
+            HelpLevel.drawText(100, 60, "This is a hero");
+
+            HelpLevel.drawPicture(50, 100, 30, 30, "blueball.png");
+            HelpLevel.drawText(100, 100, "This is an object you can collect");
+
+            HelpLevel.drawPicture(50, 140, 30, 30, "redball.png");
+            HelpLevel.drawText(100, 140, "This is an enemy.  Beware!");
+
+            HelpLevel.drawPicture(50, 180, 30, 30, "mustardball.png");
+            HelpLevel.drawText(100, 180, "This is a destination that the\nhero(s) must reach");
+
+            HelpLevel.drawPicture(50, 220, 30, 30, "purpleball.png");
+            HelpLevel.drawText(100, 220, "This is an obstacle you can \ncollide with");
+
+            HelpLevel.drawPicture(50, 260, 30, 30, "greyball.png");
+            HelpLevel.drawText(100, 260, "This is a projectile you can throw");
+        }
+        // Our second help scene is just here to show that it is possible to
+        // have more than one help scene.
+        else if (whichScene == 2) {
+            HelpLevel.configure(255, 255, 0);
+            HelpLevel.drawText(100, 5, "Be sure to read the ALEDemoGame.java code\n"
+                    + "while you play, so you can see\n" + "how the game works", 55, 110, 165, 14);
+        }
     }
 
     /**

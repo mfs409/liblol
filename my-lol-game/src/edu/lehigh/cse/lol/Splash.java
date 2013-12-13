@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// Status: help is not functional yet
-
 // TODO: clean up code and comments
 
 import com.badlogic.gdx.Gdx;
@@ -85,9 +83,11 @@ public class Splash implements Screen
         _play = new Rectangle(_game._splashConfig.getPlayX(), _game._splashConfig.getPlayY()
                 - _game._splashConfig.getPlayHeight(), _game._splashConfig.getPlayWidth(),
                 _game._splashConfig.getPlayHeight());
-        _help = new Rectangle(_game._splashConfig.getHelpX(), _game._splashConfig.getHelpY()
-                - _game._splashConfig.getHelpHeight(), _game._splashConfig.getHelpWidth(),
-                _game._splashConfig.getHelpHeight());
+        if (_game._config.getNumHelpScenes() > 0) {
+            _help = new Rectangle(_game._splashConfig.getHelpX(), _game._splashConfig.getHelpY()
+                    - _game._splashConfig.getHelpHeight(), _game._splashConfig.getHelpWidth(),
+                    _game._splashConfig.getHelpHeight());
+        }
         _quit = new Rectangle(_game._splashConfig.getQuitX(), _game._splashConfig.getQuitY()
                 - _game._splashConfig.getQuitHeight(), _game._splashConfig.getQuitWidth(),
                 _game._splashConfig.getQuitHeight());
@@ -125,6 +125,9 @@ public class Splash implements Screen
             if (_play.contains(_touchVec.x, _touchVec.y)) {
                 _game.doChooser();
             }
+            if (_help != null && _help.contains(_touchVec.x, _touchVec.y)) {
+                _game.doHelpLevel(1);
+            }
         }
 
         // now draw the screen...
@@ -147,7 +150,7 @@ public class Splash implements Screen
         _batcher.setProjectionMatrix(_camera.combined);
         _batcher.begin();
 
-        // [TODO]: these need to be externalized... it also wouldn't hurt to
+        // [TODO]: these need to use the _game._config... it also wouldn't hurt to
         // have objects to store these text entities, so that we can precompute
         // more and set up the rectangles correctly...
         BitmapFont f = Media.getFont("arial.ttf", 30);
@@ -156,8 +159,10 @@ public class Splash implements Screen
         f.draw(_batcher, "Demo Game", width / 2 - w / 2, height - 5 - h);
         w = f.getBounds("Play").width;
         f.draw(_batcher, "Play", _game._splashConfig.getPlayX(), _game._splashConfig.getPlayY());
-        w = f.getBounds("Help").width;
-        f.draw(_batcher, "Help", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h);
+        if (_help != null) {
+            w = f.getBounds("Help").width;
+            f.draw(_batcher, "Help", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h);
+        }
         w = f.getBounds("Quit").width;
         f.draw(_batcher, "Quit", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h - 30 - h);
         _batcher.end();
