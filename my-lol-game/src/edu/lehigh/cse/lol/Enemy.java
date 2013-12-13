@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -149,7 +149,7 @@ public class Enemy extends PhysicsSprite
 
         // handle defeat triggers
         if (_isTrigger)
-            ALE._game.onEnemyDefeatTrigger(_defeatTriggerID, ALE._game._currLevel, this);
+            LOL._game.onEnemyDefeatTrigger(_defeatTriggerID, LOL._game._currLevel, this);
     }
 
     /**
@@ -282,7 +282,7 @@ public class Enemy extends PhysicsSprite
                  */
             }
             else {
-                ALE._game.onEnemyCollideTrigger(o._enemyTriggerID, ALE._game._currLevel, o, this);
+                LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, this);
             }
         }
 

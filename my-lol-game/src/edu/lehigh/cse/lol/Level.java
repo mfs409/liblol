@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
 
@@ -36,7 +36,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.ale.Controls.Control;
+import edu.lehigh.cse.lol.Controls.Control;
 
 public class Level implements Screen
 {
@@ -144,13 +144,13 @@ public class Level implements Screen
 
     static Level                 _currLevel;
 
-    ALE                          _game;
+    LOL                          _game;
 
     int                          _camBoundX;
 
     int                          _camBoundY;
 
-    public Level(int width, int height, ALE game)
+    public Level(int width, int height, LOL game)
     {
         _game = game;
         _currLevel = this;
@@ -626,7 +626,7 @@ public class Level implements Screen
      */
     public static void configure(int width, int height)
     {
-        _currLevel = new Level(width, height, ALE._game);
+        _currLevel = new Level(width, height, LOL._game);
         _gameOver = false;
 
         PreScene.reset();
@@ -954,7 +954,7 @@ public class Level implements Screen
             public void run()
             {
                 if (!Level._gameOver)
-                    ALE._game.onTimeTrigger(timerId, ALE._game._currLevel);
+                    LOL._game.onTimeTrigger(timerId, LOL._game._currLevel);
             }
         }, howLong);
     }
@@ -978,7 +978,7 @@ public class Level implements Screen
             public void run()
             {
                 if (!Level._gameOver)
-                    ALE._game.onEnemyTimeTrigger(timerId, ALE._game._currLevel, e);
+                    LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, e);
             }
         }, howLong);
     }

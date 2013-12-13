@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Screen;
 

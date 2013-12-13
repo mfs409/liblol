@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -29,8 +29,8 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.ale.Level.Action;
-import edu.lehigh.cse.ale.Level.Renderable;
+import edu.lehigh.cse.lol.Level.Action;
+import edu.lehigh.cse.lol.Level.Renderable;
 
 public abstract class PhysicsSprite implements Renderable
 {
@@ -997,7 +997,7 @@ public abstract class PhysicsSprite implements Renderable
                     && (_touchTriggerActivation4 <= Score._goodiesCollected4))
             {
                 remove(false);
-                ALE._game.onTouchTrigger(_touchTriggerID, ALE._game._currLevel, this);
+                LOL._game.onTouchTrigger(_touchTriggerID, LOL._game._currLevel, this);
                 return;
             }
         }

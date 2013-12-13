@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -375,7 +375,7 @@ public class Projectile extends PhysicsSprite
                     && (o._projectileTriggerActivation3 <= Score._goodiesCollected3)
                     && (o._projectileTriggerActivation4 <= Score._goodiesCollected4))
             {
-                ALE._game.onProjectileCollideTrigger(o._projectileTriggerID, ALE._game._currLevel, o, this);
+                LOL._game.onProjectileCollideTrigger(o._projectileTriggerID, LOL._game._currLevel, o, this);
                 return;
             }
         }

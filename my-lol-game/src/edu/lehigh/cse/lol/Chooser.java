@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: comments, and clean up naming, verify return values (i.e., false)
 
@@ -64,7 +64,7 @@ public class Chooser implements Screen
      * Since we're going to create other screens via this screen, we need a
      * reference to the game...
      */
-    ALE                _game;
+    LOL                _game;
 
     /**
      * The camera we will use
@@ -87,7 +87,7 @@ public class Chooser implements Screen
 
     float              cameraCapY;
 
-    public Chooser(ALE game)
+    public Chooser(LOL game)
     {
         // save a reference to the game
         _game = game;
@@ -168,7 +168,7 @@ public class Chooser implements Screen
         _srend.begin(ShapeType.Filled);
         _srend.setColor(.4f, .4f, .4f, 0.9f);
         for (LevelSprite ls : levels) {
-            if (ls.l > ALE._game._unlockLevel && !_game._config.getDeveloperUnlock()) {
+            if (ls.l > LOL._game._unlockLevel && !_game._config.getDeveloperUnlock()) {
                 _srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
             }
         }
@@ -250,7 +250,7 @@ public class Chooser implements Screen
         // translate the touch into _touchVec
         _camera.unproject(_touchVec.set(x, y, 0));
         for (LevelSprite ls : levels) {
-            if (ls.l <= ALE._game._unlockLevel || _game._config.getDeveloperUnlock()) {
+            if (ls.l <= LOL._game._unlockLevel || _game._config.getDeveloperUnlock()) {
                 if (ls.r.contains(_touchVec.x, _touchVec.y)) {
                     _game.doPlayLevel(ls.l);
                     return true;

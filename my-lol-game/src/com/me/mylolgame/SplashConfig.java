@@ -1,6 +1,6 @@
 package com.me.mylolgame;
 
-import edu.lehigh.cse.ale.SplashConfiguration;
+import edu.lehigh.cse.lol.SplashConfiguration;
 
 // TODO: extend SplashConfiguration to handle font name/color/size, and the actual text
 

@@ -1,8 +1,8 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: comment and explain this
 
-public abstract class ALEConfiguration
+public abstract class LOLConfiguration
 {
     /*
      * ABSTRACT METHODS, IN LIEU OF XML CONFIG (FOR NOW)
@@ -25,4 +25,5 @@ public abstract class ALEConfiguration
 
     abstract public boolean showDebugBoxes();
 
+    abstract public String getStorageKey();
 }

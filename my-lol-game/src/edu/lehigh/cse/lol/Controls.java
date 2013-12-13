@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -1331,7 +1331,7 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
-                ALE._game.onControlPressTrigger(id, ALE._game._currLevel);
+                LOL._game.onControlPressTrigger(id, LOL._game._currLevel);
             }
 
             @Override

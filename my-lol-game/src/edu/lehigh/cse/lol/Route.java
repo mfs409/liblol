@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: are we setting center points or bottom-left points? This will matter to pokepath stuff
 

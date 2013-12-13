@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -27,7 +27,7 @@ public class Score
         Level._gameOver = true;
 
         // Run the level-complete trigger
-        ALE._game.levelCompleteTrigger(false);
+        LOL._game.levelCompleteTrigger(false);
 
         if (Level._currLevel._loseSound != null)
             Level._currLevel._loseSound.play();
@@ -43,7 +43,7 @@ public class Score
         PostScene.setPopUp(loseText, 255, 255, 255, 32);
         if (Level._backgroundYouLost != null) {
             PostScene.setPopUpImage(Media.getImage(Level._backgroundYouLost)[0], 0, 0,
-                    ALE._game._config.getScreenWidth(), ALE._game._config.getScreenHeight());
+                    LOL._game._config.getScreenWidth(), LOL._game._config.getScreenHeight());
         }
         PostScene._win = false;
         // NB: timers really need to be stored somewhere, so we can stop/start
@@ -63,14 +63,14 @@ public class Score
         Level._gameOver = true;
 
         // Run the level-complete trigger
-        ALE._game.levelCompleteTrigger(true);
+        LOL._game.levelCompleteTrigger(true);
 
         if (Level._winSound != null)
             Level._winSound.play();
 
-        if (ALE._game._unlockLevel == ALE._game._currLevel) {
-            ALE._game._unlockLevel++;
-            ALE._game.saveUnlocked();
+        if (LOL._game._unlockLevel == LOL._game._currLevel) {
+            LOL._game._unlockLevel++;
+            LOL._game.saveUnlocked();
         }
 
         // drop everything from the hud
@@ -84,7 +84,7 @@ public class Score
         PostScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
         if (Level._backgroundYouWon != null) {
             PostScene.setPopUpImage(Media.getImage(Level._backgroundYouWon)[0], 0, 0,
-                    ALE._game._config.getScreenWidth(), ALE._game._config.getScreenHeight());
+                    LOL._game._config.getScreenWidth(), LOL._game._config.getScreenHeight());
         }
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism

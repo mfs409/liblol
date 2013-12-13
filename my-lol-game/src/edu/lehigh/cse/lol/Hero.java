@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
@@ -156,7 +156,7 @@ public class Hero extends PhysicsSprite
                     && (o._heroTriggerActivation4 <= Score._goodiesCollected4))
             {
                 if (contact.isEnabled())
-                    ALE._game.onHeroCollideTrigger(o._heroTriggerID, ALE._game._currLevel, o, this);
+                    LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
                 return;
             }
         }

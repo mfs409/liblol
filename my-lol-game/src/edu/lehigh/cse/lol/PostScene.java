@@ -1,89 +1,17 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
+
+// TODO: migrate stuff out of Level (text, sound, image) if it has to deal with end of game
 
 // TODO: clean up comments
-
-// TODO: Could be cleaner... refactor is due.
-
-// TODO: this needs to be commented, and it would be nice if we could have a
-// more robust pop-up builder, but in terms of prior ALE functionality, this is
-// satisfactory
-
-// TODO: get rid of statics
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
-public class PreScene
+public class PostScene
 {
-    /**
-     * Print a message on a black background, and wait for a timer to expire
-     * 
-     * @param message
-     *            The message to display
-     * @param duration
-     *            Time to display the message
-     */
-    static public void showTextTimed(String message, float duration)
-    {
-        // forward to the more powerful method
-        showTextTimed(message, duration, 255, 255, 255, 30);
-    }
-
-    /**
-     * Print a message on a black background, and wait for a timer to expire.
-     * This version of the method adds the
-     * ability to customize the font
-     * 
-     * @param message
-     *            The message to display
-     * @param duration
-     *            Time to display the message
-     * @param red
-     *            The red component of the font color
-     * @param green
-     *            The green component of the font color
-     * @param blue
-     *            The blue component of the font color
-     * @param size
-     *            The size of the font
-     */
-    static public void showTextTimed(String message, float duration, int red, int green, int blue, int fontSize)
-    {
-        setPopUp(message, red, green, blue, fontSize);
-        Timer.schedule(new Task()
-        {
-            @Override
-            public void run()
-            {
-                done();
-            }
-        }, duration);
-    }
-
-    private static void done()
-    {
-        _showPopUp = false;
-        _popupText = null;
-        _popUpImgTr = null;
-    }
-
-    static public void showImageTimed(String imgName, float duration, float x, float y, float width, float height)
-    {
-        setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
-        Timer.schedule(new Task()
-        {
-            @Override
-            public void run()
-            {
-                done();
-            }
-        }, duration);
-    }
 
     /**
      * Print a message on a black background, and wait for a screen touch
@@ -137,20 +65,6 @@ public class PreScene
         setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
     }
 
-    /**
-     * 
-     * @param x
-     * @param y
-     * @return true if the event was unhandled
-     */
-    public static boolean onTouch(int x, int y)
-    {
-        if (!_showPopUp)
-            return true;
-        done();
-        return false;
-    }
-
     static boolean        _showPopUp;
 
     private static String _popupText;
@@ -198,12 +112,13 @@ public class PreScene
 
     static void reset()
     {
-        PreScene._popUpImgTr = null;
-        PreScene._popupText = null;
+        PostScene._popUpImgTr = null;
+        PostScene._popupText = null;
         _showPopUp = false;
+        _win = false;
     }
 
-    static boolean show(SpriteBatch _spriteRender, ALE _game)
+    static boolean show(SpriteBatch _spriteRender, LOL _game)
     {
         if (!_showPopUp)
             return false;
@@ -232,5 +147,42 @@ public class PreScene
         _spriteRender.end();
         Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
+
     }
+
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return true if the event was unhandled
+     */
+    public static boolean onTouch(int x, int y)
+    {
+        if (!_showPopUp)
+            return true;
+        popUpDone();
+        return false;
+    }
+
+    private static void popUpDone()
+    {
+        _showPopUp = false;
+        _popupText = null;
+        _popUpImgTr = null;
+        if (!_win) {
+            LOL._game.doPlayLevel(LOL._game._currLevel);
+        }
+        else {
+            if (LOL._game._currLevel == LOL._game._config.getNumLevels()) {
+                // TODO: untested
+                LOL._game.doChooser();
+            }
+            else {
+                LOL._game._currLevel++;
+                LOL._game.doPlayLevel(LOL._game._currLevel);
+            }
+        }
+    }
+
+    static boolean _win;
 }

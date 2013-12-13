@@ -51,9 +51,9 @@ package com.me.mylolgame;
 // == down' behavior... should we change that? Note: problem also for 46 and 47, and it would be nice to have this for
 // velocity in some cases. See https://code.google.com/p/libgdx/wiki/InputPolling
 
-import edu.lehigh.cse.ale.*;
+import edu.lehigh.cse.lol.*;
 
-public class MyLolGame extends ALE
+public class MyLolGame extends LOL
 {
     @Override
     public void nameResources()
@@ -3605,7 +3605,7 @@ public class MyLolGame extends ALE
      * Mandatory method. Don't change this.
      */
     @Override
-    public ALEConfiguration config()
+    public LOLConfiguration config()
     {
         return new Config();
     }

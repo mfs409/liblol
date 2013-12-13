@@ -1,10 +1,10 @@
 package com.me.mylolgame;
 
-import edu.lehigh.cse.ale.ALEConfiguration;
+import edu.lehigh.cse.lol.LOLConfiguration;
 
 // TODO: comment/explain
 
-public class Config extends ALEConfiguration
+public class Config extends LOLConfiguration
 {
     @Override
     public int getNumLevels()
@@ -58,5 +58,11 @@ public class Config extends ALEConfiguration
     public boolean showDebugBoxes()
     {
         return true;
+    }
+
+    @Override
+    public String getStorageKey()
+    {
+        return "com.me.mylolgame.prefs";
     }
 }

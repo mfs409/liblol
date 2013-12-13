@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // TODO: refactor the svg parsing out of this file, and maybe make it not static.
 
@@ -25,8 +25,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
-import edu.lehigh.cse.ale.Level.Renderable;
-import edu.lehigh.cse.ale.PhysicsSprite.SpriteId;
+import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
 
 public class Util
 {

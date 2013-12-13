@@ -1,4 +1,4 @@
-package edu.lehigh.cse.ale;
+package edu.lehigh.cse.lol;
 
 // Status: help is not functional yet
 
@@ -23,7 +23,7 @@ public class Splash implements Screen
      * Since we're going to create other screens via this screen, we need a
      * reference to the game...
      */
-    ALE                _game;
+    LOL                _game;
 
     /**
      * The camera we will use
@@ -69,7 +69,7 @@ public class Splash implements Screen
      * @param game
      *            The main game object
      */
-    public Splash(ALE game)
+    public Splash(LOL game)
     {
         // save a reference to the game
         _game = game;
