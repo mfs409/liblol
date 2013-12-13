@@ -4,7 +4,7 @@ package edu.lehigh.cse.ale;
 
 // TODO: update the drawpicture functions to take a z parameter
 
-// TODO: should we allow drawing pngs over the SVG lines?  If so, we'll need to have a height parameter
+// TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
 
 // TODO: clean up comments
 
@@ -409,7 +409,7 @@ public class Util
 
         // wrap it all in a fake PhysicsSprite
         //
-        // TODO: should we take in an image?  If so, we'll need to adjust the last parameter
+        // TODO: should we take in an image? If so, we'll need to adjust the last parameter
         PhysicsSprite phony = new PhysicsSprite(null, SpriteId.SVG, len, .1f)
         {
             @Override

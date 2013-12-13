@@ -1,17 +1,21 @@
 package edu.lehigh.cse.ale;
 
-// TODO: are we setting center points or bottom-left points?  This will matter to pokepath stuff
+// TODO: are we setting center points or bottom-left points? This will matter to pokepath stuff
 
 // TODO: clean up comments
 
 public class Route
 {
-    float [] _xIndices;
-    float [] _yIndices;
-    float _velocity;
-    int _size;
-    int _points;
-    
+    float[] _xIndices;
+
+    float[] _yIndices;
+
+    float   _velocity;
+
+    int     _size;
+
+    int     _points;
+
     /**
      * Define a new path, by specifying the number of points in the path
      * 
@@ -21,7 +25,7 @@ public class Route
     public Route(int numberOfPoints)
     {
         // NB: it doesn't make sense to have a route with only one point!
-        assert(numberOfPoints > 1);
+        assert (numberOfPoints > 1);
         _size = numberOfPoints;
         _xIndices = new float[_size];
         _yIndices = new float[_size];

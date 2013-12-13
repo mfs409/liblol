@@ -65,17 +65,17 @@ public class PostScene
         setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
     }
 
-    static boolean _showPopUp;
+    static boolean        _showPopUp;
 
-    private static String  _popupText;
+    private static String _popupText;
 
-    private static float   _popupRed;
+    private static float  _popupRed;
 
-    private static float   _popupGreen;
+    private static float  _popupGreen;
 
-    private static float   _popupBlue;
+    private static float  _popupBlue;
 
-    private static int     _popupSize;
+    private static int    _popupSize;
 
     static void setPopUp(String msg, int red, int green, int blue, int size)
     {

@@ -2,7 +2,7 @@ package edu.lehigh.cse.ale;
 
 // TODO: comments, and clean up naming, verify return values (i.e., false)
 
-// TODO: there is a nasty bug in how things display.  It only shows when there are less than 21 levels.
+// TODO: there is a nasty bug in how things display. It only shows when there are less than 21 levels.
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -81,9 +81,9 @@ public class Chooser implements Screen
     ShapeRenderer      _srend;
 
     // TODO: externalize these constants?
-    int         bWidth  = 60;
+    int                bWidth  = 60;
 
-    int         bHeight = 60;
+    int                bHeight = 60;
 
     float              cameraCapY;
 
@@ -138,7 +138,7 @@ public class Chooser implements Screen
     public void render(float delta)
     {
         manageTouches();
-        
+
         int camWidth = _game._config.getScreenWidth();
         int camHeight = _game._config.getScreenHeight();
 
@@ -221,7 +221,8 @@ public class Chooser implements Screen
     }
 
     // Here's a quick and dirty way to manage multitouch via polling
-    boolean [] lastTouches = new boolean[4];    
+    boolean[] lastTouches = new boolean[4];
+
     void manageTouches()
     {
         // poll for touches
@@ -231,22 +232,19 @@ public class Chooser implements Screen
             touchStates[i] = Gdx.input.isTouched(i);
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
-        if (touchStates[i] && lastTouches[i]) {
-                Gdx.app.log("touch"+i, "is a hold");
-                touchDragged((int)x, (int)y, i);
-        }
+            if (touchStates[i] && lastTouches[i]) {
+                touchDragged((int) x, (int) y, i);
+            }
             else if (touchStates[i] && !lastTouches[i]) {
-                Gdx.app.log("touch"+i, "is a down");
-                touchDown((int)x, (int)y, i, 0);
+                touchDown((int) x, (int) y, i, 0);
             }
             else if (!touchStates[i] && lastTouches[i]) {
-                Gdx.app.log("touch"+i, "is an up");
-                touchUp((int)x, (int)y, i, 0);
+                touchUp((int) x, (int) y, i, 0);
             }
             lastTouches[i] = touchStates[i];
         }
     }
-    
+
     public boolean touchDown(int x, int y, int pointer, int newParam)
     {
         // translate the touch into _touchVec

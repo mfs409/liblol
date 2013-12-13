@@ -4,7 +4,7 @@ package com.me.mylolgame;
 
 // TODO: there's at least one place where we are using Animation in a bizarre way.
 
-// TODO: PokePath (without velocity) is deprecated.  Level 70 is no longer valid
+// TODO: PokePath (without velocity) is deprecated. Level 70 is no longer valid
 
 // TODO: test double-touch to delete poke entity
 
@@ -26,12 +26,13 @@ package com.me.mylolgame;
 
 // TODO: Menu is horribly broken for < 20 levels
 
-// TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special function?
+// TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special
+// function?
 
 // TODO: the 'getx' and 'gety' methods of physicssprite used to return center coords of body, not coords of the bottom
 // left of the sprite... verify that we've got this fixed everywhere.
 
-// TODO: move scribble out of Obstacle, turn it into a callback?  Maybe a last-ditch control callback?
+// TODO: move scribble out of Obstacle, turn it into a callback? Maybe a last-ditch control callback?
 
 // TODO: revisit int vs. float parameters
 
@@ -79,7 +80,7 @@ public class MyLolGame extends ALE
         Media.registerAnimatableImage("flystar.png", 2, 1);
         Media.registerAnimatableImage("starburst.png", 4, 1);
         Media.registerAnimatableImage("colorstar.png", 8, 1);
-        
+
         // sounds
         Media.registerSound("hipitch.ogg");
         Media.registerSound("lowpitch.ogg");
@@ -704,7 +705,7 @@ public class MyLolGame extends ALE
             Goodie.makeAsCircle(20.5f, 4.5f, 1, 1, "blueball.png");
 
             // indicate that we win by collecting enough goodies
-            Level.setVictoryGoodies(5, 0, 0, 0); 
+            Level.setVictoryGoodies(5, 0, 0, 0);
             // put the goodie count on the screen
             Controls.addGoodieCount1(5, "Goodies", 220, 280);
             // put a countdown on the screen
@@ -1771,7 +1772,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 44) {
             // set up a basic tilt level
-            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press anywhere\nto throw a gray\nball", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
@@ -1828,7 +1830,7 @@ public class MyLolGame extends ALE
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             for (int i = 1; i < 20; i += 5) {
-                Enemy ee = Enemy.makeAsCircle(i, i+5, 2, 2, "redball.png");
+                Enemy ee = Enemy.makeAsCircle(i, i + 5, 2, 2, "redball.png");
                 ee.setPhysics(1.0f, 0.3f, 0.6f);
                 ee.setDamage(i);
             }
@@ -1848,7 +1850,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 46) {
             // set up a simple level
-            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
@@ -1888,7 +1891,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 47) {
             // set up a basic level
-            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
@@ -2019,7 +2023,7 @@ public class MyLolGame extends ALE
             h.setMoveByTilting();
             // this says that we scroll through the 0, 1, 2, and 3 cells of the
             // image, and we show each for 200 milliseconds
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1,200).to(2,200).to(3,200));
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200).to(2, 200).to(3, 200));
         }
 
         /**
@@ -2055,8 +2059,8 @@ public class MyLolGame extends ALE
             h.setJumpImpulses(0, 20);
             h.setTouchToJump();
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1,200).to(2,200).to(3,200));
-            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5,200).to(6,200).to(7,200));
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200).to(2, 200).to(3, 200));
+            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
 
             // create a goodie that has a disappearance animation. Note that
             // this can be a totally
@@ -2066,9 +2070,10 @@ public class MyLolGame extends ALE
             // background. Note, too,
             // that the final cell is blank, so that we don't leave a residue on
             // the screen.
-            
+
             Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "stars.png");
-            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200).to(0, 200).to(3, 200), 1, 0, 5, 5);
+            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200).to(0, 200)
+                    .to(3, 200), 1, 0, 5, 5);
             Level.setCameraChase(h);
         }
 
@@ -2098,7 +2103,7 @@ public class MyLolGame extends ALE
             h.setMoveByTilting();
 
             // set up an animation when the hero throws:
-            h.setThrowAnimation(new Animation("colorstar.png", 2, false).to(3, 100).to(4,  500));
+            h.setThrowAnimation(new Animation("colorstar.png", 2, false).to(3, 100).to(4, 500));
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
@@ -2138,8 +2143,9 @@ public class MyLolGame extends ALE
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0,300).to(1,300).to(2,300).to(3,300));
-            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100).to(7, 100));
+            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0, 300).to(1, 300).to(2, 300).to(3, 300));
+            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100)
+                    .to(7, 100));
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
@@ -2192,7 +2198,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 54) {
             // make a simple level:
-            Level.configure(3 * 48, 32); Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             PreScene.showTextTimed("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
@@ -2203,7 +2210,7 @@ public class MyLolGame extends ALE
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
             h.addVelocity(15, 0, false);
-            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0,100).to(1,300).to(2, 300).to(3, 100));
+            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0, 100).to(1, 300).to(2, 300).to(3, 100));
             h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
 
             // enable hero jumping and crawling
@@ -2258,7 +2265,8 @@ public class MyLolGame extends ALE
             // default picture so it's showing already
             //
             // Note: this is ugly, because we are matching the frames, but duration is actually the goodie count
-            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2).to(4, 3).to(5, 4).to(6, 5).to(7, 6).to(3, 8));
+            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2).to(4, 3).to(5, 4)
+                    .to(6, 5).to(7, 6).to(3, 8));
         }
 
         /**
@@ -2340,7 +2348,8 @@ public class MyLolGame extends ALE
         else if (whichLevel == 57) {
             // set up a side scroller level, but give the bounding box some
             // friction
-            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
@@ -2357,10 +2366,11 @@ public class MyLolGame extends ALE
             h.setJumpImpulses(0, 15);
 
             Level.setCameraChase(h);
-            
+
             // draw a background
             Background.setColor(0, 0, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);        }
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+        }
 
         /**
          * @level: 58
@@ -2381,7 +2391,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 58) {
             // make a simple level with left/right tilt and Y gravity
-            Level.configure(48, 32);Physics.configure(0, -10);
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 5, 3, 3, "greenball.png");
@@ -2407,7 +2418,7 @@ public class MyLolGame extends ALE
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             for (int i = 1; i < 20; i += 5) {
-                Enemy e1 = Enemy.makeAsCircle(i, i+8, 2, 2, "redball.png");
+                Enemy e1 = Enemy.makeAsCircle(i, i + 8, 2, 2, "redball.png");
                 e1.setPhysics(1.0f, 0.3f, 0.6f);
             }
 
@@ -2416,10 +2427,10 @@ public class MyLolGame extends ALE
             // and we can opt to center things as they shrink or grow
             Obstacle floor = Obstacle.makeAsBox(2, 3, 42, 3, "red.png");
             floor.setShrinkOverTime(1, 1, true);
-            
-            Obstacle roof = Obstacle.makeAsBox(24, 30, 1, 1, "red.png"); 
+
+            Obstacle roof = Obstacle.makeAsBox(24, 30, 1, 1, "red.png");
             roof.setShrinkOverTime(-1, 0, false);
-            
+
             Obstacle ball1 = Obstacle.makeAsCircle(40, 8, 8, 8, "purpleball.png");
             ball1.setShrinkOverTime(1, 2, true);
 
@@ -2443,7 +2454,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 59) {
             // make a simple level
-            Level.configure(48, 32);Physics.configure(0, -10);
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(46, 10, 2.5f, 2.5f, "mustardball.png");
@@ -2591,7 +2603,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 63) {
             // make a tilt level with just a hero
-            Level.configure(3 * 48, 32);Physics.configure(0, 0);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, 0);
             Tilt.enable(10, 10);
             PreScene.showTextTimed("Keep going right!", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
@@ -2610,7 +2623,7 @@ public class MyLolGame extends ALE
             o.setPhysics(1, 0, 1);
             o.setHeroCollisionTrigger(0, 0, 0, 0, 0);
             o.setDisappearSound("hipitch.ogg");
-            
+
             Level.setCameraChase(h);
         }
 
@@ -2734,40 +2747,40 @@ public class MyLolGame extends ALE
          *               positions and sizes are satisfactory.
          * 
          * @whatsnew: live edit mode
-         *  /
-        else if (whichLevel == 66) {
-            // configure a basic level like level 7, but with the hero in
-            // liveedit mode:
-            Level.configure(48, 32);
-            Physics.configure(0, 0);
-            Tilt.enable(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
-            h.setMoveByTilting();
-            h.setLiveEdit();
-
-            // make the destination liveedit
-            Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
-            d.setLiveEdit();
-            Level.setVictoryDestination(1);
-
-            // draw an enemy who moves, and who is liveedit
-            Enemy e = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
-            e.setPhysics(1.0f, 0.3f, 0.6f);
-            e.setMoveByTilting();
-            e.setLiveEdit();
-
-            // add a goodie and an obstacle
-            Obstacle o = Obstacle.makeAsBox(90, 90, 80, 10, "purpleball.png");
-            o.setLiveEdit();
-            Goodie g = Goodie.makeAsCircle(300, 200, 5, 5, "blueball.png");
-            g.setLiveEdit();
-
-            // display a message that stays until it is pressed
-            PreScene.showTextAndWait("Press entities to change\ntheir configuration");
-        }
-
-        /**
+         *            /
+         *            else if (whichLevel == 66) {
+         *            // configure a basic level like level 7, but with the hero in
+         *            // liveedit mode:
+         *            Level.configure(48, 32);
+         *            Physics.configure(0, 0);
+         *            Tilt.enable(10, 10);
+         *            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+         *            Hero h = Hero.makeAsCircle(40, 70, 30, 30, "greenball.png");
+         *            h.setMoveByTilting();
+         *            h.setLiveEdit();
+         * 
+         *            // make the destination liveedit
+         *            Destination d = Destination.makeAsCircle(290, 60, 10, 10, "mustardball.png");
+         *            d.setLiveEdit();
+         *            Level.setVictoryDestination(1);
+         * 
+         *            // draw an enemy who moves, and who is liveedit
+         *            Enemy e = Enemy.makeAsCircle(250, 250, 20, 20, "redball.png");
+         *            e.setPhysics(1.0f, 0.3f, 0.6f);
+         *            e.setMoveByTilting();
+         *            e.setLiveEdit();
+         * 
+         *            // add a goodie and an obstacle
+         *            Obstacle o = Obstacle.makeAsBox(90, 90, 80, 10, "purpleball.png");
+         *            o.setLiveEdit();
+         *            Goodie g = Goodie.makeAsCircle(300, 200, 5, 5, "blueball.png");
+         *            g.setLiveEdit();
+         * 
+         *            // display a message that stays until it is pressed
+         *            PreScene.showTextAndWait("Press entities to change\ntheir configuration");
+         *            }
+         * 
+         *            /**
          * @level: 67
          * 
          * @description: This level shows how to use countdown timers to win a
@@ -2776,7 +2789,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 67) {
             // set up a simple level
-            Level.configure(48, 32);Physics.configure(0, -10);
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
             PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
@@ -2807,7 +2821,8 @@ public class MyLolGame extends ALE
         // TODO: test hover + touchAndGo... there's some kind of funny issue with forces...
         else if (whichLevel == 68) {
             // set up a simple level
-            Level.configure(48, 32); Physics.configure(0, -10);
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
             PreScene.showTextTimed("Press anywhere\nto throw a ball", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(21, 23, 3, 3, "greenball.png");
@@ -2816,7 +2831,7 @@ public class MyLolGame extends ALE
             // re-enable gravity on the hero after setHover temporarily disables
             // it.
             h.setFlickable(0.7f);
-            //h.setTouchAndGo(10, 10);
+            // h.setTouchAndGo(10, 10);
             h.setHover(21, 23);
             // place an enemy, let it fall
             Enemy e = Enemy.makeAsCircle(31, 25, 3, 3, "redball.png");
@@ -2836,7 +2851,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 69) {
             // set up a standard side scroller with tilt:
-            Level.configure(3 * 48, 32); Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Press the hero to\nmake it jump", 1);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
@@ -2857,9 +2873,9 @@ public class MyLolGame extends ALE
             // draw a few walls
             // hero can jump while on this obstacle
             Obstacle.makeAsBox(10, 3, 10, 1, "red.png");
-         // hero can't jump while on this obstacle
+            // hero can't jump while on this obstacle
             Obstacle o = Obstacle.makeAsBox(40, 3, 10, 1, "red.png");
-            o.setReJump(false); 
+            o.setReJump(false);
         }
 
         /**
@@ -2868,22 +2884,22 @@ public class MyLolGame extends ALE
          * @description: A test of the PokePath feature
          * 
          * @whatsnew: setPokePath to move an entity along a path
-         *  /
-        else if (whichLevel == 70) {
-            // start by setting everything up just like in level 1
-            Level.configure(48, 32);
-            Physics.configure(0, 0);
-            Tilt.enable(10, 10);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-            h.setMoveByTilting();
-            h.setPokePath(4);
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
-            PreScene.showTextTimed("Poke the hero, then\n where you want it\nto go.", 1);
-        }
-
-        /**
+         *            /
+         *            else if (whichLevel == 70) {
+         *            // start by setting everything up just like in level 1
+         *            Level.configure(48, 32);
+         *            Physics.configure(0, 0);
+         *            Tilt.enable(10, 10);
+         *            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+         *            h.setMoveByTilting();
+         *            h.setPokePath(4);
+         *            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+         *            Level.setVictoryDestination(1);
+         *            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+         *            PreScene.showTextTimed("Poke the hero, then\n where you want it\nto go.", 1);
+         *            }
+         * 
+         *            /**
          * @level: 71
          * 
          * @description: A test of the PokeVelocity feature
@@ -3084,7 +3100,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 76) {
             // set up a side scroller, but don't turn on tilt
-            Level.configure(3 * 48, 32);Physics.configure(0, 10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, 10);
             PreScene.showTextTimed("Press anywhere to speed up", 1);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
@@ -3100,10 +3117,10 @@ public class MyLolGame extends ALE
             // give the hero a fixed velocity
             h.addVelocity(4, 0, false);
             // center the camera a little ahead of the hero, so he is not
-            // centered            
+            // centered
             h.setCameraOffset(15, 0);
             Level.setCameraChase(h);
-            
+
             // set up the background
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
@@ -3124,7 +3141,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 77) {
             // set up a side scroller, but don't turn on tilt
-            Level.configure(3 * 48, 32);Physics.configure(0, -10);
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
             PreScene.showTextTimed("Press anywhere to speed up", 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Level.setVictoryDestination(1);
@@ -3142,7 +3160,7 @@ public class MyLolGame extends ALE
             // set up the background
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
-            
+
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero
             // velocity
@@ -3156,7 +3174,8 @@ public class MyLolGame extends ALE
          */
         else if (whichLevel == 78) {
             // set up a simple level
-            Level.configure(48, 32);Physics.configure(0, -10);
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.showTextTimed("Does autojump work?", 1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -3173,7 +3192,6 @@ public class MyLolGame extends ALE
             Obstacle bottom = Obstacle.makeAsBox(10, 5, 10, .2f, "red.png");
             bottom.setOneSided(2);
 
-            
             bottom.setHeroCollisionTrigger(0, 0, 0, 0, 0);
             bottom.setCollisionEffect(true);
         }
@@ -3382,7 +3400,7 @@ public class MyLolGame extends ALE
                 for (int i = 0; i < 3; ++i)
                     Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
             }
-        } 
+        }
     }
 
     /**
@@ -3467,7 +3485,7 @@ public class MyLolGame extends ALE
                 Level.setEnemyTimerTrigger(id - 1, 2, right);
             }
         }
-        else if (whichLevel == 49) { 
+        else if (whichLevel == 49) {
             // in this case, every enemy will produce one offspring on each timer
             Enemy e2 = Enemy.makeAsCircle(e.getXPosition(), e.getYPosition(), e.getWidth(), e.getHeight(),
                     "redball.png");
@@ -3578,7 +3596,7 @@ public class MyLolGame extends ALE
     public void onControlPressTrigger(int id, int whichLevel)
     {
         if (whichLevel == 79) {
-            if (id == 747) 
+            if (id == 747)
                 PreScene.showTextTimed("Hello", 1);
         }
     }

@@ -24,17 +24,17 @@ public class Media
      * Making fonts can get expensive... to lighten the load, we'll cache any
      * fonts we make
      */
-    static final Hashtable<String, BitmapFont>            _fonts  = new Hashtable<String, BitmapFont>();
+    static final Hashtable<String, BitmapFont>              _fonts  = new Hashtable<String, BitmapFont>();
 
     /**
      * Store the sounds used by this game
      */
-    static private final Hashtable<String, Sound>         _sounds = new Hashtable<String, Sound>();
+    static private final Hashtable<String, Sound>           _sounds = new Hashtable<String, Sound>();
 
     /**
      * Store the music used by this game
      */
-    static private final Hashtable<String, Music>         _tunes  = new Hashtable<String, Music>();
+    static private final Hashtable<String, Music>           _tunes  = new Hashtable<String, Music>();
 
     /**
      * Store the images used by this game
@@ -154,7 +154,7 @@ public class Media
         int width = t.getWidth() / columns;
         int height = t.getHeight() / rows;
         TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
-        TextureRegion [] trs = new TextureRegion[columns * rows];
+        TextureRegion[] trs = new TextureRegion[columns * rows];
         int index = 0;
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
@@ -185,7 +185,7 @@ public class Media
         m.setLooping(loop);
         _tunes.put(musicName, m);
     }
-     
+
     /**
      * Register a sound file, so that it can be used later.
      * 

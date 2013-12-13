@@ -83,8 +83,8 @@ public class Score
         // "just work" for ALE, though still not orthogonal
         PostScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
         if (Level._backgroundYouWon != null) {
-            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouWon)[0], 0, 0, ALE._game._config.getScreenWidth(),
-                    ALE._game._config.getScreenHeight());
+            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouWon)[0], 0, 0,
+                    ALE._game._config.getScreenWidth(), ALE._game._config.getScreenHeight());
         }
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism

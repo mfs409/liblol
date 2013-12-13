@@ -100,7 +100,7 @@ public class Obstacle extends PhysicsSprite
     {
         float radius = (width > height) ? width : height;
         Obstacle o = new Obstacle(width, height, imgName);
-        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         Level._currLevel._sprites.add(o);
         return o;
     }
@@ -493,12 +493,12 @@ public class Obstacle extends PhysicsSprite
     /**
      * Width of the picture being drawn via scribbling
      */
-    static float             _scribbleWidth;
+    static float           _scribbleWidth;
 
     /**
      * Height of the picture being drawn via scribbling
      */
-    static float             _scribbleHeight;
+    static float           _scribbleHeight;
 
     /**
      * Track if the scribble objects move, or are stationary
@@ -567,7 +567,8 @@ public class Obstacle extends PhysicsSprite
             _scribbleX = x;
             _scribbleY = y;
             Gdx.app.log("scrib", "making");
-            o = makeAsCircle(_scribbleX - _scribbleWidth/2, _scribbleY - _scribbleHeight/2, _scribbleWidth, _scribbleHeight, _scribblePic);
+            o = makeAsCircle(_scribbleX - _scribbleWidth / 2, _scribbleY - _scribbleHeight / 2, _scribbleWidth,
+                    _scribbleHeight, _scribblePic);
             o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
             if (_scribbleMoveable)
                 o._physBody.setType(BodyType.DynamicBody);
@@ -606,7 +607,8 @@ public class Obstacle extends PhysicsSprite
             if (hSquare > (2.5f * 2.5f)) {
                 _scribbleX = newX;
                 _scribbleY = newY;
-                o = makeAsCircle(_scribbleX - _scribbleWidth/2, _scribbleY - _scribbleHeight/2, _scribbleWidth, _scribbleHeight, _scribblePic);
+                o = makeAsCircle(_scribbleX - _scribbleWidth / 2, _scribbleY - _scribbleHeight / 2, _scribbleWidth,
+                        _scribbleHeight, _scribblePic);
                 o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
                 if (_scribbleMoveable)
                     o._physBody.setType(BodyType.DynamicBody);
@@ -648,12 +650,12 @@ public class Obstacle extends PhysicsSprite
     /**
      * a sound to play when the obstacle is hit by a hero
      */
-    private Sound   _collideSound;
+    private Sound _collideSound;
 
     /**
      * how long to delay (in nanoseconds) between attempts to play the collide sound
      */
-    private long   _collideSoundDelay;
+    private long  _collideSoundDelay;
 
     /**
      * Time of last collision sound
@@ -687,12 +689,10 @@ public class Obstacle extends PhysicsSprite
         // Make sure we have waited long enough
         long now = System.nanoTime();
         if (now < _lastCollideSoundTime + _collideSoundDelay)
-        return;
+            return;
         _lastCollideSoundTime = now;
         _collideSound.play();
     }
-
-
 
     /*
      * COLLISION SUPPORT

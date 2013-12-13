@@ -209,7 +209,7 @@ public class Level implements Screen
         // reset scores
         Score.reset();
 
-        callback    = new QueryCallback()
+        callback = new QueryCallback()
         {
 
             @Override
@@ -227,7 +227,6 @@ public class Level implements Screen
             }
         };
 
-        
         // TODO: remove this, or flip a debug switch:
         Controls.addFPS(400, 15, 200, 200, 100, 12);
 
@@ -408,7 +407,7 @@ public class Level implements Screen
 
     // instantiate the callback here, so we don't irritate the GC
     QueryCallback   callback;
-    
+
     // Here's a quick and dirty way to manage multitouch via polling
     boolean[]       lastTouches = new boolean[4];
 
@@ -437,12 +436,12 @@ public class Level implements Screen
     {
         // should we forward to PreScene or PostScene?
         if (Gdx.input.justTouched()) {
-        if (!PreScene.onTouch(x, y))
-            return false;
-        if (!PostScene.onTouch(x, y))
-            return false;
+            if (!PreScene.onTouch(x, y))
+                return false;
+            if (!PostScene.onTouch(x, y))
+                return false;
         }
-        
+
         // swallow the touch if the popup is showing...
         if (PreScene._showPopUp || PostScene._showPopUp)
             return false;

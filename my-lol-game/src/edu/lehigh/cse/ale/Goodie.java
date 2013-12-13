@@ -80,13 +80,12 @@ public class Goodie extends PhysicsSprite
     {
         float radius = (width > height) ? width : height;
         Goodie g = new Goodie(width, height, imgName);
-        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         g._physBody.getFixtureList().get(0).setSensor(true);
         Level._currLevel._sprites.add(g);
         return g;
     }
 
- 
     /**
      * The "score" of this goodie... it is the amount that will be added to the score when this goodie is collected.
      * 
@@ -97,22 +96,21 @@ public class Goodie extends PhysicsSprite
      * four separate scores
      */
     int _score1;
-    
+
     /**
      * The second score
      */
     int _score2;
-    
+
     /**
      * The third score
      */
     int _score3;
-    
+
     /**
      * The fourth score
      */
     int _score4;
-    
 
     /**
      * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative

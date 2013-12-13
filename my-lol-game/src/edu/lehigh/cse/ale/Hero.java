@@ -42,7 +42,7 @@ public class Hero extends PhysicsSprite
     {
         float radius = (width > height) ? width : height;
         Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius/2);
+        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
         Level._currLevel._sprites.add(h);
         return h;
     }
@@ -153,11 +153,10 @@ public class Hero extends PhysicsSprite
             if ((o._heroTriggerActivation1 <= Score._goodiesCollected1)
                     && (o._heroTriggerActivation2 <= Score._goodiesCollected2)
                     && (o._heroTriggerActivation3 <= Score._goodiesCollected3)
-                    && (o._heroTriggerActivation4 <= Score._goodiesCollected4)) 
+                    && (o._heroTriggerActivation4 <= Score._goodiesCollected4))
             {
                 if (contact.isEnabled())
-                    ALE._game.onHeroCollideTrigger(o._heroTriggerID, ALE._game._currLevel, o,
-                            this);
+                    ALE._game.onHeroCollideTrigger(o._heroTriggerID, ALE._game._currLevel, o, this);
                 return;
             }
         }
@@ -199,28 +198,28 @@ public class Hero extends PhysicsSprite
         // jumps for the hero.
         if ((_inAir || _allowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor() && !o._noJumpReenable)
             stopJump();
-        
+
         // TODO: This should not actually be called from BeginContact... it
         // should be called from preSolve(). If we fix that, then I think we can
         // remedy the issues in level 72, where moving breaks the joint but a
         // new joint doesn't get built
-        
+
         // handle sticky obstacles
-        if ((o.isStickyTop && getYPosition() >= o.getYPosition()+o._height)
-            || (o.isStickyLeft && getXPosition()+_width <= o.getXPosition())
-            || (o.isStickyRight && getXPosition() >= o.getXPosition()+o._width)
-            || (o.isStickyBottom && getYPosition()+ _height <= o.getYPosition())
-                ) {
+        if ((o.isStickyTop && getYPosition() >= o.getYPosition() + o._height)
+                || (o.isStickyLeft && getXPosition() + _width <= o.getXPosition())
+                || (o.isStickyRight && getXPosition() >= o.getXPosition() + o._width)
+                || (o.isStickyBottom && getYPosition() + _height <= o.getYPosition()))
+        {
             Vector2 v = contact.getWorldManifold().getPoints()[0];
             _physBody.setLinearVelocity(0, 0);
             DistanceJointDef d = new DistanceJointDef();
             d.initialize(o._physBody, _physBody, v, v);
             d.collideConnected = true;
-            _dJoint = (DistanceJoint)Level._currLevel._world.createJoint(d);
+            _dJoint = (DistanceJoint) Level._currLevel._world.createJoint(d);
             WeldJointDef w = new WeldJointDef();
-            w.initialize(o._physBody,  _physBody,  v);
+            w.initialize(o._physBody, _physBody, v);
             w.collideConnected = true;
-            _wJoint = (WeldJoint)Level._currLevel._world.createJoint(w);
+            _wJoint = (WeldJoint) Level._currLevel._world.createJoint(w);
         }
     }
 
@@ -257,10 +256,10 @@ public class Hero extends PhysicsSprite
 
         // deal with invincibility
         if (g._invincibilityDuration > 0) {
-            
+
             // update the time to end invincibility
             _invincibleRemaining += g._invincibilityDuration;
-            
+
             // invincible animation
             if (_invincibleAnimation != null) {
                 setCurrentAnimation(_invincibleAnimation);
@@ -281,7 +280,7 @@ public class Hero extends PhysicsSprite
             }
         }
     }
-    
+
     /*
      * BASIC FUNCTIONALITY
      */
@@ -350,37 +349,37 @@ public class Hero extends PhysicsSprite
      * 
      * This does not quite work as desired, but is good enough for our demo
      */
-    private boolean _inAir        = false;
+    private boolean   _inAir        = false;
 
     /**
      * When the hero jumps, this specifies the amount of jump impulse in the X dimension
      */
-    private int     _xJumpImpulse = 0;
+    private int       _xJumpImpulse = 0;
 
     /**
      * When the hero jumps, this specifies the amount of jump impulse in the Y dimension
      */
-    private int     _yJumpImpulse = 0;
+    private int       _yJumpImpulse = 0;
 
     /**
      * Indicate that the hero can jump while in the air
      */
-    private boolean _allowMultiJump;
+    private boolean   _allowMultiJump;
 
     /**
      * Does the hero jump when we touch it?
      */
-    private boolean _isTouchJump  = false;
+    private boolean   _isTouchJump  = false;
 
     /**
      * Animation support: cells involved in animation for jumping
      */
-    private Animation   _jumpAnimation;
+    private Animation _jumpAnimation;
 
     /**
      * Sound to play when a jump occurs
      */
-    private Sound   _jumpSound;
+    private Sound     _jumpSound;
 
     /**
      * Make the hero jump, unless it is in the air
@@ -389,11 +388,11 @@ public class Hero extends PhysicsSprite
     {
         // TODO:
         /*
-        if (_weldJoint != null) {
-            Level._physics.destroyJoint(_weldJoint);
-            _weldJoint = null;
-        }
-        */
+         * if (_weldJoint != null) {
+         * Level._physics.destroyJoint(_weldJoint);
+         * _weldJoint = null;
+         * }
+         */
         if (_inAir)
             return;
         Vector2 v = _physBody.getLinearVelocity();
@@ -416,7 +415,8 @@ public class Hero extends PhysicsSprite
     {
         if (_inAir || _allowMultiJump) {
             _inAir = false;
-            // note: we don't need to worry about if the hero has a default animation... if it's null, everything will still be OK
+            // note: we don't need to worry about if the hero has a default animation... if it's null, everything will
+            // still be OK
             setCurrentAnimation(_defaultAnimation);
         }
     }
@@ -446,7 +446,7 @@ public class Hero extends PhysicsSprite
     /**
      * Indicate that touching this hero should make it jump
      */
-    
+
     public void setTouchToJump()
     {
         _isTouchJump = true;
@@ -471,7 +471,7 @@ public class Hero extends PhysicsSprite
             super.handleTouchDown(x, y);
         }
     }
-    
+
     /**
      * Register an animation sequence, so that this hero can have a custom animation while jumping
      * 
@@ -500,7 +500,6 @@ public class Hero extends PhysicsSprite
      * THROW SUPPORT
      */
 
-
     /**
      * Animation support: cells involved in animation for throwing
      */
@@ -509,12 +508,12 @@ public class Hero extends PhysicsSprite
     /**
      * Animation support: seconds that constitute a throw action
      */
-    private float   _throwAnimateTotalLength;
+    private float     _throwAnimateTotalLength;
 
     /**
      * Animation support: how long until we stop showing the throw animation
      */
-    private float   _throwAnimationTimeRemaining;
+    private float     _throwAnimationTimeRemaining;
 
     /**
      * Internal method to make the hero's throw animation play while it is throwing a projectile
@@ -553,12 +552,12 @@ public class Hero extends PhysicsSprite
     /**
      * Is the hero currently in crawl mode?
      */
-    private boolean _crawling = false;
+    private boolean   _crawling = false;
 
     /**
      * Animation support: cells involved in animation for _crawling
      */
-    private Animation   _crawlAnimation;
+    private Animation _crawlAnimation;
 
     /**
      * Put the hero in crawl mode
@@ -601,17 +600,17 @@ public class Hero extends PhysicsSprite
     /**
      * Time when the hero's invincibility runs out
      */
-    private float   _invincibleRemaining = 0;
+    private float     _invincibleRemaining = 0;
 
     /**
      * Track whether there is a playing invincibility animation right now
      */
-    private boolean _glowing         = false;
+    private boolean   _glowing             = false;
 
     /**
      * Animation support: cells involved in animation for invincibility
      */
-    private Animation   _invincibleAnimation;
+    private Animation _invincibleAnimation;
 
     /**
      * Register an animation sequence, so that this hero can have a custom animation while invincible
@@ -660,7 +659,8 @@ public class Hero extends PhysicsSprite
     private Animation _goodieCountAnimation;
 
     /**
-     * Indicate that this hero should change its animation cell depending on how many (type-1) goodies have been collected
+     * Indicate that this hero should change its animation cell depending on how many (type-1) goodies have been
+     * collected
      * 
      * @param counts
      *            An array of the different goodie counts that cause changes in appearance
@@ -677,13 +677,9 @@ public class Hero extends PhysicsSprite
      * ADVANCED POSITIONING FUNCTIONALITY
      */
 
-
-
     /*
      * COLLISION SUPPORT
      */
-
-
 
     /*
      * INTERNAL FUNCTIONALITY
@@ -700,63 +696,63 @@ public class Hero extends PhysicsSprite
      *            Y coordinate of the touch
      */
     /*
-    @Override
-    protected boolean onSpriteAreaTouched(TouchEvent e, float x, float y)
-    {
-        // on a down press of a live-edit object, just run the editor and return
-        if (e.isActionDown() && isLiveEdit) {
-            ALE.launchLiveEditor(this);
-            return true;
-        }
-
-        // if this isn't a down press, then don't do anything...
-        if (!e.isActionDown())
-            return false;
-        // jump?
-        // if (_isTouchJump) {
-        //    jump();
-        //    return true;
-        //}
-        // start moving?
-        if (_isTouchAndGo) {
-            _hover = false;
-            makeMoveable(); // in case hero is hovering
-            addVelocity(_xVelocityTouchGo, _yVelocityTouchGo);
-            // turn off _isTouchAndGo, so we can't double-touch
-            _isTouchAndGo = false;
-            return true;
-        }
-        // throw a projectile?
-        if (_isTouchThrow) {
-            Projectile.throwFixed(_sprite.getX(), _sprite.getY());
-            return true;
-        }
-        // forward to the PhysicsSprite handler
-        return super.onSpriteAreaTouched(e, x, y);
-    }
-
-    /**
+     * @Override
+     * protected boolean onSpriteAreaTouched(TouchEvent e, float x, float y)
+     * {
+     * // on a down press of a live-edit object, just run the editor and return
+     * if (e.isActionDown() && isLiveEdit) {
+     * ALE.launchLiveEditor(this);
+     * return true;
+     * }
+     * 
+     * // if this isn't a down press, then don't do anything...
+     * if (!e.isActionDown())
+     * return false;
+     * // jump?
+     * // if (_isTouchJump) {
+     * // jump();
+     * // return true;
+     * //}
+     * // start moving?
+     * if (_isTouchAndGo) {
+     * _hover = false;
+     * makeMoveable(); // in case hero is hovering
+     * addVelocity(_xVelocityTouchGo, _yVelocityTouchGo);
+     * // turn off _isTouchAndGo, so we can't double-touch
+     * _isTouchAndGo = false;
+     * return true;
+     * }
+     * // throw a projectile?
+     * if (_isTouchThrow) {
+     * Projectile.throwFixed(_sprite.getX(), _sprite.getY());
+     * return true;
+     * }
+     * // forward to the PhysicsSprite handler
+     * return super.onSpriteAreaTouched(e, x, y);
+     * }
+     * 
+     * /**
      * This override ensures that the hero doesn't have 'jitter' when it moves around. It also stops invincibility when
      * the timer expires
      */
     /*
-    protected void onSpriteManagedUpdate()
-    {
-        ALE._self._camera.onUpdate(0.1f);
-        float now = ALE._self.getEngine().getSecondsElapsedTotal();
-        // handle invincibility animation
-        if (_glowing && (_invincibleUntil < now)) {
-            if (_defaultAnimateCells != null)
-                _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-            else
-                _sprite.stopAnimation(0);
-            _glowing = false;
-        }
-
-
-        super.onSpriteManagedUpdate();
-    }
-    */
+     * protected void onSpriteManagedUpdate()
+     * {
+     * ALE._self._camera.onUpdate(0.1f);
+     * float now = ALE._self.getEngine().getSecondsElapsedTotal();
+     * // handle invincibility animation
+     * if (_glowing && (_invincibleUntil < now)) {
+     * if (_defaultAnimateCells != null)
+     * _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
+     * else
+     * _sprite.stopAnimation(0);
+     * _glowing = false;
+     * }
+     * 
+     * 
+     * super.onSpriteManagedUpdate();
+     * }
+     */
 
     @Override
     public void render(SpriteBatch _spriteRender, float delta)
@@ -783,7 +779,7 @@ public class Hero extends PhysicsSprite
                 }
             }
         }
-        
+
         super.render(_spriteRender, delta);
     }
 }

@@ -37,41 +37,41 @@ public class Projectile extends PhysicsSprite
     /**
      * The velocity of a projectile when it is thrown
      */
-    private static final Vector2 _velocity   = new Vector2();
+    private static final Vector2 _velocity  = new Vector2();
 
     /**
      * When throwing, we start from the top left corner of the thrower, and then use this to determine the initial x and
      * y position of the projectile
      */
-    private static final Vector2 _offset     = new Vector2();
+    private static final Vector2 _offset    = new Vector2();
 
     /**
      * We have to be careful in side-scrollers, or else projectiles can continue traveling off-screen forever. This
      * field lets us cap the distance away from the hero that a projectile can travel before we make it disappear.
      */
-    private static float _range;
+    private static float         _range;
 
     /**
      * This is the initial point of the throw
      */
     private static final Vector2 _rangeFrom = new Vector2();
-    
+
     /**
      * The initial position of a projectile.
      */
-    private static final Vector2 _position   = new Vector2();
+    private static final Vector2 _position  = new Vector2();
 
     /**
      * A spare vector for computation
      */
-    private static final Vector2 _tmp        = new Vector2();
+    private static final Vector2 _tmp       = new Vector2();
 
     /**
      * How much _damage does this projectile do?
      */
     static int                   _strength;
 
-    static TextureRegion[] _imageSource;
+    static TextureRegion[]       _imageSource;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
@@ -117,7 +117,7 @@ public class Projectile extends PhysicsSprite
     {
         super(imgName, SpriteId.PROJECTILE, width, height);
         float radius = (width > height) ? width : height;
-        setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius/2);
+        setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
         // TODO: does this get turned back on the right way elsewhere?
         _physBody.setGravityScale(0);
         setCollisionEffect(false);
@@ -263,7 +263,7 @@ public class Projectile extends PhysicsSprite
         _pool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            _pool[i] = new Projectile(-100 - i*width, -100 - i*height, width, height, imgName);
+            _pool[i] = new Projectile(-100 - i * width, -100 - i * height, width, height, imgName);
             _pool[i]._visible = false;
             _pool[i]._physBody.setBullet(true);
             _pool[i]._physBody.setActive(false);
@@ -276,8 +276,8 @@ public class Projectile extends PhysicsSprite
         _velocity.y = velocityY;
         _offset.x = offsetX;
         _offset.y = offsetY;
-        //_negGravity.x = -Level._initXGravity;
-        //_negGravity.y = -Level._initYGravity;
+        // _negGravity.x = -Level._initXGravity;
+        // _negGravity.y = -Level._initYGravity;
         _range = 1000;
         _throwSound = null;
         _projectileDisappearSound = null;
@@ -370,14 +370,12 @@ public class Projectile extends PhysicsSprite
         // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle) other;
-            if (o._isProjectileCollideTrigger 
-                    && (o._projectileTriggerActivation1 <= Score._goodiesCollected1)
+            if (o._isProjectileCollideTrigger && (o._projectileTriggerActivation1 <= Score._goodiesCollected1)
                     && (o._projectileTriggerActivation2 <= Score._goodiesCollected2)
                     && (o._projectileTriggerActivation3 <= Score._goodiesCollected3)
-                    && (o._projectileTriggerActivation4 <= Score._goodiesCollected4)) 
+                    && (o._projectileTriggerActivation4 <= Score._goodiesCollected4))
             {
-                ALE._game.onProjectileCollideTrigger(o._projectileTriggerID,
-                        ALE._game._currLevel, o, this);
+                ALE._game.onProjectileCollideTrigger(o._projectileTriggerID, ALE._game._currLevel, o, this);
                 return;
             }
         }
@@ -441,7 +439,7 @@ public class Projectile extends PhysicsSprite
         b._visible = true;
         // TODO
         // if (_animationCells != null) {
-        //    b._sprite.animate(_animationDurations, _animationCells, true);
+        // b._sprite.animate(_animationDurations, _animationCells, true);
         // }
         if (_throwSound != null)
             _throwSound.play();
@@ -485,12 +483,12 @@ public class Projectile extends PhysicsSprite
 
         // reset its sensor
         b.setCollisionEffect(!_sensorProjectiles);
-        
+
         _nextIndex = (_nextIndex + 1) % _poolSize;
         // put the projectile on the screen and place it in the _physics world
         _position.x = _rangeFrom.x;
         _position.y = _rangeFrom.y;
-        //_position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        // _position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
         b._physBody.setActive(true);
         b._physBody.setTransform(_position, 0);
 
@@ -522,13 +520,13 @@ public class Projectile extends PhysicsSprite
             b._physBody.setTransform(b._physBody.getPosition(), (float) angle);
             // TODO: b._sprite.setRotation(180 / (3.1415926f) * (float) angle);
         }
-        
+
         // make the projectile visible
         b._visible = true;
         // TODO:
-//        if (_animationCells != null) {
-//            b._sprite.animate(_animationDurations, _animationCells, true);
-//        }
+        // if (_animationCells != null) {
+        // b._sprite.animate(_animationDurations, _animationCells, true);
+        // }
         if (_throwSound != null)
             _throwSound.play();
         b._disappearSound = _projectileDisappearSound;
@@ -554,34 +552,34 @@ public class Projectile extends PhysicsSprite
             remove(true);
             _physBody.setActive(false);
             return;
-        }               
+        }
         super.render(sb, delta);
     }
     /*
-    protected void onSpriteManagedUpdate()
-    {
-        // eliminate the projectile quietly if it has traveled too far
-        Hero h = Level._lastHero;
-        if (h != null) {
-            if ((Math.abs(h._sprite.getX() - _sprite.getX()) > _range.x)
-                    || (Math.abs(h._sprite.getY() - _sprite.getY()) > _range.y)) {
-                remove(true);
-                _physBody.setActive(false);
-                super.onSpriteManagedUpdate();
-                return;
-            }
-        }
-        // do we need to negate gravity?
-        if (_gravityEnabled) {
-            super.onSpriteManagedUpdate();
-            return;
-        }
-        // if we are visible, and if there is gravity, apply negative gravity
-        if (_sprite.isVisible()) {
-            if (_negGravity.x != 0 || _negGravity.y != 0)
-                _physBody.applyForce(_negGravity, _physBody.getWorldCenter());
-        }
-        super.onSpriteManagedUpdate();
-    }
-*/
+     * protected void onSpriteManagedUpdate()
+     * {
+     * // eliminate the projectile quietly if it has traveled too far
+     * Hero h = Level._lastHero;
+     * if (h != null) {
+     * if ((Math.abs(h._sprite.getX() - _sprite.getX()) > _range.x)
+     * || (Math.abs(h._sprite.getY() - _sprite.getY()) > _range.y)) {
+     * remove(true);
+     * _physBody.setActive(false);
+     * super.onSpriteManagedUpdate();
+     * return;
+     * }
+     * }
+     * // do we need to negate gravity?
+     * if (_gravityEnabled) {
+     * super.onSpriteManagedUpdate();
+     * return;
+     * }
+     * // if we are visible, and if there is gravity, apply negative gravity
+     * if (_sprite.isVisible()) {
+     * if (_negGravity.x != 0 || _negGravity.y != 0)
+     * _physBody.applyForce(_negGravity, _physBody.getWorldCenter());
+     * }
+     * super.onSpriteManagedUpdate();
+     * }
+     */
 }

@@ -167,9 +167,9 @@ public class Splash implements Screen
      * MUSIC MANAGEMENT
      */
 
-    Music _music;
+    Music   _music;
 
-    boolean      _musicPlaying = false;
+    boolean _musicPlaying = false;
 
     public void playMusic()
     {
@@ -195,8 +195,6 @@ public class Splash implements Screen
         }
     }
 
-    
-    
     @Override
     public void dispose()
     {

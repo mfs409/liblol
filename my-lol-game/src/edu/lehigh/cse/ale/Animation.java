@@ -10,12 +10,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class Animation
 {
-    TextureRegion [] _cells;
-    int [] _frames;
-    long [] _durations;
-    boolean _loop;
-    int _nextCell;
-    
+    TextureRegion[] _cells;
+
+    int[]           _frames;
+
+    long[]          _durations;
+
+    boolean         _loop;
+
+    int             _nextCell;
+
     public Animation(String imgName, int sequenceCount, boolean repeat)
     {
         _cells = Media.getImage(imgName);
@@ -24,7 +28,7 @@ public class Animation
         _loop = repeat;
         _nextCell = 0;
     }
-    
+
     public Animation to(int frame, long duration)
     {
         _frames[_nextCell] = frame;

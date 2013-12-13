@@ -92,7 +92,7 @@ public class Destination extends PhysicsSprite
     {
         float radius = (width > height) ? width : height;
         Destination d = new Destination(radius, radius, imgName);
-        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius/2);
+        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         d._physBody.getFixtureList().get(0).setSensor(true);
         Level._currLevel._sprites.add(d);
         return d;
@@ -158,5 +158,5 @@ public class Destination extends PhysicsSprite
     public void setArrivalSound(String soundName)
     {
         _arrivalSound = Media.getSound(soundName);
-    }    
+    }
 }
