@@ -83,7 +83,7 @@ public class Physics
                 PhysicsSprite gfoA = (PhysicsSprite) a;
                 PhysicsSprite gfoB = (PhysicsSprite) b;
 
-                Gdx.app.log("contact", "presolve");
+                // NB: this is where we need to handle joints for sticky objects
                 
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact

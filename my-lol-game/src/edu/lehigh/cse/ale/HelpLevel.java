@@ -1,8 +1,10 @@
 package edu.lehigh.cse.ale;
 
+import com.badlogic.gdx.Screen;
+
 // STATUS: Not Started
 
-public class HelpLevel implements MyScreen
+public class HelpLevel implements Screen
 {
 
     @Override
@@ -52,27 +54,6 @@ public class HelpLevel implements MyScreen
     {
         // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int newParam)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int x, int y, int pointer)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int x, int y, int pointer, int button)
-    {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     /*

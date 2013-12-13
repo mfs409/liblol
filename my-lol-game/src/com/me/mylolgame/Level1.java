@@ -3,6 +3,7 @@ package com.me.mylolgame;
 //TODO: reference file... delete this
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,9 +17,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-import edu.lehigh.cse.ale.MyScreen;
-
-public class Level1 implements MyScreen {
+public class Level1 implements Screen {
 
 	// set up the rendering...
 	static final float BOX_STEP = 1 / 60f;
@@ -108,20 +107,5 @@ public class Level1 implements MyScreen {
 
 	@Override
 	public void dispose() {
-	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int newParam) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
-		return false;
 	}
 }

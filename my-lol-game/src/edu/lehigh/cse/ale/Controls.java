@@ -1004,12 +1004,16 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
+                Gdx.app.log("crawl", "drawl down");
+
                 h.crawlOn();
             }
 
             @Override
             void onUpPress()
             {
+                Gdx.app.log("crawl", "crawl up");
+
                 h.crawlOff();
             }
 
@@ -1041,12 +1045,14 @@ public class Controls
             @Override
             void onDownPress(Vector3 vv)
             {
+                Gdx.app.log("jump", "jump down");
                 h.jump();
             }
 
             @Override
             void onUpPress()
             {
+                Gdx.app.log("jump", "jump up");
             }
 
         };

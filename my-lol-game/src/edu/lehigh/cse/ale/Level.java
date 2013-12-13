@@ -17,6 +17,7 @@ package edu.lehigh.cse.ale;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -36,7 +37,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-public class Level implements MyScreen
+public class Level implements Screen
 {
     /**
      * Custom camera that can do parallax... taken directly from GDX tests
@@ -255,6 +256,7 @@ public class Level implements MyScreen
     @Override
     public void render(float delta)
     {
+        manageTouches();
         playMusic();
 
         // are we supposed to show a pre-scene?
@@ -411,10 +413,39 @@ public class Level implements MyScreen
         }
     };
 
-    
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int newParam)
+    // Here's a quick and dirty way to manage multitouch via polling
+    boolean [] lastTouches = new boolean[4];    
+    void manageTouches()
     {
+        // poll for touches
+        // assume no more than 4 simultaneous touches
+        boolean[] touchStates = new boolean[4];
+        for (int i = 0; i < 4; ++i) {
+            touchStates[i] = Gdx.input.isTouched(i);
+            float x = Gdx.input.getX(i);
+            float y = Gdx.input.getY(i);
+        if (touchStates[i] && lastTouches[i]) {
+                //Gdx.app.log("touch"+i, "is a hold");
+                touchDragged((int)x, (int)y, i);
+        }
+            else if (touchStates[i] && !lastTouches[i]) {
+                //Gdx.app.log("touch"+i, "is a down");
+                touchDown((int)x, (int)y, i, 0);
+            }
+            else if (!touchStates[i] && lastTouches[i]) {
+                //Gdx.app.log("touch"+i, "is an up");
+                touchUp((int)x, (int)y, i, 0);
+            }
+            lastTouches[i] = touchStates[i];
+        }
+
+        
+    }
+
+    
+    public boolean touchDown(int x, int y, int pointer, int button)
+    {
+        Gdx.app.log("processing touch", "pointer = "+pointer);
         // should we forward to PreScene or PostScene?
         if (!PreScene.onTouch(x, y))
             return false;
@@ -424,7 +455,7 @@ public class Level implements MyScreen
         // check for HUD touch:
         for (HudPress pe : _controls) {
             if (!pe._done) {
-                _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                _hudCam.unproject(_touchVec.set(x, y, 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
                     // now convert the touch to world coordinates and pass to the control (useful for vector throw)
                     _touchVec.set(x,y,0);
@@ -478,7 +509,7 @@ public class Level implements MyScreen
     }
 
     // TODO: we should have a collection of handlers instead of this nastiness...
-    @Override
+
     public boolean touchDragged(int x, int y, int pointer)
     {
         // deal with scribble?
@@ -512,7 +543,7 @@ public class Level implements MyScreen
         return true;
     }
 
-    @Override
+    
     public boolean touchUp(int x, int y, int pointer, int button)
     {
         // check for HUD touch:
@@ -520,7 +551,7 @@ public class Level implements MyScreen
         // TODO: is this order correct?  Should HUD always come first?
         for (HudPress pe : _controls) {
             if (!pe._done) {
-                _hudCam.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                _hudCam.unproject(_touchVec.set(x, y, 0));
                 if (pe._range.contains(_touchVec.x, _touchVec.y)) {
                     pe.onUpPress();
                     return false;

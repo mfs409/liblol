@@ -195,7 +195,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
      * SCREEN MANAGEMENT/FORWARDING
      */
 
-    private MyScreen _screen;
+    private Screen _screen;
 
     @Override
     public void dispose()
@@ -247,7 +247,7 @@ public abstract class ALE implements ApplicationListener, InputProcessor
      * @param screen
      *            may be {@code null}
      */
-    public void setScreen(MyScreen screen)
+    public void setScreen(Screen screen)
     {
         if (_screen != null)
             _screen.hide();
@@ -351,24 +351,24 @@ public abstract class ALE implements ApplicationListener, InputProcessor
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button)
     {
-        if (_screen != null)
-            return _screen.touchDown(screenX, screenY, pointer, button);
+//        if (_screen != null)
+//            return _screen.touchDown(screenX, screenY, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button)
     {
-        if (_screen != null)
-            return _screen.touchUp(screenX, screenY, pointer, button);
+//        if (_screen != null)
+//            return _screen.touchUp(screenX, screenY, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer)
     {
-        if (_screen != null)
-            return _screen.touchDragged(screenX, screenY, pointer);
+//        if (_screen != null)
+//            return _screen.touchDragged(screenX, screenY, pointer);
         return false;
     }
 

@@ -5,6 +5,7 @@ package com.me.mylolgame;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -31,9 +32,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import edu.lehigh.cse.ale.MyScreen;
-
-public class Level2 implements MyScreen {
+public class Level2 implements Screen {
 
 	public void pause() {
 	}
@@ -202,7 +201,6 @@ public class Level2 implements MyScreen {
 		}
 	};
 
-	@Override
 	public boolean touchDown(int x, int y, int pointer, int newParam) {
 		// translate the mouse coordinates to world coordinates
 		testPoint.set(x, y, 0);
@@ -239,7 +237,6 @@ public class Level2 implements MyScreen {
 	// another temporary vector
 	Vector2 target = new Vector2();
 
-	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		// if a mouse joint exists we simply update the target of the joint
 		// based on the new mouse coordinates
@@ -250,7 +247,6 @@ public class Level2 implements MyScreen {
 		return false;
 	}
 
-	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		// if a mouse joint exists we simply destroy it
 		if (mouseJoint != null) {

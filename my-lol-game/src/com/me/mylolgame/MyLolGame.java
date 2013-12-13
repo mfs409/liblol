@@ -8,8 +8,6 @@ package com.me.mylolgame;
 
 // TODO: test double-touch to delete poke entity
 
-// TODO: test mult-touch on level 54... may have to do with not using inputprocessor?  Check MultiTouch demo?
-
 // TODO: what do we do about liveedit (level 66)
 
 // TODO: on level 59, buttons should work as long as they're depressed
@@ -2209,7 +2207,7 @@ public class MyLolGame extends ALE
             h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
 
             // enable hero jumping and crawling
-            h.setJumpImpulses(0, -10);
+            h.setJumpImpulses(0, 15);
             Controls.addJumpButton(0, 0, 240, 320, "", h);
             Controls.addCrawlButton(241, 0, 480, 320, "", h);
 

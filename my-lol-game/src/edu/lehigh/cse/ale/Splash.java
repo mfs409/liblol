@@ -5,6 +5,7 @@ package edu.lehigh.cse.ale;
 // TODO: clean up code and comments
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
@@ -16,10 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-import edu.lehigh.cse.ale.ALE;
-import edu.lehigh.cse.ale.Media;
-
-public class Splash implements MyScreen
+public class Splash implements Screen
 {
     /**
      * Since we're going to create other screens via this screen, we need a
@@ -113,7 +111,6 @@ public class Splash implements MyScreen
     public void render(float delta)
     {
         // for now, stick everything in here...
-
         playMusic();
 
         // was there a touch?
@@ -230,23 +227,5 @@ public class Splash implements MyScreen
     @Override
     public void resume()
     {
-    }
-
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int newParam)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int x, int y, int pointer)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int x, int y, int pointer, int button)
-    {
-        return false;
     }
 }
