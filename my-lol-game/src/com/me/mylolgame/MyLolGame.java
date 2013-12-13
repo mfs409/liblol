@@ -1,5 +1,7 @@
 package com.me.mylolgame;
 
+// TODO: demonstrate that we can change width, height, and sprite of a Hero on the fly
+
 // TODO: update all comments and clean up code formatting
 
 // TODO: there's at least one place where we are using Animation in a bizarre way.

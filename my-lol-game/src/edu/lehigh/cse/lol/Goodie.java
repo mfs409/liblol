@@ -31,10 +31,10 @@ public class Goodie extends PhysicsSprite
     protected Goodie(float width, float height, String imgName)
     {
         super(imgName, SpriteId.GOODIE, width, height);
-        _score1 = 1;
-        _score2 = 0;
-        _score3 = 0;
-        _score4 = 0;
+        _score[0] = 1;
+        _score[1] = 0;
+        _score[2] = 0;
+        _score[3] = 0;
     }
 
     /**
@@ -91,26 +91,8 @@ public class Goodie extends PhysicsSprite
      * 
      * This is different than strength because this actually bumps the score, which in turn lets us have
      * "super goodies" that turn on trigger obstacles.
-     * 
-     * Note: the right way to do this is to have an array of scores, but we're going to be sloppy for now and just have
-     * four separate scores
      */
-    int _score1;
-
-    /**
-     * The second score
-     */
-    int _score2;
-
-    /**
-     * The third score
-     */
-    int _score3;
-
-    /**
-     * The fourth score
-     */
-    int _score4;
+    int [] _score = new int[4];
 
     /**
      * Set the score of this goodie. This indicates how many points the goodie is worth... can be positive or negative
@@ -121,10 +103,10 @@ public class Goodie extends PhysicsSprite
     public void setScore(int v1, int v2, int v3, int v4)
     {
         // save this value
-        _score1 = v1;
-        _score2 = v2;
-        _score3 = v3;
-        _score4 = v4;
+        _score[0] = v1;
+        _score[1] = v2;
+        _score[2] = v3;
+        _score[3] = v4;
     }
 
     /*

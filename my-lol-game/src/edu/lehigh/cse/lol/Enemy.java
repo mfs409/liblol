@@ -241,13 +241,6 @@ public class Enemy extends PhysicsSprite
         // collision with projectiles
         if (other._psType == SpriteId.PROJECTILE)
             onCollideWithProjectile((Projectile) other);
-
-        // one last thing: if the enemy was "norotate", then patch up any rotation that happened to its _physics body by
-        // mistake:
-
-        // TODO: I don't think we need this anymore...
-        // if (!_canRotate)
-        // _physBody.setTransform(_physBody.getPosition(), 0);
     }
 
     /**
@@ -259,11 +252,10 @@ public class Enemy extends PhysicsSprite
     private void onCollideWithObstacle(final Obstacle o)
     {
         // is there a callback when this obstacle collides with enemies?
-        if (o._isEnemyCollideTrigger && (o._enemyTriggerActivation1 <= Score._goodiesCollected1)
-                && (o._enemyTriggerActivation2 <= Score._goodiesCollected2)
-                && (o._enemyTriggerActivation3 <= Score._goodiesCollected3)
-                && (o._enemyTriggerActivation4 <= Score._goodiesCollected4))
-        {
+        boolean match = true;
+        for (int i = 0; i < 4; ++i)
+            match &= o._enemyTriggerActivation[i] <= Score._goodiesCollected[i];
+        if (o._isEnemyCollideTrigger && match) {
             // run the callback after a delay, or immediately?
             if (o._enemyCollideTriggerDelay > 0) {
                 // TODO
@@ -326,60 +318,6 @@ public class Enemy extends PhysicsSprite
      */
 
     /**
-     * Game code should not call this directly. Its purpose is to support internal advanced features of the Enemy class
-     */
-    protected void onSpriteManagedUpdate()
-    {
-        // TODO
-        /*
-         * // early exit if not a chase enemy...
-         * if (_chaseMultiplier == 0) {
-         * super.onSpriteManagedUpdate();
-         * return;
-         * }
-         * 
-         * // early exit if enemy not visible
-         * if (!_sprite.isVisible()) {
-         * super.onSpriteManagedUpdate();
-         * return;
-         * }
-         * 
-         * // get distance to hero, but exit if the hero has been removed from the
-         * // system
-         * Hero toChase = Level._lastHero;
-         * if (toChase == null) {
-         * super.onSpriteManagedUpdate();
-         * return;
-         * }
-         * 
-         * // Don't run this too frequently...
-         * float now = ALE._self.getEngine().getSecondsElapsedTotal();
-         * if (now < _lastOSMU + 0.25) {
-         * super.onSpriteManagedUpdate();
-         * return;
-         * }
-         * _lastOSMU = now;
-         * 
-         * // compute vector between hero and enemy
-         * _chaseVector.x = toChase._physBody.getPosition().x - _physBody.getPosition().x;
-         * _chaseVector.y = toChase._physBody.getPosition().y - _physBody.getPosition().y;
-         * 
-         * // normalize it and then multiply by speed
-         * float len = FloatMath.sqrt(_chaseVector.x * _chaseVector.x + _chaseVector.y * _chaseVector.y);
-         * _chaseVector.x *= (_chaseMultiplier / len);
-         * 
-         * // disable y position chasing for sidescrolling games.
-         * _chaseVector.y *= (_chaseMultiplier / len);
-         * 
-         * // set Enemy velocity accordingly
-         * updateVelocity(_chaseVector);
-         * 
-         * // dispatch to superclass
-         * super.onSpriteManagedUpdate();
-         */
-    }
-
-    /**
      * Whenever an Enemy is touched, this code runs automatically.
      * 
      * @param e
@@ -398,16 +336,6 @@ public class Enemy extends PhysicsSprite
             defeat(true);
             return;
         }
-
         super.handleTouchDown(x, y);
     }
-    // TODO:
-    /*
-     * @Override
-     * protected boolean onSpriteAreaTouched(TouchEvent e, float x, float y)
-     * {
-     * // if the enemy is supposed to disappear when we touch it, then hide it right here
-     * return super.onSpriteAreaTouched(e, x, y);
-     * }
-     */
 }

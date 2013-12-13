@@ -16,36 +16,18 @@ public class Destination extends PhysicsSprite
     /**
      * number of _heroes who can fit at /this/ destination
      */
-    int _capacity;
+    int   _capacity;
 
     /**
      * number of _heroes already in /this/ destination
      */
-    int _holding;
+    int   _holding;
 
     /**
      * number of type 1 goodies that must be collected before this destination
      * accepts any heroes
      */
-    int _activationScore1;
-
-    /**
-     * number of type 2 goodies that must be collected before this destination
-     * accepts any heroes
-     */
-    int _activationScore2;
-
-    /**
-     * number of type 3 goodies that must be collected before this destination
-     * accepts any heroes
-     */
-    int _activationScore3;
-
-    /**
-     * number of type 4 goodies that must be collected before this destination
-     * accepts any heroes
-     */
-    int _activationScore4;
+    int[] _activationScore = new int[4];
 
     /**
      * Create a destination
@@ -73,10 +55,8 @@ public class Destination extends PhysicsSprite
         super(imgName, SpriteId.DESTINATION, width, height);
         _capacity = 1;
         _holding = 0;
-        _activationScore1 = 0;
-        _activationScore2 = 0;
-        _activationScore3 = 0;
-        _activationScore4 = 0;
+        for (int i = 0; i < 4; ++i)
+            _activationScore[i] = 0;
     }
 
     public static Destination makeAsBox(float x, float y, float width, float height, String imgName)
@@ -107,10 +87,10 @@ public class Destination extends PhysicsSprite
      */
     public void setActivationScore(int score1, int score2, int score3, int score4)
     {
-        _activationScore1 = score1;
-        _activationScore2 = score2;
-        _activationScore3 = score3;
-        _activationScore4 = score4;
+        _activationScore[0] = score1;
+        _activationScore[1] = score2;
+        _activationScore[2] = score3;
+        _activationScore[3] = score4;
     }
 
     /**

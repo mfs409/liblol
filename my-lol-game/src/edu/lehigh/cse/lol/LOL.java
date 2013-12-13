@@ -1,11 +1,11 @@
 package edu.lehigh.cse.lol;
 
-// TODO: rename from ALE to something else... LOL?
-
 // TODO: comment the event methods
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
+
+// TODO: help scenes are not yet implemented
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
@@ -93,8 +93,6 @@ public abstract class LOL extends Game implements ApplicationListener
 
     /*
      * NAVIGATION BETWEEN SCENES
-     * 
-     * TODO: HELP NOT YET IMPLEMENTED
      */
 
     /**

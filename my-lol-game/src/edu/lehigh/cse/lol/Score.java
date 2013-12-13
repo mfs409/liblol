@@ -112,25 +112,7 @@ public class Score
      * 
      * TODO: switch to a vector of goodie types
      */
-    static int _goodiesCollected1;
-
-    /**
-     * Count of the goodies (with score 2) that have been collected in this
-     * level
-     */
-    static int _goodiesCollected2;
-
-    /**
-     * Count of the goodies (with score 3) that have been collected in this
-     * level
-     */
-    static int _goodiesCollected3;
-
-    /**
-     * Count of the goodies (with score 4) that have been collected in this
-     * level
-     */
-    static int _goodiesCollected4;
+    static int [] _goodiesCollected = new int[4];
 
     /**
      * Number of _heroes who have arrived at any destination yet
@@ -156,10 +138,8 @@ public class Score
         _heroesCreated = 0;
         _heroesDefeated = 0;
         // reset goodie statistics
-        _goodiesCollected1 = 0;
-        _goodiesCollected2 = 0;
-        _goodiesCollected3 = 0;
-        _goodiesCollected4 = 0;
+        for (int i = 0; i < 4; ++i)
+            _goodiesCollected[i] = 0;
 
         // reset destination statistics
         _destinationArrivals = 0;
@@ -194,20 +174,17 @@ public class Score
      */
     static void onGoodieCollected(Goodie g)
     {
-
         // Update any/all goodie counts
-        _goodiesCollected1 += g._score1;
-        _goodiesCollected2 += g._score2;
-        _goodiesCollected3 += g._score3;
-        _goodiesCollected4 += g._score4;
+        for (int i = 0; i < 4; ++i)
+            _goodiesCollected[i] += g._score[i];
 
         // possibly win the level, but only if we win on goodie count and all
         // four counts are high enoug
         if (Level._victoryType != Level.VictoryType.GOODIECOUNT)
             return;
-        if ((Level._victoryGoodie1Count <= _goodiesCollected1) && (Level._victoryGoodie2Count <= _goodiesCollected2)
-                && (Level._victoryGoodie3Count <= _goodiesCollected3)
-                && (Level._victoryGoodie4Count <= _goodiesCollected4))
+        if ((Level._victoryGoodie1Count <= _goodiesCollected[0]) && (Level._victoryGoodie2Count <= _goodiesCollected[1])
+                && (Level._victoryGoodie3Count <= _goodiesCollected[2])
+                && (Level._victoryGoodie4Count <= _goodiesCollected[3]))
         {
             winLevel();
         }
@@ -255,20 +232,6 @@ public class Score
      */
 
     /**
-     * Manually set the number of goodies collected.
-     * 
-     * @param value
-     *            The number to increment the number of goodies collected by.
-     * 
-     * @deprecated Use setGoodiesCollected[1-4]() instead
-     */
-    @Deprecated
-    public static void setGoodiesCollected(int value)
-    {
-        _goodiesCollected1 = value;
-    }
-
-    /**
      * Manually set the number of goodies of type 1 that have been collected.
      * 
      * @param value
@@ -276,7 +239,7 @@ public class Score
      */
     public static void setGoodiesCollected1(int value)
     {
-        _goodiesCollected1 = value;
+        _goodiesCollected[0] = value;
     }
 
     /**
@@ -287,7 +250,7 @@ public class Score
      */
     public static void setGoodiesCollected2(int value)
     {
-        _goodiesCollected2 = value;
+        _goodiesCollected[1] = value;
     }
 
     /**
@@ -298,7 +261,7 @@ public class Score
      */
     public static void setGoodiesCollected3(int value)
     {
-        _goodiesCollected3 = value;
+        _goodiesCollected[2] = value;
     }
 
     /**
@@ -309,18 +272,7 @@ public class Score
      */
     public static void setGoodiesCollected4(int value)
     {
-        _goodiesCollected4 = value;
-    }
-
-    /**
-     * Manually increment the number of goodies collected.
-     * 
-     * @deprecated Use incrementGoodiesCollected[1-4]() instead
-     */
-    @Deprecated
-    public static void incrementGoodiesCollected()
-    {
-        _goodiesCollected1++;
+        _goodiesCollected[3] = value;
     }
 
     /**
@@ -329,7 +281,7 @@ public class Score
      */
     public static void incrementGoodiesCollected1()
     {
-        _goodiesCollected1++;
+        _goodiesCollected[0]++;
     }
 
     /**
@@ -338,7 +290,7 @@ public class Score
      */
     public static void incrementGoodiesCollected2()
     {
-        _goodiesCollected2++;
+        _goodiesCollected[1]++;
     }
 
     /**
@@ -347,7 +299,7 @@ public class Score
      */
     public static void incrementGoodiesCollected3()
     {
-        _goodiesCollected3++;
+        _goodiesCollected[2]++;
     }
 
     /**
@@ -356,20 +308,7 @@ public class Score
      */
     public static void incrementGoodiesCollected4()
     {
-        _goodiesCollected4++;
-    }
-
-    /**
-     * Getter for number of goodies collected.
-     * 
-     * @deprecated Use getGoodiesCollected[1-4]() instead.
-     * 
-     * @return The number of goodies collected.
-     */
-    @Deprecated
-    public static int getGoodiesCollected()
-    {
-        return _goodiesCollected1;
+        _goodiesCollected[3]++;
     }
 
     /**
@@ -379,7 +318,7 @@ public class Score
      */
     public static int getGoodiesCollected1()
     {
-        return _goodiesCollected1;
+        return _goodiesCollected[0];
     }
 
     /**
@@ -389,7 +328,7 @@ public class Score
      */
     public static int getGoodiesCollected2()
     {
-        return _goodiesCollected2;
+        return _goodiesCollected[1];
     }
 
     /**
@@ -399,7 +338,7 @@ public class Score
      */
     public static int getGoodiesCollected3()
     {
-        return _goodiesCollected3;
+        return _goodiesCollected[2];
     }
 
     /**
@@ -409,6 +348,6 @@ public class Score
      */
     public static int getGoodiesCollected4()
     {
-        return _goodiesCollected4;
+        return _goodiesCollected[3];
     }
 }

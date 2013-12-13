@@ -338,7 +338,7 @@ public class Controls
                 bf.setColor(_red, _green, _blue, 1);
 
                 // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected1 + suffix;
+                String newtext = "" + Score._goodiesCollected[0] + suffix;
                 bf.draw(sb, newtext, x, y);
             }
         };
@@ -381,7 +381,7 @@ public class Controls
                 bf.setColor(_red, _green, _blue, 1);
 
                 // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected2 + suffix;
+                String newtext = "" + Score._goodiesCollected[1] + suffix;
                 bf.draw(sb, newtext, x, y);
             }
         };
@@ -424,7 +424,7 @@ public class Controls
                 bf.setColor(_red, _green, _blue, 1);
 
                 // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected3 + suffix;
+                String newtext = "" + Score._goodiesCollected[2] + suffix;
                 bf.draw(sb, newtext, x, y);
             }
         };
@@ -468,7 +468,7 @@ public class Controls
                 bf.setColor(_red, _green, _blue, 1);
 
                 // get elapsed time for this level
-                String newtext = "" + Score._goodiesCollected4 + suffix;
+                String newtext = "" + Score._goodiesCollected[3] + suffix;
                 bf.draw(sb, newtext, x, y);
             }
         };

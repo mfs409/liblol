@@ -370,11 +370,10 @@ public class Projectile extends PhysicsSprite
         // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle) other;
-            if (o._isProjectileCollideTrigger && (o._projectileTriggerActivation1 <= Score._goodiesCollected1)
-                    && (o._projectileTriggerActivation2 <= Score._goodiesCollected2)
-                    && (o._projectileTriggerActivation3 <= Score._goodiesCollected3)
-                    && (o._projectileTriggerActivation4 <= Score._goodiesCollected4))
-            {
+            boolean match = true;
+            for (int i = 0; i < 4; ++i)
+                match &= o._projectileTriggerActivation[i] <= Score._goodiesCollected[i];
+            if (o._isProjectileCollideTrigger && match) {
                 LOL._game.onProjectileCollideTrigger(o._projectileTriggerID, LOL._game._currLevel, o, this);
                 return;
             }

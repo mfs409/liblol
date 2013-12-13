@@ -80,10 +80,10 @@ public class Hero extends PhysicsSprite
     {
         // only do something if the hero has enough goodies of each type and
         // there's room in the destination
-        if ((Score._goodiesCollected1 >= d._activationScore1) && (Score._goodiesCollected2 >= d._activationScore2)
-                && (Score._goodiesCollected3 >= d._activationScore3)
-                && (Score._goodiesCollected4 >= d._activationScore4) && (d._holding < d._capacity) && _visible)
-        {
+        boolean match = true;
+        for (int i = 0; i < 4; ++i)
+            match &= Score._goodiesCollected[i] >= d._activationScore[i];
+        if (match && (d._holding < d._capacity) && _visible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d._holding++;
@@ -150,11 +150,10 @@ public class Hero extends PhysicsSprite
         // Handle callback if this obstacle is a trigger
         if (o._isHeroCollideTrigger) {
             // check if trigger is activated, if so, disable it and run code
-            if ((o._heroTriggerActivation1 <= Score._goodiesCollected1)
-                    && (o._heroTriggerActivation2 <= Score._goodiesCollected2)
-                    && (o._heroTriggerActivation3 <= Score._goodiesCollected3)
-                    && (o._heroTriggerActivation4 <= Score._goodiesCollected4))
-            {
+            boolean match = true;
+            for (int i = 0; i < 4; ++i)
+                match &= o._heroTriggerActivation[i] <= Score._goodiesCollected[i];
+            if (match) {
                 if (contact.isEnabled())
                     LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
                 return;
@@ -271,7 +270,7 @@ public class Hero extends PhysicsSprite
         //
         // TODO: if we jump, we lose this info... make it more orthogonal?
         if (_goodieCountAnimation != null) {
-            int goodies = Score._goodiesCollected1;
+            int goodies = Score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {
                 if (_goodieCountAnimation._durations[i] == goodies) {
                     _tr = _goodieCountAnimation._cells[_goodieCountAnimation._frames[i]];
@@ -683,75 +682,6 @@ public class Hero extends PhysicsSprite
 
     /*
      * INTERNAL FUNCTIONALITY
-     */
-
-    /**
-     * Code to run when the hero is touched
-     * 
-     * @param e
-     *            The type of touch
-     * @param x
-     *            X coordinate of the touch
-     * @param y
-     *            Y coordinate of the touch
-     */
-    /*
-     * @Override
-     * protected boolean onSpriteAreaTouched(TouchEvent e, float x, float y)
-     * {
-     * // on a down press of a live-edit object, just run the editor and return
-     * if (e.isActionDown() && isLiveEdit) {
-     * ALE.launchLiveEditor(this);
-     * return true;
-     * }
-     * 
-     * // if this isn't a down press, then don't do anything...
-     * if (!e.isActionDown())
-     * return false;
-     * // jump?
-     * // if (_isTouchJump) {
-     * // jump();
-     * // return true;
-     * //}
-     * // start moving?
-     * if (_isTouchAndGo) {
-     * _hover = false;
-     * makeMoveable(); // in case hero is hovering
-     * addVelocity(_xVelocityTouchGo, _yVelocityTouchGo);
-     * // turn off _isTouchAndGo, so we can't double-touch
-     * _isTouchAndGo = false;
-     * return true;
-     * }
-     * // throw a projectile?
-     * if (_isTouchThrow) {
-     * Projectile.throwFixed(_sprite.getX(), _sprite.getY());
-     * return true;
-     * }
-     * // forward to the PhysicsSprite handler
-     * return super.onSpriteAreaTouched(e, x, y);
-     * }
-     * 
-     * /**
-     * This override ensures that the hero doesn't have 'jitter' when it moves around. It also stops invincibility when
-     * the timer expires
-     */
-    /*
-     * protected void onSpriteManagedUpdate()
-     * {
-     * ALE._self._camera.onUpdate(0.1f);
-     * float now = ALE._self.getEngine().getSecondsElapsedTotal();
-     * // handle invincibility animation
-     * if (_glowing && (_invincibleUntil < now)) {
-     * if (_defaultAnimateCells != null)
-     * _sprite.animate(_defaultAnimateDurations, _defaultAnimateCells, true);
-     * else
-     * _sprite.stopAnimation(0);
-     * _glowing = false;
-     * }
-     * 
-     * 
-     * super.onSpriteManagedUpdate();
-     * }
      */
 
     @Override

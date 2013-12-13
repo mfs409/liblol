@@ -252,22 +252,7 @@ public class Obstacle extends PhysicsSprite
     /**
      * Hero triggers can require certain Goodie counts in order to run
      */
-    int     _heroTriggerActivation1       = 0;
-
-    /**
-     * Hero triggers can require certain Goodie counts in order to run
-     */
-    int     _heroTriggerActivation2       = 0;
-
-    /**
-     * Hero triggers can require certain Goodie counts in order to run
-     */
-    int     _heroTriggerActivation3       = 0;
-
-    /**
-     * Hero triggers can require certain Goodie counts in order to run
-     */
-    int     _heroTriggerActivation4       = 0;
+    int     []_heroTriggerActivation = new int[4];
 
     /**
      * An ID for each hero trigger object, in case it's useful
@@ -283,22 +268,7 @@ public class Obstacle extends PhysicsSprite
     /**
      * Enemy triggers can require certain Goodie counts in order to run
      */
-    int     _enemyTriggerActivation1      = 0;
-
-    /**
-     * Enemy triggers can require certain Goodie counts in order to run
-     */
-    int     _enemyTriggerActivation2      = 0;
-
-    /**
-     * Enemy triggers can require certain Goodie counts in order to run
-     */
-    int     _enemyTriggerActivation3      = 0;
-
-    /**
-     * Enemy triggers can require certain Goodie counts in order to run
-     */
-    int     _enemyTriggerActivation4      = 0;
+    int     [] _enemyTriggerActivation = new int[4];
 
     /**
      * An ID for each enemy trigger object, in case it's useful
@@ -308,6 +278,7 @@ public class Obstacle extends PhysicsSprite
     /**
      * How long to wait before running trigger code.
      */
+    // TODO: not currently in use!
     float   _enemyCollideTriggerDelay     = 0;
 
     /**
@@ -319,22 +290,7 @@ public class Obstacle extends PhysicsSprite
     /**
      * Projectile triggers can require certain Goodie counts in order to run
      */
-    int     _projectileTriggerActivation1 = 0;
-
-    /**
-     * Projectile triggers can require certain Goodie counts in order to run
-     */
-    int     _projectileTriggerActivation2 = 0;
-
-    /**
-     * Projectile triggers can require certain Goodie counts in order to run
-     */
-    int     _projectileTriggerActivation3 = 0;
-
-    /**
-     * Projectile triggers can require certain Goodie counts in order to run
-     */
-    int     _projectileTriggerActivation4 = 0;
+    int []    _projectileTriggerActivation = new int[4];
 
     /**
      * An ID for each projectile trigger object, in case it's useful
@@ -365,10 +321,10 @@ public class Obstacle extends PhysicsSprite
     {
         _heroTriggerID = id;
         _isHeroCollideTrigger = true;
-        _heroTriggerActivation1 = activationGoodies1;
-        _heroTriggerActivation2 = activationGoodies2;
-        _heroTriggerActivation3 = activationGoodies3;
-        _heroTriggerActivation4 = activationGoodies4;
+        _heroTriggerActivation[0] = activationGoodies1;
+        _heroTriggerActivation[1] = activationGoodies2;
+        _heroTriggerActivation[2] = activationGoodies3;
+        _heroTriggerActivation[3] = activationGoodies4;
         setCollisionEffect(false);
     }
 
@@ -396,10 +352,10 @@ public class Obstacle extends PhysicsSprite
     {
         _enemyTriggerID = id;
         _isEnemyCollideTrigger = true;
-        _enemyTriggerActivation1 = activationGoodies1;
-        _enemyTriggerActivation2 = activationGoodies2;
-        _enemyTriggerActivation3 = activationGoodies3;
-        _enemyTriggerActivation4 = activationGoodies4;
+        _enemyTriggerActivation[0] = activationGoodies1;
+        _enemyTriggerActivation[1] = activationGoodies2;
+        _enemyTriggerActivation[2] = activationGoodies3;
+        _enemyTriggerActivation[3] = activationGoodies4;
     }
 
     /**
@@ -438,10 +394,10 @@ public class Obstacle extends PhysicsSprite
     {
         _projectileTriggerID = id;
         _isProjectileCollideTrigger = true;
-        _projectileTriggerActivation1 = activationGoodies1;
-        _projectileTriggerActivation2 = activationGoodies2;
-        _projectileTriggerActivation3 = activationGoodies3;
-        _projectileTriggerActivation4 = activationGoodies4;
+        _projectileTriggerActivation[0] = activationGoodies1;
+        _projectileTriggerActivation[1] = activationGoodies2;
+        _projectileTriggerActivation[2] = activationGoodies3;
+        _projectileTriggerActivation[3] = activationGoodies4;
     }
 
     /*
