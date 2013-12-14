@@ -12,11 +12,14 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Level.Renderable;
 
-// TODO: the only difference between this and a 'pause scene' is that a 'pause scene' can have a button for going back
-// to the main menu, and thus required more nuance in its click handling
-
 public class PreScene
 {
+    ArrayList<Renderable> _sprites      = new ArrayList<Renderable>();
+
+    boolean               _clickToClear = true;
+
+    boolean               _visible      = true;
+
     /**
      * Get the PreScene that is configured for the current level, or create a blank one if none exists.
      * 
@@ -32,13 +35,18 @@ public class PreScene
         return ps;
     }
 
-    // TODO: add font
-    //
-    // TODO: add option for centering
+    // TODO: add font parameter
     public static void addText(String text, int x, int y, int red, int green, int blue, int size)
     {
         PreScene tmp = getCurrPreScene();
         tmp._sprites.add(Util.makeText(x, y, text, red, green, blue, size));
+    }
+
+    // TODO: add font parameter
+    public static void addCenteredText(String text, int red, int green, int blue, int size)
+    {
+        PreScene tmp = getCurrPreScene();
+        tmp._sprites.add(Util.makeCenteredText(text, red, green, blue, size));
     }
 
     public static void addImage(String imgName, int x, int y, int width, int height)
@@ -61,12 +69,6 @@ public class PreScene
             }, duration);
         }
     }
-
-    ArrayList<Renderable> _sprites      = new ArrayList<Renderable>();
-
-    boolean               _clickToClear = true;
-
-    boolean               _visible      = true;
 
     boolean render(SpriteBatch _spriteRender, LOL _game)
     {

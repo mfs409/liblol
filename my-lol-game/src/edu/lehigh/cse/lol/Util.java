@@ -68,6 +68,26 @@ public class Util
         };
     }
 
+    // TODO: make the font name a parameter
+    //
+    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
+    static Renderable makeCenteredText(final String message, final int red, final int green,
+            final int blue, int size)
+    {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final float x = LOL._game._config.getScreenWidth()/2 - bf.getMultiLineBounds(message).width / 2;
+        final float y = LOL._game._config.getScreenHeight()/2 - bf.getMultiLineBounds(message).height / 2;
+        return new Renderable()
+        {
+            @Override
+            public void render(SpriteBatch sb, float elapsed)
+            {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.drawMultiLine(sb, message, x, y);
+            }
+        };
+    }
+
     /**
      * A random number generator... students always seem to need this
      */

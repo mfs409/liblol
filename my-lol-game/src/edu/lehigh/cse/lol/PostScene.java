@@ -1,21 +1,63 @@
 package edu.lehigh.cse.lol;
 
+// TODO: clean up comments
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import edu.lehigh.cse.lol.Level.Renderable;
 
-// TODO: migrate stuff out of Level (text, sound, image) if it has to deal with end of game
-
-// TODO: clean up comments
-
-public class PostScene 
+public class PostScene
 {
+    boolean               _disable;
+
+    // TODO: externalize these strings to Configuration.java
+    String                _winText     = "Next Level";
+
+    String                _loseText    = "Try Again";
+
     ArrayList<Renderable> _winSprites  = new ArrayList<Renderable>();
+
     ArrayList<Renderable> _loseSprites = new ArrayList<Renderable>();
+
+    private boolean       _win;
+
+    boolean               _visible;
+    /**
+     * Sound to play when the level is won
+     */
+    Sound _winSound;
+
+    /**
+     * Sound to play when the level is lost
+     */
+    Sound _loseSound;
+
+    /**
+     * Set the sound to play when the level is won
+     * 
+     * @param soundName
+     *            Name of the sound file to play
+     */
+    public static void setWinSound(String soundName)
+    {
+        getCurrPostScene()._winSound = Media.getSound(soundName);
+    }
+
+    /**
+     * Set the sound to play when the level is lost
+     * 
+     * @param soundName
+     *            Name of the sound file to play
+     */
+    public static void setLoseSound(String soundName)
+    {
+        getCurrPostScene()._loseSound = Media.getSound(soundName);
+    }
 
     /**
      * Get the PostScene that is configured for the current level, or create a blank one if none exists.
@@ -32,16 +74,32 @@ public class PostScene
         return ps;
     }
 
+    // TODO: make font face a parameter
     public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, int size)
     {
         PostScene tmp = getCurrPostScene();
         tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, size));
     }
 
+    // TODO: make font face a parameter
     public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, int size)
     {
         PostScene tmp = getCurrPostScene();
         tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, size));
+    }
+
+    // TODO: make font face a parameter
+    public static void addExtraWinTextCentered(String text, int red, int green, int blue, int size)
+    {
+        PostScene tmp = getCurrPostScene();
+        tmp._winSprites.add(Util.makeCenteredText(text, red, green, blue, size));
+    }
+
+    // TODO: make font face a parameter
+    public static void addExtraLoseTextCentered(String text, int red, int green, int blue, int size)
+    {
+        PostScene tmp = getCurrPostScene();
+        tmp._loseSprites.add(Util.makeCenteredText(text, red, green, blue, size));
     }
 
     public static void addWinImage(String imgName, int x, int y, int width, int height)
@@ -55,42 +113,57 @@ public class PostScene
         PostScene tmp = getCurrPostScene();
         tmp._loseSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
-    public static void setWinText(String text)
+
+    // Use "" to disable
+    public static void setDefaultWinText(String text)
     {
         getCurrPostScene()._winText = text;
     }
-    public static void setLoseText(String text)
+
+    // Use "" to disable
+    public static void setDefaultLoseText(String text)
     {
-        getCurrPostScene()._loseText = text;        
+        getCurrPostScene()._loseText = text;
     }
 
-    // externalize these strings, or make them defaults?
-    String _winText = "Next Level";
-    String _loseText = "Try Again";
-    
-    /**
-     * 
-     * @param x
-     * @param y
-     * @return true if the event was unhandled
-     */
-    boolean onTouch(int x, int y)
+    public static void disable()
     {
-        if (!_visible)
-            return true;
-        popUpDone();
-        return false;
+        getCurrPostScene()._disable = true;
     }
 
-    private void popUpDone()
+    void setWin(boolean win)
     {
-        _visible = false;
+        _win = win;
+
+        if (_disable) {
+            finish();
+            return;
+        }
+
+        _visible = true;
+
+        // The default text to display can change at the last second, so we don't compute it until right here
+        if (win) {
+            if (_winSound != null)
+                _winSound.play();
+            // TODO: externalize font information, and add font face
+            _winSprites.add(Util.makeCenteredText(_winText, 255, 255, 255, 32));
+        }
+        else {
+            if (_loseSound != null)
+                _loseSound.play();
+            // TODO: externalize font information, and add font face
+            _loseSprites.add(Util.makeCenteredText(_loseText, 255, 255, 255, 32));
+        }
+    }
+
+    void finish()
+    {
         if (!_win) {
             LOL._game.doPlayLevel(LOL._game._currLevel);
         }
         else {
             if (LOL._game._currLevel == LOL._game._config.getNumLevels()) {
-                // TODO: untested
                 LOL._game.doChooser();
             }
             else {
@@ -100,22 +173,15 @@ public class PostScene
         }
     }
 
-    private boolean _win;
-    
-    void setWin(boolean win) {
-        _win = win;
-        _visible = true;
-        
-        // TODO: compute the text and font for displaying win/lose stuff
-    }
-    
-    
-    boolean       _visible;
-
     boolean render(SpriteBatch _spriteRender, LOL _game)
     {
         if (!_visible)
             return false;
+        if (Gdx.input.justTouched()) {
+            _visible = false;
+            finish();
+            return true;
+        }
         ArrayList<Renderable> _sprites = (_win) ? _winSprites : _loseSprites;
 
         // next we clear the color buffer and set the camera matrices
@@ -128,11 +194,8 @@ public class PostScene
         for (Renderable r : _sprites)
             r.render(_spriteRender, 0);
 
-        // TODO: draw the win or lose text here, centered nicely
-        
         _spriteRender.end();
         Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
     }
-
 }

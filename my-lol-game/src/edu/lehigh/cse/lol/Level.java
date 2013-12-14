@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -147,6 +146,7 @@ public class Level implements Screen
 
     PreScene _preScene;
     PostScene _postScene = new PostScene();
+    PauseScene _pauseScene;
     
     public Level(int width, int height, LOL game)
     {
@@ -273,6 +273,10 @@ public class Level implements Screen
         if (_preScene != null && _preScene.render(_spriteRender, _game))
             return;
 
+        // are we supposed to show a pause-scene?
+        if (_pauseScene != null && _pauseScene.render(_spriteRender, _game))
+            return;
+
         // is the game over, such that we should be showing a post-scene?
         if (_postScene != null && _postScene.render(_spriteRender, _game))
             return;
@@ -397,6 +401,7 @@ public class Level implements Screen
     public void dispose()
     {
         stopMusic();
+        // TODO: stop music before showing PostScene?
     }
 
     private Vector3 _touchVec   = new Vector3();
@@ -432,14 +437,8 @@ public class Level implements Screen
 
     public boolean touchDown(int x, int y, int pointer, int button)
     {
-        // should we forward to PreScene or PostScene?
-        if (Gdx.input.justTouched()) {
-            if (_postScene != null && !_postScene.onTouch(x, y))
-                return false;
-        }
-
         // swallow the touch if the popup is showing...
-        if ((_preScene != null && _preScene._visible) || (_postScene != null && _postScene._visible))
+        if ((_preScene != null && _preScene._visible) || (_postScene != null && _postScene._visible) || (_pauseScene != null && _pauseScene._visible))
             return false;
 
         // check for HUD touch:
@@ -607,10 +606,6 @@ public class Level implements Screen
         _currLevel._chase = ps;
     }
 
-    /*
-     * INTERNAL CLASSES
-     */
-
     /**
      * Track if we are playing (false) or not
      */
@@ -638,16 +633,6 @@ public class Level implements Screen
      * This is the number of enemies that must be defeated
      */
     static int     _victoryEnemyCount;
-
-    /**
-     * Name of the _background image for the "you won" message
-     */
-    static String  _backgroundYouWon;
-
-    /**
-     * Name of the _background image for the "you lost" message
-     */
-    static String  _backgroundYouLost;
 
     /**
      * Indicate that the level is won by destroying all the enemies
@@ -688,67 +673,10 @@ public class Level implements Screen
         _victoryGoodieCount[3] = type4;
     }
 
-    /**
-     * Specify the name of the image to use as the background when printing a message that the current level was won
-     * 
-     * @param imgName
-     *            The name of the image... be sure to register it first!
-     */
-    public static void setBackgroundWinImage(String imgName)
-    {
-        _backgroundYouWon = imgName;
-    }
-
-    /**
-     * Specify the name of the image to use as the background when printing a message that the _current level was lost
-     * 
-     * @param imgName
-     *            The name of the image... be sure to register it first!
-     */
-    public static void setBackgroundLoseImage(String imgName)
-    {
-        _backgroundYouLost = imgName;
-    }
-
     /*
      * SOUND
      */
 
-    /**
-     * Sound to play when the level is won
-     */
-    static Sound _winSound;
-
-    /**
-     * Sound to play when the level is lost
-     */
-    Sound        _loseSound;
-
-    /**
-     * Set the sound to play when the level is won
-     * 
-     * @param soundName
-     *            Name of the sound file to play
-     */
-    // TODO: move to PostScene
-    public static void setWinSound(String soundName)
-    {
-        Sound s = Media.getSound(soundName);
-        _winSound = s;
-    }
-
-    /**
-     * Set the sound to play when the level is lost
-     * 
-     * @param soundName
-     *            Name of the sound file to play
-     */
-    // TODO: move to PostScene
-    public static void setLoseSound(String soundName)
-    {
-        Sound s = Media.getSound(soundName);
-        _currLevel._loseSound = s;
-    }
 
     /**
      * Set the _background _music for this level
@@ -813,5 +741,72 @@ public class Level implements Screen
                     LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, e);
             }
         }, howLong);
+    }
+
+    /*
+     * MANAGE WINNING AND LOSING LEVELS
+     */
+
+    /**
+     * When a level ends in failure, this is how we shut it down, print a
+     * message, and then let the user resume it
+     * 
+     * @param loseText
+     *            Text to print when the level is lost
+     */
+    // TODO: this is called from below and from Controls.countdown
+    static void loseLevel()
+    {
+        // Prevent multiple calls from behaving oddly
+        if (Level._gameOver)
+            return;
+        Level._gameOver = true;
+
+        // Run the level-complete trigger
+        LOL._game.levelCompleteTrigger(false);
+
+        // drop everything from the hud
+        Level._currLevel._controls.clear();
+
+        if (Level._currLevel._postScene != null) {
+            Level._currLevel._postScene.setWin(false);
+        }
+        // NB: timers really need to be stored somewhere, so we can stop/start
+        // them without resorting to this coarse mechanism
+        Timer.instance().clear();
+    }
+
+    /**
+     * When a level is won, this is how we end the scene and allow a transition
+     * to the next level
+     */
+    static void winLevel()
+    {
+        // Prevent multiple calls from behaving oddly
+        if (Level._gameOver)
+            return;
+        Level._gameOver = true;
+
+        // Run the level-complete trigger
+        LOL._game.levelCompleteTrigger(true);
+
+
+        if (LOL._game._unlockLevel == LOL._game._currLevel) {
+            LOL._game._unlockLevel++;
+            LOL._game.saveUnlocked();
+        }
+
+        // drop everything from the hud
+        Level._currLevel._controls.clear();
+
+        // TODO: For now, we'll just (ab)use the setPopUp feature... need to
+        // make it more orthogonal eventually...
+        //
+        // NB: we can call setpopupimage too, which would make this all
+        // "just work" for ALE, though still not orthogonal
+        Level._currLevel._postScene.setWin(true);
+        // NB: timers really need to be stored somewhere, so we can stop/start
+        // them without resorting to this coarse mechanism
+        Timer.instance().clear();
     }
 }

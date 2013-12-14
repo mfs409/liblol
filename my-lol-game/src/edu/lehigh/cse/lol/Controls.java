@@ -198,10 +198,13 @@ public class Controls
             {
                 bf.setColor(_red, _green, _blue, 1);
                 _countDownRemaining -= Gdx.graphics.getDeltaTime();
-                if (_countDownRemaining > 0)
+                if (_countDownRemaining > 0) {
                     bf.draw(sb, "" + (int) _countDownRemaining, x, y);
-                else
-                    Score.loseLevel(text);
+                }
+                else {
+                    PostScene.setDefaultLoseText(text);
+                    Level.loseLevel();
+                }
             }
         });
     }
@@ -282,7 +285,7 @@ public class Controls
                     // get elapsed time for this level
                     bf.draw(sb, "" + (int) _winCountRemaining, x, y);
                 else
-                    Score.winLevel();
+                    Level.winLevel();
             }
         });
     }

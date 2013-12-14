@@ -6,79 +6,9 @@ package edu.lehigh.cse.lol;
 
 // TODO: get rid of statics
 
-import com.badlogic.gdx.utils.Timer;
 
 public class Score
 {
-    /*
-     * MANAGE WINNING AND LOSING LEVELS
-     */
-
-    /**
-     * When a level ends in failure, this is how we shut it down, print a
-     * message, and then let the user resume it
-     * 
-     * @param loseText
-     *            Text to print when the level is lost
-     */
-    static void loseLevel(String loseText)
-    {
-        // Prevent multiple calls from behaving oddly
-        if (Level._gameOver)
-            return;
-        Level._gameOver = true;
-
-        // Run the level-complete trigger
-        LOL._game.levelCompleteTrigger(false);
-
-        if (Level._currLevel._loseSound != null)
-            Level._currLevel._loseSound.play();
-
-        // drop everything from the hud
-        Level._currLevel._controls.clear();
-
-        if (Level._currLevel._postScene != null)
-            Level._currLevel._postScene.setWin(false);
-        // NB: timers really need to be stored somewhere, so we can stop/start
-        // them without resorting to this coarse mechanism
-        Timer.instance().clear();
-    }
-
-    /**
-     * When a level is won, this is how we end the scene and allow a transition
-     * to the next level
-     */
-    static void winLevel()
-    {
-        // Prevent multiple calls from behaving oddly
-        if (Level._gameOver)
-            return;
-        Level._gameOver = true;
-
-        // Run the level-complete trigger
-        LOL._game.levelCompleteTrigger(true);
-
-        if (Level._winSound != null)
-            Level._winSound.play();
-
-        if (LOL._game._unlockLevel == LOL._game._currLevel) {
-            LOL._game._unlockLevel++;
-            LOL._game.saveUnlocked();
-        }
-
-        // drop everything from the hud
-        Level._currLevel._controls.clear();
-
-        // TODO: For now, we'll just (ab)use the setPopUp feature... need to
-        // make it more orthogonal eventually...
-        //
-        // NB: we can call setpopupimage too, which would make this all
-        // "just work" for ALE, though still not orthogonal
-        Level._currLevel._postScene.setWin(true);
-        // NB: timers really need to be stored somewhere, so we can stop/start
-        // them without resorting to this coarse mechanism
-        Timer.instance().clear();
-    }
 
     /*
      * BASIC SUPPORT
@@ -151,8 +81,9 @@ public class Score
     {
         _heroesDefeated++;
         if (_heroesDefeated == Score._heroesCreated) {
-            // TODO: this doesn't work correctly anymore...
-            loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : "");
+            if (e._onDefeatHeroText != "")
+                PostScene.setDefaultLoseText(e._onDefeatHeroText);
+            Level.loseLevel();
         }
     }
 
@@ -176,7 +107,7 @@ public class Score
         for (int i = 0; i < 4; ++i)
             match &= Level._victoryGoodieCount[i] <= _goodiesCollected[i];
         if (match)
-            winLevel();
+            Level.winLevel();
     }
 
     /**
@@ -190,7 +121,7 @@ public class Score
         // check if the level is complete
         _destinationArrivals++;
         if ((Level._victoryType == Level.VictoryType.DESTINATION) && (_destinationArrivals >= Level._victoryHeroCount))
-            winLevel();
+            Level.winLevel();
     }
 
     /**
@@ -212,7 +143,7 @@ public class Score
                 win = _enemiesDefeated >= Level._victoryEnemyCount;
         }
         if (win)
-            winLevel();
+            Level.winLevel();
     }
 
     /*

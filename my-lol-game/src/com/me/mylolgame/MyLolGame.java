@@ -173,7 +173,7 @@ public class MyLolGame extends LOL
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
             // new: change the text that we display when the level is won
-            PostScene.addExtraWinText("Good job!", 50, 50, 255, 255, 255, 20);
+            PostScene.setDefaultWinText("Good job!");
 
             // new: add a pop-up message that shows for one second at the
             // beginning of the level
@@ -356,6 +356,8 @@ public class MyLolGame extends LOL
 
             // display a message that stays until it is pressed
             PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255, 20);
+            
+            PostScene.disable();
         }
 
         /**
@@ -469,12 +471,13 @@ public class MyLolGame extends LOL
             // show a message that must be touched in order to remove it
             PreScene.addImage("msg2.png", 10, 10, 460, 320);
 
-            // configure some sounds Level.setWinSound("winsound.ogg");
-            Level.setLoseSound("losesound.ogg");
+            // configure some sounds 
+            PostScene.setWinSound("winsound.ogg");
+            PostScene.setLoseSound("losesound.ogg");
             Level.setMusic("tune.ogg");
 
             // custom text for when the level is lost
-            PostScene.addExtraLoseText("Better luck next time...", 50, 50, 255, 255, 255, 20);
+            PostScene.setDefaultLoseText("Better luck next time...");
         }
 
         /**
@@ -928,7 +931,7 @@ public class MyLolGame extends LOL
 
             // win by defeating one enemy
             Level.setVictoryEnemyCount(1);
-            PostScene.addExtraWinText("Good enough...", 50, 50, 255, 255, 255, 20);
+            PostScene.setDefaultWinText("Good enough...");
         }
 
         /**
@@ -2194,7 +2197,7 @@ public class MyLolGame extends LOL
             // draw a picture when the level is won, and don't print text...
             // this particular picture
             // isn't very useful
-            Level.setBackgroundWinImage("splash.png");
+            PostScene.addWinImage("splash.png", 0, 0, 480, 320);
         }
 
         /**
@@ -2237,8 +2240,8 @@ public class MyLolGame extends LOL
             e.setDefeatByCrawl();
 
             // include a picture on the "try again" screen
-            Level.setBackgroundLoseImage("splash.png");
-            PostScene.addExtraLoseText("Oh well...", 50, 50, 255, 255, 255, 20);
+            PostScene.addLoseImage("splash.png", 0, 0, 480, 320);
+            PostScene.setDefaultLoseText("Oh well...");
             Level.setCameraChase(h);
         }
 
