@@ -159,6 +159,9 @@ public class PostScene
 
     void finish()
     {
+        // we turn off music here, so that music plays during the PostScene
+        Level._currLevel.stopMusic();
+        
         if (!_win) {
             LOL._game.doPlayLevel(LOL._game._currLevel);
         }

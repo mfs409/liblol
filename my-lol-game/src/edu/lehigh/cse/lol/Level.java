@@ -5,8 +5,6 @@ package edu.lehigh.cse.lol;
 // TODO: verify true/false returns from all things called from this... I don't think all our events are being chained
 // correctly
 
-// TODO: do we want to fixed-step the physics world?
-
 // TODO: does zoom work with parallax?
 
 // TODO: remove static fields (here and everywhere)?
@@ -109,6 +107,7 @@ public class Level implements Screen
     // TODO: can we get by with just one list, where there are Control objects,
     // each of which has optional render, touchDown, and a touchUp methods?
     public ArrayList<Control>    _controls;
+
     /*
      * BASIC LEVEL CONFIGURATION
      */
@@ -144,10 +143,12 @@ public class Level implements Screen
 
     int                          _camBoundY;
 
-    PreScene _preScene;
-    PostScene _postScene = new PostScene();
-    PauseScene _pauseScene;
-    
+    PreScene                     _preScene;
+
+    PostScene                    _postScene = new PostScene();
+
+    PauseScene                   _pauseScene;
+
     public Level(int width, int height, LOL game)
     {
         _game = game;
@@ -284,13 +285,11 @@ public class Level implements Screen
         // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
         Tilt.handleTilt();
 
-        // TODO: do we want to do fixed steps? See Level1.java?
-
-        // first we update the world. For simplicity we use the delta time
-        // provided by the Graphics instance. Normally you'll want to fix the
-        // time step.
-        _world.step(delta, 8, 3);
-        // float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
+        // Advance the physics world by 1/45 of a second.
+        //
+        // NB: in Box2d, This is the recommended rate for phones, though it seems like we should be using delta instead
+        // of 1/45f
+        _world.step(1 / 45f, 8, 3);
 
         // now handle any events that occurred on account of the world movement
         for (Action pe : _oneTimeEvents)
@@ -438,7 +437,8 @@ public class Level implements Screen
     public boolean touchDown(int x, int y, int pointer, int button)
     {
         // swallow the touch if the popup is showing...
-        if ((_preScene != null && _preScene._visible) || (_postScene != null && _postScene._visible) || (_pauseScene != null && _pauseScene._visible))
+        if ((_preScene != null && _preScene._visible) || (_postScene != null && _postScene._visible)
+                || (_pauseScene != null && _pauseScene._visible))
             return false;
 
         // check for HUD touch:
@@ -614,7 +614,7 @@ public class Level implements Screen
     /**
      * Track if we are in scribble mode or not
      */
-    static boolean _scribbleMode = false;
+    static boolean _scribbleMode       = false;
 
     /*
      * WINNING AND LOSING
@@ -625,7 +625,7 @@ public class Level implements Screen
      * 
      * This is the number of type-1 goodies that must be collected
      */
-    static int     [] _victoryGoodieCount = new int[4];
+    static int[]   _victoryGoodieCount = new int[4];
 
     /**
      * Supporting data for VictoryType
@@ -676,7 +676,6 @@ public class Level implements Screen
     /*
      * SOUND
      */
-
 
     /**
      * Set the _background _music for this level
@@ -789,7 +788,6 @@ public class Level implements Screen
 
         // Run the level-complete trigger
         LOL._game.levelCompleteTrigger(true);
-
 
         if (LOL._game._unlockLevel == LOL._game._currLevel) {
             LOL._game._unlockLevel++;

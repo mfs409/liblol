@@ -1,14 +1,12 @@
 package com.me.mylolgame;
 
-// TODO: there's a music bug... if we win on level 10, the music doesn't ever stop...  Does Level need music cleanup in dispose?
-
 // TODO: demonstrate that we can change width, height, and sprite of a Hero on the fly
 
-// TODO: demo setEnemyCollideTriggerDelay and setenemyjump
+// TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
 // TODO: update all comments and clean up code formatting
 
-// TODO: there's at least one place where we are using Animation in a bizarre way.
+// TODO: In level 55, for animateByGoodieCount, we are using Animation objects in an odd way...
 
 // TODO: PokePath (without velocity) is deprecated. Level 70 is no longer valid
 
@@ -30,7 +28,7 @@ package com.me.mylolgame;
 
 // TODO: does music and transition work correctly when there is only one level?
 
-// TODO: Menu is horribly broken for < 20 levels
+// TODO: Chooser.java should be redesigned into multiple screens
 
 // TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special
 // function?
@@ -51,7 +49,7 @@ package com.me.mylolgame;
 
 // TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone (see level 20)
 
-// TODO: should have ability to chase in X, Y, or Both
+// TODO: should have ability to chase in X, Y, or both
 
 // TODO: levels 44 and 45 have the same throw behavior right now, because we don't use input polling to allow for 'hold
 // == down' behavior... should we change that? Note: problem also for 46 and 47, and it would be nice to have this for
