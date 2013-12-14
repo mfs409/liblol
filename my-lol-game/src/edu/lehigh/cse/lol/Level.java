@@ -145,6 +145,9 @@ public class Level implements Screen
 
     int                          _camBoundY;
 
+    PreScene _preScene;
+    PostScene _postScene = new PostScene();
+    
     public Level(int width, int height, LOL game)
     {
         _game = game;
@@ -267,11 +270,11 @@ public class Level implements Screen
         playMusic();
 
         // are we supposed to show a pre-scene?
-        if (PreScene.show(_spriteRender, _game))
+        if (_preScene != null && _preScene.render(_spriteRender, _game))
             return;
 
         // is the game over, such that we should be showing a post-scene?
-        if (PostScene.show(_spriteRender, _game))
+        if (_postScene != null && _postScene.render(_spriteRender, _game))
             return;
 
         // handle accelerometer stuff... note that accelerometer is effectively disabled during a popup.
@@ -431,14 +434,12 @@ public class Level implements Screen
     {
         // should we forward to PreScene or PostScene?
         if (Gdx.input.justTouched()) {
-            if (!PreScene.onTouch(x, y))
-                return false;
-            if (!PostScene.onTouch(x, y))
+            if (_postScene != null && !_postScene.onTouch(x, y))
                 return false;
         }
 
         // swallow the touch if the popup is showing...
-        if (PreScene._showPopUp || PostScene._showPopUp)
+        if ((_preScene != null && _preScene._visible) || (_postScene != null && _postScene._visible))
             return false;
 
         // check for HUD touch:
@@ -563,38 +564,6 @@ public class Level implements Screen
     };
 
     /**
-     * Text to display when the _current level is won
-     */
-    static String _textYouWon;
-
-    /**
-     * Text to display when the _current level is lost
-     */
-    static String _textYouLost;
-
-    /**
-     * Specify the text to display when the _current level is won
-     * 
-     * @param text
-     *            The text to display
-     */
-    public static void setWinText(String text)
-    {
-        _textYouWon = text;
-    }
-
-    /**
-     * Specify the text to display when the _current level is lost
-     * 
-     * @param text
-     *            The text to display
-     */
-    public static void setLoseText(String text)
-    {
-        _textYouLost = text;
-    }
-
-    /**
      * Create a new empty level, and set its camera
      * 
      * @param width
@@ -606,14 +575,6 @@ public class Level implements Screen
     {
         _currLevel = new Level(width, height, LOL._game);
         _gameOver = false;
-
-        PreScene.reset();
-        PostScene.reset();
-
-        // TODO: make it so there is no popup if these are null
-        // TODO: move to postscene
-        Level._textYouWon = "Next Level";
-        Level._textYouLost = "Try Again";
     }
 
     /**
@@ -769,6 +730,7 @@ public class Level implements Screen
      * @param soundName
      *            Name of the sound file to play
      */
+    // TODO: move to PostScene
     public static void setWinSound(String soundName)
     {
         Sound s = Media.getSound(soundName);
@@ -781,6 +743,7 @@ public class Level implements Screen
      * @param soundName
      *            Name of the sound file to play
      */
+    // TODO: move to PostScene
     public static void setLoseSound(String soundName)
     {
         Sound s = Media.getSound(soundName);

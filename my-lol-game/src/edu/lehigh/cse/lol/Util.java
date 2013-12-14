@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -30,6 +31,43 @@ import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
 
 public class Util
 {
+    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
+    static Renderable makePicture(final int x, final int y, final int width, final int height, String imgName)
+    {
+        // set up the image to display
+        //
+        // NB: this will fail gracefully (no crash) for invalid file names
+        TextureRegion[] trs = Media.getImage(imgName);
+        final TextureRegion tr = (trs != null) ? trs[0] : null;
+        return new Renderable()
+        {
+            @Override
+            public void render(SpriteBatch sb, float elapsed)
+            {
+                if (tr != null)
+                    sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
+            }
+        };
+    }
+
+    // TODO: make the font name a parameter
+    //
+    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
+    static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
+            final int blue, int size)
+    {
+        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        return new Renderable()
+        {
+            @Override
+            public void render(SpriteBatch sb, float elapsed)
+            {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.drawMultiLine(sb, message, x, y);
+            }
+        };
+    }
+
     /**
      * A random number generator... students always seem to need this
      */

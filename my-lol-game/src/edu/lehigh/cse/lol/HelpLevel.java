@@ -30,11 +30,6 @@ public class HelpLevel extends ScreenAdapter // implements Screen
      */
 
     /**
-     * This stores the scene that we use to display help
-     */
-    // Scene _current;
-
-    /**
      * Reset the help scene so that we can make the next part of the help message
      * 
      * @param red

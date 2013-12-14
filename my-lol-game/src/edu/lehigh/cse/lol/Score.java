@@ -2,7 +2,9 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
-// TODO: need to refactor and simplify... first two methods could go in PostScene
+// TODO: need to refactor and simplify... first two methods could go in or Level
+
+// TODO: get rid of statics
 
 import com.badlogic.gdx.utils.Timer;
 
@@ -35,17 +37,8 @@ public class Score
         // drop everything from the hud
         Level._currLevel._controls.clear();
 
-        // TODO: For now, we'll just (ab)use the setPopUp feature... need to
-        // make it more orthogonal eventually...
-        //
-        // NB: we can call setpopupimage too, which would make this all
-        // "just work" for ALE, though still not orthogonal
-        PostScene.setPopUp(loseText, 255, 255, 255, 32);
-        if (Level._backgroundYouLost != null) {
-            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouLost)[0], 0, 0,
-                    LOL._game._config.getScreenWidth(), LOL._game._config.getScreenHeight());
-        }
-        PostScene._win = false;
+        if (Level._currLevel._postScene != null)
+            Level._currLevel._postScene.setWin(false);
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
@@ -81,15 +74,10 @@ public class Score
         //
         // NB: we can call setpopupimage too, which would make this all
         // "just work" for ALE, though still not orthogonal
-        PostScene.setPopUp(Level._textYouWon, 255, 255, 255, 32);
-        if (Level._backgroundYouWon != null) {
-            PostScene.setPopUpImage(Media.getImage(Level._backgroundYouWon)[0], 0, 0,
-                    LOL._game._config.getScreenWidth(), LOL._game._config.getScreenHeight());
-        }
+        Level._currLevel._postScene.setWin(true);
         // NB: timers really need to be stored somewhere, so we can stop/start
         // them without resorting to this coarse mechanism
         Timer.instance().clear();
-        PostScene._win = true;
     }
 
     /*
@@ -99,12 +87,12 @@ public class Score
     /**
      * Track the number of _heroes that have been created
      */
-    static int _heroesCreated;
+    static int   _heroesCreated;
 
     /**
      * Track the number of _heroes that have been removed/defeated
      */
-    static int _heroesDefeated;
+    static int   _heroesDefeated;
 
     /**
      * Count of the goodies (with score 1) that have been collected in this
@@ -112,22 +100,22 @@ public class Score
      * 
      * TODO: switch to a vector of goodie types
      */
-    static int [] _goodiesCollected = new int[4];
+    static int[] _goodiesCollected = new int[4];
 
     /**
      * Number of _heroes who have arrived at any destination yet
      */
-    static int _destinationArrivals;
+    static int   _destinationArrivals;
 
     /**
      * Count the number of enemies that have been created
      */
-    static int _enemiesCreated;
+    static int   _enemiesCreated;
 
     /**
      * Count the enemies that have been defeated
      */
-    static int _enemiesDefeated;
+    static int   _enemiesDefeated;
 
     /**
      * Reset score info when a new level is created
@@ -162,8 +150,10 @@ public class Score
     static void defeatHero(Enemy e)
     {
         _heroesDefeated++;
-        if (_heroesDefeated == Score._heroesCreated)
-            loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : Level._textYouLost);
+        if (_heroesDefeated == Score._heroesCreated) {
+            // TODO: this doesn't work correctly anymore...
+            loseLevel(e._onDefeatHeroText != "" ? e._onDefeatHeroText : "");
+        }
     }
 
     /**
@@ -185,7 +175,7 @@ public class Score
         boolean match = true;
         for (int i = 0; i < 4; ++i)
             match &= Level._victoryGoodieCount[i] <= _goodiesCollected[i];
-        if (match) 
+        if (match)
             winLevel();
     }
 

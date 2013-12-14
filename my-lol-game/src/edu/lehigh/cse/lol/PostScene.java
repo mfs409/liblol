@@ -1,174 +1,90 @@
 package edu.lehigh.cse.lol;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import edu.lehigh.cse.lol.Level.Renderable;
+
 // TODO: migrate stuff out of Level (text, sound, image) if it has to deal with end of game
 
 // TODO: clean up comments
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
-public class PostScene
+public class PostScene 
 {
+    ArrayList<Renderable> _winSprites  = new ArrayList<Renderable>();
+    ArrayList<Renderable> _loseSprites = new ArrayList<Renderable>();
 
     /**
-     * Print a message on a black background, and wait for a screen touch
+     * Get the PostScene that is configured for the current level, or create a blank one if none exists.
      * 
-     * @param message
-     *            The message to display
+     * @return
      */
-    static public void showTextAndWait(String message)
+    private static PostScene getCurrPostScene()
     {
-        // forward to the more powerful method
-        showTextAndWait(message, 255, 255, 255, 32);
+        PostScene ps = Level._currLevel._postScene;
+        if (ps != null)
+            return ps;
+        ps = new PostScene();
+        Level._currLevel._postScene = ps;
+        return ps;
     }
 
-    /**
-     * Print a message on a black background, and wait for a screen touch.
-     * 
-     * This version of the function adds the ability to customize the font
-     * 
-     * @param message
-     *            The message to display
-     * 
-     * @param red
-     *            The red component of the font color
-     * 
-     * @param green
-     *            The green component of the font color
-     * 
-     * @param blue
-     *            The blue component of the font color
-     * 
-     * @param size
-     *            The size of the font
-     */
-    static public void showTextAndWait(String message, int red, int green, int blue, int fontSize)
+    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, int size)
     {
-        setPopUp(message, red, green, blue, fontSize);
+        PostScene tmp = getCurrPostScene();
+        tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, size));
     }
 
-    /**
-     * Show an image on screen and wait for a screen touch.
-     * 
-     * @param imgName
-     *            name of the image holding the message to be displayed
-     * @param x
-     *            X coordinate of the top left corner
-     * @param y
-     *            Y coordinate of the top left corner
-     */
-    static public void showImageAndWait(String imgName, float x, float y, float width, float height)
+    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, int size)
     {
-        setPopUpImage(Media.getImage(imgName)[0], x, y, width, height);
+        PostScene tmp = getCurrPostScene();
+        tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, size));
     }
 
-    static boolean        _showPopUp;
-
-    private static String _popupText;
-
-    private static float  _popupRed;
-
-    private static float  _popupGreen;
-
-    private static float  _popupBlue;
-
-    private static int    _popupSize;
-
-    static void setPopUp(String msg, int red, int green, int blue, int size)
+    public static void addWinImage(String imgName, int x, int y, int width, int height)
     {
-        _popupText = msg;
-        _popupRed = red;
-        _popupGreen = green;
-        _popupBlue = blue;
-        _popupRed /= 256;
-        _popupGreen /= 256;
-        _popupBlue /= 256;
-        _popupSize = size;
-        _showPopUp = true;
+        PostScene tmp = getCurrPostScene();
+        tmp._winSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
-    static TextureRegion _popUpImgTr;
-
-    static float         _popUpImgX;
-
-    static float         _popUpImgY;
-
-    static float         _popUpImgW;
-
-    static float         _popUpImgH;
-
-    static void setPopUpImage(TextureRegion tr, float x, float y, float width, float height)
+    public static void addLoseImage(String imgName, int x, int y, int width, int height)
     {
-        _popUpImgTr = tr;
-        _popUpImgX = x;
-        _popUpImgY = y;
-        _popUpImgW = width;
-        _popUpImgH = height;
-        _showPopUp = true;
+        PostScene tmp = getCurrPostScene();
+        tmp._loseSprites.add(Util.makePicture(x, y, width, height, imgName));
+    }
+    public static void setWinText(String text)
+    {
+        getCurrPostScene()._winText = text;
+    }
+    public static void setLoseText(String text)
+    {
+        getCurrPostScene()._loseText = text;        
     }
 
-    static void reset()
-    {
-        PostScene._popUpImgTr = null;
-        PostScene._popupText = null;
-        _showPopUp = false;
-        _win = false;
-    }
-
-    static boolean show(SpriteBatch _spriteRender, LOL _game)
-    {
-        if (!_showPopUp)
-            return false;
-
-        // next we clear the color buffer and set the camera matrices
-        Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level._currLevel._hudCam.update();
-        _spriteRender.setProjectionMatrix(Level._currLevel._hudCam.combined);
-        _spriteRender.begin();
-
-        if (_popUpImgTr != null)
-            _spriteRender.draw(_popUpImgTr, _popUpImgX, _popUpImgY, 0, 0, _popUpImgW, _popUpImgH, 1, 1, 0);
-        if (_popupText != null) {
-            int camWidth = _game._config.getScreenWidth();
-            int camHeight = _game._config.getScreenHeight();
-
-            BitmapFont f = Media.getFont("arial.ttf", _popupSize);
-            String msg = _popupText;
-            float w = f.getMultiLineBounds(msg).width;
-            float h = f.getMultiLineBounds(msg).height;
-            f.setColor(_popupRed, _popupGreen, _popupBlue, 1);
-            f.drawMultiLine(_spriteRender, msg, camWidth / 2 - w / 2, camHeight / 2 + h / 2);
-        }
-
-        _spriteRender.end();
-        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
-        return true;
-
-    }
-
+    // externalize these strings, or make them defaults?
+    String _winText = "Next Level";
+    String _loseText = "Try Again";
+    
     /**
      * 
      * @param x
      * @param y
      * @return true if the event was unhandled
      */
-    public static boolean onTouch(int x, int y)
+    boolean onTouch(int x, int y)
     {
-        if (!_showPopUp)
+        if (!_visible)
             return true;
         popUpDone();
         return false;
     }
 
-    private static void popUpDone()
+    private void popUpDone()
     {
-        _showPopUp = false;
-        _popupText = null;
-        _popUpImgTr = null;
+        _visible = false;
         if (!_win) {
             LOL._game.doPlayLevel(LOL._game._currLevel);
         }
@@ -184,5 +100,39 @@ public class PostScene
         }
     }
 
-    static boolean _win;
+    private boolean _win;
+    
+    void setWin(boolean win) {
+        _win = win;
+        _visible = true;
+        
+        // TODO: compute the text and font for displaying win/lose stuff
+    }
+    
+    
+    boolean       _visible;
+
+    boolean render(SpriteBatch _spriteRender, LOL _game)
+    {
+        if (!_visible)
+            return false;
+        ArrayList<Renderable> _sprites = (_win) ? _winSprites : _loseSprites;
+
+        // next we clear the color buffer and set the camera matrices
+        Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Level._currLevel._hudCam.update();
+        _spriteRender.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        _spriteRender.begin();
+
+        for (Renderable r : _sprites)
+            r.render(_spriteRender, 0);
+
+        // TODO: draw the win or lose text here, centered nicely
+        
+        _spriteRender.end();
+        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
+        return true;
+    }
+
 }
