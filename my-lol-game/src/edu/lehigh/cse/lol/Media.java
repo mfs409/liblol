@@ -1,9 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
-// TODO: should we call them "sprite sheets"?
-
 import java.util.Hashtable;
 
 import com.badlogic.gdx.Gdx;
@@ -15,16 +11,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 /**
- * The MediaFactory provides a mechanism for registering all of our images and
- * sounds
+ * The MediaFactory provides a mechanism for registering all of our images, sounds, and fonts
+ * 
+ * Strictly speaking, we can re-create fonts on the fly whenever we need to. Caching them here is an optimization.
  */
 public class Media
 {
-    /**
-     * Making fonts can get expensive... to lighten the load, we'll cache any
-     * fonts we make
+    /*
+     * MEDIA COLLECTIONS
      */
-    static final Hashtable<String, BitmapFont>              _fonts  = new Hashtable<String, BitmapFont>();
+
+    /**
+     * Store the fonts used by this game
+     */
+    static private final Hashtable<String, BitmapFont>      _fonts  = new Hashtable<String, BitmapFont>();
 
     /**
      * Store the sounds used by this game
@@ -41,22 +41,46 @@ public class Media
      */
     static private final Hashtable<String, TextureRegion[]> _images = new Hashtable<String, TextureRegion[]>();
 
-    public static BitmapFont getFont(String fontFileName, int fontSize)
+    /**
+     * When a game is disposed of, the images are managed by libGDX... fonts are too, except that references to old
+     * fonts don't resurrect nicely. Clearing the collection when the game dispose()s is satisfactory to avoid visual
+     * glitches when the game comes back to the foreground.
+     */
+    static void onDispose()
     {
-        // we store pre-made fonts as their filename appended with their size
+        _fonts.clear();
+    }
+
+    /*
+     * INTERNAL INTERFACE FOR MANIPULATING MEDIA COLLECTIONS
+     */
+
+    /**
+     * Get the font described by the file name and font size
+     * 
+     * @param fontFileName
+     *            The filename for the font. This should be in the android project's assets, and should end in .ttf
+     * 
+     * @param fontSize
+     *            The size to display
+     * 
+     * @return A font object that can be used to render text
+     */
+    static BitmapFont getFont(String fontFileName, int fontSize)
+    {
+        // we store fonts as their filename appended with their size
         String key = fontFileName + "--" + fontSize;
 
-        // check if we've already got this font
+        // check if we've already got this font, return it if we do
         BitmapFont f = _fonts.get(key);
         if (f != null) {
-            // reset to white
-            //
-            // TODO: we're going to have trouble with multiple colors for the same screen at some point... what to do?
-            f.setColor(1, 1, 1, 1);
+            f.setColor(1, 1, 1, 1); // just to play it safe, make the font white... the caller can change this
             return f;
         }
 
-        // NB: cleaner way of doing fonts
+        // Generate the font, save it, and return it
+        //
+        // NB: if this crashes, the user will get a reasonably good error message
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
         f = generator.generateFont(fontSize, FreeTypeFontGenerator.DEFAULT_CHARS, false);
         generator.dispose();
@@ -81,7 +105,7 @@ public class Media
     }
 
     /**
-     * Internal method to retrieve a _music object by name
+     * Internal method to retrieve a music object by name
      * 
      * @param musicName
      *            Name of the _music file to retrieve
@@ -113,44 +137,51 @@ public class Media
         return ret;
     }
 
+    /*
+     * PUBLIC INTERFACE FOR REGISTERING SOUNDS, MUSIC, AND IMAGES
+     */
+
     /**
      * Register an image file, so that it can be used later.
      * 
-     * Images should be .png files. Note that _images with internal animations
-     * do not work correctly. You should use cell-based animation instead.
+     * Images should be .png files. Note that images with internal animations (i.e., gifs) do not work correctly. You
+     * should use cell-based animation instead.
      * 
      * @param imgName
      *            the name of the image file (assumed to be in the "assets"
      *            folder). This should be of the form "image.png", and should be
-     *            of type "png".
+     *            of type "png". "jpeg" images work too, but usually look bad in games
      */
     static public void registerImage(String imgName)
     {
+        // Create an array with one entry
         TextureRegion[] tr = new TextureRegion[1];
         tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
         _images.put(imgName, tr);
     }
 
     /**
-     * Register an animatable image file, so that it can be used later. The
-     * difference between regular _images and animatable _images is that
-     * animatable _images have multiple columns, for cell-based animation.
+     * Register an animatable image file, so that it can be used later. The difference between regular images and
+     * animatable images is that animatable images have multiple columns and rows, which allows cell-based animation.
      * 
-     * Images should be .png files. Note that _images with internal animations
-     * do not work correctly. You should use cell-based animation instead.
+     * Images should be .png files. Note that images with internal animations (i.e., gifs) do not work correctly. You
+     * should use cell-based animation instead.
      * 
      * @param imgName
      *            the name of the image file (assumed to be in the "assets"
      *            folder). This should be of the form "image.png", and should be
-     *            of type "png".
-     * @param cellColumns
-     *            If this image is for animation, and represents a grid of
-     *            cells, then cellColumns should be the number of columns in the
-     *            grid. Otherwise, it should be 1.
+     *            of type "png". "jpeg" images work too, but usually look bad in games
+     * 
+     * @param columns
+     *            The number of columns that comprise this image file
+     * @param rows
+     *            The number of rows that comprise this image file
      */
     static public void registerAnimatableImage(String imgName, int columns, int rows)
     {
+        // create a 1D array with columns x rows entries
         Texture t = new Texture(Gdx.files.internal(imgName));
+        // carve the image into cells, save them into the array
         int width = t.getWidth() / columns;
         int height = t.getHeight() / rows;
         TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
@@ -166,10 +197,9 @@ public class Media
     }
 
     /**
-     * Register a _music file, so that it can be used later.
+     * Register a music file, so that it can be used later.
      * 
-     * Music should be in .ogg files. You can use Audacity to convert _music as
-     * needed.
+     * Music should be in .ogg files. You can use Audacity to convert music as needed. mp3 files should work too.
      * 
      * @param musicName
      *            the name of the _music file (assumed to be in the "assets"
@@ -189,8 +219,8 @@ public class Media
     /**
      * Register a sound file, so that it can be used later.
      * 
-     * Sounds should be .ogg files. You can use Audacity to convert _sounds as
-     * needed.
+     * Sounds should be .ogg files. You can use Audacity to convert sounds as
+     * needed. mp3 files should work too
      * 
      * @param soundName
      *            the name of the sound file (assumed to be in the "assets"

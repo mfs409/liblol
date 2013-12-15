@@ -53,6 +53,8 @@ public class Util
     // TODO: make the font name a parameter
     //
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
+    //
+    // TODO: this isn't drawing quite where one would expect it to...
     static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
             final int blue, int size)
     {
@@ -71,6 +73,8 @@ public class Util
     // TODO: make the font name a parameter
     //
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
+    //
+    // TODO: this isn't drawing quite where one would expect it to...
     static Renderable makeCenteredText(final String message, final int red, final int green,
             final int blue, int size)
     {

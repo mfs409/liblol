@@ -2,12 +2,13 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
+// TODO: get rid of statics
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.Vector2;
 
 public class Tilt
 {
@@ -111,12 +112,6 @@ public class Tilt
      */
 
     /**
-     * A helper so that we don't need pools to handle the onAccelerometerChanged
-     * use of Vector2 objects
-     */
-    static final Vector2 _oacVec = new Vector2();
-
-    /**
      * When there is a phone tilt, this is run to adjust the forces on objects
      * in the _current level
      * 
@@ -136,7 +131,6 @@ public class Tilt
         // should work also with
         // Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
         if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
-
             // TODO: test this code in portrait mode, and test if upside-down
             // screens work (landscape and portrait)
             float rot = Gdx.input.getRotation();
@@ -169,68 +163,65 @@ public class Tilt
         }
 
         // get gravity from accelerometer
-        // TODO: there is a hidden "times 10" multiplier in here... comment
-        // it...
         xGravity *= _gravityMultiplier;
         yGravity *= _gravityMultiplier;
 
-        // ensure -10 <= x <= 10
-        xGravity = (xGravity > 10 * _xGravityMax) ? 10 * _xGravityMax : xGravity;
-        xGravity = (xGravity < 10 * -_xGravityMax) ? 10 * -_xGravityMax : xGravity;
+        // ensure x is within the -xGravityMax : xGravityMax range
+        xGravity = (xGravity > Physics.PIXEL_METER_RATIO * _xGravityMax) ? Physics.PIXEL_METER_RATIO * _xGravityMax
+                : xGravity;
+        xGravity = (xGravity < Physics.PIXEL_METER_RATIO * -_xGravityMax) ? Physics.PIXEL_METER_RATIO * -_xGravityMax
+                : xGravity;
 
-        // ensure -10 <= y <= 10
-        yGravity = (yGravity > 10 * _yGravityMax) ? 10 * _yGravityMax : yGravity;
-        yGravity = (yGravity < 10 * -_yGravityMax) ? 10 * -_yGravityMax : yGravity;
+        // ensure y is within the -yGravityMax : yGravityMax range
+        yGravity = (yGravity > Physics.PIXEL_METER_RATIO * _yGravityMax) ? Physics.PIXEL_METER_RATIO * _yGravityMax
+                : yGravity;
+        yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -_yGravityMax) ? Physics.PIXEL_METER_RATIO * -_yGravityMax
+                : yGravity;
 
-        synchronized (_accelEntities) {
-            if (_tiltVelocityOverride) {
-                // we need to be careful here... if we have a zero for the X or
-                // Y
-                // gravityMax, then in that dimension we should not just set
-                // linear
-                // velocity to the value we compute, or jumping won't work
+        if (_tiltVelocityOverride) {
+            // we need to be careful here... if we have a zero for the X or
+            // Y
+            // gravityMax, then in that dimension we should not just set
+            // linear
+            // velocity to the value we compute, or jumping won't work
 
-                // we're going to assume that you wouldn't have xGravityMax ==
-                // yGravityMax == 0
+            // we're going to assume that you wouldn't have xGravityMax ==
+            // yGravityMax == 0
 
-                if (_xGravityMax == 0) {
-                    // Send the new gravity information to the _physics system
-                    // by
-                    // changing the velocity of each object
-                    for (PhysicsSprite gfo : _accelEntities) {
-                        if (gfo._physBody.isActive())
-                            gfo.updateVelocity(gfo._physBody.getLinearVelocity().x, yGravity);
-                    }
+            if (_xGravityMax == 0) {
+                // Send the new gravity information to the _physics system
+                // by
+                // changing the velocity of each object
+                for (PhysicsSprite gfo : _accelEntities) {
+                    if (gfo._physBody.isActive())
+                        gfo.updateVelocity(gfo._physBody.getLinearVelocity().x, yGravity);
                 }
-                else if (_yGravityMax == 0) {
-                    // Send the new gravity information to the _physics system
-                    // by
-                    // changing the velocity of each object
-                    for (PhysicsSprite gfo : _accelEntities) {
-                        if (gfo._physBody.isActive())
-                            gfo.updateVelocity(xGravity, gfo._physBody.getLinearVelocity().y);
-                    }
-                }
-                else {
-                    // Send the new gravity information to the _physics system
-                    // by
-                    // changing the velocity of each object
-                    for (PhysicsSprite gfo : _accelEntities) {
-                        if (gfo._physBody.isActive())
-                            gfo.updateVelocity(xGravity, yGravity);
-                    }
+            }
+            else if (_yGravityMax == 0) {
+                // Send the new gravity information to the _physics system
+                // by
+                // changing the velocity of each object
+                for (PhysicsSprite gfo : _accelEntities) {
+                    if (gfo._physBody.isActive())
+                        gfo.updateVelocity(xGravity, gfo._physBody.getLinearVelocity().y);
                 }
             }
             else {
-                // Send the new gravity information to the _physics system by
-                // applying a force to each object
-                _oacVec.set(xGravity, yGravity);
+                // Send the new gravity information to the _physics system
+                // by
+                // changing the velocity of each object
                 for (PhysicsSprite gfo : _accelEntities) {
                     if (gfo._physBody.isActive())
-                        gfo._physBody.applyForce(_oacVec, gfo._physBody.getWorldCenter(), true);
-                    // TODO: handle reverse face
-                    // gfo.reverseFace(xGravity < 0);
+                        gfo.updateVelocity(xGravity, yGravity);
                 }
+            }
+        }
+        else {
+            // Send the new gravity information to the _physics system by
+            // applying a force to each object
+            for (PhysicsSprite gfo : _accelEntities) {
+                if (gfo._physBody.isActive())
+                    gfo._physBody.applyForceToCenter(xGravity, yGravity, true);
             }
         }
     }

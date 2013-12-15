@@ -27,6 +27,7 @@ public class PostScene
     private boolean       _win;
 
     boolean               _visible;
+
     /**
      * Sound to play when the level is won
      */

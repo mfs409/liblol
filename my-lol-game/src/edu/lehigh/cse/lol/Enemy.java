@@ -34,7 +34,7 @@ public class Enemy extends PhysicsSprite
     private Enemy(float width, float height, String imgName)
     {
         super(imgName, SpriteId.ENEMY, width, height);
-        Score._enemiesCreated++;
+        Level._currLevel._score._enemiesCreated++;
     }
 
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
@@ -147,7 +147,7 @@ public class Enemy extends PhysicsSprite
 
         // possibly update score
         if (increaseScore)
-            Score.onDefeatEnemy();
+            Level._currLevel._score.onDefeatEnemy();
 
         // handle defeat triggers
         if (_isTrigger)
@@ -256,7 +256,7 @@ public class Enemy extends PhysicsSprite
         // is there a callback when this obstacle collides with enemies?
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= o._enemyTriggerActivation[i] <= Score._goodiesCollected[i];
+            match &= o._enemyTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
         if (o._isEnemyCollideTrigger && match) {
             // run the callback after a delay, or immediately?
             if (o._enemyCollideTriggerDelay > 0) {

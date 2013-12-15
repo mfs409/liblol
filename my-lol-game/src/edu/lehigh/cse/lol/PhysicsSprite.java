@@ -854,7 +854,7 @@ public abstract class PhysicsSprite implements Renderable
         if (_isTouchTrigger) {
             boolean match = true;
             for (int i = 0; i < 4; ++i)
-                match &= _touchTriggerActivation[i] <= Score._goodiesCollected[i];
+                match &= _touchTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
             if (match) {
                 remove(false);
                 LOL._game.onTouchTrigger(_touchTriggerID, LOL._game._currLevel, this);
@@ -1264,6 +1264,43 @@ public abstract class PhysicsSprite implements Renderable
                 remove(quiet);
             }
         }, delay);
+    }
+
+    public void setImage(String imgName)
+    {
+        // minor hack so that we can have invalid png files for invisible images
+        TextureRegion[] tra = Media.getImage(imgName);
+        if (tra != null) {
+            _tr = new TextureRegion(tra[0]);
+        }
+        else {
+            _tr = null;
+        }
+    }
+    
+    public void resize(float x, float y, float width, float height)
+    {
+        _width = width;
+        _height = height;
+        Body _oldBody = _physBody;
+        Fixture _oldFix = _oldBody.getFixtureList().get(0);
+        if (_isCircle) {
+            setCirclePhysics(_oldFix.getDensity(), _oldFix.getRestitution(), _oldFix.getFriction(), _oldBody.getType(),
+                    _oldBody.isBullet(), x, y, (width > height) ? width / 2 : height / 2);
+        }
+        else {
+            setBoxPhysics(_oldFix.getDensity(), _oldFix.getRestitution(), _oldFix.getFriction(), _oldBody.getType(),
+                    _oldBody.isBullet(), x, y);
+        }
+        // clone forces
+        _physBody.setAngularVelocity(_oldBody.getAngularVelocity());
+        _physBody.setTransform(_physBody.getPosition(), _oldBody.getAngle());
+        _physBody.setGravityScale(_oldBody.getGravityScale());
+        _physBody.setLinearDamping(_oldBody.getLinearDamping());
+        _physBody.setLinearVelocity(_oldBody.getLinearVelocity());
+        // now disable the old body
+        _oldBody.setActive(false);
+
     }
 
     /**

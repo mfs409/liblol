@@ -372,7 +372,7 @@ public class Projectile extends PhysicsSprite
             Obstacle o = (Obstacle) other;
             boolean match = true;
             for (int i = 0; i < 4; ++i)
-                match &= o._projectileTriggerActivation[i] <= Score._goodiesCollected[i];
+                match &= o._projectileTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
             if (o._isProjectileCollideTrigger && match) {
                 LOL._game.onProjectileCollideTrigger(o._projectileTriggerID, LOL._game._currLevel, o, this);
                 return;

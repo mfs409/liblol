@@ -205,9 +205,9 @@ public class Level implements Screen
         // reset tilt control...
         Tilt.reset();
 
-        // reset scores
-        Score.reset();
-
+        // get ready to track the score on this level
+        _score = new Score();
+        
         callback = new QueryCallback()
         {
 
@@ -562,6 +562,8 @@ public class Level implements Screen
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     };
 
+    Score _score;
+    
     /**
      * Create a new empty level, and set its camera
      * 

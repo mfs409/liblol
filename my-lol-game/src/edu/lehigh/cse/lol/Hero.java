@@ -27,7 +27,7 @@ public class Hero extends PhysicsSprite
     Hero(float width, float height, String imgName)
     {
         super(imgName, SpriteId.HERO, width, height);
-        Score._heroesCreated++;
+        Level._currLevel._score._heroesCreated++;
     }
 
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
@@ -82,14 +82,14 @@ public class Hero extends PhysicsSprite
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Score._goodiesCollected[i] >= d._activationScore[i];
+            match &= Level._currLevel._score._goodiesCollected[i] >= d._activationScore[i];
         if (match && (d._holding < d._capacity) && _visible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d._holding++;
             if (d._arrivalSound != null)
                 d._arrivalSound.play();
-            Score.onDestinationArrive();
+            Level._currLevel._score.onDestinationArrive();
         }
     }
 
@@ -104,7 +104,7 @@ public class Hero extends PhysicsSprite
         // if the enemy always defeats the hero, no matter what, then defeat the hero
         if (e._alwaysDoesDamage) {
             remove(false);
-            Score.defeatHero(e);
+            Level._currLevel._score.defeatHero(e);
             return;
         }
         // TODO
@@ -122,7 +122,7 @@ public class Hero extends PhysicsSprite
         // when we can't defeat it by losing strength, remove the hero
         else if (e._damage >= _strength) {
             remove(false);
-            Score.defeatHero(e);
+            Level._currLevel._score.defeatHero(e);
         }
         // when we can defeat it by losing strength
         else {
@@ -152,7 +152,7 @@ public class Hero extends PhysicsSprite
             // check if trigger is activated, if so, disable it and run code
             boolean match = true;
             for (int i = 0; i < 4; ++i)
-                match &= o._heroTriggerActivation[i] <= Score._goodiesCollected[i];
+                match &= o._heroTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
             if (match) {
                 if (contact.isEnabled())
                     LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
@@ -248,7 +248,7 @@ public class Hero extends PhysicsSprite
         g.remove(false);
 
         // count this goodie
-        Score.onGoodieCollected(g);
+        Level._currLevel._score.onGoodieCollected(g);
 
         // update _strength if the goodie is a _strength booster
         _strength += g._strengthBoost;
@@ -270,7 +270,7 @@ public class Hero extends PhysicsSprite
         //
         // TODO: if we jump, we lose this info... make it more orthogonal?
         if (_goodieCountAnimation != null) {
-            int goodies = Score._goodiesCollected[0];
+            int goodies = Level._currLevel._score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {
                 if (_goodieCountAnimation._durations[i] == goodies) {
                     _tr = _goodieCountAnimation._cells[_goodieCountAnimation._frames[i]];

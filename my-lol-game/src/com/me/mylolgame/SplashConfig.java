@@ -8,7 +8,6 @@ import edu.lehigh.cse.lol.SplashConfiguration;
 
 public class SplashConfig extends SplashConfiguration
 {
-
     public String getTitle()
     {
         return "ALE Demo Game";

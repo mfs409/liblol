@@ -1,74 +1,51 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
-// TODO: need to refactor and simplify... first two methods could go in or Level
-
-// TODO: get rid of statics
-
-
+/**
+ * Score is used by Level to track the progress through a level. There are four things tracked: the number of heroes
+ * created and destroyed, the number of enemies created and destroyed, the number of heroes at destinations, and the
+ * number of (each type of) goodie that has been collected.
+ * 
+ * Apart from storing the counts, this class provides a public interface for manipulating the goodie counts, and a set
+ * of internal convenience methods for updating values and checking for win/lose.
+ */
 public class Score
 {
-
     /*
-     * BASIC SUPPORT
+     * COUNTERS
      */
+    
+    /**
+     * Track the number of heroes that have been created
+     */
+    int   _heroesCreated       = 0;
 
     /**
-     * Track the number of _heroes that have been created
+     * Track the number of heroes that have been removed/defeated
      */
-    static int   _heroesCreated;
+    int   _heroesDefeated      = 0;
 
     /**
-     * Track the number of _heroes that have been removed/defeated
+     * Count of the goodies that have been collected in this level
      */
-    static int   _heroesDefeated;
+    int[] _goodiesCollected    = new int[] { 0, 0, 0, 0 };
 
     /**
-     * Count of the goodies (with score 1) that have been collected in this
-     * level
-     * 
-     * TODO: switch to a vector of goodie types
+     * Number of heroes who have arrived at any destination yet
      */
-    static int[] _goodiesCollected = new int[4];
-
-    /**
-     * Number of _heroes who have arrived at any destination yet
-     */
-    static int   _destinationArrivals;
+    int   _destinationArrivals = 0;
 
     /**
      * Count the number of enemies that have been created
      */
-    static int   _enemiesCreated;
+    int   _enemiesCreated      = 0;
 
     /**
      * Count the enemies that have been defeated
      */
-    static int   _enemiesDefeated;
-
-    /**
-     * Reset score info when a new level is created
-     */
-    static void reset()
-    {
-        // reset the hero statistics
-        _heroesCreated = 0;
-        _heroesDefeated = 0;
-        // reset goodie statistics
-        for (int i = 0; i < 4; ++i)
-            _goodiesCollected[i] = 0;
-
-        // reset destination statistics
-        _destinationArrivals = 0;
-
-        // reset enemy statistics
-        _enemiesCreated = 0;
-        _enemiesDefeated = 0;
-    }
+    int   _enemiesDefeated     = 0;
 
     /*
-     * METHODS CALLED WHEN AN ENTITY IS REMOVED
+     * INTERNAL INTERFACE
      */
 
     /**
@@ -77,10 +54,10 @@ public class Score
      * @param e
      *            The enemy who defeated the hero
      */
-    static void defeatHero(Enemy e)
+    void defeatHero(Enemy e)
     {
         _heroesDefeated++;
-        if (_heroesDefeated == Score._heroesCreated) {
+        if (_heroesDefeated == _heroesCreated) {
             if (e._onDefeatHeroText != "")
                 PostScene.setDefaultLoseText(e._onDefeatHeroText);
             Level.loseLevel();
@@ -88,14 +65,14 @@ public class Score
     }
 
     /**
-     * Use this to inform the level that a goodie has been collected by the hero
+     * Use this to inform the level that a goodie has been collected by a hero
      * 
      * @param g
      *            The goodie that was collected
      */
-    static void onGoodieCollected(Goodie g)
+    void onGoodieCollected(Goodie g)
     {
-        // Update any/all goodie counts
+        // Update goodie counts
         for (int i = 0; i < 4; ++i)
             _goodiesCollected[i] += g._score[i];
 
@@ -111,12 +88,12 @@ public class Score
     }
 
     /**
-     * Use this to inform the level that a hero has reached the destination
+     * Use this to inform the level that a hero has reached a destination
      * 
      * @param d
      *            The destination that the hero reached
      */
-    static void onDestinationArrive()
+    void onDestinationArrive()
     {
         // check if the level is complete
         _destinationArrivals++;
@@ -127,9 +104,8 @@ public class Score
     /**
      * Internal method for handling whenever an enemy is defeated
      */
-    static void onDefeatEnemy()
+    void onDefeatEnemy()
     {
-
         // update the count of defeated enemies
         _enemiesDefeated++;
 
@@ -147,51 +123,51 @@ public class Score
     }
 
     /*
-     * MANUAL SCORE MANIPULATION
+     * PUBLIC INTERFACE FOR MANAGING GOODIE COUNTS
      */
 
     /**
      * Manually set the number of goodies of type 1 that have been collected.
      * 
      * @param value
-     *            The number to increment the number of goodies collected by.
+     *            The new value
      */
     public static void setGoodiesCollected1(int value)
     {
-        _goodiesCollected[0] = value;
+        Level._currLevel._score._goodiesCollected[0] = value;
     }
 
     /**
      * Manually set the number of goodies of type 2 that have been collected.
      * 
      * @param value
-     *            The number to increment the number of goodies collected by.
+     *            The new value
      */
     public static void setGoodiesCollected2(int value)
     {
-        _goodiesCollected[1] = value;
+        Level._currLevel._score._goodiesCollected[1] = value;
     }
 
     /**
      * Manually set the number of goodies of type 3 that have been collected.
      * 
      * @param value
-     *            The number to increment the number of goodies collected by.
+     *            The new value
      */
     public static void setGoodiesCollected3(int value)
     {
-        _goodiesCollected[2] = value;
+        Level._currLevel._score._goodiesCollected[2] = value;
     }
 
     /**
      * Manually set the number of goodies of type 4 that have been collected.
      * 
      * @param value
-     *            The number to increment the number of goodies collected by.
+     *            The new value
      */
     public static void setGoodiesCollected4(int value)
     {
-        _goodiesCollected[3] = value;
+        Level._currLevel._score._goodiesCollected[3] = value;
     }
 
     /**
@@ -200,7 +176,7 @@ public class Score
      */
     public static void incrementGoodiesCollected1()
     {
-        _goodiesCollected[0]++;
+        Level._currLevel._score._goodiesCollected[0]++;
     }
 
     /**
@@ -209,7 +185,7 @@ public class Score
      */
     public static void incrementGoodiesCollected2()
     {
-        _goodiesCollected[1]++;
+        Level._currLevel._score._goodiesCollected[1]++;
     }
 
     /**
@@ -218,7 +194,7 @@ public class Score
      */
     public static void incrementGoodiesCollected3()
     {
-        _goodiesCollected[2]++;
+        Level._currLevel._score._goodiesCollected[2]++;
     }
 
     /**
@@ -227,7 +203,7 @@ public class Score
      */
     public static void incrementGoodiesCollected4()
     {
-        _goodiesCollected[3]++;
+        Level._currLevel._score._goodiesCollected[3]++;
     }
 
     /**
@@ -237,7 +213,7 @@ public class Score
      */
     public static int getGoodiesCollected1()
     {
-        return _goodiesCollected[0];
+        return Level._currLevel._score._goodiesCollected[0];
     }
 
     /**
@@ -247,7 +223,7 @@ public class Score
      */
     public static int getGoodiesCollected2()
     {
-        return _goodiesCollected[1];
+        return Level._currLevel._score._goodiesCollected[1];
     }
 
     /**
@@ -257,7 +233,7 @@ public class Score
      */
     public static int getGoodiesCollected3()
     {
-        return _goodiesCollected[2];
+        return Level._currLevel._score._goodiesCollected[2];
     }
 
     /**
@@ -267,6 +243,6 @@ public class Score
      */
     public static int getGoodiesCollected4()
     {
-        return _goodiesCollected[3];
+        return Level._currLevel._score._goodiesCollected[3];
     }
 }

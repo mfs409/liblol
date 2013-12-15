@@ -1,56 +1,136 @@
 package edu.lehigh.cse.lol;
 
-// TODO: comment
-
-// TODO: fix the positioning of text here, and in controls
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import edu.lehigh.cse.lol.Level.Renderable;
 
 /**
- * 
- * 
- * NB: the ScreenAdapter is a convenience since this is a simple renderable screen
- * 
- * TODO: use ScreenAdapter elsewhere?
+ * HelpLevel provides an interface for drawing to the help screens of a game
  */
-public class HelpLevel extends ScreenAdapter // implements Screen
+public class HelpLevel extends ScreenAdapter
 {
     /*
-     * SUPPORT FOR BUILDING HELP SCENES
+     * INTERNAL DATA FOR RENDERING A HELP LEVEL
      */
 
     /**
-     * Reset the help scene so that we can make the next part of the help message
+     * The background color of the help level
+     */
+    private Color                 _c       = new Color();
+
+    /**
+     * All the sprites that need to be drawn
+     */
+    private ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
+
+    /**
+     * The camera to use when drawing
+     */
+    private OrthographicCamera    _camera;
+
+    /**
+     * The spritebatch to use when drawing
+     */
+    private SpriteBatch           _sb;
+
+    /**
+     * In LOL, we avoid having the game designer construct objects. To that end, the HelpLevel is accessed through a
+     * singleton.
+     */
+    static HelpLevel      _currLevel;
+
+    /**
+     * When the game designer creates a help level, she uses configure, which calls this to create the internal context
+     */
+    private HelpLevel()
+    {
+        // save the static context
+        _currLevel = this;
+
+        // set up the camera
+        int camWidth = LOL._game._config.getScreenWidth();
+        int camHeight = LOL._game._config.getScreenHeight();
+        _camera = new OrthographicCamera(camWidth, camHeight);
+        _camera.position.set(camWidth / 2, camHeight / 2, 0);
+
+        // set up the renderer
+        _sb = new SpriteBatch();
+    }
+
+    /**
+     * The main render loop for Help Levels. There's nothing fancy here
+     * 
+     * @param delta
+     *            The time that has transpired since the last render
+     */
+    @Override
+    public void render(float delta)
+    {
+        // Poll for a new touch (down-press)
+        // On down-press, either advance to the next help scene, or return to the splash screen
+        if (Gdx.input.justTouched()) {
+            if (LOL._game._currHelp < LOL._game._config.getNumHelpScenes()) {
+                LOL._game._currHelp++;
+                LOL._game.doHelpLevel(LOL._game._currHelp);
+                return;
+            }
+            LOL._game.doSplash();
+            return;
+        }
+
+        // next we clear the color buffer and set the camera matrices
+        Gdx.gl.glClearColor(_c.r, _c.g, _c.b, _c.a);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // render
+        _camera.update();
+        _sb.setProjectionMatrix(_camera.combined);
+        _sb.begin();
+        for (Renderable c : _sprites)
+            c.render(_sb, 0);
+        _sb.end();
+    }
+
+    /*
+     * PUBLIC INTERFACE
+     */
+
+    /**
+     * Configure a help level by setting its background color
      * 
      * @param red
-     *            red component of help screen background color
+     *            The red component of the background color
      * @param green
-     *            green component of help screen background color
+     *            The green component of the background color
      * @param blue
-     *            blue component of help screen background color
+     *            The blue component of the background color
      */
+    public static void configure(int red, int green, int blue)
+    {
+        _currLevel = new HelpLevel();
+        _currLevel._c.r = ((float) red) / 256;
+        _currLevel._c.g = ((float) green) / 256;
+        _currLevel._c.b = ((float) blue) / 256;
+    }
 
     /**
-     * Draw a picture on the _current help scene
+     * Draw a picture on the current help scene
      * 
      * Note: the order in which this is called relative to other entities will determine whether they go under or over
      * this picture.
      * 
      * @param x
-     *            X coordinate of top left corner
+     *            X coordinate of bottom left corner
      * 
      * @param y
-     *            Y coordinate of top left corner
+     *            Y coordinate of bottom left corner
      * 
      * @param width
      *            Width of the picture
@@ -60,27 +140,15 @@ public class HelpLevel extends ScreenAdapter // implements Screen
      * 
      * @param imgName
      *            Name of the picture to display
-     * 
-     * @return the picture on the screen, so that it can be animated if need be
      */
     public static void drawPicture(final int x, final int y, final int width, final int height, String imgName)
     {
         // set up the image to display
-        //
-        // NB: this will fail gracefully (no crash) for invalid file names
-        TextureRegion[] trs = Media.getImage(imgName);
-        final TextureRegion tr = (trs != null) ? trs[0] : null;
-        _currLevel._sprites.add(new Renderable(){
-            @Override
-            public void render(SpriteBatch sb, float elapsed)
-            {
-                if (tr != null)
-                    sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
-            }});
+        _currLevel._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
-     * Print a message on the _current help scene. This version of the addText method uses the default font.
+     * Print a message on the current help scene. This version of the addText method uses the default font.
      * 
      * @param x
      *            X coordinate of text
@@ -93,7 +161,7 @@ public class HelpLevel extends ScreenAdapter // implements Screen
      */
     static public void drawText(int x, int y, String message)
     {
-        drawText(x, y, message, 255, 255, 255, 20);
+        _currLevel._sprites.add(Util.makeText(x, y, message, 255, 255, 255, 20));
     }
 
     /**
@@ -121,108 +189,9 @@ public class HelpLevel extends ScreenAdapter // implements Screen
      * @param size
      *            The size of the font used to display the message
      */
-    static public void drawText(final int x, final int y, final String message, final int red, final int green, final int blue, int size)
+    static public void drawText(final int x, final int y, final String message, final int red, final int green,
+            final int blue, int size)
     {
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
-        _currLevel._sprites.add(new Renderable(){
-            @Override
-            public void render(SpriteBatch sb, float elapsed)
-            {
-                bf.setColor(((float)red)/256, ((float)green)/256, ((float)blue)/256, 1);
-                bf.drawMultiLine(sb, message, x, y);
-            }});
-    }
-
-    /*
-     * HELP LEVELS
-     */
-
-    static HelpLevel             _currLevel;
-
-    public ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
-
-    OrthographicCamera           _hudCam;
-
-    // a spritebatch and a font for text rendering and a Texture to draw our
-    // boxes
-    private SpriteBatch          _spriteRender;
-
-    LOL                          _game;
-
-    public HelpLevel(int width, int height, LOL game)
-    {
-        _game = game;
-        _currLevel = this;
-
-        int camWidth = _game._config.getScreenWidth();
-        int camHeight = _game._config.getScreenHeight();
-        _hudCam = new OrthographicCamera(camWidth, camHeight);
-        _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
-
-        // next we create a renderer for drawing sprites
-        _spriteRender = new SpriteBatch();
-
-        // A place for everything we draw... need 5 eventually
-        _sprites = new ArrayList<Renderable>();
-    }
-
-    @Override
-    public void render(float delta)
-    {
-        // poll for new touches
-        if (Gdx.input.justTouched())
-            nextHelp();
-
-        // next we clear the color buffer and set the camera matrices
-        Gdx.gl.glClearColor(_red, _green, _blue, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // render the hud
-        _hudCam.update();
-        _spriteRender.setProjectionMatrix(_hudCam.combined);
-        _spriteRender.begin();
-        // do the displayable stuff
-        for (Renderable c : _sprites) {
-            c.render(_spriteRender, 0);
-        }
-        _spriteRender.end();
-    }
-
-    private float _red;
-
-    private float _green;
-
-    private float _blue;
-
-    /**
-     * Configure a level by setting its background color
-     * 
-     * @param red
-     *            The red component of the background color
-     * @param green
-     *            The green component of the background color
-     * @param blue
-     *            The blue component of the background color
-     */
-    public static void configure(int red, int green, int blue)
-    {
-        _currLevel = new HelpLevel(LOL._game._config.getScreenWidth(), LOL._game._config.getScreenWidth(), LOL._game);
-        _currLevel._red = ((float) red) / 256;
-        _currLevel._green = ((float) green) / 256;
-        _currLevel._blue = ((float) blue) / 256;
-    }
-
-    /**
-     * Advance to the next help scene
-     */
-    void nextHelp()
-    {
-        if (_game._currHelp < _game._config.getNumHelpScenes()) {
-            _game._currHelp++;
-            _game.doHelpLevel(_game._currHelp);
-        }
-        else {
-            _game.doSplash();
-        }
+        _currLevel._sprites.add(Util.makeText(x, y, message, red, green, blue, size));
     }
 }

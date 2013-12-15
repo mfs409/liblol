@@ -5,7 +5,11 @@ package edu.lehigh.cse.lol;
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
 
-// TODO: help scenes are not yet implemented
+// TODO: Overall Status: Animation, Background, Chooser, Controls, Destination, Enemy, Hero, Level, LOL,
+// LOLConfiguration, Obstacle, PauseScene, Physics, PhysicsSprite, PostScene, PreScene, Projectile, Route,
+// Splash, SplashConfiguration, Tilt, and Util have outstanding TODOs
+
+// STATUS: Goodie, HelpLevel, Score, and Media are done
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
@@ -16,7 +20,7 @@ import com.badlogic.gdx.Preferences;
 public abstract class LOL extends Game implements ApplicationListener
 {
     /*
-     * GAME CONFIGURATION
+     * PUBLIC INTERFACE: GAME CONFIGURATION
      */
 
     /**
@@ -31,7 +35,7 @@ public abstract class LOL extends Game implements ApplicationListener
     abstract public LOLConfiguration config();
 
     /*
-     * SPLASH SCREEN CONFIGURATION
+     * PUBLIC INTERFACE: SPLASH SCREEN CONFIGURATION
      */
 
     /**
@@ -46,7 +50,7 @@ public abstract class LOL extends Game implements ApplicationListener
     abstract public SplashConfiguration splashConfig();
 
     /*
-     * CORE DECLARATIVE METHODS: RESOURCES, LEVELS, HELP
+     * PUBLIC INTERFACE: CORE GAME LAYOUT METHODS: RESOURCES, LEVELS, HELP
      */
 
     /**
@@ -71,7 +75,7 @@ public abstract class LOL extends Game implements ApplicationListener
     abstract public void configureHelpScene(int whichScene);
 
     /*
-     * CORE EVENT METHODS
+     * PUBLIC INTERFACE: CORE EVENT METHODS
      */
     abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
 
@@ -92,7 +96,7 @@ public abstract class LOL extends Game implements ApplicationListener
     abstract public void onControlPressTrigger(int id, int whichLevel);
 
     /*
-     * NAVIGATION BETWEEN SCENES
+     * INTERNAL INTERFACE: NAVIGATION BETWEEN SCENES
      */
 
     /**
@@ -117,7 +121,7 @@ public abstract class LOL extends Game implements ApplicationListener
     /**
      * Track the current help scene being displayed
      */
-    int   _currHelp;
+    int           _currHelp;
 
     void doSplash()
     {
@@ -201,7 +205,7 @@ public abstract class LOL extends Game implements ApplicationListener
     }
 
     /*
-     * SAVING PROGRESS THROUGH LEVELS
+     * INTERNAL INTERFACE: SAVING PROGRESS THROUGH LEVELS
      */
 
     /**
@@ -230,7 +234,7 @@ public abstract class LOL extends Game implements ApplicationListener
     }
 
     /*
-     * INTERNAL METHODS
+     * INTERNAL INTERFACE: INTERNAL METHODS
      */
 
     static LOL _game;
@@ -273,7 +277,7 @@ public abstract class LOL extends Game implements ApplicationListener
         // It appears that GDX manages all textures for images and fonts, as well as all sounds and music files. That
         // being the case, the only thing we need to be careful about is that we get rid of any references to fonts that
         // might be hanging around
-        Media._fonts.clear();
+        Media.onDispose();
     }
 
     /**
