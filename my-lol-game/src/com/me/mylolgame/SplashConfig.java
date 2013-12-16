@@ -33,7 +33,7 @@ public class SplashConfig implements SplashConfiguration
      */
     public int getPlayX()
     {
-        return 82;
+        return 92;
     }
 
     /**

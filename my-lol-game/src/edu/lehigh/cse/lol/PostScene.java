@@ -177,7 +177,7 @@ public class PostScene
         }
     }
 
-    boolean render(SpriteBatch _spriteRender)
+    boolean render(SpriteBatch sb)
     {
         if (!_visible)
             return false;
@@ -192,13 +192,13 @@ public class PostScene
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Level._currLevel._hudCam.update();
-        _spriteRender.setProjectionMatrix(Level._currLevel._hudCam.combined);
-        _spriteRender.begin();
+        sb.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        sb.begin();
 
         for (Renderable r : _sprites)
-            r.render(_spriteRender, 0);
+            r.render(sb, 0);
 
-        _spriteRender.end();
+        sb.end();
         Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
     }

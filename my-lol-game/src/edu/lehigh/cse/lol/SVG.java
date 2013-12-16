@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
-import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
+import edu.lehigh.cse.lol.Util.SpriteId;
 
 /**
  * SVG allows the game designer to load SVG line drawings into a game. SVG line drawings can be made in Inkscape.

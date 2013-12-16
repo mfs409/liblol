@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
+import edu.lehigh.cse.lol.Util.SpriteId;
+
 /**
  * Projectiles are entities that can be thrown from the hero's location in order to remove enemies
  * 
@@ -272,12 +274,8 @@ public class Projectile extends PhysicsSprite
         _poolSize = size;
         // record vars that describe how the projectile behaves
         _strength = strength;
-        _velocity.x = velocityX;
-        _velocity.y = velocityY;
-        _offset.x = offsetX;
-        _offset.y = offsetY;
-        // _negGravity.x = -Level._initXGravity;
-        // _negGravity.y = -Level._initYGravity;
+        _velocity.set(velocityX, velocityY);
+        _offset.set(offsetX, offsetY);
         _range = 1000;
         _throwSound = null;
         _projectileDisappearSound = null;
@@ -319,8 +317,7 @@ public class Projectile extends PhysicsSprite
      */
     public static void setThrowSound(String soundName)
     {
-        Sound s = Media.getSound(soundName);
-        _throwSound = s;
+        _throwSound = Media.getSound(soundName);
     }
 
     /**
@@ -436,10 +433,6 @@ public class Projectile extends PhysicsSprite
 
         // make the projectile visible
         b._visible = true;
-        // TODO
-        // if (_animationCells != null) {
-        // b._sprite.animate(_animationDurations, _animationCells, true);
-        // }
         if (_throwSound != null)
             _throwSound.play();
         b._disappearSound = _projectileDisappearSound;
@@ -487,7 +480,6 @@ public class Projectile extends PhysicsSprite
         // put the projectile on the screen and place it in the _physics world
         _position.x = _rangeFrom.x;
         _position.y = _rangeFrom.y;
-        // _position.mul(1 / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
         b._physBody.setActive(true);
         b._physBody.setTransform(_position, 0);
 
@@ -517,15 +509,10 @@ public class Projectile extends PhysicsSprite
         if (_rotateVectorThrow) {
             double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x) - Math.atan2(-1, 0);
             b._physBody.setTransform(b._physBody.getPosition(), (float) angle);
-            // TODO: b._sprite.setRotation(180 / (3.1415926f) * (float) angle);
         }
 
         // make the projectile visible
         b._visible = true;
-        // TODO:
-        // if (_animationCells != null) {
-        // b._sprite.animate(_animationDurations, _animationCells, true);
-        // }
         if (_throwSound != null)
             _throwSound.play();
         b._disappearSound = _projectileDisappearSound;
@@ -554,31 +541,4 @@ public class Projectile extends PhysicsSprite
         }
         super.render(sb, delta);
     }
-    /*
-     * protected void onSpriteManagedUpdate()
-     * {
-     * // eliminate the projectile quietly if it has traveled too far
-     * Hero h = Level._lastHero;
-     * if (h != null) {
-     * if ((Math.abs(h._sprite.getX() - _sprite.getX()) > _range.x)
-     * || (Math.abs(h._sprite.getY() - _sprite.getY()) > _range.y)) {
-     * remove(true);
-     * _physBody.setActive(false);
-     * super.onSpriteManagedUpdate();
-     * return;
-     * }
-     * }
-     * // do we need to negate gravity?
-     * if (_gravityEnabled) {
-     * super.onSpriteManagedUpdate();
-     * return;
-     * }
-     * // if we are visible, and if there is gravity, apply negative gravity
-     * if (_sprite.isVisible()) {
-     * if (_negGravity.x != 0 || _negGravity.y != 0)
-     * _physBody.applyForce(_negGravity, _physBody.getWorldCenter());
-     * }
-     * super.onSpriteManagedUpdate();
-     * }
-     */
 }

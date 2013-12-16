@@ -15,6 +15,42 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Util
 {
+    interface HeroCollisionCallback
+    {
+        void go(final Hero h);
+    }
+    
+    class RouteDriver
+    {
+        
+    }
+    
+    /**
+     * This enum encapsulates the different types of PhysicsSprite entities
+     */
+    enum SpriteId
+    {
+        UNKNOWN(0), HERO(1), ENEMY(2), GOODIE(3), PROJECTILE(4), OBSTACLE(5), SVG(6), DESTINATION(7);
+
+        /**
+         * To each ID, we attach an integer value, so that we can compare the
+         * different IDs and establish a hierarchy
+         * for collision management
+         */
+        public final int _id;
+
+        /**
+         * Construct by providing the integral id
+         * 
+         * @param id
+         *            The unique integer for this SpriteId
+         */
+        SpriteId(int id)
+        {
+            _id = id;
+        }
+    }
+
     static class ParallaxLayer
     {
         float         _xSpeed;
@@ -113,8 +149,6 @@ public class Util
         };
     }
 
-    // TODO: make the font name a parameter
-    //
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
     //
     // TODO: this isn't drawing quite where one would expect it to...
@@ -133,8 +167,6 @@ public class Util
         };
     }
 
-    // TODO: make the font name a parameter
-    //
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
     //
     // TODO: this isn't drawing quite where one would expect it to...
@@ -233,14 +265,13 @@ public class Util
         Renderable r = new Renderable()
         {
             final TextureRegion tr = Media.getImage(imgName)[0];
-
             @Override
             public void render(SpriteBatch sb, float delta)
             {
                 sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
-
         };
+        // TODO: use Util
         Level._currLevel._sprites.add(r);
     }
 
@@ -270,13 +301,13 @@ public class Util
         Renderable r = new Renderable()
         {
             final TextureRegion tr = Media.getImage(imgName)[0];
-
             @Override
             public void render(SpriteBatch sb, float delta)
             {
                 sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
         };
+        // TODO: use Util
         Level._currLevel._pix_minus_two.add(r);
     }
 }

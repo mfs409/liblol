@@ -1551,11 +1551,11 @@ public class MyLolGame extends LOL
 
             // draw an enemy to avoid, and one at the end
             Enemy.makeAsCircle(53, 28, 3, 3, "redball.png");
-            Enemy.makeAsBox(130, 0, .5f, 32, "invis.png");
+            Enemy.makeAsBox(130, 0, .5f, 32, "");
 
             // draw the up/down controls
-            Controls.addDownButton(50, 0, 380, 50, "invis.png", 15, h);
-            Controls.addUpButton(50, 270, 380, 50, "invis.png", 15, h);
+            Controls.addDownButton(50, 0, 380, 50, "", 15, h);
+            Controls.addUpButton(50, 270, 380, 50, "", 15, h);
         }
 
         /**
@@ -1583,7 +1583,7 @@ public class MyLolGame extends LOL
             h.addVelocity(5, 0, false);
             Level.setCameraChase(h);
             // to enable crawling, we just draw a crawl button on the screen
-            Controls.addCrawlButton(0, 0, 480, 320, "invis.png", h);
+            Controls.addCrawlButton(0, 0, 480, 320, "", h);
 
             // make an enemy who we can defeat by colliding with it while
             // crawling
@@ -1680,7 +1680,7 @@ public class MyLolGame extends LOL
             Level.configure(10 * 48, 32);
             Physics.configure(0, 0);
             PreScene.addText("Speed boosters and reducers", 50, 50, 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 10 * 480, 320, "invis.png", 1, 0, 1);
+            Util.drawBoundingBox(0, 0, 10 * 480, 320, "", 1, 0, 1);
             Hero h = Hero.makeAsCircle(2, 0, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
@@ -1803,7 +1803,7 @@ public class MyLolGame extends LOL
             // add a button for throwing projectiles
             //
             // TODO: this should throw as long as it's held down... and we should support the same for other controls...
-            Controls.addThrowButton(0, 0, 480, 320, "invis.png", h);
+            Controls.addThrowButton(0, 0, 480, 320, "", h);
             Level.setCameraChase(h);
         }
 
@@ -1847,7 +1847,7 @@ public class MyLolGame extends LOL
             Score.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
-            Controls.addSingleThrowButton(0, 0, 480, 320, "invis.png", h);
+            Controls.addSingleThrowButton(0, 0, 480, 320, "", h);
         }
 
         /**
@@ -1873,7 +1873,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
-            Controls.addVectorThrowButton(0, 0, 480, 320, "invis.png", h);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
@@ -1916,7 +1916,7 @@ public class MyLolGame extends LOL
             // the only differences here are that we turn gravity back on for
             // the projectiles, and
             // we use a "single throw" button
-            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "invis.png", h);
+            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h);
             Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
             Projectile.setProjectileVectorDampeningFactor(.8f);
             Projectile.setRange(40);
@@ -2511,8 +2511,8 @@ public class MyLolGame extends LOL
             // make an obstacle and then connect it to some controls
             Obstacle o = Obstacle.makeAsBox(2, 30.9f, 4, 1, "red.png");
             o.setPhysics(100, 1, 0);
-            Controls.addLeftButton(0, 0, 240, 320, "invis.png", 5, o);
-            Controls.addRightButton(240, 0, 240, 320, "invis.png", 5, o);
+            Controls.addLeftButton(0, 0, 240, 320, "", 5, o);
+            Controls.addRightButton(240, 0, 240, 320, "", 5, o);
         }
 
         /**
@@ -2959,8 +2959,8 @@ public class MyLolGame extends LOL
             o2.setPhysics(100, 0, 1f);
 
             // draw some buttons for moving the hero
-            Controls.addLeftButton(0, 50, 50, 220, "invis.png", 5, h);
-            Controls.addRightButton(430, 50, 50, 220, "invis.png", 5, h);
+            Controls.addLeftButton(0, 50, 50, 220, "", 5, h);
+            Controls.addRightButton(430, 50, 50, 220, "", 5, h);
         }
 
         /**
@@ -3127,7 +3127,7 @@ public class MyLolGame extends LOL
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero
             // velocity
-            Controls.addTurboButton(0, 0, 480, 320, "invis.png", 15, 0, 4, 0, h);
+            Controls.addTurboButton(0, 0, 480, 320, "", 15, 0, 4, 0, h);
         }
 
         /**
@@ -3163,7 +3163,7 @@ public class MyLolGame extends LOL
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero
             // velocity
-            Controls.addDampenedMotionButton(0, 0, 480, 320, "invis.png", 10, 0, 4, h);
+            Controls.addDampenedMotionButton(0, 0, 480, 320, "", 10, 0, 4, h);
         }
 
         /**

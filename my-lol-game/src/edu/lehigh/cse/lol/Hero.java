@@ -13,8 +13,8 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
+
+import edu.lehigh.cse.lol.Util.SpriteId;
 
 public class Hero extends PhysicsSprite
 {
@@ -210,7 +210,7 @@ public class Hero extends PhysicsSprite
         }
         // if the hero is touch and go, make the hero start moving
         if (_touchAndGo != null) {
-            _hover = false;
+            _hoverPosition = null;
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
             addVelocity(_touchAndGo.x, _touchAndGo.y, false);
@@ -384,38 +384,9 @@ public class Hero extends PhysicsSprite
             }
         }
 
-        // damp obstacles change the hero physics by causing slowdown/speedup
-        if (o._isDamp) {
-            Vector2 v = _physBody.getLinearVelocity();
-            v.x *= o._dampFactor;
-            v.y *= o._dampFactor;
-            updateVelocity(v);
-        }
-
-        // speed boost obstacles also change the hero speed, but can be put on a timer
-        if (o._isSpeedBoost) {
-            // boost the speed
-            Vector2 v = _physBody.getLinearVelocity();
-            v.x += o._speedBoostX;
-            v.y += o._speedBoostY;
-            updateVelocity(v);
-            // now set a timer to un-boost the speed
-            if (o._speedBoostDuration > 0) {
-                final Obstacle oo = o;
-                // set up a timer to shut off the boost
-                Timer.schedule(new Task()
-                {
-                    @Override
-                    public void run()
-                    {
-                        Vector2 v = _physBody.getLinearVelocity();
-                        v.x -= oo._speedBoostX;
-                        v.y -= oo._speedBoostY;
-                        updateVelocity(v);
-                    }
-                }, o._speedBoostDuration);
-            }
-        }
+        // if there is code attached to the obstacle for modifying the hero's behavior, run it
+        if (o._heroCollision != null) 
+            o._heroCollision.go(this);
 
         // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors should not enable
         // jumps for the hero.
@@ -610,7 +581,8 @@ public class Hero extends PhysicsSprite
     /**
      * Register an animation sequence, so that this hero can have a custom animation while jumping
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setJumpAnimation(Animation a)
     {
@@ -631,7 +603,8 @@ public class Hero extends PhysicsSprite
     /**
      * Register an animation sequence, so that this hero can have a custom animation while throwing
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setThrowAnimation(Animation a)
     {
@@ -647,7 +620,8 @@ public class Hero extends PhysicsSprite
     /**
      * Register an animation sequence, so that this hero can have a custom animation while crawling
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setCrawlAnimation(Animation a)
     {
@@ -657,7 +631,8 @@ public class Hero extends PhysicsSprite
     /**
      * Register an animation sequence, so that this hero can have a custom animation while invincible
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setInvincibleAnimation(Animation a)
     {
@@ -668,7 +643,8 @@ public class Hero extends PhysicsSprite
      * Indicate that this hero should change its animation cell depending on how many (type-1) goodies have been
      * collected
      * 
-     * @param a An animation that encodes the information we want to display
+     * @param a
+     *            An animation that encodes the information we want to display
      */
     public void setAnimateByGoodieCount(Animation a)
     {

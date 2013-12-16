@@ -2,78 +2,31 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
+// TODO: add support for enemies that can be defeated by jumping on them
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.lol.Util.SpriteId;
+
+/**
+ * Enemies are things to be avoided or defeated by the hero.
+ * 
+ * Every enemy can be defeated via bullets. They can also be defeated by colliding with invincible _heroes, or by
+ * colliding with a hero whose _strength is >= the enemy's _strength, though that case results in the hero losing
+ * _strength.
+ * 
+ * A level can require all enemies to be defeated before the level can be won.
+ * 
+ * Note that goodies can move, using the standard Route interface of PhysicsSprites, or by using tilt
+ */
 public class Enemy extends PhysicsSprite
 {
-    /**
-     * Create a destination
-     * 
-     * This should never be called directly.
-     * 
-     * @param x
-     *            X coordinate of top left corner of this destination
-     * @param y
-     *            X coordinate of top left corner of this destination
-     * @param width
-     *            Width of this destination
-     * @param height
-     *            Height of this destination
-     * @param ttr
-     *            Image to display
-     * @param isStatic
-     *            Can this destination move, or is it at a fixed location
-     * @param isCircle
-     *            true if this should use a circle underneath for its collision
-     *            detection, and false if a box should be used
-     */
-    private Enemy(float width, float height, String imgName)
-    {
-        super(imgName, SpriteId.ENEMY, width, height);
-        Level._currLevel._score._enemiesCreated++;
-    }
-
-    public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
-    {
-        Enemy e = new Enemy(width, height, imgName);
-        e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel._sprites.add(e);
-        return e;
-    }
-
-    public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName)
-    {
-        float radius = (width > height) ? width : height;
-        Enemy e = new Enemy(radius, radius, imgName);
-        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel._sprites.add(e);
-        return e;
-    }
-
-    /**
-     * Enemies are things to be avoided or defeated by the hero.
-     * 
-     * Every enemy can be defeated via bullets. They can also be defeated by colliding with invincible _heroes, or by
-     * colliding with a hero whose _strength is >= the enemy's _strength, though that case results in the hero losing
-     * _strength.
-     * 
-     * A level can require all enemies to be defeated before the level can be won.
-     * 
-     * Note that goodies can move, using the standard Route interface of PhysicsSprites, or by using tilt
-     * 
-     * TODO: add support for enemies that can be defeated by jumping on them
-     */
-
     /*
-     * BASIC FUNCTIONALITY
-     */
-
-    /*
-     * SCORE AND DAMAGE
+     * INTERNAL IMPLEMENTATION
      */
 
     /**
@@ -86,29 +39,6 @@ public class Enemy extends PhysicsSprite
      * Message to display when this enemy defeats the last hero
      */
     String _onDefeatHeroText = "";
-
-    /**
-     * Set the amount of _damage that this enemy does to a hero
-     * 
-     * @param amount
-     *            Amount of _damage. Default is 2, since _heroes have a default _strength of 1, so that the enemy
-     *            defeats the hero but does not disappear.
-     */
-    public void setDamage(int amount)
-    {
-        _damage = amount;
-    }
-
-    /**
-     * If this enemy defeats the last hero of the board, this is the message that will be displayed
-     * 
-     * @param message
-     *            The message to display
-     */
-    public void setDefeatHeroText(String message)
-    {
-        _onDefeatHeroText = message;
-    }
 
     /*
      * SUPPORT FOR DEFEATING ENEMIES
@@ -135,62 +65,32 @@ public class Enemy extends PhysicsSprite
     private boolean _disappearOnTouch      = false;
 
     /**
-     * When an enemy is defeated, this is the code sequence we run to figure out how gameplay should change.
+     * Create an Enemy
      * 
-     * @param increaseScore
-     *            Indicate if we should increase the score when this enemy is defeated
+     * This should never be called directly.
+     * 
+     * @param x
+     *            X coordinate of top left corner of this destination
+     * @param y
+     *            X coordinate of top left corner of this destination
+     * @param width
+     *            Width of this destination
+     * @param height
+     *            Height of this destination
+     * @param ttr
+     *            Image to display
+     * @param isStatic
+     *            Can this destination move, or is it at a fixed location
+     * @param isCircle
+     *            true if this should use a circle underneath for its collision
+     *            detection, and false if a box should be used
      */
-    public void defeat(boolean increaseScore)
+    private Enemy(float width, float height, String imgName)
     {
-        // remove the enemy from the screen
-        remove(false);
-
-        // possibly update score
-        if (increaseScore)
-            Level._currLevel._score.onDefeatEnemy();
-
-        // handle defeat triggers
-        if (_isTrigger)
-            LOL._game.onEnemyDefeatTrigger(_defeatTriggerID, LOL._game._currLevel, this);
+        super(imgName, SpriteId.ENEMY, width, height);
+        Level._currLevel._score._enemiesCreated++;
     }
 
-    /**
-     * Indicate that this enemy can be defeated by crawling into it
-     */
-    public void setDefeatByCrawl()
-    {
-        _defeatByCrawl = true;
-        // make the enemy's _physics body a sensor to prevent ricochets when the hero defeats this
-        _physBody.getFixtureList().get(0).setSensor(true);
-    }
-
-    /**
-     * Make this enemy resist invincibility
-     */
-    public void setResistInvincibility()
-    {
-        _immuneToInvincibility = true;
-    }
-
-    /**
-     * Make this enemy _damage the hero even when the hero is invincible
-     */
-    public void setImmuneToInvincibility()
-    {
-        _alwaysDoesDamage = true;
-    }
-
-    /**
-     * Indicate that if the player touches this enemy, the enemy will be removed from the game
-     */
-    public void setDisappearOnTouch()
-    {
-        _disappearOnTouch = true;
-    }
-
-    /*
-     * CALLBACK SUPPORT
-     */
 
     /**
      * An ID for each enemy who has a callback that runs upon defeat
@@ -202,29 +102,6 @@ public class Enemy extends PhysicsSprite
      */
     boolean     _isTrigger;
 
-    /**
-     * Make the enemy a "defeat trigger" enemy, so that custom code will run when this enemy is defeated
-     * 
-     * @param id
-     *            The id of this enemy, so that we can disambiguate enemy collisions in the onEnemyTrigger code
-     */
-    public void setDefeatTrigger(int id)
-    {
-        _defeatTriggerID = id;
-        _isTrigger = true;
-    }
-
-    /**
-     * Mark this enemy as no longer being a defeat trigger enemy
-     */
-    public void clearDefeatTrigger()
-    {
-        _isTrigger = false;
-    }
-
-    /*
-     * COLLISION SUPPORT
-     */
 
     /**
      * Collision behavior of enemies. Based on our PhysicsSprite numbering scheme, the only concerns are to ensure that
@@ -309,10 +186,6 @@ public class Enemy extends PhysicsSprite
         }
     }
 
-    /*
-     * INTERNAL FUNCTIONALITY
-     */
-
     /**
      * Whenever an Enemy is touched, this code runs automatically.
      * 
@@ -333,5 +206,123 @@ public class Enemy extends PhysicsSprite
             return;
         }
         super.handleTouchDown();
+    }
+
+    /*
+     * PUBLIC INTERFACE
+     */
+
+    public static Enemy makeAsBox(float x, float y, float width, float height, String imgName)
+    {
+        Enemy e = new Enemy(width, height, imgName);
+        e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
+        Level._currLevel._sprites.add(e);
+        return e;
+    }
+
+    public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName)
+    {
+        float radius = (width > height) ? width : height;
+        Enemy e = new Enemy(radius, radius, imgName);
+        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
+        Level._currLevel._sprites.add(e);
+        return e;
+    }
+
+    /**
+     * Set the amount of _damage that this enemy does to a hero
+     * 
+     * @param amount
+     *            Amount of _damage. Default is 2, since _heroes have a default _strength of 1, so that the enemy
+     *            defeats the hero but does not disappear.
+     */
+    public void setDamage(int amount)
+    {
+        _damage = amount;
+    }
+
+    /**
+     * If this enemy defeats the last hero of the board, this is the message that will be displayed
+     * 
+     * @param message
+     *            The message to display
+     */
+    public void setDefeatHeroText(String message)
+    {
+        _onDefeatHeroText = message;
+    }
+
+    /**
+     * When an enemy is defeated, this is the code sequence we run to figure out how gameplay should change.
+     * 
+     * @param increaseScore
+     *            Indicate if we should increase the score when this enemy is defeated
+     */
+    public void defeat(boolean increaseScore)
+    {
+        // remove the enemy from the screen
+        remove(false);
+
+        // possibly update score
+        if (increaseScore)
+            Level._currLevel._score.onDefeatEnemy();
+
+        // handle defeat triggers
+        if (_isTrigger)
+            LOL._game.onEnemyDefeatTrigger(_defeatTriggerID, LOL._game._currLevel, this);
+    }
+
+    /**
+     * Indicate that this enemy can be defeated by crawling into it
+     */
+    public void setDefeatByCrawl()
+    {
+        _defeatByCrawl = true;
+        // make the enemy's _physics body a sensor to prevent ricochets when the hero defeats this
+        _physBody.getFixtureList().get(0).setSensor(true);
+    }
+
+    /**
+     * Make this enemy resist invincibility
+     */
+    public void setResistInvincibility()
+    {
+        _immuneToInvincibility = true;
+    }
+
+    /**
+     * Make this enemy _damage the hero even when the hero is invincible
+     */
+    public void setImmuneToInvincibility()
+    {
+        _alwaysDoesDamage = true;
+    }
+
+    /**
+     * Indicate that if the player touches this enemy, the enemy will be removed from the game
+     */
+    public void setDisappearOnTouch()
+    {
+        _disappearOnTouch = true;
+    }
+
+    /**
+     * Make the enemy a "defeat trigger" enemy, so that custom code will run when this enemy is defeated
+     * 
+     * @param id
+     *            The id of this enemy, so that we can disambiguate enemy collisions in the onEnemyTrigger code
+     */
+    public void setDefeatTrigger(int id)
+    {
+        _defeatTriggerID = id;
+        _isTrigger = true;
+    }
+
+    /**
+     * Mark this enemy as no longer being a defeat trigger enemy
+     */
+    public void clearDefeatTrigger()
+    {
+        _isTrigger = false;
     }
 }
