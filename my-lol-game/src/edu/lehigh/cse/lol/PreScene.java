@@ -35,18 +35,16 @@ public class PreScene
         return ps;
     }
 
-    // TODO: add font parameter
-    public static void addText(String text, int x, int y, int red, int green, int blue, int size)
+    public static void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
     {
         PreScene tmp = getCurrPreScene();
-        tmp._sprites.add(Util.makeText(x, y, text, red, green, blue, size));
+        tmp._sprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
-    // TODO: add font parameter
-    public static void addCenteredText(String text, int red, int green, int blue, int size)
+    public static void addCenteredText(String text, int red, int green, int blue, String fontName, int size)
     {
         PreScene tmp = getCurrPreScene();
-        tmp._sprites.add(Util.makeCenteredText(text, red, green, blue, size));
+        tmp._sprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
     public static void addImage(String imgName, int x, int y, int width, int height)

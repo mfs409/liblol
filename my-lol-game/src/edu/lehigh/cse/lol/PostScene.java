@@ -76,31 +76,31 @@ public class PostScene
     }
 
     // TODO: make font face a parameter
-    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, int size)
+    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();
-        tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, size));
+        tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     // TODO: make font face a parameter
-    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, int size)
+    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();
-        tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, size));
+        tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     // TODO: make font face a parameter
-    public static void addExtraWinTextCentered(String text, int red, int green, int blue, int size)
+    public static void addExtraWinTextCentered(String text, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();
-        tmp._winSprites.add(Util.makeCenteredText(text, red, green, blue, size));
+        tmp._winSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
     // TODO: make font face a parameter
-    public static void addExtraLoseTextCentered(String text, int red, int green, int blue, int size)
+    public static void addExtraLoseTextCentered(String text, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();
-        tmp._loseSprites.add(Util.makeCenteredText(text, red, green, blue, size));
+        tmp._loseSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
     public static void addWinImage(String imgName, int x, int y, int width, int height)
@@ -148,13 +148,13 @@ public class PostScene
             if (_winSound != null)
                 _winSound.play();
             // TODO: externalize font information, and add font face
-            _winSprites.add(Util.makeCenteredText(_winText, 255, 255, 255, 32));
+            _winSprites.add(Util.makeCenteredText(_winText, 255, 255, 255, LOL._game._config.getDefaultFont(), 32));
         }
         else {
             if (_loseSound != null)
                 _loseSound.play();
             // TODO: externalize font information, and add font face
-            _loseSprites.add(Util.makeCenteredText(_loseText, 255, 255, 255, 32));
+            _loseSprites.add(Util.makeCenteredText(_loseText, 255, 255, 255, LOL._game._config.getDefaultFont(), 32));
         }
     }
 

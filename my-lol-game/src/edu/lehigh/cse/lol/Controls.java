@@ -6,6 +6,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: work on the 'hold to keep the action going' buttons
 
+// TODO: pass in fonts everywhere...
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

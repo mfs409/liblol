@@ -123,7 +123,7 @@ public class Chooser extends ScreenAdapter
         _camera.position.set(camWidth / 2, cameraCapY, 0);
 
         // create a font
-        _font = Media.getFont("arial.ttf", 30);
+        _font = Media.getFont(LOL._game._config.getDefaultFont(), 30);
 
         // and our renderers
         _batcher = new SpriteBatch();

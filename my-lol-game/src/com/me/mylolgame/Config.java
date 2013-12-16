@@ -5,7 +5,7 @@ import edu.lehigh.cse.lol.LOLConfiguration;
 /**
  * This file provides configuration information about the game
  */
-public class Config extends LOLConfiguration
+public class Config implements LOLConfiguration
 {
     /**
      * The width of the screen of your device, in pixels. The actual value here isn't too important, the main point is
@@ -81,5 +81,16 @@ public class Config extends LOLConfiguration
     public String getStorageKey()
     {
         return "com.me.mylolgame.prefs";
+    }
+
+    /**
+     * When getting started, it's useful to use the "easy" versions of some methods, which rely on an implicit default
+     * font. You should provide the name of the font through this file, and be sure the font file (with a .ttf
+     * extension) is in your assets folder.
+     */
+    @Override
+    public String getDefaultFont()
+    {
+        return "arial.ttf";
     }
 }

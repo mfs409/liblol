@@ -161,7 +161,7 @@ public class HelpLevel extends ScreenAdapter
      */
     static public void drawText(int x, int y, String message)
     {
-        _currLevel._sprites.add(Util.makeText(x, y, message, 255, 255, 255, 20));
+        _currLevel._sprites.add(Util.makeText(x, y, message, 255, 255, 255, LOL._game._config.getDefaultFont(), 20));
     }
 
     /**
@@ -190,8 +190,8 @@ public class HelpLevel extends ScreenAdapter
      *            The size of the font used to display the message
      */
     static public void drawText(final int x, final int y, final String message, final int red, final int green,
-            final int blue, int size)
+            final int blue, String fontName, int size)
     {
-        _currLevel._sprites.add(Util.makeText(x, y, message, red, green, blue, size));
+        _currLevel._sprites.add(Util.makeText(x, y, message, red, green, blue, fontName, size));
     }
 }
