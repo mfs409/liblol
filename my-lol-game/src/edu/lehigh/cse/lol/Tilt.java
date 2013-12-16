@@ -137,7 +137,7 @@ public class Tilt
         }
         // when not in velocity mode, apply the accelerometer reading to each entity as a force
         else {
-            for (PhysicsSprite gfo : _accelEntities) 
+            for (PhysicsSprite gfo : _accelEntities)
                 if (gfo._physBody.isActive())
                     gfo._physBody.applyForceToCenter(xGravity, yGravity, true);
         }

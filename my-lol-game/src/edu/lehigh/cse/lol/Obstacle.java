@@ -247,12 +247,12 @@ public class Obstacle extends PhysicsSprite
      * Track if this is a "trigger" object that causes special code to run upon
      * any collision with a hero
      */
-    boolean _isHeroCollideTrigger         = false;
+    boolean _isHeroCollideTrigger        = false;
 
     /**
      * Hero triggers can require certain Goodie counts in order to run
      */
-    int     []_heroTriggerActivation = new int[4];
+    int[]   _heroTriggerActivation       = new int[4];
 
     /**
      * An ID for each hero trigger object, in case it's useful
@@ -263,12 +263,12 @@ public class Obstacle extends PhysicsSprite
      * Track if this is a "trigger" object that causes special code to run upon
      * any collision with an enemy
      */
-    boolean _isEnemyCollideTrigger        = false;
+    boolean _isEnemyCollideTrigger       = false;
 
     /**
      * Enemy triggers can require certain Goodie counts in order to run
      */
-    int     [] _enemyTriggerActivation = new int[4];
+    int[]   _enemyTriggerActivation      = new int[4];
 
     /**
      * An ID for each enemy trigger object, in case it's useful
@@ -278,18 +278,18 @@ public class Obstacle extends PhysicsSprite
     /**
      * How long to wait before running trigger code.
      */
-    float   _enemyCollideTriggerDelay     = 0;
+    float   _enemyCollideTriggerDelay    = 0;
 
     /**
      * Track if this is a "trigger" object that causes special code to run upon
      * any collision with a projectile
      */
-    boolean _isProjectileCollideTrigger   = false;
+    boolean _isProjectileCollideTrigger  = false;
 
     /**
      * Projectile triggers can require certain Goodie counts in order to run
      */
-    int []    _projectileTriggerActivation = new int[4];
+    int[]   _projectileTriggerActivation = new int[4];
 
     /**
      * An ID for each projectile trigger object, in case it's useful

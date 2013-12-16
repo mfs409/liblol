@@ -94,9 +94,7 @@ public class Chooser extends ScreenAdapter
 
         int numLevels = _game._config.getNumLevels();
 
-        
         levels = new LevelSprite[numLevels];
-
 
         // figure out number of rows and columns...
         int camWidth = _game._config.getScreenWidth();
@@ -104,7 +102,6 @@ public class Chooser extends ScreenAdapter
 
         int vpad = camHeight;
 
-        
         // we want to have gutter, box, gutter, box, ..., where the last box (+
         // margin) is scroll space
         int columns = camWidth / (hGutter + bWidth) - 1;
@@ -114,13 +111,13 @@ public class Chooser extends ScreenAdapter
         for (int i = 0; i < numLevels; ++i) {
             int mycol = i % columns;
             int myrow = rows - i / columns - 1;
-            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter) + vpad,
-                    bWidth, bHeight, 1 + i);
+            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter)
+                    + vpad, bWidth, bHeight, 1 + i);
         }
 
         // figure out the boundary for the camera
         cameraCapY = levels[0].r.y + bHeight - camHeight / 2 + vGutter;
-        Gdx.app.log("cap", ""+cameraCapY);
+        Gdx.app.log("cap", "" + cameraCapY);
         // configure the camera
         _camera = new OrthographicCamera(camWidth, camHeight);
         _camera.position.set(camWidth / 2, cameraCapY, 0);

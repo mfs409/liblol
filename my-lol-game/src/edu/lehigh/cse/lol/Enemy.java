@@ -260,13 +260,15 @@ public class Enemy extends PhysicsSprite
         if (o._isEnemyCollideTrigger && match) {
             // run the callback after a delay, or immediately?
             if (o._enemyCollideTriggerDelay > 0) {
-                  final Enemy e = this;
-                  Timer.schedule(new Task(){
+                final Enemy e = this;
+                Timer.schedule(new Task()
+                {
                     @Override
                     public void run()
                     {
                         LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, e);
-                    }}, o._enemyCollideTriggerDelay);
+                    }
+                }, o._enemyCollideTriggerDelay);
             }
             else {
                 LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, this);

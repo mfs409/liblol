@@ -378,7 +378,7 @@ public class MyLolGame extends LOL
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
-            // since it loops, it is going to 
+            // since it loops, it is going to
 
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
@@ -3371,7 +3371,7 @@ public class MyLolGame extends LOL
             // here's a way to set a goodie count
             Score.setGoodiesCollected3(3);
             // here's a way to read and write a goodie count
-            Score.setGoodiesCollected1(4+Score.getGoodiesCollected1());
+            Score.setGoodiesCollected1(4 + Score.getGoodiesCollected1());
             // get rid of the star, so we know it's been used
             o.remove(true);
             h.resize(h.getXPosition(), h.getYPosition(), 5, 5);

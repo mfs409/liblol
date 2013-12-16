@@ -31,12 +31,12 @@ public class PostScene
     /**
      * Sound to play when the level is won
      */
-    Sound _winSound;
+    Sound                 _winSound;
 
     /**
      * Sound to play when the level is lost
      */
-    Sound _loseSound;
+    Sound                 _loseSound;
 
     /**
      * Set the sound to play when the level is won
@@ -162,7 +162,7 @@ public class PostScene
     {
         // we turn off music here, so that music plays during the PostScene
         Level._currLevel.stopMusic();
-        
+
         if (!_win) {
             LOL._game.doPlayLevel(LOL._game._currLevel);
         }

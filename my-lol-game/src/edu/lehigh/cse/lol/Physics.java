@@ -100,7 +100,7 @@ public class Physics
                 PhysicsSprite gfoB = (PhysicsSprite) b;
 
                 // TODO: need to handle sticky obstacles here!
-                
+
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact
                 if (gfoA._passThroughId != 0 && gfoA._passThroughId == gfoB._passThroughId) {

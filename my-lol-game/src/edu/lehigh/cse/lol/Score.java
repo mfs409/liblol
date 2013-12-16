@@ -186,7 +186,7 @@ public class Score
             LOL._game._unlockLevel++;
             LOL._game.saveUnlocked();
         }
-        
+
         // drop everything from the hud
         Level._currLevel._controls.clear();
 

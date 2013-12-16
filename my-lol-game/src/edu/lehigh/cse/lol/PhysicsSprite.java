@@ -595,7 +595,7 @@ public abstract class PhysicsSprite implements Renderable
 
         // this is how we initialize a route driver:
         // first, move to the starting point
-        _physBody.setTransform(_myRoute._xIndices[0] + _width/2, _myRoute._yIndices[0] + _height/2, 0);
+        _physBody.setTransform(_myRoute._xIndices[0] + _width / 2, _myRoute._yIndices[0] + _height / 2, 0);
         // second, indicate that we are working on goal #1, and set velocity
         // TODO: this needs to be in one place, instead of duplicated elsewhere
         // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
@@ -612,6 +612,8 @@ public abstract class PhysicsSprite implements Renderable
     boolean _routeDone;
 
     int     _nextRouteGoal;
+
+    int     _zIndex;
 
     /**
      * Internal method for figuring out where we need to go next when driving a route
@@ -636,7 +638,7 @@ public abstract class PhysicsSprite implements Renderable
             if (_nextRouteGoal == _myRoute._points) {
                 // reset if it's a loop, else terminate Route
                 if (_routeLoop) {
-                    _physBody.setTransform(_myRoute._xIndices[0] + _width/2, _myRoute._yIndices[0] + _height/2, 0);
+                    _physBody.setTransform(_myRoute._xIndices[0] + _width / 2, _myRoute._yIndices[0] + _height / 2, 0);
                     _nextRouteGoal = 1;
                     _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
                     _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
@@ -1277,7 +1279,7 @@ public abstract class PhysicsSprite implements Renderable
             _tr = null;
         }
     }
-    
+
     public void resize(float x, float y, float width, float height)
     {
         _width = width;

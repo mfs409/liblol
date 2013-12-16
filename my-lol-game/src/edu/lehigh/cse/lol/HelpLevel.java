@@ -44,7 +44,7 @@ public class HelpLevel extends ScreenAdapter
      * In LOL, we avoid having the game designer construct objects. To that end, the HelpLevel is accessed through a
      * singleton.
      */
-    static HelpLevel      _currLevel;
+    static HelpLevel              _currLevel;
 
     /**
      * When the game designer creates a help level, she uses configure, which calls this to create the internal context

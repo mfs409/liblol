@@ -156,12 +156,11 @@ public class Util
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
     //
     // TODO: this isn't drawing quite where one would expect it to...
-    static Renderable makeCenteredText(final String message, final int red, final int green,
-            final int blue, int size)
+    static Renderable makeCenteredText(final String message, final int red, final int green, final int blue, int size)
     {
         final BitmapFont bf = Media.getFont("arial.ttf", size);
-        final float x = LOL._game._config.getScreenWidth()/2 - bf.getMultiLineBounds(message).width / 2;
-        final float y = LOL._game._config.getScreenHeight()/2 - bf.getMultiLineBounds(message).height / 2;
+        final float x = LOL._game._config.getScreenWidth() / 2 - bf.getMultiLineBounds(message).width / 2;
+        final float y = LOL._game._config.getScreenHeight() / 2 - bf.getMultiLineBounds(message).height / 2;
         return new Renderable()
         {
             @Override
