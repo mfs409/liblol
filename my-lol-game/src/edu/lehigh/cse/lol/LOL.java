@@ -9,15 +9,15 @@ package edu.lehigh.cse.lol;
 
 // TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
 
-// TODO: Overall Status: Animation, Background, Chooser, Controls, Enemy, Hero, Level, LOL,
-// LOLConfiguration, Obstacle, PauseScene, Physics, PhysicsSprite, PostScene, PreScene, Projectile, Route,
-// Splash, SplashConfiguration, and Util have outstanding TODOs 
-//
-// Note: (Animation, Background, and Physics are close to done)
+// TODO: Overall Status: Chooser, Controls, Enemy, Hero, LOL,
+// LOLConfiguration, Obstacle, PauseScene, PhysicsSprite, PostScene, PreScene, Projectile, Route,
+// Splash, SplashConfiguration, and Util have outstanding TODOs
 
-// STATUS: Destination, Goodie, HelpLevel, Media, Score, and Tilt are done
+// STATUS: Destination, Goodie, HelpLevel, Media, Score, SVG, and Tilt are done
 
-// STATUS: Level and Physics are close
+// STATUS: Animation, Background, Level and Physics are close
+
+// TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;

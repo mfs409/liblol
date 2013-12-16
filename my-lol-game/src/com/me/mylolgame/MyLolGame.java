@@ -1654,7 +1654,7 @@ public class MyLolGame extends LOL
             Level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            Util.importSVGLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
+            SVG.importLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
 
             // notice that we can only get to the destination by jumping from
             // *on top of* the obstacle
