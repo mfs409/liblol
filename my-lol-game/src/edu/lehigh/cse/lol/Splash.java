@@ -2,6 +2,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up code and comments
 
+// TODO: add debug rendering to this?
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
@@ -18,28 +20,22 @@ import com.badlogic.gdx.math.Vector3;
 public class Splash extends ScreenAdapter
 {
     /**
-     * Since we're going to create other screens via this screen, we need a
-     * reference to the game...
-     */
-    LOL                _game;
-
-    /**
      * The camera we will use
      */
     OrthographicCamera _camera;
 
     /**
-     * A rectangle for tracking when the Play button is pressed
+     * A rectangle for tracking the location of the play button
      */
     Rectangle          _play;
 
     /**
-     * A rectangle for tracking when the Help button is pressed
+     * A rectangle for tracking the location of the help button
      */
     Rectangle          _help;
 
     /**
-     * A rectangle for tracking when the Quit button is pressed
+     * A rectangle for tracking the location of the quit button
      */
     Rectangle          _quit;
 
@@ -51,13 +47,10 @@ public class Splash extends ScreenAdapter
     /**
      * For rendering
      */
-    SpriteBatch        _batcher;
+    SpriteBatch        _sb;
 
     /**
      * The splash screen texture region
-     * 
-     * TODO: use Media so we don't need to track this... it's lazy, but for the
-     * simple splash screen it will do
      */
     TextureRegion      _tr;
 
@@ -67,44 +60,40 @@ public class Splash extends ScreenAdapter
      * @param game
      *            The main game object
      */
-    public Splash(LOL game)
+    public Splash()
     {
-        // save a reference to the game
-        _game = game;
-
-        int CAMERA_WIDTH = _game._config.getScreenWidth();
-        int CAMERA_HEIGHT = _game._config.getScreenHeight();
+        int CAMERA_WIDTH = LOL._game._config.getScreenWidth();
+        int CAMERA_HEIGHT = LOL._game._config.getScreenHeight();
 
         // configure the camera, center it on the screen
         _camera = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
         _camera.position.set(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2, 0);
 
         // set up the play, help, and quit buttons
-        _play = new Rectangle(_game._splashConfig.getPlayX(), _game._splashConfig.getPlayY()
-                - _game._splashConfig.getPlayHeight(), _game._splashConfig.getPlayWidth(),
-                _game._splashConfig.getPlayHeight());
-        if (_game._config.getNumHelpScenes() > 0) {
-            _help = new Rectangle(_game._splashConfig.getHelpX(), _game._splashConfig.getHelpY()
-                    - _game._splashConfig.getHelpHeight(), _game._splashConfig.getHelpWidth(),
-                    _game._splashConfig.getHelpHeight());
+        _play = new Rectangle(LOL._game._splashConfig.getPlayX(), LOL._game._splashConfig.getPlayY()
+                - LOL._game._splashConfig.getPlayHeight(), LOL._game._splashConfig.getPlayWidth(),
+                LOL._game._splashConfig.getPlayHeight());
+        if (LOL._game._config.getNumHelpScenes() > 0) {
+            _help = new Rectangle(LOL._game._splashConfig.getHelpX(), LOL._game._splashConfig.getHelpY()
+                    - LOL._game._splashConfig.getHelpHeight(), LOL._game._splashConfig.getHelpWidth(),
+                    LOL._game._splashConfig.getHelpHeight());
         }
-        _quit = new Rectangle(_game._splashConfig.getQuitX(), _game._splashConfig.getQuitY()
-                - _game._splashConfig.getQuitHeight(), _game._splashConfig.getQuitWidth(),
-                _game._splashConfig.getQuitHeight());
+        _quit = new Rectangle(LOL._game._splashConfig.getQuitX(), LOL._game._splashConfig.getQuitY()
+                - LOL._game._splashConfig.getQuitHeight(), LOL._game._splashConfig.getQuitWidth(),
+                LOL._game._splashConfig.getQuitHeight());
 
         // prepare for touches
         _touchVec = new Vector3();
 
         // set up our images
-        _tr = new TextureRegion(new Texture(Gdx.files.internal(_game._config.getSplashBackground())));
+        _tr = new TextureRegion(new Texture(Gdx.files.internal(LOL._game._config.getSplashBackground())));
 
         // and our sprite batcher
-        _batcher = new SpriteBatch();
+        _sb = new SpriteBatch();
 
         // config music?
-        if (_game._config.getSplashMusic() != null) {
-            _music = Media.getMusic(_game._config.getSplashMusic());
-        }
+        if (LOL._game._config.getSplashMusic() != null)
+            _music = Media.getMusic(LOL._game._config.getSplashMusic());
     }
 
     @Override
@@ -114,20 +103,15 @@ public class Splash extends ScreenAdapter
         playMusic();
 
         // was there a touch?
-        //
-        // TODO: why is this here, and not in TouchDown?
         if (Gdx.input.justTouched()) {
             // translate the touch into _touchVec
             _camera.unproject(_touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (_quit.contains(_touchVec.x, _touchVec.y)) {
-                _game.doQuit();
-            }
-            if (_play.contains(_touchVec.x, _touchVec.y)) {
-                _game.doChooser();
-            }
-            if (_help != null && _help.contains(_touchVec.x, _touchVec.y)) {
-                _game.doHelpLevel(1);
-            }
+            if (_quit.contains(_touchVec.x, _touchVec.y)) 
+                LOL._game.doQuit();
+            if (_play.contains(_touchVec.x, _touchVec.y)) 
+                LOL._game.doChooser();
+            if (_help != null && _help.contains(_touchVec.x, _touchVec.y)) 
+                LOL._game.doHelpLevel(1);
         }
 
         // now draw the screen...
@@ -135,20 +119,14 @@ public class Splash extends ScreenAdapter
         gl.glClearColor(1, 0, 0, 1);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         _camera.update();
-        _batcher.setProjectionMatrix(_camera.combined);
 
-        int width = _game._config.getScreenWidth();
-        int height = _game._config.getScreenHeight();
-
-        _batcher.begin();
-        _batcher.enableBlending();
-        _batcher.draw(_tr, 0, 0, width, height);
-        _batcher.end();
-
-        // Render some text... for this we have to set the projection matrix
-        // again, so we work in pixel coordinates
-        _batcher.setProjectionMatrix(_camera.combined);
-        _batcher.begin();
+        int width = LOL._game._config.getScreenWidth();
+        int height = LOL._game._config.getScreenHeight();
+        
+        _sb.setProjectionMatrix(_camera.combined);
+        _sb.begin();
+        _sb.enableBlending();
+        _sb.draw(_tr, 0, 0, width, height);
 
         // [TODO]: these need to use the _game._config... it also wouldn't hurt to
         // have objects to store these text entities, so that we can precompute
@@ -156,16 +134,16 @@ public class Splash extends ScreenAdapter
         BitmapFont f = Media.getFont("arial.ttf", 30);
         float w = f.getBounds("Demo Game").width;
         float h = f.getBounds("test").height;
-        f.draw(_batcher, "Demo Game", width / 2 - w / 2, height - 5 - h);
+        f.draw(_sb, "Demo Game", width / 2 - w / 2, height - 5 - h);
         w = f.getBounds("Play").width;
-        f.draw(_batcher, "Play", _game._splashConfig.getPlayX(), _game._splashConfig.getPlayY());
+        f.draw(_sb, "Play", LOL._game._splashConfig.getPlayX(), LOL._game._splashConfig.getPlayY());
         if (_help != null) {
             w = f.getBounds("Help").width;
-            f.draw(_batcher, "Help", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h);
+            f.draw(_sb, "Help", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h);
         }
         w = f.getBounds("Quit").width;
-        f.draw(_batcher, "Quit", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h - 30 - h);
-        _batcher.end();
+        f.draw(_sb, "Quit", width / 2 - w / 2, height - 5 - h - 30 - h - 30 - h - 30 - h);
+        _sb.end();
     }
 
     /*

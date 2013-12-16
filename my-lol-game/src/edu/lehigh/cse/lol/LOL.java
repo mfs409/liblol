@@ -9,13 +9,13 @@ package edu.lehigh.cse.lol;
 
 // TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
 
-// TODO: Overall Status: Chooser, Controls, Enemy, Hero, LOL,
-// LOLConfiguration, Obstacle, PauseScene, PhysicsSprite, PostScene, PreScene, Projectile, Route,
+// TODO: Overall Status: Chooser, Controls, Enemy, LOL,
+// LOLConfiguration, Obstacle, PauseScene, PhysicsSprite, PostScene, PreScene, Projectile
 // Splash, SplashConfiguration, and Util have outstanding TODOs
 
-// STATUS: Destination, Goodie, HelpLevel, Media, Score, SVG, and Tilt are done
+// STATUS: Destination, Goodie, HelpLevel, Media, Route, Score, SVG, and Tilt are done
 
-// STATUS: Animation, Background, Level and Physics are close
+// STATUS: Animation, Background, Hero, Level and Physics are close
 
 // TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
 
@@ -137,7 +137,7 @@ public abstract class LOL extends Game implements ApplicationListener
         _currLevel = 0;
         _mode = Modes.SPLASH;
         _currHelp = 0;
-        setScreen(new Splash(this));
+        setScreen(new Splash());
     }
 
     void doChooser()

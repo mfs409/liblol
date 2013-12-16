@@ -1,11 +1,7 @@
 package edu.lehigh.cse.lol;
 
-// TODO: are we setting center points or bottom-left points? This will matter to pokepath stuff
-
-// TODO: clean up comments
-
 /**
- * A Route specifies a set of points that an entitiy will follow, so that it can move from one point to the next
+ * A Route specifies a set of points that an entity will move between at a fixed speed.
  */
 public class Route
 {

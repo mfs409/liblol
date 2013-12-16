@@ -803,7 +803,7 @@ public abstract class PhysicsSprite implements Renderable
 
     private Hero    _throwHero;
 
-    void handleTouchDown(float x, float y)
+    void handleTouchDown()
     {
         if (_touchSound != null)
             _touchSound.play();

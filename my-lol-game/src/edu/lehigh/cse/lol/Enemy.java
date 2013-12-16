@@ -324,7 +324,7 @@ public class Enemy extends PhysicsSprite
      *            Y position of the touch
      */
     @Override
-    void handleTouchDown(float x, float y)
+    void handleTouchDown()
     {
         if (_disappearOnTouch) {
             // if (Configuration.isVibrationOn())
@@ -332,6 +332,6 @@ public class Enemy extends PhysicsSprite
             defeat(true);
             return;
         }
-        super.handleTouchDown(x, y);
+        super.handleTouchDown();
     }
 }

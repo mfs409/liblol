@@ -494,7 +494,7 @@ public class Level extends ScreenAdapter
         _gameCam.unproject(_touchVec.set(x, y, 0));
         _world.QueryAABB(_callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f, _touchVec.y + 0.1f);
         if (_hitSprite != null) {
-            _hitSprite.handleTouchDown(_touchVec.x, _touchVec.y);
+            _hitSprite.handleTouchDown();
             return;
         }
 

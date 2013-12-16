@@ -1,14 +1,9 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
-// TODO: be sure that whenever possible, we've moved funcitonality into PhysicsSprite
-
 // TODO: the decisions about what animation to display are very ad-hoc. We could
 // use a combination of boolean flags, plus some other data, to make a
 // reasonable decision in a function.
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -23,30 +18,269 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 public class Hero extends PhysicsSprite
 {
+    /*
+     * BASIC HERO CONFIGURATION
+     */
 
+    /**
+     * Strength of the hero
+     * 
+     * This determines how many collisions with enemies the hero can sustain before it is defeated. The default is 1,
+     * and the default enemy damage amount is 2, so that the default behavior is for the hero to be defeated on any
+     * collision with an enemy, with the enemy *not* disappearing
+     */
+    int               _strength = 1;
+
+    /**
+     * Time until the hero's invincibility runs out
+     */
+    private float     _invincibleRemaining;
+
+    /**
+     * Animation support: cells involved in animation for invincibility
+     */
+    private Animation _invincibleAnimation;
+
+    /**
+     * Is the hero currently in crawl mode?
+     */
+    private boolean   _crawling;
+
+    /**
+     * Animation support: cells involved in animation for crawling
+     */
+    private Animation _crawlAnimation;
+
+    /**
+     * Animation support: cells involved in animation for throwing
+     */
+    private Animation _throwAnimation;
+
+    /**
+     * Animation support: seconds that constitute a throw action
+     */
+    private float     _throwAnimateTotalLength;
+
+    /**
+     * Animation support: how long until we stop showing the throw animation
+     */
+    private float     _throwAnimationTimeRemaining;
+
+    /**
+     * Animation support: an Animation sequence that correlates goodie counts to specific frames of an animation
+     */
+    private Animation _goodieCountAnimation;
+
+    /**
+     * Track if the hero is in the air, so that it can't jump when it isn't touching anything.
+     * 
+     * This does not quite work as desired, but is good enough for LOL
+     */
+    private boolean   _inAir;
+
+    /**
+     * When the hero jumps, this specifies the amount of velocity to add to simulate a jump
+     */
+    private Vector2   _jumpImpulses;
+
+    /**
+     * Indicate that the hero can jump while in the air
+     */
+    private boolean   _allowMultiJump;
+
+    /**
+     * Does the hero jump when we touch it?
+     */
+    private boolean   _isTouchJump;
+
+    /**
+     * Animation support: cells involved in animation for jumping
+     */
+    private Animation _jumpAnimation;
+
+    /**
+     * Sound to play when a jump occurs
+     */
+    private Sound     _jumpSound;
+
+    /**
+     * Does the hero only start moving when we touch it?
+     */
+    private Vector2   _touchAndGo;
+
+    /**
+     * For tracking the current amount of rotation of the hero
+     */
+    private float     _currentRotation;
+
+    /**
+     * Construct a Hero by creating a PhysicsSprite and incrementing the number of heroes created.
+     * 
+     * @param width
+     *            The width of the hero
+     * @param height
+     *            The height of the hero
+     * @param imgName
+     *            The name of the file that has the default image for this hero
+     */
     Hero(float width, float height, String imgName)
     {
         super(imgName, SpriteId.HERO, width, height);
         Level._currLevel._score._heroesCreated++;
     }
 
-    public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
+    /*
+     * INTERNAL INTERFACE: NON-COLLISION EVENTS
+     */
+
+    /**
+     * We can't just use the basic PhysicsSprite renderer, because we might need to adjust a one-off animation
+     * (invincibility or throw) first
+     * 
+     * @param sb
+     *            The SpriteBatch to use for drawing this hero
+     * @param delta
+     *            The time since the last render
+     */
+    @Override
+    public void render(SpriteBatch sb, float delta)
     {
-        Hero h = new Hero(width, height, imgName);
-        h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level._currLevel._sprites.add(h);
-        return h;
+        // determine when to turn off throw animations
+        if (_throwAnimationTimeRemaining > 0) {
+            _throwAnimationTimeRemaining -= delta;
+            if (_throwAnimationTimeRemaining <= 0) {
+                _throwAnimationTimeRemaining = 0;
+                setCurrentAnimation(_defaultAnimation);
+            }
+        }
+
+        // determine when to turn off invincibility. When we turn it off, if we had an invincibility animation, turn it
+        // off too
+        if (_invincibleRemaining > 0) {
+            _invincibleRemaining -= delta;
+            if (_invincibleRemaining <= 0) {
+                _invincibleRemaining = 0;
+                if (_invincibleAnimation != null)
+                    setCurrentAnimation(_defaultAnimation);
+            }
+        }
+
+        super.render(sb, delta);
     }
 
-    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName)
+    /**
+     * Make the hero jump, unless it is in the air and not multijump
+     */
+    void jump()
     {
-        float radius = (width > height) ? width : height;
-        Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Level._currLevel._sprites.add(h);
-        return h;
+        if (_inAir)
+            return;
+        Vector2 v = _physBody.getLinearVelocity();
+        v.add(_jumpImpulses);
+        updateVelocity(v);
+        if (!_allowMultiJump)
+            _inAir = true;
+        if (_jumpAnimation != null)
+            setCurrentAnimation(_jumpAnimation);
+        if (_jumpSound != null)
+            _jumpSound.play();
     }
 
+    /**
+     * Stop the jump animation for a hero, and make it eligible to jump again
+     */
+    void stopJump()
+    {
+        if (_inAir || _allowMultiJump) {
+            _inAir = false;
+            setCurrentAnimation(_defaultAnimation);
+        }
+    }
+
+    /**
+     * When the hero is touched, we might need to take action. If so, we use this to detemrine what to do.
+     */
+    @Override
+    void handleTouchDown()
+    {
+        // if the hero is touch-to-jump, then try to jump
+        if (_isTouchJump) {
+            jump();
+            return;
+        }
+        // if the hero is touch and go, make the hero start moving
+        if (_touchAndGo != null) {
+            _hover = false;
+            if (_physBody.getType() != BodyType.DynamicBody)
+                _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
+            addVelocity(_touchAndGo.x, _touchAndGo.y, false);
+            // turn off _isTouchAndGo, so we can't double-touch
+            _touchAndGo = null;
+            return;
+        }
+        super.handleTouchDown();
+    }
+
+    /**
+     * Internal method to make the hero's throw animation play while it is throwing a projectile
+     */
+    void doThrowAnimation()
+    {
+        if (_throwAnimation != null) {
+            setCurrentAnimation(_throwAnimation);
+            _throwAnimationTimeRemaining = _throwAnimateTotalLength;
+        }
+    }
+
+    /**
+     * Put the hero in crawl mode. Note that we make the hero rotate when it is crawling
+     */
+    void crawlOn()
+    {
+        _crawling = true;
+        _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
+        if (_crawlAnimation != null)
+            setCurrentAnimation(_crawlAnimation);
+    }
+
+    /**
+     * Take the hero out of crawl mode
+     */
+    void crawlOff()
+    {
+        _crawling = false;
+        _physBody.setTransform(_physBody.getPosition(), 0);
+        setCurrentAnimation(_defaultAnimation);
+    }
+
+    /**
+     * Change the rotation of the hero
+     * 
+     * @param delta
+     *            How much to add to the current rotation
+     */
+    void increaseRotation(float delta)
+    {
+        if (_inAir) {
+            _currentRotation += delta;
+            _physBody.setAngularVelocity(0);
+            _physBody.setTransform(_physBody.getPosition(), _currentRotation);
+        }
+    }
+
+    /*
+     * INTERNAL INTERFACE: COLLISION DETECTION
+     */
+
+    /**
+     * The Hero is the dominant participant in all collisions. Whenever the hero collides with something, we need to
+     * figure out what to do
+     * 
+     * @param other
+     *            Other object involved in this collision
+     * @param contact
+     *            A description of the contact that caused this collision
+     */
     @Override
     void onCollide(PhysicsSprite other, Contact contact)
     {
@@ -61,13 +295,6 @@ public class Hero extends PhysicsSprite
             onCollideWithSVG(other);
         else if (other._psType == SpriteId.GOODIE)
             onCollideWithGoodie((Goodie) other);
-
-        // one last thing: if the hero was "norotate", then patch up any
-        // rotation that happened to its _physics body by
-        // mistake:
-        // TODO: do we still need this?
-        // if (!_canRotate)
-        // _physBody.setTransform(_physBody.getPosition(), 0);
     }
 
     /**
@@ -107,7 +334,6 @@ public class Hero extends PhysicsSprite
             Level._currLevel._score.defeatHero(e);
             return;
         }
-        // TODO
         // handle hero invincibility
         if (_invincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
@@ -140,27 +366,25 @@ public class Hero extends PhysicsSprite
     private void onCollideWithObstacle(Obstacle o, Contact contact)
     {
         // do we need to play a sound?
-        // TODO: should we call this from anywhere else?
         o.playCollideSound();
 
         // reset rotation of hero if this obstacle is not a sensor
         if ((_currentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
             increaseRotation(-_currentRotation);
 
-        // Handle callback if this obstacle is a trigger
-        if (o._isHeroCollideTrigger) {
-            // check if trigger is activated, if so, disable it and run code
+        // Handle callback if this obstacle is a trigger, but only if the contact wasn't disabled (due to pass-through)
+        if (o._isHeroCollideTrigger && contact.isEnabled()) {
+            // check if trigger is activated, if so run Trigger code
             boolean match = true;
             for (int i = 0; i < 4; ++i)
                 match &= o._heroTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
             if (match) {
-                if (contact.isEnabled())
-                    LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
+                LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
                 return;
             }
         }
 
-        // damp obstacles change the hero _physics by causing slowdown/speedup
+        // damp obstacles change the hero physics by causing slowdown/speedup
         if (o._isDamp) {
             Vector2 v = _physBody.getLinearVelocity();
             v.x *= o._dampFactor;
@@ -203,12 +427,15 @@ public class Hero extends PhysicsSprite
         // remedy the issues in level 72, where moving breaks the joint but a
         // new joint doesn't get built
 
-        // handle sticky obstacles
+        // handle sticky obstacles... only do something if we're hitting the obstacle from the right direction
         if ((o.isStickyTop && getYPosition() >= o.getYPosition() + o._height)
                 || (o.isStickyLeft && getXPosition() + _width <= o.getXPosition())
                 || (o.isStickyRight && getXPosition() >= o.getXPosition() + o._width)
                 || (o.isStickyBottom && getYPosition() + _height <= o.getYPosition()))
         {
+            // create distance and weld joints... somehow, the combination is needed to get this to work
+            //
+            // TODO: revisit 'somehow' after we fix this code
             Vector2 v = contact.getWorldManifold().getPoints()[0];
             _physBody.setLinearVelocity(0, 0);
             DistanceJointDef d = new DistanceJointDef();
@@ -232,7 +459,6 @@ public class Hero extends PhysicsSprite
     {
         // all we do is record that the hero is not in the air anymore, and is
         // not in a jump animation anymore
-        // TODO:
         stopJump();
     }
 
@@ -250,20 +476,16 @@ public class Hero extends PhysicsSprite
         // count this goodie
         Level._currLevel._score.onGoodieCollected(g);
 
-        // update _strength if the goodie is a _strength booster
+        // update strength if the goodie is a strength booster
         _strength += g._strengthBoost;
 
         // deal with invincibility
         if (g._invincibilityDuration > 0) {
-
             // update the time to end invincibility
             _invincibleRemaining += g._invincibilityDuration;
-
             // invincible animation
-            if (_invincibleAnimation != null) {
+            if (_invincibleAnimation != null)
                 setCurrentAnimation(_invincibleAnimation);
-                _glowing = true;
-            }
         }
 
         // deal with animation changes due to goodie count
@@ -281,47 +503,66 @@ public class Hero extends PhysicsSprite
     }
 
     /*
-     * BASIC FUNCTIONALITY
+     * PUBLIC INTERFACE
      */
 
     /**
-     * Strength of the hero
+     * Make a Hero with an underlying rectangular shape
      * 
-     * This determines how many collisions with enemies the hero can sustain before it is defeated. The default is 1,
-     * and the default enemy _damage amount is 2, so that the default behavior is for the hero to be defeated on any
-     * collision with an enemy
+     * @param x
+     *            X coordinate of the hero
+     * @param y
+     *            Y coordinate of the hero
+     * @param width
+     *            width of the hero
+     * @param height
+     *            height of the hero
+     * @param imgName
+     *            File name of the default image to display
+     * @return The hero that was created
      */
-    int _strength = 1;
+    public static Hero makeAsBox(float x, float y, float width, float height, String imgName)
+    {
+        Hero h = new Hero(width, height, imgName);
+        h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
+        Level._currLevel._sprites.add(h);
+        return h;
+    }
 
     /**
-     * Give the hero more _strength than the default, so it can survive more collisions with enemies
+     * Make a Hero with an underlying circular shape
+     * 
+     * @param x
+     *            X coordinate of the hero
+     * @param y
+     *            Y coordinate of the hero
+     * @param width
+     *            width of the hero
+     * @param height
+     *            height of the hero
+     * @param imgName
+     *            File name of the default image to display
+     * @return The hero that was created
+     */
+    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName)
+    {
+        float radius = (width > height) ? width : height;
+        Hero h = new Hero(width, height, imgName);
+        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
+        Level._currLevel._sprites.add(h);
+        return h;
+    }
+
+    /**
+     * Give the hero more strength than the default, so it can survive more collisions with enemies
      * 
      * @param amount
-     *            The new _strength of the hero
+     *            The new strength of the hero
      */
     public void setStrength(int amount)
     {
         _strength = amount;
     }
-
-    /*
-     * DELAYED MOTION SUPPORT
-     */
-
-    /**
-     * Does the hero only start moving when we touch it?
-     */
-    private boolean _isTouchAndGo     = false;
-
-    /**
-     * Velocity in X dimension for this hero when it is touched
-     */
-    private int     _xVelocityTouchGo = 0;
-
-    /**
-     * Velocity in Y dimension for this hero when it is touched
-     */
-    private int     _yVelocityTouchGo = 0;
 
     /**
      * Indicate that upon a touch, this hero should begin moving with a specific velocity
@@ -331,93 +572,9 @@ public class Hero extends PhysicsSprite
      * @param y
      *            Velocity in Y dimension
      */
-    public void setTouchAndGo(int x, int y)
+    public void setTouchAndGo(float x, float y)
     {
-        _isTouchAndGo = true;
-        _xVelocityTouchGo = x;
-        _yVelocityTouchGo = y;
-        // TODO: // Level._current.registerTouchArea(_sprite);
-    }
-
-    /*
-     * JUMP SUPPORT
-     */
-
-    /**
-     * Track if the hero is in the air, so that it can't jump when it isn't touching anything.
-     * 
-     * This does not quite work as desired, but is good enough for our demo
-     */
-    private boolean   _inAir        = false;
-
-    /**
-     * When the hero jumps, this specifies the amount of jump impulse in the X dimension
-     */
-    private int       _xJumpImpulse = 0;
-
-    /**
-     * When the hero jumps, this specifies the amount of jump impulse in the Y dimension
-     */
-    private int       _yJumpImpulse = 0;
-
-    /**
-     * Indicate that the hero can jump while in the air
-     */
-    private boolean   _allowMultiJump;
-
-    /**
-     * Does the hero jump when we touch it?
-     */
-    private boolean   _isTouchJump  = false;
-
-    /**
-     * Animation support: cells involved in animation for jumping
-     */
-    private Animation _jumpAnimation;
-
-    /**
-     * Sound to play when a jump occurs
-     */
-    private Sound     _jumpSound;
-
-    /**
-     * Make the hero jump, unless it is in the air
-     */
-    void jump()
-    {
-        // TODO:
-        /*
-         * if (_weldJoint != null) {
-         * Level._physics.destroyJoint(_weldJoint);
-         * _weldJoint = null;
-         * }
-         */
-        if (_inAir)
-            return;
-        Vector2 v = _physBody.getLinearVelocity();
-        v.y += _yJumpImpulse;
-        v.x += _xJumpImpulse;
-        updateVelocity(v);
-        if (!_allowMultiJump)
-            _inAir = true;
-        if (_jumpAnimation != null) {
-            setCurrentAnimation(_jumpAnimation);
-        }
-        if (_jumpSound != null)
-            _jumpSound.play();
-    }
-
-    /**
-     * Stop the jump animation for a hero, and make it eligible to jump again
-     */
-    void stopJump()
-    {
-        if (_inAir || _allowMultiJump) {
-            _inAir = false;
-            // note: we don't need to worry about if the hero has a default animation... if it's null, everything will
-            // still be OK
-            setCurrentAnimation(_defaultAnimation);
-        }
+        _touchAndGo = new Vector2(x, y);
     }
 
     /**
@@ -428,10 +585,9 @@ public class Hero extends PhysicsSprite
      * @param y
      *            Force in Y direction
      */
-    public void setJumpImpulses(int x, int y)
+    public void setJumpImpulses(float x, float y)
     {
-        _xJumpImpulse = x;
-        _yJumpImpulse = y;
+        _jumpImpulses = new Vector2(x, y);
     }
 
     /**
@@ -451,33 +607,10 @@ public class Hero extends PhysicsSprite
         _isTouchJump = true;
     }
 
-    @Override
-    void handleTouchDown(float x, float y)
-    {
-        if (_isTouchJump) {
-            jump();
-        }
-        else if (_isTouchAndGo) {
-            _hover = false;
-            if (_physBody.getType() != BodyType.DynamicBody)
-                _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
-            addVelocity(_xVelocityTouchGo, _yVelocityTouchGo, false);
-            // turn off _isTouchAndGo, so we can't double-touch
-            _isTouchAndGo = false;
-        }
-
-        else {
-            super.handleTouchDown(x, y);
-        }
-    }
-
     /**
      * Register an animation sequence, so that this hero can have a custom animation while jumping
      * 
-     * @param cells
-     *            Which cells to show
-     * @param durations
-     *            How long to show each cell
+     * @param a The animation to display
      */
     public void setJumpAnimation(Animation a)
     {
@@ -495,43 +628,10 @@ public class Hero extends PhysicsSprite
         _jumpSound = Media.getSound(soundName);
     }
 
-    /*
-     * THROW SUPPORT
-     */
-
-    /**
-     * Animation support: cells involved in animation for throwing
-     */
-    private Animation _throwAnimation;
-
-    /**
-     * Animation support: seconds that constitute a throw action
-     */
-    private float     _throwAnimateTotalLength;
-
-    /**
-     * Animation support: how long until we stop showing the throw animation
-     */
-    private float     _throwAnimationTimeRemaining;
-
-    /**
-     * Internal method to make the hero's throw animation play while it is throwing a projectile
-     */
-    void doThrowAnimation()
-    {
-        if (_throwAnimation != null) {
-            setCurrentAnimation(_throwAnimation);
-            _throwAnimationTimeRemaining = _throwAnimateTotalLength;
-        }
-    }
-
     /**
      * Register an animation sequence, so that this hero can have a custom animation while throwing
      * 
-     * @param cells
-     *            Which cells to show
-     * @param durations
-     *            How long to show each cell
+     * @param a The animation to display
      */
     public void setThrowAnimation(Animation a)
     {
@@ -544,172 +644,34 @@ public class Hero extends PhysicsSprite
         _throwAnimateTotalLength /= 1000; // convert to seconds
     }
 
-    /*
-     * CRAWL SUPPORT
-     */
-
     /**
-     * Is the hero currently in crawl mode?
-     */
-    private boolean   _crawling = false;
-
-    /**
-     * Animation support: cells involved in animation for _crawling
-     */
-    private Animation _crawlAnimation;
-
-    /**
-     * Put the hero in crawl mode
-     */
-    void crawlOn()
-    {
-        _crawling = true;
-        _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
-        if (_crawlAnimation != null)
-            setCurrentAnimation(_crawlAnimation);
-    }
-
-    /**
-     * Take the hero out of crawl mode
-     */
-    void crawlOff()
-    {
-        _crawling = false;
-        _physBody.setTransform(_physBody.getPosition(), 0);
-        setCurrentAnimation(_defaultAnimation);
-    }
-
-    /**
-     * Register an animation sequence, so that this hero can have a custom animation while _crawling
+     * Register an animation sequence, so that this hero can have a custom animation while crawling
      * 
-     * @param cells
-     *            Which cells to show
-     * @param durations
-     *            How long to show each cell
+     * @param a The animation to display
      */
     public void setCrawlAnimation(Animation a)
     {
         _crawlAnimation = a;
     }
 
-    /*
-     * INVINCIBILITY SUPPORT
-     */
-
-    /**
-     * Time when the hero's invincibility runs out
-     */
-    private float     _invincibleRemaining = 0;
-
-    /**
-     * Track whether there is a playing invincibility animation right now
-     */
-    private boolean   _glowing             = false;
-
-    /**
-     * Animation support: cells involved in animation for invincibility
-     */
-    private Animation _invincibleAnimation;
-
     /**
      * Register an animation sequence, so that this hero can have a custom animation while invincible
      * 
-     * @param cells
-     *            Which cells to show
-     * @param durations
-     *            How long to show each cell
+     * @param a The animation to display
      */
     public void setInvincibleAnimation(Animation a)
     {
         _invincibleAnimation = a;
     }
 
-    /*
-     * MANUAL ROTATION
-     */
-
-    /**
-     * For tracking the _current amount of rotation of the hero
-     */
-    private float _currentRotation;
-
-    /**
-     * Change the rotation of the hero
-     * 
-     * @param delta
-     *            How much to add to the _current rotation
-     */
-    void increaseRotation(float delta)
-    {
-        if (_inAir) {
-            _currentRotation += delta;
-            _physBody.setAngularVelocity(0);
-            _physBody.setTransform(_physBody.getPosition(), _currentRotation);
-        }
-    }
-
-    /*
-     * CUSTOM ANIMATION VIA GOODIE COUNT
-     */
-
-    /**
-     * Flag for tracking if we change the animation cell based on the goodie count
-     */
-    private Animation _goodieCountAnimation;
-
     /**
      * Indicate that this hero should change its animation cell depending on how many (type-1) goodies have been
      * collected
      * 
-     * @param counts
-     *            An array of the different goodie counts that cause changes in appearance
-     * @param cells
-     *            An array of the cells of the hero's animation sequence to display. These should correspond to the
-     *            entries in counts
+     * @param a An animation that encodes the information we want to display
      */
     public void setAnimateByGoodieCount(Animation a)
     {
         _goodieCountAnimation = a;
-    }
-
-    /*
-     * ADVANCED POSITIONING FUNCTIONALITY
-     */
-
-    /*
-     * COLLISION SUPPORT
-     */
-
-    /*
-     * INTERNAL FUNCTIONALITY
-     */
-
-    @Override
-    public void render(SpriteBatch _spriteRender, float delta)
-    {
-        // determine when to turn off throw animations
-        if (_throwAnimationTimeRemaining > 0) {
-            _throwAnimationTimeRemaining -= delta;
-            if (_throwAnimationTimeRemaining < 0) {
-                _throwAnimationTimeRemaining = 0;
-                setCurrentAnimation(_defaultAnimation);
-            }
-        }
-
-        // on each hero render, update invincibility status
-        if (_invincibleRemaining > 0) {
-            _invincibleRemaining -= delta;
-            if (_invincibleRemaining < 0) {
-                Gdx.app.log("invince", "over");
-                _invincibleRemaining = 0;
-                // reset animation
-                if (_glowing) {
-                    setCurrentAnimation(_defaultAnimation);
-                    _glowing = false;
-                }
-            }
-        }
-
-        super.render(_spriteRender, delta);
     }
 }
