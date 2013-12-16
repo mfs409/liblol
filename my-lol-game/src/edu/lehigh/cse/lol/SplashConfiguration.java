@@ -7,7 +7,6 @@ package edu.lehigh.cse.lol;
  * 
  * That being the case, the splash screen consists of an image, a sound file, and descriptions of the regions that
  * should be treated as Play, Help, and Quit buttons
- * 
  */
 public interface SplashConfiguration
 {

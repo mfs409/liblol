@@ -1,7 +1,5 @@
 package com.me.mylolgame;
 
-// TODO: Overall Status (this namespace): Config, SplashConfig, and MyLolGame all have outstanding TODOs
-
 // TODO: Verify that mp3 and jpg files work
 
 // TODO: Util's text functions are a bit funky, and result in HelpScene drawing text oddly

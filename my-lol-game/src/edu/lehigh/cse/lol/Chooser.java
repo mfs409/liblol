@@ -164,7 +164,7 @@ public class Chooser extends ScreenAdapter
         _srend.begin(ShapeType.Filled);
         _srend.setColor(.4f, .4f, .4f, 0.9f);
         for (LevelSprite ls : levels) {
-            if (ls.l > LOL._game._unlockLevel && !_game._config.getDeveloperUnlock()) {
+            if (ls.l > LOL._game._unlockLevel && !_game._config.getUnlockMode()) {
                 _srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
             }
         }
@@ -209,7 +209,7 @@ public class Chooser extends ScreenAdapter
     {
         _camera.unproject(curr.set(x, y, 0));
         for (LevelSprite ls : levels) {
-            if (ls.l <= LOL._game._unlockLevel || _game._config.getDeveloperUnlock()) {
+            if (ls.l <= LOL._game._unlockLevel || _game._config.getUnlockMode()) {
                 if (ls.r.contains(curr.x, curr.y)) {
                     _game.doPlayLevel(ls.l);
                     return true;

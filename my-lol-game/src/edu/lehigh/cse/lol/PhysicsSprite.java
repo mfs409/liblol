@@ -1529,12 +1529,7 @@ public abstract class PhysicsSprite implements Renderable
      * OTHER FUNCTIONALITY
      */
 
-    /**
-     * Track if this entity can be re-positioned via the developer live-edit feature
-     */
-    boolean isLiveEdit;
-
-    /**
+     /**
      * By default, non-hero entities are not subject to gravity until they are given a path, velocity, or other form of
      * motion. This lets an entity simply fall.
      */
