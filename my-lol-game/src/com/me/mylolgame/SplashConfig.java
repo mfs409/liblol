@@ -6,105 +6,78 @@ import edu.lehigh.cse.lol.SplashConfiguration;
 
 // TODO: then extend this so that we can query to get width and height via queries to SplashConfiguration
 
-public class SplashConfig extends SplashConfiguration
+public class SplashConfig implements SplashConfiguration
 {
-    public String getTitle()
+    @Override
+    public String getBackgroundImage()
     {
-        return "ALE Demo Game";
+        return "splash.png";
     }
 
-    public String getPlayButtonText()
+    @Override
+    public String getMusic()
     {
-        return "Play";
-    }
-
-    public String getHelpButtonText()
-    {
-        return "Help";
-    }
-
-    public String getQuitButtonText()
-    {
-        return "Quit";
+        return "tune.ogg";
     }
 
     public int getPlayX()
     {
-        return 213;
+        return 82;
     }
 
     public int getPlayY()
     {
-        return 241;
+        return 150;
     }
 
     public int getPlayWidth()
     {
-        return 56;
+        return 75;
     }
 
     public int getPlayHeight()
     {
-        return 22;
+        return 25;
     }
 
     public int getHelpX()
     {
-        return 211;
+        return 284;
     }
 
     public int getHelpY()
     {
-        return 189;
+        return 140;
     }
 
     public int getHelpWidth()
     {
-        return 58;
+        return 70;
     }
 
     public int getHelpHeight()
     {
-        return 22;
+        return 25;
     }
 
     public int getQuitX()
     {
-        return 213;
+        return 163;
     }
 
     public int getQuitY()
     {
-        return 137;
+        return 89;
     }
 
     public int getQuitWidth()
     {
-        return 45;
+        return 75;
     }
 
     public int getQuitHeight()
     {
-        return 22;
+        return 25;
     }
 
-    public int getTitleX()
-    {
-        return 157;
-    }
-
-    public int getTitleY()
-    {
-        return 293;
-    }
-
-    public int getTitleWidth()
-    {
-        return 166;
-    }
-
-    public int getTitleHeight()
-    {
-        return 22;
-    }
 }

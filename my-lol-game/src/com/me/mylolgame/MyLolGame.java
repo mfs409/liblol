@@ -72,9 +72,12 @@ public class MyLolGame extends LOL
         Media.registerImage("purpleball.png");
         Media.registerImage("msg1.png");
         Media.registerImage("msg2.png");
-        Media.registerImage("splash.png");
+        Media.registerImage("fade.png");
         Media.registerImage("greyball.png");
 
+        // load the image we show on the main screen
+        Media.registerImage("splash.png");
+        
         // parallax stuff
         Media.registerImage("mid.png");
         Media.registerImage("front.png");
@@ -2190,7 +2193,7 @@ public class MyLolGame extends LOL
             // draw a picture when the level is won, and don't print text...
             // this particular picture
             // isn't very useful
-            PostScene.addWinImage("splash.png", 0, 0, 480, 320);
+            PostScene.addWinImage("fade.png", 0, 0, 480, 320);
         }
 
         /**
@@ -2234,7 +2237,7 @@ public class MyLolGame extends LOL
             e.setDefeatByCrawl();
 
             // include a picture on the "try again" screen
-            PostScene.addLoseImage("splash.png", 0, 0, 480, 320);
+            PostScene.addLoseImage("fade.png", 0, 0, 480, 320);
             PostScene.setDefaultLoseText("Oh well...");
             Level.setCameraChase(h);
         }

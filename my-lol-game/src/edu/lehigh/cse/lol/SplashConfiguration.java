@@ -1,47 +1,83 @@
 package edu.lehigh.cse.lol;
 
-// TODO: comment and explain this
-
-public abstract class SplashConfiguration
+/**
+ * The SplashConfiguration interface describes the key characteristics of the splash screen. In LOL, we assume there is
+ * a single image that comprises the background, and that any text or graphics that are needed to instruct the user
+ * (i.e., a "play button") are part of the image.
+ * 
+ * That being the case, the splash screen consists of an image, a sound file, and descriptions of the regions that
+ * should be treated as Play, Help, and Quit buttons
+ * 
+ */
+public interface SplashConfiguration
 {
+    /**
+     * Indicate the X coordinate of the bottom left corner of the "PLAY" button
+     */
+    public int getPlayX();
 
-    abstract public String getTitle();
+    /**
+     * Indicate the Y coordinate of the bottom left corner of the "PLAY" button
+     */
+    public int getPlayY();
 
-    abstract public String getPlayButtonText();
+    /**
+     * Indicate the width of the "PLAY" button
+     */
+    public int getPlayWidth();
 
-    abstract public String getHelpButtonText();
+    /**
+     * Indicate the height of the "PLAY" button
+     */
+    public int getPlayHeight();
 
-    abstract public String getQuitButtonText();
+    /**
+     * Indicate the X coordinate of the bottom left corner of the "HELP" button
+     */
+    public int getHelpX();
 
-    abstract public int getPlayX();
+    /**
+     * Indicate the Y coordinate of the bottom left corner of the "HELP" button
+     */
+    public int getHelpY();
 
-    abstract public int getPlayY();
+    /**
+     * Indicate the width of the "HELP" button
+     */
+    public int getHelpWidth();
 
-    abstract public int getPlayWidth();
+    /**
+     * Indicate the height of the "HELP" button
+     */
+    public int getHelpHeight();
 
-    abstract public int getPlayHeight();
+    /**
+     * Indicate the X coordinate of the bottom left corner of the "QUIT" button
+     */
+    public int getQuitX();
 
-    abstract public int getHelpX();
+    /**
+     * Indicate the Y coordinate of the bottom left corner of the "QUIT" button
+     */
+    public int getQuitY();
 
-    abstract public int getHelpY();
+    /**
+     * Indicate the width of the "QUIT" button
+     */
+    public int getQuitWidth();
 
-    abstract public int getHelpWidth();
+    /**
+     * Indicate the height of the "QUIT" button
+     */
+    public int getQuitHeight();
 
-    abstract public int getHelpHeight();
+    /**
+     * Indicate the name of the file that serves as the background image for the opening screen
+     */
+    public String getBackgroundImage();
 
-    abstract public int getQuitX();
-
-    abstract public int getQuitY();
-
-    abstract public int getQuitWidth();
-
-    abstract public int getQuitHeight();
-
-    abstract public int getTitleX();
-
-    abstract public int getTitleY();
-
-    abstract public int getTitleWidth();
-
-    abstract public int getTitleHeight();
+    /**
+     * Indicate the name of the file that serves as the music for the opening screen
+     */
+    public String getMusic();
 }

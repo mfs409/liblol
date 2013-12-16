@@ -9,11 +9,10 @@ package edu.lehigh.cse.lol;
 
 // TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
 
-// TODO: Overall Status: Chooser, Controls, Enemy, LOL,
-// LOLConfiguration, Obstacle, PauseScene, PhysicsSprite, PostScene, PreScene, Projectile
-// Splash, SplashConfiguration, and Util have outstanding TODOs
+// TODO: Overall Status: Chooser, Controls, Enemy, LOL, LOLConfiguration, Obstacle, PauseScene, PhysicsSprite,
+// PostScene, PreScene, Projectile and Util have lots of remaining work
 
-// STATUS: Destination, Goodie, HelpLevel, Media, Route, Score, SVG, and Tilt are done
+// STATUS: Destination, Goodie, HelpLevel, Media, Route, Score, Splash, SplashConfiguration, SVG, and Tilt are done
 
 // STATUS: Animation, Background, Hero, Level and Physics are close
 

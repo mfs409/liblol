@@ -31,18 +31,6 @@ public class Config extends LOLConfiguration
     }
 
     @Override
-    public String getSplashBackground()
-    {
-        return "splash.png";
-    }
-
-    @Override
-    public String getSplashMusic()
-    {
-        return "tune.ogg";
-    }
-
-    @Override
     public boolean getVibration()
     {
         return false;

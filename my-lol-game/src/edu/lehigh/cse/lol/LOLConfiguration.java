@@ -15,10 +15,6 @@ public abstract class LOLConfiguration
 
     abstract public int getNumHelpScenes();
 
-    abstract public String getSplashBackground();
-
-    abstract public String getSplashMusic();
-
     abstract public boolean getVibration();
 
     abstract public boolean getDeveloperUnlock();
