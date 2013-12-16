@@ -1,138 +1,73 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
-// TODO: get rid of statics
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
+/**
+ * Tilt provides a mechanism for moving entities on the screen. To use tilt, you must enable() it for a level, and also
+ * indicate that some entities move via tilting.
+ * 
+ * Tilt has two flavors: tilt can cause gravitational effects, where a sustained tilt causes acceleration (this is the
+ * default), or it can cause sprites to move with a fixed velocity.
+ * 
+ * Be careful when using tilt. Different phones' accelerometers vary in terms of sensitivity. It is possible to set
+ * multipliers and/or caps on the effect of Tilt, but these may not suffice to make your game playable and enjoyable.
+ */
 public class Tilt
 {
     /*
-     * BASIC FUNCTIONALITY
+     * INTERNAL INTERFACE
      */
 
     /**
      * Maximum gravity the accelerometer can create in X dimension
      */
-    static private float            _xGravityMax;
+    private float            _xGravityMax;
 
     /**
      * Maximum gravity the accelerometer can create in Y dimension
      */
-    static private float            _yGravityMax;
-
-    /**
-     * List of entities that change behavior based on tilt
-     */
-    static ArrayList<PhysicsSprite> _accelEntities = new ArrayList<PhysicsSprite>();
+    private float            _yGravityMax;
 
     /**
      * Track if we have an override for gravity to be translated into velocity
      */
-    static boolean                  _tiltVelocityOverride;
+    private boolean          _tiltVelocityOverride;
 
     /**
      * A multiplier to make gravity change faster or slower than the
      * accelerometer default
      */
-    private static float            _gravityMultiplier;
+    private float            _gravityMultiplier = 1;
 
     /**
-     * Track if accel support is turned on
+     * Track if tilt support is turned on
      */
-    private static boolean          _enabled;
+    private boolean          _enabled;
 
     /**
-     * Reset tilt configuration when a new level is created
+     * List of entities that change behavior based on tilt
      */
-    static void reset()
-    {
-        _tiltVelocityOverride = false;
-        _xGravityMax = 0;
-        _yGravityMax = 0;
-        _gravityMultiplier = 1;
-        // clear the stuff we explicitly manage in the _physics world
-        synchronized (_accelEntities) {
-            _accelEntities.clear();
-        }
-        _enabled = false;
-    }
+    ArrayList<PhysicsSprite> _accelEntities     = new ArrayList<PhysicsSprite>();
 
     /**
-     * Turn on accelerometer support so that tilt can control entities in this
-     * level
-     * 
-     * @param xGravityMax
-     *            Max X force that the accelerometer can produce
-     * @param yGravityMax
-     *            Max Y force that the accelerometer can produce
+     * The main render loop calls this to determine what to do when there is a phone tilt
      */
-    public static void enable(float xGravityMax, float yGravityMax)
-    {
-        _enabled = true;
-        _xGravityMax = xGravityMax;
-        _yGravityMax = yGravityMax;
-    }
-
-    /**
-     * This method lets us change the behavior of tilt, so that instead of
-     * applying a force, we directly set the velocity of objects using the
-     * accelerometer data.
-     * 
-     * @param toggle
-     *            This should usually be false. Setting it to true means that
-     *            tilt does not cause forces upon objects, but instead the tilt
-     *            of the phone directly sets velocities
-     */
-    public static void setAsVelocity(boolean toggle)
-    {
-        _tiltVelocityOverride = toggle;
-    }
-
-    /**
-     * Use this to make the accelerometer more or less responsive, by
-     * multiplying accelerometer values by a constant.
-     * 
-     * @param multiplier
-     *            The constant that should be multiplied by the accelerometer
-     *            data
-     */
-    public static void setGravityMultiplier(float multiplier)
-    {
-        _gravityMultiplier = multiplier;
-    }
-
-    /*
-     * INTERNAL SUPPORT CODE
-     */
-
-    /**
-     * When there is a phone tilt, this is run to adjust the forces on objects
-     * in the _current level
-     * 
-     * @param info
-     *            The acceleration data
-     */
-    static void handleTilt()
+    void handleTilt()
     {
         if (!_enabled)
             return;
 
-        ApplicationType appType = Gdx.app.getType();
-
+        // these temps are for storing the forces we measure
         float xGravity = 0;
         float yGravity = 0;
 
-        // should work also with
-        // Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
+        // if we're on a phone, read from the accelerometer device, taking into account the rotation of the device
+        ApplicationType appType = Gdx.app.getType();
         if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
-            // TODO: test this code in portrait mode, and test if upside-down
-            // screens work (landscape and portrait)
             float rot = Gdx.input.getRotation();
             if (rot == 0) {
                 xGravity = Gdx.input.getAccelerometerX();
@@ -151,6 +86,7 @@ public class Tilt
                 yGravity = Gdx.input.getAccelerometerX();
             }
         }
+        // if we're on a computer, we simulate tilt with the arrow keys
         else {
             if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT))
                 xGravity = -15f;
@@ -162,7 +98,7 @@ public class Tilt
                 yGravity = -15f;
         }
 
-        // get gravity from accelerometer
+        // Apply the gravity multiplier
         xGravity *= _gravityMultiplier;
         yGravity *= _gravityMultiplier;
 
@@ -178,52 +114,79 @@ public class Tilt
         yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -_yGravityMax) ? Physics.PIXEL_METER_RATIO * -_yGravityMax
                 : yGravity;
 
+        // If we're in 'velocity' mode, apply the accelerometer reading to each entity as a fixed velocity
         if (_tiltVelocityOverride) {
-            // we need to be careful here... if we have a zero for the X or
-            // Y
-            // gravityMax, then in that dimension we should not just set
-            // linear
-            // velocity to the value we compute, or jumping won't work
-
-            // we're going to assume that you wouldn't have xGravityMax ==
-            // yGravityMax == 0
-
+            // if X is clipped to zero, set each entity's Y velocity, leave X unchanged
             if (_xGravityMax == 0) {
-                // Send the new gravity information to the _physics system
-                // by
-                // changing the velocity of each object
-                for (PhysicsSprite gfo : _accelEntities) {
+                for (PhysicsSprite gfo : _accelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(gfo._physBody.getLinearVelocity().x, yGravity);
-                }
             }
+            // if Y is clipped to zero, set each entitiy's X velocity, leave Y unchanged
             else if (_yGravityMax == 0) {
-                // Send the new gravity information to the _physics system
-                // by
-                // changing the velocity of each object
-                for (PhysicsSprite gfo : _accelEntities) {
+                for (PhysicsSprite gfo : _accelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(xGravity, gfo._physBody.getLinearVelocity().y);
-                }
             }
+            // otherwise we set X and Y velocity
             else {
-                // Send the new gravity information to the _physics system
-                // by
-                // changing the velocity of each object
-                for (PhysicsSprite gfo : _accelEntities) {
+                for (PhysicsSprite gfo : _accelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(xGravity, yGravity);
-                }
             }
         }
+        // when not in velocity mode, apply the accelerometer reading to each entity as a force
         else {
-            // Send the new gravity information to the _physics system by
-            // applying a force to each object
-            for (PhysicsSprite gfo : _accelEntities) {
+            for (PhysicsSprite gfo : _accelEntities) 
                 if (gfo._physBody.isActive())
                     gfo._physBody.applyForceToCenter(xGravity, yGravity, true);
-            }
         }
     }
 
+    /*
+     * PUBLIC INTERFACE
+     */
+
+    /**
+     * Turn on accelerometer support so that tilt can control entities in this level
+     * 
+     * @param xGravityMax
+     *            Max X force that the accelerometer can produce
+     * @param yGravityMax
+     *            Max Y force that the accelerometer can produce
+     */
+    public static void enable(float xGravityMax, float yGravityMax)
+    {
+        Level._currLevel._tilt._enabled = true;
+        Level._currLevel._tilt._xGravityMax = xGravityMax;
+        Level._currLevel._tilt._yGravityMax = yGravityMax;
+    }
+
+    /**
+     * This method lets us change the behavior of tilt, so that instead of
+     * applying a force, we directly set the velocity of objects using the
+     * accelerometer data.
+     * 
+     * @param toggle
+     *            This should usually be false. Setting it to true means that
+     *            tilt does not cause forces upon objects, but instead the tilt
+     *            of the phone directly sets velocities
+     */
+    public static void setAsVelocity(boolean toggle)
+    {
+        Level._currLevel._tilt._tiltVelocityOverride = toggle;
+    }
+
+    /**
+     * Use this to make the accelerometer more or less responsive, by
+     * multiplying accelerometer values by a constant.
+     * 
+     * @param multiplier
+     *            The constant that should be multiplied by the accelerometer
+     *            data
+     */
+    public static void setGravityMultiplier(float multiplier)
+    {
+        Level._currLevel._tilt._gravityMultiplier = multiplier;
+    }
 }

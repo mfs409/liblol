@@ -5,11 +5,19 @@ package edu.lehigh.cse.lol;
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
 
-// TODO: Overall Status: Animation, Background, Chooser, Controls, Destination, Enemy, Hero, Level, LOL,
-// LOLConfiguration, Obstacle, PauseScene, Physics, PhysicsSprite, PostScene, PreScene, Projectile, Route,
-// Splash, SplashConfiguration, Tilt, and Util have outstanding TODOs
+// TODO: remove static fields and methods throughout namespace whenever possible
 
-// STATUS: Goodie, HelpLevel, Score, and Media are done
+// TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
+
+// TODO: Overall Status: Animation, Background, Chooser, Controls, Enemy, Hero, Level, LOL,
+// LOLConfiguration, Obstacle, PauseScene, Physics, PhysicsSprite, PostScene, PreScene, Projectile, Route,
+// Splash, SplashConfiguration, and Util have outstanding TODOs 
+//
+// Note: (Animation, Background, and Physics are close to done)
+
+// STATUS: Destination, Goodie, HelpLevel, Media, Score, and Tilt are done
+
+// STATUS: Level and Physics are close
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;

@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.Util.Renderable;
 
 // TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
 
@@ -49,7 +49,7 @@ public class PauseScene
         Level._currLevel._pauseScene._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
-    boolean render(SpriteBatch _spriteRender, LOL _game)
+    boolean render(SpriteBatch _spriteRender)
     {
         // if the pop-up scene is not visible, do nothing
         if (!_visible)

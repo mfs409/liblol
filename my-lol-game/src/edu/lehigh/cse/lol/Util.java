@@ -12,10 +12,13 @@ import java.io.IOException;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -26,11 +29,89 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
-import edu.lehigh.cse.lol.Level.Renderable;
 import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
 
 public class Util
 {
+    static class ParallaxLayer
+    {
+        float         _xSpeed;
+
+        float         _ySpeed;
+
+        TextureRegion _tr;
+
+        float         _xOffset;
+
+        float         _yOffset;
+
+        boolean       _xRepeat;
+
+        boolean       _yRepeat;
+
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset)
+        {
+            _xSpeed = xSpeed;
+            _ySpeed = ySpeed;
+            _tr = tr;
+            _xOffset = xOffset;
+            _yOffset = yOffset;
+        }
+    }
+
+    /**
+     * Custom camera that can do parallax... taken directly from GDX tests
+     */
+    static class ParallaxCamera extends OrthographicCamera
+    {
+        private Matrix4 parallaxView     = new Matrix4();
+
+        private Matrix4 parallaxCombined = new Matrix4();
+
+        private Vector3 tmp              = new Vector3();
+
+        private Vector3 tmp2             = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         * 
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
+         */
+        ParallaxCamera(float viewportWidth, float viewportHeight)
+        {
+            super(viewportWidth, viewportHeight);
+        }
+
+        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY)
+        {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
+        }
+    }
+
+    /**
+     * Wrapper for actions that we generate and then want handled during the render loop
+     */
+    static interface Action
+    {
+        void go();
+    }
+
+    static interface Renderable
+    {
+        void render(SpriteBatch sb, float elapsed);
+    }
+
     // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
     static Renderable makePicture(final int x, final int y, final int width, final int height, String imgName)
     {

@@ -4,17 +4,13 @@ package com.me.mylolgame;
 
 // TODO: Verify that mp3 and jpg files work
 
-// TODO: use ScreenAdapter internally to avoid boilerplate code
-
 // TODO: Util's text functions are a bit funky, and result in HelpScene drawing text oddly
-
-// TODO: use Color instead of red/blue/green channels wherever possible (internal only, of course)
 
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
 // TODO: In level 55, for animateByGoodieCount, we are using Animation objects in an odd way...
 
-// TODO: Level 70 is no longer valid. We can use it as a home for a new demos
+// TODO: Level 70 is no longer valid. We can use it as a home for a new demo
 
 // TODO: on level 59, buttons should work as long as they're depressed
 
@@ -136,7 +132,7 @@ public class MyLolGame extends LOL
 
             // finally, let's draw a circular destination
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
 
         /**
@@ -164,7 +160,7 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // new: add a bounding box so the hero can't fall off the screen
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
@@ -201,7 +197,7 @@ public class MyLolGame extends LOL
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // new: the bounding box now also has nonzero density,
             // elasticity, and friction
@@ -249,7 +245,7 @@ public class MyLolGame extends LOL
             // the level
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(2);
+            Score.setVictoryDestination(2);
 
             // Let's show msg1.png instead of text. Note that we had to
             // register it in registerMedia()
@@ -290,7 +286,7 @@ public class MyLolGame extends LOL
 
             // Indicate that two heroes have to reach destinations in order to
             // finish the level
-            Level.setVictoryDestination(2);
+            Score.setVictoryDestination(2);
 
             // Change the pop-up message slightly
             PreScene.addText("All heroes must\nreach the destination", 50, 50, 255, 255, 255, 32);
@@ -317,7 +313,7 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // change the behavior or tilt
             Tilt.setAsVelocity(true);
@@ -345,7 +341,7 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw an enemy:
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -374,15 +370,15 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw an enemy that can move
-            Enemy e = Enemy.makeAsCircle(25, 5, 2, 2, "redball.png");
+            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(100.0f, 0.3f, 0.6f);
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
-            // it isn't going to move quite as we'd like
+            // since it loops, it is going to 
 
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
@@ -408,7 +404,7 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw an enemy that can move
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -458,7 +454,7 @@ public class MyLolGame extends LOL
             // update: let's make the destination rotate:
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             d.setRotationSpeed(1);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // update: draw an enemy who moves via tilt
             Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
@@ -505,7 +501,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(329, 281, 10, 10, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // add zoom buttons
 
@@ -543,7 +539,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // let's draw an obstacle whose underlying shape is a box, but whose
             // picture is a circle. This can be odd... our hero can roll around
@@ -591,7 +587,7 @@ public class MyLolGame extends LOL
             o1.setPhysics(0, 100, 0);
             Obstacle o2 = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
             o2.setPhysics(10, 0, 100);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
 
         /**
@@ -636,7 +632,7 @@ public class MyLolGame extends LOL
             Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             d.setActivationScore(2, 0, 0, 0);
 
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // let's put a display on the screen to see how many goodies we've
             // collected
@@ -674,7 +670,7 @@ public class MyLolGame extends LOL
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             d.setActivationScore(1, 0, 0, 0);
             d.setRoute(new Route(3).to(29, 6).to(29, 26).to(29, 6), 4, true);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make an obstacle that moves
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
@@ -718,7 +714,7 @@ public class MyLolGame extends LOL
             Goodie.makeAsCircle(20.5f, 4.5f, 1, 1, "blueball.png");
 
             // indicate that we win by collecting enough goodies
-            Level.setVictoryGoodies(5, 0, 0, 0);
+            Score.setVictoryGoodies(5, 0, 0, 0);
             // put the goodie count on the screen
             Controls.addGoodieCount1(5, "Goodies", 220, 280);
             // put a countdown on the screen
@@ -752,7 +748,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // add a stopwatch... note that there are two ways to add a
             // stopwatch, the other of which allows for configuring the font
@@ -812,7 +808,7 @@ public class MyLolGame extends LOL
             PreScene.addText("The hero can defeat \nup to two enemies...", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw a hero and give it strength of 10
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
@@ -881,7 +877,7 @@ public class MyLolGame extends LOL
             Controls.addCountdown(10, "Time Up!", 200, 25);
 
             // indicate that defeating enemies is the key to success
-            Level.setVictoryEnemyCount();
+            Score.setVictoryEnemyCount();
         }
 
         /**
@@ -927,7 +923,7 @@ public class MyLolGame extends LOL
             Controls.addStrengthMeter("Strength", 220, 280, h);
 
             // win by defeating one enemy
-            Level.setVictoryEnemyCount(1);
+            Score.setVictoryEnemyCount(1);
             PostScene.setDefaultWinText("Good enough...");
         }
 
@@ -970,7 +966,7 @@ public class MyLolGame extends LOL
             // we'll still say you win by reaching the destination. Defeating
             // enemies is just for fun...
             Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Controls.addGoodieCount1(0, "Goodies", 220, 280);
 
             Controls.addFPS(400, 15, 200, 200, 100, 12);
@@ -998,7 +994,7 @@ public class MyLolGame extends LOL
             h.setMoveByTilting();
             Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             d.setActivationScore(7, 0, 0, 0);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // create some goodies with special values
             Goodie g1 = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
@@ -1037,7 +1033,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw an obstacle that we can drag
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
@@ -1083,7 +1079,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a pokeable obstacle
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
@@ -1112,7 +1108,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // create an enemy who chases the hero
             Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
@@ -1148,7 +1144,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // set up our obstacle so that collision and touch make it play
             // sounds
@@ -1174,7 +1170,7 @@ public class MyLolGame extends LOL
             PreScene.addText("The star rotates in\nthe direction of movement", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(29, 60, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
@@ -1211,7 +1207,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // this enemy starts from off-screen
             Enemy e = Enemy.makeAsCircle(1, -20, 44, 44, "redball.png");
@@ -1238,7 +1234,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // turn on 'scribble mode'. Be sure to play with the last parameter
             // to see the difference between scribbles
@@ -1273,7 +1269,7 @@ public class MyLolGame extends LOL
 
             // set up a destination
             Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
 
         /**
@@ -1304,7 +1300,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Level.setCameraChase(h);
         }
 
@@ -1334,7 +1330,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(30 * 48 - 5, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Level.setCameraChase(h);
 
             // now paint the background blue
@@ -1369,7 +1365,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -1416,7 +1412,7 @@ public class MyLolGame extends LOL
             Physics.configure(0, -10);
             PreScene.addText("Press anywhere to jump", 50, 50, 255, 255, 255, 32);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // note: the bounding box does not have friction, and neither does
             // the hero
@@ -1481,7 +1477,7 @@ public class MyLolGame extends LOL
             Controls.addJumpButton(0, 0, 480, 320, "", h);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Enemy.makeAsBox(130, 0, .5f, 32, "");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
 
         /**
@@ -1508,7 +1504,7 @@ public class MyLolGame extends LOL
 
             Level.setCameraChase(h);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
@@ -1539,7 +1535,7 @@ public class MyLolGame extends LOL
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             // be careful about friction!
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
@@ -1580,7 +1576,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the screen\nto crawl", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
             h.setPhysics(.1f, 0, 0);
             h.addVelocity(5, 0, false);
@@ -1611,7 +1607,7 @@ public class MyLolGame extends LOL
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero who doesn't start moving until it is touched
             //
@@ -1663,7 +1659,7 @@ public class MyLolGame extends LOL
             // notice that we can only get to the destination by jumping from
             // *on top of* the obstacle
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // zoom buttons so that we can see the whole obstacle
             Controls.addZoomInButton(0, 0, 20, 20, "red.png", .25f);
@@ -1688,7 +1684,7 @@ public class MyLolGame extends LOL
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             Destination.makeAsCircle(450, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             h.addVelocity(10, 0, false);
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
@@ -1727,7 +1723,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsBox(0, 2, 48, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Level.setCameraChase(h);
 
             // set up a vertical scrolling background
@@ -1754,7 +1750,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the hero\nto make it throw\nprojectiles", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // create a hero, and indicate that touching it makes it throw
             // projectiles
@@ -1795,7 +1791,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // set up a pool of projectiles, but now once the projectiles move
             // more than 250x20 away
@@ -1847,7 +1843,7 @@ public class MyLolGame extends LOL
                 ee.setPhysics(1.0f, 0.3f, 0.6f);
                 ee.setDamage(i);
             }
-            Level.setVictoryEnemyCount();
+            Score.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
             Controls.addSingleThrowButton(0, 0, 480, 320, "invis.png", h);
@@ -1873,7 +1869,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
             Controls.addVectorThrowButton(0, 0, 480, 320, "invis.png", h);
@@ -1914,7 +1910,7 @@ public class MyLolGame extends LOL
             h.setPhysics(0, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // the only differences here are that we turn gravity back on for
             // the projectiles, and
@@ -1979,7 +1975,7 @@ public class MyLolGame extends LOL
             Enemy e = Enemy.makeAsCircle(23, 20, 1, 1, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
             Level.setEnemyTimerTrigger(2, 2, e);
-            Level.setVictoryEnemyCount();
+            Score.setVictoryEnemyCount();
             Controls.addDefeatedCount(0, "Enemies Defeated", 20, 20);
         }
 
@@ -2000,7 +1996,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 29, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make our initial enemy
             Enemy e = Enemy.makeAsCircle(23, 2, 1, 1, "redball.png");
@@ -2028,7 +2024,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Make a wish!", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // this hero will be animated:
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
@@ -2059,7 +2055,7 @@ public class MyLolGame extends LOL
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero, and give it two animations: one for when it is in
             // the air, and another
@@ -2107,7 +2103,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the hero\nto make it\nthrow a ball", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // set up our hero
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "colorstar.png");
@@ -2149,7 +2145,7 @@ public class MyLolGame extends LOL
             PreScene.addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make an animated hero, and also give it an invincibility
             // animation
@@ -2216,7 +2212,7 @@ public class MyLolGame extends LOL
                     255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero with fixed velocity, and give it crawl and jump
             // animations
@@ -2262,7 +2258,7 @@ public class MyLolGame extends LOL
                 Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             d.setActivationScore(8, 0, 0, 0);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // Note: colorstar.png has 8 cells...
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "colorstar.png");
@@ -2348,7 +2344,7 @@ public class MyLolGame extends LOL
             e3.setInfoText("weak");
 
             // win by defeating enemies
-            Level.setVictoryEnemyCount(2);
+            Score.setVictoryEnemyCount(2);
         }
 
         /**
@@ -2367,7 +2363,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a box hero with friction... it won't roll on the floor, so
             // it's stuck!
@@ -2450,7 +2446,7 @@ public class MyLolGame extends LOL
             Obstacle ball2 = Obstacle.makeAsCircle(40, 16, 8, 8, "purpleball.png");
             ball2.setShrinkOverTime(2, 1, false);
 
-            Level.setVictoryEnemyCount(5);
+            Score.setVictoryEnemyCount(5);
         }
 
         /**
@@ -2472,7 +2468,7 @@ public class MyLolGame extends LOL
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(46, 10, 2.5f, 2.5f, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make the hero jumpable, so that we can see it spin in the air
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
@@ -2502,7 +2498,7 @@ public class MyLolGame extends LOL
             Physics.configure(0, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero who is always moving... note there is no friction,
             // anywhere, and the hero
@@ -2536,7 +2532,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // create an enemy that will quietly disappear after 2 seconds
             Enemy e1 = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -2584,7 +2580,7 @@ public class MyLolGame extends LOL
             // note: there's no destination yet, but we still say it's how to
             // win... we'll get a
             // destination in this level after a few timers run...
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // now set a timer trigger. after three seconds, the
             // onTimerTrigger() method will run,
@@ -2624,7 +2620,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Controls.addGoodieCount1(0, "Goodies", 220, 280);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // this obstacle is a collision trigger... when the hero hits it,
             // the next part of the
@@ -2664,7 +2660,7 @@ public class MyLolGame extends LOL
             // screen...
             Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             d.setActivationScore(3, 0, 0, 0);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw an obstacle, make it a touch trigger, and then draw the
             // goodie we need to get in
@@ -2743,7 +2739,7 @@ public class MyLolGame extends LOL
             g1.setInvincibilityDuration(15);
 
             // win by defeating enemies
-            Level.setVictoryEnemyCount();
+            Score.setVictoryEnemyCount();
         }
 
         /**
@@ -2774,7 +2770,7 @@ public class MyLolGame extends LOL
             // the destination won't work until some goodies are collected...
             Destination d = Destination.makeAsBox(46, 2, 2, 2, "colorstar.png");
             d.setActivationScore(4, 1, 3, 0);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // Colliding with this star will make the hero into a star
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
@@ -2797,7 +2793,7 @@ public class MyLolGame extends LOL
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
             Controls.addWinCountdown(25, 28, 250, 192, 192, 192, 16);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
             Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
@@ -2840,7 +2836,7 @@ public class MyLolGame extends LOL
             e.setCanFall();
 
             Destination.makeAsCircle(25, 25, 5, 5, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
 
         /**
@@ -2859,7 +2855,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // make a hero
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -2896,7 +2892,7 @@ public class MyLolGame extends LOL
          *            h.setMoveByTilting();
          *            h.setPokePath(4);
          *            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-         *            Level.setVictoryDestination(1);
+         *            Score.setVictoryDestination(1);
          *            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
          *            PreScene.addText("Poke the hero, then\n where you want it\nto go.", 1);
          *            }
@@ -2920,7 +2916,7 @@ public class MyLolGame extends LOL
             h.setPokeVelocity(4);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Controls.addImage(40, 40, 40, 40, "red.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255, 255, 32);
         }
@@ -2949,7 +2945,7 @@ public class MyLolGame extends LOL
 
             // create a destination
             Destination.makeAsCircle(20, 15, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             Obstacle o = Obstacle.makeAsBox(10, 5, 8, .5f, "red.png");
             o.setRoute(new Route(5).to(10, 5).to(5, 15).to(10, 25).to(15, 15).to(10, 5), 5, true);
@@ -2989,7 +2985,7 @@ public class MyLolGame extends LOL
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
             Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
@@ -3043,7 +3039,7 @@ public class MyLolGame extends LOL
             // the destination requires lots of goodies of different types
             Destination d = Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
             d.setActivationScore(1, 1, 3, 0);
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             Controls.addGoodieCount1(0, "blue", 10, 110, 0, 255, 255, 16);
             Controls.addGoodieCount2(0, "green", 10, 140, 0, 255, 255, 16);
@@ -3084,7 +3080,7 @@ public class MyLolGame extends LOL
 
             // the destination requires lots of goodies of different types
             Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             Enemy e = Enemy.makeAsCircle(42, 1, 5, 4, "red.png");
             e.setChaseSpeed(1, h);
@@ -3106,7 +3102,7 @@ public class MyLolGame extends LOL
             Physics.configure(0, 10);
             PreScene.addText("Press anywhere to speed up", 50, 50, 255, 255, 255, 32);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // note: the bounding box does not have friction, and neither does
             // the hero
@@ -3147,7 +3143,7 @@ public class MyLolGame extends LOL
             Physics.configure(0, -10);
             PreScene.addText("Press anywhere to speed up", 50, 50, 255, 255, 255, 32);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // note: the bounding box has friction, so the hero will glide
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
@@ -3188,7 +3184,7 @@ public class MyLolGame extends LOL
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
             Destination.makeAsCircle(42, 1, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
 
             // create a box that is easy to fall into, but hard to get out of
             Obstacle bottom = Obstacle.makeAsBox(10, 5, 10, .2f, "red.png");
@@ -3226,7 +3222,7 @@ public class MyLolGame extends LOL
             h.setKeepPokeEntity();
             h.setPokeChaseMode();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255, 255, 32);
             Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
@@ -3256,7 +3252,7 @@ public class MyLolGame extends LOL
             // note: it must not be immune to physics, or it will pass through the bounding box
             d.setAbsoluteVelocity(-2, 0, false);
             d.setGravityDefy();
-            Level.setVictoryDestination(1);
+            Score.setVictoryDestination(1);
         }
     }
 

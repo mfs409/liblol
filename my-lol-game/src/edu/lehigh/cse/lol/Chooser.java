@@ -7,7 +7,7 @@ package edu.lehigh.cse.lol;
 // TODO: Provide configurable configuration?
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
@@ -19,7 +19,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public class Chooser implements Screen
+public class Chooser extends ScreenAdapter
 {
     // for managing the camera...
 
@@ -181,42 +181,6 @@ public class Chooser implements Screen
             _font.draw(_batcher, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
         }
         _batcher.end();
-    }
-
-    @Override
-    public void resize(int width, int height)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void show()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void hide()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void pause()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void resume()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void dispose()
-    {
-        // TODO Auto-generated method stub
     }
 
     // Here's a quick and dirty way to manage multitouch via polling

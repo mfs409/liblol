@@ -493,7 +493,7 @@ public class Obstacle extends PhysicsSprite
         _scribbleFriction = friction;
 
         // turn on scribble mode, reset scribble status vars
-        Level._scribbleMode = true;
+        Level._currLevel._scribbleMode = true;
         _scribbleDown = false;
         _scribbleX = -1000;
         _scribbleY = -1000;

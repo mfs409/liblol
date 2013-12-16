@@ -3,7 +3,7 @@ package edu.lehigh.cse.lol;
 // TODO: clean up code and comments
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public class Splash implements Screen
+public class Splash extends ScreenAdapter
 {
     /**
      * Since we're going to create other screens via this screen, we need a
@@ -207,28 +207,8 @@ public class Splash implements Screen
     }
 
     @Override
-    public void resize(int width, int height)
-    {
-    }
-
-    @Override
-    public void show()
-    {
-    }
-
-    @Override
     public void hide()
     {
         pauseMusic();
-    }
-
-    @Override
-    public void pause()
-    {
-    }
-
-    @Override
-    public void resume()
-    {
     }
 }

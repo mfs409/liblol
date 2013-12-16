@@ -4,20 +4,39 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
+/**
+ * A Route specifies a set of points that an entitiy will follow, so that it can move from one point to the next
+ */
 public class Route
 {
+    /**
+     * The X coordinates of the points in the route
+     */
     float[] _xIndices;
 
+    /**
+     * The Y coordinates of the points in the route
+     */
     float[] _yIndices;
 
+    /**
+     * The speed at which the entity should move along the route
+     */
     float   _velocity;
 
+    /**
+     * The maximum number of points in this route
+     */
     int     _size;
 
+    /**
+     * The current number of points that have been set
+     */
     int     _points;
 
     /**
-     * Define a new path, by specifying the number of points in the path
+     * Define a new path, by specifying the number of points in the path. Note that all points in the path will be
+     * uninitialized until the "to" method is called on this Route.
      * 
      * @param numberOfPoints
      *            number of points in the path

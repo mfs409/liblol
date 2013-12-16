@@ -29,8 +29,8 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Level.Action;
-import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.Util.Action;
+import edu.lehigh.cse.lol.Util.Renderable;
 
 public abstract class PhysicsSprite implements Renderable
 {
@@ -347,7 +347,7 @@ public abstract class PhysicsSprite implements Renderable
             // make sure it is moveable, add it to the list of tilt entities
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody);
-            Tilt._accelEntities.add(this);
+            Level._currLevel._tilt._accelEntities.add(this);
             _isTilt = true;
             // turn off sensor behavior, so this collides with stuff...
             _physBody.getFixtureList().get(0).setSensor(false);
@@ -595,13 +595,13 @@ public abstract class PhysicsSprite implements Renderable
 
         // this is how we initialize a route driver:
         // first, move to the starting point
-        _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
+        _physBody.setTransform(_myRoute._xIndices[0] + _width/2, _myRoute._yIndices[0] + _height/2, 0);
         // second, indicate that we are working on goal #1, and set velocity
         // TODO: this needs to be in one place, instead of duplicated elsewhere
         // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
         _nextRouteGoal = 1;
-        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
-        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
+        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
         _routeVec.nor();
         _routeVec.scl(_routeVelocity);
         _physBody.setLinearVelocity(_routeVec);
@@ -625,10 +625,10 @@ public abstract class PhysicsSprite implements Renderable
             return;
         // if we haven't passed the goal, keep going. we tell if we've passed the goal by comparing the magnitudes of
         // the vectors from source to here and from goal to here
-        float sx = _myRoute._xIndices[_nextRouteGoal - 1] - _physBody.getPosition().x;
-        float sy = _myRoute._yIndices[_nextRouteGoal - 1] - _physBody.getPosition().y;
-        float gx = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
-        float gy = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+        float sx = _myRoute._xIndices[_nextRouteGoal - 1] - getXPosition();
+        float sy = _myRoute._yIndices[_nextRouteGoal - 1] - getYPosition();
+        float gx = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
+        float gy = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
         boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
         boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
         if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
@@ -636,10 +636,10 @@ public abstract class PhysicsSprite implements Renderable
             if (_nextRouteGoal == _myRoute._points) {
                 // reset if it's a loop, else terminate Route
                 if (_routeLoop) {
-                    _physBody.setTransform(_myRoute._xIndices[0], _myRoute._yIndices[0], 0);
+                    _physBody.setTransform(_myRoute._xIndices[0] + _width/2, _myRoute._yIndices[0] + _height/2, 0);
                     _nextRouteGoal = 1;
-                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
-                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
+                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
                     _routeVec.nor();
                     _routeVec.scl(_routeVelocity);
                     _physBody.setLinearVelocity(_routeVec);
@@ -654,8 +654,8 @@ public abstract class PhysicsSprite implements Renderable
             }
             else {
                 // advance to next point
-                _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _physBody.getPosition().x;
-                _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _physBody.getPosition().y;
+                _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
+                _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
                 _routeVec.nor();
                 _routeVec.scl(_routeVelocity);
                 _physBody.setLinearVelocity(_routeVec);
@@ -1410,7 +1410,7 @@ public abstract class PhysicsSprite implements Renderable
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
-            void go()
+            public void go()
             {
                 if (!_hover)
                     return;
@@ -1571,7 +1571,7 @@ public abstract class PhysicsSprite implements Renderable
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
-            void go()
+            public void go()
             {
                 // don't chase something that isn't visible
                 if (!_chaseTarget._visible)
@@ -1617,7 +1617,7 @@ public abstract class PhysicsSprite implements Renderable
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
-            void go()
+            public void go()
             {
                 // handle rotating the hero based on the direction it faces
                 if (_rotateByDirection && _visible) {

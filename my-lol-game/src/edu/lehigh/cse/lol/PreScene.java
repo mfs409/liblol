@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.Util.Renderable;
 
 public class PreScene
 {
@@ -70,7 +70,7 @@ public class PreScene
         }
     }
 
-    boolean render(SpriteBatch _spriteRender, LOL _game)
+    boolean render(SpriteBatch _spriteRender)
     {
         // if the pop-up scene is not visible, do nothing
         if (!_visible)

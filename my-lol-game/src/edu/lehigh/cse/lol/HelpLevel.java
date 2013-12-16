@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.Util.Renderable;
 
 /**
  * HelpLevel provides an interface for drawing to the help screens of a game

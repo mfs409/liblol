@@ -9,7 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.Level.Renderable;
+import edu.lehigh.cse.lol.Util.Renderable;
 
 public class PostScene
 {
@@ -177,7 +177,7 @@ public class PostScene
         }
     }
 
-    boolean render(SpriteBatch _spriteRender, LOL _game)
+    boolean render(SpriteBatch _spriteRender)
     {
         if (!_visible)
             return false;

@@ -7,6 +7,7 @@ package edu.lehigh.cse.lol;
 // TODO: work on the 'hold to keep the action going' buttons
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -45,11 +46,7 @@ public class Controls
             _range = new Rectangle(x, y, width, height);
         }
 
-        float _red;
-
-        float _green;
-
-        float _blue;
+        Color _c = new Color(0, 0, 0, 1);
 
         /**
          * Use this constructor for controls that are simply for displaying text
@@ -63,9 +60,9 @@ public class Controls
          */
         Control(int red, int green, int blue)
         {
-            _red = ((float) red) / 256;
-            _green = ((float) green) / 256;
-            _blue = ((float) blue) / 256;
+            _c.r = ((float) red) / 256;
+            _c.g = ((float) green) / 256;
+            _c.b = ((float) blue) / 256;
             _isTouchable = false;
         }
 
@@ -196,14 +193,14 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
                 _countDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (_countDownRemaining > 0) {
                     bf.draw(sb, "" + (int) _countDownRemaining, x, y);
                 }
                 else {
                     PostScene.setDefaultLoseText(text);
-                    Level.loseLevel();
+                    Level._currLevel._score.endLevel(false);
                 }
             }
         });
@@ -228,7 +225,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
                 bf.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), x, y);
             }
         });
@@ -279,13 +276,13 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
                 _winCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (_winCountRemaining > 0)
                     // get elapsed time for this level
                     bf.draw(sb, "" + (int) _winCountRemaining, x, y);
                 else
-                    Level.winLevel();
+                    Level._currLevel._score.endLevel(true);
             }
         });
     }
@@ -340,7 +337,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Level._currLevel._score._goodiesCollected[0] + suffix;
@@ -383,7 +380,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Level._currLevel._score._goodiesCollected[1] + suffix;
@@ -426,7 +423,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Level._currLevel._score._goodiesCollected[2] + suffix;
@@ -470,7 +467,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Level._currLevel._score._goodiesCollected[3] + suffix;
@@ -530,7 +527,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Level._currLevel._score._enemiesDefeated + suffix;
@@ -580,7 +577,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 _stopWatchProgress += Gdx.graphics.getDeltaTime();
                 // get elapsed time for this level
@@ -635,7 +632,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + h._strength + " " + text;
@@ -672,7 +669,7 @@ public class Controls
             @Override
             void render(SpriteBatch sb)
             {
-                bf.setColor(_red, _green, _blue, 1);
+                bf.setColor(_c.r, _c.g, _c.b, 1);
 
                 // get elapsed time for this level
                 String newtext = "" + Projectile._projectilesRemaining + " " + text;
