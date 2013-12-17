@@ -34,6 +34,7 @@ import edu.lehigh.cse.lol.Controls.Control;
 import edu.lehigh.cse.lol.Util.Action;
 import edu.lehigh.cse.lol.Util.ParallaxCamera;
 import edu.lehigh.cse.lol.Util.Renderable;
+import edu.lehigh.cse.lol.Util.TouchAction;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they can have an end goal.
@@ -212,6 +213,11 @@ public class Level extends ScreenAdapter
      * the current Level here
      */
     static Level               _currLevel;
+
+    /**
+     * Entities may need to set callbacks to run on a screen touch.  If so, they can use this.
+     */
+    TouchAction                _touchResponder;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in camera setup
@@ -494,25 +500,19 @@ public class Level extends ScreenAdapter
         _gameCam.unproject(_touchVec.set(x, y, 0));
         _world.QueryAABB(_callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f, _touchVec.y + 0.1f);
         if (_hitSprite != null) {
-            _hitSprite.handleTouchDown();
+            _hitSprite.handleTouchDown(x, y);
+            return;
+        }
+
+        // Handle level touches for which we've got a registered handler
+        if (_touchResponder != null) {
+            _touchResponder.onDown(_touchVec.x, _touchVec.y);
             return;
         }
 
         // There are a variety of screen touch handlers we might need to invoke. They're all one-off calls from here...
         // it's not the best design, but it works for now
 
-        // poke sprites
-        if (PhysicsSprite._currentPokeSprite != null) {
-            PhysicsSprite._currentPokeSprite.finishPoke(_touchVec.x, _touchVec.y);
-        }
-        // poke velocity
-        else if (PhysicsSprite._pokeVelocityEntity != null) {
-            PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, true, false, false);
-        }
-        // poke path
-        else if (PhysicsSprite._pokePathEntity != null) {
-            PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, true, false, false);
-        }
         // deal with scribbles
         else if (Level._currLevel._scribbleMode) {
             if (Level._currLevel._scribbleMode) {
@@ -549,23 +549,22 @@ public class Level extends ScreenAdapter
         // We don't currently support Move within a Sprite, only on the screen. These screen handlers are all one-off
         // calls from here.
         _gameCam.unproject(_touchVec.set(x, y, 0));
+
+        if (_touchResponder != null) {
+            _touchResponder.onMove(_touchVec.x, _touchVec.y);
+            return;
+        }
+
         // deal with scribble?
         if (Level._currLevel._scribbleMode) {
             Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
         }
         // deal with drag?
+        //
+        // TODO: verify we can't do this with a touchresponder
         else if (_hitSprite != null) {
             if (_hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y))
                 return;
-        }
-        // move a poke entity?
-        else if (PhysicsSprite._pokePathEntity != null) {
-            if (!PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, true, false))
-                return;
-        }
-        // move a poke velocity entity?
-        else if (PhysicsSprite._pokeVelocityEntity != null) {
-            PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, true, false);
         }
     }
 
@@ -593,25 +592,14 @@ public class Level extends ScreenAdapter
 
         // Up presses are not handled by entities, only by the screen, via a bunch of one-off handlers
         _gameCam.unproject(_touchVec.set(x, y, 0));
+        if (_touchResponder != null) {
+            _touchResponder.onUp(_touchVec.x, _touchVec.y);
+            return;
+        }
         // Deal with scribbles
         if (Level._currLevel._scribbleMode) {
             Obstacle.doScribbleUp();
             return;
-        }
-        // handle flicks
-        if (PhysicsSprite._flickEntity != null) {
-            PhysicsSprite.flickDone(_touchVec.x, _touchVec.y);
-            return;
-        }
-        // Pokepath movement
-        if (PhysicsSprite._pokePathEntity != null) {
-            if (PhysicsSprite.finishPokePath(_touchVec.x, _touchVec.y, false, false, true))
-                return;
-        }
-        // pokevelocity movement
-        if (PhysicsSprite._pokeVelocityEntity != null) {
-            if (PhysicsSprite.finishPokeVelocity(_touchVec.x, _touchVec.y, false, false, true))
-                return;
         }
     }
 

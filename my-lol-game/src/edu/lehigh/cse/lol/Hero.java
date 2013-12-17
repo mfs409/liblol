@@ -201,7 +201,7 @@ public class Hero extends PhysicsSprite
      * When the hero is touched, we might need to take action. If so, we use this to detemrine what to do.
      */
     @Override
-    void handleTouchDown()
+    void handleTouchDown(float x, float y)
     {
         // if the hero is touch-to-jump, then try to jump
         if (_isTouchJump) {
@@ -218,7 +218,7 @@ public class Hero extends PhysicsSprite
             _touchAndGo = null;
             return;
         }
-        super.handleTouchDown();
+        super.handleTouchDown(x, y);
     }
 
     /**

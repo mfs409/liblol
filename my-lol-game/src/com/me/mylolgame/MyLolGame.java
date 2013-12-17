@@ -1085,7 +1085,7 @@ public class MyLolGame extends LOL
             // make a pokeable obstacle
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
-            o.setPokeable();
+            o.setPokeToPlace();
         }
 
         /**
@@ -2668,7 +2668,7 @@ public class MyLolGame extends LOL
             // order to activate the obstacle
             Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            o.setTouchTrigger(39, 1, 0, 0, 0); // I picked '39' arbitrarily...
+            o.setTouchTrigger(39, 1, 0, 0, 0, true); // I picked '39' arbitrarily...
             o.setDisappearSound("hipitch.ogg");
             Goodie g = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
             g.setDisappearSound("lowpitch.ogg");
@@ -2914,7 +2914,7 @@ public class MyLolGame extends LOL
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
             h.setCanFaceBackwards();
-            h.setPokeVelocity(4);
+            h.setPokePath(4, false, false, true);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Controls.addImage(40, 40, 40, 40, "red.png");
             Score.setVictoryDestination(1);
@@ -3219,9 +3219,7 @@ public class MyLolGame extends LOL
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            h.setPokePathFixedVelocity(4);
-            h.setKeepPokeEntity();
-            h.setPokeChaseMode();
+            h.setPokePath(4, true, false, false);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);

@@ -197,15 +197,14 @@ public class Enemy extends PhysicsSprite
      *            Y position of the touch
      */
     @Override
-    void handleTouchDown()
+    void handleTouchDown(float x, float y)
     {
         if (_disappearOnTouch) {
-            // if (Configuration.isVibrationOn())
-            // ALE._self.getEngine().vibrate(100);
+            LOL._game.vibrate(100);
             defeat(true);
             return;
         }
-        super.handleTouchDown();
+        super.handleTouchDown(x, y);
     }
 
     /*

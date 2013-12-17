@@ -11,20 +11,120 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class Util
-{
+{   
     interface HeroCollisionCallback
     {
         void go(final Hero h);
     }
-    
-    class RouteDriver
+
+    static class RouteDriver
     {
+        Route                          _myRoute;
+
+        float                          _routeVelocity;
+
+        boolean                        _routeLoop;
+
+        Vector2                        _routeVec               = new Vector2();
+
+        boolean                        _routeDone;
+
+        int                            _nextRouteGoal;
+
+        PhysicsSprite _entity;
         
+        void haltRoute()
+        {
+            _routeDone = true;
+            // TODO: verify third parameter is ok... this gets called from pokevelocity stuff...
+            _entity.setAbsoluteVelocity(0, 0, false);
+        }
+
+        RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity)
+        {
+            _myRoute = route;
+            
+            _routeVelocity = velocity;
+            _routeLoop = loop;
+
+            _entity = entity;
+            
+            // this is how we initialize a route driver:
+            // first, move to the starting point
+            _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2, _myRoute._yIndices[0] + _entity._height / 2, 0);
+            // second, indicate that we are working on goal #1, and set velocity
+            // TODO: this needs to be in one place, instead of duplicated elsewhere
+            // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
+            _nextRouteGoal = 1;
+            _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
+            _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+            _routeVec.nor();
+            _routeVec.scl(_routeVelocity);
+            _entity._physBody.setLinearVelocity(_routeVec);
+            // and indicate that we aren't all done yet
+            _routeDone = false;
+
+
+        }
+
+        /**
+         * Internal method for figuring out where we need to go next when driving a route
+         */
+        void drive()
+        {
+            // quit if we're done and we don't loop
+            if (_routeDone)
+                return;
+            // if we haven't passed the goal, keep going. we tell if we've passed the goal by comparing the magnitudes
+            // of
+            // the vectors from source to here and from goal to here
+            float sx = _myRoute._xIndices[_nextRouteGoal - 1] - _entity.getXPosition();
+            float sy = _myRoute._yIndices[_nextRouteGoal - 1] - _entity.getYPosition();
+            float gx = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
+            float gy = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+            boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
+            boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
+            if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
+                _nextRouteGoal++;
+                if (_nextRouteGoal == _myRoute._points) {
+                    // reset if it's a loop, else terminate Route
+                    if (_routeLoop) {
+                        _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2, _myRoute._yIndices[0] + _entity._height / 2,
+                                0);
+                        _nextRouteGoal = 1;
+                        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
+                        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+                        _routeVec.nor();
+                        _routeVec.scl(_routeVelocity);
+                        _entity._physBody.setLinearVelocity(_routeVec);
+
+                        return;
+                    }
+                    else {
+                        _routeDone = true;
+                        _entity._physBody.setLinearVelocity(0, 0);
+                        return;
+                    }
+                }
+                else {
+                    // advance to next point
+                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
+                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+                    _routeVec.nor();
+                    _routeVec.scl(_routeVelocity);
+                    _entity._physBody.setLinearVelocity(_routeVec);
+                    return;
+                }
+            }
+            // NB: if we get here, we didn't need to change the velocity
+        }
+
     }
-    
+
     /**
      * This enum encapsulates the different types of PhysicsSprite entities
      */
@@ -120,18 +220,24 @@ public class Util
     /**
      * Wrapper for actions that we generate and then want handled during the render loop
      */
-    static interface Action
+    interface Action
     {
         void go();
     }
 
-    static interface Renderable
+    static class TouchAction
+    {
+        void onDown(float x, float y){}
+        void onMove(float x, float y){}
+        void onUp(float x, float y){}
+    }
+    
+    interface Renderable
     {
         void render(SpriteBatch sb, float elapsed);
     }
 
-    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
-    static Renderable makePicture(final int x, final int y, final int width, final int height, String imgName)
+    static Renderable makePicture(final float x, final float y, final float width, final float height, String imgName)
     {
         // set up the image to display
         //
@@ -149,9 +255,9 @@ public class Util
         };
     }
 
-    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
-    //
     // TODO: this isn't drawing quite where one would expect it to...
+    //
+    // NB: uses ints because it's on the hud
     static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
             final int blue, String fontName, int size)
     {
@@ -167,10 +273,11 @@ public class Util
         };
     }
 
-    // TODO: we should be able to use this in *lots* of places that are currently rolling their own...
-    //
     // TODO: this isn't drawing quite where one would expect it to...
-    static Renderable makeCenteredText(final String message, final int red, final int green, final int blue, String fontName, int size)
+    //
+    // NB: uses ints because it's on the hud
+    static Renderable makeCenteredText(final String message, final int red, final int green, final int blue,
+            String fontName, int size)
     {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = LOL._game._config.getScreenWidth() / 2 - bf.getMultiLineBounds(message).width / 2;
@@ -262,17 +369,7 @@ public class Util
      */
     public static void drawPicture(final int x, final int y, final int width, final int height, final String imgName)
     {
-        Renderable r = new Renderable()
-        {
-            final TextureRegion tr = Media.getImage(imgName)[0];
-            @Override
-            public void render(SpriteBatch sb, float delta)
-            {
-                sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
-            }
-        };
-        // TODO: use Util
-        Level._currLevel._sprites.add(r);
+        Level._currLevel._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -298,16 +395,6 @@ public class Util
     public static void drawPictureBehindScene(final float x, final float y, final float width, final float height,
             final String imgName)
     {
-        Renderable r = new Renderable()
-        {
-            final TextureRegion tr = Media.getImage(imgName)[0];
-            @Override
-            public void render(SpriteBatch sb, float delta)
-            {
-                sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
-            }
-        };
-        // TODO: use Util
-        Level._currLevel._pix_minus_two.add(r);
+        Level._currLevel._pix_minus_two.add(Util.makePicture(x, y, width, height, imgName));
     }
 }

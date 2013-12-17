@@ -172,6 +172,11 @@ public abstract class LOL extends Game implements ApplicationListener
         Gdx.app.exit();
     }
 
+    // TODO: make sure we're calling this from all the right places
+    void vibrate(long millis) {
+        
+    }
+    
     /**
      * This variable lets us track whether the user pressed 'back' on an android, or 'escape' on the desktop. We are
      * using polling, so we swallow presses that aren't preceded by a release. In that manner, holding 'back' can't exit

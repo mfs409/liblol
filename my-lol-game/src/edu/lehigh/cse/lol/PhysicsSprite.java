@@ -10,6 +10,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: add vibration support
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -31,284 +32,190 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Util.Action;
 import edu.lehigh.cse.lol.Util.Renderable;
+import edu.lehigh.cse.lol.Util.RouteDriver;
 import edu.lehigh.cse.lol.Util.SpriteId;
+import edu.lehigh.cse.lol.Util.TouchAction;
 
 public abstract class PhysicsSprite implements Renderable
 {
     /**
-     * Track the image to display
+     * Track if the entity is currently being rendered. This is a proxy for "is important to the rest of the game" and
+     * when it is false, we don't run any updates on the PhysicsSprite
      */
-    TextureRegion                  _tr;
-
-    private boolean                _flipped;
+    boolean                   _visible                = true;
 
     /**
-     * Type of this PhysicsSprite; useful for disambiguation in collision
-     * detection
+     * The default image to display
      */
-    SpriteId                       _psType;
+    TextureRegion             _tr;
 
     /**
-     * Text that user can modify to hold additional information
+     * We may opt to flip the image when it is moving in the -X direction. If so, this tracks if the image is flipped,
+     * so that we draw its sprite correctly.
      */
-    String                         _infoText               = "";
-
-    float                          _width;
-
-    float                          _height;
+    private boolean           _flipped;
 
     /**
-     * When the camera follows the hero without centering the hero, this gives us the difference between the hero and
-     * camera
+     * The width of the PhysicsSprite
      */
-    Vector2                        _cameraOffset           = new Vector2(0, 0);
+    float                     _width;
 
     /**
-     * Physics body for this object
+     * The height of the PhysicsSprite
      */
-    Body                           _physBody;
+    float                     _height;
+
+    /**
+     * Type of this PhysicsSprite; useful for disambiguation in collision detection
+     */
+    SpriteId                  _psType;
+
+    /**
+     * Physics body for this PhysicsSprite
+     */
+    Body                      _physBody;
 
     /**
      * Track whether the underlying body is a circle or box
      */
-    protected boolean              _isCircle;
-
-    boolean                        _isTilt;
-
-    boolean                        _visible                = true;
-
-    boolean                        _deleteQuietly;
+    boolean                   _isCircle;
 
     /**
-     * Internal field to track if this hero is connected to an obstacle
+     * Text that game designer can modify to hold additional information
      */
-    DistanceJoint                  _dJoint;
-
-    WeldJoint                      _wJoint;
+    String                    _infoText               = "";
 
     /**
-     * Does this entity follow a route?
+     * Some PhysicsSprites run custom code when they are touched. This is a reference to the code to run.
      */
-    private boolean                _isRoute                = false;
+    TouchAction               _touchResponder;
 
     /**
-     * Track if the object is a touch trigger
+     * When the camera follows the entity without centering the hero, this gives us the difference between the hero and
+     * camera
      */
-    boolean                        _isTouchTrigger         = false;
+    Vector2                   _cameraOffset           = new Vector2(0, 0);
 
     /**
-     * Touch triggers can require certain Goodie counts in order to run
+     * Sometimes a hero collides with an obstacle, and should stick to it. In that case, we create a pair of joints to
+     * connect the two entities. This is the Distance joint that connects them (Note: for convenience, we store the
+     * joints in a common parent class)
      */
-    int[]                          _touchTriggerActivation = new int[4];
+    DistanceJoint             _dJoint;
 
     /**
-     * An ID for each touch trigger object, in case it's useful
+     * Sometimes a hero collides with an obstacle, and should stick to it. In that case, we create a pair of joints to
+     * connect the two entities. This is the Weld joint that connects them (Note: for convenience, we store the joints
+     * in a common parent class)
      */
-    int                            _touchTriggerID;
-
-    // TODO: move all this into a routedriver class
-    Route                          _myRoute;
-
-    float                          _routeVelocity;
-
-    boolean                        _routeLoop;
-
-    Vector2                        _routeVec               = new Vector2();
-
-    boolean                        _routeDone;
-
-    int                            _nextRouteGoal;
-
-    int                            _zIndex;
+    WeldJoint                 _wJoint;
 
     /**
-     * Track if the object is draggable
+     * Does this entity follow a route? If so, the RouteDriver will be used to advance the entity along its route.
      */
-    private boolean                _isDrag                 = false;
+    private RouteDriver       _route;
 
     /**
-     * A multiplicative factor to apply when flicking an entity
+     * The z index of this entity. Valid range is [-2, 2]
+     * 
+     * TODO: Not currently used
      */
-    private float                  _flickDampener;
-
-    /**
-     * Track if this entity can be flicked
-     */
-    private boolean                _isFlick                = false;
-
-    /**
-     * Track the x coordinate (screen, not _sprite) of where a flick began
-     */
-    private static Vector2           _flickStart = new Vector2();
-
-    /**
-     * Track the entity being flicked
-     */
-    static PhysicsSprite           _flickEntity;
-
-    /**
-     * Internal vector for computing flicks, so that we don't need to use a Vector pool
-     */
-    private static Vector2         _flickVector            = new Vector2();
-
-    /**
-     * An entity involved in poke path movement
-     */
-    static PhysicsSprite           _pokePathEntity;
-
-    /**
-     * Track if this entity can be moved via the creation of paths based on poking
-     */
-    private boolean                _isPokePath;
-
-    /**
-     * Track if we keep the pokeEntities or require re-touching them on every movement
-     */
-    private boolean                _keepPokeEntity;
-
-    /**
-     * If this is a poke path entity, how long should it take to travel its path?
-     */
-    private float                  _pokePathVelocity;
-
-    /**
-     * An entity involved in poke velocity movement
-     */
-    static PhysicsSprite           _pokeVelocityEntity;
-
-    /**
-     * Track if this entity can be given velocity based on poking
-     */
-    private boolean                _isPokeVelocity;
-
-    /**
-     * If this is a poke velocity entity, what velocity should be used?
-     */
-    private float                  _pokeVelocity;
-
-    /**
-     * In "chase mode", a poke entity will change its path based on dragging, and will stop when a touch ends.
-     */
-    private boolean                _pokeChaseMode;
+    int                       _zIndex                 = 0;
 
     /**
      * a sound to play when the obstacle is touched
      */
-    Sound                          _touchSound;
+    Sound                     _touchSound;
 
     /**
-     * Does the hero throw a projectile when we touch it?
+     * When a sprite is poked in pokeToPlace mode, remember the time, so that rapid double-clicks can cause deletion
      */
-    private boolean                _isTouchThrow;
-
-    private Hero                   _throwHero;
-
-    /**
-     * When a _sprite is poked, we record it here so that we know who to move on
-     * the next screen touch
-     */
-    protected static PhysicsSprite _currentPokeSprite;
-
-    /**
-     * Track if the object is pokeable
-     */
-    private boolean                _isPoke                 = false;
-
-    /**
-     * When a _sprite is poked, remember the time, because rapid double-clicks
-     * cause deletion
-     */
-    private static long            _lastPokeTime;
+    private long              _lastPokeTime;
 
     /**
      * Tunable constant for how much time between pokes constitutes a
      * "double click"... this is in nanoseconds, so it's half a second
      */
-    private final static long      _pokeDeleteThresh       = 500000000;
+    private final static long _pokeDeleteThresh       = 500000000;
 
     /**
      * Animation support: the cells of the default animation
      */
-    Animation                      _defaultAnimation;
+    Animation                 _defaultAnimation;
 
     /**
      * The currently running animation
+     * 
+     * TODO: use an AnimationDriver?
      */
-    private Animation              _currentAnimation;
+    private Animation         _currentAnimation;
 
-    private int                    _currAnimationFrame;
+    private int               _currAnimationFrame;
 
-    private float                  _currAnimationTime;
+    private float             _currAnimationTime;
 
     /**
      * Animation support: the cells of the disappearance animation
      */
-    Animation                      _disappearAnimation;
+    Animation                 _disappearAnimation;
 
     /**
      * Animation support: the offset for placing the disappearance animation relative to the disappearing _sprite
      */
-    final Vector2                  _disappearAnimateOffset = new Vector2();
+    final Vector2             _disappearAnimateOffset = new Vector2();
 
     /**
      * Animation support: the width of the disappearance animation
      */
-    float                          _disappearAnimateWidth;
+    float                     _disappearAnimateWidth;
 
     /**
      * Animation support: the height of the disappearance animation
      */
-    float                          _disappearAnimateHeight;
+    float                     _disappearAnimateHeight;
 
     /**
      * Does the entity's image flip when the hero moves backwards?
      */
-    private boolean                _reverseFace            = false;
+    private boolean           _reverseFace            = false;
 
     /**
      * If this entity hovers, this is the x coordinate on screen where it should appear
      */
-    Vector2 _hoverPosition;
+    Vector2                   _hoverPosition;
 
     /**
      * A vector for computing _hover placement
      */
-    private Vector3                _hoverVector            = new Vector3();
+    private Vector3           _hoverVector            = new Vector3();
 
-    boolean                        isStickyTop;
+    boolean                   isStickyTop;
 
-    boolean                        isStickyBottom;
+    boolean                   isStickyBottom;
 
-    boolean                        isStickyLeft;
+    boolean                   isStickyLeft;
 
-    boolean                        isStickyRight;
+    boolean                   isStickyRight;
 
     /**
      * Sound to play when this disappears
      */
-    protected Sound                _disappearSound         = null;
+    protected Sound           _disappearSound         = null;
 
     /**
      * Track which sides are one-sided. 0 is bottom, 1 is right, 2 is top, 3 is left
      */
-    int                            _isOneSided             = -1;
+    int                       _isOneSided             = -1;
 
     /**
      * Entities with a matching nonzero Id don't collide with each other
      */
-    int                            _passThroughId          = 0;
-
-    /**
-     * If this enemy is supposed to chase the hero, this determines the velocity with which it chases
-     */
-    private float                  _chaseMultiplier        = 0;
+    int                       _passThroughId          = 0;
 
     /**
      * An internal vector for supporting chase enemies
      */
-    private final Vector2          _chaseVector            = new Vector2();
-
-    private PhysicsSprite          _chaseTarget;
+    private final Vector2     _chaseVector            = new Vector2();
 
     PhysicsSprite(String imgName, SpriteId id, float width, float height)
     {
@@ -351,249 +258,18 @@ public abstract class PhysicsSprite implements Renderable
         _physBody.setLinearVelocity(x, y);
     }
 
-    /**
-     * Internal method for figuring out where we need to go next when driving a route
-     */
-    private void drive()
-    {
-        // quit if we're done and we don't loop
-        if (_routeDone)
-            return;
-        // if we haven't passed the goal, keep going. we tell if we've passed the goal by comparing the magnitudes of
-        // the vectors from source to here and from goal to here
-        float sx = _myRoute._xIndices[_nextRouteGoal - 1] - getXPosition();
-        float sy = _myRoute._yIndices[_nextRouteGoal - 1] - getYPosition();
-        float gx = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
-        float gy = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
-        boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
-        boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
-        if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
-            _nextRouteGoal++;
-            if (_nextRouteGoal == _myRoute._points) {
-                // reset if it's a loop, else terminate Route
-                if (_routeLoop) {
-                    _physBody.setTransform(_myRoute._xIndices[0] + _width / 2, _myRoute._yIndices[0] + _height / 2, 0);
-                    _nextRouteGoal = 1;
-                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
-                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
-                    _routeVec.nor();
-                    _routeVec.scl(_routeVelocity);
-                    _physBody.setLinearVelocity(_routeVec);
-
-                    return;
-                }
-                else {
-                    _routeDone = true;
-                    _physBody.setLinearVelocity(0, 0);
-                    return;
-                }
-            }
-            else {
-                // advance to next point
-                _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
-                _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
-                _routeVec.nor();
-                _routeVec.scl(_routeVelocity);
-                _physBody.setLinearVelocity(_routeVec);
-                return;
-            }
-        }
-        // NB: if we get here, we didn't need to change the velocity
-    }
-
-    void handleTouchDown()
+    void handleTouchDown(float x, float y)
     {
         if (_touchSound != null)
             _touchSound.play();
-
-        if (_isFlick) {
-            registerInitialFlick();
-            return;
-        }
-
-        // throw a projectile?
-        if (_isTouchThrow) {
-            Projectile.throwFixed(_throwHero._physBody.getPosition().x, _throwHero._physBody.getPosition().y,
-                    _throwHero);
-            return;
-        }
-
-        if (_isPokeVelocity) {
-            _pokeVelocityEntity = this;
-            // TODO: ALE._self.getEngine().vibrate(5);
-            return;
-        }
-
-        if (_isPoke) {
-            // TODO:
-            // if (ALE._game._config.getVibration())
-            // ALE._self.getEngine().vibrate(100);
-
-            long time = System.nanoTime();
-
-            if (this == _currentPokeSprite) {
-
-                // double touch
-                if ((time - _lastPokeTime) < _pokeDeleteThresh) {
-                    // hide sprite, disable physics
-                    _physBody.setActive(false);
-                    _visible = false;
-                }
-                // repeat single-touch
-                else {
-                    _lastPokeTime = time;
-                }
-            }
-            else {
-                _currentPokeSprite = this;
-                _lastPokeTime = time;
-            }
-            return;
-        }
-        // if this is a touch trigger, call the touchtrigger code
-        if (_isTouchTrigger) {
-            boolean match = true;
-            for (int i = 0; i < 4; ++i)
-                match &= _touchTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
-            if (match) {
-                remove(false);
-                LOL._game.onTouchTrigger(_touchTriggerID, LOL._game._currLevel, this);
-                return;
-            }
-        }
-        else if (_isPokePath) {
-            _pokePathEntity = this;
-            // TODO: ALE._self.getEngine().vibrate(5);
-            return;
-        }
-
+        if (_touchResponder != null)
+            _touchResponder.onDown(x, y);
     }
 
     boolean handleTouchDrag(float x, float y)
     {
-        if (_isDrag) {
-            _physBody.setTransform(x, y, _physBody.getAngle());
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * record the occasion of a down press on a flickable entity
-     * 
-     * @param e
-     *            The event, so that we can filter for down presses
-     * @param x
-     *            The x coordinate of where on the _sprite the touch occurred
-     * @param y
-     *            The y coordinate of where on the _sprite the touch occurred
-     */
-    private void registerInitialFlick()
-    {
-        // TODO:
-        // ALE._self.getEngine().vibrate(100);
-
-        // don't forget to translate the touch into a screen coordinate
-        _flickStart.x = _physBody.getPosition().x;// + _sprite.getX();
-        _flickStart.y = _physBody.getPosition().y;
-        _flickEntity = this;
-    }
-
-    static void flickDone(float x, float y)
-    {
-        if (_flickEntity != null) {
-            // if the entity was hovering, stop hovering
-            _flickEntity._hoverPosition = null;
-            // compute velocity for the flick
-            _flickVector.x = (x - _flickStart.x) * _flickEntity._flickDampener;
-            _flickVector.y = (y - _flickStart.y) * _flickEntity._flickDampener;
-            _flickEntity.updateVelocity(_flickVector);
-            // clear the flick, so we don't have strange "memory"
-            // issues...
-            _flickEntity = null;
-        }
-    }
-
-    void finishPoke(float x, float y)
-    {
-        if (_currentPokeSprite != null) {
-            // TODO:
-            // if (Configuration.isVibrationOn())
-            // ALE._self.getEngine().vibrate(100);
-
-            // move the object
-            _currentPokeSprite._physBody.setTransform(x, y, _currentPokeSprite._physBody.getAngle());
-
-            // forget the object
-            _currentPokeSprite = null;
-        }
-    }
-
-    // TODO: why does this have to be static? Can't it be a method of the _pokePathEntity?
-    static boolean finishPokePath(float x, float y, boolean isDown, boolean isMove, boolean isUp)
-    {
-        if (_pokePathEntity != null) {
-            if (isDown || (isMove && _pokePathEntity._pokeChaseMode)) {
-                Route r = new Route(2).to(_pokePathEntity.getXPosition() + _pokePathEntity._width / 2,
-                        _pokePathEntity.getYPosition() + _pokePathEntity._height / 2).to(x, y);
-                _pokePathEntity.setAbsoluteVelocity(0, 0, false);
-                _pokePathEntity.setRoute(r, _pokePathEntity._pokePathVelocity, false);
-
-                // clear the pokePathEntity, so a future touch starts the process over
-                if (!_pokePathEntity._keepPokeEntity)
-                    _pokePathEntity = null;
-                return false;
-            }
-            else if (isUp) {
-                // TODO: this is dead code... we don't actually want to do anything on an up press, just let it run...
-                // otherwise, it's really a velocity entity. However, we could make it an optional behavior, so let's
-                // leave it for now
-                if (isDown && _pokePathEntity._pokeChaseMode) {
-                    // stop driving a route
-                    _pokePathEntity._routeDone = true;
-                    _pokePathEntity.setAbsoluteVelocity(0, 0, false);
-                    // _pokePathEntity._sprite.clearEntityModifiers();
-                    // clear the pokePathEntity, so a future touch starts the process over
-                    if (!_pokePathEntity._keepPokeEntity)
-                        _pokePathEntity = null;
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    static boolean finishPokeVelocity(float xx, float yy, boolean isDown, boolean isMove, boolean isUp)
-    {
-        if (_pokeVelocityEntity != null) {
-            if (isDown || (_pokeVelocityEntity._pokeChaseMode && isMove)) {
-                // Figure out a vector for the movement, so we have direction
-                float x = xx - _pokeVelocityEntity._width / 2 - _pokeVelocityEntity.getXPosition();
-                float y = yy - _pokeVelocityEntity._width / 2 - _pokeVelocityEntity.getYPosition();
-
-                // make it a unit vector, and multiply by the requested velocity, to get the right magnitude
-                float hypotenuse = (float) Math.sqrt(x * x + y * y);
-                x = (x / hypotenuse) * _pokeVelocityEntity._pokeVelocity;
-                y = (y / hypotenuse) * _pokeVelocityEntity._pokeVelocity;
-
-                // apply velocity to the entity
-                _pokeVelocityEntity.updateVelocity(x, y);
-
-                // clear the pokeVelocityEntity, so a future touch starts the process over
-                if (!_pokeVelocityEntity._keepPokeEntity)
-                    _pokeVelocityEntity = null;
-            }
-            // TODO: should this behavior on up be a new parameter, like 'stoponup'?
-            else if (isUp) {
-                if (_pokeVelocityEntity._pokeChaseMode) {
-                    // stop the entity
-                    _pokeVelocityEntity.updateVelocity(0, 0);
-
-                    // clear the pokePathEntity, so a future touch starts the process over
-                    if (!_pokeVelocityEntity._keepPokeEntity)
-                        _pokeVelocityEntity = null;
-                }
-            }
+        if (_touchResponder != null) {
+            _touchResponder.onMove(x, y);
             return false;
         }
         return true;
@@ -622,8 +298,8 @@ public abstract class PhysicsSprite implements Renderable
     {
         if (_visible) {
             // possibly run a route update
-            if (_isRoute && _visible)
-                drive();
+            if (_route != null && _visible)
+                _route.drive();
 
             // choose the default TextureRegion to show... this is how we animate
             TextureRegion tr = _tr;
@@ -884,15 +560,16 @@ public abstract class PhysicsSprite implements Renderable
      */
     public void setMoveByTilting()
     {
-        if (!_isTilt) {
-            // make sure it is moveable, add it to the list of tilt entities
-            if (_physBody.getType() != BodyType.DynamicBody)
-                _physBody.setType(BodyType.DynamicBody);
-            Level._currLevel._tilt._accelEntities.add(this);
-            _isTilt = true;
-            // turn off sensor behavior, so this collides with stuff...
-            _physBody.getFixtureList().get(0).setSensor(false);
-        }
+        // If we've already added this to the set of tiltable objects, don't do it again
+        if (Level._currLevel._tilt._accelEntities.contains(this))
+            return;
+
+        // make sure it is moveable, add it to the list of tilt entities
+        if (_physBody.getType() != BodyType.DynamicBody)
+            _physBody.setType(BodyType.DynamicBody);
+        Level._currLevel._tilt._accelEntities.add(this);
+        // turn off sensor behavior, so this collides with stuff...
+        _physBody.getFixtureList().get(0).setSensor(false);
     }
 
     /**
@@ -919,7 +596,6 @@ public abstract class PhysicsSprite implements Renderable
         // set it invisible immediately, so that future calls know to ignore
         // this PhysicsSprite
         _visible = false;
-        _deleteQuietly = quiet;
         _physBody.setActive(false);
 
         // play a sound when we hit this thing?
@@ -1012,15 +688,26 @@ public abstract class PhysicsSprite implements Renderable
      *            Number of type-4 goodies that must be collected before it
      *            works
      */
-    public void setTouchTrigger(int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4)
+    public void setTouchTrigger(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
+            int activationGoodies4, final boolean disappear)
     {
-        _touchTriggerID = id;
-        _isTouchTrigger = true;
-        _touchTriggerActivation[0] = activationGoodies1;
-        _touchTriggerActivation[1] = activationGoodies2;
-        _touchTriggerActivation[2] = activationGoodies3;
-        _touchTriggerActivation[3] = activationGoodies4;
+        final int[] _touchTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+                activationGoodies4 };
+        this._touchResponder = new TouchAction()
+        {
+            @Override
+            public void onDown(float x, float y)
+            {
+                boolean match = true;
+                for (int i = 0; i < 4; ++i)
+                    match &= _touchTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                if (match) {
+                    if (disappear)
+                        remove(false);
+                    LOL._game.onTouchTrigger(id, LOL._game._currLevel, PhysicsSprite.this);
+                }
+            }
+        };
     }
 
     /**
@@ -1059,26 +746,8 @@ public abstract class PhysicsSprite implements Renderable
         if (_physBody.getType() == BodyType.StaticBody)
             _physBody.setType(BodyType.KinematicBody);
 
-        // save parameters
-        _isRoute = true;
-        _myRoute = route;
-        _routeVelocity = velocity;
-        _routeLoop = loop;
-
-        // this is how we initialize a route driver:
-        // first, move to the starting point
-        _physBody.setTransform(_myRoute._xIndices[0] + _width / 2, _myRoute._yIndices[0] + _height / 2, 0);
-        // second, indicate that we are working on goal #1, and set velocity
-        // TODO: this needs to be in one place, instead of duplicated elsewhere
-        // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
-        _nextRouteGoal = 1;
-        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - getXPosition();
-        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - getYPosition();
-        _routeVec.nor();
-        _routeVec.scl(_routeVelocity);
-        _physBody.setLinearVelocity(_routeVec);
-        // and indicate that we aren't all done yet
-        _routeDone = false;
+        // Create a RouteDriver to advance the entity's position according to the route
+        _route = new RouteDriver(route, velocity, loop, this);
     }
 
     /**
@@ -1105,7 +774,14 @@ public abstract class PhysicsSprite implements Renderable
             _physBody.setType(BodyType.KinematicBody);
         else
             _physBody.setType(BodyType.DynamicBody);
-        _isDrag = true;
+        _touchResponder = new TouchAction()
+        {
+            @Override
+            public void onMove(float x, float y)
+            {
+                _physBody.setTransform(x, y, _physBody.getAngle());
+            }
+        };
     }
 
     /**
@@ -1127,31 +803,93 @@ public abstract class PhysicsSprite implements Renderable
      * the location that was pressed. Poke the
      * Obstacle twice in rapid succession to delete the Obstacle.
      */
-    public void setPokeable()
+    public void setPokeToPlace()
     {
-        _isPoke = true;
+        _touchResponder = new TouchAction()
+        {
+            @Override
+            public void onDown(float x, float y)
+            {
+                LOL._game.vibrate(100);
+                long time = System.nanoTime();
+                // double touch
+                if ((time - _lastPokeTime) < _pokeDeleteThresh) {
+                    // hide sprite, disable physics
+                    _physBody.setActive(false);
+                    _visible = false;
+                    Level._currLevel._touchResponder = null;
+                    return;
+                }
+                // repeat single-touch
+                else {
+                    _lastPokeTime = time;
+                }
+                Level._currLevel._touchResponder = new TouchAction()
+                {
+                    @Override
+                    public void onDown(float x, float y)
+                    {
+                        LOL._game.vibrate(100);
+                        // move the object
+                        _physBody.setTransform(x, y, _physBody.getAngle());
+                        // clear the Level responder
+                        Level._currLevel._touchResponder = null;
+                    }
+
+                };
+            }
+        };
     }
 
     /**
      * Indicate that this entity can be flicked on the screen
      * 
-     * @param _dampFactor
+     * @param dampFactor
      *            A value that is multiplied by the vector for the flick, to affect speed
      */
-    public void setFlickable(float dampFactor)
+    public void setFlickable(final float dampFactor)
     {
+        // make sure the body is a dynamic body, because it really doesn't make sense to flick it otherwise
         if (_physBody.getType() != BodyType.DynamicBody)
             _physBody.setType(BodyType.DynamicBody);
-        _isFlick = true;
-        _flickDampener = dampFactor;
-    }
-
-    /**
-     * Indicate that we should not "forget" a poke-path entity after we've done one movement with it
-     */
-    public void setKeepPokeEntity()
-    {
-        _keepPokeEntity = true;
+        // register a handler so that when this entity is touched, we'll start processing a flick
+        _touchResponder = new TouchAction()
+        {
+            /**
+             * This runs when the entity is touched
+             */
+            @Override
+            public void onDown(float x, float y)
+            {
+                // possibly vibrate
+                LOL._game.vibrate(100);
+                // remember the current position of the entity
+                final float initialX = _physBody.getPosition().x;
+                final float initialY = _physBody.getPosition().y;
+                // set a handler to run when the screen is touched
+                //
+                // TODO: whenever *any* entity is touched, it should null out the Level touchResponder
+                Level._currLevel._touchResponder = new TouchAction()
+                {
+                    /**
+                     * Since flicking usually involves dragging, we'll look for when the screen is up-pressed
+                     */
+                    @Override
+                    public void onUp(float x, float y)
+                    {
+                        // If the entity isn't visible we're done
+                        if (_visible) {
+                            // if the entity was hovering, stop hovering
+                            _hoverPosition = null;
+                            // compute velocity for the flick and apply velocity
+                            updateVelocity((x - initialX) * dampFactor, (y - initialY) * dampFactor);
+                            // Unregister this handler... the flick is done
+                            Level._currLevel._touchResponder = null;
+                        }
+                    }
+                };
+            }
+        };
     }
 
     /**
@@ -1160,40 +898,55 @@ public abstract class PhysicsSprite implements Renderable
      * 
      * @param velocity
      *            The constant velocity for poke movement
+     * 
+     *            TODO: rethink these parameters a little bit more, then clean up levels 71 and 79. Are there really 8
+     *            possible behaviors, or is the real number much smaller?
      */
-    public void setPokePathFixedVelocity(float velocity)
+    public void setPokePath(final float velocity, final boolean oncePerTouch, final boolean updateOnMove,
+            final boolean stopOnUp)
     {
         if (_physBody.getType() == BodyType.StaticBody)
             _physBody.setType(BodyType.KinematicBody);
-        _isPokePath = true;
-        // TODO: simplify this... we only need one set of poke fields...
-        _pokePathVelocity = velocity;
-    }
+        _touchResponder = new TouchAction()
+        {
+            @Override
+            public void onDown(float x, float y)
+            {
+                LOL._game.vibrate(5);
+                Level._currLevel._touchResponder = new TouchAction()
+                {
+                    @Override
+                    public void onDown(float x, float y)
+                    {
+                        Gdx.app.log("uo", "down");
+                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(x - _width / 2, y - _height / 2);
+                        setAbsoluteVelocity(0, 0, false);
+                        setRoute(r, velocity, false);
 
-    /**
-     * Call this on an Entity to indicate that it can move on the screen via poking
-     * 
-     * Poke the Entity, then poke the screen, and the Entity will move toward the location that was pressed, with a
-     * fixed velocity
-     * 
-     * @param magnitude
-     *            The magnitude of the velocity when the entity starts moving
-     */
-    public void setPokeVelocity(float magnitude)
-    {
-        if (_physBody.getType() == BodyType.StaticBody)
-            _physBody.setType(BodyType.KinematicBody);
-        _isPokeVelocity = true;
-        _pokeVelocity = magnitude;
-    }
+                        // clear the pokePathEntity, so a future touch starts the process over
+                        if (oncePerTouch)
+                            Level._currLevel._touchResponder = null;
+                    }
 
-    /**
-     * Indicate that a poke-to-move entity will keep changing its path based on finger movements, and will stop when the
-     * user stops touching the screen.
-     */
-    public void setPokeChaseMode()
-    {
-        _pokeChaseMode = true;
+                    @Override
+                    public void onMove(float x, float y)
+                    {
+                        if (updateOnMove)
+                            onDown(x, y);
+                    }
+
+                    @Override
+                    public void onUp(float x, float y)
+                    {
+                        Gdx.app.log("ip", "ip");
+                        if (stopOnUp && _route != null) {
+                            Gdx.app.log("ip", "halt");
+                            _route.haltRoute();
+                        }
+                    }
+                };
+            }
+        };
     }
 
     /**
@@ -1403,7 +1156,7 @@ public abstract class PhysicsSprite implements Renderable
         // save the parameters
         //
         // TODO: can we just use the _hoverVector without the x, y, and flag?
-        _hoverPosition = new Vector2(x,y);
+        _hoverPosition = new Vector2(x, y);
 
         Level._currLevel._repeatEvents.add(new Action()
         {
@@ -1459,10 +1212,16 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * Indicate that touching this hero should make it throw a projectile
      */
-    public void setTouchToThrow(Hero h)
+    public void setTouchToThrow(final Hero h)
     {
-        _isTouchThrow = true;
-        _throwHero = h;
+        _touchResponder = new TouchAction()
+        {
+            @Override
+            public void onDown(float x, float y)
+            {
+                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
+            }
+        };
     }
 
     /**
@@ -1502,18 +1261,16 @@ public abstract class PhysicsSprite implements Renderable
      * @param speed
      *            The speed with which the enemy chases the hero
      */
-    public void setChaseSpeed(float speed, PhysicsSprite ps)
+    public void setChaseSpeed(final float speed, final PhysicsSprite target)
     {
         _physBody.setType(BodyType.DynamicBody);
-        _chaseMultiplier = speed;
-        _chaseTarget = ps;
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
             public void go()
             {
                 // don't chase something that isn't visible
-                if (!_chaseTarget._visible)
+                if (!target._visible)
                     return;
                 // don't run if this sprite isn't visible
                 if (!_visible)
@@ -1521,14 +1278,14 @@ public abstract class PhysicsSprite implements Renderable
 
                 // chase the _chaseTarget
                 // compute vector between hero and enemy
-                _chaseVector.x = _chaseTarget._physBody.getPosition().x - _physBody.getPosition().x;
-                _chaseVector.y = _chaseTarget._physBody.getPosition().y - _physBody.getPosition().y;
+                _chaseVector.x = target._physBody.getPosition().x - _physBody.getPosition().x;
+                _chaseVector.y = target._physBody.getPosition().y - _physBody.getPosition().y;
 
                 // normalize it and then multiply by speed
                 _chaseVector.nor();
-                _chaseVector.x *= (_chaseMultiplier);
+                _chaseVector.x *= (speed);
                 // TODO: disable y position chasing for sidescrolling games?
-                _chaseVector.y *= (_chaseMultiplier);
+                _chaseVector.y *= (speed);
 
                 // set Enemy velocity accordingly
                 updateVelocity(_chaseVector);
@@ -1548,7 +1305,7 @@ public abstract class PhysicsSprite implements Renderable
             {
                 // handle rotating the hero based on the direction it faces
                 if (_visible) {
-                    float x  = _physBody.getLinearVelocity().x;
+                    float x = _physBody.getLinearVelocity().x;
                     float y = _physBody.getLinearVelocity().y;
                     double angle = Math.atan2(y, x) + Math.atan2(-1, 0);
                     _physBody.setTransform(_physBody.getPosition(), (float) angle);
