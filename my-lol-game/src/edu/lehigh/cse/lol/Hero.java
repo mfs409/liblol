@@ -210,7 +210,7 @@ public class Hero extends PhysicsSprite
         }
         // if the hero is touch and go, make the hero start moving
         if (_touchAndGo != null) {
-            _hoverPosition = null;
+            _isHover = false;
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
             addVelocity(_touchAndGo.x, _touchAndGo.y, false);
