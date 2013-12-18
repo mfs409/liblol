@@ -110,8 +110,6 @@ public abstract class PhysicsSprite implements Renderable
 
     /**
      * The z index of this entity. Valid range is [-2, 2]
-     * 
-     * TODO: Not currently used
      */
     int                       _zIndex                 = 0;
 
@@ -175,7 +173,7 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * If this entity hovers, this will be true
      */
-    boolean _isHover;
+    boolean                   _isHover;
 
     /**
      * A vector for computing _hover placement
@@ -1228,7 +1226,8 @@ public abstract class PhysicsSprite implements Renderable
      * @param speed
      *            The speed with which the enemy chases the hero
      */
-    public void setChaseSpeed(final float speed, final PhysicsSprite target, final boolean chaseInX, final boolean chaseInY)
+    public void setChaseSpeed(final float speed, final PhysicsSprite target, final boolean chaseInX,
+            final boolean chaseInY)
     {
         _physBody.setType(BodyType.DynamicBody);
         Level._currLevel._repeatEvents.add(new Action()
@@ -1248,7 +1247,7 @@ public abstract class PhysicsSprite implements Renderable
                 float x = target._physBody.getPosition().x - _physBody.getPosition().x;
                 float y = target._physBody.getPosition().y - _physBody.getPosition().y;
 
-                // normalize it 
+                // normalize it
                 float denom = (float) Math.sqrt(x * x + y * y);
                 x /= denom;
                 y /= denom;
@@ -1284,5 +1283,18 @@ public abstract class PhysicsSprite implements Renderable
                 }
             }
         });
+    }
+
+    /**
+     * Set the z plane for this sprite
+     * 
+     * @param zIndex
+     *            The z plane. Values range from -2 to 2. The default is 0.
+     */
+    public void setZIndex(int zIndex)
+    {
+        Level._currLevel.removeSprite(this, _zIndex);
+        this._zIndex = zIndex;
+        Level._currLevel.addSprite(this, _zIndex);
     }
 }

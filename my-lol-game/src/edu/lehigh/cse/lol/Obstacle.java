@@ -353,7 +353,7 @@ public class Obstacle extends PhysicsSprite
     {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel._sprites.add(o);
+        Level._currLevel.addSprite(o, 0);
         return o;
     }
 
@@ -377,7 +377,7 @@ public class Obstacle extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel._sprites.add(o);
+        Level._currLevel.addSprite(o,0);
         return o;
     }
 

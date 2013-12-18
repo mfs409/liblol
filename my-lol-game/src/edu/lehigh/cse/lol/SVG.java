@@ -337,7 +337,8 @@ public class SVG
         invis._physBody = b;
         b.setUserData(invis);
         // put the line on the screen
-        Level._currLevel._sprites.add(invis);
+        // TODO: need to configure the z plane?  Or should we not even render it?
+        Level._currLevel.addSprite(invis, 0);
     }
 
     /**

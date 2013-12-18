@@ -210,7 +210,7 @@ public class Enemy extends PhysicsSprite
     {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel._sprites.add(e);
+        Level._currLevel.addSprite(e,0);
         return e;
     }
 
@@ -219,7 +219,7 @@ public class Enemy extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Enemy e = new Enemy(radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel._sprites.add(e);
+        Level._currLevel.addSprite(e,0);
         return e;
     }
 

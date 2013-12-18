@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class Util
-{   
+{
     interface CollisionCallback
     {
         void go(final PhysicsSprite ps);
@@ -23,20 +23,20 @@ public class Util
 
     static class RouteDriver
     {
-        Route                          _myRoute;
+        Route         _myRoute;
 
-        float                          _routeVelocity;
+        float         _routeVelocity;
 
-        boolean                        _routeLoop;
+        boolean       _routeLoop;
 
-        Vector2                        _routeVec               = new Vector2();
+        Vector2       _routeVec = new Vector2();
 
-        boolean                        _routeDone;
+        boolean       _routeDone;
 
-        int                            _nextRouteGoal;
+        int           _nextRouteGoal;
 
         PhysicsSprite _entity;
-        
+
         void haltRoute()
         {
             _routeDone = true;
@@ -47,18 +47,20 @@ public class Util
         RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity)
         {
             _myRoute = route;
-            
+
             _routeVelocity = velocity;
             _routeLoop = loop;
 
             _entity = entity;
-            
+
             // this is how we initialize a route driver:
             // first, move to the starting point
-            _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2, _myRoute._yIndices[0] + _entity._height / 2, 0);
+            _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2, _myRoute._yIndices[0]
+                    + _entity._height / 2, 0);
             // second, indicate that we are working on goal #1, and set velocity
             // TODO: this needs to be in one place, instead of duplicated elsewhere
-            // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world center.
+            // TODO: note that we are not getting the x,y coordinates quite right, since we're dealing with world
+            // center.
             _nextRouteGoal = 1;
             _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
             _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
@@ -67,7 +69,6 @@ public class Util
             _entity._physBody.setLinearVelocity(_routeVec);
             // and indicate that we aren't all done yet
             _routeDone = false;
-
 
         }
 
@@ -93,8 +94,8 @@ public class Util
                 if (_nextRouteGoal == _myRoute._points) {
                     // reset if it's a loop, else terminate Route
                     if (_routeLoop) {
-                        _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2, _myRoute._yIndices[0] + _entity._height / 2,
-                                0);
+                        _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2,
+                                _myRoute._yIndices[0] + _entity._height / 2, 0);
                         _nextRouteGoal = 1;
                         _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
                         _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
@@ -227,11 +228,19 @@ public class Util
 
     static class TouchAction
     {
-        void onDown(float x, float y){}
-        void onMove(float x, float y){}
-        void onUp(float x, float y){}
+        void onDown(float x, float y)
+        {
+        }
+
+        void onMove(float x, float y)
+        {
+        }
+
+        void onUp(float x, float y)
+        {
+        }
     }
-    
+
     interface Renderable
     {
         void render(SpriteBatch sb, float elapsed);
@@ -350,7 +359,7 @@ public class Util
     }
 
     /**
-     * Draw a picture on the _current level
+     * Draw a picture on the current level
      * 
      * Note: the order in which this is called relative to other entities will
      * determine whether they go under or over
@@ -366,35 +375,13 @@ public class Util
      *            Height of this picture
      * @param imgName
      *            Name of the picture to display
+     * @param zIndex
+     *            The z index of the image. There are 5 planes: -2, -2, 0, 1, and 2. By default, everything goes to
+     *            plane 0
      */
-    public static void drawPicture(final int x, final int y, final int width, final int height, final String imgName)
+    public static void drawPicture(final int x, final int y, final int width, final int height, final String imgName,
+            int zIndex)
     {
-        Level._currLevel._sprites.add(Util.makePicture(x, y, width, height, imgName));
-    }
-
-    /**
-     * Draw a picture on the _current level, but unlike the regular drawPicture,
-     * this draws a picture behind the rest of
-     * the scene
-     * 
-     * Note: the order in which this is called relative to other entities will
-     * determine whether they go under or over
-     * this picture.
-     * 
-     * @param x
-     *            X coordinate of top left corner
-     * @param y
-     *            Y coordinate of top left corner
-     * @param width
-     *            Width of the picture
-     * @param height
-     *            Height of this picture
-     * @param imgName
-     *            Name of the picture to display
-     */
-    public static void drawPictureBehindScene(final float x, final float y, final float width, final float height,
-            final String imgName)
-    {
-        Level._currLevel._pix_minus_two.add(Util.makePicture(x, y, width, height, imgName));
+        Level._currLevel.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
     }
 }

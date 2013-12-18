@@ -497,7 +497,7 @@ public class Hero extends PhysicsSprite
     {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level._currLevel._sprites.add(h);
+        Level._currLevel.addSprite(h,0);
         return h;
     }
 
@@ -521,7 +521,7 @@ public class Hero extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Level._currLevel._sprites.add(h);
+        Level._currLevel.addSprite(h,0);
         return h;
     }
 

@@ -55,71 +55,62 @@ public class Level extends ScreenAdapter
     /**
      * The music, if any
      */
-    Music                      _music;
+    Music                                    _music;
 
     /**
      * Whether the music is playing or not
      */
-    boolean                    _musicPlaying  = false;
+    boolean                                  _musicPlaying  = false;
 
     /**
      * A reference to the score object, for tracking winning and losing
      */
-    Score                      _score         = new Score();
+    Score                                    _score         = new Score();
 
     /**
      * A reference to the tilt object, for managing how tilts are handled
      */
-    Tilt                       _tilt          = new Tilt();
+    Tilt                                     _tilt          = new Tilt();
 
     /**
      * The physics world in which all entities interact
      */
-    World                      _world;
+    World                                    _world;
 
     /**
      * The set of Parallax backgrounds
      */
-    Background                 _background    = new Background();
+    Background                               _background    = new Background();
 
     /**
      * The scene to show when the level is created (if any)
      */
-    PreScene                   _preScene;
+    PreScene                                 _preScene;
 
     /**
      * The scene to show when the level is won or lost
      */
-    PostScene                  _postScene     = new PostScene();
+    PostScene                                _postScene     = new PostScene();
 
     /**
      * The scene to show when the level is paused (if any)
      */
-    PauseScene                 _pauseScene;
+    PauseScene                               _pauseScene;
 
     /**
      * Track if we are in scribble mode or not
      */
-    boolean                    _scribbleMode  = false;
+    boolean                                  _scribbleMode  = false;
 
     /*
      * COLLECTIONS OF DRAWABLE ENTITIES/PICTURES/TEXT AND CONTROLS
      */
-
-    /**
-     * The level -2 sprites
-     */
-    ArrayList<Renderable>      _pix_minus_two = new ArrayList<Renderable>();
-
-    /**
-     * The level 0 sprites
-     */
-    ArrayList<Renderable>      _sprites       = new ArrayList<Renderable>();
+    private ArrayList<ArrayList<Renderable>> _sprites       = new ArrayList<ArrayList<Renderable>>(5);
 
     /**
      * The controls / heads-up-display
      */
-    ArrayList<Control>         _controls      = new ArrayList<Control>();
+    ArrayList<Control>                       _controls      = new ArrayList<Control>();
 
     /*
      * COLLECTIONS OF EVENTS THAT MUST BE PROCESSED
@@ -128,12 +119,12 @@ public class Level extends ScreenAdapter
     /**
      * Events that get processed on the next render, then discarded
      */
-    ArrayList<Action>          _oneTimeEvents = new ArrayList<Action>();
+    ArrayList<Action>                        _oneTimeEvents = new ArrayList<Action>();
 
     /**
      * Events that get processed on every render
      */
-    ArrayList<Action>          _repeatEvents  = new ArrayList<Action>();
+    ArrayList<Action>                        _repeatEvents  = new ArrayList<Action>();
 
     /*
      * FIELDS FOR CAMERAS AND RENDERING
@@ -142,47 +133,47 @@ public class Level extends ScreenAdapter
     /**
      * This camera is for drawing entities that exist in the physics world
      */
-    OrthographicCamera         _gameCam;
+    OrthographicCamera                       _gameCam;
 
     /**
      * This camera is for drawing controls that sit above the world
      */
-    OrthographicCamera         _hudCam;
+    OrthographicCamera                       _hudCam;
 
     /**
      * This camera is for drawing parallax backgrounds that go behind the world
      */
-    ParallaxCamera             _bgCam;
+    ParallaxCamera                           _bgCam;
 
     /**
      * This is the sprite that the camera chases
      */
-    PhysicsSprite              _chase;
+    PhysicsSprite                            _chase;
 
     /**
      * The X bound of the camera
      */
-    int                        _camBoundX;
+    int                                      _camBoundX;
 
     /**
      * The Y bound of the camera
      */
-    int                        _camBoundY;
+    int                                      _camBoundY;
 
     /**
      * The debug renderer, for printing circles and boxes for each entity
      */
-    private Box2DDebugRenderer _debugRender   = new Box2DDebugRenderer();
+    private Box2DDebugRenderer               _debugRender   = new Box2DDebugRenderer();
 
     /**
      * The spritebatch for drawing all texture regions and fonts
      */
-    private SpriteBatch        _spriteRender  = new SpriteBatch();
+    private SpriteBatch                      _spriteRender  = new SpriteBatch();
 
     /**
      * The debug shape renderer, for putting boxes around HUD entities
      */
-    private ShapeRenderer      _shapeRender   = new ShapeRenderer();
+    private ShapeRenderer                    _shapeRender   = new ShapeRenderer();
 
     /*
      * FIELDS FOR MANAGING TOUCH
@@ -191,33 +182,33 @@ public class Level extends ScreenAdapter
     /**
      * We use this to avoid garbage collection when converting screen touches to camera coordinates
      */
-    private Vector3            _touchVec      = new Vector3();
+    private Vector3                          _touchVec      = new Vector3();
 
     /**
      * When there is a touch of an entity in the physics world, this is how we find it
      */
-    PhysicsSprite              _hitSprite     = null;
+    PhysicsSprite                            _hitSprite     = null;
 
     /**
      * This callback is used to get a touched entity from the physics world
      */
-    QueryCallback              _callback;
+    QueryCallback                            _callback;
 
     /**
      * Our polling-based multitouch uses this array to track the previous state of 4 fingers
      */
-    boolean[]                  lastTouches    = new boolean[4];
+    boolean[]                                lastTouches    = new boolean[4];
 
     /**
      * The LOL interface requires that game designers don't have to construct Level manually. To make it work, we store
      * the current Level here
      */
-    static Level               _currLevel;
+    static Level                             _currLevel;
 
     /**
-     * Entities may need to set callbacks to run on a screen touch.  If so, they can use this.
+     * Entities may need to set callbacks to run on a screen touch. If so, they can use this.
      */
-    TouchAction                _touchResponder;
+    TouchAction                              _touchResponder;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in camera setup
@@ -250,6 +241,10 @@ public class Level extends ScreenAdapter
         // the background camera is like the hudcam
         _bgCam = new ParallaxCamera(camWidth, camHeight);
         _bgCam.position.set(camWidth / 2, camHeight / 2, 0);
+
+        // set up the sprite sets
+        for (int i = 0; i < 5; ++i)
+            _sprites.add(new ArrayList<Renderable>());
 
         // set up the callback for finding out who in the physics world was touched
         _callback = new QueryCallback()
@@ -370,10 +365,11 @@ public class Level extends ScreenAdapter
         // Render the entities in order from z=-2 through z=2
         _spriteRender.setProjectionMatrix(_gameCam.combined);
         _spriteRender.begin();
-        for (Renderable r : _pix_minus_two)
-            r.render(_spriteRender, delta);
-        for (Renderable r : _sprites)
-            r.render(_spriteRender, delta);
+        for (ArrayList<Renderable> a : _sprites) {
+            for (Renderable r : a) {
+                r.render(_spriteRender, delta);
+            }
+        }
         _spriteRender.end();
 
         // DEBUG: draw outlines of physics entities
@@ -442,6 +438,28 @@ public class Level extends ScreenAdapter
 
         // update the camera position
         _gameCam.position.set(x, y, 0);
+    }
+
+    /**
+     * Add a renderable entity to the level, putting it into the appropriate z plane
+     * 
+     * @param r
+     *            The renderable entity
+     * @param zIndex
+     *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the default.
+     */
+    void addSprite(Renderable r, int zIndex)
+    {
+        assert zIndex >= -2;
+        assert zIndex <= 2;
+        _sprites.get(zIndex + 2).add(r);
+    }
+
+    void removeSprite(Renderable r, int zIndex)
+    {
+        assert zIndex >= -2;
+        assert zIndex <= 2;
+        _sprites.get(zIndex + 2).remove(r);
     }
 
     /*

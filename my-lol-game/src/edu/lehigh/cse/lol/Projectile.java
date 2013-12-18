@@ -124,7 +124,8 @@ public class Projectile extends PhysicsSprite
         _physBody.setGravityScale(0);
         setCollisionEffect(false);
         disableRotation();
-        Level._currLevel._sprites.add(this);
+        // TODO: need to configure the z plane for projectiles...
+        Level._currLevel.addSprite(this, 0);
     }
 
     /**
