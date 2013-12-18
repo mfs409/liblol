@@ -55,4 +55,16 @@ public interface LOLConfiguration
      * extension) is in your assets folder.
      */
     public String getDefaultFont();
+    
+    /**
+     * When getting started, you may wish to use default text at the end of each level. This is the default text when
+     * winning the level:
+     */
+    public String getDefaultWinText();
+
+    /**
+     * When getting started, you may wish to use default text at the end of each level. This is the default text when
+     * losing the level:
+     */
+    public String getDefaultLoseText();
 }

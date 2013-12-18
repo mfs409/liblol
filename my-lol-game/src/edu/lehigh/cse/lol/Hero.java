@@ -385,7 +385,7 @@ public class Hero extends PhysicsSprite
         }
 
         // if there is code attached to the obstacle for modifying the hero's behavior, run it
-        if (o._heroCollision != null) 
+        if (o._heroCollision != null)
             o._heroCollision.go(this);
 
         // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors should not enable
@@ -461,7 +461,8 @@ public class Hero extends PhysicsSprite
 
         // deal with animation changes due to goodie count
         //
-        // TODO: if we jump, we lose this info... make it more orthogonal?
+        // TODO: if we jump, we lose this info... make it more orthogonal? Another consideration is that we could make
+        // it a callback of the goodie colliison...
         if (_goodieCountAnimation != null) {
             int goodies = Level._currLevel._score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {

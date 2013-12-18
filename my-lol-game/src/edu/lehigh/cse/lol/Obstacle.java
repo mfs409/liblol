@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Util.HeroCollisionCallback;
+import edu.lehigh.cse.lol.Util.CollisionCallback;
 import edu.lehigh.cse.lol.Util.SpriteId;
 
 /**
@@ -44,27 +44,15 @@ public class Obstacle extends PhysicsSprite
      * One of the main uses of obstacles is to use hero/obstacle collisions as a way to run custom code. This callback
      * defines what code to run when a hero collides with this obstacle.
      */
-    HeroCollisionCallback  _heroCollision;
+    CollisionCallback  _heroCollision;
 
+    CollisionCallback _enemyCollision;
+    
     /**
      * Indicate that this obstacle does not re-enable jumping for the hero
      */
     boolean                _noJumpReenable;
 
-    /**
-     * Track if the obstacle can modify the enemy jump velocity
-     */
-    boolean                _isEnemyJump                 = false;
-
-    /**
-     * Jump applied in Y direction when this obstacle is encountered
-     */
-    float                  _enemyXJumpImpulse           = 0;
-
-    /**
-     * Jump applied in X direction when this obstacle is encountered
-     */
-    float                  _enemyYJumpImpulse           = 0;
 
     /**
      * Track if this is a "trigger" object that causes special code to run upon
@@ -410,10 +398,10 @@ public class Obstacle extends PhysicsSprite
         // disable collisions on this obstacle
         _physBody.getFixtureList().get(0).setSensor(true);
         // register a callback to multiply the hero's speed by factor
-        _heroCollision = new HeroCollisionCallback()
+        _heroCollision = new CollisionCallback()
         {
             @Override
-            public void go(Hero h)
+            public void go(PhysicsSprite h)
             {
                 Vector2 v = h._physBody.getLinearVelocity();
                 v.x *= factor;
@@ -441,10 +429,10 @@ public class Obstacle extends PhysicsSprite
         // disable collisions on this obstacle
         _physBody.getFixtureList().get(0).setSensor(true);
         // register a callback to change the hero's speed
-        _heroCollision = new HeroCollisionCallback()
+        _heroCollision = new CollisionCallback()
         {
             @Override
-            public void go(final Hero h)
+            public void go(final PhysicsSprite h)
             {
                 // boost the speed
                 Vector2 v = h._physBody.getLinearVelocity();
@@ -491,11 +479,17 @@ public class Obstacle extends PhysicsSprite
      * @param y
      *            The new y velocity
      */
-    public void setEnemyJump(float x, float y)
+    public void setEnemyJump(final float x, final float y)
     {
-        _enemyYJumpImpulse = y;
-        _enemyXJumpImpulse = x;
-        _isEnemyJump = true;
+        _enemyCollision = new CollisionCallback(){
+            @Override
+            public void go(PhysicsSprite ps)
+            {
+                Vector2 v = ps._physBody.getLinearVelocity();
+                v.y += y;
+                v.x += x;
+                ps.updateVelocity(v.x, v.y);
+            }};
     }
 
     /**

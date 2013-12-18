@@ -4,7 +4,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: add support for enemies that can be defeated by jumping on them
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
@@ -152,13 +151,9 @@ public class Enemy extends PhysicsSprite
             }
         }
 
-        // handle obstacles that make the enemy jump.
-        if (o._isEnemyJump) {
-            Vector2 v = _physBody.getLinearVelocity();
-            v.y += o._enemyYJumpImpulse;
-            v.x += o._enemyXJumpImpulse;
-            updateVelocity(v.x, v.y);
-        }
+        // handle any callbacks the obstacle has
+        if (o._enemyCollision != null) 
+            o._enemyCollision.go(this);
     }
 
     /**

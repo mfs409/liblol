@@ -93,4 +93,22 @@ public class Config implements LOLConfiguration
     {
         return "arial.ttf";
     }
+
+    /**
+     * When getting started, you may wish to use default text at the end of each level. This is the default text when
+     * winning the level:
+     */
+    public String getDefaultWinText()
+    {
+        return "Good Job";
+    }
+
+    /**
+     * When getting started, you may wish to use default text at the end of each level. This is the default text when
+     * losing the level:
+     */
+    public String getDefaultLoseText()
+    {
+        return "Try Again";
+    }
 }

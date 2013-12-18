@@ -2,6 +2,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
+// TODO: setWin() has some hard-coded font configuration
+
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -13,12 +15,13 @@ import edu.lehigh.cse.lol.Util.Renderable;
 
 public class PostScene
 {
+    boolean               _visible;
+
     boolean               _disable;
 
-    // TODO: externalize these strings to Configuration.java
-    String                _winText     = "Next Level";
+    String                _winText;
 
-    String                _loseText    = "Try Again";
+    String                _loseText;
 
     ArrayList<Renderable> _winSprites  = new ArrayList<Renderable>();
 
@@ -26,7 +29,6 @@ public class PostScene
 
     private boolean       _win;
 
-    boolean               _visible;
 
     /**
      * Sound to play when the level is won
@@ -37,6 +39,12 @@ public class PostScene
      * Sound to play when the level is lost
      */
     Sound                 _loseSound;
+
+    PostScene()
+    {
+        _winText = LOL._game._config.getDefaultWinText();
+        _loseText = LOL._game._config.getDefaultLoseText();
+    }
 
     /**
      * Set the sound to play when the level is won
@@ -75,28 +83,26 @@ public class PostScene
         return ps;
     }
 
-    // TODO: make font face a parameter
-    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
+    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, String fontName,
+            int size)
     {
         PostScene tmp = getCurrPostScene();
         tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
-    // TODO: make font face a parameter
-    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
+    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, String fontName,
+            int size)
     {
         PostScene tmp = getCurrPostScene();
         tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
-    // TODO: make font face a parameter
     public static void addExtraWinTextCentered(String text, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();
         tmp._winSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
-    // TODO: make font face a parameter
     public static void addExtraLoseTextCentered(String text, int red, int green, int blue, String fontName, int size)
     {
         PostScene tmp = getCurrPostScene();

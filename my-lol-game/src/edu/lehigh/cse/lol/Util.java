@@ -16,9 +16,9 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Util
 {   
-    interface HeroCollisionCallback
+    interface CollisionCallback
     {
-        void go(final Hero h);
+        void go(final PhysicsSprite ps);
     }
 
     static class RouteDriver
