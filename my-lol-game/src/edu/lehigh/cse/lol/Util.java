@@ -1,8 +1,8 @@
 package edu.lehigh.cse.lol;
 
-// TODO: update the drawpicture functions to take a z parameter
-
 // TODO: clean up comments
+
+// TODO: this file gets font horizontal position correct, but other files may not... verify other files! 
 
 import java.util.Random;
 
@@ -264,9 +264,6 @@ public class Util
         };
     }
 
-    // TODO: this isn't drawing quite where one would expect it to...
-    //
-    // NB: uses ints because it's on the hud
     static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
             final int blue, String fontName, int size)
     {
@@ -277,20 +274,17 @@ public class Util
             public void render(SpriteBatch sb, float elapsed)
             {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.drawMultiLine(sb, message, x, y);
+                bf.drawMultiLine(sb, message, x, y+bf.getMultiLineBounds(message).height);
             }
         };
     }
 
-    // TODO: this isn't drawing quite where one would expect it to...
-    //
-    // NB: uses ints because it's on the hud
     static Renderable makeCenteredText(final String message, final int red, final int green, final int blue,
             String fontName, int size)
     {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = LOL._game._config.getScreenWidth() / 2 - bf.getMultiLineBounds(message).width / 2;
-        final float y = LOL._game._config.getScreenHeight() / 2 - bf.getMultiLineBounds(message).height / 2;
+        final float y = LOL._game._config.getScreenHeight() / 2 + bf.getMultiLineBounds(message).height / 2;
         return new Renderable()
         {
             @Override

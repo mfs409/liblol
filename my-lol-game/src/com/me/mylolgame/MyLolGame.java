@@ -172,6 +172,7 @@ public class MyLolGame extends LOL
             // new: add a pop-up message that shows for one second at the
             // beginning of the level
             PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addImage("red.png", 50, 50, 10, 1);
         }
 
         /**
@@ -379,7 +380,7 @@ public class MyLolGame extends LOL
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
-            // since it loops, it is going to
+            // since it loops, it is not going to gracefully move back to its starting point
 
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
