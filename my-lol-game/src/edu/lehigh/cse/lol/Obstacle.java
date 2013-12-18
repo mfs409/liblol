@@ -418,7 +418,7 @@ public class Obstacle extends PhysicsSprite
                 Vector2 v = h._physBody.getLinearVelocity();
                 v.x *= factor;
                 v.y *= factor;
-                h.updateVelocity(v);
+                h.updateVelocity(v.x, v.y);
             }
         };
     }
@@ -450,7 +450,7 @@ public class Obstacle extends PhysicsSprite
                 Vector2 v = h._physBody.getLinearVelocity();
                 v.x += boostAmountX;
                 v.y += boostAmountY;
-                h.updateVelocity(v);
+                h.updateVelocity(v.x, v.y);
                 // now set a timer to un-boost the speed
                 if (boostDuration > 0) {
                     // set up a timer to shut off the boost
@@ -463,7 +463,7 @@ public class Obstacle extends PhysicsSprite
                             Vector2 v = h._physBody.getLinearVelocity();
                             v.x -= boostAmountX;
                             v.y -= boostAmountY;
-                            h.updateVelocity(v);
+                            h.updateVelocity(v.x, v.y);
                         }
                     }, boostDuration);
                 }

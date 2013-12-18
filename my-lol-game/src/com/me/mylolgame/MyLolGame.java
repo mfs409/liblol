@@ -42,7 +42,7 @@ package com.me.mylolgame;
 
 // TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone (see level 20)
 
-// TODO: should have ability to chase in X, Y, or both
+// TODO: need a demo to show that we can in just X or just Y
 
 // TODO: levels 44 and 45 have the same throw behavior right now, because we don't use input polling to allow for 'hold
 // == down' behavior... should we change that? Note: problem also for 46 and 47, and it would be nice to have this for
@@ -1114,7 +1114,7 @@ public class MyLolGame extends LOL
             // create an enemy who chases the hero
             Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
             e3.setPhysics(.1f, 0.3f, 0.6f);
-            e3.setChaseSpeed(8, h);
+            e3.setChaseSpeed(8, h, true, true);
 
             // draw a picture late within this block of code, but still cause
             // the picture to be drawn behind everything else
@@ -3084,7 +3084,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             Enemy e = Enemy.makeAsCircle(42, 1, 5, 4, "red.png");
-            e.setChaseSpeed(1, h);
+            e.setChaseSpeed(1, h, true, true);
 
             Obstacle o = Obstacle.makeAsBox(40, 1, .5f, 20, "red.png");
             o.setPassThrough(7);

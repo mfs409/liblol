@@ -157,7 +157,7 @@ public class Enemy extends PhysicsSprite
             Vector2 v = _physBody.getLinearVelocity();
             v.y += o._enemyYJumpImpulse;
             v.x += o._enemyXJumpImpulse;
-            updateVelocity(v);
+            updateVelocity(v.x, v.y);
         }
     }
 

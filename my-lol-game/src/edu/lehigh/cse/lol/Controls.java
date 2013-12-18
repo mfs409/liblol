@@ -716,7 +716,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = -rate;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override
@@ -724,7 +724,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = 0;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -761,7 +761,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = rate;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override
@@ -769,7 +769,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = 0;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -811,7 +811,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = -rate;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override
@@ -819,7 +819,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = 0;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -857,7 +857,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rate;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override
@@ -865,7 +865,7 @@ public class Controls
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = 0;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -910,7 +910,7 @@ public class Controls
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rateDownX;
                 v.y = rateDownY;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override
@@ -920,7 +920,7 @@ public class Controls
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rateUpX;
                 v.y = rateUpY;
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -962,7 +962,7 @@ public class Controls
                 v.x = rateX;
                 v.y = rateY;
                 entity._physBody.setLinearDamping(0);
-                entity.updateVelocity(v);
+                entity.updateVelocity(v.x, v.y);
             }
 
             @Override

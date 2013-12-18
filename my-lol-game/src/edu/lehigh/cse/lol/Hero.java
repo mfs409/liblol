@@ -177,7 +177,7 @@ public class Hero extends PhysicsSprite
             return;
         Vector2 v = _physBody.getLinearVelocity();
         v.add(_jumpImpulses);
-        updateVelocity(v);
+        updateVelocity(v.x, v.y);
         if (!_allowMultiJump)
             _inAir = true;
         if (_jumpAnimation != null)

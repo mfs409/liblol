@@ -429,7 +429,7 @@ public class Projectile extends PhysicsSprite
         b._physBody.setTransform(_position, 0);
 
         // give the projectile velocity
-        b.updateVelocity(_velocity);
+        b.updateVelocity(_velocity.x, _velocity.y);
 
         // make the projectile visible
         b._visible = true;
@@ -494,7 +494,7 @@ public class Projectile extends PhysicsSprite
             // multiply by fixed velocity
             _tmp.x *= _fixedVectorVelocity;
             _tmp.y *= _fixedVectorVelocity;
-            b.updateVelocity(_tmp);
+            b.updateVelocity(_tmp.x, _tmp.y);
         }
         else {
             float dX = toX - heroX - _offset.x;
@@ -502,7 +502,7 @@ public class Projectile extends PhysicsSprite
             // compute absolute vector, multiply by dampening factor
             _tmp.x = dX * _vectorDamp;
             _tmp.y = dY * _vectorDamp;
-            b.updateVelocity(_tmp);
+            b.updateVelocity(_tmp.x, _tmp.y);
         }
 
         // rotate the projectile

@@ -4,13 +4,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: enable arbitrary polygon creation?
 
-// TODO: get rid of static fields in this class?
-
-// TODO: can we get rid of Vector2 objects and instead use the x and y directly?
-
-// TODO: add vibration support
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -180,9 +173,9 @@ public abstract class PhysicsSprite implements Renderable
     private boolean           _reverseFace            = false;
 
     /**
-     * If this entity hovers, this is the x coordinate on screen where it should appear
+     * If this entity hovers, this will be true
      */
-    Vector2                   _hoverPosition;
+    boolean _isHover;
 
     /**
      * A vector for computing _hover placement
@@ -211,11 +204,6 @@ public abstract class PhysicsSprite implements Renderable
      * Entities with a matching nonzero Id don't collide with each other
      */
     int                       _passThroughId          = 0;
-
-    /**
-     * An internal vector for supporting chase enemies
-     */
-    private final Vector2     _chaseVector            = new Vector2();
 
     PhysicsSprite(String imgName, SpriteId id, float width, float height)
     {
@@ -280,17 +268,6 @@ public abstract class PhysicsSprite implements Renderable
         _currentAnimation = a;
         _currAnimationFrame = 0;
         _currAnimationTime = 0;
-    }
-
-    /**
-     * Internal method for updating an entity's velocity, so that we can handle its direction correctly
-     * 
-     * @param v
-     *            a vector representing the new velocity
-     */
-    void updateVelocity(Vector2 v)
-    {
-        updateVelocity(v.x, v.y);
     }
 
     @Override
@@ -639,7 +616,7 @@ public abstract class PhysicsSprite implements Renderable
         Vector2 v = _physBody.getLinearVelocity();
         v.y += y;
         v.x += x;
-        updateVelocity(v);
+        updateVelocity(v.x, v.y);
         // Disable sensor, or else this entity will go right through walls
         setCollisionEffect(true);
     }
@@ -665,7 +642,7 @@ public abstract class PhysicsSprite implements Renderable
         Vector2 v = _physBody.getLinearVelocity();
         v.y = y;
         v.x = x;
-        updateVelocity(v);
+        updateVelocity(v.x, v.y);
         // Disable sensor, or else this entity will go right through walls
         setCollisionEffect(true);
     }
@@ -861,7 +838,6 @@ public abstract class PhysicsSprite implements Renderable
             @Override
             public void onDown(float x, float y)
             {
-                // possibly vibrate
                 LOL._game.vibrate(100);
                 // remember the current position of the entity
                 final float initialX = _physBody.getPosition().x;
@@ -880,7 +856,7 @@ public abstract class PhysicsSprite implements Renderable
                         // If the entity isn't visible we're done
                         if (_visible) {
                             // if the entity was hovering, stop hovering
-                            _hoverPosition = null;
+                            _isHover = false;
                             // compute velocity for the flick and apply velocity
                             updateVelocity((x - initialX) * dampFactor, (y - initialY) * dampFactor);
                             // Unregister this handler... the flick is done
@@ -918,7 +894,6 @@ public abstract class PhysicsSprite implements Renderable
                     @Override
                     public void onDown(float x, float y)
                     {
-                        Gdx.app.log("uo", "down");
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(x - _width / 2, y - _height / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
@@ -938,9 +913,7 @@ public abstract class PhysicsSprite implements Renderable
                     @Override
                     public void onUp(float x, float y)
                     {
-                        Gdx.app.log("ip", "ip");
                         if (stopOnUp && _route != null) {
-                            Gdx.app.log("ip", "halt");
                             _route.haltRoute();
                         }
                     }
@@ -1149,24 +1122,18 @@ public abstract class PhysicsSprite implements Renderable
      * @param y
      *            the Y coordinate where the entity should appear
      */
-    public void setHover(int x, int y)
+    public void setHover(final int x, final int y)
     {
-        // make the entity kinematic, so gravity doesn't affect it but it still participates in collisions
-        // makeKinematic();
-        // save the parameters
-        //
-        // TODO: can we just use the _hoverVector without the x, y, and flag?
-        _hoverPosition = new Vector2(x, y);
-
+        _isHover = true;
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
             public void go()
             {
-                if (_hoverPosition == null)
+                if (!_isHover)
                     return;
-                _hoverVector.x = _hoverPosition.x;
-                _hoverVector.y = _hoverPosition.y;
+                _hoverVector.x = x;
+                _hoverVector.y = y;
                 _hoverVector.z = 0;
                 Level._currLevel._gameCam.unproject(_hoverVector);
                 _physBody.setTransform(_hoverVector.x, _hoverVector.y, _physBody.getAngle());
@@ -1261,7 +1228,7 @@ public abstract class PhysicsSprite implements Renderable
      * @param speed
      *            The speed with which the enemy chases the hero
      */
-    public void setChaseSpeed(final float speed, final PhysicsSprite target)
+    public void setChaseSpeed(final float speed, final PhysicsSprite target, final boolean chaseInX, final boolean chaseInY)
     {
         _physBody.setType(BodyType.DynamicBody);
         Level._currLevel._repeatEvents.add(new Action()
@@ -1278,17 +1245,22 @@ public abstract class PhysicsSprite implements Renderable
 
                 // chase the _chaseTarget
                 // compute vector between hero and enemy
-                _chaseVector.x = target._physBody.getPosition().x - _physBody.getPosition().x;
-                _chaseVector.y = target._physBody.getPosition().y - _physBody.getPosition().y;
+                float x = target._physBody.getPosition().x - _physBody.getPosition().x;
+                float y = target._physBody.getPosition().y - _physBody.getPosition().y;
 
-                // normalize it and then multiply by speed
-                _chaseVector.nor();
-                _chaseVector.x *= (speed);
-                // TODO: disable y position chasing for sidescrolling games?
-                _chaseVector.y *= (speed);
-
+                // normalize it 
+                float denom = (float) Math.sqrt(x * x + y * y);
+                x /= denom;
+                y /= denom;
+                // multiply by speed
+                x *= speed;
+                y *= speed;
+                if (!chaseInX)
+                    x = _physBody.getLinearVelocity().x;
+                if (!chaseInY)
+                    y = _physBody.getLinearVelocity().y;
                 // set Enemy velocity accordingly
-                updateVelocity(_chaseVector);
+                updateVelocity(x, y);
             }
         });
     }
