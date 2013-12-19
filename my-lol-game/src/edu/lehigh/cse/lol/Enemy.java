@@ -28,12 +28,12 @@ public class Enemy extends PhysicsSprite
      * Amount of _damage this enemy does to a hero on a collision. The default is 2, so that an enemy will defeat a hero
      * and not disappear.
      */
-    int    _damage           = 2;
+    int               _damage                = 2;
 
     /**
      * Message to display when this enemy defeats the last hero
      */
-    String _onDefeatHeroText = "";
+    String            _onDefeatHeroText      = "";
 
     /*
      * SUPPORT FOR DEFEATING ENEMIES
@@ -42,22 +42,27 @@ public class Enemy extends PhysicsSprite
     /**
      * Does a crawling hero avoid being damaged by this enemy?
      */
-    boolean         _defeatByCrawl         = false;
+    boolean           _defeatByCrawl         = false;
 
     /**
      * Is this enemy immune to invincibility? That means it won't hurt the enemy, but it won't disappear
      */
-    boolean         _immuneToInvincibility = false;
+    boolean           _immuneToInvincibility = false;
 
     /**
      * Does the enemy do _damage even to an invincible hero?
      */
-    boolean         _alwaysDoesDamage      = false;
+    boolean           _alwaysDoesDamage      = false;
 
     /**
      * Indicates that touching this enemy will remove it from the level
      */
-    private boolean _disappearOnTouch      = false;
+    private boolean   _disappearOnTouch      = false;
+
+    /**
+     * A callback to run when the enemy is defeated
+     */
+    CollisionCallback _defeatCallback;
 
     /**
      * Create an Enemy
@@ -85,18 +90,6 @@ public class Enemy extends PhysicsSprite
         super(imgName, SpriteId.ENEMY, width, height);
         Level._currLevel._score._enemiesCreated++;
     }
-
-
-    /**
-     * An ID for each enemy who has a callback that runs upon defeat
-     */
-    private int _defeatTriggerID;
-
-    /**
-     * Track if defeating this enemy should cause special code to run
-     */
-    boolean     _isTrigger;
-
 
     /**
      * Collision behavior of enemies. Based on our PhysicsSprite numbering scheme, the only concerns are to ensure that
@@ -126,7 +119,7 @@ public class Enemy extends PhysicsSprite
     private void onCollideWithObstacle(final Obstacle o, Contact c)
     {
         // handle any callbacks the obstacle has
-        if (o._enemyCollision != null) 
+        if (o._enemyCollision != null)
             o._enemyCollision.go(this, c);
     }
 
@@ -184,7 +177,7 @@ public class Enemy extends PhysicsSprite
     {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel.addSprite(e,0);
+        Level._currLevel.addSprite(e, 0);
         return e;
     }
 
@@ -193,7 +186,7 @@ public class Enemy extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Enemy e = new Enemy(radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel.addSprite(e,0);
+        Level._currLevel.addSprite(e, 0);
         return e;
     }
 
@@ -236,8 +229,8 @@ public class Enemy extends PhysicsSprite
             Level._currLevel._score.onDefeatEnemy();
 
         // handle defeat triggers
-        if (_isTrigger)
-            LOL._game.onEnemyDefeatTrigger(_defeatTriggerID, LOL._game._currLevel, this);
+        if (_defeatCallback != null)
+            _defeatCallback.go(this, null);
     }
 
     /**
@@ -280,10 +273,16 @@ public class Enemy extends PhysicsSprite
      * @param id
      *            The id of this enemy, so that we can disambiguate enemy collisions in the onEnemyTrigger code
      */
-    public void setDefeatTrigger(int id)
+    public void setDefeatTrigger(final int id)
     {
-        _defeatTriggerID = id;
-        _isTrigger = true;
+        _defeatCallback = new CollisionCallback()
+        {
+            @Override
+            public void go(PhysicsSprite ps, Contact c)
+            {
+                LOL._game.onEnemyDefeatTrigger(id, LOL._game._currLevel, Enemy.this);
+            }
+        };
     }
 
     /**
@@ -291,6 +290,6 @@ public class Enemy extends PhysicsSprite
      */
     public void clearDefeatTrigger()
     {
-        _isTrigger = false;
+        _defeatCallback = null;
     }
 }

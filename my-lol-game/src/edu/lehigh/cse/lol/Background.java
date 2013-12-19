@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * The Background class provides a way to declare images that go in the background of the game, and which automatically
@@ -14,6 +15,32 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public class Background
 {
+    static class ParallaxLayer
+    {
+        float         _xSpeed;
+
+        float         _ySpeed;
+
+        TextureRegion _tr;
+
+        float         _xOffset;
+
+        float         _yOffset;
+
+        boolean       _xRepeat;
+
+        boolean       _yRepeat;
+
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset)
+        {
+            _xSpeed = xSpeed;
+            _ySpeed = ySpeed;
+            _tr = tr;
+            _xOffset = xOffset;
+            _yOffset = yOffset;
+        }
+    }
+    
     /*
      * INTERNAL INTERFACE
      */

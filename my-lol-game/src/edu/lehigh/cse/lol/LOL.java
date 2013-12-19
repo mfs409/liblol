@@ -37,6 +37,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class LOL extends Game
 {
@@ -322,4 +323,9 @@ public abstract class LOL extends Game
         // Draw the current scene
         super.render();
     }
+}
+
+interface Renderable
+{
+    void render(SpriteBatch sb, float elapsed);
 }

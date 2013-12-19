@@ -2,6 +2,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: complete the "easy" constructor
 
+// TODO: comments, clean AnimationDriver
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
@@ -97,5 +99,54 @@ public class Animation
         _durations[_nextCell] = duration;
         _nextCell++;
         return this;
+    }
+
+    static class AnimationDriver
+    {
+        /**
+         * The currently running animation
+         * 
+         * TODO: use an AnimationDriver?
+         */
+        private Animation _currentAnimation;
+
+        private int       _currAnimationFrame;
+
+        private float     _currAnimationTime;
+
+        void setCurrentAnimation(Animation a)
+        {
+            _currentAnimation = a;
+            _currAnimationFrame = 0;
+            _currAnimationTime = 0;
+        }
+
+        boolean isActive()
+        {
+            return _currentAnimation != null;
+        }
+
+        TextureRegion getTr(float delta)
+        {
+            _currAnimationTime += delta;
+            long millis = (long) (1000 * _currAnimationTime);
+            // are we still in this frame?
+            //
+            // TODO: we can simplify this code
+            if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
+                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+            }
+            // are we on the last frame, with no loop? If so, stay where we are...
+            else if (_currAnimationFrame == _currentAnimation._nextCell - 1 && !_currentAnimation._loop) {
+                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+            }
+            // else advance, reset, go
+            else {
+                _currAnimationFrame = (_currAnimationFrame + 1) % _currentAnimation._nextCell;
+                _currAnimationTime = 0;
+                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
+            }
+
+        }
     }
 }

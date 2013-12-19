@@ -1,6 +1,6 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
+// TODO: clean up comments (stopped at line 945)
 
 // TODO: enable arbitrary polygon creation?
 
@@ -23,34 +23,62 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.lol.Animation.AnimationDriver;
+import edu.lehigh.cse.lol.Level.Action;
+import edu.lehigh.cse.lol.Level.TouchAction;
+
 public abstract class PhysicsSprite implements Renderable
 {
-    /**
-     * Track if the entity is currently being rendered. This is a proxy for "is important to the rest of the game" and
-     * when it is false, we don't run any updates on the PhysicsSprite
+    /*
+     * TYPES AND INTERFACES
      */
-    boolean                   _visible                = true;
 
     /**
-     * The default image to display
+     * This enum encapsulates the different types of PhysicsSprite entities
      */
-    TextureRegion             _tr;
+    enum SpriteId
+    {
+        UNKNOWN(0), HERO(1), ENEMY(2), GOODIE(3), PROJECTILE(4), OBSTACLE(5), SVG(6), DESTINATION(7);
+
+        /**
+         * To each ID, we attach an integer value, so that we can compare the different IDs and establish a hierarchy
+         * for collision management
+         */
+        public final int _id;
+
+        /**
+         * Construct by providing the integral id
+         * 
+         * @param id
+         *            The unique integer for this SpriteId
+         */
+        SpriteId(int id)
+        {
+            _id = id;
+        }
+    }
 
     /**
-     * We may opt to flip the image when it is moving in the -X direction. If so, this tracks if the image is flipped,
-     * so that we draw its sprite correctly.
+     * When a PhysicsSprite collides with another PhysicsSprite, and that collision is intended to cause some custom
+     * code to run, we use this interface
      */
-    private boolean           _flipped;
+    interface CollisionCallback
+    {
+        /**
+         * Respond to a collision with a PhysicsSprite. Note that one of the collision entities is not named; it should
+         * be clear from the context in which this was constructed.
+         * 
+         * @param ps
+         *            The PhysicsSprite involved in the collision
+         * @param c
+         *            A description of the contact, in case it is useful
+         */
+        void go(final PhysicsSprite ps, Contact c);
+    }
 
-    /**
-     * The width of the PhysicsSprite
+    /*
+     * FIELDS
      */
-    float                     _width;
-
-    /**
-     * The height of the PhysicsSprite
-     */
-    float                     _height;
 
     /**
      * Type of this PhysicsSprite; useful for disambiguation in collision detection
@@ -68,6 +96,52 @@ public abstract class PhysicsSprite implements Renderable
     boolean                   _isCircle;
 
     /**
+     * Track if the entity is currently being rendered. This is a proxy for "is important to the rest of the game" and
+     * when it is false, we don't run any updates on the PhysicsSprite
+     */
+    boolean                   _visible                = true;
+
+    /**
+     * The default image to display
+     * 
+     * TODO: consider moving into AnimationDriver?
+     */
+    TextureRegion             _tr;
+
+    /**
+     * Does the entity's image flip when the hero moves backwards?
+     */
+    private boolean           _reverseFace            = false;
+
+    /**
+     * We may opt to flip the image when it is moving in the -X direction. If so, this tracks if the image is flipped,
+     * so that we draw its sprite correctly.
+     * 
+     * TODO: consider moving into AnimationDriver?
+     */
+    private boolean           _flipped;
+
+    /**
+     * The z index of this entity. Valid range is [-2, 2]
+     */
+    int                       _zIndex                 = 0;
+
+    /**
+     * The width of the PhysicsSprite
+     */
+    float                     _width;
+
+    /**
+     * The height of the PhysicsSprite
+     */
+    float                     _height;
+
+    /**
+     * Does this entity follow a route? If so, the RouteDriver will be used to advance the entity along its route.
+     */
+    private RouteDriver       _route;
+
+    /**
      * Text that game designer can modify to hold additional information
      */
     String                    _infoText               = "";
@@ -78,8 +152,10 @@ public abstract class PhysicsSprite implements Renderable
     TouchAction               _touchResponder;
 
     /**
-     * When the camera follows the entity without centering the hero, this gives us the difference between the hero and
+     * When the camera follows the entity without centering on it, this gives us the difference between the hero and
      * camera
+     * 
+     * TODO: move to level
      */
     Vector2                   _cameraOffset           = new Vector2(0, 0);
 
@@ -98,16 +174,6 @@ public abstract class PhysicsSprite implements Renderable
     WeldJoint                 _wJoint;
 
     /**
-     * Does this entity follow a route? If so, the RouteDriver will be used to advance the entity along its route.
-     */
-    private RouteDriver       _route;
-
-    /**
-     * The z index of this entity. Valid range is [-2, 2]
-     */
-    int                       _zIndex                 = 0;
-
-    /**
      * a sound to play when the obstacle is touched
      */
     Sound                     _touchSound;
@@ -124,20 +190,14 @@ public abstract class PhysicsSprite implements Renderable
     private final static long _pokeDeleteThresh       = 500000000;
 
     /**
+     * Animation support: this tracks the current state of the active animation (if any)
+     */
+    AnimationDriver           _animator               = new AnimationDriver();
+
+    /**
      * Animation support: the cells of the default animation
      */
     Animation                 _defaultAnimation;
-
-    /**
-     * The currently running animation
-     * 
-     * TODO: use an AnimationDriver?
-     */
-    private Animation         _currentAnimation;
-
-    private int               _currAnimationFrame;
-
-    private float             _currAnimationTime;
 
     /**
      * Animation support: the cells of the disappearance animation
@@ -160,26 +220,35 @@ public abstract class PhysicsSprite implements Renderable
     float                     _disappearAnimateHeight;
 
     /**
-     * Does the entity's image flip when the hero moves backwards?
-     */
-    private boolean           _reverseFace            = false;
-
-    /**
      * If this entity hovers, this will be true
+     * 
+     * TODO: do we need this, or is a _hoverVector enough?
      */
     boolean                   _isHover;
 
     /**
-     * A vector for computing _hover placement
+     * A vector for computing hover placement
      */
     private Vector3           _hoverVector            = new Vector3();
 
+    /**
+     * Track if heroes stick to the top of this PhysicsSprite
+     */
     boolean                   isStickyTop;
 
+    /**
+     * Track if heroes stick to the bottom of this PhysicsSprite
+     */
     boolean                   isStickyBottom;
 
+    /**
+     * Track if heroes stick to the left side of this PhysicsSprite
+     */
     boolean                   isStickyLeft;
 
+    /**
+     * Track if heroes stick to the right side of this PhysicsSprite
+     */
     boolean                   isStickyRight;
 
     /**
@@ -188,7 +257,8 @@ public abstract class PhysicsSprite implements Renderable
     protected Sound           _disappearSound         = null;
 
     /**
-     * Track which sides are one-sided. 0 is bottom, 1 is right, 2 is top, 3 is left
+     * Disable 3 of 4 sides of a PhysicsSprite, to allow walking through walls. The value reflects the side that
+     * remains active. 0 is bottom, 1 is right, 2 is top, 3 is left
      */
     int                       _isOneSided             = -1;
 
@@ -197,6 +267,18 @@ public abstract class PhysicsSprite implements Renderable
      */
     int                       _passThroughId          = 0;
 
+    /**
+     * Create a new PhysicsSprite that does not yet have physics, but that has a renderable picture
+     * 
+     * @param imgName
+     *            The image to display
+     * @param id
+     *            The type of PhysicsSprite
+     * @param width
+     *            The width
+     * @param height
+     *            The height
+     */
     PhysicsSprite(String imgName, SpriteId id, float width, float height)
     {
         _psType = id;
@@ -210,8 +292,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Each descendant defines this to address any custom logic that we need to
-     * deal with on a collision
+     * Each descendant defines this to address any custom logic that we need to deal with on a collision
      * 
      * @param other
      *            The other entity involved in the collision
@@ -219,8 +300,7 @@ public abstract class PhysicsSprite implements Renderable
     abstract void onCollide(PhysicsSprite other, Contact contact);
 
     /**
-     * Internal method for updating an entity's velocity, so that we can handle
-     * its direction correctly
+     * Internal method for updating an entity's velocity, so that we can handle its direction correctly
      * 
      * @param x
      *            The new x velocity
@@ -238,6 +318,14 @@ public abstract class PhysicsSprite implements Renderable
         _physBody.setLinearVelocity(x, y);
     }
 
+    /**
+     * When this PhysicsSprite is touched (down press), we run this code
+     * 
+     * @param x
+     *            The X coordinate that was touched
+     * @param y
+     *            The Y coordinate that was touched
+     */
     void handleTouchDown(float x, float y)
     {
         if (_touchSound != null)
@@ -246,6 +334,14 @@ public abstract class PhysicsSprite implements Renderable
             _touchResponder.onDown(x, y);
     }
 
+    /**
+     * When this PhysicsSprite is touched (move/drag press), we run this code
+     * 
+     * @param x
+     *            The X coordinate that was touched
+     * @param y
+     *            The Y coordinate that was touched
+     */
     boolean handleTouchDrag(float x, float y)
     {
         if (_touchResponder != null) {
@@ -255,16 +351,13 @@ public abstract class PhysicsSprite implements Renderable
         return true;
     }
 
-    void setCurrentAnimation(Animation a)
-    {
-        _currentAnimation = a;
-        _currAnimationFrame = 0;
-        _currAnimationTime = 0;
-    }
-
+    /**
+     * Every time the world advances by a timestep, we call this code. It updates the PhysicsSprite and draws it.
+     */
     @Override
     public void render(SpriteBatch _spriteRender, float delta)
     {
+        // skip all rendering and updates if not visible
         if (_visible) {
             // possibly run a route update
             if (_route != null && _visible)
@@ -273,28 +366,10 @@ public abstract class PhysicsSprite implements Renderable
             // choose the default TextureRegion to show... this is how we animate
             TextureRegion tr = _tr;
             // If we've got an in-flight animation, switch to it
-            if (_currentAnimation != null) {
-                _currAnimationTime += delta;
-                long millis = (long) (1000 * _currAnimationTime);
-                // are we still in this frame?
-                //
-                // TODO: we can simplify this code
-                if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
-                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-                }
-                // are we on the last frame, with no loop? If so, stay where we are...
-                else if (_currAnimationFrame == _currentAnimation._nextCell - 1 && !_currentAnimation._loop) {
-                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-                }
-                // else advance, reset, go
-                else {
-                    _currAnimationFrame = (_currAnimationFrame + 1) % _currentAnimation._nextCell;
-                    _currAnimationTime = 0;
-                    tr = _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-                }
-            }
+            if (_animator.isActive())
+                tr = _animator.getTr(delta);
 
-            // now draw this sprite
+            // now draw this sprite, flipping it if necessary
             Vector2 pos = _physBody.getPosition();
             if (_reverseFace && _physBody.getLinearVelocity().x < 0) {
                 if (!_flipped) {
@@ -340,12 +415,12 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Make the camera follow the hero, but without centering the hero on the screen
+     * Make the camera follow the entity, but without centering the entity on the screen
      * 
      * @param x
-     *            Amount of x distance between hero and center
+     *            Amount of x distance between entity and center
      * @param y
-     *            Amount of y distance between hero and center
+     *            Amount of y distance between entity and center
      */
     // TODO: make this part of the Level.setCameraChase code?
     public void setCameraOffset(float x, float y)
@@ -355,7 +430,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Specify that this entity should have a rectangular _physics shape
+     * Specify that this entity should have a rectangular physics shape
      * 
      * @param density
      *            Density of the entity
@@ -366,12 +441,15 @@ public abstract class PhysicsSprite implements Renderable
      * @param type
      *            Is this static or dynamic?
      * @param isProjectile
-     *            Is this a bullet
+     *            Is this a fast-moving object
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
      */
     void setBoxPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile, float x,
             float y)
     {
-        // NB: this is not a circle... it's a box...
         PolygonShape boxPoly = new PolygonShape();
         boxPoly.setAsBox(_width / 2, _height / 2);
         BodyDef boxBodyDef = new BodyDef();
@@ -411,14 +489,18 @@ public abstract class PhysicsSprite implements Renderable
      * @param type
      *            Is this static or dynamic?
      * @param isProjectile
-     *            Is this a bullet
+     *            Is this a fast-moving object
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param radius
+     *            The radius of the underlying circle
      */
     void setCirclePhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile,
             float x, float y, float r)
     {
         _isCircle = true;
-
-        // NB: this is a circle... really!
         CircleShape c = new CircleShape();
         c.setRadius(r);
         BodyDef boxBodyDef = new BodyDef();
@@ -441,15 +523,13 @@ public abstract class PhysicsSprite implements Renderable
 
         // link the body to the sprite
         _physBody.setUserData(this);
-
     }
 
     /**
-     * Change whether this entity engages in _physics collisions or not
+     * Change whether this entity engages in physics collisions or not
      * 
      * @param state
-     *            either true or false. true indicates that the object will
-     *            participate in _physics collisions. false
+     *            either true or false. true indicates that the object will participate in physics collisions. false
      *            indicates that it will not.
      */
     public void setCollisionEffect(boolean state)
@@ -458,7 +538,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Allow the user to adjust the default _physics settings (density,
+     * Allow the user to adjust the default physics settings (density,
      * elasticity, friction) for this entity
      * 
      * @param density
@@ -477,7 +557,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Reset the _current PhysicsSprite as non-rotateable
+     * Indicate that this entity should not rotate due to torque
      */
     public void disableRotation()
     {
@@ -525,7 +605,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Indicate that the _sprite should move with the tilt of the phone
+     * Indicate that the entity should move with the tilt of the phone
      */
     public void setMoveByTilting()
     {
@@ -562,8 +642,7 @@ public abstract class PhysicsSprite implements Renderable
      */
     public void remove(boolean quiet)
     {
-        // set it invisible immediately, so that future calls know to ignore
-        // this PhysicsSprite
+        // set it invisible immediately, so that future calls know to ignore this PhysicsSprite
         _visible = false;
         _physBody.setActive(false);
 
@@ -656,20 +735,25 @@ public abstract class PhysicsSprite implements Renderable
      * @param activationGoodies4
      *            Number of type-4 goodies that must be collected before it
      *            works
+     * @param disapper
+     *            True if the entity should disappear after the trigger completes
      */
     public void setTouchTrigger(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
             int activationGoodies4, final boolean disappear)
     {
         final int[] _touchTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
-        this._touchResponder = new TouchAction()
+        // set the code to run on touch
+        _touchResponder = new TouchAction()
         {
             @Override
             public void onDown(float x, float y)
             {
+                // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= _touchTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                // if so, run the trigger
                 if (match) {
                     if (disappear)
                         remove(false);
@@ -754,8 +838,7 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Indicate that when the player touches this obstacle, we should make a
-     * sound
+     * Indicate that when the player touches this obstacle, we should play a sound
      * 
      * @param sound
      *            The name of the sound file to play
@@ -766,16 +849,16 @@ public abstract class PhysicsSprite implements Renderable
     }
 
     /**
-     * Call this on an Obstacle to make it pokeable
+     * Call this on an Entity to make it pokeable
      * 
-     * Poke the Obstacle, then poke the screen, and the Obstacle will move to
-     * the location that was pressed. Poke the
-     * Obstacle twice in rapid succession to delete the Obstacle.
+     * Poke the entity, then poke the screen, and the entity will move to the location that was pressed. Poke the
+     * entity twice in rapid succession to delete it.
      * 
      * TODO: make poke twice a more configurable option?
      */
     public void setPokeToPlace()
     {
+        // set the code to run on touch
         _touchResponder = new TouchAction()
         {
             @Override
@@ -784,6 +867,8 @@ public abstract class PhysicsSprite implements Renderable
                 LOL._game.vibrate(100);
                 long time = System.nanoTime();
                 // double touch
+                //
+                // TODO: move _lastPokeTime into here?
                 if ((time - _lastPokeTime) < _pokeDeleteThresh) {
                     // hide sprite, disable physics
                     _physBody.setActive(false);
@@ -795,6 +880,7 @@ public abstract class PhysicsSprite implements Renderable
                 else {
                     _lastPokeTime = time;
                 }
+                // set a screen handler to detect when/where to move the entity
                 Level._currLevel._touchResponder = new TouchAction()
                 {
                     @Override
@@ -826,9 +912,6 @@ public abstract class PhysicsSprite implements Renderable
         // register a handler so that when this entity is touched, we'll start processing a flick
         _touchResponder = new TouchAction()
         {
-            /**
-             * This runs when the entity is touched
-             */
             @Override
             public void onDown(float x, float y)
             {
@@ -841,9 +924,6 @@ public abstract class PhysicsSprite implements Renderable
                 // TODO: whenever *any* entity is touched, it should null out the Level touchResponder
                 Level._currLevel._touchResponder = new TouchAction()
                 {
-                    /**
-                     * Since flicking usually involves dragging, we'll look for when the screen is up-pressed
-                     */
                     @Override
                     public void onUp(float x, float y)
                     {
@@ -927,7 +1007,7 @@ public abstract class PhysicsSprite implements Renderable
     {
         _defaultAnimation = a;
         // we'll assume we're using the default animation as our first animation...
-        setCurrentAnimation(_defaultAnimation);
+        _animator.setCurrentAnimation(_defaultAnimation);
     }
 
     /**

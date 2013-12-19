@@ -148,7 +148,7 @@ public class Hero extends PhysicsSprite
             _throwAnimationTimeRemaining -= delta;
             if (_throwAnimationTimeRemaining <= 0) {
                 _throwAnimationTimeRemaining = 0;
-                setCurrentAnimation(_defaultAnimation);
+                _animator.setCurrentAnimation(_defaultAnimation);
             }
         }
 
@@ -159,7 +159,7 @@ public class Hero extends PhysicsSprite
             if (_invincibleRemaining <= 0) {
                 _invincibleRemaining = 0;
                 if (_invincibleAnimation != null)
-                    setCurrentAnimation(_defaultAnimation);
+                    _animator.setCurrentAnimation(_defaultAnimation);
             }
         }
 
@@ -179,7 +179,7 @@ public class Hero extends PhysicsSprite
         if (!_allowMultiJump)
             _inAir = true;
         if (_jumpAnimation != null)
-            setCurrentAnimation(_jumpAnimation);
+            _animator.setCurrentAnimation(_jumpAnimation);
         if (_jumpSound != null)
             _jumpSound.play();
     }
@@ -191,7 +191,7 @@ public class Hero extends PhysicsSprite
     {
         if (_inAir || _allowMultiJump) {
             _inAir = false;
-            setCurrentAnimation(_defaultAnimation);
+            _animator.setCurrentAnimation(_defaultAnimation);
         }
     }
 
@@ -225,7 +225,7 @@ public class Hero extends PhysicsSprite
     void doThrowAnimation()
     {
         if (_throwAnimation != null) {
-            setCurrentAnimation(_throwAnimation);
+            _animator.setCurrentAnimation(_throwAnimation);
             _throwAnimationTimeRemaining = _throwAnimateTotalLength;
         }
     }
@@ -238,7 +238,7 @@ public class Hero extends PhysicsSprite
         _crawling = true;
         _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
         if (_crawlAnimation != null)
-            setCurrentAnimation(_crawlAnimation);
+            _animator.setCurrentAnimation(_crawlAnimation);
     }
 
     /**
@@ -248,7 +248,7 @@ public class Hero extends PhysicsSprite
     {
         _crawling = false;
         _physBody.setTransform(_physBody.getPosition(), 0);
-        setCurrentAnimation(_defaultAnimation);
+        _animator.setCurrentAnimation(_defaultAnimation);
     }
 
     /**
@@ -442,13 +442,13 @@ public class Hero extends PhysicsSprite
             _invincibleRemaining += g._invincibilityDuration;
             // invincible animation
             if (_invincibleAnimation != null)
-                setCurrentAnimation(_invincibleAnimation);
+                _animator.setCurrentAnimation(_invincibleAnimation);
         }
 
         // deal with animation changes due to goodie count
         //
         // TODO: if we jump, we lose this info... make it more orthogonal? Another consideration is that we could make
-        // it a callback of the goodie colliison...
+        // it a callback of the goodie collision...
         if (_goodieCountAnimation != null) {
             int goodies = Level._currLevel._score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {

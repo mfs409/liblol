@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -45,6 +46,69 @@ import edu.lehigh.cse.lol.Controls.Control;
  */
 public class Level extends ScreenAdapter
 {
+    /**
+     * Wrapper for actions that we generate and then want handled during the render loop
+     */
+    interface Action
+    {
+        void go();
+    }
+
+    static class TouchAction
+    {
+        void onDown(float x, float y)
+        {
+        }
+
+        void onMove(float x, float y)
+        {
+        }
+
+        void onUp(float x, float y)
+        {
+        }
+    }
+
+    /**
+     * Custom camera that can do parallax... taken directly from GDX tests
+     */
+    class ParallaxCamera extends OrthographicCamera
+    {
+        private Matrix4 parallaxView     = new Matrix4();
+
+        private Matrix4 parallaxCombined = new Matrix4();
+
+        private Vector3 tmp              = new Vector3();
+
+        private Vector3 tmp2             = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         * 
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
+         */
+        ParallaxCamera(float viewportWidth, float viewportHeight)
+        {
+            super(viewportWidth, viewportHeight);
+        }
+
+        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY)
+        {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
+        }
+    }
+    
     /*
      * FIELDS FOR MANAGING GAME STATE
      */
@@ -764,3 +828,5 @@ public class Level extends ScreenAdapter
         };
     }
 }
+
+
