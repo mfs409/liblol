@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: add support for multiple z indices: -2, -1, 0, 1, 2 (0 is hero)
-
 // TODO: verify true/false returns from all things called from this... I don't think all our events are being chained
 // correctly
 
@@ -10,6 +8,8 @@ package edu.lehigh.cse.lol;
 // TODO: zoom doesn't work right with bounds of big screens and chase heroes
 
 // TODO: hud onhold is untested
+
+// TODO: the unlock mechanism is untested
 
 import java.util.ArrayList;
 
@@ -31,10 +31,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Controls.Control;
-import edu.lehigh.cse.lol.Util.Action;
-import edu.lehigh.cse.lol.Util.ParallaxCamera;
-import edu.lehigh.cse.lol.Util.Renderable;
-import edu.lehigh.cse.lol.Util.TouchAction;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they can have an end goal.

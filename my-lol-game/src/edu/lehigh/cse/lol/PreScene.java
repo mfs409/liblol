@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Util.Renderable;
-
 /**
  * PreScene provides a way to put a pop-up on the screen before a level begins. A PreScene can include arbitrary text
  * and pictures.

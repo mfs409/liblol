@@ -20,22 +20,59 @@ package edu.lehigh.cse.lol;
 
 // TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Preferences;
 
-public abstract class LOL extends Game implements ApplicationListener
+public abstract class LOL extends Game
 {
-    /*
-     * PUBLIC INTERFACE: GAME CONFIGURATION
+    /**
+     * Modes of the game: we can be showing the main screen, the help screens,
+     * the level chooser, or a playable level
      */
+    private enum Modes
+    {
+        SPLASH, HELP, CHOOSE, PLAY
+    };
+
+    /**
+     * The current mode of the program
+     */
+    private Modes       _mode;
+
+    /**
+     * The current level being played
+     */
+    int                 _currLevel;
+
+    /**
+     * Track the current help scene being displayed
+     */
+    int                 _currHelp;
+
+    static LOL          _game;
+
+    /**
+     * This variable lets us track whether the user pressed 'back' on an android, or 'escape' on the desktop. We are
+     * using polling, so we swallow presses that aren't preceded by a release. In that manner, holding 'back' can't exit
+     * all the way out... you must press 'back' repeatedly, once for each screen to revert.
+     */
+    boolean             _keyDown;
 
     /**
      * The configuration of the game is accessible through this
      */
-    LOLConfiguration _config;
+    LOLConfiguration    _config;
+
+    /**
+     * The configuration of the splash screen is accessible through this
+     */
+    SplashConfiguration _splashConfig;
+
+    /*
+     * PUBLIC INTERFACE: GAME CONFIGURATION
+     */
 
     /**
      * The programmer configures the splash screen by implementing this method, and returning a SplashConfiguration
@@ -46,11 +83,6 @@ public abstract class LOL extends Game implements ApplicationListener
     /*
      * PUBLIC INTERFACE: SPLASH SCREEN CONFIGURATION
      */
-
-    /**
-     * The configuration of the splash screen is accessible through this
-     */
-    SplashConfiguration _splashConfig;
 
     /**
      * The programmer configures the splash screen by implementing this method, and returning a SplashConfiguration
@@ -108,30 +140,6 @@ public abstract class LOL extends Game implements ApplicationListener
      * INTERNAL INTERFACE: NAVIGATION BETWEEN SCENES
      */
 
-    /**
-     * Modes of the game: we can be showing the main screen, the help screens,
-     * the level chooser, or a playable level
-     */
-    private enum Modes
-    {
-        SPLASH, HELP, CHOOSE, PLAY
-    };
-
-    /**
-     * The current mode of the program
-     */
-    private Modes _mode;
-
-    /**
-     * The current level being played
-     */
-    int           _currLevel;
-
-    /**
-     * Track the current help scene being displayed
-     */
-    int           _currHelp;
-
     void doSplash()
     {
         // set the default display mode
@@ -187,13 +195,6 @@ public abstract class LOL extends Game implements ApplicationListener
     }
 
     /**
-     * This variable lets us track whether the user pressed 'back' on an android, or 'escape' on the desktop. We are
-     * using polling, so we swallow presses that aren't preceded by a release. In that manner, holding 'back' can't exit
-     * all the way out... you must press 'back' repeatedly, once for each screen to revert.
-     */
-    boolean _keyDown;
-
-    /**
      * We can use this method from the render loop to poll for back presses
      */
     private void handleKeyDown()
@@ -231,35 +232,31 @@ public abstract class LOL extends Game implements ApplicationListener
      */
 
     /**
-     * ID of the highest level that is unlocked
-     */
-    int _unlockLevel;
-
-    /**
      * save the value of 'unlocked' so that the next time we play, we don't have
      * to start at level 0
+     * 
+     * @param value
+     *            The value to save as the most recently unlocked level
      */
-    void saveUnlocked()
+    void saveUnlocked(int value)
     {
         Preferences prefs = Gdx.app.getPreferences(_config.getStorageKey());
-        prefs.putInteger("unlock", _unlockLevel);
+        prefs.putInteger("unlock", value);
         prefs.flush();
     }
 
     /**
      * read the _current value of 'unlocked' to know how many levels to unlock
      */
-    private void readUnlocked()
+    int readUnlocked()
     {
         Preferences prefs = Gdx.app.getPreferences(_config.getStorageKey());
-        _unlockLevel = prefs.getInteger("unlock", 1);
+        return prefs.getInteger("unlock", 1);
     }
 
     /*
      * INTERNAL INTERFACE: INTERNAL METHODS
      */
-
-    static LOL _game;
 
     /**
      * This is an internal method for initializing a game. User code should never call this.
@@ -273,7 +270,6 @@ public abstract class LOL extends Game implements ApplicationListener
         _splashConfig = splashConfig();
 
         // for handling back presses
-        // Gdx.input.setInputProcessor(this);
         Gdx.input.setCatchBackKey(true);
 
         // get number of unlocked levels

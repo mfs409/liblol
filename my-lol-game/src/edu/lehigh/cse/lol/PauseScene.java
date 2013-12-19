@@ -8,8 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.Util.Renderable;
-
 // TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
 
 // TODO: need to be able to add a 'back to menu' button

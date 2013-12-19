@@ -11,8 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 /**
  * Projectiles are entities that can be thrown from the hero's location in order to remove enemies
  * 

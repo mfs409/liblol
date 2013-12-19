@@ -14,9 +14,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Util.CollisionCallback;
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 /**
  * Obstacles are entities that change the hero's velocity upon a collision
  * 

@@ -4,8 +4,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 /**
  * Destinations are entities that the hero should try to reach. When a hero reaches a destination, the hero disappears,
  * and the score updates.

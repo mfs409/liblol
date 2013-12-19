@@ -3,8 +3,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 /**
  * Goodies are physical entities in a game whose main purpose is for the hero to collect them. Collecting a goodie has
  * three possible consequences: it can lead to the score changing, it can lead to the hero's strength changing, and it

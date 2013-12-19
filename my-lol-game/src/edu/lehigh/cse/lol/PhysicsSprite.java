@@ -23,12 +23,6 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Util.Action;
-import edu.lehigh.cse.lol.Util.Renderable;
-import edu.lehigh.cse.lol.Util.RouteDriver;
-import edu.lehigh.cse.lol.Util.SpriteId;
-import edu.lehigh.cse.lol.Util.TouchAction;
-
 public abstract class PhysicsSprite implements Renderable
 {
     /**
@@ -777,6 +771,8 @@ public abstract class PhysicsSprite implements Renderable
      * Poke the Obstacle, then poke the screen, and the Obstacle will move to
      * the location that was pressed. Poke the
      * Obstacle twice in rapid succession to delete the Obstacle.
+     * 
+     * TODO: make poke twice a more configurable option?
      */
     public void setPokeToPlace()
     {

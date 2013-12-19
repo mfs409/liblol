@@ -8,8 +8,6 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 
-import edu.lehigh.cse.lol.Util.Action;
-
 /**
  * Game designers can configure the physics of a level (i.e., the default forces, if any), via this class. Internally,
  * the class constructs a box2d physics world and instantiates the callbacks needed to ensure that LOL works correctly.

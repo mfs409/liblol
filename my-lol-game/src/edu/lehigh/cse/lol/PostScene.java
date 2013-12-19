@@ -11,8 +11,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.Util.Renderable;
-
 public class PostScene
 {
     boolean               _visible;

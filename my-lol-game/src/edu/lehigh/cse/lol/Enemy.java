@@ -9,8 +9,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 /**
  * Enemies are things to be avoided or defeated by the hero.
  * 

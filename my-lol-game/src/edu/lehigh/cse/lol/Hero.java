@@ -14,8 +14,6 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
-import edu.lehigh.cse.lol.Util.SpriteId;
-
 public class Hero extends PhysicsSprite
 {
     /*

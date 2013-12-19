@@ -182,10 +182,8 @@ public class Score
         LOL._game.levelCompleteTrigger(win);
 
         // if we won, unlock the next level
-        if (win && LOL._game._unlockLevel == LOL._game._currLevel) {
-            LOL._game._unlockLevel++;
-            LOL._game.saveUnlocked();
-        }
+        if (win && LOL._game.readUnlocked() == LOL._game._currLevel) 
+            LOL._game.saveUnlocked(LOL._game._currLevel + 1);
 
         // drop everything from the hud
         Level._currLevel._controls.clear();
