@@ -12,7 +12,8 @@ package edu.lehigh.cse.lol;
 // TODO: Overall Status: Chooser, Controls, Enemy, LOL, Obstacle, PauseScene, PhysicsSprite,
 // PostScene, Projectile and Util have lots of remaining work
 
-// STATUS: Destination, Goodie, HelpLevel, LOLConfiguration, Media, PreScene, Route, Score, Splash, SplashConfiguration, SVG, and
+// STATUS: Destination, Goodie, HelpLevel, LOLConfiguration, Media, PreScene, Route, Score, Splash, SplashConfiguration,
+// SVG, and
 // Tilt are done
 
 // STATUS: Animation, Background, Hero, Level and Physics are close
@@ -172,11 +173,19 @@ public abstract class LOL extends Game implements ApplicationListener
         Gdx.app.exit();
     }
 
-    // TODO: implement vibration
-    void vibrate(long millis) {
-        
+    /**
+     * Vibrate the phone for a fixed amount of time. Note that this only vibrates the phone if the configuration says
+     * that vibration should be permitted.
+     * 
+     * @param millis
+     *            The amount of time to vibrate
+     */
+    void vibrate(int millis)
+    {
+        if (_config.getVibration())
+            Gdx.input.vibrate(millis);
     }
-    
+
     /**
      * This variable lets us track whether the user pressed 'back' on an android, or 'escape' on the desktop. We are
      * using polling, so we swallow presses that aren't preceded by a release. In that manner, holding 'back' can't exit

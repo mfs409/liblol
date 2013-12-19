@@ -1,7 +1,7 @@
 package edu.lehigh.cse.lol;
 
 /**
- * The LOLConfiguration interface describes the key characteristics of the game screen.
+ * The LOLConfiguration interface describes some configuration details of the game
  */
 public interface LOLConfiguration
 {
@@ -67,4 +67,9 @@ public interface LOLConfiguration
      * losing the level:
      */
     public String getDefaultLoseText();
+
+    /**
+     * When running on the desktop, this value will be used as the name on the window's title bar
+     */
+    public String getGameTitle();
 }
