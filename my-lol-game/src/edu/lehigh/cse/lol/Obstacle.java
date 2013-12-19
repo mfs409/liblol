@@ -2,11 +2,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: clean up comments
 
-// TODO: scribble time of -1 should leave things on the screen forever...
-
-// TODO: we should really make this so that there are simply callbacks and far fewer static fields
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -29,7 +24,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * collision. There is also a simple object
  * type for loading SVG files, such as those created by Inkscape.
  * 
- * TODO: add delays for non-enemy collide triggers
+ * TODO: add delays for non-enemy collide triggers?
  */
 public class Obstacle extends PhysicsSprite
 {
@@ -41,143 +36,36 @@ public class Obstacle extends PhysicsSprite
      * One of the main uses of obstacles is to use hero/obstacle collisions as a way to run custom code. This callback
      * defines what code to run when a hero collides with this obstacle.
      */
-    CollisionCallback  _heroCollision;
+    CollisionCallback _heroCollision;
 
     CollisionCallback _enemyCollision;
-    
+
+    CollisionCallback _projectileCollision;
+
     /**
      * Indicate that this obstacle does not re-enable jumping for the hero
      */
-    boolean                _noJumpReenable;
-
-
-    /**
-     * Track if this is a "trigger" object that causes special code to run upon
-     * any collision with a hero
-     */
-    boolean                _isHeroCollideTrigger        = false;
-
-    /**
-     * Hero triggers can require certain Goodie counts in order to run
-     */
-    int[]                  _heroTriggerActivation       = new int[4];
-
-    /**
-     * An ID for each hero trigger object, in case it's useful
-     */
-    int                    _heroTriggerID;
-
-    /**
-     * Track if this is a "trigger" object that causes special code to run upon
-     * any collision with an enemy
-     */
-    boolean                _isEnemyCollideTrigger       = false;
-
-    /**
-     * Enemy triggers can require certain Goodie counts in order to run
-     */
-    int[]                  _enemyTriggerActivation      = new int[4];
-
-    /**
-     * An ID for each enemy trigger object, in case it's useful
-     */
-    int                    _enemyTriggerID;
-
-    /**
-     * How long to wait before running trigger code.
-     */
-    float                  _enemyCollideTriggerDelay    = 0;
-
-    /**
-     * Track if this is a "trigger" object that causes special code to run upon
-     * any collision with a projectile
-     */
-    boolean                _isProjectileCollideTrigger  = false;
-
-    /**
-     * Projectile triggers can require certain Goodie counts in order to run
-     */
-    int[]                  _projectileTriggerActivation = new int[4];
-
-    /**
-     * An ID for each projectile trigger object, in case it's useful
-     */
-    int                    _projectileTriggerID;
-
-    /**
-     * The image to draw when we are in scribble mode
-     */
-    private static String  _scribblePic;
-
-    /**
-     * The last x coordinate of a scribble
-     */
-    private static float   _scribbleX;
-
-    /**
-     * The last y coordinate of a scribble
-     */
-    private static float   _scribbleY;
-
-    /**
-     * True if we are in mid-scribble
-     */
-    private static boolean _scribbleDown;
-
-    /**
-     * Density of objects drawn via scribbling
-     */
-    private static float   _scribbleDensity;
-
-    /**
-     * Elasticity of objects drawn via scribbling
-     */
-    private static float   _scribbleElasticity;
-
-    /**
-     * Friction of objects drawn via scribbling
-     */
-    private static float   _scribbleFriction;
-
-    /**
-     * Time before a scribbled object disappears
-     */
-    static float           _scribbleTime;
-
-    /**
-     * Width of the picture being drawn via scribbling
-     */
-    static float           _scribbleWidth;
-
-    /**
-     * Height of the picture being drawn via scribbling
-     */
-    static float           _scribbleHeight;
-
-    /**
-     * Track if the scribble objects move, or are stationary
-     */
-    static boolean         _scribbleMoveable;
+    boolean           _noJumpReenable;
 
     /**
      * a sound to play when the obstacle is hit by a hero
      */
-    private Sound          _collideSound;
+    private Sound     _collideSound;
 
     /**
      * how long to delay (in nanoseconds) between attempts to play the collide sound
      */
-    private long           _collideSoundDelay;
+    private long      _collideSoundDelay;
 
     /**
      * Time of last collision sound
      */
-    private long           _lastCollideSoundTime;
+    private long      _lastCollideSoundTime;
 
     /**
      * Holds the peer obstacle, as set by the programmer
      */
-    Obstacle               _peer;
+    Obstacle          _peer;
 
     /**
      * Internal constructor to build an Obstacle.
@@ -199,102 +87,6 @@ public class Obstacle extends PhysicsSprite
     protected Obstacle(float width, float height, String imgName)
     {
         super(imgName, SpriteId.OBSTACLE, width, height);
-    }
-
-    /**
-     * Code to handle the processing of a scribble event. Whenever we have a
-     * scribble event, we will draw an obstacle on
-     * the scene. Note that there are some hard-coded values that should become
-     * parameters to setScribbleMode()
-     * 
-     * @param event
-     *            The screen touch event
-     */
-    static void doScribbleDown(float x, float y)
-    {
-        // remember if we made an obstacle
-        Obstacle o = null;
-        // is this an initial press to start scribbling?
-        if (!_scribbleDown) {
-            // turn on scribbling, draw an obstacle
-            _scribbleDown = true;
-            _scribbleX = x;
-            _scribbleY = y;
-            Gdx.app.log("scrib", "making");
-            o = makeAsCircle(_scribbleX - _scribbleWidth / 2, _scribbleY - _scribbleHeight / 2, _scribbleWidth,
-                    _scribbleHeight, _scribblePic);
-            o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
-            if (_scribbleMoveable)
-                o._physBody.setType(BodyType.DynamicBody);
-        }
-        // if we drew something, then we will set a timer so that it disappears
-        // in a few seconds
-        if (o != null) {
-            final Obstacle o2 = o;
-            Timer.schedule(new Task()
-            {
-                @Override
-                public void run()
-                {
-                    o2._visible = false;
-                    o2._physBody.setActive(false);
-                }
-            }, _scribbleTime);
-        }
-    }
-
-    // TODO: lots of redundancy with doScribbleDown...
-    static void doScribbleDrag(float x, float y)
-    {
-        // remember if we made an obstacle
-        Obstacle o = null;
-        if (_scribbleDown) {
-            // figure out if we're far enough away from the last object to
-            // warrant drawing something new
-            float newX = x;
-            float newY = y;
-            float xDist = _scribbleX - newX;
-            float yDist = _scribbleY - newY;
-            float hSquare = xDist * xDist + yDist * yDist;
-            // NB: we're using euclidian distance, but we're comparing
-            // squares instead of square roots
-            if (hSquare > (2.5f * 2.5f)) {
-                _scribbleX = newX;
-                _scribbleY = newY;
-                o = makeAsCircle(_scribbleX - _scribbleWidth / 2, _scribbleY - _scribbleHeight / 2, _scribbleWidth,
-                        _scribbleHeight, _scribblePic);
-                o.setPhysics(_scribbleDensity, _scribbleElasticity, _scribbleFriction);
-                if (_scribbleMoveable)
-                    o._physBody.setType(BodyType.DynamicBody);
-            }
-        }
-
-        // if we drew something, then we will set a timer so that it disappears
-        // in a few seconds
-        if (o != null) {
-            // standard hack: make a final of the object, so we can reference it
-            // in the callback
-            final Obstacle o2 = o;
-            Timer.schedule(new Task()
-            {
-                @Override
-                public void run()
-                {
-                    o2._visible = false;
-                    o2._physBody.setActive(false);
-                }
-            }, _scribbleTime);
-        }
-    }
-
-    static void doScribbleUp()
-    {
-        if (_scribbleDown) {
-            // reset scribble vars
-            _scribbleDown = false;
-            _scribbleX = -1000;
-            _scribbleY = -1000;
-        }
     }
 
     /**
@@ -374,7 +166,7 @@ public class Obstacle extends PhysicsSprite
         float radius = (width > height) ? width : height;
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel.addSprite(o,0);
+        Level._currLevel.addSprite(o, 0);
         return o;
     }
 
@@ -398,7 +190,7 @@ public class Obstacle extends PhysicsSprite
         _heroCollision = new CollisionCallback()
         {
             @Override
-            public void go(PhysicsSprite h)
+            public void go(PhysicsSprite h, Contact c)
             {
                 Vector2 v = h._physBody.getLinearVelocity();
                 v.x *= factor;
@@ -429,7 +221,7 @@ public class Obstacle extends PhysicsSprite
         _heroCollision = new CollisionCallback()
         {
             @Override
-            public void go(final PhysicsSprite h)
+            public void go(final PhysicsSprite h, Contact c)
             {
                 // boost the speed
                 Vector2 v = h._physBody.getLinearVelocity();
@@ -444,7 +236,6 @@ public class Obstacle extends PhysicsSprite
                         @Override
                         public void run()
                         {
-                            Gdx.app.log("boost", "expired");
                             Vector2 v = h._physBody.getLinearVelocity();
                             v.x -= boostAmountX;
                             v.y -= boostAmountY;
@@ -478,15 +269,17 @@ public class Obstacle extends PhysicsSprite
      */
     public void setEnemyJump(final float x, final float y)
     {
-        _enemyCollision = new CollisionCallback(){
+        _enemyCollision = new CollisionCallback()
+        {
             @Override
-            public void go(PhysicsSprite ps)
+            public void go(PhysicsSprite ps, Contact c)
             {
                 Vector2 v = ps._physBody.getLinearVelocity();
                 v.y += y;
                 v.x += x;
                 ps.updateVelocity(v.x, v.y);
-            }};
+            }
+        };
     }
 
     /**
@@ -508,16 +301,33 @@ public class Obstacle extends PhysicsSprite
      *            Number of type-4 goodies that must be collected before this
      *            trigger works
      */
-    public void setHeroCollisionTrigger(int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4)
+    public void setHeroCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+            int activationGoodies3, int activationGoodies4)
     {
-        _heroTriggerID = id;
-        _isHeroCollideTrigger = true;
-        _heroTriggerActivation[0] = activationGoodies1;
-        _heroTriggerActivation[1] = activationGoodies2;
-        _heroTriggerActivation[2] = activationGoodies3;
-        _heroTriggerActivation[3] = activationGoodies4;
+        // save the required goodie counts, turn off collisions
+        final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
         setCollisionEffect(false);
+
+        // register a callback
+        _heroCollision = new CollisionCallback()
+        {
+            @Override
+            public void go(PhysicsSprite ps, Contact c)
+            {
+                // Handle callback if this obstacle is a trigger, but only if the contact wasn't disabled (due to
+                // pass-through)
+                if (c.isEnabled()) {
+                    // check if trigger is activated, if so run Trigger code
+                    boolean match = true;
+                    for (int i = 0; i < 4; ++i)
+                        match &= counts[i] <= Level._currLevel._score._goodiesCollected[i];
+                    if (match) {
+                        LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this, (Hero) ps);
+                        return;
+                    }
+                }
+            }
+        };
     }
 
     /**
@@ -539,27 +349,42 @@ public class Obstacle extends PhysicsSprite
      *            Number of type-4 goodies that must be collected before this
      *            trigger works
      */
-    public void setEnemyCollisionTrigger(int id, int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4)
+    public void setEnemyCollisionTrigger(final int id, final float delayDuration, int activationGoodies1,
+            int activationGoodies2, int activationGoodies3, int activationGoodies4)
     {
-        _enemyTriggerID = id;
-        _isEnemyCollideTrigger = true;
-        _enemyTriggerActivation[0] = activationGoodies1;
-        _enemyTriggerActivation[1] = activationGoodies2;
-        _enemyTriggerActivation[2] = activationGoodies3;
-        _enemyTriggerActivation[3] = activationGoodies4;
-    }
+        /**
+         * Enemy triggers can require certain Goodie counts in order to run
+         */
+        final int[] _enemyTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+                activationGoodies4 };
 
-    /**
-     * Set a delay between when an enemy collides with this trigger, and when
-     * this trigger actually executes
-     * 
-     * @param delayDuration
-     *            the delay, in seconds
-     */
-    public void setEnemyCollideTriggerDelay(float delayDuration)
-    {
-        _enemyCollideTriggerDelay = delayDuration;
+        _enemyCollision = new CollisionCallback()
+        {
+
+            @Override
+            public void go(final PhysicsSprite ps, Contact c)
+            {
+                boolean match = true;
+                for (int i = 0; i < 4; ++i)
+                    match &= _enemyTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                if (match) {
+                    final Enemy e = (Enemy) ps;
+                    // run the callback after a delay, or immediately?
+                    if (delayDuration <= 0) {
+                        LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel, Obstacle.this, e);
+                        return;
+                    }
+                    Timer.schedule(new Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel, Obstacle.this, e);
+                        }
+                    }, delayDuration);
+                }
+            }
+        };
     }
 
     /**
@@ -581,57 +406,24 @@ public class Obstacle extends PhysicsSprite
      *            Number of type-4 goodies that must be collected before this
      *            trigger works
      */
-    public void setProjectileCollisionTrigger(int id, int activationGoodies1, int activationGoodies2,
+    public void setProjectileCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4)
     {
-        _projectileTriggerID = id;
-        _isProjectileCollideTrigger = true;
-        _projectileTriggerActivation[0] = activationGoodies1;
-        _projectileTriggerActivation[1] = activationGoodies2;
-        _projectileTriggerActivation[2] = activationGoodies3;
-        _projectileTriggerActivation[3] = activationGoodies4;
-    }
+        final int[] _projectileTriggerActivation = new int[] { activationGoodies1, activationGoodies2,
+                activationGoodies3, activationGoodies4 };
 
-    /**
-     * Turn on scribble mode, so that scene touch events draw an object
-     * 
-     * @param imgName
-     *            The name of the image to use for scribbling
-     * @param duration
-     *            How long the scribble stays on screen before disappearing
-     * @param width
-     *            Width of the individual components of the scribble
-     * @param height
-     *            Height of the individual components of the scribble
-     * @param density
-     *            Density of each scribble component
-     * @param elasticity
-     *            Elasticity of the scribble
-     * @param friction
-     *            Friction of the scribble
-     * @param moveable
-     *            Can the individual items that are drawn move on account of
-     *            collisions?
-     */
-    public static void setScribbleOn(String imgName, float duration, float width, float height, float density,
-            float elasticity, float friction, boolean moveable)
-    {
-        _scribbleTime = duration;
-        _scribbleWidth = width;
-        _scribbleHeight = height;
-
-        _scribbleDensity = density;
-        _scribbleElasticity = elasticity;
-        _scribbleFriction = friction;
-
-        // turn on scribble mode, reset scribble status vars
-        Level._currLevel._scribbleMode = true;
-        _scribbleDown = false;
-        _scribbleX = -1000;
-        _scribbleY = -1000;
-        _scribbleMoveable = moveable;
-        // register the scribble picture
-        _scribblePic = imgName;
+        _projectileCollision = new CollisionCallback()
+        {
+            @Override
+            public void go(PhysicsSprite ps, Contact c)
+            {
+                boolean match = true;
+                for (int i = 0; i < 4; ++i)
+                    match &= _projectileTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                if (match)
+                    LOL._game.onProjectileCollideTrigger(id, LOL._game._currLevel, Obstacle.this, (Projectile) ps);
+            }
+        };
     }
 
     /**

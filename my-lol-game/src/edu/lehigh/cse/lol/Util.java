@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 public class Util
 {
@@ -154,7 +155,7 @@ public class Util
 
 interface CollisionCallback
 {
-    void go(final PhysicsSprite ps);
+    void go(final PhysicsSprite ps, Contact c);
 }
 
 class RouteDriver

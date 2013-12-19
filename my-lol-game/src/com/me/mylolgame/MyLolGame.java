@@ -1,5 +1,9 @@
 package com.me.mylolgame;
 
+// TODO: 29 and 67 suggest that there is a way that touches can get registered on a prescene and on the game
+
+// TODO: demonstrate obstacle._peer?
+
 // TODO: Verify that mp3 and jpg files work
 
 // TODO: Util's text functions are a bit funky, and result in HelpScene drawing text oddly
@@ -1244,7 +1248,7 @@ public class MyLolGame extends LOL
             // turn on 'scribble mode'. Be sure to play with the last parameter
             // to see the difference between scribbles
             // that can move and that can't move
-            Obstacle.setScribbleOn("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true);
+            Level.setScribbleOn("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
         }
 
         /**
@@ -2320,14 +2324,14 @@ public class MyLolGame extends LOL
             Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
             o.setPhysics(.1f, 0, 0.6f);
             o.setMoveByTilting();
-            o.setEnemyCollisionTrigger(0, 0, 0, 0, 0);
+            o.setEnemyCollisionTrigger(0, 0, 0, 0, 0, 0);
 
             // make a small obstacle that can also defeat enemies, but doesn't
             // disappear
             Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionTrigger(1, 0, 0, 0, 0);
+            o2.setEnemyCollisionTrigger(1, 0, 0, 0, 0, 0);
 
             // this enemy has a triggerID of 1... no obstacle will defeat it
             Enemy e = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
@@ -2720,7 +2724,7 @@ public class MyLolGame extends LOL
             Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionTrigger(0, 0, 0, 0, 0);
+            o.setEnemyCollisionTrigger(0, 0, 0, 0, 0, 0);
 
             // now draw our enemies... we need enough to be able to test that
             // all five defeat mechanisms work.
@@ -3063,7 +3067,7 @@ public class MyLolGame extends LOL
                 r.setScore(0, 0, 1, 0);
             }
 
-            Obstacle o = Obstacle.makeAsBox(400, 0, 5, 200, "red.png");
+            Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
             o.setHeroCollisionTrigger(0, 1, 1, 1, 0);
         }
 
@@ -3387,6 +3391,7 @@ public class MyLolGame extends LOL
         else if (whichLevel == 74) {
             // add 15 seconds to the timer
             Controls.updateTimerExpiration(15);
+            o.remove(true);
         }
         else if (whichLevel == 78) {
             h.setAbsoluteVelocity(h.getXVelocity(), 5, false);

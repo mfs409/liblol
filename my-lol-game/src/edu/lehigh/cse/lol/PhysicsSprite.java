@@ -868,10 +868,9 @@ public abstract class PhysicsSprite implements Renderable
      * 
      * @param velocity
      *            The constant velocity for poke movement
-     * 
-     *            TODO: rethink these parameters a little bit more, then clean up levels 71 and 79. Are there really 8
-     *            possible behaviors, or is the real number much smaller?
      */
+    // TODO: rethink these parameters a little bit more, then clean up levels 71 and 79. Are there really 8 possible
+    // behaviors, or is the real number much smaller?
     public void setPokePath(final float velocity, final boolean oncePerTouch, final boolean updateOnMove,
             final boolean stopOnUp)
     {

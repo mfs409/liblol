@@ -27,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -51,12 +52,12 @@ public class Level extends ScreenAdapter
     /**
      * The music, if any
      */
-    Music                                    _music;
+    private Music                                    _music;
 
     /**
      * Whether the music is playing or not
      */
-    boolean                                  _musicPlaying  = false;
+    private boolean                          _musicPlaying  = false;
 
     /**
      * A reference to the score object, for tracking winning and losing
@@ -92,11 +93,6 @@ public class Level extends ScreenAdapter
      * The scene to show when the level is paused (if any)
      */
     PauseScene                               _pauseScene;
-
-    /**
-     * Track if we are in scribble mode or not
-     */
-    boolean                                  _scribbleMode  = false;
 
     /*
      * COLLECTIONS OF DRAWABLE ENTITIES/PICTURES/TEXT AND CONTROLS
@@ -144,7 +140,7 @@ public class Level extends ScreenAdapter
     /**
      * This is the sprite that the camera chases
      */
-    PhysicsSprite                            _chase;
+    private PhysicsSprite                    _chase;
 
     /**
      * The X bound of the camera
@@ -183,17 +179,17 @@ public class Level extends ScreenAdapter
     /**
      * When there is a touch of an entity in the physics world, this is how we find it
      */
-    PhysicsSprite                            _hitSprite     = null;
+    private PhysicsSprite                    _hitSprite     = null;
 
     /**
      * This callback is used to get a touched entity from the physics world
      */
-    QueryCallback                            _callback;
+    private QueryCallback                    _callback;
 
     /**
      * Our polling-based multitouch uses this array to track the previous state of 4 fingers
      */
-    boolean[]                                lastTouches    = new boolean[4];
+    private boolean[]                        lastTouches    = new boolean[4];
 
     /**
      * The LOL interface requires that game designers don't have to construct Level manually. To make it work, we store
@@ -523,18 +519,6 @@ public class Level extends ScreenAdapter
             _touchResponder.onDown(_touchVec.x, _touchVec.y);
             return;
         }
-
-        // There are a variety of screen touch handlers we might need to invoke. They're all one-off calls from here...
-        // it's not the best design, but it works for now
-
-        // deal with scribbles
-        else if (Level._currLevel._scribbleMode) {
-            if (Level._currLevel._scribbleMode) {
-                _gameCam.unproject(_touchVec.set(x, y, 0));
-                Obstacle.doScribbleDown(_touchVec.x, _touchVec.y);
-                return;
-            }
-        }
     }
 
     /**
@@ -549,7 +533,6 @@ public class Level extends ScreenAdapter
     private void touchMove(int x, int y)
     {
         // check for HUD touch first...
-        // TODO: HUD onHold not tested!
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (Control pe : _controls) {
             if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
@@ -563,23 +546,16 @@ public class Level extends ScreenAdapter
         // We don't currently support Move within a Sprite, only on the screen. These screen handlers are all one-off
         // calls from here.
         _gameCam.unproject(_touchVec.set(x, y, 0));
-
         if (_touchResponder != null) {
             _touchResponder.onMove(_touchVec.x, _touchVec.y);
             return;
         }
 
-        // deal with scribble?
-        if (Level._currLevel._scribbleMode) {
-            Obstacle.doScribbleDrag(_touchVec.x, _touchVec.y);
-        }
         // deal with drag?
         //
         // TODO: verify we can't do this with a touchresponder
-        else if (_hitSprite != null) {
-            if (_hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y))
-                return;
-        }
+        if (_hitSprite != null) 
+            _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
     }
 
     /**
@@ -608,11 +584,6 @@ public class Level extends ScreenAdapter
         _gameCam.unproject(_touchVec.set(x, y, 0));
         if (_touchResponder != null) {
             _touchResponder.onUp(_touchVec.x, _touchVec.y);
-            return;
-        }
-        // Deal with scribbles
-        if (Level._currLevel._scribbleMode) {
-            Obstacle.doScribbleUp();
             return;
         }
     }
@@ -700,5 +671,96 @@ public class Level extends ScreenAdapter
                     LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, enemy);
             }
         }, howLong);
+    }
+
+    /**
+     * Turn on scribble mode, so that scene touch events draw circular objects
+     * 
+     * Note: this code should be thought of as serving to demonstrate, only. If you really wanted to do anything clever
+     * with scribbling, you'd certainly want to change this code.
+     * 
+     * @param imgName
+     *            The name of the image to use for scribbling
+     * @param duration
+     *            How long the scribble stays on screen before disappearing
+     * @param width
+     *            Width of the individual components of the scribble
+     * @param height
+     *            Height of the individual components of the scribble
+     * @param density
+     *            Density of each scribble component
+     * @param elasticity
+     *            Elasticity of the scribble
+     * @param friction
+     *            Friction of the scribble
+     * @param moveable
+     *            Can the individual items that are drawn move on account of
+     *            collisions?
+     * @param interval
+     *            Time (in milliseconds) that must transpire between scribble events... use this to avoid outrageously
+     *            high rates of scribbling
+     */
+    public static void setScribbleOn(final String imgName, final float duration, final float width, final float height,
+            final float density, final float elasticity, final float friction, final boolean moveable,
+            final int interval)
+    {
+        // we set a callback on the Level, so that any touch to the level (down, drag, up) will effect our scribbling
+        Level._currLevel._touchResponder = new TouchAction()
+        {
+            /**
+             * The time of the last touch event... we use this to prevent high rates of scribble
+             */
+            long _lastTime;
+
+            /**
+             * On a down press, draw a new obstacle if enough time has transpired
+             * 
+             * @param x
+             *            The X coordinate of the touch
+             * @param y
+             *            The Y coordinate of the touch
+             */
+            @Override
+            public void onDown(float x, float y)
+            {
+                // check if enough milliseconds have passed
+                long now = System.nanoTime();
+                if (now < _lastTime + interval * 1000000)
+                    return;
+                _lastTime = now;
+
+                // make a circular obstacle
+                final Obstacle o = Obstacle.makeAsCircle(x - width / 2, y - height / 2, width, height, imgName);
+                o.setPhysics(density, elasticity, friction);
+                if (moveable)
+                    o._physBody.setType(BodyType.DynamicBody);
+
+                // possibly set a timer to remove the scribble
+                if (duration > 0) {
+                    Timer.schedule(new Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            o.remove(false);
+                        }
+                    }, duration);
+                }
+            }
+
+            /**
+             * On a move, do exactly the same as on down
+             * 
+             * @param x
+             *            The X coordinate of the touch
+             * @param y
+             *            The Y coordinate of the touch
+             */
+            @Override
+            public void onMove(float x, float y)
+            {
+                onDown(x, y);
+            }
+        };
     }
 }

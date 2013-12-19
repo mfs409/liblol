@@ -30,11 +30,6 @@ public class Projectile extends PhysicsSprite
      */
 
     /**
-     * The force that is applied to a projectile to negate gravity
-     */
-    // private static final Vector2 _negGravity = new Vector2();
-
-    /**
      * The velocity of a projectile when it is thrown
      */
     private static final Vector2 _velocity  = new Vector2();
@@ -366,11 +361,9 @@ public class Projectile extends PhysicsSprite
         // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle) other;
-            boolean match = true;
-            for (int i = 0; i < 4; ++i)
-                match &= o._projectileTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
-            if (o._isProjectileCollideTrigger && match) {
-                LOL._game.onProjectileCollideTrigger(o._projectileTriggerID, LOL._game._currLevel, o, this);
+            if (o._projectileCollision != null) {
+                o._projectileCollision.go(this, contact);
+                // return... don't remove the projectile
                 return;
             }
         }

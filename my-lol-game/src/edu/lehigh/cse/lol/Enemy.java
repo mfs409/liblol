@@ -6,8 +6,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 /**
  * Enemies are things to be avoided or defeated by the hero.
@@ -113,7 +111,7 @@ public class Enemy extends PhysicsSprite
     {
         // collision with obstacles
         if (other._psType == SpriteId.OBSTACLE)
-            onCollideWithObstacle((Obstacle) other);
+            onCollideWithObstacle((Obstacle) other, contact);
         // collision with projectiles
         if (other._psType == SpriteId.PROJECTILE)
             onCollideWithProjectile((Projectile) other);
@@ -125,33 +123,11 @@ public class Enemy extends PhysicsSprite
      * @param o
      *            The obstacle with which this Enemy collided
      */
-    private void onCollideWithObstacle(final Obstacle o)
+    private void onCollideWithObstacle(final Obstacle o, Contact c)
     {
-        // is there a callback when this obstacle collides with enemies?
-        boolean match = true;
-        for (int i = 0; i < 4; ++i)
-            match &= o._enemyTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
-        if (o._isEnemyCollideTrigger && match) {
-            // run the callback after a delay, or immediately?
-            if (o._enemyCollideTriggerDelay > 0) {
-                final Enemy e = this;
-                Timer.schedule(new Task()
-                {
-                    @Override
-                    public void run()
-                    {
-                        LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, e);
-                    }
-                }, o._enemyCollideTriggerDelay);
-            }
-            else {
-                LOL._game.onEnemyCollideTrigger(o._enemyTriggerID, LOL._game._currLevel, o, this);
-            }
-        }
-
         // handle any callbacks the obstacle has
         if (o._enemyCollision != null) 
-            o._enemyCollision.go(this);
+            o._enemyCollision.go(this, c);
     }
 
     /**

@@ -370,21 +370,9 @@ public class Hero extends PhysicsSprite
         if ((_currentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
             increaseRotation(-_currentRotation);
 
-        // Handle callback if this obstacle is a trigger, but only if the contact wasn't disabled (due to pass-through)
-        if (o._isHeroCollideTrigger && contact.isEnabled()) {
-            // check if trigger is activated, if so run Trigger code
-            boolean match = true;
-            for (int i = 0; i < 4; ++i)
-                match &= o._heroTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
-            if (match) {
-                LOL._game.onHeroCollideTrigger(o._heroTriggerID, LOL._game._currLevel, o, this);
-                return;
-            }
-        }
-
         // if there is code attached to the obstacle for modifying the hero's behavior, run it
         if (o._heroCollision != null)
-            o._heroCollision.go(this);
+            o._heroCollision.go(this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors should not enable
         // jumps for the hero.

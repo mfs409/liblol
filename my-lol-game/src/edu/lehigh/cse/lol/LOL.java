@@ -13,12 +13,25 @@ package edu.lehigh.cse.lol;
 // PostScene, Projectile and Util have lots of remaining work
 
 // STATUS: Destination, Goodie, HelpLevel, LOLConfiguration, Media, PreScene, Route, Score, Splash, SplashConfiguration,
-// SVG, and
-// Tilt are done
+// SVG, and Tilt are done
 
 // STATUS: Animation, Background, Hero, Level and Physics are close
 
 // TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
+
+// TODO: put a license on every file?
+
+// TODO: Sticky obstacles need work (see Hero)
+
+// TODO: Hero animation sequence could use work
+
+// TODO: add jump-to-defeat enemies
+
+// TODO: add delays for hero-obstacle triggers?
+
+// TODO: controls need a lot of work
+
+// TODO: projectile needs a lot of work
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
