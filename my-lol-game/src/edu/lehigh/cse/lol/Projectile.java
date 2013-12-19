@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
 // TODO: I'm not thrilled with how we're handling the random projectile sprites...
 
 import com.badlogic.gdx.audio.Sound;

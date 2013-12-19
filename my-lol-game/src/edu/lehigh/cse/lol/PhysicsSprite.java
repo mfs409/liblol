@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments (stopped at line 945)
-
 // TODO: enable arbitrary polygon creation?
 
 import com.badlogic.gdx.audio.Sound;

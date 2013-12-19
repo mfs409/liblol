@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
 // TODO: work out the return values of presses
 
 // TODO: work on the 'hold to keep the action going' buttons

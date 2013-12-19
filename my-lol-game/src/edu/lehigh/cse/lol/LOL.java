@@ -1,6 +1,8 @@
 package edu.lehigh.cse.lol;
 
-// TODO: comment the event methods
+// TODO: update comments for all files
+
+// TODO: consider switching to Android style guide
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
@@ -8,14 +10,6 @@ package edu.lehigh.cse.lol;
 // TODO: remove static fields and methods throughout namespace whenever possible
 
 // TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
-
-// TODO: Overall Status: Chooser, Controls, Enemy, LOL, Obstacle, PauseScene, PhysicsSprite,
-// PostScene, Projectile and Util have lots of remaining work
-
-// STATUS: Destination, Goodie, HelpLevel, LOLConfiguration, Media, PreScene, Route, Score, Splash, SplashConfiguration,
-// SVG, and Tilt are done
-
-// STATUS: Animation, Background, Hero, Level and Physics are close
 
 // TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
 

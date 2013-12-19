@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: comment
-
 import com.badlogic.gdx.math.Vector2;
 
 class RouteDriver

@@ -2,7 +2,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: complete the "easy" constructor
 
-// TODO: comments, clean AnimationDriver
+// TODO: clean up the AnimationDriver
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -105,8 +105,6 @@ public class Animation
     {
         /**
          * The currently running animation
-         * 
-         * TODO: use an AnimationDriver?
          */
         private Animation _currentAnimation;
 

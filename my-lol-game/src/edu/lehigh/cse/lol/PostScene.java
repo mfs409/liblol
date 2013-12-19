@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
 // TODO: setWin() has some hard-coded font configuration
 
 import java.util.ArrayList;

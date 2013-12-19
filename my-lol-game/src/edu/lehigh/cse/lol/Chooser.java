@@ -1,6 +1,6 @@
 package edu.lehigh.cse.lol;
 
-// TODO: comments, and clean up naming, verify return values (i.e., false)
+// TODO: verify return values (i.e., false)
 
 // TODO: Redesign so that we don't have to scroll, and so that we don't have to rely on the back button
 

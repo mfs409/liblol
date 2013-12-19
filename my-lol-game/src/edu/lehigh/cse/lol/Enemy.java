@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
 // TODO: add support for enemies that can be defeated by jumping on them
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;

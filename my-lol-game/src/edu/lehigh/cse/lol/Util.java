@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
-
 // TODO: this file gets font horizontal position correct, but other files may not... verify other files! 
 
 import java.util.Random;

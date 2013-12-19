@@ -1,6 +1,6 @@
 package edu.lehigh.cse.lol;
 
-// TODO: clean up comments
+// TODO: add delays for non-enemy collide triggers?
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
@@ -23,8 +23,6 @@ import com.badlogic.gdx.utils.Timer.Task;
  * creating "trigger" obstacles that cause user-specified code to run upon any
  * collision. There is also a simple object
  * type for loading SVG files, such as those created by Inkscape.
- * 
- * TODO: add delays for non-enemy collide triggers?
  */
 public class Obstacle extends PhysicsSprite
 {

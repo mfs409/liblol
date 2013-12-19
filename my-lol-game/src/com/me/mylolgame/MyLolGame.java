@@ -22,7 +22,7 @@ package com.me.mylolgame;
 
 // TODO: produce helpful error messages at all the common mistake points (especially animation and filenames)
 
-// TODO: make sure that all Gdx.app.log messages are removed, except those for mistake points
+// TODO: make sure that all Gdx.app.log messages are removed, except those for common mistake points
 
 // TODO: does music and transition work correctly when there is only one level?
 
