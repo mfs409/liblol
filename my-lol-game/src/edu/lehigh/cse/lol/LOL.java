@@ -33,16 +33,16 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: aggressively comment and reduce visibility as much as possible
+// TODO: aggressively comment and reduce visibility as much as possible.  Files remaining: MyLolGame, all of this namespace
+
+// TODO: hero-enemy triggers would allow neat animation effects
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
-// feature, and on-screen 'back' buttons that go with it?
+// feature, and on-screen 'back' buttons that go with it? (Status: only Chooser is a serious issue)
 
 // TODO: does music and transition work correctly when there is only one level?
 
 // TODO: Chooser.java should be redesigned into multiple screens
-
-// TODO: put a license on every file?
 
 // TODO: Hero animation sequences could use work.  The problem is that goodie count animation information 
 // can be lost if we animate, then return from the animation.  Furthermore, we don't have support for 
@@ -50,22 +50,23 @@ package edu.lehigh.cse.lol;
 
 // TODO: add jump-to-defeat enemies
 
-// TODO: add delays for hero-obstacle triggers?
-
-// TODO: move scribble out of Obstacle, turn it into a callback? Maybe a last-ditch control callback?
-
 // TODO: consider adding a wrapper to expose Box2d collision groups?
 
 // TODO: consider making the public interface use pixels instead of meters?
 
-// TODO: I'm not thrilled with how we're handling the random projectile sprites...
-
 // TODO: I'm not thrilled with the current animateByGoodieCount mechanism
 
-// TODO: make sure that all Gdx.app.log messages are removed, except those for common mistake points (animation, filenames)
+// TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 
-// TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special
-// function?
+// TODO: demonstrate obstacle._peer?
+
+// TODO: Demo projectile setCollisionOk?
+
+// TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
+
+// TODO: consider making a tool for proper sprite sheet manipulation
+
+// TODO: test Tilt in portrait mode
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

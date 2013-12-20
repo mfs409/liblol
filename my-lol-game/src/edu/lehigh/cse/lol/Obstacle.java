@@ -273,7 +273,7 @@ public class Obstacle extends PhysicsSprite {
      *            before this trigger works
      */
     public void setHeroCollisionTrigger(final int id, int activationGoodies1,
-            int activationGoodies2, int activationGoodies3, int activationGoodies4) {
+            int activationGoodies2, int activationGoodies3, int activationGoodies4, final float delay) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
@@ -283,7 +283,7 @@ public class Obstacle extends PhysicsSprite {
         // register a callback
         _heroCollision = new CollisionCallback() {
             @Override
-            public void go(PhysicsSprite ps, Contact c) {
+            public void go(final PhysicsSprite ps, Contact c) {
                 // Handle callback if this obstacle is a trigger, but only if
                 // the contact wasn't disabled (due to
                 // pass-through)
@@ -293,8 +293,18 @@ public class Obstacle extends PhysicsSprite {
                     for (int i = 0; i < 4; ++i)
                         match &= counts[i] <= Level._currLevel._score._goodiesCollected[i];
                     if (match) {
+                        if (delay <= 0) { 
                         LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
                                 (Hero)ps);
+                        }
+                        else {
+                            Timer.schedule(new Task() {
+                                @Override
+                                public void run() {
+                                    LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
+                                            (Hero)ps);
+                                }}, delay);   
+                        }
                         return;
                     }
                 }

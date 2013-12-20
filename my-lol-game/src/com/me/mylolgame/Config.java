@@ -30,15 +30,19 @@ package com.me.mylolgame;
 import edu.lehigh.cse.lol.LOLConfiguration;
 
 /**
- * This file provides configuration information about the game Warning: This
- * file should be as simple as possible, and you should avoid doing anything
- * stateful in it. When running your game on an Android phone, only one Config
- * object will be made, during the creation of your game. However, when
- * debugging on the desktop, two Config objects will be made. The first one is
- * made in the LWJGL Main.java file, in order to configure the window a little
- * bit more nicely, and the second will be made during the creation of your
- * game. If you do stateful things in this file, you're likely to have get into
- * a situation where the game plays differently on a phone than on the desktop.
+ * This file provides configuration information about the game
+ */
+
+/**
+ * Warning: This file should be as simple as possible, and you should avoid
+ * doing anything stateful in it. When running your game on an Android phone,
+ * only one Config object will be made, during the creation of your game.
+ * However, when debugging on the desktop, two Config objects will be made. The
+ * first one is made in the LWJGL Main.java file, in order to configure the
+ * window a little bit more nicely, and the second will be made during the
+ * creation of your game. If you do stateful things in this file, you're likely
+ * to have get into a situation where the game plays differently on a phone than
+ * on the desktop.
  */
 public class Config implements LOLConfiguration {
     /**
@@ -123,21 +127,33 @@ public class Config implements LOLConfiguration {
         return "arial.ttf";
     }
 
+    /**
+     * The default font size for messages that are written to the screen
+     */
     @Override
     public int getDefaultFontSize() {
         return 32;
     }
 
+    /**
+     * The red component of the default font color
+     */
     @Override
     public int getDefaultFontRed() {
         return 255;
     }
 
+    /**
+     * The green component of the default font color
+     */
     @Override
     public int getDefaultFontGreen() {
         return 255;
     }
 
+    /**
+     * The blue component of the default font color
+     */
     @Override
     public int getDefaultFontBlue() {
         return 255;

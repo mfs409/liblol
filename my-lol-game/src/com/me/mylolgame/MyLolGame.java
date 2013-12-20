@@ -27,26 +27,6 @@
 
 package com.me.mylolgame;
 
-// TODO: demonstrate the simple animation technique
-
-// TODO: demonstrate obstacle._peer?
-
-// TODO: Demo projectile setCollisionOk?
-
-// TODO: Verify that mp3 and jpg files work
-
-// TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
-
-// TODO: Level 70 is no longer valid. We can use it as a home for a new demo
-
-// TODO: test if x and y parallax works as expected (swimming level with >32 Y?)
-
-// TODO: need a demo to show that we can chase in just X or just Y
-
-// TODO: consider making a tool for proper sprite sheet manipulation
-
-// TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
-
 import edu.lehigh.cse.lol.*;
 
 public class MyLolGame extends LOL {
@@ -1371,10 +1351,10 @@ public class MyLolGame extends LOL {
         else if (whichLevel == 35) {
 
             // set up a standard side scroller without tilt
-            Level.configure(3 * 48, 32);
+            Level.configure(3 * 48, 38);
             Physics.configure(0, -10);
             PreScene.addText("Multi-jump is enabled", 50, 50, 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            Util.drawBoundingBox(0, 0, 3 * 48, 38, "red.png", 1, 0, 0);
             Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
@@ -1382,7 +1362,7 @@ public class MyLolGame extends LOL {
             h.setMultiJumpOn();
             Level.setCameraChase(h);
             h.setCameraOffset(15, 0);
-            h.setJumpImpulses(0, 2);
+            h.setJumpImpulses(0, 6);
             h.addVelocity(5, 0, false);
 
             // this is all the same as before, to include the invisible enemy
@@ -1390,7 +1370,7 @@ public class MyLolGame extends LOL {
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
             Controls.addJumpButton(0, 0, 480, 320, "", h);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
-            Enemy.makeAsBox(130, 0, .5f, 32, "");
+            Enemy.makeAsBox(130, 0, .5f, 38, "");
             Score.setVictoryDestination(1);
         }
 
@@ -1919,8 +1899,7 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
             // this says that we scroll through the 0, 1, 2, and 3 cells of the
             // image, and we show each for 200 milliseconds
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200)
-                    .to(2, 200).to(3, 200));
+            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 1, 2, 3));
         }
 
         /**
@@ -2487,7 +2466,7 @@ public class MyLolGame extends LOL {
             // sound if we want...
             Obstacle o = Obstacle.makeAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionTrigger(0, 0, 0, 0, 0);
+            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 0);
             o.setDisappearSound("hipitch.ogg");
 
             Level.setCameraChase(h);
@@ -2627,7 +2606,7 @@ public class MyLolGame extends LOL {
             // Colliding with this star will make the hero into a star
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionTrigger(0, 0, 0, 0, 0);
+            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 2);
         }
 
         /**
@@ -2730,18 +2709,36 @@ public class MyLolGame extends LOL {
 
         /**
          * @level: 70
-         * @description: A test of the PokePath feature
-         * @demonstrates: setPokePath to move an entity along a path / else if
-         *            (whichLevel == 70) { // start by setting everything up
-         *            just like in level 1 Level.configure(48, 32);
-         *            Physics.configure(0, 0); Tilt.enable(10, 10); Hero h =
-         *            Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-         *            h.setMoveByTilting(); h.setPokePath(4);
-         *            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-         *            Score.setVictoryDestination(1); Util.drawBoundingBox(0, 0,
-         *            48, 32, "red.png", 0, 0, 0);
-         *            PreScene.addText("Poke the hero, then\n where you want it\nto go."
-         *            , "arial.ttf", 1); } /**
+         * @description: Show that chasing can be one-dimensional
+         */
+        else if (whichLevel == 70) {
+            // set up a simple level
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.addText("You can walk through the wall", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            h.setMoveByTilting();
+            h.setPassThrough(7); // make sure obstacle has same value
+
+            // the destination requires lots of goodies of different types
+            Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            Obstacle e = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
+            e.setChaseSpeed(15, h, false, true);
+            e.setCollisionEffect(false);
+            Obstacle e2 = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
+            e2.setChaseSpeed(15, h, true, false);
+            e2.setCollisionEffect(false);
+
+            Obstacle o = Obstacle.makeAsBox(40, 1, .5f, 20, "red.png");
+            o.setPassThrough(7);
+
+        }
+         /**
          * @level: 71
          * @description: A test of the PokeVelocity feature
          * @demonstrates: setPokeVelocity to move an entity along a path
@@ -2889,7 +2886,7 @@ public class MyLolGame extends LOL {
             }
 
             Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
-            o.setHeroCollisionTrigger(0, 1, 1, 1, 0);
+            o.setHeroCollisionTrigger(0, 1, 1, 1, 0, 0);
         }
 
         /**
@@ -3015,7 +3012,7 @@ public class MyLolGame extends LOL {
             // create a box that is easy to fall into, but hard to get out of
             Obstacle bottom = Obstacle.makeAsBox(10, 5, 10, .2f, "red.png");
             bottom.setOneSided(2);
-            bottom.setHeroCollisionTrigger(0, 0, 0, 0, 0);
+            bottom.setHeroCollisionTrigger(0, 0, 0, 0, 0, 0);
             bottom.setCollisionEffect(true);
             // make the z index of the bottom -1, so that the hero (index 0)
             // will be drawn on top of the box, not under
@@ -3149,7 +3146,7 @@ public class MyLolGame extends LOL {
             if (id == 0) {
                 Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
                 oo.setPhysics(1, 0, 1);
-                oo.setHeroCollisionTrigger(1, 1, 0, 0, 0);
+                oo.setHeroCollisionTrigger(1, 1, 0, 0, 0, 0);
                 Goodie.makeAsCircle(45, 1, 1, 1, "blueball.png");
                 o.remove(false);
             }
@@ -3159,7 +3156,7 @@ public class MyLolGame extends LOL {
             else if (id == 1) {
                 Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
                 oo.setPhysics(1, 0, 1);
-                oo.setHeroCollisionTrigger(2, 2, 0, 0, 0);
+                oo.setHeroCollisionTrigger(2, 2, 0, 0, 0, 0);
                 Goodie.makeAsCircle(75, 21, 1, 1, "blueball.png");
                 o.remove(false);
             }
@@ -3167,7 +3164,7 @@ public class MyLolGame extends LOL {
             else if (id == 2) {
                 Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
                 oo.setPhysics(1, 0, 1);
-                oo.setHeroCollisionTrigger(3, 3, 0, 0, 0);
+                oo.setHeroCollisionTrigger(3, 3, 0, 0, 0, 0);
                 Goodie.makeAsCircle(105, 1, 1, 1, "blueball.png");
                 o.remove(false);
             }
