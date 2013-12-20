@@ -40,11 +40,6 @@ public class Projectile extends PhysicsSprite {
     private static final Vector2 _rangeFrom = new Vector2();
 
     /**
-     * A spare vector for computation
-     */
-    private static final Vector2 _tmp = new Vector2();
-
-    /**
      * How much _damage does this projectile do?
      */
     static int _strength;
@@ -429,19 +424,19 @@ public class Projectile extends PhysicsSprite {
             float dX = toX - heroX - _offset.x;
             float dY = toY - heroY - _offset.y;
             float hypotenuse = (float)Math.sqrt(dX * dX + dY * dY);
-            _tmp.x = dX / hypotenuse;
-            _tmp.y = dY / hypotenuse;
+            float tmpX = dX / hypotenuse;
+            float tmpY = dY / hypotenuse;
             // multiply by fixed velocity
-            _tmp.x *= _fixedVectorVelocity;
-            _tmp.y *= _fixedVectorVelocity;
-            b.updateVelocity(_tmp.x, _tmp.y);
+            tmpX *= _fixedVectorVelocity;
+            tmpY *= _fixedVectorVelocity;
+            b.updateVelocity(tmpX, tmpY);
         } else {
             float dX = toX - heroX - _offset.x;
             float dY = toY - heroY - _offset.y;
             // compute absolute vector, multiply by dampening factor
-            _tmp.x = dX * _vectorDamp;
-            _tmp.y = dY * _vectorDamp;
-            b.updateVelocity(_tmp.x, _tmp.y);
+            float tmpX = dX * _vectorDamp;
+            float tmpY = dY * _vectorDamp;
+            b.updateVelocity(tmpX, tmpY);
         }
 
         // rotate the projectile

@@ -1,9 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: We've got inefficient /while/ loops in the rendering code. It's especially bad if GDX doesn't cull, but even
-// if it does, the computation is overly expensive.
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
@@ -74,20 +71,18 @@ public class Background {
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
             if (pl._xRepeat) {
+                // NB: this while loop is not the most efficient way to draw the background
                 int i = -(int)pl._tr.getRegionWidth() / 2;
                 while (i / Physics.PIXEL_METER_RATIO < x + Level._currLevel._camBoundX) {
-                    // TODO: verify that GDX culls... otherwise, we should
-                    // manually cull...
                     sb.draw(pl._tr, i, pl._yOffset);
                     i += pl._tr.getRegionWidth();
                 }
             }
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl._yRepeat) {
+                // NB: this while loop is not the most efficient way to draw the background
                 int i = 0;
                 while (i / Physics.PIXEL_METER_RATIO < y + Level._currLevel._camBoundY) {
-                    // TODO: verify that GDX culls... otherwise, we should
-                    // manually cull...
                     sb.draw(pl._tr, pl._xOffset, i);
                     i += pl._tr.getRegionHeight();
                 }

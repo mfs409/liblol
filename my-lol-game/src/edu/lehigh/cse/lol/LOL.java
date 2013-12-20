@@ -18,7 +18,7 @@ package edu.lehigh.cse.lol;
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
 
-// TODO: remove static fields and methods throughout namespace whenever possible
+// TODO: Projectile's rangeFrom shouldn't be static?
 
 // TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
 

@@ -87,11 +87,6 @@ public class Controls {
      */
     private static float _countDownRemaining;
 
-    /**
-     * Store the amount of stopwatch that has transpired
-     */
-    private static float _stopWatchProgress;
-
     private static float _winCountRemaining;
 
     /**
@@ -470,9 +465,9 @@ public class Controls {
      */
     static public void addStopwatch(final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size) {
-        _stopWatchProgress = 0;
         final BitmapFont bf = Media.getFont(fontName, size);
         HudEntity he = new HudEntity(red, green, blue) {
+            float _stopWatchProgress;
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
