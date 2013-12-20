@@ -1,8 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: setWin() has some hard-coded font configuration
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;

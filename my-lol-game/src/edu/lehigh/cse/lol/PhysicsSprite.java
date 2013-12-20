@@ -98,7 +98,9 @@ public abstract class PhysicsSprite implements Renderable {
     boolean _visible = true;
 
     /**
-     * The default image to display TODO: consider moving into AnimationDriver?
+     * The default image to display 
+     * 
+     * TODO: consider moving into AnimationDriver?
      */
     TextureRegion _tr;
 
@@ -110,7 +112,9 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * We may opt to flip the image when it is moving in the -X direction. If
      * so, this tracks if the image is flipped, so that we draw its sprite
-     * correctly. TODO: consider moving into AnimationDriver?
+     * correctly. 
+     * 
+     * TODO: consider moving into AnimationDriver?
      */
     private boolean _flipped;
 
