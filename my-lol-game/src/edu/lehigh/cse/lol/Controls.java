@@ -2,8 +2,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: work out the return values of presses
 
-// TODO: work on the 'hold to keep the action going' buttons
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -783,7 +781,6 @@ public class Controls
         // universally, or is there a problem? I made it dynamic for now, ensure
         // we don't actually want kinematic
 
-        // TODO: should all these buttons should work while holding?
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
@@ -911,7 +908,7 @@ public class Controls
             @Override
             void onUpPress()
             {
-                // TODO: do this on 'not pressing button anymore' too
+                // TODO: can we do this on 'not pressing button anymore' too?
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rateUpX;
                 v.y = rateUpY;

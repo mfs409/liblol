@@ -152,8 +152,6 @@ public abstract class PhysicsSprite implements Renderable
     /**
      * When the camera follows the entity without centering on it, this gives us the difference between the hero and
      * camera
-     * 
-     * TODO: move to level
      */
     Vector2                   _cameraOffset           = new Vector2(0, 0);
 
@@ -170,6 +168,12 @@ public abstract class PhysicsSprite implements Renderable
      * in a common parent class)
      */
     WeldJoint                 _wJoint;
+
+    /**
+     * When we have PhysicsSprites stuck together, we might want to set a brief delay before they can re-join. This
+     * field represents that delay time, in milliseconds.
+     */
+    long                      _stickyDelay;
 
     /**
      * a sound to play when the obstacle is touched
@@ -218,16 +222,9 @@ public abstract class PhysicsSprite implements Renderable
     float                     _disappearAnimateHeight;
 
     /**
-     * If this entity hovers, this will be true
-     * 
-     * TODO: do we need this, or is a _hoverVector enough?
-     */
-    boolean                   _isHover;
-
-    /**
      * A vector for computing hover placement
      */
-    private Vector3           _hoverVector            = new Vector3();
+    Vector3           _hoverVector            = new Vector3();
 
     /**
      * Track if heroes stick to the top of this PhysicsSprite
@@ -420,7 +417,6 @@ public abstract class PhysicsSprite implements Renderable
      * @param y
      *            Amount of y distance between entity and center
      */
-    // TODO: make this part of the Level.setCameraChase code?
     public void setCameraOffset(float x, float y)
     {
         _cameraOffset.x = x;
@@ -928,7 +924,7 @@ public abstract class PhysicsSprite implements Renderable
                         // If the entity isn't visible we're done
                         if (_visible) {
                             // if the entity was hovering, stop hovering
-                            _isHover = false;
+                            _hoverVector = null;
                             // compute velocity for the flick and apply velocity
                             updateVelocity((x - initialX) * dampFactor, (y - initialY) * dampFactor);
                             // Unregister this handler... the flick is done
@@ -1195,13 +1191,13 @@ public abstract class PhysicsSprite implements Renderable
      */
     public void setHover(final int x, final int y)
     {
-        _isHover = true;
+        _hoverVector = new Vector3();
         Level._currLevel._repeatEvents.add(new Action()
         {
             @Override
             public void go()
             {
-                if (!_isHover)
+                if (_hoverVector == null)
                     return;
                 _hoverVector.x = x;
                 _hoverVector.y = y;

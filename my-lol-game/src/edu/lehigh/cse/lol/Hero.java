@@ -9,10 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class Hero extends PhysicsSprite
 {
@@ -182,6 +178,7 @@ public class Hero extends PhysicsSprite
             _animator.setCurrentAnimation(_jumpAnimation);
         if (_jumpSound != null)
             _jumpSound.play();
+        _stickyDelay = System.nanoTime() + 10000000;
     }
 
     /**
@@ -208,7 +205,7 @@ public class Hero extends PhysicsSprite
         }
         // if the hero is touch and go, make the hero start moving
         if (_touchAndGo != null) {
-            _isHover = false;
+            _hoverVector = null;
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
             setAbsoluteVelocity(_touchAndGo.x, _touchAndGo.y, false);
@@ -378,32 +375,6 @@ public class Hero extends PhysicsSprite
         // jumps for the hero.
         if ((_inAir || _allowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor() && !o._noJumpReenable)
             stopJump();
-
-        // TODO: This should not actually be called from BeginContact... it
-        // should be called from preSolve(). If we fix that, then I think we can
-        // remedy the issues in level 72, where moving breaks the joint but a
-        // new joint doesn't get built
-
-        // handle sticky obstacles... only do something if we're hitting the obstacle from the right direction
-        if ((o.isStickyTop && getYPosition() >= o.getYPosition() + o._height)
-                || (o.isStickyLeft && getXPosition() + _width <= o.getXPosition())
-                || (o.isStickyRight && getXPosition() >= o.getXPosition() + o._width)
-                || (o.isStickyBottom && getYPosition() + _height <= o.getYPosition()))
-        {
-            // create distance and weld joints... somehow, the combination is needed to get this to work
-            //
-            // TODO: revisit 'somehow' after we fix this code
-            Vector2 v = contact.getWorldManifold().getPoints()[0];
-            _physBody.setLinearVelocity(0, 0);
-            DistanceJointDef d = new DistanceJointDef();
-            d.initialize(o._physBody, _physBody, v, v);
-            d.collideConnected = true;
-            _dJoint = (DistanceJoint) Level._currLevel._world.createJoint(d);
-            WeldJointDef w = new WeldJointDef();
-            w.initialize(o._physBody, _physBody, v);
-            w.collideConnected = true;
-            _wJoint = (WeldJoint) Level._currLevel._world.createJoint(w);
-        }
     }
 
     /**

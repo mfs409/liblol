@@ -7,6 +7,10 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 import edu.lehigh.cse.lol.Level.Action;
 
@@ -22,6 +26,41 @@ public class Physics
      * to screen dimensions.
      */
     static final float PIXEL_METER_RATIO = 10;
+
+    static void handleSticky(final PhysicsSprite sticky, final PhysicsSprite other, Contact contact)
+    {
+        if (other._dJoint != null)
+            return;
+        if (System.nanoTime() < other._stickyDelay)
+            return;
+        // handle sticky obstacles... only do something if we're hitting the obstacle from the right direction
+        if ((sticky.isStickyTop && other.getYPosition() >= sticky.getYPosition() + sticky._height)
+                || (sticky.isStickyLeft && other.getXPosition() + other._width <= sticky.getXPosition())
+                || (sticky.isStickyRight && other.getXPosition() >= sticky.getXPosition() + sticky._width)
+                || (sticky.isStickyBottom && other.getYPosition() + other._height <= sticky.getYPosition()))
+        {
+            // create distance and weld joints... somehow, the combination is needed to get this to work
+            //
+            // TODO: revisit 'somehow' after we fix this code
+            final Vector2 v = contact.getWorldManifold().getPoints()[0];
+            Level._currLevel._oneTimeEvents.add(new Action(){
+
+                @Override
+                public void go()
+                {
+                    other._physBody.setLinearVelocity(0, 0);
+                    DistanceJointDef d = new DistanceJointDef();
+                    d.initialize(sticky._physBody, other._physBody, v, v);
+                    d.collideConnected = true;
+                    other._dJoint = (DistanceJoint) Level._currLevel._world.createJoint(d);
+                    WeldJointDef w = new WeldJointDef();
+                    w.initialize(sticky._physBody, other._physBody, v);
+                    w.collideConnected = true;
+                    other._wJoint = (WeldJoint) Level._currLevel._world.createJoint(w);
+                }});
+        }
+
+    }
 
     /**
      * Configure physics for the current level
@@ -100,6 +139,15 @@ public class Physics
                 PhysicsSprite gfoB = (PhysicsSprite) b;
 
                 // TODO: need to handle sticky obstacles here!
+                // handle sticky obstacles... only do something if at least one entity is a sticky entity
+                if (gfoA.isStickyBottom || gfoA.isStickyTop || gfoA.isStickyLeft || gfoA.isStickyRight) {
+                    handleSticky(gfoA, gfoB, contact);
+                    return;
+                }
+                else if (gfoB.isStickyBottom || gfoB.isStickyTop || gfoB.isStickyLeft || gfoB.isStickyRight) {
+                    handleSticky(gfoB, gfoA, contact);
+                    return;
+                }
 
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact
