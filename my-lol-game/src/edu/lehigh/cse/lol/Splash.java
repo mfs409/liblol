@@ -1,3 +1,4 @@
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
@@ -16,11 +17,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
- * The splash screen is the first thing the user sees when playing the game. It has buttons for playing, getting help,
- * and quitting. It is configured through a SplashConfiguration object.
+ * The splash screen is the first thing the user sees when playing the game. It
+ * has buttons for playing, getting help, and quitting. It is configured through
+ * a SplashConfiguration object.
  */
-public class Splash extends ScreenAdapter
-{
+public class Splash extends ScreenAdapter {
     /**
      * The camera for displaying the scene
      */
@@ -29,53 +30,53 @@ public class Splash extends ScreenAdapter
     /**
      * A rectangle for tracking the location of the play button
      */
-    private Rectangle          _play;
+    private Rectangle _play;
 
     /**
      * A rectangle for tracking the location of the help button
      */
-    private Rectangle          _help;
+    private Rectangle _help;
 
     /**
      * A rectangle for tracking the location of the quit button
      */
-    private Rectangle          _quit;
+    private Rectangle _quit;
 
     /**
      * For handling touches
      */
-    private Vector3            _v  = new Vector3();
+    private Vector3 _v = new Vector3();
 
     /**
      * For rendering
      */
-    private SpriteBatch        _sb = new SpriteBatch();
+    private SpriteBatch _sb = new SpriteBatch();
 
     /**
      * For debug rendering
      */
-    private ShapeRenderer      _sr = new ShapeRenderer();
+    private ShapeRenderer _sr = new ShapeRenderer();
 
     /**
      * The image to display
      */
-    private TextureRegion      _tr;
+    private TextureRegion _tr;
 
     /**
      * The music to play
      */
-    Music                      _music;
+    Music _music;
 
     /**
      * Track if the music is actually playing
      */
-    boolean                    _musicPlaying;
+    boolean _musicPlaying;
 
     /**
-     * Basic configuration: get the image and music, configure the locations of the play/help/quit buttons
+     * Basic configuration: get the image and music, configure the locations of
+     * the play/help/quit buttons
      */
-    public Splash()
-    {
+    public Splash() {
         // configure the camera, center it on the screen
         int w = LOL._game._config.getScreenWidth();
         int h = LOL._game._config.getScreenHeight();
@@ -86,7 +87,8 @@ public class Splash extends ScreenAdapter
         SplashConfiguration sc = LOL._game._splashConfig;
         _play = new Rectangle(sc.getPlayX(), sc.getPlayY(), sc.getPlayWidth(), sc.getPlayHeight());
         if (LOL._game._config.getNumHelpScenes() > 0) {
-            _help = new Rectangle(sc.getHelpX(), sc.getHelpY(), sc.getHelpWidth(), sc.getHelpHeight());
+            _help = new Rectangle(sc.getHelpX(), sc.getHelpY(), sc.getHelpWidth(),
+                    sc.getHelpHeight());
         }
         _quit = new Rectangle(sc.getQuitX(), sc.getQuitY(), sc.getQuitWidth(), sc.getQuitHeight());
 
@@ -99,8 +101,7 @@ public class Splash extends ScreenAdapter
     /**
      * Start the music if it's not already playing
      */
-    public void playMusic()
-    {
+    public void playMusic() {
         if (!_musicPlaying) {
             _musicPlaying = true;
             _music.play();
@@ -110,8 +111,7 @@ public class Splash extends ScreenAdapter
     /**
      * Pause the music if it's playing
      */
-    public void pauseMusic()
-    {
+    public void pauseMusic() {
         if (_musicPlaying) {
             _musicPlaying = false;
             _music.pause();
@@ -121,8 +121,7 @@ public class Splash extends ScreenAdapter
     /**
      * Stop the music if it's playing
      */
-    public void stopMusic()
-    {
+    public void stopMusic() {
         if (_musicPlaying) {
             _musicPlaying = false;
             _music.stop();
@@ -132,12 +131,10 @@ public class Splash extends ScreenAdapter
     /**
      * Draw the splash screen
      * 
-     * @param delta
-     *            time since the screen was last displayed
+     * @param delta time since the screen was last displayed
      */
     @Override
-    public void render(float delta)
-    {
+    public void render(float delta) {
         // make sure the music is playing
         playMusic();
 
@@ -145,12 +142,14 @@ public class Splash extends ScreenAdapter
         if (Gdx.input.justTouched()) {
             // translate the touch into camera coordinates
             _cam.unproject(_v.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            // DEBUG: print the location of the touch... this is really useful when trying to figure out the coordinates
+            // DEBUG: print the location of the touch... this is really useful
+            // when trying to figure out the coordinates
             // of the rectangles
             if (LOL._game._config.showDebugBoxes()) {
                 Gdx.app.log("touch", "(" + _v.x + ", " + _v.y + ")");
             }
-            // check if the touch was inside one of our buttons, and act accordingly
+            // check if the touch was inside one of our buttons, and act
+            // accordingly
             if (_quit.contains(_v.x, _v.y)) {
                 stopMusic();
                 LOL._game.doQuit();
@@ -192,8 +191,7 @@ public class Splash extends ScreenAdapter
      * When this scene goes away, make sure the music gets turned off
      */
     @Override
-    public void dispose()
-    {
+    public void dispose() {
         stopMusic();
     }
 
@@ -201,8 +199,7 @@ public class Splash extends ScreenAdapter
      * When this scene goes away, make sure the music gets turned off
      */
     @Override
-    public void hide()
-    {
+    public void hide() {
         pauseMusic();
     }
 }

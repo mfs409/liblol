@@ -1,18 +1,20 @@
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * Score is used by Level to track the progress through a level. There are four things tracked: the number of heroes
- * created and destroyed, the number of enemies created and destroyed, the number of heroes at destinations, and the
- * number of (each type of) goodie that has been collected.
- * 
- * Apart from storing the counts, this class provides a public interface for manipulating the goodie counts, and a set
- * of internal convenience methods for updating values and checking for win/lose. It also manages the mode of the level
- * (i.e., what must be done to finish the level... collecting goodies, reaching a destination, etc).
+ * Score is used by Level to track the progress through a level. There are four
+ * things tracked: the number of heroes created and destroyed, the number of
+ * enemies created and destroyed, the number of heroes at destinations, and the
+ * number of (each type of) goodie that has been collected. Apart from storing
+ * the counts, this class provides a public interface for manipulating the
+ * goodie counts, and a set of internal convenience methods for updating values
+ * and checking for win/lose. It also manages the mode of the level (i.e., what
+ * must be done to finish the level... collecting goodies, reaching a
+ * destination, etc).
  */
-public class Score
-{
+public class Score {
     /*
      * COUNTERS
      */
@@ -20,72 +22,77 @@ public class Score
     /**
      * Track the number of heroes that have been created
      */
-    int   _heroesCreated       = 0;
+    int _heroesCreated = 0;
 
     /**
      * Track the number of heroes that have been removed/defeated
      */
-    int   _heroesDefeated      = 0;
+    int _heroesDefeated = 0;
 
     /**
      * Count of the goodies that have been collected in this level
      */
-    int[] _goodiesCollected    = new int[] { 0, 0, 0, 0 };
+    int[] _goodiesCollected = new int[] {
+            0, 0, 0, 0
+    };
 
     /**
      * Number of heroes who have arrived at any destination yet
      */
-    int   _destinationArrivals = 0;
+    int _destinationArrivals = 0;
 
     /**
      * Count the number of enemies that have been created
      */
-    int   _enemiesCreated      = 0;
+    int _enemiesCreated = 0;
 
     /**
      * Count the enemies that have been defeated
      */
-    int   _enemiesDefeated     = 0;
+    int _enemiesDefeated = 0;
 
     /*
      * WIN MODE OF THE CURRENT LEVEL
      */
 
     /**
-     * these are the ways you can complete a level: you can reach the destination, you can collect enough stuff, or you
-     * can reach a certain number of enemies defeated
-     * 
-     * Technically, there's also 'survive for x seconds', but that doesn't need special support
+     * these are the ways you can complete a level: you can reach the
+     * destination, you can collect enough stuff, or you can reach a certain
+     * number of enemies defeated Technically, there's also 'survive for x
+     * seconds', but that doesn't need special support
      */
-    enum VictoryType
-    {
+    enum VictoryType {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     };
 
     /**
      * Describes how a level is won
      */
-    VictoryType _victoryType        = VictoryType.DESTINATION;
+    VictoryType _victoryType = VictoryType.DESTINATION;
 
     /**
-     * This is the number of heroes who must reach destinations, if we're in DESTINATION mode
+     * This is the number of heroes who must reach destinations, if we're in
+     * DESTINATION mode
      */
-    int         _victoryHeroCount;
+    int _victoryHeroCount;
 
     /**
-     * This is the number of goodies that must be collected, if we're in GOODIECOUNT mode
+     * This is the number of goodies that must be collected, if we're in
+     * GOODIECOUNT mode
      */
-    int[]       _victoryGoodieCount = new int[4];
+    int[] _victoryGoodieCount = new int[4];
 
     /**
-     * This is the number of enemies that must be defeated, if we're in ENEMYCOUNT mode. -1 means "all of them"
+     * This is the number of enemies that must be defeated, if we're in
+     * ENEMYCOUNT mode. -1 means "all of them"
      */
-    int         _victoryEnemyCount;
+    int _victoryEnemyCount;
 
     /**
-     * Track if the level has been lost (true) or the game is still being played (false)
+     * Track if the level has been lost (true) or the game is still being played
+     * (false)
      */
-    boolean     _gameOver           = false;
+    boolean _gameOver = false;
 
     /*
      * INTERNAL INTERFACE
@@ -94,11 +101,9 @@ public class Score
     /**
      * Use this to inform the level that a hero has been defeated
      * 
-     * @param e
-     *            The enemy who defeated the hero
+     * @param e The enemy who defeated the hero
      */
-    void defeatHero(Enemy e)
-    {
+    void defeatHero(Enemy e) {
         _heroesDefeated++;
         if (_heroesDefeated == _heroesCreated) {
             if (e._onDefeatHeroText != "")
@@ -110,11 +115,9 @@ public class Score
     /**
      * Use this to inform the level that a goodie has been collected by a hero
      * 
-     * @param g
-     *            The goodie that was collected
+     * @param g The goodie that was collected
      */
-    void onGoodieCollected(Goodie g)
-    {
+    void onGoodieCollected(Goodie g) {
         // Update goodie counts
         for (int i = 0; i < 4; ++i)
             _goodiesCollected[i] += g._score[i];
@@ -133,22 +136,20 @@ public class Score
     /**
      * Use this to inform the level that a hero has reached a destination
      * 
-     * @param d
-     *            The destination that the hero reached
+     * @param d The destination that the hero reached
      */
-    void onDestinationArrive()
-    {
+    void onDestinationArrive() {
         // check if the level is complete
         _destinationArrivals++;
-        if ((_victoryType == VictoryType.DESTINATION) && (_destinationArrivals >= _victoryHeroCount))
+        if ((_victoryType == VictoryType.DESTINATION)
+                && (_destinationArrivals >= _victoryHeroCount))
             endLevel(true);
     }
 
     /**
      * Internal method for handling whenever an enemy is defeated
      */
-    void onDefeatEnemy()
-    {
+    void onDefeatEnemy() {
         // update the count of defeated enemies
         _enemiesDefeated++;
 
@@ -166,13 +167,12 @@ public class Score
     }
 
     /**
-     * When a level ends, we run this code to shut it down, print a message, and then let the user resume play
+     * When a level ends, we run this code to shut it down, print a message, and
+     * then let the user resume play
      * 
-     * @param win
-     *            /true/ if the level was won, /false/ otherwise
+     * @param win /true/ if the level was won, /false/ otherwise
      */
-    void endLevel(boolean win)
-    {
+    void endLevel(boolean win) {
         // Safeguard: only call this method once per level
         if (_gameOver)
             return;
@@ -182,7 +182,7 @@ public class Score
         LOL._game.levelCompleteTrigger(win);
 
         // if we won, unlock the next level
-        if (win && LOL._game.readUnlocked() == LOL._game._currLevel) 
+        if (win && LOL._game.readUnlocked() == LOL._game._currLevel)
             LOL._game.saveUnlocked(LOL._game._currLevel + 1);
 
         // drop everything from the hud
@@ -191,7 +191,8 @@ public class Score
         // clear any pending timers
         Timer.instance().clear();
 
-        // display the PostScene, which provides a pause before we retry/start the next level
+        // display the PostScene, which provides a pause before we retry/start
+        // the next level
         Level._currLevel._postScene.setWin(win);
     }
 
@@ -202,44 +203,36 @@ public class Score
     /**
      * Manually set the number of goodies of type 1 that have been collected.
      * 
-     * @param value
-     *            The new value
+     * @param value The new value
      */
-    public static void setGoodiesCollected1(int value)
-    {
+    public static void setGoodiesCollected1(int value) {
         Level._currLevel._score._goodiesCollected[0] = value;
     }
 
     /**
      * Manually set the number of goodies of type 2 that have been collected.
      * 
-     * @param value
-     *            The new value
+     * @param value The new value
      */
-    public static void setGoodiesCollected2(int value)
-    {
+    public static void setGoodiesCollected2(int value) {
         Level._currLevel._score._goodiesCollected[1] = value;
     }
 
     /**
      * Manually set the number of goodies of type 3 that have been collected.
      * 
-     * @param value
-     *            The new value
+     * @param value The new value
      */
-    public static void setGoodiesCollected3(int value)
-    {
+    public static void setGoodiesCollected3(int value) {
         Level._currLevel._score._goodiesCollected[2] = value;
     }
 
     /**
      * Manually set the number of goodies of type 4 that have been collected.
      * 
-     * @param value
-     *            The new value
+     * @param value The new value
      */
-    public static void setGoodiesCollected4(int value)
-    {
+    public static void setGoodiesCollected4(int value) {
         Level._currLevel._score._goodiesCollected[3] = value;
     }
 
@@ -247,8 +240,7 @@ public class Score
      * Manually increment the number of goodies of type 1 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected1()
-    {
+    public static void incrementGoodiesCollected1() {
         Level._currLevel._score._goodiesCollected[0]++;
     }
 
@@ -256,8 +248,7 @@ public class Score
      * Manually increment the number of goodies of type 2 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected2()
-    {
+    public static void incrementGoodiesCollected2() {
         Level._currLevel._score._goodiesCollected[1]++;
     }
 
@@ -265,8 +256,7 @@ public class Score
      * Manually increment the number of goodies of type 3 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected3()
-    {
+    public static void incrementGoodiesCollected3() {
         Level._currLevel._score._goodiesCollected[2]++;
     }
 
@@ -274,8 +264,7 @@ public class Score
      * Manually increment the number of goodies of type 4 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected4()
-    {
+    public static void incrementGoodiesCollected4() {
         Level._currLevel._score._goodiesCollected[3]++;
     }
 
@@ -284,8 +273,7 @@ public class Score
      * 
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected1()
-    {
+    public static int getGoodiesCollected1() {
         return Level._currLevel._score._goodiesCollected[0];
     }
 
@@ -294,8 +282,7 @@ public class Score
      * 
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected2()
-    {
+    public static int getGoodiesCollected2() {
         return Level._currLevel._score._goodiesCollected[1];
     }
 
@@ -304,8 +291,7 @@ public class Score
      * 
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected3()
-    {
+    public static int getGoodiesCollected3() {
         return Level._currLevel._score._goodiesCollected[2];
     }
 
@@ -314,19 +300,16 @@ public class Score
      * 
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected4()
-    {
+    public static int getGoodiesCollected4() {
         return Level._currLevel._score._goodiesCollected[3];
     }
 
     /**
-     * Indicate that the level is won by defeating all the enemies
-     * 
-     * This version is useful if the number of enemies isn't known, or if the goal is to defeat enemies before more are
-     * are created.
+     * Indicate that the level is won by defeating all the enemies This version
+     * is useful if the number of enemies isn't known, or if the goal is to
+     * defeat enemies before more are are created.
      */
-    static public void setVictoryEnemyCount()
-    {
+    static public void setVictoryEnemyCount() {
         Level._currLevel._score._victoryType = VictoryType.ENEMYCOUNT;
         Level._currLevel._score._victoryEnemyCount = -1;
     }
@@ -334,11 +317,10 @@ public class Score
     /**
      * Indicate that the level is won by defeating a certain number of enemies
      * 
-     * @param howMany
-     *            The number of enemies that must be defeated to win the level
+     * @param howMany The number of enemies that must be defeated to win the
+     *            level
      */
-    static public void setVictoryEnemyCount(int howMany)
-    {
+    static public void setVictoryEnemyCount(int howMany) {
         Level._currLevel._score._victoryType = VictoryType.ENEMYCOUNT;
         Level._currLevel._score._victoryEnemyCount = howMany;
     }
@@ -346,17 +328,16 @@ public class Score
     /**
      * Indicate that the level is won by collecting enough goodies
      * 
-     * @param v1
-     *            Number of type-1 goodies that must be collected to win the level
-     * @param v2
-     *            Number of type-2 goodies that must be collected to win the level
-     * @param v3
-     *            Number of type-3 goodies that must be collected to win the level
-     * @param v4
-     *            Number of type-4 goodies that must be collected to win the level
+     * @param v1 Number of type-1 goodies that must be collected to win the
+     *            level
+     * @param v2 Number of type-2 goodies that must be collected to win the
+     *            level
+     * @param v3 Number of type-3 goodies that must be collected to win the
+     *            level
+     * @param v4 Number of type-4 goodies that must be collected to win the
+     *            level
      */
-    static public void setVictoryGoodies(int v1, int v2, int v3, int v4)
-    {
+    static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
         Level._currLevel._score._victoryType = VictoryType.GOODIECOUNT;
         Level._currLevel._score._victoryGoodieCount[0] = v1;
         Level._currLevel._score._victoryGoodieCount[1] = v2;
@@ -365,13 +346,12 @@ public class Score
     }
 
     /**
-     * Indicate that the level is won by having a certain number of heroes reach destinations
+     * Indicate that the level is won by having a certain number of heroes reach
+     * destinations
      * 
-     * @param howMany
-     *            Number of heroes that must reach destinations
+     * @param howMany Number of heroes that must reach destinations
      */
-    static public void setVictoryDestination(int howMany)
-    {
+    static public void setVictoryDestination(int howMany) {
         Level._currLevel._score._victoryType = VictoryType.DESTINATION;
         Level._currLevel._score._victoryHeroCount = howMany;
     }

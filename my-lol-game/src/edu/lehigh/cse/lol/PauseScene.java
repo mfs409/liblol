@@ -1,3 +1,4 @@
+
 package edu.lehigh.cse.lol;
 
 //TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
@@ -12,40 +13,39 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class PauseScene
-{
+public class PauseScene {
     ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
 
-    boolean               _visible = true;
+    boolean _visible = true;
 
     /**
-     * Get the PauseScene that is configured for the current level, or create a blank one if none exists.
+     * Get the PauseScene that is configured for the current level, or create a
+     * blank one if none exists.
      * 
      * @return
      */
-    void create()
-    {
+    void create() {
         Level._currLevel._pauseScene = new PauseScene();
         Level._currLevel.suspendTouch();
     }
 
-    public static void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size)
-    {
-        Level._currLevel._pauseScene._sprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+    public static void addText(String text, int x, int y, int red, int green, int blue,
+            String fontName, int size) {
+        Level._currLevel._pauseScene._sprites.add(Util.makeText(x, y, text, red, green, blue,
+                fontName, size));
     }
 
-    public static void addCenteredText(String text, int red, int green, int blue, String fontName, int size)
-    {
-        Level._currLevel._pauseScene._sprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
+    public static void addCenteredText(String text, int red, int green, int blue, String fontName,
+            int size) {
+        Level._currLevel._pauseScene._sprites.add(Util.makeCenteredText(text, red, green, blue,
+                fontName, size));
     }
 
-    public static void addImage(String imgName, int x, int y, int width, int height)
-    {
+    public static void addImage(String imgName, int x, int y, int width, int height) {
         Level._currLevel._pauseScene._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
-    boolean render(SpriteBatch _spriteRender)
-    {
+    boolean render(SpriteBatch _spriteRender) {
         // if the pop-up scene is not visible, do nothing
         if (!_visible)
             return false;

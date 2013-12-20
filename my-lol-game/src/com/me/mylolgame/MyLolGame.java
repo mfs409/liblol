@@ -1,3 +1,4 @@
+
 package com.me.mylolgame;
 
 // TODO: demonstrate obstacle._peer?
@@ -47,11 +48,9 @@ package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.*;
 
-public class MyLolGame extends LOL
-{
+public class MyLolGame extends LOL {
     @Override
-    public void nameResources()
-    {
+    public void nameResources() {
         // load regular (non-animated) images
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");
@@ -92,18 +91,14 @@ public class MyLolGame extends LOL
     }
 
     @Override
-    public void configureLevel(int whichLevel)
-    {
+    public void configureLevel(int whichLevel) {
         /**
          * @level: 1
-         * 
          * @description: In this level, all we have is a hero (the green ball)
-         *               who needs to make it to the destination
-         *               (a mustard colored ball). The game is configured to use
-         *               tilt to control the hero.
-         * 
+         *               who needs to make it to the destination (a mustard
+         *               colored ball). The game is configured to use tilt to
+         *               control the hero.
          * @whatsnew: control a hero with tilt
-         * 
          * @whatsnew: win by reaching a destination
          */
         if (whichLevel == 1) {
@@ -129,18 +124,14 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 2
-         * 
          * @description: In this level, we add a few features to level 1 to make
-         *               it a bit more playable. Note, though,
-         *               that since nothing has physics properties attached to
-         *               it, the behavior when the ball crashes
-         *               into the bounding box doesn't really feel right.
-         * 
+         *               it a bit more playable. Note, though, that since
+         *               nothing has physics properties attached to it, the
+         *               behavior when the ball crashes into the bounding box
+         *               doesn't really feel right.
          * @whatsnew: draw a bounding box around the level, so the hero can't
          *            fall into infinity
-         * 
          * @whatsnew: custom text when the level is won
-         * 
          * @whatsnew: a pop up scene shows for one second at the start of the
          *            level
          */
@@ -162,19 +153,17 @@ public class MyLolGame extends LOL
 
             // new: add a pop-up message that shows for one second at the
             // beginning of the level
-            PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             PreScene.addImage("red.png", 50, 50, 10, 1);
         }
 
         /**
          * @level: 3
-         * 
          * @description: In this level, we change the physics from level 2 so
          *               that things roll and bounce a little bit more nicely
-         * 
          * @whatsnew: the hero and bounding box now have nonzero physics so that
          *            things are a little bit more smooth
-         * 
          * @whatsnew: we don't set the win text anymore, so now when we win
          *            we'll go back to the default message
          */
@@ -196,20 +185,17 @@ public class MyLolGame extends LOL
             // elasticity, and friction
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             PreScene.setExpire(2);
         }
 
         /**
          * @level: 4
-         * 
          * @description: This level shows that we the natural behavior is for
          *               each destination to only hold one hero
-         * 
          * @whatsnew: we are showing a popup image instead of popup text
-         * 
          * @whatsnew: there are two heroes
-         * 
          * @whatsnew: it takes two heroes to reach destinations before the level
          *            is won
          */
@@ -247,12 +233,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 5
-         * 
          * @description: This level demonstrates that we can have many heroes
          *               that can reach the same destination
-         * 
          * @whatsnew: the destination can hold two heroes
-         * 
          * @whatsnew: when the hero reaches the destination, we play a sound
          */
         else if (whichLevel == 5) {
@@ -282,18 +265,17 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(2);
 
             // Change the pop-up message slightly
-            PreScene.addText("All heroes must\nreach the destination", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("All heroes must\nreach the destination", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
         }
 
         /**
          * @level: 6
-         * 
          * @description: this demonstrates an alternative way of using tilt.
          *               Instead of tilt representing a force applied to
          *               entities, tilt now represents a velocity to apply to
          *               those entities. Note that this form of tilt behaves
          *               oddly when we have friction on the ball and wall.
-         * 
          * @whatsnew: using tilt as velocity instead of tilt as force
          */
         else if (whichLevel == 6) {
@@ -312,17 +294,15 @@ public class MyLolGame extends LOL
             Tilt.setAsVelocity(true);
 
             // and print a popup to tell the user what's going on...
-            PreScene.addText("A different way\nto use tilt.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("A different way\nto use tilt.", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
         }
 
         /**
          * @level: 7
-         * 
          * @description: This level adds an enemy, to demonstrate that we can
          *               make it possible to lose a level
-         * 
          * @whatsnew: there is a stationary enemy
-         * 
          * @whatsnew: a pop-up message that stays until it is pressed
          */
         else if (whichLevel == 7) {
@@ -341,17 +321,16 @@ public class MyLolGame extends LOL
             e.setPhysics(1.0f, 0.3f, 0.6f);
 
             // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255, "arial.ttf", 20);
+            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
+                    "arial.ttf", 20);
 
             PostScene.disable();
         }
 
         /**
          * @level: 8
-         * 
          * @description: This level explores a bit more of what we can do with
          *               enemies, by having an enemy with a fixed path.
-         * 
          * @whatsnew: make a moveable enemy and attach a fixed path to it
          */
         else if (whichLevel == 8) {
@@ -371,20 +350,20 @@ public class MyLolGame extends LOL
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
-            // since it loops, it is not going to gracefully move back to its starting point
+            // since it loops, it is not going to gracefully move back to its
+            // starting point
 
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
             // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255, "arial.ttf", 20);
+            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
+                    "arial.ttf", 20);
         }
 
         /**
          * @level: 9
-         * 
          * @description: This level explores a bit more of what we can do with
          *               paths.
-         * 
          * @whatsnew: The path end point is the same as the start point, so that
          *            we get cleaner movement
          */
@@ -411,27 +390,22 @@ public class MyLolGame extends LOL
             // extremely complex shapes!
 
             // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255, "arial.ttf", 20);
+            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
+                    "arial.ttf", 20);
         }
 
         /**
          * @level: 10
-         * 
          * @description: This level fleshes out a bunch of additional enemy
          *               features, as well as sound features
-         * 
          * @whatsnew: any entity can be controlled by tilt, so here we add an
          *            enemy that is controlled by tilt.
-         * 
          * @whatsnew: any entity can have a continuous rotation, so we do that
          *            to the Destination
-         * 
          * @whatsnew: this level also demonstrates background music, and sounds
          *            to play on victory or defeat.
-         * 
          * @whatsnew: this level shows a popup message that uses an image, and
          *            that does not go away until it is touched
-         * 
          * @whatsnew: there is a custom message when the level is lost
          */
         else if (whichLevel == 10) {
@@ -468,14 +442,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 11
-         * 
          * @description: This shows how it is possible to have a level that is
          *               larger than one screen. It also demonstrates zoom
          *               buttons, and introduces the notion of invisibile
          *               controls.
-         * 
          * @whatsnew: zoom buttons on the left and right halves of the screen
-         * 
          * @whatsnew: the level is larger than the screen, but the screen always
          *            shows the hero
          */
@@ -487,7 +458,8 @@ public class MyLolGame extends LOL
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 400, 300, "red.png", 0, 0, 0);
 
-            PreScene.addText("Press left to zoom out\nright to zoom in", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press left to zoom out\nright to zoom in", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
 
             // put the hero and destination far apart
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -506,12 +478,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 12
-         * 
          * @description: this level introduces obstacles, and also shows the
          *               difference between "box" and "circle" physics
-         * 
          * @whatsnew: stationary obstacles
-         * 
          * @whatsnew: examples of box vs. circle physics
          */
         else if (whichLevel == 12) {
@@ -550,13 +519,12 @@ public class MyLolGame extends LOL
             o4.setPhysics(1, 0, 1);
 
             // print a popup about this level
-            PreScene.addText("An obstacle's appearance may\nnot match its physics", 50, 50, 255, 255, 255, "arial.ttf",
-                    32);
+            PreScene.addText("An obstacle's appearance may\nnot match its physics", 50, 50, 255,
+                    255, 255, "arial.ttf", 32);
         }
 
         /**
          * @level: 13
-         * 
          * @description: this level just plays around with physics a little bit,
          *               to show how friction and elasticity can do interesting
          *               things.
@@ -565,8 +533,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("These obstacles have\ndifferent physics\nparameters", 50, 50, 255, 255, 255, "arial.ttf",
-                    32);
+            PreScene.addText("These obstacles have\ndifferent physics\nparameters", 50, 50, 255,
+                    255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -581,18 +549,14 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 14
-         * 
          * @description: This level introduces goodies. Goodies are something
          *               that we collect. We can make the collection of goodies
          *               lead to changes in the behavior of the game, and in
          *               this example, the collection of goodies "enables" a
          *               destination.
-         * 
          * @whatsnew: introduce goodies
-         * 
          * @whatsnew: destination does not work until enough goodies are
          *            collected
-         * 
          * @whatsnew: display the goodie count on the heads-up display
          */
         else if (whichLevel == 14) {
@@ -626,20 +590,18 @@ public class MyLolGame extends LOL
             // let's put a display on the screen to see how many goodies we've
             // collected
             Controls.addGoodieCount1(2, "Goodies", 220, 280);
-            PreScene.addText("You must collect\ntwo blue balls", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("You must collect\ntwo blue balls", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
 
         }
 
         /**
          * @level: 15
-         * 
          * @description: All entities can have a fixed motion path. Here, we'll
          *               attach a path to a few kinds of entities to show this
          *               ability
-         * 
          * @whatsnew: show that destinations, goodies, and obstacles can have
          *            motion paths too
-         * 
          * @whatsnew: also show how to change the color and size of on-screen
          *            text, and show how when the goodie counter's max field is
          *            0, the display is just the number of goodies collected
@@ -676,12 +638,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 16
-         * 
          * @description: show how we can make a level that is won by collecting
          *               goodies, and show how we can set a time limit.
-         * 
          * @whatsnew: victory by goodie count
-         * 
          * @whatsnew: lose by running out of time
          */
         else if (whichLevel == 16) {
@@ -689,7 +648,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Collect all\nblue balls\nto win", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Collect all\nblue balls\nto win", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 20, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -712,7 +672,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 17
-         * 
          * @description: This level shows how "obstacles" need not actually
          *               impede the hero's movement. Here, we attach
          *               "damping factors" to the hero, which let us make the
@@ -720,9 +679,7 @@ public class MyLolGame extends LOL
          *               the obstacle. This level also adds a stopwatch.
          *               Stopwatches don't have any meaning, but they are nice
          *               to have anyway...
-         * 
          * @whatsnew: dampening factors on obstacles
-         * 
          * @whatsnew: added a stopwatch
          */
         else if (whichLevel == 17) {
@@ -731,8 +688,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Obstacles as zoom\nstrips, friction pads\nand repellers", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
+            PreScene.addText("Obstacles as zoom\nstrips, friction pads\nand repellers", 50, 50,
+                    255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -773,19 +730,15 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 18
-         * 
          * @description: This level shows that it is possible to give heroes and
          *               enemies different strengths, so that a hero doesn't
          *               disappear after a single collision
-         * 
          * @whatsnew: when an enemy defeats a hero, we can customize the message
          *            that prints
-         * 
          * @whatsnew: setting the strength of heroes, and the damage caused by
          *            enemies. The default is for enemies to have "2" units of
          *            damage, and heroes to have "1" unit of strength, so that
          *            any collision defeats the hero without removing the enemy.
-         * 
          * @whatsnew: show how much strength the hero has left. Note that if
          *            there were several heroes in this level, we'd only see the
          *            strength of the last hero
@@ -795,7 +748,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("The hero can defeat \nup to two enemies...", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("The hero can defeat \nup to two enemies...", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -833,10 +787,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 19
-         * 
          * @description: This level shows that we can win a level by defeating
          *               all enemies
-         * 
          * @whatsnew: ability to win by defeating enemies
          */
         else if (whichLevel == 19) {
@@ -844,7 +796,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("You have 10 seconds\nto defeat the enemies", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("You have 10 seconds\nto defeat the enemies", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // give the hero enough strength that this will work...
@@ -872,13 +825,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 20
-         * 
          * @description: this level shows that a goodie can increase the hero's
          *               strength, and that we can win by defeating a specific
          *               number of enemies
-         * 
          * @whatsnew: goodies that give the hero more strength
-         * 
          * @whatsnew: winning without defeating all the enemies
          */
         else if (whichLevel == 20) {
@@ -886,7 +836,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Collect blue balls\nto increse strength", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Collect blue balls\nto increse strength", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // our default hero only has "1" strength
@@ -919,13 +870,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 21
-         * 
          * @description: this level introduces the idea of invincibility.
          *               Collecting the goodie makes the hero invincible for a
          *               little while...
-         * 
          * @whatsnew: Invincibility from a goodie
-         * 
          * @whatsnew: Print FPS to the screen
          */
         else if (whichLevel == 21) {
@@ -933,8 +881,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
+            PreScene.addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50,
+                    255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -965,10 +913,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 22
-         * 
          * @description: Some goodies can "count" for more than one point...
          *               they can even count for negative points.
-         * 
          * @whatsnew: goodie values that change how many points we get for
          *            collecting a goodie
          */
@@ -978,8 +924,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Collect 'the right' \nblue balls to\nactivate destination", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
+            PreScene.addText("Collect 'the right' \nblue balls to\nactivate destination", 50, 50,
+                    255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1004,14 +950,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 23
-         * 
          * @description: this level demonstrates that we can drag entities (in
          *               this case, obstacles), and that we can make rotated
          *               obstacles. The latter could be useful for having angled
          *               walls in a maze
-         * 
          * @whatsnew: entites that can be dragged
-         * 
          * @whatsnew: oblong obstacles that can be rotated
          */
         else if (whichLevel == 23) {
@@ -1019,8 +962,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Rotating oblong obstacles\nand draggable obstacles", 50, 50, 255, 255, 255, "arial.ttf",
-                    32);
+            PreScene.addText("Rotating oblong obstacles\nand draggable obstacles", 50, 50, 255,
+                    255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1042,14 +985,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 24
-         * 
          * @description: this level shows how we can use "poking" to move
          *               obstacles. In this case, pressing an obstacle selects
          *               it, and pressing the screen moves the obstacle to that
          *               location. Double-tapping an obstacle removes it.
-         * 
          * @whatsnew: pokeable obstacles
-         * 
          * @whatsnew: we can draw pictures on the screen that don't have an
          *            influence on the physics of the game
          */
@@ -1059,8 +999,8 @@ public class MyLolGame extends LOL
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            PreScene.addText("Touch the obstacle\nto select, then" + "\ntouch a destination", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
+            PreScene.addText("Touch the obstacle\nto select, then" + "\ntouch a destination", 50,
+                    50, 255, 255, 255, "arial.ttf", 32);
 
             // draw a picture on the default plane (0)
             Util.drawPicture(0, 0, 48, 32, "greenball.png", 0);
@@ -1081,11 +1021,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 25
-         * 
          * @description: In this level, the enemy chases the hero
-         * 
          * @whatsnew: an enemy that follows the hero, wherever the hero goes...
-         * 
          * @whatsnew: use of drawPictureBehindScene to draw something behind the
          *            hero
          */
@@ -1108,27 +1045,25 @@ public class MyLolGame extends LOL
             e3.setChaseSpeed(8, h, true, true);
 
             // draw a picture late within this block of code, but still cause
-            // the picture to be drawn behind everything else by giving it a z index of -2
+            // the picture to be drawn behind everything else by giving it a z
+            // index of -2
             Util.drawPicture(0, 0, 48, 32, "greenball.png", -2);
         }
 
         /**
          * @level: 26
-         * 
          * @description: demonstrate that we can make obstacles play sounds
          *               either when we collide with them, or touch them
-         * 
          * @whatsnew: touch an obstacle to make it play a sound
-         * 
          * @whatsnew: collide with an obstacle to make it play a sound
-         * 
          */
         else if (whichLevel == 26) {
             // set up a basic level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Touch the purple ball \nor collide with it", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Touch the purple ball \nor collide with it", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1146,10 +1081,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 27
-         * 
          * @description: this hero rotates so that it faces in the direction of
          *               movement
-         * 
          * @whatsnew: heroes whose rotation changes with their direction
          */
         else if (whichLevel == 27) {
@@ -1157,7 +1090,8 @@ public class MyLolGame extends LOL
             Level.configure(4 * 48, 2 * 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("The star rotates in\nthe direction of movement", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("The star rotates in\nthe direction of movement", 50, 50, 255, 255,
+                    255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(29, 60, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1172,18 +1106,15 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 28
-         * 
          * @description: This level shows three things. The first is that a
          *               custom motion path can allow things to violate the laws
          *               of physics and pass through other things. The second is
          *               that motion paths can go off-screen. The third is that
-         *               PreScene is not benign. The only way to win this
-         *               level is to hold the phone a certain way, wait three
-         *               seconds, and then press the message. While the phone is
-         *               held, some gravitational force can be "built up", so
-         *               that the hero moves really fast when the level finally
-         *               starts
-         * 
+         *               PreScene is not benign. The only way to win this level
+         *               is to hold the phone a certain way, wait three seconds,
+         *               and then press the message. While the phone is held,
+         *               some gravitational force can be "built up", so that the
+         *               hero moves really fast when the level finally starts
          * @whatsnew: paths that go off screen
          */
         else if (whichLevel == 28) {
@@ -1191,7 +1122,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Reach the destination\nto win the game.", 50, 50, 255, 255, 255, "arial.ttf", 20);
+            PreScene.addText("Reach the destination\nto win the game.", 50, 50, 255, 255, 255,
+                    "arial.ttf", 20);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1207,10 +1139,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 29
-         * 
          * @description: this level shows that we can draw on the screen to
          *               create obstacles.
-         * 
          * @whatsnew: scribblemode for drawing obstacles on the screen
          */
         else if (whichLevel == 29) {
@@ -1218,7 +1148,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Draw on the screen\nto make obstacles appear", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Draw on the screen\nto make obstacles appear", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1234,16 +1165,13 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 30
-         * 
          * @description: this level shows that we can "flick" things to move
          *               them
-         * 
          * @whatsnew: In this level, notice that we did not enable tilt!
          *            Instead, we specified that there is a default gravity in
          *            the Y dimension pushing everything down. This is much like
          *            gravity on earth. The only way to move things, then, is
          *            via flicking them.
-         * 
          * @whatsnew: using flick to move the hero
          */
         else if (whichLevel == 30) {
@@ -1265,7 +1193,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 31
-         * 
          * @description: this level introduces a new concept: side-scrolling
          *               games. just like in level 30, we have a constant force
          *               in the negative direction. However, in this level, we
@@ -1274,7 +1201,6 @@ public class MyLolGame extends LOL
          *               too, that the hero will fall to the floor, since there
          *               is a constant downward force, but there is not any
          *               mechanism to apply a Y force to make it move back up.
-         * 
          * @whatsnew: we changed the physics, so that now we have a tilt-based
          *            side scroller
          */
@@ -1297,15 +1223,12 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 32
-         * 
          * @description: In the previous level, it was hard to see that the hero
          *               was moving. We can make a background layer to remedy
          *               this situation. Notice that the background uses
          *               transparency to show the blue color for part of the
          *               screen
-         * 
          * @whatsnew: background colors and background images
-         * 
          * @whatsnew: demonstrate that we can have things hover on the screen
          *            despite the fact that the screen is scrolling
          */
@@ -1337,14 +1260,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 33
-         * 
          * @description: this level adds multiple background layers, and it also
          *               allows the hero to jump via touch
-         * 
          * @whatsnew: jumping via touching heroes
-         * 
          * @whatsnew: background layers
-         * 
          * @whatsnew: jump sounds
          */
         else if (whichLevel == 33) {
@@ -1353,7 +1272,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1382,19 +1302,15 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 34
-         * 
          * @description: tilt doesn't always work so nicely in side scrollers.
          *               An alternative is for the hero to have a fixed rate of
          *               motion. Another issue was that you had to touch the
          *               hero itself to make it jump. Now, we use an invisible
          *               button so touching any part of the screen makes the
          *               hero jump.
-         * 
          * @whatsnew: camera offset on the hero, so that it stays a bit to the
          *            left of the center of the screen
-         * 
          * @whatsnew: fixed velocity on the hero
-         * 
          * @whatsnew: jump button on the HUD
          */
         else if (whichLevel == 34) {
@@ -1438,7 +1354,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 35
-         * 
          * @description: the default is that once a hero jumps, it can't jump
          *               again until it touches an obstacle (floor or wall).
          *               Here, we enable multiple jumps. Coupled with a small
@@ -1473,18 +1388,17 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 36
-         * 
          * @description: This level shows that we can make a hero move based on
          *               how we touch the screen
          * @whatsnew: controls on the screen for moving the hero
-         * 
          * @whatsnew: the hero can face backwards when it moves backwards
          */
         else if (whichLevel == 36) {
             // set up a basic side scroller without tilt
             Level.configure(3 * 48, 32);
             Physics.configure(0, 0);
-            PreScene.addText("Press screen borders\nto move the hero", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press screen borders\nto move the hero", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Hero h = Hero.makeAsCircle(2, 0, 3, 3, "stars.png");
             h.disableRotation();
@@ -1513,7 +1427,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 37
-         * 
          * @description: In the last level, we had complete control of the
          *               hero's movement. Here, we give the hero a fixed
          *               velocity, and only control its up/down movement.
@@ -1522,7 +1435,8 @@ public class MyLolGame extends LOL
             // set up a basic side-scroller
             Level.configure(3 * 48, 32);
             Physics.configure(0, 0);
-            PreScene.addText("Press screen borders\nto move up and down", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press screen borders\nto move up and down", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             // be careful about friction!
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
@@ -1550,14 +1464,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 38
-         * 
          * @description: this level demonstrates crawling heroes. We can use
          *               this to simulate crawling, ducking, rolling, spinning,
          *               etc. Note, too, that we can use it to make the hero
          *               defeat certain enemies via crawl.
-         * 
          * @whatsnew: buttons for making heroes crawl
-         * 
          * @whatsnew:
          */
         else if (whichLevel == 38) {
@@ -1584,16 +1495,15 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 39
-         * 
          * @description: we can make a hero start moving only when it is pressed
-         * 
          * @whatsnew: touch and go
          */
         else if (whichLevel == 39) {
             // set up a basic side scroller
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
-            PreScene.addText("Press the hero\nto start moving\n", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero\nto start moving\n", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
@@ -1615,16 +1525,13 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 40
-         * 
          * @description: ALE has limited support for SVG. If you draw a picture
          *               in Inkscape or another SVG tool, and it only consists
          *               of lines, then you can import it into your game as an
          *               obstacle. Drawing a picture on top of the obstacle is
          *               probably a good idea, though we don't bother in this
          *               level
-         * 
          * @whatsnew: import an svg as an obstacle
-         * 
          * @whatsnew: side scroller with velocity tilt override
          */
         else if (whichLevel == 40) {
@@ -1633,7 +1540,8 @@ public class MyLolGame extends LOL
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
             Tilt.setAsVelocity(true);
-            PreScene.addText("Obstacles can\nbe drawn from SVG\nfiles", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Obstacles can\nbe drawn from SVG\nfiles", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
 
             // make a hero who can jump
@@ -1659,10 +1567,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 41
-         * 
          * @description: this is a side-scroller with speed boosters for
          *               changing the hero's velocity
-         * 
          * @whatsnew: speed booster obstacles
          */
         else if (whichLevel == 41) {
@@ -1697,10 +1603,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 42
-         * 
          * @description: this is a very gross level, which exists just to show
          *               that backgrounds can scroll vertically.
-         * 
          * @whatsnew: vertical background colors and images
          */
         else if (whichLevel == 42) {
@@ -1726,11 +1630,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 43
-         * 
          * @description: the next few levels demonstrate support for throwing
-         *               projectiles. In this level, we throw
-         *               projectiles by touching the hero
-         * 
+         *               projectiles. In this level, we throw projectiles by
+         *               touching the hero
          * @whatsnew: throw a projectile by touching the hero
          */
         else if (whichLevel == 43) {
@@ -1738,7 +1640,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Press the hero\nto make it throw\nprojectiles", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero\nto make it throw\nprojectiles", 50, 50, 255, 255,
+                    255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1759,15 +1662,12 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 44
-         * 
          * @description: this is another demo of how throwing projectiles works.
-         *               Like the previous demo, it doesn't
-         *               actually use projectiles for anything, it is just to
-         *               show how to get some different behaviors
-         *               in terms of how the projectiles move.
-         * 
+         *               Like the previous demo, it doesn't actually use
+         *               projectiles for anything, it is just to show how to get
+         *               some different behaviors in terms of how the
+         *               projectiles move.
          * @whatsnew: limiting the range of projectiles
-         * 
          * @whatsnew: throw projectiles by touching the screen
          */
         else if (whichLevel == 44) {
@@ -1775,7 +1675,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press anywhere\nto throw a gray\nball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a gray\nball", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 30, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1797,13 +1698,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level 45
-         * 
          * @description: this level demonstrates that we can defeat enemies by
          *               throwing projectiles at them
-         * 
          * @whatsnew: show that we can defeat enemies by throwing projectiles at
          *            them
-         * 
          * @whatsnew: holding the button doesn't make multiple shots fire
          */
         else if (whichLevel == 45) {
@@ -1840,10 +1738,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 46
-         * 
          * @description: this level shows how to throw projectiles in a variety
          *               of directions
-         * 
          * @whatsnew: the "vector throw" mechanism
          */
         else if (whichLevel == 46) {
@@ -1851,7 +1747,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1875,15 +1772,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 47
-         * 
          * @description: this level shows that with the "vector" projectiles, we
-         *               can still have gravity affect the
-         *               projectiles. This is very good for basketball-style
-         *               games.
-         * 
+         *               can still have gravity affect the projectiles. This is
+         *               very good for basketball-style games.
          * @whatsnew: holding the screen no longer throws multiple projectiles
          *            in that direction
-         * 
          * @whatsnew: projectiles can be prevented from disappearing when they
          *            collide with certain types of obstacles
          */
@@ -1892,10 +1785,12 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
-            h.disableRotation(); // Remember: disableRotation doesn't work well if we have mass...
+            h.disableRotation(); // Remember: disableRotation doesn't work well
+                                 // if we have mass...
             h.setPhysics(0, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
@@ -1932,15 +1827,12 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 48
-         * 
          * @description: this level shows how enemies can reproduce. This can
-         *               simulate cancer cells, or fire on a
-         *               building. We do this by using a timer connected to an
-         *               enemy. Whenever the timer goes off, we
-         *               will have access to the enemy so that we can copy it.
-         * 
+         *               simulate cancer cells, or fire on a building. We do
+         *               this by using a timer connected to an enemy. Whenever
+         *               the timer goes off, we will have access to the enemy so
+         *               that we can copy it.
          * @whatsnew: enemy timer triggers
-         * 
          * @whatsnew: sound when the projectile is thrown
          */
         else if (whichLevel == 48) {
@@ -1948,8 +1840,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 0);
-            PreScene.addText("Throw balls at \nthe enemies before\nthey reproduce", 50, 50, 255, 255, 255, "arial.ttf",
-                    32);
+            PreScene.addText("Throw balls at \nthe enemies before\nthey reproduce", 50, 50, 255,
+                    255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1971,7 +1863,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 49
-         * 
          * @description: this level shows what happens when enemies reproduce
          *               when they are moveable
          */
@@ -1980,7 +1871,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("These enemies are\nreally tricky", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("These enemies are\nreally tricky", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -1998,13 +1890,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 50
-         * 
          * @description: this level shows simple animation. Every entity can
          *               have a default animation.
-         * 
          * @whatsnew: the hero has an animation in this level, which makes it
-         *            look like a star with streamers underneath
-         *            it
+         *            look like a star with streamers underneath it
          */
         else if (whichLevel == 50) {
             // set up a basic level
@@ -2022,17 +1911,15 @@ public class MyLolGame extends LOL
             h.setMoveByTilting();
             // this says that we scroll through the 0, 1, 2, and 3 cells of the
             // image, and we show each for 200 milliseconds
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200).to(2, 200).to(3, 200));
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200)
+                    .to(2, 200).to(3, 200));
         }
 
         /**
          * @level: 51
-         * 
          * @description: this level introduces jumping animations and
          *               disappearance animations
-         * 
          * @whatsnew: jump animation
-         * 
          * @whatsnew: disappearance animation
          */
         else if (whichLevel == 51) {
@@ -2040,7 +1927,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
@@ -2058,8 +1946,10 @@ public class MyLolGame extends LOL
             h.setJumpImpulses(0, 20);
             h.setTouchToJump();
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200).to(2, 200).to(3, 200));
-            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
+            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 200).to(1, 200)
+                    .to(2, 200).to(3, 200));
+            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200)
+                    .to(7, 200));
 
             // create a goodie that has a disappearance animation. Note that
             // this can be a totally
@@ -2071,18 +1961,15 @@ public class MyLolGame extends LOL
             // the screen.
 
             Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "stars.png");
-            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200).to(0, 200)
-                    .to(3, 200), 1, 0, 5, 5);
+            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200)
+                    .to(0, 200).to(3, 200), 1, 0, 5, 5);
             Level.setCameraChase(h);
         }
 
         /**
          * @level: 52
-         * 
          * @description: this level shows that projectiles can be animated
-         * 
          * @whatsnew: projectile animations
-         * 
          * @whatsnew: animations when the hero throws a projectile
          */
         else if (whichLevel == 52) {
@@ -2090,7 +1977,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Press the hero\nto make it\nthrow a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero\nto make it\nthrow a ball", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2112,19 +2000,13 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 53
-         * 
          * @description: this level explores invincibility animation. While
-         *               we're at it, we make some enemies that
-         *               aren't affected by invincibility, and some that can
-         *               even damage the hero while they are
-         *               invincible.
-         * 
+         *               we're at it, we make some enemies that aren't affected
+         *               by invincibility, and some that can even damage the
+         *               hero while they are invincible.
          * @whatsnew: invincibility animation
-         * 
          * @whatsnew: enemies that resist invincibility
-         * 
          * @whatsnew: enemies that do damage even when the hero is invincible
-         * 
          * @whatsnew: display a picture when the level is won
          */
         else if (whichLevel == 53) {
@@ -2132,8 +2014,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
+            PreScene.addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50,
+                    255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2143,9 +2025,10 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0, 300).to(1, 300).to(2, 300).to(3, 300));
-            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100)
-                    .to(7, 100));
+            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0, 300).to(1, 300)
+                    .to(2, 300).to(3, 300));
+            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100)
+                    .to(6, 100).to(7, 100));
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
@@ -2186,21 +2069,18 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 54
-         * 
          * @description: demonstrate crawl animation, and also show that on
-         *               multitouch phones, we can "crawl" in the air
-         *               while jumping.
-         * 
+         *               multitouch phones, we can "crawl" in the air while
+         *               jumping.
          * @whatsnew: crawl animation
-         * 
          * @whatsnew: show a picture when the level is lost
          */
         else if (whichLevel == 54) {
             // make a simple level:
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
-            PreScene.addText("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.", 50, 50,
-                    255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the left side of\nthe screen to crawl\n"
+                    + "or the right side\nto jump.", 50, 50, 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2210,8 +2090,10 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
             h.addVelocity(15, 0, false);
-            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0, 100).to(1, 300).to(2, 300).to(3, 100));
-            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
+            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0, 100).to(1, 300)
+                    .to(2, 300).to(3, 100));
+            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200)
+                    .to(7, 200));
 
             // enable hero jumping and crawling
             h.setJumpImpulses(0, 15);
@@ -2232,12 +2114,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 55
-         * 
          * @description: This isn't quite the same as animation, but it's nice.
-         *               We can indicate that a hero's image
-         *               changes via goodie count. This can, for example, allow
-         *               a hero to change (e.g., get healthier)
-         *               by swapping through images as goodies are collected
+         *               We can indicate that a hero's image changes via goodie
+         *               count. This can, for example, allow a hero to change
+         *               (e.g., get healthier) by swapping through images as
+         *               goodies are collected
          */
         else if (whichLevel == 55) {
             // set up a basic level with a bunch of goodies
@@ -2264,24 +2145,21 @@ public class MyLolGame extends LOL
             // note: no change for goodie count 3, and remember that 0 is the
             // default picture so it's showing already
             //
-            // Note: this is ugly, because we are matching the frames, but duration is actually the goodie count
-            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2).to(4, 3).to(5, 4)
-                    .to(6, 5).to(7, 6).to(3, 8));
+            // Note: this is ugly, because we are matching the frames, but
+            // duration is actually the goodie count
+            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2)
+                    .to(4, 3).to(5, 4).to(6, 5).to(7, 6).to(3, 8));
         }
 
         /**
          * @level: 56
-         * 
          * @description: demonstrate that obstacles can defeat enemies, and that
-         *               we can use this feature to have
-         *               obstacles that only defeat certain "marked" enemies
-         * 
+         *               we can use this feature to have obstacles that only
+         *               defeat certain "marked" enemies
          * @whatsnew: gravity multiplier, to make the forces happen more quickly
-         * 
          * @whatsnew: use of enemyCollisionTrigger to make some obstacles able
-         *            to defeat some enemies, and enable some
-         *            of these obstacles to disappear after defeating an enemy
-         * 
+         *            to defeat some enemies, and enable some of these obstacles
+         *            to disappear after defeating an enemy
          * @whatsnew: moveable obstacles
          */
         else if (whichLevel == 56) {
@@ -2290,7 +2168,8 @@ public class MyLolGame extends LOL
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Tilt.setGravityMultiplier(3);
-            PreScene.addText("You can defeat\ntwo enemies with\nthe blue ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("You can defeat\ntwo enemies with\nthe blue ball", 50, 50, 255, 255,
+                    255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(1, 0, 0.6f);
@@ -2340,10 +2219,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 57
-         * 
          * @description: this level shows an odd way of moving the hero. There's
-         *               friction on the floor, so it can only
-         *               move by tilting while the hero is in the air
+         *               friction on the floor, so it can only move by tilting
+         *               while the hero is in the air
          */
         else if (whichLevel == 57) {
             // set up a side scroller level, but give the bounding box some
@@ -2351,7 +2229,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2374,19 +2253,14 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 58
-         * 
          * @description: this level shows that we can put an obstacle on the
-         *               screen and use it to make the hero throw
-         *               projectiles. It also shows that we can make entities
-         *               that shrink over time... growth is
-         *               possible too, with a negative value.
-         * 
+         *               screen and use it to make the hero throw projectiles.
+         *               It also shows that we can make entities that shrink
+         *               over time... growth is possible too, with a negative
+         *               value.
          * @whatsnew: limit the total number of projectiles that can be thrown
-         * 
          * @whatsnew: make an entity shrink over time
-         * 
          * @whatsnew: make projectiles that have a randomly selected image
-         * 
          * @whatsnew: show how many shots are left
          */
         else if (whichLevel == 58) {
@@ -2408,7 +2282,8 @@ public class MyLolGame extends LOL
             Projectile.configure(3, 1, 1, "colorstar.png", 0, 15, 0, 0, 2);
             Projectile.setNumberOfProjectiles(20); // there are only 20... throw
                                                    // them carefully
-            // Allow the projectile image to be chosen randomly from a sprite sheet
+            // Allow the projectile image to be chosen randomly from a sprite
+            // sheet
             Projectile.setImageSource("colorstar.png");
             // show how many shots are left
             Controls.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 255, 255, 12);
@@ -2442,13 +2317,10 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 59
-         * 
          * @description: this level shows that we can make a hero in the air
-         *               rotate. Rotation doesn't do anything, but
-         *               it looks nice...
-         * 
+         *               rotate. Rotation doesn't do anything, but it looks
+         *               nice...
          * @whatsnew: rotation buttons
-         * 
          * @whatsnew: this level relies on being able to jump after touching a
          *            side wall
          */
@@ -2475,11 +2347,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level 60
-         * 
          * @description: we can attach movement buttons to any moveable entity,
-         *               so in this case, we attach it to an
-         *               obstacle to get an arkanoid-like effect.
-         * 
+         *               so in this case, we attach it to an obstacle to get an
+         *               arkanoid-like effect.
          * @whatsnew: attaching left/right buttons to an obstacle instead of
          *            controlling the last hero created
          */
@@ -2507,9 +2377,7 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 61
-         * 
          * @description: this level demonstrates that things can appear and
-         * 
          * @whatsnew: use of disappearDelay and appearanceDelay
          */
         else if (whichLevel == 61) {
@@ -2517,7 +2385,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Things will appear \nand disappear...", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Things will appear \nand disappear...", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -2540,21 +2409,15 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 62
-         * 
          * @description: this level demonstrates the use of timer triggers. We
-         *               can use timers to make more of the level
-         *               appear over time. In this case, we'll chain the timer
-         *               triggers together, so that we can get
-         *               more and more things to develop. Be sure to look at the
-         *               onTimeTrigger code to see how the rest
-         *               of this level works.
-         * 
+         *               can use timers to make more of the level appear over
+         *               time. In this case, we'll chain the timer triggers
+         *               together, so that we can get more and more things to
+         *               develop. Be sure to look at the onTimeTrigger code to
+         *               see how the rest of this level works.
          * @whatsnew: destinations and goodies with fixed velocities
-         * 
          * @whatsnew: enemy who disappears when it is touched
-         * 
          * @whatsnew: enemy who can be dragged around
-         * 
          * @whatsnew: timer triggers
          */
         else if (whichLevel == 62) {
@@ -2566,7 +2429,8 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            PreScene.addText("There's nothing to\ndo... yet", 50, 50, 255, 255, 255, "arial.ttf", 20);
+            PreScene.addText("There's nothing to\ndo... yet", 50, 50, 255, 255, 255, "arial.ttf",
+                    20);
 
             // note: there's no destination yet, but we still say it's how to
             // win... we'll get a
@@ -2581,22 +2445,17 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 63
-         * 
          * @description: this level shows triggers that run on a collision. In
-         *               this case, it lets us draw out the next
-         *               part of the level later, instead of drawing the whole
-         *               thing right now. In a real level, we'd
-         *               draw a few screens at a time, and not put the trigger
-         *               obstacle at the end of a screen, so that
-         *               we'd never see the drawing of stuff taking place, but
-         *               for this demo, that's actually a nice
+         *               this case, it lets us draw out the next part of the
+         *               level later, instead of drawing the whole thing right
+         *               now. In a real level, we'd draw a few screens at a
+         *               time, and not put the trigger obstacle at the end of a
+         *               screen, so that we'd never see the drawing of stuff
+         *               taking place, but for this demo, that's actually a nice
          *               effect. Be sure to look at onCollideTrigger for more
          *               details.
-         * 
          * @whatsnew: obstacles that are collision triggers
-         * 
          * @whatsnew: obstacles with collision sounds
-         * 
          * @whatsnew: collision triggers that depend on collecting enough
          *            goodies before they work
          */
@@ -2628,11 +2487,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 64
-         * 
          * @description: this level demonstrates triggers that happen when we
          *               touch an obstacle. Be sure to look at the
          *               onTouchTrigger() method for more details
-         * 
          * @whatsnew: touchtrigger obstacles
          */
         else if (whichLevel == 64) {
@@ -2640,7 +2497,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Activate and then \ntouch the obstacle", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Activate and then \ntouch the obstacle", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -2658,7 +2516,8 @@ public class MyLolGame extends LOL
             // order to activate the obstacle
             Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            o.setTouchTrigger(39, 1, 0, 0, 0, true); // I picked '39' arbitrarily...
+            o.setTouchTrigger(39, 1, 0, 0, 0, true); // I picked '39'
+                                                     // arbitrarily...
             o.setDisappearSound("hipitch.ogg");
             Goodie g = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
             g.setDisappearSound("lowpitch.ogg");
@@ -2666,21 +2525,16 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 65
-         * 
          * @description: this level shows how to use enemy defeat triggers.
-         *               There are four ways to defeat an enemy, so
-         *               we enable all mechanisms in this level, to see if they
-         *               all work to cause enemy triggers to run
-         *               the onEnemyTrigger code. Another important point here
-         *               is that the IDs don't need to be unique
-         *               for *any* triggers. We can use the same ID every
-         *               time...
-         * 
+         *               There are four ways to defeat an enemy, so we enable
+         *               all mechanisms in this level, to see if they all work
+         *               to cause enemy triggers to run the onEnemyTrigger code.
+         *               Another important point here is that the IDs don't need
+         *               to be unique for *any* triggers. We can use the same ID
+         *               every time...
          * @whatsnew: use enemy defeat triggers
-         * 
          * @whatsnew: the trigger code uses random number generation to place a
-         *            reward goodie whenever an enemy is
-         *            defeated
+         *            reward goodie whenever an enemy is defeated
          */
         else if (whichLevel == 65) {
             // draw a simple level
@@ -2735,15 +2589,13 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 66
-         * 
-         * @description: This level shows that we can resize a hero on the fly, and change its image. We use a collision
-         *               trigger to cause the effect. Furthermore, we can increment scores inside of the trigger code,
-         *               which lets us activate the destination on an obstacle collision
-         * 
+         * @description: This level shows that we can resize a hero on the fly,
+         *               and change its image. We use a collision trigger to
+         *               cause the effect. Furthermore, we can increment scores
+         *               inside of the trigger code, which lets us activate the
+         *               destination on an obstacle collision
          * @whatsnew: resizing a hero
-         * 
          * @whatsnew: changing a hero's image on-the-fly
-         * 
          * @whatsnew: manually modifying the scores
          */
         else if (whichLevel == 66) {
@@ -2751,7 +2603,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addCenteredText("Only stars can reach\nthe destination", 255, 255, 255, "arial.ttf", 20);
+            PreScene.addCenteredText("Only stars can reach\nthe destination", 255, 255, 255,
+                    "arial.ttf", 20);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
@@ -2771,16 +2624,16 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 67
-         * 
          * @description: This level shows how to use countdown timers to win a
-         *               level, tests some color features, and
-         *               introduces a vector throw mechanism with fixed velocity
+         *               level, tests some color features, and introduces a
+         *               vector throw mechanism with fixed velocity
          */
         else if (whichLevel == 67) {
             // set up a simple level
             Level.configure(48, 32);
             Physics.configure(0, -10);
-            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
             Controls.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
@@ -2801,9 +2654,7 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 68
-         * 
          * @description Test hovering heroes that stop hovering after a press
-         * 
          * @whatsnew: setCanFall to allow an entity to be subject to gravity
          *            without having a pre-set motion
          */
@@ -2811,7 +2662,8 @@ public class MyLolGame extends LOL
             // set up a simple level
             Level.configure(48, 32);
             Physics.configure(0, -10);
-            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(21, 23, 3, 3, "greenball.png");
             // note that if we did hover, then flickable, this would not work
@@ -2830,10 +2682,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 69
-         * 
          * @description: this level shows that not all obstacles cause the hero
          *               to be able to jump again
-         * 
          * @whatsnew: obstacles that don't re-enable jumping
          */
         else if (whichLevel == 69) {
@@ -2841,7 +2691,8 @@ public class MyLolGame extends LOL
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press the hero to\nmake it jump", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2867,32 +2718,21 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 70
-         * 
          * @description: A test of the PokePath feature
-         * 
-         * @whatsnew: setPokePath to move an entity along a path
-         *            /
-         *            else if (whichLevel == 70) {
-         *            // start by setting everything up just like in level 1
-         *            Level.configure(48, 32);
-         *            Physics.configure(0, 0);
-         *            Tilt.enable(10, 10);
-         *            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-         *            h.setMoveByTilting();
-         *            h.setPokePath(4);
+         * @whatsnew: setPokePath to move an entity along a path / else if
+         *            (whichLevel == 70) { // start by setting everything up
+         *            just like in level 1 Level.configure(48, 32);
+         *            Physics.configure(0, 0); Tilt.enable(10, 10); Hero h =
+         *            Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+         *            h.setMoveByTilting(); h.setPokePath(4);
          *            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-         *            Score.setVictoryDestination(1);
-         *            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
-         *            PreScene.addText("Poke the hero, then\n where you want it\nto go.", "arial.ttf", 1);
-         *            }
-         * 
-         *            /**
+         *            Score.setVictoryDestination(1); Util.drawBoundingBox(0, 0,
+         *            48, 32, "red.png", 0, 0, 0);
+         *            PreScene.addText("Poke the hero, then\n where you want it\nto go."
+         *            , "arial.ttf", 1); } /**
          * @level: 71
-         * 
          * @description: A test of the PokeVelocity feature
-         * 
          * @whatsnew: setPokeVelocity to move an entity along a path
-         * 
          * @whatsnew: draw an image directly onto the heads-up display
          */
         else if (whichLevel == 71) {
@@ -2907,23 +2747,22 @@ public class MyLolGame extends LOL
             Controls.addImage(40, 40, 40, 40, "red.png");
             Score.setVictoryDestination(1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
-            PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255,
+                    255, "arial.ttf", 32);
         }
 
         /**
          * @level: 72
-         * 
          * @description: This level tests sticky obstacles
-         * 
          * @whatsnew: sticky obstacles. Note that the obstacle must have more
-         *            density than the hero for these to work
-         *            correctly.
+         *            density than the hero for these to work correctly.
          */
         else if (whichLevel == 72) {
             // set up a basic side scroller without tilt
             Level.configure(48, 32);
             Physics.configure(0, -10);
-            PreScene.addText("Press screen borders\nto move the hero", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press screen borders\nto move the hero", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -2953,13 +2792,9 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 73
-         * 
          * @description: this level shows how to throw projectiles that rotate
-         *               correctly, and how to add one-sided
-         *               entities
-         * 
+         *               correctly, and how to add one-sided entities
          * @whatsnew: setRotateVectorThrow
-         * 
          * @whatsnew: setOneSided
          */
         else if (whichLevel == 73) {
@@ -2967,7 +2802,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -3002,17 +2838,11 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 74
-         * 
          * @description: this level shows how to use multiple types of goodies
-         * 
          * @whatsnew: Different activationscores for destinations
-         * 
          * @whatsnew: different goodiecounts from controls
-         * 
          * @whatsnew: Goodies with different score types that increment
-         * 
          * @whatsnew: triggers with multiple types of goodies in the activation
-         * 
          * @whatsnew: adding to the countdown timer via updateTimerExpiration
          */
         else if (whichLevel == 74) {
@@ -3020,7 +2850,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Green, Red, and Grey\nballs are goodies", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Green, Red, and Grey\nballs are goodies", 50, 50, 255, 255, 255,
+                    "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
@@ -3051,9 +2882,7 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 75
-         * 
          * @description: this level shows passthrough objects
-         * 
          * @whatsnew: setting passthrough
          */
         else if (whichLevel == 75) {
@@ -3061,7 +2890,8 @@ public class MyLolGame extends LOL
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("You can walk through the wall", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("You can walk through the wall", 50, 50, 255, 255, 255, "arial.ttf",
+                    32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
@@ -3080,9 +2910,7 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 76
-         * 
          * @description: Demonstrate the use of a turbo boost button
-         * 
          * @whatsnew: Controls.addTurboButton
          */
         else if (whichLevel == 76) {
@@ -3120,10 +2948,8 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 77
-         * 
          * @description: Demonstrate a control that doesn't stop the hero upon
          *               release
-         * 
          * @whatsnew: Controls.addDampenedMotionButton
          */
         else if (whichLevel == 77) {
@@ -3156,7 +2982,6 @@ public class MyLolGame extends LOL
 
         /**
          * @level: 78
-         * 
          * @description: Demonstrate how onesided and triggers interact
          */
         else if (whichLevel == 78) {
@@ -3180,25 +3005,21 @@ public class MyLolGame extends LOL
             bottom.setOneSided(2);
             bottom.setHeroCollisionTrigger(0, 0, 0, 0, 0);
             bottom.setCollisionEffect(true);
-            // make the z index of the bottom -1, so that the hero (index 0) will be drawn on top of the box, not under
+            // make the z index of the bottom -1, so that the hero (index 0)
+            // will be drawn on top of the box, not under
             // it
             bottom.setZIndex(-1);
         }
 
         /**
          * @level: 79
-         * 
          * @description: A test of extended PokePath features
-         * 
          * @whatsnew: setKeepPokeEntity to avoid re-touching the hero every time
          *            we want to register a new movement
-         * 
          * @whatsnew: setPokePathFixedVelocity to always have the same velocity,
          *            regardless of distance
-         * 
          * @whatsnew: setPokeChaseMode to track movement of poke presses, not
          *            just down presses
-         * 
          * @whatsnew: Controls.addTriggerControl for an on-screen button that
          *            runs custom code
          */
@@ -3213,15 +3034,14 @@ public class MyLolGame extends LOL
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
-            PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Poke the hero, then\n where you want it\nto go.", 50, 50, 255, 255,
+                    255, "arial.ttf", 32);
             Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
         }
 
         /**
          * @level: 80
-         * 
          * @description: A test of gravity-defying objects
-         * 
          * @whatsnew: setGravityDefy
          */
         else if (whichLevel == 80) {
@@ -3238,7 +3058,8 @@ public class MyLolGame extends LOL
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
             Destination d = Destination.makeAsCircle(42, 14, 1, 1, "mustardball.png");
-            // note: it must not be immune to physics, or it will pass through the bounding box
+            // note: it must not be immune to physics, or it will pass through
+            // the bounding box
             d.setAbsoluteVelocity(-2, 0, false);
             d.setGravityDefy();
             Score.setVictoryDestination(1);
@@ -3246,22 +3067,18 @@ public class MyLolGame extends LOL
     }
 
     /**
-     * Describe how each help scene ought to be drawn.
+     * Describe how each help scene ought to be drawn. Every game must implement
+     * this method to describe how each help scene should appear. Note that you
+     * *must* specify the maximum number of help scenes for your game in the
+     * res/values/gameconfig.xml file. If you specify "0", then you can leave
+     * this code blank. NB: A real game would need to provide better help. This
+     * is just a demo.
      * 
-     * Every game must implement this method to describe how each help scene
-     * should appear. Note that you *must* specify the maximum number of help
-     * scenes for your game in the res/values/gameconfig.xml file. If you
-     * specify "0", then you can leave this code blank.
-     * 
-     * NB: A real game would need to provide better help. This is just a demo.
-     * 
-     * @param whichScene
-     *            The help scene being drawn. The game engine will set this
-     *            value to indicate which scene needs to be drawn.
+     * @param whichScene The help scene being drawn. The game engine will set
+     *            this value to indicate which scene needs to be drawn.
      */
     @Override
-    public void configureHelpScene(int whichScene)
-    {
+    public void configureHelpScene(int whichScene) {
 
         // Our first scene describes the color coding that we use for the
         // different entities in the game
@@ -3292,32 +3109,28 @@ public class MyLolGame extends LOL
         else if (whichScene == 2) {
             HelpLevel.configure(255, 255, 0);
             HelpLevel.drawText(100, 5, "Be sure to read the ALEDemoGame.java code\n"
-                    + "while you play, so you can see\n" + "how the game works", 55, 110, 165, "arial.ttf", 14);
+                    + "while you play, so you can see\n" + "how the game works", 55, 110, 165,
+                    "arial.ttf", 14);
         }
     }
 
     /**
      * If a game uses Obstacles that are triggers, it must provide this to
-     * specify what to do when such an obstacle is hit by a hero.
+     * specify what to do when such an obstacle is hit by a hero. The idea
+     * behind this mechanism is that it allows the creation of more things in
+     * the game, but only after the game has reached a particular state. The
+     * most obvious example is 'infinite' levels. There, it is impossible to
+     * draw the entire scene, so instead one can place an invisible, full-length
+     * TriggerObstacle at some point in the scene, and then when that obstacle
+     * is hit, this code will run. If the TriggerObstacle has a unique ID (for
+     * example, its 'x' coordinate), then we can use that id to know where on
+     * the screen we are, and we can draw the next part of the level correctly.
      * 
-     * The idea behind this mechanism is that it allows the creation of more
-     * things in the game, but only after the game has reached a particular
-     * state. The most obvious example is 'infinite' levels. There, it is
-     * impossible to draw the entire scene, so instead one can place an
-     * invisible, full-length TriggerObstacle at some point in the scene, and
-     * then when that obstacle is hit, this code will run. If the
-     * TriggerObstacle has a unique ID (for example, its 'x' coordinate), then
-     * we can use that id to know where on the screen we are, and we can draw
-     * the next part of the level correctly.
-     * 
-     * @param id
-     *            The ID of the obstacle that was hit by the hero
-     * @param whichLevel
-     *            The current level
+     * @param id The ID of the obstacle that was hit by the hero
+     * @param whichLevel The current level
      */
     @Override
-    public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h)
-    {
+    public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h) {
         // obstacle trigger code for level 63
         if (whichLevel == 63) { // the first trigger just causes us to make a
                                 // new trigger a little farther out
@@ -3348,13 +3161,13 @@ public class MyLolGame extends LOL
             }
             // well done... now print a message and make the destination
             else if (id == 3) {
-                PreScene.addText("The destination is\nnow available", 50, 50, 255, 255, 255, "arial.ttf", 32);
+                PreScene.addText("The destination is\nnow available", 50, 50, 255, 255, 255,
+                        "arial.ttf", 32);
                 PreScene.setExpire(1);
                 Destination.makeAsCircle(120, 20, 2, 2, "mustardball.png");
                 o.remove(false);
             }
-        }
-        else if (whichLevel == 66) {
+        } else if (whichLevel == 66) {
             // here's a simple way to increment a goodie count
             Score.incrementGoodiesCollected2();
             // here's a way to set a goodie count
@@ -3365,13 +3178,11 @@ public class MyLolGame extends LOL
             o.remove(true);
             h.resize(h.getXPosition(), h.getYPosition(), 5, 5);
             h.setImage("stars.png");
-        }
-        else if (whichLevel == 74) {
+        } else if (whichLevel == 74) {
             // add 15 seconds to the timer
             Controls.updateTimerExpiration(15);
             o.remove(true);
-        }
-        else if (whichLevel == 78) {
+        } else if (whichLevel == 78) {
             h.setAbsoluteVelocity(h.getXVelocity(), 5, false);
             return;
         }
@@ -3379,20 +3190,16 @@ public class MyLolGame extends LOL
 
     /**
      * If a game uses Entities that are touch triggers, it must provide this to
-     * specify what to do when such an obstacle is touched by the user
+     * specify what to do when such an obstacle is touched by the user The idea
+     * behind this mechanism is that it allows the creation of more interactive
+     * games, since there can be items to unlock, treasure chests to open, and
+     * other such behaviors.
      * 
-     * The idea behind this mechanism is that it allows the creation of more
-     * interactive games, since there can be items to unlock, treasure chests to
-     * open, and other such behaviors.
-     * 
-     * @param id
-     *            The ID of the obstacle that was hit by the hero
-     * @param whichLevel
-     *            The current level
+     * @param id The ID of the obstacle that was hit by the hero
+     * @param whichLevel The current level
      */
     @Override
-    public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o)
-    {
+    public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o) {
         // In level 64, we draw a bunch of goodies when the obstacle is touched.
         // This is supposed to be like having a treasure chest open up.
         if (whichLevel == 64) {
@@ -3408,14 +3215,11 @@ public class MyLolGame extends LOL
      * If a game uses timer triggers, it must provide this to specify what to do
      * when a timer expires.
      * 
-     * @param id
-     *            The ID of the obstacle that was hit by the hero
-     * @param whichLevel
-     *            The current level
+     * @param id The ID of the obstacle that was hit by the hero
+     * @param whichLevel The current level
      */
     @Override
-    public void onTimeTrigger(int id, int whichLevel)
-    {
+    public void onTimeTrigger(int id, int whichLevel) {
         // here's the code for level 62
         if (whichLevel == 62) { // after first trigger, print a message, draw an
                                 // enemy, register a new timer
@@ -3434,7 +3238,8 @@ public class MyLolGame extends LOL
             // after second trigger, draw an enemy who disappears on touch,
             // register a new timer
             else if (id == 1) {
-                PreScene.addText("Touch the enemy and it will go away", 50, 50, 255, 0, 255, "arial.ttf", 12);
+                PreScene.addText("Touch the enemy and it will go away", 50, 50, 255, 0, 255,
+                        "arial.ttf", 12);
                 PreScene.setExpire(1);
                 Enemy e4 = Enemy.makeAsCircle(35, 5, 2, 2, "redball.png");
                 e4.setPhysics(1.0f, 0.3f, 0.6f);
@@ -3444,7 +3249,8 @@ public class MyLolGame extends LOL
             // after third trigger, draw an enemy, a goodie, and a destination,
             // all with fixed velocity
             else if (id == 2) {
-                PreScene.addText("Now you can see the rest of the level", 50, 50, 255, 255, 0, "arial.ttf", 12);
+                PreScene.addText("Now you can see the rest of the level", 50, 50, 255, 255, 0,
+                        "arial.ttf", 12);
                 PreScene.setExpire(1);
                 Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
                 d.addVelocity(-.5f, -1, false);
@@ -3462,36 +3268,32 @@ public class MyLolGame extends LOL
      * If you want to have enemy timertriggers, then you must override this to
      * define what happens when the timer expires
      * 
-     * @param id
-     *            The id that was assigned to the timer that exired
-     * @param whichLevel
-     *            The current level
-     * @param e
-     *            The enemy to modify
+     * @param id The id that was assigned to the timer that exired
+     * @param whichLevel The current level
+     * @param e The enemy to modify
      */
     @Override
-    public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e)
-    {
+    public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e) {
         if (whichLevel == 48) {
             // the ID represents the number of remaining reproductions for the
             // current enemy (e), so that we don't reproduce forever (note that
             // we could, if we wanted to...)
-            Enemy left = Enemy.makeAsCircle(e.getXPosition() - 2 * id, e.getYPosition() + 2 * id, e.getWidth(),
-                    e.getHeight(), "redball.png");
+            Enemy left = Enemy.makeAsCircle(e.getXPosition() - 2 * id, e.getYPosition() + 2 * id,
+                    e.getWidth(), e.getHeight(), "redball.png");
             left.setDisappearSound("lowpitch.ogg");
-            Enemy right = Enemy.makeAsCircle(e.getXPosition() + 2 * id, e.getYPosition() + 2 * id, e.getWidth(),
-                    e.getHeight(), "redball.png");
+            Enemy right = Enemy.makeAsCircle(e.getXPosition() + 2 * id, e.getYPosition() + 2 * id,
+                    e.getWidth(), e.getHeight(), "redball.png");
             right.setDisappearSound("lowpitch.ogg");
             if (id > 0) {
                 Level.setEnemyTimerTrigger(id - 1, 2, left);
                 Level.setEnemyTimerTrigger(id - 1, 2, e);
                 Level.setEnemyTimerTrigger(id - 1, 2, right);
             }
-        }
-        else if (whichLevel == 49) {
-            // in this case, every enemy will produce one offspring on each timer
-            Enemy e2 = Enemy.makeAsCircle(e.getXPosition(), e.getYPosition(), e.getWidth(), e.getHeight(),
-                    "redball.png");
+        } else if (whichLevel == 49) {
+            // in this case, every enemy will produce one offspring on each
+            // timer
+            Enemy e2 = Enemy.makeAsCircle(e.getXPosition(), e.getYPosition(), e.getWidth(),
+                    e.getHeight(), "redball.png");
             e2.setPhysics(1.0f, 0.3f, 0.6f);
             e2.setMoveByTilting();
             if (id > 0) {
@@ -3505,14 +3307,11 @@ public class MyLolGame extends LOL
      * If a game has Enemies that have 'defeatTrigger' set, then when any of
      * those enemies are defeated, this code will run
      * 
-     * @param id
-     *            The ID of the enemy that was defeated by the hero
-     * @param whichLevel
-     *            The current level
+     * @param id The ID of the enemy that was defeated by the hero
+     * @param whichLevel The current level
      */
     @Override
-    public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e)
-    {
+    public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e) {
         if (whichLevel == 65) {
             PreScene.addText("good job, here's a prize", 50, 50, 88, 226, 160, "arial.ttf", 16);
             PreScene.setExpire(1);
@@ -3526,16 +3325,12 @@ public class MyLolGame extends LOL
      * If you want to have obstacletriggers, then you must override this to
      * define what happens when an enemy hits the obstacle
      * 
-     * @param whichLevel
-     *            The id that was assigned to the enemy who was defeated
-     * @param o
-     *            The obstacle involved in the collision
-     * @param e
-     *            The enemy involved in the collision
+     * @param whichLevel The id that was assigned to the enemy who was defeated
+     * @param o The obstacle involved in the collision
+     * @param e The enemy involved in the collision
      */
     @Override
-    public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e)
-    {
+    public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e) {
         if (whichLevel == 56) {
             if (e.getInfoText() == "weak")
                 return;
@@ -3558,16 +3353,12 @@ public class MyLolGame extends LOL
      * If you want to have obstacletriggers, then you must override this to
      * define what happens when a projectile hits the obstacle
      * 
-     * @param whichLevel
-     *            The id that was assigned to the enemy who was defeated
-     * @param o
-     *            The obstacle involved in the collision
-     * @param p
-     *            The projectile involved in the collision
+     * @param whichLevel The id that was assigned to the enemy who was defeated
+     * @param o The obstacle involved in the collision
+     * @param p The projectile involved in the collision
      */
     @Override
-    public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p)
-    {
+    public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p) {
         /*
          * if (whichLevel == 47) { // do nothing... as long as there is a
          * collision registered, the projectile won't disappear... }
@@ -3578,27 +3369,21 @@ public class MyLolGame extends LOL
      * If you want to do something when the level ends (like record a high
      * score), you will need to override this method
      * 
-     * @param win
-     *            true if the level was won, false otherwise
-     * 
+     * @param win true if the level was won, false otherwise
      */
     @Override
-    public void levelCompleteTrigger(boolean win)
-    {
+    public void levelCompleteTrigger(boolean win) {
     }
 
     /**
      * If you use TriggerControls, you must override this to define what happens
      * when the control is pressed
      * 
-     * @param id
-     *            The id that was assigned to the Control
-     * @param whichLevel
-     *            The _current level
+     * @param id The id that was assigned to the Control
+     * @param whichLevel The _current level
      */
     @Override
-    public void onControlPressTrigger(int id, int whichLevel)
-    {
+    public void onControlPressTrigger(int id, int whichLevel) {
         if (whichLevel == 79) {
             if (id == 747)
                 PreScene.addText("Hello", 50, 50, 2550, 2550, 255, "arial.ttf", 20);
@@ -3610,8 +3395,7 @@ public class MyLolGame extends LOL
      * Mandatory method. Don't change this.
      */
     @Override
-    public LOLConfiguration config()
-    {
+    public LOLConfiguration config() {
         return new Config();
     }
 
@@ -3619,8 +3403,7 @@ public class MyLolGame extends LOL
      * Mandatory method. Don't change this.
      */
     @Override
-    public SplashConfiguration splashConfig()
-    {
+    public SplashConfiguration splashConfig() {
         return new SplashConfig();
     }
 }

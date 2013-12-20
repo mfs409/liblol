@@ -1,3 +1,4 @@
+
 package edu.lehigh.cse.lol;
 
 // TODO: verify return values (i.e., false)
@@ -19,32 +20,28 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public class Chooser extends ScreenAdapter
-{
+public class Chooser extends ScreenAdapter {
     // for managing the camera...
 
-    final Vector3 curr  = new Vector3();
+    final Vector3 curr = new Vector3();
 
-    final Vector3 last  = new Vector3(-1, -1, -1);
+    final Vector3 last = new Vector3(-1, -1, -1);
 
     final Vector3 delta = new Vector3();
 
     /**
      * A helper class for tracking where the buttons are, since we don't have an
-     * easy way to know which lines are touched.
-     * 
-     * TODO: replace with just rectangles in an indexed array...
+     * easy way to know which lines are touched. TODO: replace with just
+     * rectangles in an indexed array...
      */
-    class LevelSprite
-    {
+    class LevelSprite {
         Rectangle r;
 
-        String    t;
+        String t;
 
-        int       l;
+        int l;
 
-        LevelSprite(int x, int y, int w, int h, int level)
-        {
+        LevelSprite(int x, int y, int w, int h, int level) {
             r = new Rectangle(x, y, w, h);
             l = level;
             t = "" + l;
@@ -54,13 +51,13 @@ public class Chooser extends ScreenAdapter
     /**
      * All the level boxes we drew
      */
-    LevelSprite[]      levels;
+    LevelSprite[] levels;
 
     /**
      * Since we're going to create other screens via this screen, we need a
      * reference to the game...
      */
-    LOL                _game;
+    LOL _game;
 
     /**
      * The camera we will use
@@ -70,25 +67,24 @@ public class Chooser extends ScreenAdapter
     /**
      * For rendering
      */
-    SpriteBatch        _sb;
+    SpriteBatch _sb;
 
-    BitmapFont         _bf;
+    BitmapFont _bf;
 
-    ShapeRenderer      _shapeRenderer;
+    ShapeRenderer _shapeRenderer;
 
     // TODO: externalize these constants?
-    static final int   bWidth  = 60;
+    static final int bWidth = 60;
 
-    static final int   bHeight = 60;
+    static final int bHeight = 60;
 
-    static final int   hGutter = 15;
+    static final int hGutter = 15;
 
-    static final int   vGutter = 15;
+    static final int vGutter = 15;
 
-    float              cameraCapY;
+    float cameraCapY;
 
-    public Chooser(LOL game)
-    {
+    public Chooser(LOL game) {
         // save a reference to the game
         _game = game;
 
@@ -111,8 +107,8 @@ public class Chooser extends ScreenAdapter
         for (int i = 0; i < numLevels; ++i) {
             int mycol = i % columns;
             int myrow = rows - i / columns - 1;
-            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow * (bHeight + vGutter)
-                    + vpad, bWidth, bHeight, 1 + i);
+            levels[i] = new LevelSprite(hGutter + mycol * (bWidth + hGutter), vGutter + myrow
+                    * (bHeight + vGutter) + vpad, bWidth, bHeight, 1 + i);
         }
 
         // figure out the boundary for the camera
@@ -131,8 +127,7 @@ public class Chooser extends ScreenAdapter
     }
 
     @Override
-    public void render(float delta)
-    {
+    public void render(float delta) {
         manageTouches();
 
         int camWidth = _game._config.getScreenWidth();
@@ -184,8 +179,7 @@ public class Chooser extends ScreenAdapter
     // Here's a quick and dirty way to manage multitouch via polling
     boolean[] lastTouches = new boolean[4];
 
-    void manageTouches()
-    {
+    void manageTouches() {
         // poll for touches
         // assume no more than 4 simultaneous touches
         boolean[] touchStates = new boolean[4];
@@ -194,20 +188,17 @@ public class Chooser extends ScreenAdapter
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
             if (touchStates[i] && lastTouches[i]) {
-                touchDragged((int) x, (int) y, i);
-            }
-            else if (touchStates[i] && !lastTouches[i]) {
-                touchDown((int) x, (int) y, i, 0);
-            }
-            else if (!touchStates[i] && lastTouches[i]) {
-                touchUp((int) x, (int) y, i, 0);
+                touchDragged((int)x, (int)y, i);
+            } else if (touchStates[i] && !lastTouches[i]) {
+                touchDown((int)x, (int)y, i, 0);
+            } else if (!touchStates[i] && lastTouches[i]) {
+                touchUp((int)x, (int)y, i, 0);
             }
             lastTouches[i] = touchStates[i];
         }
     }
 
-    public boolean touchDown(int x, int y, int pointer, int newParam)
-    {
+    public boolean touchDown(int x, int y, int pointer, int newParam) {
         _camera.unproject(curr.set(x, y, 0));
         int unlocked = LOL._game.readUnlocked();
         for (LevelSprite ls : levels) {
@@ -221,8 +212,7 @@ public class Chooser extends ScreenAdapter
         return false;
     }
 
-    public boolean touchDragged(int x, int y, int pointer)
-    {
+    public boolean touchDragged(int x, int y, int pointer) {
         _camera.unproject(curr.set(x, y, 0));
         if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
             _camera.unproject(delta.set(last.x, last.y, 0));
@@ -233,8 +223,7 @@ public class Chooser extends ScreenAdapter
         return false;
     }
 
-    public boolean touchUp(int x, int y, int pointer, int button)
-    {
+    public boolean touchUp(int x, int y, int pointer, int button) {
         // clear drag event
         last.set(-1, -1, -1);
         return false;

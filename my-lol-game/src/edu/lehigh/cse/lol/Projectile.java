@@ -1,3 +1,4 @@
+
 package edu.lehigh.cse.lol;
 
 // TODO: I'm not thrilled with how we're handling the random projectile sprites...
@@ -10,19 +11,14 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Projectiles are entities that can be thrown from the hero's location in order to remove enemies
- * 
- * There are three main parts to the Projectile subsystem:
- * 
- * - The Projectile type is a PhysicsSprite that flies across the screen.
- * 
- * - The Projectile pool is how a level is set to have projectiles. Configuring the pool ensures that there are
- * projectiles that can be thrown
- * 
- * - The throwing mechanism is how projectiles are put onto the screen and given velocity.
+ * Projectiles are entities that can be thrown from the hero's location in order
+ * to remove enemies There are three main parts to the Projectile subsystem: -
+ * The Projectile type is a PhysicsSprite that flies across the screen. - The
+ * Projectile pool is how a level is set to have projectiles. Configuring the
+ * pool ensures that there are projectiles that can be thrown - The throwing
+ * mechanism is how projectiles are put onto the screen and given velocity.
  */
-public class Projectile extends PhysicsSprite
-{
+public class Projectile extends PhysicsSprite {
     /*
      * BASIC SUPPORT
      */
@@ -30,19 +26,20 @@ public class Projectile extends PhysicsSprite
     /**
      * The velocity of a projectile when it is thrown
      */
-    private static final Vector2 _velocity  = new Vector2();
+    private static final Vector2 _velocity = new Vector2();
 
     /**
-     * When throwing, we start from the top left corner of the thrower, and then use this to determine the initial x and
-     * y position of the projectile
+     * When throwing, we start from the top left corner of the thrower, and then
+     * use this to determine the initial x and y position of the projectile
      */
-    private static final Vector2 _offset    = new Vector2();
+    private static final Vector2 _offset = new Vector2();
 
     /**
-     * We have to be careful in side-scrollers, or else projectiles can continue traveling off-screen forever. This
-     * field lets us cap the distance away from the hero that a projectile can travel before we make it disappear.
+     * We have to be careful in side-scrollers, or else projectiles can continue
+     * traveling off-screen forever. This field lets us cap the distance away
+     * from the hero that a projectile can travel before we make it disappear.
      */
-    private static float         _range;
+    private static float _range;
 
     /**
      * This is the initial point of the throw
@@ -52,62 +49,59 @@ public class Projectile extends PhysicsSprite
     /**
      * The initial position of a projectile.
      */
-    private static final Vector2 _position  = new Vector2();
+    private static final Vector2 _position = new Vector2();
 
     /**
      * A spare vector for computation
      */
-    private static final Vector2 _tmp       = new Vector2();
+    private static final Vector2 _tmp = new Vector2();
 
     /**
      * How much _damage does this projectile do?
      */
-    static int                   _strength;
+    static int _strength;
 
-    static TextureRegion[]       _imageSource;
+    static TextureRegion[] _imageSource;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
      */
-    private static float         _vectorDamp;
+    private static float _vectorDamp;
 
     /**
      * Indicates that projectiles should be sensors
      */
-    private static boolean       _sensorProjectiles;
+    private static boolean _sensorProjectiles;
 
     /**
      * Indicates that vector projectiles should have a fixed velocity
      */
-    private static boolean       _enableFixedVectorVelocity;
+    private static boolean _enableFixedVectorVelocity;
 
     /**
-     * The magnitude of the velocity for vector projectiles thrown with a fixed velocity
+     * The magnitude of the velocity for vector projectiles thrown with a fixed
+     * velocity
      */
-    private static float         _fixedVectorVelocity;
+    private static float _fixedVectorVelocity;
 
     /**
-     * Indicate that projectiles should face in the direction they are initially thrown
+     * Indicate that projectiles should face in the direction they are initially
+     * thrown
      */
-    private static boolean       _rotateVectorThrow;
+    private static boolean _rotateVectorThrow;
 
     /**
-     * Internal method to create a projectile. Projectiles have an underlying circle as their _physics body
+     * Internal method to create a projectile. Projectiles have an underlying
+     * circle as their _physics body
      * 
-     * @param x
-     *            initial x position of the projectile
-     * @param y
-     *            initial y position of the projectile
-     * @param width
-     *            width of the projectile
-     * @param height
-     *            height of the projectile
-     * @param ttr
-     *            animatable image to display as the projectile
+     * @param x initial x position of the projectile
+     * @param y initial y position of the projectile
+     * @param width width of the projectile
+     * @param height height of the projectile
+     * @param ttr animatable image to display as the projectile
      */
     // TODO: change to width, height, textureregion
-    private Projectile(float x, float y, float width, float height, String imgName)
-    {
+    private Projectile(float x, float y, float width, float height, String imgName) {
         super(imgName, SpriteId.PROJECTILE, width, height);
         float radius = (width > height) ? width : height;
         setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
@@ -120,77 +114,68 @@ public class Projectile extends PhysicsSprite
     }
 
     /**
-     * Specify a limit on how far away from the Hero a projectile can go. Without this, projectiles could keep on
-     * traveling forever.
+     * Specify a limit on how far away from the Hero a projectile can go.
+     * Without this, projectiles could keep on traveling forever.
      * 
-     * @param x
-     *            Maximum x distance from the hero that a projectile can travel
-     * @param y
-     *            Maximum y distance from the hero that a projectile can travel
+     * @param x Maximum x distance from the hero that a projectile can travel
+     * @param y Maximum y distance from the hero that a projectile can travel
      */
-    public static void setRange(float distance)
-    {
+    public static void setRange(float distance) {
         _range = distance;
     }
 
     /**
-     * Indicate that projectiles should feel the effects of gravity. Otherwise, they will be (more or less) immune to
-     * gravitational forces.
+     * Indicate that projectiles should feel the effects of gravity. Otherwise,
+     * they will be (more or less) immune to gravitational forces.
      */
-    public static void setProjectileGravityOn()
-    {
+    public static void setProjectileGravityOn() {
         for (Projectile p : _pool)
             p._physBody.setGravityScale(1);
     }
 
     /**
-     * Specify the number of cells from which to choose a random projectile image
+     * Specify the number of cells from which to choose a random projectile
+     * image
      * 
-     * @param range
-     *            This number indicates the number of cells
+     * @param range This number indicates the number of cells
      */
-    public static void setImageSource(String imgName)
-    {
+    public static void setImageSource(String imgName) {
         _imageSource = Media.getImage(imgName);
     }
 
     /**
-     * The "vector projectile" mechanism might lead to the projectiles moving too fast. This will cause the speed to be
-     * multiplied by a factor
+     * The "vector projectile" mechanism might lead to the projectiles moving
+     * too fast. This will cause the speed to be multiplied by a factor
      * 
-     * @param factor
-     *            The value to multiply against the projectile speed.
+     * @param factor The value to multiply against the projectile speed.
      */
-    public static void setProjectileVectorDampeningFactor(float factor)
-    {
+    public static void setProjectileVectorDampeningFactor(float factor) {
         _vectorDamp = factor;
     }
 
     /**
      * Indicate that all projectiles should participate in collisions
      */
-    public static void enableCollisionsForProjectiles()
-    {
+    public static void enableCollisionsForProjectiles() {
         _sensorProjectiles = false;
     }
 
     /**
-     * Indicate that projectiles thrown with the "vector" mechanism should have a fixed velocity
+     * Indicate that projectiles thrown with the "vector" mechanism should have
+     * a fixed velocity
      * 
-     * @param velocity
-     *            The magnitude of the velocity for projectiles
+     * @param velocity The magnitude of the velocity for projectiles
      */
-    public static void setFixedVectorThrowVelocity(float velocity)
-    {
+    public static void setFixedVectorThrowVelocity(float velocity) {
         _enableFixedVectorVelocity = true;
         _fixedVectorVelocity = velocity;
     }
 
     /**
-     * Indicate that projectiles thrown via the "vector" mechanism should be rotated to face in their initial direction
+     * Indicate that projectiles thrown via the "vector" mechanism should be
+     * rotated to face in their initial direction
      */
-    public static void setRotateVectorThrow()
-    {
+    public static void setRotateVectorThrow() {
         _rotateVectorThrow = true;
     }
 
@@ -206,53 +191,37 @@ public class Projectile extends PhysicsSprite
     /**
      * The number of projectiles in the pool
      */
-    private static int        _poolSize;
+    private static int _poolSize;
 
     /**
      * Index of next available projectile in the pool
      */
-    private static int        _nextIndex;
+    private static int _nextIndex;
 
     /**
      * For limiting the number of projectiles that can be thrown
      */
-    static int                _projectilesRemaining;
+    static int _projectilesRemaining;
 
     /**
-     * Describe the behavior of projectiless in a scene.
+     * Describe the behavior of projectiless in a scene. You must call this if
+     * you intend to use projectiles in your scene
      * 
-     * You must call this if you intend to use projectiles in your scene
-     * 
-     * @param size
-     *            number of projectiles that can be thrown at once
-     * 
-     * @param width
-     *            width of a projectile
-     * 
-     * @param height
-     *            height of a projectile
-     * 
-     * @param imgName
-     *            name image to use for projectiles
-     * 
-     * @param velocityX
-     *            x velocity of projectiles
-     * 
-     * @param velocityY
-     *            y velocity of projectiles
-     * 
-     * @param offsetX
-     *            specifies the x distance between the origin of the projectile and the origin of the hero throwing the
-     *            projectile
-     * @param offsetY
-     *            specifies the y distance between the origin of the projectile and the origin of the hero throwing the
-     *            projectile
-     * @param _strength
-     *            specifies the amount of _damage that a projectile does to an enemy
+     * @param size number of projectiles that can be thrown at once
+     * @param width width of a projectile
+     * @param height height of a projectile
+     * @param imgName name image to use for projectiles
+     * @param velocityX x velocity of projectiles
+     * @param velocityY y velocity of projectiles
+     * @param offsetX specifies the x distance between the origin of the
+     *            projectile and the origin of the hero throwing the projectile
+     * @param offsetY specifies the y distance between the origin of the
+     *            projectile and the origin of the hero throwing the projectile
+     * @param _strength specifies the amount of _damage that a projectile does
+     *            to an enemy
      */
-    public static void configure(int size, float width, float height, String imgName, float velocityX, float velocityY,
-            float offsetX, float offsetY, int strength)
-    {
+    public static void configure(int size, float width, float height, String imgName,
+            float velocityX, float velocityY, float offsetX, float offsetY, int strength) {
         // set up the pool
         _pool = new Projectile[size];
         // don't draw all projectiles in same place...
@@ -279,11 +248,9 @@ public class Projectile extends PhysicsSprite
     /**
      * Set a limit on the total number of projectiles that can be thrown
      * 
-     * @param number
-     *            How many projectiles are available
+     * @param number How many projectiles are available
      */
-    public static void setNumberOfProjectiles(int number)
-    {
+    public static void setNumberOfProjectiles(int number) {
         _projectilesRemaining = number;
     }
 
@@ -294,7 +261,7 @@ public class Projectile extends PhysicsSprite
     /**
      * Sound to play when projectiles are fired
      */
-    static Sound         _throwSound;
+    static Sound _throwSound;
 
     /**
      * The sound to play when a projectile disappears
@@ -304,22 +271,18 @@ public class Projectile extends PhysicsSprite
     /**
      * Specify a sound to play when the projectile is thrown
      * 
-     * @param soundName
-     *            Name of the sound file to play
+     * @param soundName Name of the sound file to play
      */
-    public static void setThrowSound(String soundName)
-    {
+    public static void setThrowSound(String soundName) {
         _throwSound = Media.getSound(soundName);
     }
 
     /**
      * Specify the sound to play when a projectile disappears
      * 
-     * @param soundName
-     *            the name of the sound file to play
+     * @param soundName the name of the sound file to play
      */
-    public static void setProjectileDisappearSound(String soundName)
-    {
+    public static void setProjectileDisappearSound(String soundName) {
         _projectileDisappearSound = Media.getSound(soundName);
     }
 
@@ -330,13 +293,11 @@ public class Projectile extends PhysicsSprite
     /**
      * Specify how projectiles should be animated
      * 
-     * @param frames
-     *            a listing of the order in which frames of the underlying image should be displayed
-     * @param durations
-     *            time to display each frame
+     * @param frames a listing of the order in which frames of the underlying
+     *            image should be displayed
+     * @param durations time to display each frame
      */
-    public static void setAnimation(Animation a)
-    {
+    public static void setAnimation(Animation a) {
         for (Projectile p : _pool)
             p.setDefaultAnimation(a);
     }
@@ -346,19 +307,18 @@ public class Projectile extends PhysicsSprite
      */
 
     /**
-     * Standard collision detection routine
+     * Standard collision detection routine Since we have a careful ordering
+     * scheme, this only triggers on hitting an obstacle, which makes the
+     * projectile disappear, or on hitting a projectile, which is a bit funny
+     * because one of the two projectiles will live.
      * 
-     * Since we have a careful ordering scheme, this only triggers on hitting an obstacle, which makes the projectile
-     * disappear, or on hitting a projectile, which is a bit funny because one of the two projectiles will live.
-     * 
-     * @param other
-     *            The other entity involved in the collision
+     * @param other The other entity involved in the collision
      */
-    protected void onCollide(PhysicsSprite other, Contact contact)
-    {
-        // if this is an obstacle, check if it is a projectile trigger, and if so, do the callback
+    protected void onCollide(PhysicsSprite other, Contact contact) {
+        // if this is an obstacle, check if it is a projectile trigger, and if
+        // so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
-            Obstacle o = (Obstacle) other;
+            Obstacle o = (Obstacle)other;
             if (o._projectileCollision != null) {
                 o._projectileCollision.go(this, contact);
                 // return... don't remove the projectile
@@ -378,13 +338,10 @@ public class Projectile extends PhysicsSprite
     /**
      * Throw a projectile
      * 
-     * @param xx
-     *            x coordinate of the top left corner of the thrower
-     * @param yy
-     *            y coordinate of the top left corner of the thrower
+     * @param xx x coordinate of the top left corner of the thrower
+     * @param yy y coordinate of the top left corner of the thrower
      */
-    static void throwFixed(float xx, float yy, Hero h)
-    {
+    static void throwFixed(float xx, float yy, Hero h) {
         // have we reached our limit?
         if (_projectilesRemaining == 0)
             return;
@@ -432,19 +389,15 @@ public class Projectile extends PhysicsSprite
     }
 
     /**
-     * Throw a projectile in a specific direction, instead of the default direction
+     * Throw a projectile in a specific direction, instead of the default
+     * direction
      * 
-     * @param heroX
-     *            x coordinate of the top left corner of the thrower
-     * @param heroY
-     *            y coordinate of the top left corner of the thrower
-     * @param toX
-     *            x coordinate of the point at which to throw
-     * @param toY
-     *            y coordinate of the point at which to throw
+     * @param heroX x coordinate of the top left corner of the thrower
+     * @param heroY y coordinate of the top left corner of the thrower
+     * @param toX x coordinate of the point at which to throw
+     * @param toY y coordinate of the point at which to throw
      */
-    static void throwAt(float heroX, float heroY, float toX, float toY, Hero h)
-    {
+    static void throwAt(float heroX, float heroY, float toX, float toY, Hero h) {
         // TODO: be sure to use rangeFrom!
 
         // have we reached our limit?
@@ -478,15 +431,14 @@ public class Projectile extends PhysicsSprite
             // compute a unit vector
             float dX = toX - heroX - _offset.x;
             float dY = toY - heroY - _offset.y;
-            float hypotenuse = (float) Math.sqrt(dX * dX + dY * dY);
+            float hypotenuse = (float)Math.sqrt(dX * dX + dY * dY);
             _tmp.x = dX / hypotenuse;
             _tmp.y = dY / hypotenuse;
             // multiply by fixed velocity
             _tmp.x *= _fixedVectorVelocity;
             _tmp.y *= _fixedVectorVelocity;
             b.updateVelocity(_tmp.x, _tmp.y);
-        }
-        else {
+        } else {
             float dX = toX - heroX - _offset.x;
             float dY = toY - heroY - _offset.y;
             // compute absolute vector, multiply by dampening factor
@@ -497,8 +449,9 @@ public class Projectile extends PhysicsSprite
 
         // rotate the projectile
         if (_rotateVectorThrow) {
-            double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x) - Math.atan2(-1, 0);
-            b._physBody.setTransform(b._physBody.getPosition(), (float) angle);
+            double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x)
+                    - Math.atan2(-1, 0);
+            b._physBody.setTransform(b._physBody.getPosition(), (float)angle);
         }
 
         // make the projectile visible
@@ -516,11 +469,11 @@ public class Projectile extends PhysicsSprite
      */
 
     /**
-     * Internal method for negating gravity in side scrollers and for enforcing the projectile range
+     * Internal method for negating gravity in side scrollers and for enforcing
+     * the projectile range
      */
     @Override
-    public void render(SpriteBatch sb, float delta)
-    {
+    public void render(SpriteBatch sb, float delta) {
         // eliminate the projectile quietly if it has traveled too far
         float dx = Math.abs(_physBody.getPosition().x - _rangeFrom.x);
         float dy = Math.abs(_physBody.getPosition().y - _rangeFrom.y);
