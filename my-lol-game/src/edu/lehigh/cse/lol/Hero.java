@@ -1,9 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: the decisions about what animation to display are very ad-hoc. We could
-// use a combination of boolean flags, plus some other data, to make a
-// reasonable decision in a function.
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -402,10 +399,6 @@ public class Hero extends PhysicsSprite {
         }
 
         // deal with animation changes due to goodie count
-        //
-        // TODO: if we jump, we lose this info... make it more orthogonal?
-        // Another consideration is that we could make
-        // it a callback of the goodie collision...
         if (_goodieCountAnimation != null) {
             int goodies = Level._currLevel._score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {

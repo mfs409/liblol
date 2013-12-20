@@ -1,11 +1,11 @@
 
 package edu.lehigh.cse.lol;
 
-//TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
+// TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
 
-//TODO: need to be able to add a 'back to menu' button
+// TODO: need to be able to add a 'back to menu' button
 
-//TODO: we could add support for muting via another button on this screen
+// TODO: we could add support for muting via another button on this screen
 
 import java.util.ArrayList;
 

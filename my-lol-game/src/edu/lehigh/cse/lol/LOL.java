@@ -18,15 +18,17 @@ package edu.lehigh.cse.lol;
 
 // TODO: put a license on every file?
 
-// TODO: Hero animation sequences could use work
+// TODO: Hero animation sequences could use work.  The problem is that goodie count animation information 
+// can be lost if we animate, then return from the animation.  Furthermore, we don't have support for 
+// invincible+X animation, or jump+crawl animation
 
 // TODO: add jump-to-defeat enemies
 
 // TODO: add delays for hero-obstacle triggers?
 
-// TODO: projectile needs a lot of work
-
 // TODO: I'm not thrilled with how we're handling the random projectile sprites...
+
+// TODO: consider adding goodie collect callbacks?
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

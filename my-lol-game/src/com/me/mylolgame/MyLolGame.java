@@ -1,6 +1,8 @@
 
 package com.me.mylolgame;
 
+// TODO: demonstrate the simple animation technique
+
 // TODO: demonstrate obstacle._peer?
 
 // TODO: Demo projectile setCollisionOk?

@@ -1,8 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: complete the "easy" constructor
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
@@ -80,7 +78,15 @@ public class Animation {
      * @param frameIndices The indices of the image that should be shown
      */
     public Animation(String imgName, int timePerFrame, boolean repeat, int... frameIndices) {
-        // TODO: add this constructor
+        _cells = Media.getImage(imgName);
+        _frames = new int[frameIndices.length];
+        _durations = new long[frameIndices.length];
+        _loop = repeat;
+        _nextCell = frameIndices.length;
+        for (int i = 0; i < _nextCell; ++i) {
+            _durations[i] = timePerFrame;
+            _frames[i] = frameIndices[i];
+        }
     }
 
     /**
