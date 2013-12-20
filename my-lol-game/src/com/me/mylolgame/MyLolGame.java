@@ -3,6 +3,8 @@ package com.me.mylolgame;
 
 // TODO: demonstrate obstacle._peer?
 
+// TODO: Demo projectile setCollisionOk?
+
 // TODO: Verify that mp3 and jpg files work
 
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
@@ -1657,7 +1659,7 @@ public class MyLolGame extends LOL {
             // 'configure' to see what all the parameters do. In particular,
             // note how the projectiles fly out of the hero, and how many can be
             // on screen at any time
-            Projectile.configure(3, 1, 1, "greyball.png", 0, 10, 1, .5f, 1);
+            Projectile.configure(3, 1, 1, "greyball.png", 0, 10, 1, .5f, 1, 0, true);
         }
 
         /**
@@ -1688,7 +1690,7 @@ public class MyLolGame extends LOL {
             // set up a pool of projectiles, but now once the projectiles move
             // more than 250x20 away
             // from the hero, they disappear
-            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
             Projectile.setRange(25);
 
             // add a button for throwing projectiles
@@ -1718,7 +1720,7 @@ public class MyLolGame extends LOL {
             // set up our projectiles... note that the last parameter means that
             // projectiles each do
             // 2 units of damage
-            Projectile.configure(3, .4f, .1f, "greyball.png", 0, 10, .2f, -.5f, 2);
+            Projectile.configure(3, .4f, .1f, "greyball.png", 0, 10, .2f, -.5f, 2, 0, true);
 
             // draw a few enemies... note that they have different amounts of
             // damage
@@ -1763,7 +1765,7 @@ public class MyLolGame extends LOL {
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
             // goes, so we multiply the velocity by .8 to slow it down a bit
-            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 0, 1);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 0, 1, 0, true);
             Projectile.setProjectileVectorDampeningFactor(.8f);
             Projectile.setRange(30);
 
@@ -1800,7 +1802,7 @@ public class MyLolGame extends LOL {
             // the projectiles, and
             // we use a "single throw" button
             Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h);
-            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
             Projectile.setProjectileVectorDampeningFactor(.8f);
             Projectile.setRange(40);
             Projectile.setProjectileGravityOn();
@@ -1849,7 +1851,7 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
 
             // configure a pool of projectiles
-            Projectile.configure(100, .5f, .5f, "greyball.png", 0, 10, 2, -.5f, 1);
+            Projectile.configure(100, .5f, .5f, "greyball.png", 0, 10, 2, -.5f, 1, 0, true);
             Projectile.setThrowSound("fwapfwap.ogg");
             Projectile.setProjectileDisappearSound("slowdown.ogg");
 
@@ -1994,7 +1996,7 @@ public class MyLolGame extends LOL {
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
-            Projectile.configure(100, 1, 1, "flystar.png", 0, 10, 0, -.5f, 1);
+            Projectile.configure(100, 1, 1, "flystar.png", 0, 10, 0, -.5f, 1, 0, true);
             Projectile.setAnimation(new Animation("flystar.png", 2, true).to(0, 100).to(1, 100));
         }
 
@@ -2279,7 +2281,7 @@ public class MyLolGame extends LOL {
             o.setTouchToThrow(h);
 
             // set up our projectiles
-            Projectile.configure(3, 1, 1, "colorstar.png", 0, 15, 0, 0, 2);
+            Projectile.configure(3, 1, 1, "colorstar.png", 0, 15, 0, 0, 2, 0, true);
             Projectile.setNumberOfProjectiles(20); // there are only 20... throw
                                                    // them carefully
             // Allow the projectile image to be chosen randomly from a sprite
@@ -2552,7 +2554,7 @@ public class MyLolGame extends LOL {
             // enable throwing projectiles, so that we can test enemy triggers
             // again
             h.setTouchToThrow(h);
-            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
 
             // add an obstacle that has a collision trigger
             Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
@@ -2647,7 +2649,7 @@ public class MyLolGame extends LOL {
             // hero we press, the faster the projectile goes, so we multiply the
             // velocity by .3 to
             // slow it down a bit
-            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 1, 1);
+            Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 1, 1, 0, true);
             Projectile.setRange(50);
             Projectile.setFixedVectorThrowVelocity(5);
         }
@@ -2820,7 +2822,7 @@ public class MyLolGame extends LOL {
             // hero we press, the faster the projectile goes, so we multiply the
             // velocity by .3 to
             // slow it down a bit
-            Projectile.configure(100, .1f, 3, "red.png", 30, 0, 0, 0, 1);
+            Projectile.configure(100, .1f, 3, "red.png", 30, 0, 0, 0, 1, 0, false);
             Projectile.setFixedVectorThrowVelocity(10);
             Projectile.setRange(50);
             Projectile.setRotateVectorThrow();

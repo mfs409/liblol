@@ -98,7 +98,9 @@ public abstract class PhysicsSprite implements Renderable {
     boolean _visible = true;
 
     /**
-     * The default image to display TODO: consider moving into AnimationDriver?
+     * The default image to display 
+     * 
+     * TODO: consider moving into AnimationDriver?
      */
     TextureRegion _tr;
 
@@ -975,8 +977,8 @@ public abstract class PhysicsSprite implements Renderable {
      * Indicate that something should disappear after a little while
      * 
      * @param delay How long to wait before hiding the thing
-     * @param quiet true if the item should disappear quietly, false if it should
-     *            play its disappear sound
+     * @param quiet true if the item should disappear quietly, false if it
+     *            should play its disappear sound
      */
     public void setDisappearDelay(float delay, final boolean quiet) {
         Timer.schedule(new Task() {

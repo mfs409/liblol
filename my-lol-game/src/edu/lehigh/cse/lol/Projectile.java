@@ -19,10 +19,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * mechanism is how projectiles are put onto the screen and given velocity.
  */
 public class Projectile extends PhysicsSprite {
-    /*
-     * BASIC SUPPORT
-     */
-
     /**
      * The velocity of a projectile when it is thrown
      */
@@ -45,11 +41,6 @@ public class Projectile extends PhysicsSprite {
      * This is the initial point of the throw
      */
     private static final Vector2 _rangeFrom = new Vector2();
-
-    /**
-     * The initial position of a projectile.
-     */
-    private static final Vector2 _position = new Vector2();
 
     /**
      * A spare vector for computation
@@ -100,17 +91,19 @@ public class Projectile extends PhysicsSprite {
      * @param height height of the projectile
      * @param ttr animatable image to display as the projectile
      */
-    // TODO: change to width, height, textureregion
-    private Projectile(float x, float y, float width, float height, String imgName) {
+    private Projectile(float width, float height, String imgName, float x, float y, int zIndex,
+            boolean isCircle) {
         super(imgName, SpriteId.PROJECTILE, width, height);
-        float radius = (width > height) ? width : height;
-        setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
-        // TODO: does this get turned back on the right way elsewhere?
+        if (isCircle) {
+            float radius = (width > height) ? width : height;
+            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
+        } else {
+            setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
+        }
         _physBody.setGravityScale(0);
         setCollisionEffect(false);
         disableRotation();
-        // TODO: need to configure the z plane for projectiles...
-        Level._currLevel.addSprite(this, 0);
+        Level._currLevel.addSprite(this, zIndex);
     }
 
     /**
@@ -203,6 +196,12 @@ public class Projectile extends PhysicsSprite {
      */
     static int _projectilesRemaining;
 
+    static boolean _disappearOnCollide;
+
+    void setCollisionOk() {
+        _disappearOnCollide = false;
+    }
+
     /**
      * Describe the behavior of projectiless in a scene. You must call this if
      * you intend to use projectiles in your scene
@@ -221,12 +220,14 @@ public class Projectile extends PhysicsSprite {
      *            to an enemy
      */
     public static void configure(int size, float width, float height, String imgName,
-            float velocityX, float velocityY, float offsetX, float offsetY, int strength) {
+            float velocityX, float velocityY, float offsetX, float offsetY, int strength,
+            int zIndex, boolean isCircle) {
         // set up the pool
         _pool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            _pool[i] = new Projectile(-100 - i * width, -100 - i * height, width, height, imgName);
+            _pool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
+                    zIndex, isCircle);
             _pool[i]._visible = false;
             _pool[i]._physBody.setBullet(true);
             _pool[i]._physBody.setActive(false);
@@ -243,6 +244,7 @@ public class Projectile extends PhysicsSprite {
         _projectilesRemaining = -1;
         _imageSource = null;
         _sensorProjectiles = true;
+        _disappearOnCollide = true;
     }
 
     /**
@@ -325,6 +327,10 @@ public class Projectile extends PhysicsSprite {
                 return;
             }
         }
+        if (other._psType == SpriteId.PROJECTILE) {
+            if (!_disappearOnCollide)
+                return;
+        }
         // only disappear if other is not a sensor
         if (other._physBody.getFixtureList().get(0).isSensor())
             return;
@@ -368,12 +374,8 @@ public class Projectile extends PhysicsSprite {
         _nextIndex = (_nextIndex + 1) % _poolSize;
 
         // put the projectile on the screen and place it in the _physics world
-        //
-        // TODO: do we need _position?
-        _position.x = _rangeFrom.x;
-        _position.y = _rangeFrom.y;
         b._physBody.setActive(true);
-        b._physBody.setTransform(_position, 0);
+        b._physBody.setTransform(_rangeFrom, 0);
 
         // give the projectile velocity
         b.updateVelocity(_velocity.x, _velocity.y);
@@ -398,8 +400,6 @@ public class Projectile extends PhysicsSprite {
      * @param toY y coordinate of the point at which to throw
      */
     static void throwAt(float heroX, float heroY, float toX, float toY, Hero h) {
-        // TODO: be sure to use rangeFrom!
-
         // have we reached our limit?
         if (_projectilesRemaining == 0)
             return;
@@ -421,10 +421,8 @@ public class Projectile extends PhysicsSprite {
 
         _nextIndex = (_nextIndex + 1) % _poolSize;
         // put the projectile on the screen and place it in the _physics world
-        _position.x = _rangeFrom.x;
-        _position.y = _rangeFrom.y;
         b._physBody.setActive(true);
-        b._physBody.setTransform(_position, 0);
+        b._physBody.setTransform(_rangeFrom, 0);
 
         // give the projectile velocity
         if (_enableFixedVectorVelocity) {

@@ -3,8 +3,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: complete the "easy" constructor
 
-// TODO: clean up the AnimationDriver
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
@@ -123,8 +121,6 @@ public class Animation {
             _currAnimationTime += delta;
             long millis = (long)(1000 * _currAnimationTime);
             // are we still in this frame?
-            //
-            // TODO: we can simplify this code
             if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
                 return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
             }

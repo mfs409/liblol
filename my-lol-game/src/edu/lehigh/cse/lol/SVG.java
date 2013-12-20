@@ -324,7 +324,8 @@ public class SVG {
         _fixture.shape.dispose(); // i.e., line.dispose()
         b.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
 
-        // connect it to an invisible PhysicsSprite
+        // connect it to an invisible PhysicsSprite, so that collision callbacks
+        // will work (i.e., for _inAir)
         PhysicsSprite invis = new PhysicsSprite(null, SpriteId.SVG, len, .1f) {
             @Override
             void onCollide(PhysicsSprite other, Contact contact) {
@@ -332,8 +333,8 @@ public class SVG {
         };
         invis._physBody = b;
         b.setUserData(invis);
-        // put the line on the screen
-        // TODO: need to configure the z plane? Or should we not even render it?
+        // NB: we probably don't need to put the invisible sprite on the screen,
+        // since we don't overload render()... this is invisible.
         Level._currLevel.addSprite(invis, 0);
     }
 

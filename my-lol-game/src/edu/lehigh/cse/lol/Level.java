@@ -1,9 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: verify true/false returns from all things called from this... I don't think all our events are being chained
-// correctly
-
 // TODO: does zoom work with parallax?
 
 // TODO: the unlock mechanism is untested

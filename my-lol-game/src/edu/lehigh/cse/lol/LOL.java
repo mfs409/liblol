@@ -3,8 +3,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: update comments for all files
 
-// TODO: consider switching to Android style guidelines
-
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
 
@@ -16,15 +14,11 @@ package edu.lehigh.cse.lol;
 
 // TODO: put a license on every file?
 
-// TODO: Sticky obstacles need work (see Hero)
-
 // TODO: Hero animation sequences could use work
 
 // TODO: add jump-to-defeat enemies
 
 // TODO: add delays for hero-obstacle triggers?
-
-// TODO: controls need a lot of work
 
 // TODO: projectile needs a lot of work
 

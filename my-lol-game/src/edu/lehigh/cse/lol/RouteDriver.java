@@ -20,17 +20,15 @@ class RouteDriver {
 
     void haltRoute() {
         _routeDone = true;
-        // TODO: verify third parameter is ok... this gets called from
-        // pokevelocity stuff...
+        // NB: third parameter doesn't matter, because the entity isn't a static
+        // body, so its bodytype won't change.
         _entity.setAbsoluteVelocity(0, 0, false);
     }
 
     RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity) {
         _myRoute = route;
-
         _routeVelocity = velocity;
         _routeLoop = loop;
-
         _entity = entity;
 
         // this is how we initialize a route driver:
@@ -38,19 +36,19 @@ class RouteDriver {
         _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2,
                 _myRoute._yIndices[0] + _entity._height / 2, 0);
         // second, indicate that we are working on goal #1, and set velocity
-        // TODO: this needs to be in one place, instead of duplicated elsewhere
-        // TODO: note that we are not getting the x,y coordinates quite right,
-        // since we're dealing with world
-        // center.
+        startRoute();
+        // and indicate that we aren't all done yet
+        _routeDone = false;
+
+    }
+
+    void startRoute() {
         _nextRouteGoal = 1;
         _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
         _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
         _routeVec.nor();
         _routeVec.scl(_routeVelocity);
         _entity._physBody.setLinearVelocity(_routeVec);
-        // and indicate that we aren't all done yet
-        _routeDone = false;
-
     }
 
     /**
@@ -78,13 +76,7 @@ class RouteDriver {
                 if (_routeLoop) {
                     _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2,
                             _myRoute._yIndices[0] + _entity._height / 2, 0);
-                    _nextRouteGoal = 1;
-                    _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
-                    _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
-                    _routeVec.nor();
-                    _routeVec.scl(_routeVelocity);
-                    _entity._physBody.setLinearVelocity(_routeVec);
-
+                    startRoute();
                     return;
                 } else {
                     _routeDone = true;
