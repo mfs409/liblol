@@ -1,6 +1,14 @@
 
 package edu.lehigh.cse.lol;
 
+// TODO: Have a mute button on HUD and pre/post/pause scenes?
+
+// TODO: Do pre and post scenes need a "back to chooser" button?
+
+// TODO: Should we allow the creation of arbitrary polygons?
+
+// TODO: verify that flipped animations work correctly, even when they change while flipped
+
 // TODO: does zoom work with parallax?
 
 // TODO: the unlock mechanism is untested

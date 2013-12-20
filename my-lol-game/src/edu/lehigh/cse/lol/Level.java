@@ -561,7 +561,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
@@ -594,7 +594,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
@@ -625,7 +625,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 pe.onUpPress();
                 return;
             }

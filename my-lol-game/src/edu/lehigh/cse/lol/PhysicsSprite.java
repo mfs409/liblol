@@ -1,8 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: enable arbitrary polygon creation?
-
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -107,9 +105,6 @@ public abstract class PhysicsSprite implements Renderable {
      * so, this tracks if the image is flipped, so that we draw its sprite
      * correctly.
      */
-    // TODO: consider moving into AnimationDriver? It's almost certainly the
-    // case that if we change animations while going in reverse, things will
-    // break.
     private boolean _flipped;
 
     /**
@@ -853,9 +848,6 @@ public abstract class PhysicsSprite implements Renderable {
      * 
      * @param velocity The constant velocity for poke movement
      */
-    // TODO: rethink these parameters a little bit more, then clean up levels 71
-    // and 79. Are there really 8 possible behaviors, or is the real number much
-    // smaller? I think the right answer is "2"
     public void setPokePath(final float velocity, final boolean oncePerTouch,
             final boolean updateOnMove, final boolean stopOnUp) {
         if (_physBody.getType() == BodyType.StaticBody)

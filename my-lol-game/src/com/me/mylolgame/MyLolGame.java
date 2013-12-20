@@ -2758,7 +2758,7 @@ public class MyLolGame extends LOL {
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
             h.setCanFaceBackwards();
-            h.setPokePath(4, false, false, true);
+            h.setPokePath(4, false, true, true);
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Controls.addImage(40, 40, 40, 40, "red.png");
             Score.setVictoryDestination(1);

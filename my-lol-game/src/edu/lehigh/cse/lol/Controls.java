@@ -33,8 +33,11 @@ public class Controls {
 
             // set up the touchable range for the image
             _range = new Rectangle(x, y, width, height);
+            _isTouchable = true;
         }
 
+        boolean _isTouchable;
+        
         Color _c = new Color(0, 0, 0, 1);
 
         /**
@@ -48,6 +51,7 @@ public class Controls {
             _c.r = ((float)red) / 256;
             _c.g = ((float)green) / 256;
             _c.b = ((float)blue) / 256;
+            _isTouchable = false;
         }
 
         void onDownPress(Vector3 vec) {
@@ -1054,8 +1058,7 @@ public class Controls {
      */
     public static void addImage(int x, int y, int width, int height, String imgName) {
         HudEntity pe = new HudEntity(imgName, x, y, width, height);
-        // get rid of the HudEntity's range, so that it does not handle touches
-        pe._range = null;
+        pe._isTouchable = false;
         Level._currLevel._controls.add(pe);
     }
 

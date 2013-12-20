@@ -1,8 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: we could add support for muting via another button on this screen
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
