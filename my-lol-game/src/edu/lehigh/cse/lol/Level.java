@@ -32,7 +32,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Controls.Control;
+import edu.lehigh.cse.lol.Controls.HudEntity;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they can have an end goal.
@@ -108,7 +108,7 @@ public class Level extends ScreenAdapter
             return parallaxCombined;
         }
     }
-    
+
     /*
      * FIELDS FOR MANAGING GAME STATE
      */
@@ -116,7 +116,7 @@ public class Level extends ScreenAdapter
     /**
      * The music, if any
      */
-    private Music                                    _music;
+    private Music                            _music;
 
     /**
      * Whether the music is playing or not
@@ -166,7 +166,7 @@ public class Level extends ScreenAdapter
     /**
      * The controls / heads-up-display
      */
-    ArrayList<Control>                       _controls      = new ArrayList<Control>();
+    ArrayList<HudEntity>                       _controls      = new ArrayList<HudEntity>();
 
     /*
      * COLLECTIONS OF EVENTS THAT MUST BE PROCESSED
@@ -253,8 +253,10 @@ public class Level extends ScreenAdapter
     /**
      * Our polling-based multitouch uses this array to track the previous state of 4 fingers
      */
-    private boolean[]                        lastTouches    = new boolean[4];
+    private boolean[]                        lastTouches    = new boolean[]{true,true,true,true};
 
+    private boolean _touchActive = false;
+    
     /**
      * The LOL interface requires that game designers don't have to construct Level manually. To make it work, we store
      * the current Level here
@@ -324,10 +326,6 @@ public class Level extends ScreenAdapter
         if (LOL._game._config.showDebugBoxes())
             Controls.addFPS(400, 15, LOL._game._config.getDefaultFont(), 200, 200, 100, 12);
     }
-
-    /*
-     * INTERNAL INTERFACE: MUSIC
-     */
 
     /**
      * If the level has music attached to it, this starts playing it
@@ -436,7 +434,7 @@ public class Level extends ScreenAdapter
         _hudCam.update();
         _spriteRender.setProjectionMatrix(_hudCam.combined);
         _spriteRender.begin();
-        for (Control c : _controls)
+        for (HudEntity c : _controls)
             c.render(_spriteRender);
         _spriteRender.end();
 
@@ -445,7 +443,7 @@ public class Level extends ScreenAdapter
             _shapeRender.setProjectionMatrix(_hudCam.combined);
             _shapeRender.begin(ShapeType.Line);
             _shapeRender.setColor(Color.RED);
-            for (Control pe : _controls)
+            for (HudEntity pe : _controls)
                 if (pe._range != null)
                     _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
             _shapeRender.end();
@@ -537,11 +535,13 @@ public class Level extends ScreenAdapter
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
             // if there is a touch, call the appropriate method
-            if (touchStates[i] && lastTouches[i])
+            if (touchStates[i] && lastTouches[i] && _touchActive)
                 touchMove((int) x, (int) y);
-            else if (touchStates[i] && !lastTouches[i])
+            else if (touchStates[i] && !lastTouches[i]) {
+                _touchActive = true;
                 touchDown((int) x, (int) y);
-            else if (!touchStates[i] && lastTouches[i])
+            }
+            else if (!touchStates[i] && lastTouches[i]&& _touchActive)
                 touchUp((int) x, (int) y);
             lastTouches[i] = touchStates[i];
         }
@@ -560,8 +560,8 @@ public class Level extends ScreenAdapter
     {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (Control pe : _controls) {
-            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+        for (HudEntity pe : _controls) {
+            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
                 pe.onDownPress(_touchVec);
@@ -573,16 +573,11 @@ public class Level extends ScreenAdapter
         _hitSprite = null;
         _gameCam.unproject(_touchVec.set(x, y, 0));
         _world.QueryAABB(_callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f, _touchVec.y + 0.1f);
-        if (_hitSprite != null) {
+        if (_hitSprite != null) 
             _hitSprite.handleTouchDown(x, y);
-            return;
-        }
-
         // Handle level touches for which we've got a registered handler
-        if (_touchResponder != null) {
+        else if (_touchResponder != null) 
             _touchResponder.onDown(_touchVec.x, _touchVec.y);
-            return;
-        }
     }
 
     /**
@@ -598,8 +593,8 @@ public class Level extends ScreenAdapter
     {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (Control pe : _controls) {
-            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+        for (HudEntity pe : _controls) {
+            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
                 pe.onHold(_touchVec);
@@ -610,15 +605,12 @@ public class Level extends ScreenAdapter
         // We don't currently support Move within a Sprite, only on the screen. These screen handlers are all one-off
         // calls from here.
         _gameCam.unproject(_touchVec.set(x, y, 0));
-        if (_touchResponder != null) {
+        if (_touchResponder != null) 
             _touchResponder.onMove(_touchVec.x, _touchVec.y);
-            return;
-        }
-
         // deal with drag?
         //
         // TODO: verify we can't do this with a touchresponder
-        if (_hitSprite != null) 
+        else if (_hitSprite != null)
             _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
     }
 
@@ -635,12 +627,10 @@ public class Level extends ScreenAdapter
     {
         // check for HUD touch first
         _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (Control pe : _controls) {
-            if (pe._isTouchable) {
-                if (pe._range.contains(_touchVec.x, _touchVec.y)) {
-                    pe.onUpPress();
-                    return;
-                }
+        for (HudEntity pe : _controls) {
+            if (pe._range != null && pe._range.contains(_touchVec.x, _touchVec.y)) {
+                pe.onUpPress();
+                return;
             }
         }
 
@@ -648,7 +638,6 @@ public class Level extends ScreenAdapter
         _gameCam.unproject(_touchVec.set(x, y, 0));
         if (_touchResponder != null) {
             _touchResponder.onUp(_touchVec.x, _touchVec.y);
-            return;
         }
     }
 
@@ -828,5 +817,3 @@ public class Level extends ScreenAdapter
         };
     }
 }
-
-

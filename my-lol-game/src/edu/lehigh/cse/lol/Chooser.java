@@ -70,11 +70,11 @@ public class Chooser extends ScreenAdapter
     /**
      * For rendering
      */
-    SpriteBatch        _batcher;
+    SpriteBatch        _sb;
 
-    BitmapFont         _font;
+    BitmapFont         _bf;
 
-    ShapeRenderer      _srend;
+    ShapeRenderer      _shapeRenderer;
 
     // TODO: externalize these constants?
     static final int   bWidth  = 60;
@@ -123,11 +123,11 @@ public class Chooser extends ScreenAdapter
         _camera.position.set(camWidth / 2, cameraCapY, 0);
 
         // create a font
-        _font = Media.getFont(LOL._game._config.getDefaultFont(), 30);
+        _bf = Media.getFont(LOL._game._config.getDefaultFont(), 30);
 
         // and our renderers
-        _batcher = new SpriteBatch();
-        _srend = new ShapeRenderer();
+        _sb = new SpriteBatch();
+        _shapeRenderer = new ShapeRenderer();
     }
 
     @Override
@@ -152,33 +152,33 @@ public class Chooser extends ScreenAdapter
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // draw squares...
-        _srend.setProjectionMatrix(_camera.combined);
-        _srend.begin(ShapeType.Line);
-        _srend.setColor(Color.BLUE);
+        _shapeRenderer.setProjectionMatrix(_camera.combined);
+        _shapeRenderer.begin(ShapeType.Line);
+        _shapeRenderer.setColor(Color.BLUE);
         for (LevelSprite ls : levels) {
-            _srend.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
-            _srend.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
+            _shapeRenderer.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
+            _shapeRenderer.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
         }
-        _srend.end();
+        _shapeRenderer.end();
 
-        _srend.begin(ShapeType.Filled);
-        _srend.setColor(.4f, .4f, .4f, 0.9f);
+        _shapeRenderer.begin(ShapeType.Filled);
+        _shapeRenderer.setColor(.4f, .4f, .4f, 0.9f);
         int unlocked = LOL._game.readUnlocked();
         for (LevelSprite ls : levels) {
             if (ls.l > unlocked && !_game._config.getUnlockMode()) {
-                _srend.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
+                _shapeRenderer.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
             }
         }
-        _srend.end();
+        _shapeRenderer.end();
 
-        _batcher.setProjectionMatrix(_camera.combined);
-        _batcher.begin();
+        _sb.setProjectionMatrix(_camera.combined);
+        _sb.begin();
         for (LevelSprite ls : levels) {
-            float x = _font.getBounds(ls.t).width;
-            float y = _font.getBounds(ls.t).height;
-            _font.draw(_batcher, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
+            float x = _bf.getBounds(ls.t).width;
+            float y = _bf.getBounds(ls.t).height;
+            _bf.draw(_sb, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
         }
-        _batcher.end();
+        _sb.end();
     }
 
     // Here's a quick and dirty way to manage multitouch via polling

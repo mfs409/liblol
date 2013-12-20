@@ -17,20 +17,17 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 public class Controls
 {
     /**
-     * This is for handling hud presses... need to merge with Control, if
-     * possible, and then subclass it in Controls
+     * This is for handling everything that gets drawn presses to the buttons that are drawn on the hudCam
      */
-    static class Control
+    static class HudEntity
     {
-        boolean _isTouchable;
-
         /**
          * Use this constructor for controls that provide pressable images
          * 
          * @param imgName
-         *            The name of the image to display
+         *            The name of the image to display. If "" is given as the name, it will not crash.
          */
-        Control(String imgName, int x, int y, int width, int height)
+        HudEntity(String imgName, int x, int y, int width, int height)
         {
             // set up the image to display
             //
@@ -38,7 +35,6 @@ public class Controls
             TextureRegion[] trs = Media.getImage(imgName);
             if (trs != null)
                 _tr = trs[0];
-            _isTouchable = true;
 
             // set up the touchable range for the image
             _range = new Rectangle(x, y, width, height);
@@ -56,12 +52,11 @@ public class Controls
          * @param blue
          *            blue portion of text color
          */
-        Control(int red, int green, int blue)
+        HudEntity(int red, int green, int blue)
         {
             _c.r = ((float) red) / 256;
             _c.g = ((float) green) / 256;
             _c.b = ((float) blue) / 256;
-            _isTouchable = false;
         }
 
         void onDownPress(Vector3 vec)
@@ -93,10 +88,6 @@ public class Controls
                 sb.draw(_tr, _range.x, _range.y, 0, 0, _range.width, _range.height, 1, 1, 0);
         }
     }
-
-    /*
-     * BASIC FUNCTIONALITY
-     */
 
     /**
      * Store the duration between when the program started and when the _current level started, so that we can reuse the
@@ -136,10 +127,16 @@ public class Controls
     static void updateTimerForPause(float delta)
     {
         _countDownRemaining += delta;
+        _winCountRemaining += delta;
         // TODO: how do we deal with pausing? This next line isn't needed, but a
         // pause screen could change that...
         //
         // _stopWatchProgress -= delta;
+    }
+
+    static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb)
+    {
+        bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
     }
 
     /**
@@ -181,12 +178,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addCountdown(final float timeout, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addCountdown(final float timeout, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         _countDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level._currLevel._controls.add(new Control(red, green, blue)
+        Level._currLevel._controls.add(new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
@@ -194,7 +191,7 @@ public class Controls
                 bf.setColor(_c.r, _c.g, _c.b, 1);
                 _countDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (_countDownRemaining > 0) {
-                    bf.draw(sb, "" + (int) _countDownRemaining, x, y);
+                    drawTextTransposed(x, y, "" + (int) _countDownRemaining, bf, sb);
                 }
                 else {
                     PostScene.setDefaultLoseText(text);
@@ -214,17 +211,18 @@ public class Controls
      * @param blue
      * @param size
      */
-    public static void addFPS(final int x, final int y, String fontName, final int red, final int green, final int blue, int size)
+    public static void addFPS(final int x, final int y, String fontName, final int red, final int green,
+            final int blue, int size)
     {
         final BitmapFont bf = Media.getFont(fontName, size);
 
-        Level._currLevel._controls.add(new Control(red, green, blue)
+        Level._currLevel._controls.add(new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-                bf.draw(sb, "fps: " + Gdx.graphics.getFramesPerSecond(), x, y);
+                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
             }
         });
     }
@@ -264,12 +262,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addWinCountdown(final float timeout, final int x, final int y, String fontName, final int red, final int green,
-            final int blue, int size)
+    public static void addWinCountdown(final float timeout, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size)
     {
         _winCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level._currLevel._controls.add(new Control(red, green, blue)
+        Level._currLevel._controls.add(new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
@@ -278,7 +276,7 @@ public class Controls
                 _winCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (_winCountRemaining > 0)
                     // get elapsed time for this level
-                    bf.draw(sb, "" + (int) _winCountRemaining, x, y);
+                    drawTextTransposed(x, y, "" + (int) _winCountRemaining, bf, sb);
                 else
                     Level._currLevel._score.endLevel(true);
             }
@@ -324,22 +322,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount1(int max, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addGoodieCount1(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Level._currLevel._score._goodiesCollected[0] + suffix;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[0] + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -367,22 +362,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount2(int max, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addGoodieCount2(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Level._currLevel._score._goodiesCollected[1] + suffix;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[1] + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -410,22 +402,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount3(int max, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addGoodieCount3(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Level._currLevel._score._goodiesCollected[2] + suffix;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[2] + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -454,22 +443,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount4(int max, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addGoodieCount4(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Level._currLevel._score._goodiesCollected[3] + suffix;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[3] + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -514,22 +500,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addDefeatedCount(int max, final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size)
+    public static void addDefeatedCount(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Level._currLevel._score._enemiesDefeated + suffix;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._enemiesDefeated + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -566,21 +549,19 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    static public void addStopwatch(final int x, final int y, String fontName, final int red, final int green, final int blue, int size)
+    static public void addStopwatch(final int x, final int y, String fontName, final int red, final int green,
+            final int blue, int size)
     {
         _stopWatchProgress = 0;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
                 _stopWatchProgress += Gdx.graphics.getDeltaTime();
-                // get elapsed time for this level
-                String newtext = "" + (int) _stopWatchProgress;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + (int) _stopWatchProgress, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -621,20 +602,17 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    static public void addStrengthMeter(final String text, final int x, final int y, String fontName, final int red, final int green,
-            final int blue, int size, final Hero h)
+    static public void addStrengthMeter(final String text, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final Hero h)
     {
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + h._strength + " " + text;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + h._strength + " " + text, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -658,20 +636,17 @@ public class Controls
      * @param size
      *            The size of the font
      */
-    public static void addProjectileCount(final String text, final int x, final int y, String fontName, final int red, final int green,
-            final int blue, int size)
+    public static void addProjectileCount(final String text, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size)
     {
         final BitmapFont bf = Media.getFont(fontName, size);
-        Control he = new Control(red, green, blue)
+        HudEntity he = new HudEntity(red, green, blue)
         {
             @Override
             void render(SpriteBatch sb)
             {
                 bf.setColor(_c.r, _c.g, _c.b, 1);
-
-                // get elapsed time for this level
-                String newtext = "" + Projectile._projectilesRemaining + " " + text;
-                bf.draw(sb, newtext, x, y);
+                drawTextTransposed(x, y, "" + Projectile._projectilesRemaining + " " + text, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
@@ -705,7 +680,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.KinematicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -750,7 +725,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.KinematicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -800,7 +775,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -846,7 +821,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -898,7 +873,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -949,7 +924,7 @@ public class Controls
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -986,7 +961,7 @@ public class Controls
      */
     public static void addCrawlButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -1019,7 +994,7 @@ public class Controls
      */
     public static void addJumpButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -1044,20 +1019,28 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    public static void addThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
+    public static void addThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+            final int milliDelay)
     {
-        // TODO: this should keep throwing if we hold...
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
+            long lastThrow;
+
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
+                lastThrow = System.nanoTime();
             }
 
             @Override
-            void onUpPress()
+            void onHold(Vector3 vv)
             {
+                long now = System.nanoTime();
+                if (lastThrow + milliDelay * 1000000 < now) {
+                    lastThrow = now;
+                    Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
+                }
             }
         };
         Level._currLevel._controls.add(pe);
@@ -1079,7 +1062,7 @@ public class Controls
      */
     public static void addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -1112,20 +1095,29 @@ public class Controls
      * @param imgName
      *            Name of the image to use for this button
      */
-    public static void addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
+    public static void addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+            final long milliDelay)
     {
         // TODO: this should keep throwing if we hold...
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
+            long lastThrow;
+
             @Override
             void onDownPress(Vector3 vv)
             {
                 Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
+                lastThrow = System.nanoTime();
             }
 
             @Override
-            void onUpPress()
+            void onHold(Vector3 vv)
             {
+                long now = System.nanoTime();
+                if (lastThrow + milliDelay * 1000000 < now) {
+                    lastThrow = now;
+                    Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x, vv.y, h);
+                }
             }
 
         };
@@ -1151,7 +1143,7 @@ public class Controls
      */
     public static void addVectorSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -1185,7 +1177,7 @@ public class Controls
      */
     public static void addZoomOutButton(int x, int y, int width, int height, String imgName, final float maxZoom)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 v)
@@ -1221,7 +1213,7 @@ public class Controls
      */
     public static void addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 v)
@@ -1259,7 +1251,7 @@ public class Controls
             final Hero h)
     {
         // TODO: this should keep rotating if we hold...
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
@@ -1268,8 +1260,9 @@ public class Controls
             }
 
             @Override
-            void onUpPress()
+            void onHold(Vector3 vv)
             {
+                h.increaseRotation(rate);
             }
         };
         Level._currLevel._controls.add(pe);
@@ -1291,20 +1284,9 @@ public class Controls
      */
     public static void addImage(int x, int y, int width, int height, String imgName)
     {
-        Control pe = new Control(imgName, x, y, width, height)
-        {
-            @Override
-            void onDownPress(Vector3 vv)
-            {
-                // TODO: this should return true/false, so we know if we should propagate...
-            }
-
-            @Override
-            void onUpPress()
-            {
-                // TODO: this should return true/false, so we know if we should propagate...
-            }
-        };
+        HudEntity pe = new HudEntity(imgName, x, y, width, height);
+        // get rid of the HudEntity's range, so that it does not handle touches
+        pe._range = null;
         Level._currLevel._controls.add(pe);
     }
 
@@ -1326,17 +1308,12 @@ public class Controls
      */
     public static void addTriggerControl(int x, int y, int width, int height, String imgName, final int id)
     {
-        Control pe = new Control(imgName, x, y, width, height)
+        HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override
             void onDownPress(Vector3 vv)
             {
                 LOL._game.onControlPressTrigger(id, LOL._game._currLevel);
-            }
-
-            @Override
-            void onUpPress()
-            {
             }
         };
         Level._currLevel._controls.add(pe);

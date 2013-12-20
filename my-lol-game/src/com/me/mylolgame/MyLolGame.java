@@ -1,22 +1,14 @@
 package com.me.mylolgame;
 
-// TODO: 29 and 67 suggest that there is a way that touches can get registered on a prescene and on the game
-
 // TODO: demonstrate obstacle._peer?
 
 // TODO: Verify that mp3 and jpg files work
-
-// TODO: Util's text functions are a bit funky, and result in HelpScene drawing text oddly
 
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
 // TODO: In level 55, for animateByGoodieCount, we are using Animation objects in an odd way...
 
 // TODO: Level 70 is no longer valid. We can use it as a home for a new demo
-
-// TODO: on level 59, buttons should work as long as they're depressed
-
-// TODO: Controls crash if invalid filename... consider no filename, and just doing images separately?
 
 // TODO: once everything works, aggressively comment, reformat, and reduce visibility as much as possible
 
@@ -47,10 +39,6 @@ package com.me.mylolgame;
 // TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone (see level 20)
 
 // TODO: need a demo to show that we can in just X or just Y
-
-// TODO: levels 44 and 45 have the same throw behavior right now, because we don't use input polling to allow for 'hold
-// == down' behavior... should we change that? Note: problem also for 46 and 47, and it would be nice to have this for
-// velocity in some cases. See https://code.google.com/p/libgdx/wiki/InputPolling
 
 // TODO: consider adding a wrapper to expose Box2d collision groups?
 
@@ -1809,9 +1797,7 @@ public class MyLolGame extends LOL
             Projectile.setRange(25);
 
             // add a button for throwing projectiles
-            //
-            // TODO: this should throw as long as it's held down... and we should support the same for other controls...
-            Controls.addThrowButton(0, 0, 480, 320, "", h);
+            Controls.addThrowButton(0, 0, 480, 320, "", h, 100);
             Level.setCameraChase(h);
         }
 
@@ -1881,7 +1867,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
@@ -2807,7 +2793,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the
@@ -2999,7 +2985,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the

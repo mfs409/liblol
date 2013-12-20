@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-// TODO: this file gets font horizontal position correct, but other files may not... verify other files! 
-
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -38,7 +36,7 @@ public class Util
             public void render(SpriteBatch sb, float elapsed)
             {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.drawMultiLine(sb, message, x, y+bf.getMultiLineBounds(message).height);
+                bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
             }
         };
     }
