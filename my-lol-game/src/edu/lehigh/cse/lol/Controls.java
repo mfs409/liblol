@@ -691,6 +691,12 @@ public class Controls
             }
 
             @Override
+            void onHold(Vector3 vv)
+            {
+                onDownPress(vv);
+            }
+
+            @Override
             void onUpPress()
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
@@ -736,6 +742,12 @@ public class Controls
             }
 
             @Override
+            void onHold(Vector3 vv)
+            {
+                onDownPress(vv);
+            }
+
+            @Override
             void onUpPress()
             {
                 Vector2 v = entity._physBody.getLinearVelocity();
@@ -771,7 +783,7 @@ public class Controls
         // universally, or is there a problem? I made it dynamic for now, ensure
         // we don't actually want kinematic
 
-        // TODO: all these buttons should work while holding...
+        // TODO: should all these buttons should work while holding?
         if (entity._physBody.getType() == BodyType.StaticBody)
             entity._physBody.setType(BodyType.DynamicBody);
 
@@ -785,6 +797,12 @@ public class Controls
                 entity.updateVelocity(v.x, v.y);
             }
 
+            @Override
+            void onHold(Vector3 vv)
+            {
+                onDownPress(vv);
+            }
+            
             @Override
             void onUpPress()
             {
@@ -829,6 +847,12 @@ public class Controls
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rate;
                 entity.updateVelocity(v.x, v.y);
+            }
+
+            @Override
+            void onHold(Vector3 vv)
+            {
+                onDownPress(vv);
             }
 
             @Override
@@ -1098,7 +1122,6 @@ public class Controls
     public static void addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
             final long milliDelay)
     {
-        // TODO: this should keep throwing if we hold...
         HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             long lastThrow;
@@ -1250,7 +1273,6 @@ public class Controls
     public static void addRotateButton(int x, int y, int width, int height, String imgName, final float rate,
             final Hero h)
     {
-        // TODO: this should keep rotating if we hold...
         HudEntity pe = new HudEntity(imgName, x, y, width, height)
         {
             @Override

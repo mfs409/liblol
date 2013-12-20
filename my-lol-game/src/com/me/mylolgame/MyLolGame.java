@@ -31,8 +31,7 @@ package com.me.mylolgame;
 // TODO: revisit int vs. float parameters
 
 // TODO: level 28 accelerometer trick no longer applies. Altering the order of popup and accel in Level.render() would
-// restore the behavior, but the behavior is actually not desirable. However, it looks like during
-// hover+touchtomove/pokepath (level 68), things get weird again.
+// restore the behavior, but the behavior is actually not desirable.
 
 // TODO: test if x and y parallax works as expected (swimming level with >32 Y?)
 
@@ -498,12 +497,6 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
 
             // add zoom buttons
-
-            // TODO: chase shapes + zoom can lead to funny behaviors (e.g., try
-            // zooming in when we're in bottom left corner; a solution is to
-            // incorporate zoom into the computations in the chase shape code,
-            // though andengine doesn't do this...
-
             Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
 
@@ -2937,7 +2930,7 @@ public class MyLolGame extends LOL
             // the hero can jump
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
-            h.setPhysics(2, 0, 0);
+            h.setPhysics(2, 0, .1f);
 
             // create a destination
             Destination.makeAsCircle(20, 15, 1, 1, "mustardball.png");
@@ -2945,7 +2938,7 @@ public class MyLolGame extends LOL
 
             Obstacle o = Obstacle.makeAsBox(10, 5, 8, .5f, "red.png");
             o.setRoute(new Route(5).to(10, 5).to(5, 15).to(10, 25).to(15, 15).to(10, 5), 5, true);
-            o.setPhysics(100, 0, 0);
+            o.setPhysics(100, 0, .1f);
             // Note: this is only sticky on the top!
             o.setSticky(true, false, false, false);
 

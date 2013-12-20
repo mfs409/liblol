@@ -5,10 +5,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: does zoom work with parallax?
 
-// TODO: zoom doesn't work right with bounds of big screens and chase heroes
-
-// TODO: hud onhold is untested
-
 // TODO: the unlock mechanism is untested
 
 import java.util.ArrayList;
@@ -486,14 +482,10 @@ public class Level extends ScreenAdapter
         float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
         float y = _chase._physBody.getWorldCenter().y + _chase._cameraOffset.y;
         // if x or y is too close to 0,0, stick with minimum acceptable values
-        if (x < LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) {
+        if (x < LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) 
             x = LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-            Gdx.app.log("clippped", "from "+(_chase._physBody.getWorldCenter().x + _chase._cameraOffset.x)+" to "+x);
-        }
-        if (y < LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) {
+        if (y < LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) 
             y = LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-            Gdx.app.log("clippped", "from "+(_chase._physBody.getWorldCenter().y + _chase._cameraOffset.y)+" to "+y);
-        }
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
         if (x > _camBoundX - LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
@@ -618,9 +610,7 @@ public class Level extends ScreenAdapter
         _gameCam.unproject(_touchVec.set(x, y, 0));
         if (_touchResponder != null)
             _touchResponder.onMove(_touchVec.x, _touchVec.y);
-        // deal with drag?
-        //
-        // TODO: verify we can't do this with a touchresponder
+        // deal with drag
         else if (_hitSprite != null)
             _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
     }
