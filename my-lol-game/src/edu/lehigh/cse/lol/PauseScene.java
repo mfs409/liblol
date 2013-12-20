@@ -1,10 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: we need a level to demo this... it should put a pause button on the hud that causes this to show
-
-// TODO: need to be able to add a 'back to menu' button
-
 // TODO: we could add support for muting via another button on this screen
 
 import java.util.ArrayList;
@@ -12,12 +8,21 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public class PauseScene {
     ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
 
     boolean _visible = true;
 
+    Rectangle _pauseRectangle;
+    
+    /**
+     * For handling touches
+     */
+    private Vector3 _v = new Vector3();
+    
     private static PauseScene getCurrPauseScene() {
         PauseScene ps = Level._currLevel._pauseScene;
         if (ps != null)
@@ -45,6 +50,11 @@ public class PauseScene {
         getCurrPauseScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
+    public static void addBackButton(String imgName, int x, int y, int width, int height) {
+        getCurrPauseScene()._pauseRectangle = new Rectangle(x, y, width, height);
+        getCurrPauseScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
+    }
+    
     boolean render(SpriteBatch _spriteRender) {
         // if the pop-up scene is not visible, do nothing
         if (!_visible)
@@ -53,6 +63,12 @@ public class PauseScene {
         //
         // TODO: need to make this more nuanced if we want to add buttons...
         if (Gdx.input.justTouched()) {
+            Level._currLevel._hudCam.unproject(_v.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (_pauseRectangle.contains(_v.x, _v.y)) {
+                LOL._game.handleBack();
+                _visible = false;
+                return false;
+            }
             _visible = false;
             return false;
         }

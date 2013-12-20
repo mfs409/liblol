@@ -709,6 +709,7 @@ public class MyLolGame extends LOL {
             Controls.addStopwatch(50, 50);
 
             PauseScene.addCenteredText("Game Paused", 255, 255, 255, "arial.ttf", 32);
+            PauseScene.addBackButton("red.png", 0, 300, 20, 20);
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
             
             // now draw three obstacles. Note that they have different dampening

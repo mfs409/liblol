@@ -212,7 +212,10 @@ public abstract class LOL extends Game {
             return;
         // recognize a new back press as being a 'down' press
         _keyDown = true;
+        handleBack();
+    }
 
+    void handleBack() {
         // if we're looking at main menu, then exit
         if (_mode == Modes.SPLASH) {
             dispose();
