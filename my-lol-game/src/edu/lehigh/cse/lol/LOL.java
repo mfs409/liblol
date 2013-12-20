@@ -13,16 +13,18 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: update comments for all files
+// TODO: aggressively comment, reformat, and reduce visibility as much as possible
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
 
 // TODO: Projectile's rangeFrom shouldn't be static?
 
-// TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
+// TODO: does music and transition work correctly when there is only one level?
 
-// TODO: should we allow drawing pngs over the SVG lines? If so, we'll need to have a height parameter
+// TODO: revisit int vs. float parameters
+
+// TODO: Chooser.java should be redesigned into multiple screens
 
 // TODO: put a license on every file?
 
@@ -34,9 +36,20 @@ package edu.lehigh.cse.lol;
 
 // TODO: add delays for hero-obstacle triggers?
 
+// TODO: move scribble out of Obstacle, turn it into a callback? Maybe a last-ditch control callback?
+
+// TODO: consider adding a wrapper to expose Box2d collision groups?
+
+// TODO: consider making the public interface use pixels instead of meters?
+
 // TODO: I'm not thrilled with how we're handling the random projectile sprites...
 
-// TODO: consider adding goodie collect callbacks?
+// TODO: I'm not thrilled with the current animateByGoodieCount mechanism
+
+// TODO: make sure that all Gdx.app.log messages are removed, except those for common mistake points (animation, filenames)
+
+// TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special
+// function?
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

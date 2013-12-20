@@ -11,29 +11,7 @@ package com.me.mylolgame;
 
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
-// TODO: In level 55, for animateByGoodieCount, we are using Animation objects in an odd way...
-
 // TODO: Level 70 is no longer valid. We can use it as a home for a new demo
-
-// TODO: once everything works, aggressively comment, reformat, and reduce visibility as much as possible
-
-// TODO: produce helpful error messages at all the common mistake points (especially animation and filenames)
-
-// TODO: make sure that all Gdx.app.log messages are removed, except those for common mistake points
-
-// TODO: does music and transition work correctly when there is only one level?
-
-// TODO: Chooser.java should be redesigned into multiple screens
-
-// TODO: I don't like the extra parameter to setvelocity... should we make kinematic-ness or dynamic-ness a special
-// function?
-
-// TODO: the 'getx' and 'gety' methods of physicssprite used to return center coords of body, not coords of the bottom
-// left of the sprite... verify that we've got this fixed everywhere.
-
-// TODO: move scribble out of Obstacle, turn it into a callback? Maybe a last-ditch control callback?
-
-// TODO: revisit int vs. float parameters
 
 // TODO: level 28 accelerometer trick no longer applies. Altering the order of popup and accel in Level.render() would
 // restore the behavior, but the behavior is actually not desirable.
@@ -44,11 +22,9 @@ package com.me.mylolgame;
 
 // TODO: need a demo to show that we can chase in just X or just Y
 
-// TODO: consider adding a wrapper to expose Box2d collision groups?
-
-// TODO: consider making the public interface use pixels instead of meters?
-
 // TODO: consider making a tool for proper sprite sheet manipulation
+
+// TODO: test Tilt in portrait mode, and test if upside-down screens work (landscape and portrait)
 
 import edu.lehigh.cse.lol.*;
 
@@ -711,7 +687,7 @@ public class MyLolGame extends LOL {
             PauseScene.addCenteredText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("red.png", 0, 300, 20, 20);
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
-            
+
             // now draw three obstacles. Note that they have different dampening
             // factors
             // one important thing to notice is that since we place these on the
@@ -2664,7 +2640,6 @@ public class MyLolGame extends LOL {
             Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 1, 1, 0, true);
             Projectile.setRange(50);
             Projectile.setFixedVectorThrowVelocity(5);
-            
 
         }
 
