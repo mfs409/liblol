@@ -1018,7 +1018,7 @@ public class MyLolGame extends LOL {
             // make a pokeable obstacle
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
-            o.setPokeToPlace();
+            o.setPokeToPlace(250);
         }
 
         /**

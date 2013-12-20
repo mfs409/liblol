@@ -133,7 +133,7 @@ public class Controls {
      * @param y The y coordinate where the timer should be drawn
      */
     public static void addCountdown(float timeout, String text, int x, int y) {
-        addCountdown(timeout, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
+        addCountdown(timeout, text, x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
@@ -204,7 +204,7 @@ public class Controls {
      * @param y The y coordinate where the timer should be drawn
      */
     public static void addWinCountdown(float timeout, int x, int y) {
-        addWinCountdown(timeout, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
+        addWinCountdown(timeout, x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
@@ -251,7 +251,7 @@ public class Controls {
      * @param y The y coordinate where the text should be drawn
      */
     public static void addGoodieCount1(int max, String text, int x, int y) {
-        addGoodieCount1(max, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
+        addGoodieCount1(max, text, x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
@@ -401,7 +401,7 @@ public class Controls {
      * @param y The y coordinate where the text should be drawn
      */
     public static void addDefeatedCount(int max, String text, int x, int y) {
-        addDefeatedCount(max, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
+        addDefeatedCount(max, text, x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
@@ -445,7 +445,7 @@ public class Controls {
      * @param y The y coordinate where the stopwatch should be drawn
      */
     static public void addStopwatch(int x, int y) {
-        addStopwatch(x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
+        addStopwatch(x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
@@ -487,7 +487,7 @@ public class Controls {
      */
     static public void addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        addStrengthMeter(text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32, h);
+        addStrengthMeter(text, x, y, LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize(), h);
     }
 
     /**

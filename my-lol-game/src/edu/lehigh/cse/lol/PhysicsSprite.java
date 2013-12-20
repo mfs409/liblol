@@ -98,9 +98,7 @@ public abstract class PhysicsSprite implements Renderable {
     boolean _visible = true;
 
     /**
-     * The default image to display 
-     * 
-     * TODO: consider moving into AnimationDriver?
+     * The default image to display TODO: consider moving into AnimationDriver?
      */
     TextureRegion _tr;
 
@@ -181,18 +179,6 @@ public abstract class PhysicsSprite implements Renderable {
      * a sound to play when the obstacle is touched
      */
     Sound _touchSound;
-
-    /**
-     * When a sprite is poked in pokeToPlace mode, remember the time, so that
-     * rapid double-clicks can cause deletion
-     */
-    private long _lastPokeTime;
-
-    /**
-     * Tunable constant for how much time between pokes constitutes a
-     * "double click"... this is in nanoseconds, so it's half a second
-     */
-    private final static long _pokeDeleteThresh = 500000000;
 
     /**
      * Animation support: this tracks the current state of the active animation
@@ -783,20 +769,21 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * Call this on an Entity to make it pokeable Poke the entity, then poke the
      * screen, and the entity will move to the location that was pressed. Poke
-     * the entity twice in rapid succession to delete it. TODO: make poke twice
-     * a more configurable option?
+     * the entity twice in rapid succession to delete it.
      */
-    public void setPokeToPlace() {
+    public void setPokeToPlace(long deleteThresholdMillis) {
+        // convert threshold to nanoseconds
+        final long deleteThreshold = deleteThresholdMillis * 1000000;
         // set the code to run on touch
         _touchResponder = new TouchAction() {
+            long _lastPokeTime;
+
             @Override
             public void onDown(float x, float y) {
                 LOL._game.vibrate(100);
                 long time = System.nanoTime();
                 // double touch
-                //
-                // TODO: move _lastPokeTime into here?
-                if ((time - _lastPokeTime) < _pokeDeleteThresh) {
+                if ((time - _lastPokeTime) < deleteThreshold) {
                     // hide sprite, disable physics
                     _physBody.setActive(false);
                     _visible = false;
@@ -844,9 +831,6 @@ public abstract class PhysicsSprite implements Renderable {
                 final float initialX = _physBody.getPosition().x;
                 final float initialY = _physBody.getPosition().y;
                 // set a handler to run when the screen is touched
-                //
-                // TODO: whenever *any* entity is touched, it should null out
-                // the Level touchResponder
                 Level._currLevel._touchResponder = new TouchAction() {
                     @Override
                     public void onUp(float x, float y) {
@@ -873,8 +857,8 @@ public abstract class PhysicsSprite implements Renderable {
      * @param velocity The constant velocity for poke movement
      */
     // TODO: rethink these parameters a little bit more, then clean up levels 71
-    // and 79. Are there really 8 possible
-    // behaviors, or is the real number much smaller?
+    // and 79. Are there really 8 possible behaviors, or is the real number much
+    // smaller? I think the right answer is "2"
     public void setPokePath(final float velocity, final boolean oncePerTouch,
             final boolean updateOnMove, final boolean stopOnUp) {
         if (_physBody.getType() == BodyType.StaticBody)
@@ -890,7 +874,6 @@ public abstract class PhysicsSprite implements Renderable {
                                 x - _width / 2, y - _height / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
-
                         // clear the pokePathEntity, so a future touch starts
                         // the process over
                         if (oncePerTouch)

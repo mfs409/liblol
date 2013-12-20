@@ -1,10 +1,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: does zoom work with parallax?
-
-// TODO: the unlock mechanism is untested
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -311,7 +307,9 @@ public class Level extends ScreenAdapter {
 
         // When debug mode is on, print the frames per second
         if (LOL._game._config.showDebugBoxes())
-            Controls.addFPS(400, 15, LOL._game._config.getDefaultFont(), 200, 200, 100, 12);
+            Controls.addFPS(400, 15, LOL._game._config.getDefaultFontFace(),
+                    LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
+                    LOL._game._config.getDefaultFontBlue(), 12);
     }
 
     /**

@@ -59,8 +59,13 @@ public interface LOLConfiguration {
      * name of the font through this file, and be sure the font file (with a
      * .ttf extension) is in your assets folder.
      */
-    public String getDefaultFont();
+    public String getDefaultFontFace();
 
+    public int getDefaultFontSize();
+    public int getDefaultFontRed();
+    public int getDefaultFontGreen();
+    public int getDefaultFontBlue();
+    
     /**
      * When getting started, you may wish to use default text at the end of each
      * level. This is the default text when winning the level:

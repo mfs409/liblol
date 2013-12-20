@@ -93,8 +93,28 @@ public class Config implements LOLConfiguration {
      * .ttf extension) is in your assets folder.
      */
     @Override
-    public String getDefaultFont() {
+    public String getDefaultFontFace() {
         return "arial.ttf";
+    }
+
+    @Override
+    public int getDefaultFontSize() {
+        return 32;
+    }
+
+    @Override
+    public int getDefaultFontRed() {
+        return 255;
+    }
+
+    @Override
+    public int getDefaultFontGreen() {
+        return 255;
+    }
+
+    @Override
+    public int getDefaultFontBlue() {
+        return 255;
     }
 
     /**

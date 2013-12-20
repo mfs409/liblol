@@ -139,8 +139,9 @@ public class HelpLevel extends ScreenAdapter {
      * @param message The message to display
      */
     static public void drawText(int x, int y, String message) {
-        _currLevel._sprites.add(Util.makeText(x, y, message, 255, 255, 255,
-                LOL._game._config.getDefaultFont(), 20));
+        _currLevel._sprites.add(Util.makeText(x, y, message, LOL._game._config.getDefaultFontRed(),
+                LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(),
+                LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
     }
 
     /**
@@ -154,8 +155,8 @@ public class HelpLevel extends ScreenAdapter {
      * @param message The message to display
      * @param red A value between 0 and 255, indicating the red aspect of the
      *            font color
-     * @param green A value between 0 and 255, indicating the green aspect of the
-     *            font color
+     * @param green A value between 0 and 255, indicating the green aspect of
+     *            the font color
      * @param blue A value between 0 and 255, indicating the blue aspect of the
      *            font color
      * @param size The size of the font used to display the message

@@ -1,6 +1,10 @@
 
 package edu.lehigh.cse.lol;
 
+//TODO: does zoom work with parallax?
+
+//TODO: the unlock mechanism is untested
+
 // TODO: update comments for all files
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'

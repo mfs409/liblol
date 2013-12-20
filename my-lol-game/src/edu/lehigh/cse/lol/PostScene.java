@@ -136,15 +136,13 @@ public class PostScene {
         if (win) {
             if (_winSound != null)
                 _winSound.play();
-            // TODO: externalize font information, and add font face
             _winSprites.add(Util.makeCenteredText(_winText, 255, 255, 255,
-                    LOL._game._config.getDefaultFont(), 32));
+                    LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
         } else {
             if (_loseSound != null)
                 _loseSound.play();
-            // TODO: externalize font information, and add font face
             _loseSprites.add(Util.makeCenteredText(_loseText, 255, 255, 255,
-                    LOL._game._config.getDefaultFont(), 32));
+                    LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
         }
     }
 
