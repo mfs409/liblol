@@ -4,8 +4,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: work on the 'hold to keep the action going' buttons
 
-// TODO: pass in fonts everywhere...
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -158,7 +156,7 @@ public class Controls
      */
     public static void addCountdown(float timeout, String text, int x, int y)
     {
-        addCountdown(timeout, text, x, y, 255, 255, 255, 32);
+        addCountdown(timeout, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
     }
 
     /**
@@ -183,11 +181,11 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addCountdown(final float timeout, final String text, final int x, final int y, final int red,
+    public static void addCountdown(final float timeout, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         _countDownRemaining = timeout;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Level._currLevel._controls.add(new Control(red, green, blue)
         {
             @Override
@@ -216,9 +214,9 @@ public class Controls
      * @param blue
      * @param size
      */
-    public static void addFPS(final int x, final int y, final int red, final int green, final int blue, int size)
+    public static void addFPS(final int x, final int y, String fontName, final int red, final int green, final int blue, int size)
     {
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
 
         Level._currLevel._controls.add(new Control(red, green, blue)
         {
@@ -243,7 +241,7 @@ public class Controls
      */
     public static void addWinCountdown(float timeout, int x, int y)
     {
-        addWinCountdown(timeout, x, y, 255, 255, 255, 32);
+        addWinCountdown(timeout, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
     }
 
     /**
@@ -266,11 +264,11 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addWinCountdown(final float timeout, final int x, final int y, final int red, final int green,
+    public static void addWinCountdown(final float timeout, final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size)
     {
         _winCountRemaining = timeout;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Level._currLevel._controls.add(new Control(red, green, blue)
         {
             @Override
@@ -301,7 +299,7 @@ public class Controls
      */
     public static void addGoodieCount1(int max, String text, int x, int y)
     {
-        addGoodieCount1(max, text, x, y, 255, 255, 255, 32);
+        addGoodieCount1(max, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
     }
 
     /**
@@ -326,12 +324,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount1(int max, final String text, final int x, final int y, final int red,
+    public static void addGoodieCount1(int max, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -369,12 +367,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount2(int max, final String text, final int x, final int y, final int red,
+    public static void addGoodieCount2(int max, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -412,12 +410,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount3(int max, final String text, final int x, final int y, final int red,
+    public static void addGoodieCount3(int max, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -456,12 +454,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addGoodieCount4(int max, final String text, final int x, final int y, final int red,
+    public static void addGoodieCount4(int max, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -491,7 +489,7 @@ public class Controls
      */
     public static void addDefeatedCount(int max, String text, int x, int y)
     {
-        addDefeatedCount(max, text, x, y, 255, 255, 255, 32);
+        addDefeatedCount(max, text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
     }
 
     /**
@@ -516,12 +514,12 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    public static void addDefeatedCount(int max, final String text, final int x, final int y, final int red,
+    public static void addDefeatedCount(int max, final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size)
     {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -547,7 +545,7 @@ public class Controls
      */
     static public void addStopwatch(int x, int y)
     {
-        addStopwatch(x, y, 255, 255, 255, 32);
+        addStopwatch(x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32);
     }
 
     /**
@@ -568,10 +566,10 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    static public void addStopwatch(final int x, final int y, final int red, final int green, final int blue, int size)
+    static public void addStopwatch(final int x, final int y, String fontName, final int red, final int green, final int blue, int size)
     {
         _stopWatchProgress = 0;
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -601,7 +599,7 @@ public class Controls
     static public void addStrengthMeter(String text, int x, int y, Hero h)
     {
         // forward to the more powerful method...
-        addStrengthMeter(text, x, y, 255, 255, 255, 32, h);
+        addStrengthMeter(text, x, y, LOL._game._config.getDefaultFont(), 255, 255, 255, 32, h);
     }
 
     /**
@@ -623,10 +621,10 @@ public class Controls
      *            The font size, typically 32 but can be varied depending on the amount of text being drawn to the
      *            screen
      */
-    static public void addStrengthMeter(final String text, final int x, final int y, final int red, final int green,
+    static public void addStrengthMeter(final String text, final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size, final Hero h)
     {
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override
@@ -660,10 +658,10 @@ public class Controls
      * @param size
      *            The size of the font
      */
-    public static void addProjectileCount(final String text, final int x, final int y, final int red, final int green,
+    public static void addProjectileCount(final String text, final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size)
     {
-        final BitmapFont bf = Media.getFont("arial.ttf", size);
+        final BitmapFont bf = Media.getFont(fontName, size);
         Control he = new Control(red, green, blue)
         {
             @Override

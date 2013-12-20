@@ -690,7 +690,7 @@ public class MyLolGame extends LOL
             g.setRoute(new Route(5).to(5, 5).to(5, 25).to(25, 25).to(9, 9).to(5, 5), 10, true);
 
             // draw a goodie counter in light blue with a 12-point font
-            Controls.addGoodieCount1(0, "Goodies", 220, 280, 60, 70, 255, 12);
+            Controls.addGoodieCount1(0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /**
@@ -979,7 +979,7 @@ public class MyLolGame extends LOL
             Score.setVictoryDestination(1);
             Controls.addGoodieCount1(0, "Goodies", 220, 280);
 
-            Controls.addFPS(400, 15, 200, 200, 100, 12);
+            Controls.addFPS(400, 15, "arial.ttf", 200, 200, 100, 12);
         }
 
         /**
@@ -2318,7 +2318,7 @@ public class MyLolGame extends LOL
 
             // put an enemy defeated count on the screen, in red with a small
             // font
-            Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20, 255, 0, 0, 10);
+            Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
 
             // make a moveable obstacle that can defeat enemies
             Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
@@ -2431,7 +2431,7 @@ public class MyLolGame extends LOL
             // Allow the projectile image to be chosen randomly from a sprite sheet
             Projectile.setImageSource("colorstar.png");
             // show how many shots are left
-            Controls.addProjectileCount("projectiles left", 5, 300, 255, 255, 255, 12);
+            Controls.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 255, 255, 12);
 
             // draw a bunch of enemies to defeat
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -2803,7 +2803,7 @@ public class MyLolGame extends LOL
             PreScene.addText("Press anywhere\nto throw a ball", 50, 50, 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
-            Controls.addWinCountdown(25, 28, 250, 192, 192, 192, 16);
+            Controls.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions
@@ -3052,9 +3052,9 @@ public class MyLolGame extends LOL
             d.setActivationScore(1, 1, 3, 0);
             Score.setVictoryDestination(1);
 
-            Controls.addGoodieCount1(0, "blue", 10, 110, 0, 255, 255, 16);
-            Controls.addGoodieCount2(0, "green", 10, 140, 0, 255, 255, 16);
-            Controls.addGoodieCount3(0, "red", 10, 170, 0, 255, 255, 16);
+            Controls.addGoodieCount1(0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
+            Controls.addGoodieCount2(0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
+            Controls.addGoodieCount3(0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
 
             Controls.addCountdown(100, "", 250, 30);
 

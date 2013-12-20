@@ -2,7 +2,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: update comments for all files
 
-// TODO: consider switching to Android style guide
+// TODO: consider switching to Android style guidelines
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it?
@@ -17,7 +17,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: Sticky obstacles need work (see Hero)
 
-// TODO: Hero animation sequence could use work
+// TODO: Hero animation sequences could use work
 
 // TODO: add jump-to-defeat enemies
 
