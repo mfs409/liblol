@@ -486,16 +486,20 @@ public class Level extends ScreenAdapter
         float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
         float y = _chase._physBody.getWorldCenter().y + _chase._cameraOffset.y;
         // if x or y is too close to 0,0, stick with minimum acceptable values
-        if (x < LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2)
-            x = LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2;
-        if (y < LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2)
-            y = LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2;
+        if (x < LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) {
+            x = LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+            Gdx.app.log("clippped", "from "+(_chase._physBody.getWorldCenter().x + _chase._cameraOffset.x)+" to "+x);
+        }
+        if (y < LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2) {
+            y = LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+            Gdx.app.log("clippped", "from "+(_chase._physBody.getWorldCenter().y + _chase._cameraOffset.y)+" to "+y);
+        }
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > _camBoundX - LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2)
-            x = _camBoundX - LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2;
-        if (y > _camBoundY - LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2)
-            y = _camBoundY - LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2;
+        if (x > _camBoundX - LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = _camBoundX - LOL._game._config.getScreenWidth()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y > _camBoundY - LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = _camBoundY - LOL._game._config.getScreenHeight()*_gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         _gameCam.position.set(x, y, 0);
