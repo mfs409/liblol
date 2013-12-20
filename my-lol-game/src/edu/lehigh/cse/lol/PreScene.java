@@ -80,9 +80,6 @@ public class PreScene {
         for (Renderable r : _sprites)
             r.render(sb, 0);
         sb.end();
-
-        // be sure to update anything related to timers in the main game
-        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
     }
 

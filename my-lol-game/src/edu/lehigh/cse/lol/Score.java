@@ -3,6 +3,8 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.utils.Timer;
 
+import edu.lehigh.cse.lol.Level.Action;
+
 /**
  * Score is used by Level to track the progress through a level. There are four
  * things tracked: the number of heroes created and destroyed, the number of
@@ -172,28 +174,33 @@ public class Score {
      * 
      * @param win /true/ if the level was won, /false/ otherwise
      */
-    void endLevel(boolean win) {
-        // Safeguard: only call this method once per level
-        if (_gameOver)
-            return;
-        _gameOver = true;
+    void endLevel(final boolean win) {
+        if (Level._currLevel._endGameEvent == null)
+        Level._currLevel._endGameEvent = new Action(){
+            @Override
+            public void go() {
+                // Safeguard: only call this method once per level
+                if (_gameOver)
+                    return;
+                _gameOver = true;
 
-        // Run the level-complete trigger
-        LOL._game.levelCompleteTrigger(win);
+                // Run the level-complete trigger
+                LOL._game.levelCompleteTrigger(win);
 
-        // if we won, unlock the next level
-        if (win && LOL._game.readUnlocked() == LOL._game._currLevel)
-            LOL._game.saveUnlocked(LOL._game._currLevel + 1);
+                // if we won, unlock the next level
+                if (win && LOL._game.readUnlocked() == LOL._game._currLevel)
+                    LOL._game.saveUnlocked(LOL._game._currLevel + 1);
 
-        // drop everything from the hud
-        Level._currLevel._controls.clear();
+                // drop everything from the hud
+                Level._currLevel._controls.clear();
 
-        // clear any pending timers
-        Timer.instance().clear();
+                // clear any pending timers
+                Timer.instance().clear();
 
-        // display the PostScene, which provides a pause before we retry/start
-        // the next level
-        Level._currLevel._postScene.setWin(win);
+                // display the PostScene, which provides a pause before we retry/start
+                // the next level
+                Level._currLevel._postScene.setWin(win);                
+            }};
     }
 
     /*

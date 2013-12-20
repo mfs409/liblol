@@ -157,6 +157,8 @@ public class Level extends ScreenAdapter {
      */
     ArrayList<Action> _oneTimeEvents = new ArrayList<Action>();
 
+    Action _endGameEvent;
+    
     /**
      * Events that get processed on every render
      */
@@ -399,6 +401,10 @@ public class Level extends ScreenAdapter {
         for (Action pe : _repeatEvents)
             pe.go();
 
+        // check for end of game
+        if (_endGameEvent != null)
+            _endGameEvent.go();
+        
         // The world is now static for this time step... we can display it!
 
         // clear the screen

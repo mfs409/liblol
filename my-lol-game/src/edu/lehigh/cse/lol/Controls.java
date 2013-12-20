@@ -110,15 +110,6 @@ public class Controls {
         _countDownRemaining += delta;
     }
 
-    static void updateTimerForPause(float delta) {
-        _countDownRemaining += delta;
-        _winCountRemaining += delta;
-        // TODO: how do we deal with pausing? This next line isn't needed, but a
-        // pause screen could change that...
-        //
-        // _stopWatchProgress -= delta;
-    }
-
     static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
         bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
     }
@@ -590,6 +581,16 @@ public class Controls {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.y = 0;
                 entity.updateVelocity(v.x, v.y);
+            }
+        };
+        Level._currLevel._controls.add(pe);
+    }
+
+    public static void addPauseButton(int x, int y, int width, int height, String imgName) {
+        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+            @Override
+            void onDownPress(Vector3 vv) {
+                Level._currLevel._pauseScene._visible = true;
             }
         };
         Level._currLevel._controls.add(pe);

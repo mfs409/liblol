@@ -176,12 +176,9 @@ public class PostScene {
         Level._currLevel._hudCam.update();
         sb.setProjectionMatrix(Level._currLevel._hudCam.combined);
         sb.begin();
-
         for (Renderable r : _sprites)
             r.render(sb, 0);
-
         sb.end();
-        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
     }
 }

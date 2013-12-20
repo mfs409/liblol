@@ -18,31 +18,31 @@ public class PauseScene {
 
     boolean _visible = true;
 
-    /**
-     * Get the PauseScene that is configured for the current level, or create a
-     * blank one if none exists.
-     * 
-     * @return
-     */
-    void create() {
-        Level._currLevel._pauseScene = new PauseScene();
+    private static PauseScene getCurrPauseScene() {
+        PauseScene ps = Level._currLevel._pauseScene;
+        if (ps != null)
+            return ps;
+        ps = new PauseScene();
         Level._currLevel.suspendTouch();
+        Level._currLevel._pauseScene = ps;
+        return ps;
     }
 
+    
     public static void addText(String text, int x, int y, int red, int green, int blue,
             String fontName, int size) {
-        Level._currLevel._pauseScene._sprites.add(Util.makeText(x, y, text, red, green, blue,
+        getCurrPauseScene()._sprites.add(Util.makeText(x, y, text, red, green, blue,
                 fontName, size));
     }
 
     public static void addCenteredText(String text, int red, int green, int blue, String fontName,
             int size) {
-        Level._currLevel._pauseScene._sprites.add(Util.makeCenteredText(text, red, green, blue,
+        getCurrPauseScene()._sprites.add(Util.makeCenteredText(text, red, green, blue,
                 fontName, size));
     }
 
     public static void addImage(String imgName, int x, int y, int width, int height) {
-        Level._currLevel._pauseScene._sprites.add(Util.makePicture(x, y, width, height, imgName));
+        getCurrPauseScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     boolean render(SpriteBatch _spriteRender) {
@@ -67,9 +67,6 @@ public class PauseScene {
         for (Renderable r : _sprites)
             r.render(_spriteRender, 0);
         _spriteRender.end();
-
-        // be sure to update anything related to timers in the main game
-        Controls.updateTimerForPause(Gdx.graphics.getDeltaTime());
         return true;
     }
 }

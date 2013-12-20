@@ -672,6 +672,9 @@ public class MyLolGame extends LOL {
             Controls.addGoodieCount1(5, "Goodies", 220, 280);
             // put a countdown on the screen
             Controls.addCountdown(15, "Time Up!", 400, 50);
+
+            PauseScene.addCenteredText("Game Paused", 255, 255, 255, "arial.ttf", 32);
+            Controls.addPauseButton(0, 300, 20, 20, "red.png");
         }
 
         /**
@@ -705,6 +708,9 @@ public class MyLolGame extends LOL {
             // stopwatch, the other of which allows for configuring the font
             Controls.addStopwatch(50, 50);
 
+            PauseScene.addCenteredText("Game Paused", 255, 255, 255, "arial.ttf", 32);
+            Controls.addPauseButton(0, 300, 20, 20, "red.png");
+            
             // now draw three obstacles. Note that they have different dampening
             // factors
             // one important thing to notice is that since we place these on the
@@ -2643,6 +2649,9 @@ public class MyLolGame extends LOL {
             Controls.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
             Score.setVictoryDestination(1);
 
+            PauseScene.addCenteredText("Game Paused", 255, 255, 255, "arial.ttf", 32);
+            Controls.addPauseButton(0, 300, 20, 20, "red.png");
+
             // draw a button for throwing projectiles in many directions
             Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
 
@@ -2654,6 +2663,8 @@ public class MyLolGame extends LOL {
             Projectile.configure(100, 1, 1, "greyball.png", 30, 0, 0, 1, 1, 0, true);
             Projectile.setRange(50);
             Projectile.setFixedVectorThrowVelocity(5);
+            
+
         }
 
         /**
