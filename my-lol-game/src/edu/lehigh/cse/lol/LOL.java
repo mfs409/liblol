@@ -1,9 +1,9 @@
 
 package edu.lehigh.cse.lol;
 
-//TODO: does zoom work with parallax?
+// TODO: does zoom work with parallax?
 
-//TODO: the unlock mechanism is untested
+// TODO: the unlock mechanism is untested
 
 // TODO: update comments for all files
 
@@ -25,6 +25,8 @@ package edu.lehigh.cse.lol;
 // TODO: add delays for hero-obstacle triggers?
 
 // TODO: projectile needs a lot of work
+
+// TODO: I'm not thrilled with how we're handling the random projectile sprites...
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

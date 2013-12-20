@@ -98,13 +98,6 @@ public abstract class PhysicsSprite implements Renderable {
     boolean _visible = true;
 
     /**
-     * The default image to display 
-     * 
-     * TODO: consider moving into AnimationDriver?
-     */
-    TextureRegion _tr;
-
-    /**
      * Does the entity's image flip when the hero moves backwards?
      */
     private boolean _reverseFace = false;
@@ -112,10 +105,11 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * We may opt to flip the image when it is moving in the -X direction. If
      * so, this tracks if the image is flipped, so that we draw its sprite
-     * correctly. 
-     * 
-     * TODO: consider moving into AnimationDriver?
+     * correctly.
      */
+    // TODO: consider moving into AnimationDriver? It's almost certainly the
+    // case that if we change animations while going in reverse, things will
+    // break.
     private boolean _flipped;
 
     /**
@@ -188,7 +182,7 @@ public abstract class PhysicsSprite implements Renderable {
      * Animation support: this tracks the current state of the active animation
      * (if any)
      */
-    AnimationDriver _animator = new AnimationDriver();
+    AnimationDriver _animator;
 
     /**
      * Animation support: the cells of the default animation
@@ -269,11 +263,7 @@ public abstract class PhysicsSprite implements Renderable {
      */
     PhysicsSprite(String imgName, SpriteId id, float width, float height) {
         _psType = id;
-        // minor hack so that we can have invalid png files for invisible images
-        TextureRegion[] tra = Media.getImage(imgName);
-        if (tra != null) {
-            _tr = new TextureRegion(tra[0]);
-        }
+        _animator = new AnimationDriver(imgName);
         _width = width;
         _height = height;
     }
@@ -294,6 +284,12 @@ public abstract class PhysicsSprite implements Renderable {
      * @param y The new y velocity
      */
     void updateVelocity(float x, float y) {
+        // make sure it is moveable... heroes are already Dynamic, let's just
+        // set everything else that is static to kinematic... that's probably
+        // safest.
+        if (_physBody.getType() == BodyType.StaticBody)
+            _physBody.setType(BodyType.KinematicBody);
+        // Clobber any joints, or this won't be able to move
         if (_dJoint != null) {
             Level._currLevel._world.destroyJoint(_dJoint);
             _dJoint = null;
@@ -344,10 +340,7 @@ public abstract class PhysicsSprite implements Renderable {
 
             // choose the default TextureRegion to show... this is how we
             // animate
-            TextureRegion tr = _tr;
-            // If we've got an in-flight animation, switch to it
-            if (_animator.isActive())
-                tr = _animator.getTr(delta);
+            TextureRegion tr = _animator.getTr(delta);
 
             // now draw this sprite, flipping it if necessary
             Vector2 pos = _physBody.getPosition();
@@ -977,13 +970,7 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     public void setImage(String imgName) {
-        // minor hack so that we can have invalid png files for invisible images
-        TextureRegion[] tra = Media.getImage(imgName);
-        if (tra != null) {
-            _tr = new TextureRegion(tra[0]);
-        } else {
-            _tr = null;
-        }
+        _animator.updateImage(imgName);
     }
 
     public void resize(float x, float y, float width, float height) {

@@ -260,6 +260,7 @@ public class Level extends ScreenAdapter {
      * @param height The height of the level, in meters
      */
     Level(int width, int height) {
+        Timer.instance().clear();
         // save the singleton and camera bounds
         _currLevel = this;
         _camBoundX = width;

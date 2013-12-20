@@ -1,11 +1,8 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: I'm not thrilled with how we're handling the random projectile sprites...
-
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -51,8 +48,6 @@ public class Projectile extends PhysicsSprite {
      * How much _damage does this projectile do?
      */
     static int _strength;
-
-    static TextureRegion[] _imageSource;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
@@ -126,6 +121,8 @@ public class Projectile extends PhysicsSprite {
             p._physBody.setGravityScale(1);
     }
 
+    static boolean _randomizeImages;
+    
     /**
      * Specify the number of cells from which to choose a random projectile
      * image
@@ -133,7 +130,10 @@ public class Projectile extends PhysicsSprite {
      * @param range This number indicates the number of cells
      */
     public static void setImageSource(String imgName) {
-        _imageSource = Media.getImage(imgName);
+        for (Projectile p : _pool)
+            p._animator.updateImage(imgName);
+        _randomizeImages = true;
+        
     }
 
     /**
@@ -242,7 +242,6 @@ public class Projectile extends PhysicsSprite {
         _throwSound = null;
         _projectileDisappearSound = null;
         _projectilesRemaining = -1;
-        _imageSource = null;
         _sensorProjectiles = true;
         _disappearOnCollide = true;
     }
@@ -368,8 +367,8 @@ public class Projectile extends PhysicsSprite {
         b.setCollisionEffect(!_sensorProjectiles);
 
         // set its _sprite
-        if (Projectile._imageSource != null)
-            b._tr = _imageSource[Util.getRandom(_imageSource.length)];
+        if (_randomizeImages)
+            b._animator.pickRandomIndex();
 
         _nextIndex = (_nextIndex + 1) % _poolSize;
 

@@ -410,7 +410,7 @@ public class Hero extends PhysicsSprite {
             int goodies = Level._currLevel._score._goodiesCollected[0];
             for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {
                 if (_goodieCountAnimation._durations[i] == goodies) {
-                    _tr = _goodieCountAnimation._cells[_goodieCountAnimation._frames[i]];
+                    _animator.setIndex(_goodieCountAnimation._frames[i]);
                     break;
                 }
             }

@@ -98,6 +98,17 @@ public class Animation {
     }
 
     static class AnimationDriver {
+
+        AnimationDriver(String imgName) {
+            updateImage(imgName);
+        }
+
+        /**
+         * The default image to display 
+         */
+        TextureRegion [] _tra;
+        int _traIndex;
+
         /**
          * The currently running animation
          */
@@ -113,11 +124,28 @@ public class Animation {
             _currAnimationTime = 0;
         }
 
-        boolean isActive() {
-            return _currentAnimation != null;
+        void updateImage(String imgName) {
+            // minor hack so that we can have invalid png files for invisible
+            // images
+            _tra = Media.getImage(imgName);
+            _traIndex = 0;
         }
-
+        
+        void setIndex(int i)
+        {
+            _traIndex = i;
+        }
+        
+        void pickRandomIndex(){
+            _traIndex = Util.getRandom(_tra.length);
+        }
+        
         TextureRegion getTr(float delta) {
+            if (_currentAnimation == null) {
+                if (_tra == null)
+                    return null;
+                return _tra[_traIndex];
+            }
             _currAnimationTime += delta;
             long millis = (long)(1000 * _currAnimationTime);
             // are we still in this frame?
