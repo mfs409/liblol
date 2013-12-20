@@ -211,7 +211,7 @@ public class Hero extends PhysicsSprite
             _isHover = false;
             if (_physBody.getType() != BodyType.DynamicBody)
                 _physBody.setType(BodyType.DynamicBody); // in case hero is hovering
-            addVelocity(_touchAndGo.x, _touchAndGo.y, false);
+            setAbsoluteVelocity(_touchAndGo.x, _touchAndGo.y, false);
             // turn off _isTouchAndGo, so we can't double-touch
             _touchAndGo = null;
             return;

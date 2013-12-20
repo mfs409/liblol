@@ -166,7 +166,7 @@ public class Level extends ScreenAdapter
     /**
      * The controls / heads-up-display
      */
-    ArrayList<HudEntity>                       _controls      = new ArrayList<HudEntity>();
+    ArrayList<HudEntity>                     _controls      = new ArrayList<HudEntity>();
 
     /*
      * COLLECTIONS OF EVENTS THAT MUST BE PROCESSED
@@ -253,10 +253,10 @@ public class Level extends ScreenAdapter
     /**
      * Our polling-based multitouch uses this array to track the previous state of 4 fingers
      */
-    private boolean[]                        lastTouches    = new boolean[]{true,true,true,true};
+    private boolean[]                        _lastTouches   = new boolean[4];
 
-    private boolean _touchActive = false;
-    
+    private boolean                          _touchActive   = true;
+
     /**
      * The LOL interface requires that game designers don't have to construct Level manually. To make it work, we store
      * the current Level here
@@ -363,6 +363,13 @@ public class Level extends ScreenAdapter
     /*
      * INTERNAL INTERFACE: RENDERING AND CAMERAS
      */
+
+    void suspendTouch()
+    {
+        _touchActive = false;
+        for (int i = 0; i < 4; ++i)
+            _lastTouches[i] = true;
+    }
 
     /**
      * This code is called every 1/45th of a second to update the game state and re-draw the screen
@@ -535,15 +542,15 @@ public class Level extends ScreenAdapter
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
             // if there is a touch, call the appropriate method
-            if (touchStates[i] && lastTouches[i] && _touchActive)
+            if (touchStates[i] && _lastTouches[i] && _touchActive)
                 touchMove((int) x, (int) y);
-            else if (touchStates[i] && !lastTouches[i]) {
+            else if (touchStates[i] && !_lastTouches[i]) {
                 _touchActive = true;
                 touchDown((int) x, (int) y);
             }
-            else if (!touchStates[i] && lastTouches[i]&& _touchActive)
+            else if (!touchStates[i] && _lastTouches[i] && _touchActive)
                 touchUp((int) x, (int) y);
-            lastTouches[i] = touchStates[i];
+            _lastTouches[i] = touchStates[i];
         }
     }
 
@@ -573,10 +580,10 @@ public class Level extends ScreenAdapter
         _hitSprite = null;
         _gameCam.unproject(_touchVec.set(x, y, 0));
         _world.QueryAABB(_callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f, _touchVec.y + 0.1f);
-        if (_hitSprite != null) 
+        if (_hitSprite != null)
             _hitSprite.handleTouchDown(x, y);
         // Handle level touches for which we've got a registered handler
-        else if (_touchResponder != null) 
+        else if (_touchResponder != null)
             _touchResponder.onDown(_touchVec.x, _touchVec.y);
     }
 
@@ -605,7 +612,7 @@ public class Level extends ScreenAdapter
         // We don't currently support Move within a Sprite, only on the screen. These screen handlers are all one-off
         // calls from here.
         _gameCam.unproject(_touchVec.set(x, y, 0));
-        if (_touchResponder != null) 
+        if (_touchResponder != null)
             _touchResponder.onMove(_touchVec.x, _touchVec.y);
         // deal with drag?
         //

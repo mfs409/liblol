@@ -26,6 +26,7 @@ public class PauseScene
     void create()
     {
         Level._currLevel._pauseScene = new PauseScene();
+        Level._currLevel.suspendTouch();
     }
 
     public static void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size)

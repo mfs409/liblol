@@ -46,6 +46,7 @@ public class PreScene
         if (ps != null)
             return ps;
         ps = new PreScene();
+        Level._currLevel.suspendTouch();
         Level._currLevel._preScene = ps;
         return ps;
     }

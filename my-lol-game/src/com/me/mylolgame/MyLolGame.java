@@ -38,7 +38,7 @@ package com.me.mylolgame;
 
 // TODO: woowoowoo.ogg doesn't seem to play on Desktop, but works on Phone (see level 20)
 
-// TODO: need a demo to show that we can in just X or just Y
+// TODO: need a demo to show that we can chase in just X or just Y
 
 // TODO: consider adding a wrapper to expose Box2d collision groups?
 
@@ -1263,6 +1263,7 @@ public class MyLolGame extends LOL
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setFlickable(1f);
+            h.disableRotation();
 
             // set up a destination
             Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
@@ -2813,7 +2814,6 @@ public class MyLolGame extends LOL
          * @whatsnew: setCanFall to allow an entity to be subject to gravity
          *            without having a pre-set motion
          */
-        // TODO: test hover + touchAndGo... there's some kind of funny issue with forces...
         else if (whichLevel == 68) {
             // set up a simple level
             Level.configure(48, 32);
@@ -2826,7 +2826,6 @@ public class MyLolGame extends LOL
             // re-enable gravity on the hero after setHover temporarily disables
             // it.
             h.setFlickable(0.7f);
-            // h.setTouchAndGo(10, 10);
             h.setHover(21, 23);
             // place an enemy, let it fall
             Enemy e = Enemy.makeAsCircle(31, 25, 3, 3, "redball.png");
