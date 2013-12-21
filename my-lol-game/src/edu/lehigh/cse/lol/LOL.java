@@ -68,6 +68,10 @@ package edu.lehigh.cse.lol;
 
 // TODO: test Tilt in portrait mode
 
+// TODO: Parallax has zoom and performance bugs
+
+// TODO: zoom bounds are probably backwards... do max before min?
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
