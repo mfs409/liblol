@@ -97,11 +97,17 @@ public class Background {
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
             if (pl._xRepeat) {
-                // NB: this while loop is not the most efficient way to draw the background
-                int i = -(int)pl._tr.getRegionWidth() / 2;
-                while (i / Physics.PIXEL_METER_RATIO < x + Level._currLevel._camBoundX) {
-                    sb.draw(pl._tr, i, pl._yOffset);
-                    i += pl._tr.getRegionWidth();
+                // get the camera center, translate to pixels, and scale by speed
+                float startX = x*Physics.PIXEL_METER_RATIO*pl._xSpeed;
+                // subtract one and a half screens worth of repeated pictures
+                startX -= 1.5f*LOL._game._config.getScreenWidth();
+                // round down to nearest screen width
+                startX = startX - startX % pl._tr.getRegionWidth();
+                float currX = startX;
+                // draw picture repeatedly until we've drawn 2 screens worth of data
+                while (currX < startX + 2*LOL._game._config.getScreenWidth()) {
+                    sb.draw(pl._tr,  currX, pl._yOffset);
+                    currX += pl._tr.getRegionWidth();
                 }
             }
             // Figure out what to draw for layers that repeat in the y dimension

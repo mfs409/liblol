@@ -1007,8 +1007,10 @@ public class Controls {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level._currLevel._gameCam.zoom;
-                if (curzoom < maxZoom)
+                if (curzoom < maxZoom) {
                     Level._currLevel._gameCam.zoom *= 2;
+                    Level._currLevel._bgCam.zoom *= 2;
+                }
             }
 
             @Override
@@ -1034,8 +1036,10 @@ public class Controls {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level._currLevel._gameCam.zoom;
-                if (curzoom > minZoom)
+                if (curzoom > minZoom) {
                     Level._currLevel._gameCam.zoom /= 2;
+                    Level._currLevel._bgCam.zoom /= 2;
+                }
             }
 
             @Override

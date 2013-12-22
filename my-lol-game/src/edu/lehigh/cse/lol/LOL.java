@@ -68,7 +68,9 @@ package edu.lehigh.cse.lol;
 
 // TODO: test Tilt in portrait mode
 
-// TODO: Parallax has zoom and performance bugs
+// TODO: Parallax has zoom bug, and has a performance bug for vertical parallax (it's fixed for horizontal)
+
+// TODO: Hover has a zoom bug
 
 // TODO: zoom bounds are probably backwards... do max before min?
 
