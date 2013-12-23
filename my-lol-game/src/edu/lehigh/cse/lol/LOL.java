@@ -40,8 +40,6 @@ package edu.lehigh.cse.lol;
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it? (Status: only Chooser is a serious issue)
 
-// TODO: does music and transition work correctly when there is only one level?
-
 // TODO: Chooser.java should be redesigned into multiple screens
 
 // TODO: Hero animation sequences could use work.  The problem is that goodie count animation information 
@@ -65,8 +63,6 @@ package edu.lehigh.cse.lol;
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
 // TODO: consider making a tool for proper sprite sheet manipulation
-
-// TODO: Parallax has zoom bug, and has a performance bug for vertical parallax (it's fixed for horizontal)
 
 // TODO: Hover has a zoom bug
 
@@ -200,6 +196,13 @@ public abstract class LOL extends Game {
     }
 
     void doChooser() {
+        if (_config.getNumLevels() == 1) {
+            if (_currLevel == 1)
+                doSplash();
+            else
+                doPlayLevel(1);
+            return;
+        }
         _currLevel = 0;
         _currHelp = 0;
         _mode = Modes.CHOOSE;
@@ -269,8 +272,7 @@ public abstract class LOL extends Game {
             doSplash();
         } else {
             // ok, we're looking at a game scene... switch to chooser
-            _mode = Modes.CHOOSE;
-            setScreen(new Chooser(this));
+            doChooser();
         }
     }
 

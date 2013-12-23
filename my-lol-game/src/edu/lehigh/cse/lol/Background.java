@@ -133,15 +133,6 @@ public class Background {
                     sb.draw(pl._tr, pl._xOffset, currY);
                     currY += pl._tr.getRegionHeight();
                 }
-/*
-                // NB: this while loop is not the most efficient way to draw the
-                // background
-                int i = 0;
-                while (i / Physics.PIXEL_METER_RATIO < y + Level._currLevel._camBoundY) {
-                    sb.draw(pl._tr, pl._xOffset, i);
-                    i += pl._tr.getRegionHeight();
-                }
- */
             }
             // draw a layer that never changes based on the camera's X
             // coordinate
