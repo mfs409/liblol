@@ -100,7 +100,7 @@ public class Destination extends PhysicsSprite {
         Destination d = new Destination(width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         d.setCollisionEffect(false);
-        Level._currLevel.addSprite(d, 0);
+        Level.sCurrent.addSprite(d, 0);
         return d;
     }
 
@@ -120,7 +120,7 @@ public class Destination extends PhysicsSprite {
         Destination d = new Destination(radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionEffect(false);
-        Level._currLevel.addSprite(d, 0);
+        Level.sCurrent.addSprite(d, 0);
         return d;
     }
 

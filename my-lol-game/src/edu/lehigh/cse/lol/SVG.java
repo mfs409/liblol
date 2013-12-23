@@ -339,7 +339,7 @@ public class SVG {
         float len = (float)Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         bd.position.set(centerX, centerY);
         bd.angle = 0;
-        Body b = Level._currLevel._world.createBody(bd);
+        Body b = Level.sCurrent.mWorld.createBody(bd);
         EdgeShape line = new EdgeShape();
 
         // set the line position as an offset from center, rotate it, and
@@ -361,7 +361,7 @@ public class SVG {
         b.setUserData(invis);
         // NB: we probably don't need to put the invisible sprite on the screen,
         // since we don't overload render()... this is invisible.
-        Level._currLevel.addSprite(invis, 0);
+        Level.sCurrent.addSprite(invis, 0);
     }
 
     /**

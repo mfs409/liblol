@@ -140,7 +140,7 @@ public class Hero extends PhysicsSprite {
      */
     private Hero(float width, float height, String imgName) {
         super(imgName, SpriteId.HERO, width, height);
-        Level._currLevel._score._heroesCreated++;
+        Level.sCurrent.mScore._heroesCreated++;
     }
 
     /**
@@ -305,14 +305,14 @@ public class Hero extends PhysicsSprite {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Level._currLevel._score._goodiesCollected[i] >= d.mActivation[i];
+            match &= Level.sCurrent.mScore._goodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && _visible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
                 d.mArrivalSound.play();
-            Level._currLevel._score.onDestinationArrive();
+            Level.sCurrent.mScore.onDestinationArrive();
         }
     }
 
@@ -326,7 +326,7 @@ public class Hero extends PhysicsSprite {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            Level._currLevel._score.defeatHero(e);
+            Level.sCurrent.mScore.defeatHero(e);
             return;
         }
         // handle hero invincibility
@@ -343,7 +343,7 @@ public class Hero extends PhysicsSprite {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            Level._currLevel._score.defeatHero(e);
+            Level.sCurrent.mScore.defeatHero(e);
         }
         // when we can defeat it by losing strength
         else {
@@ -399,7 +399,7 @@ public class Hero extends PhysicsSprite {
         g.remove(false);
 
         // count this goodie
-        Level._currLevel._score.onGoodieCollected(g);
+        Level.sCurrent.mScore.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         mStrength += g.mStrengthBoost;
@@ -415,7 +415,7 @@ public class Hero extends PhysicsSprite {
 
         // deal with animation changes due to goodie count
         if (mGoodieCountAnimation != null) {
-            int goodies = Level._currLevel._score._goodiesCollected[0];
+            int goodies = Level.sCurrent.mScore._goodiesCollected[0];
             for (int i = 0; i < mGoodieCountAnimation.mNextCell; ++i) {
                 if (mGoodieCountAnimation.mDurations[i] == goodies) {
                     _animator.setIndex(mGoodieCountAnimation.mFrames[i]);
@@ -442,7 +442,7 @@ public class Hero extends PhysicsSprite {
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level._currLevel.addSprite(h, 0);
+        Level.sCurrent.addSprite(h, 0);
         return h;
     }
 
@@ -460,7 +460,7 @@ public class Hero extends PhysicsSprite {
         float radius = (width > height) ? width : height;
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Level._currLevel.addSprite(h, 0);
+        Level.sCurrent.addSprite(h, 0);
         return h;
     }
 

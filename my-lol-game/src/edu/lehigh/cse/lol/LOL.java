@@ -35,7 +35,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: aggressively comment and reduce visibility as much as possible.
 // DONE: Animation, Background, Controls, Destination, Enemy, Goodie, HelpLevel
-// Remaining: Chooser, L*.java->U*.java; MyLolGame.java
+// Remaining: Chooser, LOL, O*.java->U*.java; MyLolGame.java
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -214,7 +214,7 @@ public abstract class LOL extends Game {
         _currHelp = 0;
         _mode = Modes.PLAY;
         configureLevel(which);
-        setScreen(Level._currLevel);
+        setScreen(Level.sCurrent);
     }
 
     void doHelpLevel(int which) {

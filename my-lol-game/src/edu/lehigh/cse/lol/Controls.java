@@ -215,7 +215,7 @@ public class Controls {
             final int y, String fontName, final int red, final int green, final int blue, int size) {
         sCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level._currLevel._controls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -224,7 +224,7 @@ public class Controls {
                     drawTextTransposed(x, y, "" + (int)sCountDownRemaining, bf, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
-                    Level._currLevel._score.endLevel(false);
+                    Level.sCurrent.mScore.endLevel(false);
                 }
             }
         });
@@ -254,7 +254,7 @@ public class Controls {
             final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
-        Level._currLevel._controls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -294,7 +294,7 @@ public class Controls {
             String fontName, final int red, final int green, final int blue, int size) {
         sWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level._currLevel._controls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -303,7 +303,7 @@ public class Controls {
                     // get elapsed time for this level
                     drawTextTransposed(x, y, "" + (int)sWinCountRemaining, bf, sb);
                 else
-                    Level._currLevel._score.endLevel(true);
+                    Level.sCurrent.mScore.endLevel(true);
             }
         });
     }
@@ -348,11 +348,11 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[type - 1]
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore._goodiesCollected[type - 1]
                         + suffix, bf, sb);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -394,11 +394,11 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level._currLevel._score._enemiesDefeated + suffix,
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore._enemiesDefeated + suffix,
                         bf, sb);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -438,7 +438,7 @@ public class Controls {
                 drawTextTransposed(x, y, "" + (int)_stopWatchProgress, bf, sb);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -480,7 +480,7 @@ public class Controls {
                 drawTextTransposed(x, y, "" + h.mStrength + " " + text, bf, sb);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -505,7 +505,7 @@ public class Controls {
                 drawTextTransposed(x, y, "" + Projectile._projectilesRemaining + " " + text, bf, sb);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -524,10 +524,10 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Level._currLevel._pauseScene._visible = true;
+                Level.sCurrent.mPauseScene._visible = true;
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -571,7 +571,7 @@ public class Controls {
                 entity.updateVelocity(v.x, v.y);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -688,7 +688,7 @@ public class Controls {
                 entity.updateVelocity(v.x, v.y);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -724,7 +724,7 @@ public class Controls {
                 entity._physBody.setLinearDamping(dampening);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -752,7 +752,7 @@ public class Controls {
                 h.crawlOff();
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -774,7 +774,7 @@ public class Controls {
                 h.jump();
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -811,7 +811,7 @@ public class Controls {
                 }
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -838,7 +838,7 @@ public class Controls {
             void onUpPress() {
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -881,7 +881,7 @@ public class Controls {
             }
 
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -909,7 +909,7 @@ public class Controls {
             void onUpPress() {
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -929,14 +929,14 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
-                float curzoom = Level._currLevel._gameCam.zoom;
+                float curzoom = Level.sCurrent.mGameCam.zoom;
                 if (curzoom < maxZoom) {
-                    Level._currLevel._gameCam.zoom *= 2;
-                    Level._currLevel._bgCam.zoom *= 2;
+                    Level.sCurrent.mGameCam.zoom *= 2;
+                    Level.sCurrent.mBgCam.zoom *= 2;
                 }
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -955,14 +955,14 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
-                float curzoom = Level._currLevel._gameCam.zoom;
+                float curzoom = Level.sCurrent.mGameCam.zoom;
                 if (curzoom > minZoom) {
-                    Level._currLevel._gameCam.zoom /= 2;
-                    Level._currLevel._bgCam.zoom /= 2;
+                    Level.sCurrent.mGameCam.zoom /= 2;
+                    Level.sCurrent.mBgCam.zoom /= 2;
                 }
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -989,7 +989,7 @@ public class Controls {
                 h.increaseRotation(rate);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -1005,7 +1005,7 @@ public class Controls {
     public static void addImage(int x, int y, int width, int height, String imgName) {
         HudEntity he = new HudEntity(imgName, x, y, width, height);
         he.mIsTouchable = false;
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 
     /**
@@ -1028,6 +1028,6 @@ public class Controls {
                 LOL._game.onControlPressTrigger(id, LOL._game._currLevel);
             }
         };
-        Level._currLevel._controls.add(he);
+        Level.sCurrent.mControls.add(he);
     }
 }

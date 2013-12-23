@@ -113,15 +113,15 @@ public class Background {
      */
     void renderLayers(SpriteBatch sb) {
         // center camera on _gameCam's camera
-        float x = Level._currLevel._gameCam.position.x;
-        float y = Level._currLevel._gameCam.position.y;
-        Level._currLevel._bgCam.position.set(x, y, 0);
-        Level._currLevel._bgCam.update();
+        float x = Level.sCurrent.mGameCam.position.x;
+        float y = Level.sCurrent.mGameCam.position.y;
+        Level.sCurrent.mBgCam.position.set(x, y, 0);
+        Level.sCurrent.mBgCam.update();
 
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
-            sb.setProjectionMatrix(Level._currLevel._bgCam.calculateParallaxMatrix(pl.mXSpeed
+            sb.setProjectionMatrix(Level.sCurrent.mBgCam.calculateParallaxMatrix(pl.mXSpeed
                     * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
@@ -133,7 +133,7 @@ public class Background {
                 float screensBefore = 1.5f;
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
-                screensBefore += Level._currLevel._bgCam.zoom;
+                screensBefore += Level.sCurrent.mBgCam.zoom;
                 startX -= (screensBefore * LOL._game._config.getScreenWidth());
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
@@ -141,7 +141,7 @@ public class Background {
                 // draw picture repeatedly until we've drawn enough to cover the
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
-                float limit = 2 + 2 * Level._currLevel._bgCam.zoom;
+                float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
                 while (currX < startX + limit * LOL._game._config.getScreenWidth()) {
                     sb.draw(pl.mImage, currX, pl.mYOffset);
                     currX += pl.mImage.getRegionWidth();
@@ -152,13 +152,13 @@ public class Background {
                 // get the camera center, translate, and scale
                 float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + Level._currLevel._bgCam.zoom)
+                startY -= (1.5f + Level.sCurrent.mBgCam.zoom)
                         * LOL._game._config.getScreenHeight();
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
-                float limit = 2 + 2 * Level._currLevel._bgCam.zoom;
+                float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
                 while (currY < startY + limit * LOL._game._config.getScreenHeight()) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
@@ -190,9 +190,9 @@ public class Background {
      * @param blue The amount of blueness (0-255)
      */
     static public void setColor(int red, int green, int blue) {
-        Level._currLevel._background.mColor.r = ((float)red) / 255;
-        Level._currLevel._background.mColor.g = ((float)green) / 255;
-        Level._currLevel._background.mColor.b = ((float)blue) / 255;
+        Level.sCurrent.mBackground.mColor.r = ((float)red) / 255;
+        Level.sCurrent.mBackground.mColor.g = ((float)green) / 255;
+        Level.sCurrent.mBackground.mColor.b = ((float)blue) / 255;
     }
 
     /**
@@ -212,7 +212,7 @@ public class Background {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
                 * Physics.PIXEL_METER_RATIO);
         pl.mXRepeat = xSpeed != 0;
-        Level._currLevel._background.mLayers.add(pl);
+        Level.sCurrent.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -232,6 +232,6 @@ public class Background {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
                 * Physics.PIXEL_METER_RATIO, 0);
         pl.mYRepeat = ySpeed != 0;
-        Level._currLevel._background.mLayers.add(pl);
+        Level.sCurrent.mBackground.mLayers.add(pl);
     }
 }

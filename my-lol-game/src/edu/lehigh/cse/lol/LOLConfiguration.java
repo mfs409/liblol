@@ -87,11 +87,26 @@ public interface LOLConfiguration {
      */
     public String getDefaultFontFace();
 
+    /**
+     * The size of the default font
+     */
     public int getDefaultFontSize();
+
+    /**
+     * The red component of the color of the default font
+     */
     public int getDefaultFontRed();
+
+    /**
+     * The green component of the color of the default font
+     */
     public int getDefaultFontGreen();
+
+    /**
+     * The blue component of the color of the default font
+     */
     public int getDefaultFontBlue();
-    
+
     /**
      * When getting started, you may wish to use default text at the end of each
      * level. This is the default text when winning the level:

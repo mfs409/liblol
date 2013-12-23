@@ -75,18 +75,18 @@ public class Physics {
             // create distance and weld joints... somehow, the combination is
             // needed to get this to work
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            Level._currLevel._oneTimeEvents.add(new Action() {
+            Level.sCurrent.mOneTimeEvents.add(new Action() {
                 @Override
                 public void go() {
                     other._physBody.setLinearVelocity(0, 0);
                     DistanceJointDef d = new DistanceJointDef();
                     d.initialize(sticky._physBody, other._physBody, v, v);
                     d.collideConnected = true;
-                    other._dJoint = (DistanceJoint)Level._currLevel._world.createJoint(d);
+                    other._dJoint = (DistanceJoint)Level.sCurrent.mWorld.createJoint(d);
                     WeldJointDef w = new WeldJointDef();
                     w.initialize(sticky._physBody, other._physBody, v);
                     w.collideConnected = true;
-                    other._wJoint = (WeldJoint)Level._currLevel._world.createJoint(w);
+                    other._wJoint = (WeldJoint)Level.sCurrent.mWorld.createJoint(w);
                 }
             });
         }
@@ -102,10 +102,10 @@ public class Physics {
      */
     public static void configure(float defaultXGravity, float defaultYGravity) {
         // create a world with gravity
-        Level._currLevel._world = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        Level.sCurrent.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
         // set up the collision handlers
-        Level._currLevel._world.setContactListener(new ContactListener() {
+        Level.sCurrent.mWorld.setContactListener(new ContactListener() {
             /**
              * When two bodies start to collide, we can use this to forward to
              * our onCollide methods
@@ -137,7 +137,7 @@ public class Physics {
                 // entities until the update finishes, so we have to schedule
                 // collision-based updates to run after the
                 // world update.
-                Level._currLevel._oneTimeEvents.add(new Action() {
+                Level.sCurrent.mOneTimeEvents.add(new Action() {
                     public void go() {
                         _a.onCollide(_b, _c);
                     }

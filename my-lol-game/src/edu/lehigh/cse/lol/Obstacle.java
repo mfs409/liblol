@@ -145,7 +145,7 @@ public class Obstacle extends PhysicsSprite {
     public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel.addSprite(o, 0);
+        Level.sCurrent.addSprite(o, 0);
         return o;
     }
 
@@ -163,7 +163,7 @@ public class Obstacle extends PhysicsSprite {
         float radius = (width > height) ? width : height;
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel.addSprite(o, 0);
+        Level.sCurrent.addSprite(o, 0);
         return o;
     }
 
@@ -291,7 +291,7 @@ public class Obstacle extends PhysicsSprite {
                     // check if trigger is activated, if so run Trigger code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= Level._currLevel._score._goodiesCollected[i];
+                        match &= counts[i] <= Level.sCurrent.mScore._goodiesCollected[i];
                     if (match) {
                         if (delay <= 0) { 
                         LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
@@ -342,7 +342,7 @@ public class Obstacle extends PhysicsSprite {
             public void go(final PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _enemyTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                    match &= _enemyTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
                 if (match) {
                     final Enemy e = (Enemy)ps;
                     // run the callback after a delay, or immediately?
@@ -387,7 +387,7 @@ public class Obstacle extends PhysicsSprite {
             public void go(PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _projectileTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                    match &= _projectileTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
                 if (match)
                     LOL._game.onProjectileCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
                             (Projectile)ps);

@@ -90,11 +90,11 @@ public class PostScene {
      * @return
      */
     private static PostScene getCurrPostScene() {
-        PostScene ps = Level._currLevel._postScene;
+        PostScene ps = Level.sCurrent.mPostScene;
         if (ps != null)
             return ps;
         ps = new PostScene();
-        Level._currLevel._postScene = ps;
+        Level.sCurrent.mPostScene = ps;
         return ps;
     }
 
@@ -173,7 +173,7 @@ public class PostScene {
 
     void finish() {
         // we turn off music here, so that music plays during the PostScene
-        Level._currLevel.stopMusic();
+        Level.sCurrent.stopMusic();
 
         if (!_win) {
             LOL._game.doPlayLevel(LOL._game._currLevel);
@@ -200,8 +200,8 @@ public class PostScene {
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level._currLevel._hudCam.update();
-        sb.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        Level.sCurrent.mHudCam.update();
+        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
         for (Renderable r : _sprites)
             r.render(sb, 0);

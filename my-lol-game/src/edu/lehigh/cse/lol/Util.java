@@ -136,6 +136,6 @@ public class Util {
      */
     public static void drawPicture(final int x, final int y, final int width, final int height,
             final String imgName, int zIndex) {
-        Level._currLevel.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
+        Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
     }
 }

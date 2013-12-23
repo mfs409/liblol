@@ -119,7 +119,7 @@ public class Projectile extends PhysicsSprite {
         _physBody.setGravityScale(0);
         setCollisionEffect(false);
         disableRotation();
-        Level._currLevel.addSprite(this, zIndex);
+        Level.sCurrent.addSprite(this, zIndex);
     }
 
     /**

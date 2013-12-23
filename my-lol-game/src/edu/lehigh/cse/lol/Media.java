@@ -43,10 +43,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
  * whenever we need to. Caching them here is an optimization.
  */
 public class Media {
-    /*
-     * MEDIA COLLECTIONS
-     */
-
     /**
      * Store the fonts used by this game
      */
@@ -68,7 +64,7 @@ public class Media {
     static private final Hashtable<String, TextureRegion[]> _images = new Hashtable<String, TextureRegion[]>();
 
     /**
-     * When a game is disposed of, the images are managed by libGDX... fonts are
+     * When a game is disposed of, the images are managed by libGDX. Fonts are
      * too, except that references to old fonts don't resurrect nicely. Clearing
      * the collection when the game dispose()s is satisfactory to avoid visual
      * glitches when the game comes back to the foreground.
@@ -76,10 +72,6 @@ public class Media {
     static void onDispose() {
         _fonts.clear();
     }
-
-    /*
-     * INTERNAL INTERFACE FOR MANIPULATING MEDIA COLLECTIONS
-     */
 
     /**
      * Get the font described by the file name and font size
@@ -96,8 +88,9 @@ public class Media {
         // check if we've already got this font, return it if we do
         BitmapFont f = _fonts.get(key);
         if (f != null) {
-            f.setColor(1, 1, 1, 1); // just to play it safe, make the font
-                                    // white... the caller can change this
+            // just to play it safe, make the font white... the caller can
+            // change this
+            f.setColor(1, 1, 1, 1);
             return f;
         }
 
@@ -122,8 +115,7 @@ public class Media {
     static Sound getSound(String soundName) {
         Sound ret = _sounds.get(soundName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving sound " + soundName
-                    + " ... your program is probably about to crash");
+            Gdx.app.log("ERROR", "Error retreiving sound '" + soundName + "'");
         return ret;
     }
 
@@ -136,8 +128,7 @@ public class Media {
     static Music getMusic(String musicName) {
         Music ret = _tunes.get(musicName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving music " + musicName
-                    + " ... your program is probably about to crash");
+            Gdx.app.log("ERROR", "Error retreiving music '" + musicName + "'");
         return ret;
     }
 
@@ -151,13 +142,12 @@ public class Media {
     static TextureRegion[] getImage(String imgName) {
         TextureRegion[] ret = _images.get(imgName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving image " + imgName
-                    + " ... your program is probably about to crash");
+            Gdx.app.log("ERROR", "Error retreiving image '" + imgName + "'");
         return ret;
     }
 
     /*
-     * PUBLIC INTERFACE FOR REGISTERING SOUNDS, MUSIC, AND IMAGES
+     * PUBLIC INTERFACE
      */
 
     /**
@@ -187,18 +177,18 @@ public class Media {
      * 
      * @param imgName the name of the image file (assumed to be in the "assets"
      *            folder). This should be of the form "image.png", and should be
-     *            of type "png". "jpeg" images work too, but usually look bad in
-     *            games
+     *            of type "png"
      * @param columns The number of columns that comprise this image file
      * @param rows The number of rows that comprise this image file
      */
     static public void registerAnimatableImage(String imgName, int columns, int rows) {
-        // create a 1D array with columns x rows entries
+        // Load the file as a texture
         Texture t = new Texture(Gdx.files.internal(imgName));
-        // carve the image into cells, save them into the array
+        // carve the image into cells of equal width and height
         int width = t.getWidth() / columns;
         int height = t.getHeight() / rows;
         TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
+        // put all entries into a 1-D array
         TextureRegion[] trs = new TextureRegion[columns * rows];
         int index = 0;
         for (int i = 0; i < rows; ++i) {

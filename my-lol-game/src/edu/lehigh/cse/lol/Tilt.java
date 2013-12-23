@@ -191,9 +191,9 @@ public class Tilt {
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
     public static void enable(float xGravityMax, float yGravityMax) {
-        Level._currLevel._tilt._enabled = true;
-        Level._currLevel._tilt._xGravityMax = xGravityMax;
-        Level._currLevel._tilt._yGravityMax = yGravityMax;
+        Level.sCurrent.mTilt._enabled = true;
+        Level.sCurrent.mTilt._xGravityMax = xGravityMax;
+        Level.sCurrent.mTilt._yGravityMax = yGravityMax;
     }
 
     /**
@@ -206,7 +206,7 @@ public class Tilt {
      *            of the phone directly sets velocities
      */
     public static void setAsVelocity(boolean toggle) {
-        Level._currLevel._tilt._tiltVelocityOverride = toggle;
+        Level.sCurrent.mTilt._tiltVelocityOverride = toggle;
     }
 
     /**
@@ -217,6 +217,6 @@ public class Tilt {
      *            accelerometer data
      */
     public static void setGravityMultiplier(float multiplier) {
-        Level._currLevel._tilt._gravityMultiplier = multiplier;
+        Level.sCurrent.mTilt._gravityMultiplier = multiplier;
     }
 }

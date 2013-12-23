@@ -201,8 +201,8 @@ public class Score {
      * @param win /true/ if the level was won, /false/ otherwise
      */
     void endLevel(final boolean win) {
-        if (Level._currLevel._endGameEvent == null)
-        Level._currLevel._endGameEvent = new Action(){
+        if (Level.sCurrent.mEndGameEvent == null)
+        Level.sCurrent.mEndGameEvent = new Action(){
             @Override
             public void go() {
                 // Safeguard: only call this method once per level
@@ -218,14 +218,14 @@ public class Score {
                     LOL._game.saveUnlocked(LOL._game._currLevel + 1);
 
                 // drop everything from the hud
-                Level._currLevel._controls.clear();
+                Level.sCurrent.mControls.clear();
 
                 // clear any pending timers
                 Timer.instance().clear();
 
                 // display the PostScene, which provides a pause before we retry/start
                 // the next level
-                Level._currLevel._postScene.setWin(win);                
+                Level.sCurrent.mPostScene.setWin(win);                
             }};
     }
 
@@ -239,7 +239,7 @@ public class Score {
      * @param value The new value
      */
     public static void setGoodiesCollected1(int value) {
-        Level._currLevel._score._goodiesCollected[0] = value;
+        Level.sCurrent.mScore._goodiesCollected[0] = value;
     }
 
     /**
@@ -248,7 +248,7 @@ public class Score {
      * @param value The new value
      */
     public static void setGoodiesCollected2(int value) {
-        Level._currLevel._score._goodiesCollected[1] = value;
+        Level.sCurrent.mScore._goodiesCollected[1] = value;
     }
 
     /**
@@ -257,7 +257,7 @@ public class Score {
      * @param value The new value
      */
     public static void setGoodiesCollected3(int value) {
-        Level._currLevel._score._goodiesCollected[2] = value;
+        Level.sCurrent.mScore._goodiesCollected[2] = value;
     }
 
     /**
@@ -266,7 +266,7 @@ public class Score {
      * @param value The new value
      */
     public static void setGoodiesCollected4(int value) {
-        Level._currLevel._score._goodiesCollected[3] = value;
+        Level.sCurrent.mScore._goodiesCollected[3] = value;
     }
 
     /**
@@ -274,7 +274,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected1() {
-        Level._currLevel._score._goodiesCollected[0]++;
+        Level.sCurrent.mScore._goodiesCollected[0]++;
     }
 
     /**
@@ -282,7 +282,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected2() {
-        Level._currLevel._score._goodiesCollected[1]++;
+        Level.sCurrent.mScore._goodiesCollected[1]++;
     }
 
     /**
@@ -290,7 +290,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected3() {
-        Level._currLevel._score._goodiesCollected[2]++;
+        Level.sCurrent.mScore._goodiesCollected[2]++;
     }
 
     /**
@@ -298,7 +298,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected4() {
-        Level._currLevel._score._goodiesCollected[3]++;
+        Level.sCurrent.mScore._goodiesCollected[3]++;
     }
 
     /**
@@ -307,7 +307,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected1() {
-        return Level._currLevel._score._goodiesCollected[0];
+        return Level.sCurrent.mScore._goodiesCollected[0];
     }
 
     /**
@@ -316,7 +316,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected2() {
-        return Level._currLevel._score._goodiesCollected[1];
+        return Level.sCurrent.mScore._goodiesCollected[1];
     }
 
     /**
@@ -325,7 +325,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected3() {
-        return Level._currLevel._score._goodiesCollected[2];
+        return Level.sCurrent.mScore._goodiesCollected[2];
     }
 
     /**
@@ -334,7 +334,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected4() {
-        return Level._currLevel._score._goodiesCollected[3];
+        return Level.sCurrent.mScore._goodiesCollected[3];
     }
 
     /**
@@ -343,8 +343,8 @@ public class Score {
      * defeat enemies before more are are created.
      */
     static public void setVictoryEnemyCount() {
-        Level._currLevel._score._victoryType = VictoryType.ENEMYCOUNT;
-        Level._currLevel._score._victoryEnemyCount = -1;
+        Level.sCurrent.mScore._victoryType = VictoryType.ENEMYCOUNT;
+        Level.sCurrent.mScore._victoryEnemyCount = -1;
     }
 
     /**
@@ -354,8 +354,8 @@ public class Score {
      *            level
      */
     static public void setVictoryEnemyCount(int howMany) {
-        Level._currLevel._score._victoryType = VictoryType.ENEMYCOUNT;
-        Level._currLevel._score._victoryEnemyCount = howMany;
+        Level.sCurrent.mScore._victoryType = VictoryType.ENEMYCOUNT;
+        Level.sCurrent.mScore._victoryEnemyCount = howMany;
     }
 
     /**
@@ -371,11 +371,11 @@ public class Score {
      *            level
      */
     static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        Level._currLevel._score._victoryType = VictoryType.GOODIECOUNT;
-        Level._currLevel._score._victoryGoodieCount[0] = v1;
-        Level._currLevel._score._victoryGoodieCount[1] = v2;
-        Level._currLevel._score._victoryGoodieCount[2] = v3;
-        Level._currLevel._score._victoryGoodieCount[3] = v4;
+        Level.sCurrent.mScore._victoryType = VictoryType.GOODIECOUNT;
+        Level.sCurrent.mScore._victoryGoodieCount[0] = v1;
+        Level.sCurrent.mScore._victoryGoodieCount[1] = v2;
+        Level.sCurrent.mScore._victoryGoodieCount[2] = v3;
+        Level.sCurrent.mScore._victoryGoodieCount[3] = v4;
     }
 
     /**
@@ -385,7 +385,7 @@ public class Score {
      * @param howMany Number of heroes that must reach destinations
      */
     static public void setVictoryDestination(int howMany) {
-        Level._currLevel._score._victoryType = VictoryType.DESTINATION;
-        Level._currLevel._score._victoryHeroCount = howMany;
+        Level.sCurrent.mScore._victoryType = VictoryType.DESTINATION;
+        Level.sCurrent.mScore._victoryHeroCount = howMany;
     }
 }

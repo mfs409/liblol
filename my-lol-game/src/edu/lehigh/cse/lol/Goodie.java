@@ -102,7 +102,7 @@ public class Goodie extends PhysicsSprite {
         Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         g.setCollisionEffect(false);
-        Level._currLevel.addSprite(g, 0);
+        Level.sCurrent.addSprite(g, 0);
         return g;
     }
 
@@ -122,7 +122,7 @@ public class Goodie extends PhysicsSprite {
         Goodie g = new Goodie(width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         g.setCollisionEffect(false);
-        Level._currLevel.addSprite(g, 0);
+        Level.sCurrent.addSprite(g, 0);
         return g;
     }
 

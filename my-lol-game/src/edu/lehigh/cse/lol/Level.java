@@ -62,6 +62,164 @@ import edu.lehigh.cse.lol.Controls.HudEntity;
  */
 public class Level extends ScreenAdapter {
     /**
+     * The music, if any
+     */
+    private Music mMusic;
+
+    /**
+     * Whether the music is playing or not
+     */
+    private boolean mMusicPlaying;
+
+    /**
+     * A reference to the score object, for tracking winning and losing
+     */
+    Score mScore = new Score();
+
+    /**
+     * A reference to the tilt object, for managing how tilts are handled
+     */
+    Tilt mTilt = new Tilt();
+
+    /**
+     * The physics world in which all entities interact
+     */
+    World mWorld;
+
+    /**
+     * The set of Parallax backgrounds
+     */
+    Background mBackground = new Background();
+
+    /**
+     * The scene to show when the level is created (if any)
+     */
+    PreScene mPreScene;
+
+    /**
+     * The scene to show when the level is won or lost
+     */
+    PostScene mPostScene = new PostScene();
+
+    /**
+     * The scene to show when the level is paused (if any)
+     */
+    PauseScene mPauseScene;
+
+    /**
+     * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
+     */
+    private ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(5);
+
+    /**
+     * The controls / heads-up-display
+     */
+    ArrayList<HudEntity> mControls = new ArrayList<HudEntity>();
+
+    /**
+     * Events that get processed on the next render, then discarded
+     */
+    ArrayList<Action> mOneTimeEvents = new ArrayList<Action>();
+
+    /**
+     * When the level is won or lost, this is where we store the event that
+     * needs to run
+     */
+    Action mEndGameEvent;
+
+    /**
+     * Events that get processed on every render
+     */
+    ArrayList<Action> mRepeatEvents = new ArrayList<Action>();
+
+    /**
+     * This camera is for drawing entities that exist in the physics world
+     */
+    OrthographicCamera mGameCam;
+
+    /**
+     * This camera is for drawing controls that sit above the world
+     */
+    OrthographicCamera mHudCam;
+
+    /**
+     * This camera is for drawing parallax backgrounds that go behind the world
+     */
+    ParallaxCamera mBgCam;
+
+    /**
+     * This is the sprite that the camera chases
+     */
+    private PhysicsSprite mChaseEntity;
+
+    /**
+     * The maximum x value of the camera
+     */
+    int mCamBoundX;
+
+    /**
+     * The maximum y value of the camera
+     */
+    int mCamBoundY;
+
+    /**
+     * The debug renderer, for printing circles and boxes for each entity
+     */
+    private Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
+
+    /**
+     * The spritebatch for drawing all texture regions and fonts
+     */
+    private SpriteBatch mSpriteBatch = new SpriteBatch();
+
+    /**
+     * The debug shape renderer, for putting boxes around HUD entities
+     */
+    private ShapeRenderer mShapeRender = new ShapeRenderer();
+
+    /**
+     * We use this to avoid garbage collection when converting screen touches to
+     * camera coordinates
+     */
+    private Vector3 mTouchVec = new Vector3();
+
+    /**
+     * When there is a touch of an entity in the physics world, this is how we
+     * find it
+     */
+    private PhysicsSprite mHitSprite = null;
+
+    /**
+     * This callback is used to get a touched entity from the physics world
+     */
+    private QueryCallback mTouchCallback;
+
+    /**
+     * Our polling-based multitouch uses this array to track the previous state
+     * of 4 fingers
+     */
+    private boolean[] mLastTouches = new boolean[4];
+
+    /**
+     * When transitioning between a pre-scene and the game, we need to be sure
+     * that a down press on the pre-scene doesn't show up as a move event on the
+     * game... we achieve it via this
+     */
+    private boolean mTouchActive = true;
+
+    /**
+     * The LOL interface requires that game designers don't have to construct
+     * Level manually. To make it work, we store the current Level here
+     */
+    static Level sCurrent;
+
+    /**
+     * Entities may need to set callbacks to run on a screen touch. If so, they
+     * can use this.
+     */
+    TouchAction mTouchResponder;
+
+    /**
      * Wrapper for actions that we generate and then want handled during the
      * render loop
      */
@@ -69,13 +227,34 @@ public class Level extends ScreenAdapter {
         void go();
     }
 
+    /**
+     * Wrapper for handling code that needs to run in response to a screen touch
+     */
     static class TouchAction {
+        /**
+         * Run this when the screen is initially pressed down
+         * 
+         * @param x The X coordinate, in pixels, of the touch
+         * @param y The Y coordinate, in pixels, of the touch
+         */
         void onDown(float x, float y) {
         }
 
+        /**
+         * Run this when the screen is held down
+         * 
+         * @param x The X coordinate, in pixels, of the touch
+         * @param y The Y coordinate, in pixels, of the touch
+         */
         void onMove(float x, float y) {
         }
 
+        /**
+         * Run this when the screen is released
+         * 
+         * @param x The X coordinate, in pixels, of the touch
+         * @param y The Y coordinate, in pixels, of the touch
+         */
         void onUp(float x, float y) {
         }
     }
@@ -84,12 +263,24 @@ public class Level extends ScreenAdapter {
      * Custom camera that can do parallax... taken directly from GDX tests
      */
     class ParallaxCamera extends OrthographicCamera {
+        /**
+         * This matrix helps us compute the view
+         */
         private Matrix4 parallaxView = new Matrix4();
 
+        /**
+         * This matrix helps us compute the camera.combined
+         */
         private Matrix4 parallaxCombined = new Matrix4();
 
+        /**
+         * A temporary vector for doing the calculations
+         */
         private Vector3 tmp = new Vector3();
 
+        /**
+         * Another temporary vector for doing the calculations
+         */
         private Vector3 tmp2 = new Vector3();
 
         /**
@@ -102,6 +293,9 @@ public class Level extends ScreenAdapter {
             super(viewportWidth, viewportHeight);
         }
 
+        /**
+         * This is how we calculate the position of a parallax camera
+         */
         Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
             update();
             tmp.set(position);
@@ -115,171 +309,6 @@ public class Level extends ScreenAdapter {
         }
     }
 
-    /*
-     * FIELDS FOR MANAGING GAME STATE
-     */
-
-    /**
-     * The music, if any
-     */
-    private Music _music;
-
-    /**
-     * Whether the music is playing or not
-     */
-    private boolean _musicPlaying = false;
-
-    /**
-     * A reference to the score object, for tracking winning and losing
-     */
-    Score _score = new Score();
-
-    /**
-     * A reference to the tilt object, for managing how tilts are handled
-     */
-    Tilt _tilt = new Tilt();
-
-    /**
-     * The physics world in which all entities interact
-     */
-    World _world;
-
-    /**
-     * The set of Parallax backgrounds
-     */
-    Background _background = new Background();
-
-    /**
-     * The scene to show when the level is created (if any)
-     */
-    PreScene _preScene;
-
-    /**
-     * The scene to show when the level is won or lost
-     */
-    PostScene _postScene = new PostScene();
-
-    /**
-     * The scene to show when the level is paused (if any)
-     */
-    PauseScene _pauseScene;
-
-    /*
-     * COLLECTIONS OF DRAWABLE ENTITIES/PICTURES/TEXT AND CONTROLS
-     */
-    private ArrayList<ArrayList<Renderable>> _sprites = new ArrayList<ArrayList<Renderable>>(5);
-
-    /**
-     * The controls / heads-up-display
-     */
-    ArrayList<HudEntity> _controls = new ArrayList<HudEntity>();
-
-    /*
-     * COLLECTIONS OF EVENTS THAT MUST BE PROCESSED
-     */
-
-    /**
-     * Events that get processed on the next render, then discarded
-     */
-    ArrayList<Action> _oneTimeEvents = new ArrayList<Action>();
-
-    Action _endGameEvent;
-
-    /**
-     * Events that get processed on every render
-     */
-    ArrayList<Action> _repeatEvents = new ArrayList<Action>();
-
-    /*
-     * FIELDS FOR CAMERAS AND RENDERING
-     */
-
-    /**
-     * This camera is for drawing entities that exist in the physics world
-     */
-    OrthographicCamera _gameCam;
-
-    /**
-     * This camera is for drawing controls that sit above the world
-     */
-    OrthographicCamera _hudCam;
-
-    /**
-     * This camera is for drawing parallax backgrounds that go behind the world
-     */
-    ParallaxCamera _bgCam;
-
-    /**
-     * This is the sprite that the camera chases
-     */
-    private PhysicsSprite _chase;
-
-    /**
-     * The X bound of the camera
-     */
-    int _camBoundX;
-
-    /**
-     * The Y bound of the camera
-     */
-    int _camBoundY;
-
-    /**
-     * The debug renderer, for printing circles and boxes for each entity
-     */
-    private Box2DDebugRenderer _debugRender = new Box2DDebugRenderer();
-
-    /**
-     * The spritebatch for drawing all texture regions and fonts
-     */
-    private SpriteBatch _spriteRender = new SpriteBatch();
-
-    /**
-     * The debug shape renderer, for putting boxes around HUD entities
-     */
-    private ShapeRenderer _shapeRender = new ShapeRenderer();
-
-    /*
-     * FIELDS FOR MANAGING TOUCH
-     */
-
-    /**
-     * We use this to avoid garbage collection when converting screen touches to
-     * camera coordinates
-     */
-    private Vector3 _touchVec = new Vector3();
-
-    /**
-     * When there is a touch of an entity in the physics world, this is how we
-     * find it
-     */
-    private PhysicsSprite _hitSprite = null;
-
-    /**
-     * This callback is used to get a touched entity from the physics world
-     */
-    private QueryCallback _callback;
-
-    /**
-     * Our polling-based multitouch uses this array to track the previous state
-     * of 4 fingers
-     */
-    private boolean[] _lastTouches = new boolean[4];
-
-    private boolean _touchActive = true;
-
-    /**
-     * The LOL interface requires that game designers don't have to construct
-     * Level manually. To make it work, we store the current Level here
-     */
-    static Level _currLevel;
-
-    /**
-     * Entities may need to set callbacks to run on a screen touch. If so, they
-     * can use this.
-     */
-    TouchAction _touchResponder;
-
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
@@ -288,45 +317,47 @@ public class Level extends ScreenAdapter {
      * @param height The height of the level, in meters
      */
     Level(int width, int height) {
+        // clear any timers
         Timer.instance().clear();
         // save the singleton and camera bounds
-        _currLevel = this;
-        _camBoundX = width;
-        _camBoundY = height;
+        sCurrent = this;
+        mCamBoundX = width;
+        mCamBoundY = height;
 
-        // set up the game camera, centered on the world
-        _gameCam = new OrthographicCamera(LOL._game._config.getScreenWidth()
+        // set up the game camera, with 0,0 in the bottom left
+        mGameCam = new OrthographicCamera(LOL._game._config.getScreenWidth()
                 / Physics.PIXEL_METER_RATIO, LOL._game._config.getScreenHeight()
                 / Physics.PIXEL_METER_RATIO);
-        _gameCam.position.set(LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
+        mGameCam.position.set(LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
                 LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
-        _gameCam.zoom = 1;
+        mGameCam.zoom = 1;
 
-        // set up the heads-up display
+        // set up the heads-up display camera
         int camWidth = LOL._game._config.getScreenWidth();
         int camHeight = LOL._game._config.getScreenHeight();
-        _hudCam = new OrthographicCamera(camWidth, camHeight);
-        _hudCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mHudCam = new OrthographicCamera(camWidth, camHeight);
+        mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
         // the background camera is like the hudcam
-        _bgCam = new ParallaxCamera(camWidth, camHeight);
-        _bgCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mBgCam = new ParallaxCamera(camWidth, camHeight);
+        mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mBgCam.zoom = 1;
 
         // set up the sprite sets
         for (int i = 0; i < 5; ++i)
-            _sprites.add(new ArrayList<Renderable>());
+            mSprites.add(new ArrayList<Renderable>());
 
         // set up the callback for finding out who in the physics world was
         // touched
-        _callback = new QueryCallback() {
+        mTouchCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
                 // if the hit point is inside the fixture of the body we report
                 // it
-                if (fixture.testPoint(_touchVec.x, _touchVec.y)) {
+                if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
                     PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
                     if (hs._visible) {
-                        _hitSprite = hs;
+                        mHitSprite = hs;
                         return false;
                     }
                 }
@@ -345,9 +376,9 @@ public class Level extends ScreenAdapter {
      * If the level has music attached to it, this starts playing it
      */
     void playMusic() {
-        if (!_musicPlaying && _music != null) {
-            _musicPlaying = true;
-            _music.play();
+        if (!mMusicPlaying && mMusic != null) {
+            mMusicPlaying = true;
+            mMusic.play();
         }
     }
 
@@ -355,9 +386,9 @@ public class Level extends ScreenAdapter {
      * If the level has music attached to it, this pauses it
      */
     void pauseMusic() {
-        if (_musicPlaying) {
-            _musicPlaying = false;
-            _music.pause();
+        if (mMusicPlaying) {
+            mMusicPlaying = false;
+            mMusic.pause();
         }
     }
 
@@ -365,25 +396,26 @@ public class Level extends ScreenAdapter {
      * If the level has music attached to it, this stops it
      */
     void stopMusic() {
-        if (_musicPlaying) {
-            _musicPlaying = false;
-            _music.stop();
+        if (mMusicPlaying) {
+            mMusicPlaying = false;
+            mMusic.stop();
         }
     }
 
-    /*
-     * INTERNAL INTERFACE: RENDERING AND CAMERAS
+    /**
+     * When a pre or pause scene is showing, this un-registers all touches
      */
-
     void suspendTouch() {
-        _touchActive = false;
+        mTouchActive = false;
         for (int i = 0; i < 4; ++i)
-            _lastTouches[i] = true;
+            mLastTouches[i] = true;
     }
 
     /**
      * This code is called every 1/45th of a second to update the game state and
      * re-draw the screen
+     * 
+     * @param delta The time since the last render
      */
     @Override
     public void render(float delta) {
@@ -393,11 +425,11 @@ public class Level extends ScreenAdapter {
 
         // Handle pauses due to pre, pause, or post scenes... Note that these
         // handle their own screen touches
-        if (_preScene != null && _preScene.render(_spriteRender))
+        if (mPreScene != null && mPreScene.render(mSpriteBatch))
             return;
-        if (_pauseScene != null && _pauseScene.render(_spriteRender))
+        if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
             return;
-        if (_postScene != null && _postScene.render(_spriteRender))
+        if (mPostScene != null && mPostScene.render(mSpriteBatch))
             return;
 
         // check for any scene touches that should generate new events to
@@ -405,77 +437,73 @@ public class Level extends ScreenAdapter {
         manageTouches();
 
         // handle accelerometer stuff... note that accelerometer is effectively
-        // disabled during a popup... we could
-        // change that by moving this to the top, but that's probably not going
-        // to produce logical behavior
-        Level._currLevel._tilt.handleTilt();
+        // disabled during a popup... we could change that by moving this to the
+        // top, but that's probably not going to produce logical behavior
+        Level.sCurrent.mTilt.handleTilt();
 
         // Advance the physics world by 1/45 of a second.
         //
         // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/
-        // instead of 1/45f
-        _world.step(1 / 45f, 8, 3);
+        // seems like we should be using /delta/ instead of 1/45f
+        mWorld.step(1 / 45f, 8, 3);
 
         // now handle any events that occurred on account of the world movement
         // or screen touches
-        for (Action pe : _oneTimeEvents)
+        for (Action pe : mOneTimeEvents)
             pe.go();
-        _oneTimeEvents.clear();
+        mOneTimeEvents.clear();
 
         // handle repeat events
-        for (Action pe : _repeatEvents)
+        for (Action pe : mRepeatEvents)
             pe.go();
 
         // check for end of game
-        if (_endGameEvent != null)
-            _endGameEvent.go();
+        if (mEndGameEvent != null)
+            mEndGameEvent.go();
 
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(_background.mColor.r, _background.mColor.g, _background.mColor.b, 1);
+        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g, mBackground.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // prepare the main camera... we do it here, so that the parallax code
         // knows where to draw...
         adjustCamera();
-        _gameCam.update();
+        mGameCam.update();
 
         // draw parallax backgrounds
-        _background.renderLayers(_spriteRender);
+        mBackground.renderLayers(mSpriteBatch);
 
         // Render the entities in order from z=-2 through z=2
-        _spriteRender.setProjectionMatrix(_gameCam.combined);
-        _spriteRender.begin();
-        for (ArrayList<Renderable> a : _sprites) {
-            for (Renderable r : a) {
-                r.render(_spriteRender, delta);
-            }
-        }
-        _spriteRender.end();
+        mSpriteBatch.setProjectionMatrix(mGameCam.combined);
+        mSpriteBatch.begin();
+        for (ArrayList<Renderable> a : mSprites)
+            for (Renderable r : a)
+                r.render(mSpriteBatch, delta);
+        mSpriteBatch.end();
 
         // DEBUG: draw outlines of physics entities
         if (LOL._game._config.showDebugBoxes())
-            _debugRender.render(_world, _gameCam.combined);
+            mDebugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
-        _hudCam.update();
-        _spriteRender.setProjectionMatrix(_hudCam.combined);
-        _spriteRender.begin();
-        for (HudEntity c : _controls)
-            c.render(_spriteRender);
-        _spriteRender.end();
+        mHudCam.update();
+        mSpriteBatch.setProjectionMatrix(mHudCam.combined);
+        mSpriteBatch.begin();
+        for (HudEntity c : mControls)
+            c.render(mSpriteBatch);
+        mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
         if (LOL._game._config.showDebugBoxes()) {
-            _shapeRender.setProjectionMatrix(_hudCam.combined);
-            _shapeRender.begin(ShapeType.Line);
-            _shapeRender.setColor(Color.RED);
-            for (HudEntity pe : _controls)
+            mShapeRender.setProjectionMatrix(mHudCam.combined);
+            mShapeRender.begin(ShapeType.Line);
+            mShapeRender.setColor(Color.RED);
+            for (HudEntity pe : mControls)
                 if (pe.mRange != null)
-                    _shapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
-            _shapeRender.end();
+                    mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
+            mShapeRender.end();
         }
     }
 
@@ -496,34 +524,37 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * If the camera is supposed to follow an Entity, this code will handle
-     * updating the camera accordingly
+     * If the camera is supposed to follow an entity, this code will handle
+     * updating the camera position
      */
     private void adjustCamera() {
-        if (_chase == null)
+        if (mChaseEntity == null)
             return;
         // figure out the entity's position
-        float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
-        float y = _chase._physBody.getWorldCenter().y + _chase._cameraOffset.y;
-        
+        float x = mChaseEntity._physBody.getWorldCenter().x + mChaseEntity._cameraOffset.x;
+        float y = mChaseEntity._physBody.getWorldCenter().y + mChaseEntity._cameraOffset.y;
+
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > _camBoundX - LOL._game._config.getScreenWidth() * _gameCam.zoom
+        if (x > mCamBoundX - LOL._game._config.getScreenWidth() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            x = _camBoundX - LOL._game._config.getScreenWidth() * _gameCam.zoom
+            x = mCamBoundX - LOL._game._config.getScreenWidth() * mGameCam.zoom
                     / Physics.PIXEL_METER_RATIO / 2;
-        if (y > _camBoundY - LOL._game._config.getScreenHeight() * _gameCam.zoom
+        if (y > mCamBoundY - LOL._game._config.getScreenHeight() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            y = _camBoundY - LOL._game._config.getScreenHeight() * _gameCam.zoom
+            y = mCamBoundY - LOL._game._config.getScreenHeight() * mGameCam.zoom
                     / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
-        if (x < LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        //
+        // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
+        // space at the top instead of the bottom
+        if (x < LOL._game._config.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = LOL._game._config.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < LOL._game._config.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = LOL._game._config.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
-        _gameCam.position.set(x, y, 0);
+        mGameCam.position.set(x, y, 0);
     }
 
     /**
@@ -537,43 +568,47 @@ public class Level extends ScreenAdapter {
     void addSprite(Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        _sprites.get(zIndex + 2).add(r);
+        mSprites.get(zIndex + 2).add(r);
     }
 
+    /**
+     * Remove a renderable entity from its z plane
+     * 
+     * @param r The entity to remove
+     * @param zIndex The z plane where it is expected to be
+     */
     void removeSprite(Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        _sprites.get(zIndex + 2).remove(r);
+        mSprites.get(zIndex + 2).remove(r);
     }
-
-    /*
-     * INTERNAL INTERFACE: TOUCH CONTROLS
-     */
 
     /**
      * LOL uses polling to detect multitouch, touchdown, touchup, and
      * touchhold/touchdrag. This method, called from render, will track up to 4
-     * simultaneous touches and forward them for proper processing.
+     * simultaneous touches and forward them for proper processing. Note that
+     * our choice of 4 points is totally arbitrary... we could do up to 10 quite
+     * easily
      */
     private void manageTouches() {
         // poll for touches... we assume no more than 4 simultaneous touches
         boolean[] touchStates = new boolean[4];
         for (int i = 0; i < 4; ++i) {
             // we compare the current state to the prior state, to detect down,
-            // up, or move/hold. Note that we don't
-            // distinguish between move and hold, but that's OK.
+            // up, or move/hold. Note that we don't distinguish between move and
+            // hold
             touchStates[i] = Gdx.input.isTouched(i);
             float x = Gdx.input.getX(i);
             float y = Gdx.input.getY(i);
             // if there is a touch, call the appropriate method
-            if (touchStates[i] && _lastTouches[i] && _touchActive)
+            if (touchStates[i] && mLastTouches[i] && mTouchActive)
                 touchMove((int)x, (int)y);
-            else if (touchStates[i] && !_lastTouches[i]) {
-                _touchActive = true;
+            else if (touchStates[i] && !mLastTouches[i]) {
+                mTouchActive = true;
                 touchDown((int)x, (int)y);
-            } else if (!touchStates[i] && _lastTouches[i] && _touchActive)
+            } else if (!touchStates[i] && mLastTouches[i] && mTouchActive)
                 touchUp((int)x, (int)y);
-            _lastTouches[i] = touchStates[i];
+            mLastTouches[i] = touchStates[i];
         }
     }
 
@@ -582,32 +617,31 @@ public class Level extends ScreenAdapter {
      * 
      * @param x The X location of the press, in screen coordinates
      * @param y The Y location of the press, in screen coordinates
-     * @return
      */
     private void touchDown(int x, int y) {
         // check for HUD touch first...
-        _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (HudEntity pe : _controls) {
-            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
+        for (HudEntity pe : mControls) {
+            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
-                _gameCam.unproject(_touchVec.set(x, y, 0));
-                pe.onDownPress(_touchVec);
+                mGameCam.unproject(mTouchVec.set(x, y, 0));
+                pe.onDownPress(mTouchVec);
                 return;
             }
         }
 
         // check for sprite touch, by looking at gameCam coordinates... on
         // touch, hitSprite will change
-        _hitSprite = null;
-        _gameCam.unproject(_touchVec.set(x, y, 0));
-        _world.QueryAABB(_callback, _touchVec.x - 0.1f, _touchVec.y - 0.1f, _touchVec.x + 0.1f,
-                _touchVec.y + 0.1f);
-        if (_hitSprite != null)
-            _hitSprite.handleTouchDown(x, y);
+        mHitSprite = null;
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f,
+                mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+        if (mHitSprite != null)
+            mHitSprite.handleTouchDown(x, y);
         // Handle level touches for which we've got a registered handler
-        else if (_touchResponder != null)
-            _touchResponder.onDown(_touchVec.x, _touchVec.y);
+        else if (mTouchResponder != null)
+            mTouchResponder.onDown(mTouchVec.x, mTouchVec.y);
     }
 
     /**
@@ -615,30 +649,25 @@ public class Level extends ScreenAdapter {
      * 
      * @param x The X location of the press, in screen coordinates
      * @param y The Y location of the press, in screen coordinates
-     * @return
      */
     private void touchMove(int x, int y) {
         // check for HUD touch first...
-        _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (HudEntity pe : _controls) {
-            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
+        for (HudEntity pe : mControls) {
+            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
-                _gameCam.unproject(_touchVec.set(x, y, 0));
-                pe.onHold(_touchVec);
+                mGameCam.unproject(mTouchVec.set(x, y, 0));
+                pe.onHold(mTouchVec);
                 return;
             }
         }
-
-        // We don't currently support Move within a Sprite, only on the screen.
-        // These screen handlers are all one-off
-        // calls from here.
-        _gameCam.unproject(_touchVec.set(x, y, 0));
-        if (_touchResponder != null)
-            _touchResponder.onMove(_touchVec.x, _touchVec.y);
-        // deal with drag
-        else if (_hitSprite != null)
-            _hitSprite.handleTouchDrag(_touchVec.x, _touchVec.y);
+        // check for screen touch, then for dragging an entity
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        if (mTouchResponder != null)
+            mTouchResponder.onMove(mTouchVec.x, mTouchVec.y);
+        else if (mHitSprite != null)
+            mHitSprite.handleTouchDrag(mTouchVec.x, mTouchVec.y);
     }
 
     /**
@@ -646,24 +675,21 @@ public class Level extends ScreenAdapter {
      * 
      * @param x The X location of the press, in screen coordinates
      * @param y The Y location of the press, in screen coordinates
-     * @return
      */
     void touchUp(int x, int y) {
         // check for HUD touch first
-        _hudCam.unproject(_touchVec.set(x, y, 0));
-        for (HudEntity pe : _controls) {
-            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
+        for (HudEntity pe : mControls) {
+            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 pe.onUpPress();
                 return;
             }
         }
 
-        // Up presses are not handled by entities, only by the screen, via a
-        // bunch of one-off handlers
-        _gameCam.unproject(_touchVec.set(x, y, 0));
-        if (_touchResponder != null) {
-            _touchResponder.onUp(_touchVec.x, _touchVec.y);
-        }
+        // Up presses are not handled by entities, only by the screen
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        if (mTouchResponder != null) 
+            mTouchResponder.onUp(mTouchVec.x, mTouchVec.y);
     }
 
     /*
@@ -677,7 +703,7 @@ public class Level extends ScreenAdapter {
      * @param height height of the camera
      */
     public static void configure(int width, int height) {
-        _currLevel = new Level(width, height);
+        sCurrent = new Level(width, height);
     }
 
     /**
@@ -687,7 +713,7 @@ public class Level extends ScreenAdapter {
      * @param ps The entity the camera should chase
      */
     public static void setCameraChase(PhysicsSprite ps) {
-        _currLevel._chase = ps;
+        sCurrent.mChaseEntity = ps;
     }
 
     /**
@@ -697,7 +723,7 @@ public class Level extends ScreenAdapter {
      */
     public static void setMusic(String musicName) {
         Music m = Media.getMusic(musicName);
-        _currLevel._music = m;
+        sCurrent.mMusic = m;
     }
 
     /**
@@ -711,7 +737,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level._currLevel._score._gameOver)
+                if (!Level.sCurrent.mScore._gameOver)
                     LOL._game.onTimeTrigger(timerId, LOL._game._currLevel);
             }
         }, howLong);
@@ -730,7 +756,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level._currLevel._score._gameOver)
+                if (!Level.sCurrent.mScore._gameOver)
                     LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, enemy);
             }
         }, howLong);
@@ -759,8 +785,8 @@ public class Level extends ScreenAdapter {
             final float height, final float density, final float elasticity, final float friction,
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
-        // drag, up) will effect our scribbling
-        Level._currLevel._touchResponder = new TouchAction() {
+        // drag, up) will affect our scribbling
+        Level.sCurrent.mTouchResponder = new TouchAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble

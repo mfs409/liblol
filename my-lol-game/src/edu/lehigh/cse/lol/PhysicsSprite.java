@@ -312,9 +312,9 @@ public abstract class PhysicsSprite implements Renderable {
             _physBody.setType(BodyType.KinematicBody);
         // Clobber any joints, or this won't be able to move
         if (_dJoint != null) {
-            Level._currLevel._world.destroyJoint(_dJoint);
+            Level.sCurrent.mWorld.destroyJoint(_dJoint);
             _dJoint = null;
-            Level._currLevel._world.destroyJoint(_wJoint);
+            Level.sCurrent.mWorld.destroyJoint(_wJoint);
             _wJoint = null;
         }
         _physBody.setLinearVelocity(x, y);
@@ -436,7 +436,7 @@ public abstract class PhysicsSprite implements Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + _width / 2;
         boxBodyDef.position.y = y + _height / 2;
-        _physBody = Level._currLevel._world.createBody(boxBodyDef);
+        _physBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -478,7 +478,7 @@ public abstract class PhysicsSprite implements Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + _width / 2;
         boxBodyDef.position.y = y + _height / 2;
-        _physBody = Level._currLevel._world.createBody(boxBodyDef);
+        _physBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -572,13 +572,13 @@ public abstract class PhysicsSprite implements Renderable {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (Level._currLevel._tilt._accelEntities.contains(this))
+        if (Level.sCurrent.mTilt._accelEntities.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt entities
         if (_physBody.getType() != BodyType.DynamicBody)
             _physBody.setType(BodyType.DynamicBody);
-        Level._currLevel._tilt._accelEntities.add(this);
+        Level.sCurrent.mTilt._accelEntities.add(this);
         // turn off sensor behavior, so this collides with stuff...
         _physBody.getFixtureList().get(0).setSensor(false);
     }
@@ -698,7 +698,7 @@ public abstract class PhysicsSprite implements Renderable {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _touchTriggerActivation[i] <= Level._currLevel._score._goodiesCollected[i];
+                    match &= _touchTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
                 // if so, run the trigger
                 if (match) {
                     if (disappear)
@@ -805,7 +805,7 @@ public abstract class PhysicsSprite implements Renderable {
                     // hide sprite, disable physics
                     _physBody.setActive(false);
                     _visible = false;
-                    Level._currLevel._touchResponder = null;
+                    Level.sCurrent.mTouchResponder = null;
                     return;
                 }
                 // repeat single-touch
@@ -813,14 +813,14 @@ public abstract class PhysicsSprite implements Renderable {
                     _lastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the entity
-                Level._currLevel._touchResponder = new TouchAction() {
+                Level.sCurrent.mTouchResponder = new TouchAction() {
                     @Override
                     public void onDown(float x, float y) {
                         LOL._game.vibrate(100);
                         // move the object
                         _physBody.setTransform(x, y, _physBody.getAngle());
                         // clear the Level responder
-                        Level._currLevel._touchResponder = null;
+                        Level.sCurrent.mTouchResponder = null;
                     }
 
                 };
@@ -849,7 +849,7 @@ public abstract class PhysicsSprite implements Renderable {
                 final float initialX = _physBody.getPosition().x;
                 final float initialY = _physBody.getPosition().y;
                 // set a handler to run when the screen is touched
-                Level._currLevel._touchResponder = new TouchAction() {
+                Level.sCurrent.mTouchResponder = new TouchAction() {
                     @Override
                     public void onUp(float x, float y) {
                         // If the entity isn't visible we're done
@@ -859,7 +859,7 @@ public abstract class PhysicsSprite implements Renderable {
                             // compute velocity for the flick and apply velocity
                             updateVelocity((x - initialX) * dampFactor, (y - initialY) * dampFactor);
                             // Unregister this handler... the flick is done
-                            Level._currLevel._touchResponder = null;
+                            Level.sCurrent.mTouchResponder = null;
                         }
                     }
                 };
@@ -882,7 +882,7 @@ public abstract class PhysicsSprite implements Renderable {
             @Override
             public void onDown(float x, float y) {
                 LOL._game.vibrate(5);
-                Level._currLevel._touchResponder = new TouchAction() {
+                Level.sCurrent.mTouchResponder = new TouchAction() {
                     @Override
                     public void onDown(float x, float y) {
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(
@@ -892,7 +892,7 @@ public abstract class PhysicsSprite implements Renderable {
                         // clear the pokePathEntity, so a future touch starts
                         // the process over
                         if (oncePerTouch)
-                            Level._currLevel._touchResponder = null;
+                            Level.sCurrent.mTouchResponder = null;
                     }
 
                     @Override
@@ -1082,7 +1082,7 @@ public abstract class PhysicsSprite implements Renderable {
      */
     public void setHover(final int x, final int y) {
         _hoverVector = new Vector3();
-        Level._currLevel._repeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
             public void go() {
                 if (_hoverVector == null)
@@ -1090,7 +1090,7 @@ public abstract class PhysicsSprite implements Renderable {
                 _hoverVector.x = x;
                 _hoverVector.y = y;
                 _hoverVector.z = 0;
-                Level._currLevel._gameCam.unproject(_hoverVector);
+                Level.sCurrent.mGameCam.unproject(_hoverVector);
                 _physBody.setTransform(_hoverVector.x, _hoverVector.y, _physBody.getAngle());
             }
         });
@@ -1175,7 +1175,7 @@ public abstract class PhysicsSprite implements Renderable {
     public void setChaseSpeed(final float speed, final PhysicsSprite target,
             final boolean chaseInX, final boolean chaseInY) {
         _physBody.setType(BodyType.DynamicBody);
-        Level._currLevel._repeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1212,7 +1212,7 @@ public abstract class PhysicsSprite implements Renderable {
      * in which it is traveling
      */
     public void setRotationByDirection() {
-        Level._currLevel._repeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
             public void go() {
                 // handle rotating the hero based on the direction it faces
@@ -1232,8 +1232,8 @@ public abstract class PhysicsSprite implements Renderable {
      * @param zIndex The z plane. Values range from -2 to 2. The default is 0.
      */
     public void setZIndex(int zIndex) {
-        Level._currLevel.removeSprite(this, _zIndex);
+        Level.sCurrent.removeSprite(this, _zIndex);
         this._zIndex = zIndex;
-        Level._currLevel.addSprite(this, _zIndex);
+        Level.sCurrent.addSprite(this, _zIndex);
     }
 }

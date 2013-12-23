@@ -68,12 +68,12 @@ public class PreScene {
      * @return The current PreScene
      */
     private static PreScene getCurrPreScene() {
-        PreScene ps = Level._currLevel._preScene;
+        PreScene ps = Level.sCurrent.mPreScene;
         if (ps != null)
             return ps;
         ps = new PreScene();
-        Level._currLevel.suspendTouch();
-        Level._currLevel._preScene = ps;
+        Level.sCurrent.suspendTouch();
+        Level.sCurrent.mPreScene = ps;
         return ps;
     }
 
@@ -100,8 +100,8 @@ public class PreScene {
         // clear screen and draw sprites... we can use the level's hudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level._currLevel._hudCam.update();
-        sb.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        Level.sCurrent.mHudCam.update();
+        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
         for (Renderable r : _sprites)
             r.render(sb, 0);
@@ -173,7 +173,7 @@ public class PreScene {
             Timer.schedule(new Task() {
                 @Override
                 public void run() {
-                    Level._currLevel._preScene._visible = false;
+                    Level.sCurrent.mPreScene._visible = false;
                 }
             }, duration);
         }

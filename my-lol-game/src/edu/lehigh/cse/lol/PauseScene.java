@@ -48,12 +48,12 @@ public class PauseScene {
     private Vector3 _v = new Vector3();
     
     private static PauseScene getCurrPauseScene() {
-        PauseScene ps = Level._currLevel._pauseScene;
+        PauseScene ps = Level.sCurrent.mPauseScene;
         if (ps != null)
             return ps;
         ps = new PauseScene();
-        Level._currLevel.suspendTouch();
-        Level._currLevel._pauseScene = ps;
+        Level.sCurrent.suspendTouch();
+        Level.sCurrent.mPauseScene = ps;
         return ps;
     }
 
@@ -87,7 +87,7 @@ public class PauseScene {
         //
         // TODO: need to make this more nuanced if we want to add buttons...
         if (Gdx.input.justTouched()) {
-            Level._currLevel._hudCam.unproject(_v.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            Level.sCurrent.mHudCam.unproject(_v.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             if (_pauseRectangle.contains(_v.x, _v.y)) {
                 LOL._game.handleBack();
                 _visible = false;
@@ -101,8 +101,8 @@ public class PauseScene {
         // clear screen and draw sprites... we can use hudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level._currLevel._hudCam.update();
-        _spriteRender.setProjectionMatrix(Level._currLevel._hudCam.combined);
+        Level.sCurrent.mHudCam.update();
+        _spriteRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         _spriteRender.begin();
         for (Renderable r : _sprites)
             r.render(_spriteRender, 0);

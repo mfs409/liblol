@@ -90,7 +90,7 @@ public class Enemy extends PhysicsSprite {
      */
     private Enemy(float width, float height, String imgName) {
         super(imgName, SpriteId.ENEMY, width, height);
-        Level._currLevel._score._enemiesCreated++;
+        Level.sCurrent.mScore._enemiesCreated++;
     }
 
     /**
@@ -178,7 +178,7 @@ public class Enemy extends PhysicsSprite {
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName) {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level._currLevel.addSprite(e, 0);
+        Level.sCurrent.addSprite(e, 0);
         return e;
     }
 
@@ -196,7 +196,7 @@ public class Enemy extends PhysicsSprite {
         float radius = (width > height) ? width : height;
         Enemy e = new Enemy(radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level._currLevel.addSprite(e, 0);
+        Level.sCurrent.addSprite(e, 0);
         return e;
     }
 
@@ -234,7 +234,7 @@ public class Enemy extends PhysicsSprite {
 
         // possibly update score
         if (increaseScore)
-            Level._currLevel._score.onDefeatEnemy();
+            Level.sCurrent.mScore.onDefeatEnemy();
 
         // handle defeat triggers
         if (mDefeatCallback != null)
