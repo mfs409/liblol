@@ -616,7 +616,7 @@ public class MyLolGame extends LOL {
             g.setRoute(new Route(5).to(5, 5).to(5, 25).to(25, 25).to(9, 9).to(5, 5), 10, true);
 
             // draw a goodie counter in light blue with a 12-point font
-            Controls.addGoodieCount1(0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /**
@@ -2884,9 +2884,9 @@ public class MyLolGame extends LOL {
             d.setActivationScore(1, 1, 3, 0);
             Score.setVictoryDestination(1);
 
-            Controls.addGoodieCount1(0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
-            Controls.addGoodieCount2(0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
-            Controls.addGoodieCount3(0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
+            Controls.addGoodieCount(1, 0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
+            Controls.addGoodieCount(2, 0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
+            Controls.addGoodieCount(3, 0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
 
             Controls.addCountdown(100, "", 250, 30);
 

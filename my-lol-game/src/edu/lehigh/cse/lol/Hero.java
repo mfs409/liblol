@@ -316,13 +316,13 @@ public class Hero extends PhysicsSprite {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Level._currLevel._score._goodiesCollected[i] >= d._activationScore[i];
-        if (match && (d._holding < d._capacity) && _visible) {
+            match &= Level._currLevel._score._goodiesCollected[i] >= d.mActivation[i];
+        if (match && (d.mHolding < d.mCapacity) && _visible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
-            d._holding++;
-            if (d._arrivalSound != null)
-                d._arrivalSound.play();
+            d.mHolding++;
+            if (d.mArrivalSound != null)
+                d.mArrivalSound.play();
             Level._currLevel._score.onDestinationArrive();
         }
     }
@@ -335,7 +335,7 @@ public class Hero extends PhysicsSprite {
     private void onCollideWithEnemy(Enemy e) {
         // if the enemy always defeats the hero, no matter what, then defeat the
         // hero
-        if (e._alwaysDoesDamage) {
+        if (e.mAlwaysDoesDamage) {
             remove(false);
             Level._currLevel._score.defeatHero(e);
             return;
@@ -343,22 +343,22 @@ public class Hero extends PhysicsSprite {
         // handle hero invincibility
         if (_invincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
-            if (e._immuneToInvincibility)
+            if (e.mImmuneToInvincibility)
                 return;
             e.defeat(true);
         }
         // defeat by _crawling?
-        else if (_crawling && e._defeatByCrawl) {
+        else if (_crawling && e.mDefeatByCrawl) {
             e.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
-        else if (e._damage >= _strength) {
+        else if (e.mDamage >= _strength) {
             remove(false);
             Level._currLevel._score.defeatHero(e);
         }
         // when we can defeat it by losing strength
         else {
-            _strength -= e._damage;
+            _strength -= e.mDamage;
             e.defeat(true);
         }
     }
@@ -413,12 +413,12 @@ public class Hero extends PhysicsSprite {
         Level._currLevel._score.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
-        _strength += g._strengthBoost;
+        _strength += g.mStrengthBoost;
 
         // deal with invincibility
-        if (g._invincibilityDuration > 0) {
+        if (g.mInvincibilityDuration > 0) {
             // update the time to end invincibility
-            _invincibleRemaining += g._invincibilityDuration;
+            _invincibleRemaining += g.mInvincibilityDuration;
             // invincible animation
             if (_invincibleAnimation != null)
                 _animator.setCurrentAnimation(_invincibleAnimation);
@@ -427,9 +427,9 @@ public class Hero extends PhysicsSprite {
         // deal with animation changes due to goodie count
         if (_goodieCountAnimation != null) {
             int goodies = Level._currLevel._score._goodiesCollected[0];
-            for (int i = 0; i < _goodieCountAnimation._nextCell; ++i) {
-                if (_goodieCountAnimation._durations[i] == goodies) {
-                    _animator.setIndex(_goodieCountAnimation._frames[i]);
+            for (int i = 0; i < _goodieCountAnimation.mNextCell; ++i) {
+                if (_goodieCountAnimation.mDurations[i] == goodies) {
+                    _animator.setIndex(_goodieCountAnimation.mFrames[i]);
                     break;
                 }
             }
@@ -552,7 +552,7 @@ public class Hero extends PhysicsSprite {
         // compute the length of the throw sequence, so that we can get our
         // timer right for restoring the default animation
         _throwAnimateTotalLength = 0;
-        for (long l : a._durations)
+        for (long l : a.mDurations)
             _throwAnimateTotalLength += l;
         _throwAnimateTotalLength /= 1000; // convert to seconds
     }

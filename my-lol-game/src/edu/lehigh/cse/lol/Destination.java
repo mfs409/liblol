@@ -36,30 +36,26 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * reaches a destination, the hero disappears, and the score updates.
  */
 public class Destination extends PhysicsSprite {
-    /*
-     * BASIC CONFIGURATION
-     */
-
     /**
      * number of heroes who can fit at /this/ destination
      */
-    int _capacity;
+    int mCapacity;
 
     /**
      * number of heroes already in /this/ destination
      */
-    int _holding;
+    int mHolding;
 
     /**
      * number of type each type of goodies that must be collected before this
      * destination accepts any heroes
      */
-    int[] _activationScore = new int[4];
+    int[] mActivation = new int[4];
 
     /**
      * Sound to play when a hero arrives at this destination
      */
-    Sound _arrivalSound;
+    Sound mArrivalSound;
 
     /**
      * Create a destination. This is an internal method, the game designer
@@ -71,8 +67,8 @@ public class Destination extends PhysicsSprite {
      */
     private Destination(float width, float height, String imgName) {
         super(imgName, SpriteId.DESTINATION, width, height);
-        _capacity = 1;
-        _holding = 0;
+        mCapacity = 1;
+        mHolding = 0;
     }
 
     /**
@@ -103,7 +99,7 @@ public class Destination extends PhysicsSprite {
     public static Destination makeAsBox(float x, float y, float width, float height, String imgName) {
         Destination d = new Destination(width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        d._physBody.getFixtureList().get(0).setSensor(true);
+        d.setCollisionEffect(false);
         Level._currLevel.addSprite(d, 0);
         return d;
     }
@@ -123,7 +119,7 @@ public class Destination extends PhysicsSprite {
         float radius = (width > height) ? width : height;
         Destination d = new Destination(radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        d._physBody.getFixtureList().get(0).setSensor(true);
+        d.setCollisionEffect(false);
         Level._currLevel.addSprite(d, 0);
         return d;
     }
@@ -138,10 +134,10 @@ public class Destination extends PhysicsSprite {
      * @param score4 The number of type-4 goodies that must be collected.
      */
     public void setActivationScore(int score1, int score2, int score3, int score4) {
-        _activationScore[0] = score1;
-        _activationScore[1] = score2;
-        _activationScore[2] = score3;
-        _activationScore[3] = score4;
+        mActivation[0] = score1;
+        mActivation[1] = score2;
+        mActivation[2] = score3;
+        mActivation[3] = score4;
     }
 
     /**
@@ -151,7 +147,7 @@ public class Destination extends PhysicsSprite {
      * @param heroes The number of _heroes that can be accepted
      */
     public void setHeroCount(int heroes) {
-        _capacity = heroes;
+        mCapacity = heroes;
     }
 
     /**
@@ -160,6 +156,6 @@ public class Destination extends PhysicsSprite {
      * @param soundName The name of the sound file that should play
      */
     public void setArrivalSound(String soundName) {
-        _arrivalSound = Media.getSound(soundName);
+        mArrivalSound = Media.getSound(soundName);
     }
 }

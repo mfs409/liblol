@@ -43,21 +43,17 @@ public class Goodie extends PhysicsSprite {
      * strength because this actually bumps the score, which in turn lets us
      * have "super goodies" that turn on trigger obstacles.
      */
-    int[] _score = new int[4];
+    int[] mScore = new int[4];
 
     /**
      * How much strength does the hero get by collecting this goodie
      */
-    int _strengthBoost = 0;
+    int mStrengthBoost = 0;
 
     /**
      * How long will the hero be invincible if it collects this goodie
      */
-    float _invincibilityDuration = 0;
-
-    /*
-     * INTERNAL INTERFACE
-     */
+    float mInvincibilityDuration = 0;
 
     /**
      * Build a Goodie This should never be invoked directly. Instead, LOL game
@@ -71,10 +67,10 @@ public class Goodie extends PhysicsSprite {
      */
     private Goodie(float width, float height, String imgName) {
         super(imgName, SpriteId.GOODIE, width, height);
-        _score[0] = 1;
-        _score[1] = 0;
-        _score[2] = 0;
-        _score[3] = 0;
+        mScore[0] = 1;
+        mScore[1] = 0;
+        mScore[2] = 0;
+        mScore[3] = 0;
     }
 
     /**
@@ -105,7 +101,7 @@ public class Goodie extends PhysicsSprite {
     public static Goodie makeAsBox(float x, float y, float width, float height, String imgName) {
         Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        g._physBody.getFixtureList().get(0).setSensor(true);
+        g.setCollisionEffect(false);
         Level._currLevel.addSprite(g, 0);
         return g;
     }
@@ -125,7 +121,7 @@ public class Goodie extends PhysicsSprite {
         float radius = (width > height) ? width : height;
         Goodie g = new Goodie(width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        g._physBody.getFixtureList().get(0).setSensor(true);
+        g.setCollisionEffect(false);
         Level._currLevel.addSprite(g, 0);
         return g;
     }
@@ -144,10 +140,10 @@ public class Goodie extends PhysicsSprite {
      *            the goodie is collected
      */
     public void setScore(int v1, int v2, int v3, int v4) {
-        _score[0] = v1;
-        _score[1] = v2;
-        _score[2] = v3;
-        _score[3] = v4;
+        mScore[0] = v1;
+        mScore[1] = v2;
+        mScore[2] = v3;
+        mScore[3] = v4;
     }
 
     /**
@@ -156,7 +152,7 @@ public class Goodie extends PhysicsSprite {
      * @param boost Amount of strength to add (can be negative)
      */
     public void setStrengthBoost(int boost) {
-        _strengthBoost = boost;
+        mStrengthBoost = boost;
     }
 
     /**
@@ -169,6 +165,6 @@ public class Goodie extends PhysicsSprite {
      */
     public void setInvincibilityDuration(float duration) {
         assert (duration >= 0);
-        _invincibilityDuration = duration;
+        mInvincibilityDuration = duration;
     }
 }

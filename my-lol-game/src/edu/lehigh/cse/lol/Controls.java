@@ -35,19 +35,62 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+/**
+ * LOL Games have a heads-up display (hud). The hud is a place for displaying
+ * text and drawing touchable buttons, so that as the hero moves through the
+ * level, the buttons and text can remain at the same place on the screen
+ */
 public class Controls {
     /**
-     * This is for handling everything that gets drawn presses to the buttons
-     * that are drawn on the hudCam
+     * In levels that have a lose-on-timer feature, we store the timer here, so
+     * that we can extend the time left to complete a game
+     */
+    private static float sCountDownRemaining;
+
+    /**
+     * This is the same as sCountDownRemaining, but for levels where the hero
+     * wins by lasting until time runs out.
+     */
+    private static float sWinCountRemaining;
+
+    /**
+     * This is for handling everything that gets drawn on the HUD, whether it is
+     * pressable or not
      */
     static class HudEntity {
+        /**
+         * Should we run code when this HudEntity is touched?
+         */
+        boolean mIsTouchable;
+
+        /**
+         * For touchable HudEntities, this is the rectangle on the screen that
+         * is touchable
+         */
+        Rectangle mRange;
+
+        /**
+         * What color should we use to draw text, if this HudEntity is a text
+         * entity?
+         */
+        Color mColor = new Color(0, 0, 0, 1);
+
+        /**
+         * What image should we display, if this HudEntity has an image
+         * associated with it?
+         */
+        TextureRegion mImage;
+
         /**
          * Use this constructor for controls that provide pressable images
          * 
          * @param imgName The name of the image to display. If "" is given as
          *            the name, it will not crash.
+         * @param x The X coordinate (in pixels) of the bottom left corner.
+         * @param y The Y coordinate (in pixels) of the bottom left corner.
+         * @param width The width of the Hud Entity
+         * @param height The height of the Hud Entity
          */
         HudEntity(String imgName, int x, int y, int width, int height) {
             // set up the image to display
@@ -55,65 +98,63 @@ public class Controls {
             // NB: this will fail gracefully (no crash) for invalid file names
             TextureRegion[] trs = Media.getImage(imgName);
             if (trs != null)
-                _tr = trs[0];
+                mImage = trs[0];
 
             // set up the touchable range for the image
-            _range = new Rectangle(x, y, width, height);
-            _isTouchable = true;
+            mRange = new Rectangle(x, y, width, height);
+            mIsTouchable = true;
         }
-
-        boolean _isTouchable;
-
-        Color _c = new Color(0, 0, 0, 1);
 
         /**
          * Use this constructor for controls that are simply for displaying text
          * 
-         * @param red red portion of text color
-         * @param green green portion of text color
-         * @param blue blue portion of text color
+         * @param red The red portion of text color (0-255)
+         * @param green The green portion of text color (0-255)
+         * @param blue The blue portion of text color (0-255)
          */
         HudEntity(int red, int green, int blue) {
-            _c.r = ((float)red) / 256;
-            _c.g = ((float)green) / 256;
-            _c.b = ((float)blue) / 256;
-            _isTouchable = false;
+            mColor.r = ((float)red) / 256;
+            mColor.g = ((float)green) / 256;
+            mColor.b = ((float)blue) / 256;
+            mIsTouchable = false;
         }
 
+        /**
+         * Run this code when this HUD entity is down-pressed
+         * 
+         * @param vec The coordinates of the touch
+         */
         void onDownPress(Vector3 vec) {
         }
 
+        /**
+         * Run this code when this HUD entity is still being pressed, after a
+         * down press has already been observed.
+         * 
+         * @param vec The coordinates of the touch
+         */
         void onHold(Vector3 vec) {
         }
 
+        /**
+         * Run this code when this HUD entity is released
+         */
         void onUpPress() {
         }
-
-        Rectangle _range;
-
-        TextureRegion _tr;
 
         /**
          * This is the render method when we've got a valid TR. When we don't,
          * we're displaying text, which probably means we're also dynamically
          * updating the text to display on every render, so it makes sense to
-         * overload the render() call for those methods
+         * overload the render() call for those HUD entities
          * 
-         * @param sb
+         * @param sb The SpriteBatch to use to draw the image
          */
         void render(SpriteBatch sb) {
-            if (_tr != null)
-                sb.draw(_tr, _range.x, _range.y, 0, 0, _range.width, _range.height, 1, 1, 0);
+            if (mImage != null)
+                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
         }
     }
-
-    /**
-     * Store the duration between when the program started and when the _current
-     * level started, so that we can reuse the timer from one level to the next
-     */
-    private static float _countDownRemaining;
-
-    private static float _winCountRemaining;
 
     /**
      * Controls is a pure static class, and should never be constructed
@@ -122,22 +163,24 @@ public class Controls {
     private Controls() {
     }
 
-    /*
-     * TEXT-ONLY CONTROLS
-     */
-
     /**
-     * Change the amount of time left in a countdown
+     * A helper method to draw text nicely. In GDX, we draw everything by giving
+     * the bottom left corner, except text, which takes the top left corner.
+     * This function handles the conversion, so that we can use bottom-left.
      * 
-     * @param delta The amount of time to add before the timer expires
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param message The text to display
+     * @param bf The BitmapFont object to use for the text's font
+     * @param sb The SpriteBatch used to render the text
      */
-    public static void updateTimerExpiration(float delta) {
-        _countDownRemaining += delta;
-    }
-
     static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
         bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
     }
+
+    /*
+     * PUBLIC INTERFACE
+     */
 
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in
@@ -145,8 +188,8 @@ public class Controls {
      * 
      * @param timeout Starting value of the timer
      * @param text The text to display when the timer expires
-     * @param x The x coordinate where the timer should be drawn
-     * @param y The y coordinate where the timer should be drawn
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addCountdown(float timeout, String text, int x, int y) {
         addCountdown(timeout, text, x, y, LOL._game._config.getDefaultFontFace(),
@@ -160,28 +203,25 @@ public class Controls {
      * 
      * @param timeout Starting value of the timer
      * @param text The text to display when the timer expires
-     * @param x The x coordinate where the timer should be drawn
-     * @param y The y coordinate where the timer should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     public static void addCountdown(final float timeout, final String text, final int x,
             final int y, String fontName, final int red, final int green, final int blue, int size) {
-        _countDownRemaining = timeout;
+        sCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Level._currLevel._controls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                _countDownRemaining -= Gdx.graphics.getDeltaTime();
-                if (_countDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int)_countDownRemaining, bf, sb);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                sCountDownRemaining -= Gdx.graphics.getDeltaTime();
+                if (sCountDownRemaining > 0) {
+                    drawTextTransposed(x, y, "" + (int)sCountDownRemaining, bf, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
                     Level._currLevel._score.endLevel(false);
@@ -191,14 +231,24 @@ public class Controls {
     }
 
     /**
+     * Change the amount of time left in a countdown timer
+     * 
+     * @param delta The amount of time to add before the timer expires
+     */
+    public static void updateTimerExpiration(float delta) {
+        sCountDownRemaining += delta;
+    }
+
+    /**
      * Print the frames per second
      * 
-     * @param x
-     * @param y
-     * @param red
-     * @param green
-     * @param blue
-     * @param size
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     public static void addFPS(final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size) {
@@ -207,7 +257,7 @@ public class Controls {
         Level._currLevel._controls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
             }
         });
@@ -218,8 +268,8 @@ public class Controls {
      * victory
      * 
      * @param timeout Starting value of the timer
-     * @param x The x coordinate where the timer should be drawn
-     * @param y The y coordinate where the timer should be drawn
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addWinCountdown(float timeout, int x, int y) {
         addWinCountdown(timeout, x, y, LOL._game._config.getDefaultFontFace(),
@@ -232,29 +282,26 @@ public class Controls {
      * the appearance of the font. When time is up, the level ends in victory
      * 
      * @param timeout Starting value of the timer
-     * @param x The x coordinate where the timer should be drawn
-     * @param y The y coordinate where the timer should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     public static void addWinCountdown(final float timeout, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
-        _winCountRemaining = timeout;
+        sWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Level._currLevel._controls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                _winCountRemaining -= Gdx.graphics.getDeltaTime();
-                if (_winCountRemaining > 0)
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                sWinCountRemaining -= Gdx.graphics.getDeltaTime();
+                if (sWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int)_winCountRemaining, bf, sb);
+                    drawTextTransposed(x, y, "" + (int)sWinCountRemaining, bf, sb);
                 else
                     Level._currLevel._score.endLevel(true);
             }
@@ -264,163 +311,58 @@ public class Controls {
     /**
      * Add a count of the current number of goodies of type 1
      * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
+     * @param max If this is > 0, then the message will be of the form XX/max
      *            instead of just XX
      * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addGoodieCount1(int max, String text, int x, int y) {
-        addGoodieCount1(max, text, x, y, LOL._game._config.getDefaultFontFace(),
+        addGoodieCount(1, max, text, x, y, LOL._game._config.getDefaultFontFace(),
                 LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
                 LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
     }
 
     /**
-     * Add a count of the current number of goodies of type 1, with extra
-     * features for describing the appearance of the font
+     * Add a count of the current number of goodies of the specified type, with
+     * extra features for describing the appearance of the font
      * 
+     * @param type The type of goodie to show (1-4)
      * @param max If this is > 0, then the message wil be of the form XX/max
      *            instead of just XX
      * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
-    public static void addGoodieCount1(int max, final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
+    public static void addGoodieCount(final int type, int max, final String text, final int x,
+            final int y, String fontName, final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
         HudEntity he = new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                drawTextTransposed(x, y,
-                        "" + Level._currLevel._score._goodiesCollected[0] + suffix, bf, sb);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "" + Level._currLevel._score._goodiesCollected[type - 1]
+                        + suffix, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
     }
 
     /**
-     * Add a count of the current number of goodies of type 2, with extra
-     * features for describing the appearance of the font
+     * Add a count of the number of enemies who have been defeated
      * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
+     * @param max If this is > 0, then the message will be of the form XX/max
      *            instead of just XX
      * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
-     */
-    public static void addGoodieCount2(int max, final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
-            @Override
-            void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                drawTextTransposed(x, y,
-                        "" + Level._currLevel._score._goodiesCollected[1] + suffix, bf, sb);
-            }
-        };
-        Level._currLevel._controls.add(he);
-    }
-
-    /**
-     * Add a count of the current number of goodies of type 3, with extra
-     * features for describing the appearance of the font
-     * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
-     *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
-     */
-    public static void addGoodieCount3(int max, final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
-            @Override
-            void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                drawTextTransposed(x, y,
-                        "" + Level._currLevel._score._goodiesCollected[2] + suffix, bf, sb);
-            }
-        };
-        Level._currLevel._controls.add(he);
-
-    }
-
-    /**
-     * Add a count of the current number of goodies of type 4, with extra
-     * features for describing the appearance of the font
-     * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
-     *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
-     */
-    public static void addGoodieCount4(int max, final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
-            @Override
-            void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
-                drawTextTransposed(x, y,
-                        "" + Level._currLevel._score._goodiesCollected[3] + suffix, bf, sb);
-            }
-        };
-        Level._currLevel._controls.add(he);
-    }
-
-    /**
-     * Add a count of the _current number of enemies who have been defeated
-     * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
-     *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addDefeatedCount(int max, String text, int x, int y) {
         addDefeatedCount(max, text, x, y, LOL._game._config.getDefaultFontFace(),
@@ -429,22 +371,19 @@ public class Controls {
     }
 
     /**
-     * Add a count of the _current number of enemies who have been defeated,
-     * with extra features for describing the appearance of the font
+     * Add a count of the number of enemies who have been defeated, with extra
+     * features for describing the appearance of the font
      * 
      * @param max If this is > 0, then the message wil be of the form XX/max
      *            instead of just XX
      * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     public static void addDefeatedCount(int max, final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
@@ -454,7 +393,7 @@ public class Controls {
         HudEntity he = new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, "" + Level._currLevel._score._enemiesDefeated + suffix,
                         bf, sb);
             }
@@ -465,8 +404,8 @@ public class Controls {
     /**
      * Add a stopwatch for tracking how long a level takes
      * 
-     * @param x The x coordinate where the stopwatch should be drawn
-     * @param y The y coordinate where the stopwatch should be drawn
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     static public void addStopwatch(int x, int y) {
         addStopwatch(x, y, LOL._game._config.getDefaultFontFace(),
@@ -478,16 +417,13 @@ public class Controls {
      * Add a stopwatch for tracking how long a level takes, with extra features
      * for describing the appearance of the font
      * 
-     * @param x The x coordinate where the stopwatch should be drawn
-     * @param y The y coordinate where the stopwatch should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     static public void addStopwatch(final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size) {
@@ -497,7 +433,7 @@ public class Controls {
 
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 _stopWatchProgress += Gdx.graphics.getDeltaTime();
                 drawTextTransposed(x, y, "" + (int)_stopWatchProgress, bf, sb);
             }
@@ -506,11 +442,12 @@ public class Controls {
     }
 
     /**
-     * Display a strength meter
+     * Display a strength meter for a specific hero
      * 
-     * @param text The text to display after the remaining _strength value
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
+     * @param text The text to display after the remaining strength value
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param h The Hero whose strength should be displayed
      */
     static public void addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
@@ -520,20 +457,18 @@ public class Controls {
     }
 
     /**
-     * Display a _strength meter, with extra features for describing the
-     * appearance of the font
+     * Display a strength meter for a specific hero, with extra features for
+     * describing the appearance of the font
      * 
      * @param text The text to display after the remaining _strength value
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red A value between 0 and 255, indicating the red portion of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green portion of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue portion of the
-     *            font color
-     * @param size The font size, typically 32 but can be varied depending on
-     *            the amount of text being drawn to the screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
+     * @param h The Hero whose strength should be displayed
      */
     static public void addStrengthMeter(final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size, final Hero h) {
@@ -541,7 +476,7 @@ public class Controls {
         HudEntity he = new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, "" + h._strength + " " + text, bf, sb);
             }
         };
@@ -552,12 +487,13 @@ public class Controls {
      * Display the number of remaining projectiles
      * 
      * @param text The text to display after the number of goodies
-     * @param x The x coordinate where the text should be drawn
-     * @param y The y coordinate where the text should be drawn
-     * @param red The red dimension of the font color
-     * @param green The green dimension of the font color
-     * @param blue The blue dimension of the font color
-     * @param size The size of the font
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
      */
     public static void addProjectileCount(final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
@@ -565,181 +501,158 @@ public class Controls {
         HudEntity he = new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(_c.r, _c.g, _c.b, 1);
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, "" + Projectile._projectilesRemaining + " " + text, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);
     }
 
-    /*
-     * GRAPHICAL BUTTON CONTROLS
-     */
-
     /**
-     * Add a button that moves an entity downward
+     * Add a button that pauses the game by causing a PauseScene to be
+     * displayed. Note that you must configure a PauseScene, or pressing this
+     * button will cause your game to crash.
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
-     * @param rate Rate at which the entity moves
-     * @param entity The entity to move downward
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      */
-    public static void addDownButton(int x, int y, int width, int height, String imgName,
-            final float rate, final PhysicsSprite entity) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.y = -rate;
-                entity.updateVelocity(v.x, v.y);
-            }
-
-            @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
-
-            @Override
-            void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.y = 0;
-                entity.updateVelocity(v.x, v.y);
-            }
-        };
-        Level._currLevel._controls.add(pe);
-    }
-
     public static void addPauseButton(int x, int y, int width, int height, String imgName) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Level._currLevel._pauseScene._visible = true;
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
+    }
+
+    /**
+     * Add a button that moves an entity
+     * 
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param entity The entity to move downward
+     * @param dx The new X velocity
+     * @param dy The new Y velocity
+     */
+    public static void addMoveButton(int x, int y, int width, int height, String imgName,
+            final PhysicsSprite entity, final float dx, final float dy) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+            @Override
+            void onDownPress(Vector3 vv) {
+                Vector2 v = entity._physBody.getLinearVelocity();
+                if (dx != 0)
+                    v.x = dx;
+                if (dy != 0)
+                    v.y = dy;
+                entity.updateVelocity(v.x, v.y);
+            }
+
+            @Override
+            void onHold(Vector3 vv) {
+                onDownPress(vv);
+            }
+
+            @Override
+            void onUpPress() {
+                Vector2 v = entity._physBody.getLinearVelocity();
+                if (dx != 0)
+                    v.x = 0;
+                if (dy != 0)
+                    v.y = 0;
+                entity.updateVelocity(v.x, v.y);
+            }
+        };
+        Level._currLevel._controls.add(he);
+    }
+
+    /**
+     * Add a button that moves an entity downward
+     * 
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param rate Rate at which the entity moves
+     * @param entity The entity to move downward
+     */
+    public static void addDownButton(int x, int y, int width, int height, String imgName,
+            float rate, PhysicsSprite entity) {
+        addMoveButton(x, y, width, height, imgName, entity, 0, -rate);
     }
 
     /**
      * Add a button that moves an entity upward
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rate Rate at which the entity moves
-     * @param entity The entity to move
+     * @param entity The entity to move upward
      */
-    public static void addUpButton(int x, int y, int width, int height, String imgName,
-            final float rate, final PhysicsSprite entity) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.y = rate;
-                entity.updateVelocity(v.x, v.y);
-            }
-
-            @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
-
-            @Override
-            void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.y = 0;
-                entity.updateVelocity(v.x, v.y);
-            }
-        };
-        Level._currLevel._controls.add(pe);
+    public static void addUpButton(int x, int y, int width, int height, String imgName, float rate,
+            PhysicsSprite entity) {
+        addMoveButton(x, y, width, height, imgName, entity, 0, rate);
     }
 
     /**
      * Add a button that moves the given entity left
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rate Rate at which the entity moves
      * @param entity The entity that should move left when the button is pressed
      */
     public static void addLeftButton(int x, int y, int width, int height, String imgName,
-            final float rate, final PhysicsSprite entity) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.x = -rate;
-                entity.updateVelocity(v.x, v.y);
-            }
-
-            @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
-
-            @Override
-            void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.x = 0;
-                entity.updateVelocity(v.x, v.y);
-            }
-        };
-        Level._currLevel._controls.add(pe);
+            float rate, PhysicsSprite entity) {
+        addMoveButton(x, y, width, height, imgName, entity, -rate, 0);
     }
 
     /**
      * Add a button that moves the given entity to the right
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rate Rate at which the entity moves
      * @param entity The entity that should move right when the button is
      *            pressed
      */
     public static void addRightButton(int x, int y, int width, int height, String imgName,
-            final float rate, final PhysicsSprite entity) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.x = rate;
-                entity.updateVelocity(v.x, v.y);
-            }
-
-            @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
-
-            @Override
-            void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
-                v.x = 0;
-                entity.updateVelocity(v.x, v.y);
-            }
-        };
-        Level._currLevel._controls.add(pe);
+            float rate, PhysicsSprite entity) {
+        addMoveButton(x, y, width, height, imgName, entity, rate, 0);
     }
 
     /**
      * Add a button that moves the given entity at one speed when it is
      * depressed, and at another otherwise
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rateDownX Rate (X) at which the entity moves when the button is
      *            pressed
      * @param rateDownY Rate (Y) at which the entity moves when the button is
@@ -748,22 +661,23 @@ public class Controls {
      *            pressed
      * @param rateUpY Rate (Y) at which the entity moves when the button is not
      *            pressed
-     * @param entity The entity that should move left when the button is pressed
+     * @param entity The entity that the button controls
      */
     public static void addTurboButton(int x, int y, int width, int height, String imgName,
             final int rateDownX, final int rateDownY, final int rateUpX, final int rateUpY,
             final PhysicsSprite entity) {
-        // see left button for note on body type
-        if (entity._physBody.getType() == BodyType.StaticBody)
-            entity._physBody.setType(BodyType.DynamicBody);
-
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Vector2 v = entity._physBody.getLinearVelocity();
                 v.x = rateDownX;
                 v.y = rateDownY;
                 entity.updateVelocity(v.x, v.y);
+            }
+
+            @Override
+            void onHold(Vector3 vv) {
+                onDownPress(vv);
             }
 
             @Override
@@ -774,31 +688,28 @@ public class Controls {
                 entity.updateVelocity(v.x, v.y);
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button that moves the given entity at one speed, but doesn't stop
      * the entity when the button is released
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rateX Rate (X) at which the entity moves when the button is
      *            pressed
      * @param rateY Rate (Y) at which the entity moves when the button is
      *            pressed
-     * @param entity The entity that should move left when the button is pressed
+     * @param entity The entity that the button controls
      */
     public static void addDampenedMotionButton(int x, int y, int width, int height, String imgName,
             final float rateX, final float rateY, final float dampening, final PhysicsSprite entity) {
-        // see left button for note on body type
-        if (entity._physBody.getType() == BodyType.StaticBody)
-            entity._physBody.setType(BodyType.DynamicBody);
-
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Vector2 v = entity._physBody.getLinearVelocity();
@@ -813,22 +724,24 @@ public class Controls {
                 entity._physBody.setLinearDamping(dampening);
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button that puts the hero into crawl mode when depressed, and
      * regular mode when released
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero to control
      */
     public static void addCrawlButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.crawlOn();
@@ -839,75 +752,83 @@ public class Controls {
                 h.crawlOff();
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button to make the hero jump
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero to control
      */
     public static void addJumpButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.jump();
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button to make the hero throw a projectile
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero who should throw the projectile
+     * @param milliDelay A delay between throws, so that holding doesn't lead to
+     *            too many throws at once
      */
     public static void addThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h, final int milliDelay) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            long lastThrow;
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+            long mLastThrow;
 
             @Override
             void onDownPress(Vector3 vv) {
                 Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
-                lastThrow = System.nanoTime();
+                mLastThrow = System.nanoTime();
             }
 
             @Override
             void onHold(Vector3 vv) {
                 long now = System.nanoTime();
-                if (lastThrow + milliDelay * 1000000 < now) {
-                    lastThrow = now;
+                if (mLastThrow + milliDelay * 1000000 < now) {
+                    mLastThrow = now;
                     Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y,
                             h);
                 }
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button to make the hero throw a projectile, but holding doesn't
      * make it throw more often
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero who should throw the projectile
      */
     public static void addSingleThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
@@ -917,65 +838,67 @@ public class Controls {
             void onUpPress() {
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * The default behavior for throwing is to throw in a straight line. If we
-     * instead desire that the bullets have some sort of aiming to them, we need
-     * to use this method, which throws toward where the screen was pressed
+     * instead desire that the projectiles have some sort of aiming to them, we
+     * need to use this method, which throws toward where the screen was pressed
      * Note: you probably want to use an invisible button that covers the
      * screen...
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero who should throw the projectile
+     * @param milliDelay A delay between throws, so that holding doesn't lead to
+     *            too many throws at once
      */
     public static void addVectorThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h, final long milliDelay) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
-            long lastThrow;
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+            long mLastThrow;
 
             @Override
             void onDownPress(Vector3 vv) {
                 Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x,
                         vv.y, h);
-                lastThrow = System.nanoTime();
+                mLastThrow = System.nanoTime();
             }
 
             @Override
             void onHold(Vector3 vv) {
                 long now = System.nanoTime();
-                if (lastThrow + milliDelay * 1000000 < now) {
-                    lastThrow = now;
+                if (mLastThrow + milliDelay * 1000000 < now) {
+                    mLastThrow = now;
                     Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y,
                             vv.x, vv.y, h);
                 }
             }
 
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
-     * The default behavior for throwing projectiles is to throw in a straight
-     * line. If we instead desire that the bullets have some sort of aiming to
-     * them, we need to use this method, which throws toward where the screen
-     * was pressed. Note that with this command, the button that is drawn on the
-     * screen cannot be held down to throw multipel projectiles in rapid
-     * succession.
+     * This is almost exactly like addVectorThrowButton. The only difference is
+     * that holding won't cause the hero to throw more projectiles
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
+     * @param h The hero who should throw the projectile
      */
     public static void addVectorSingleThrowButton(int x, int y, int width, int height,
             String imgName, final Hero h) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x,
@@ -986,23 +909,24 @@ public class Controls {
             void onUpPress() {
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
-     * Display a zoom in button. Note that zooming in and out does not work well
-     * with elements that hover on the screen. Use with care.
+     * Display a zoom out button. Note that zooming in and out does not work
+     * well with elements that hover on the screen. Use with care.
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param maxZoom Maximum zoom. 8 is usually a good default
      */
     public static void addZoomOutButton(int x, int y, int width, int height, String imgName,
             final float maxZoom) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level._currLevel._gameCam.zoom;
@@ -1011,27 +935,24 @@ public class Controls {
                     Level._currLevel._bgCam.zoom *= 2;
                 }
             }
-
-            @Override
-            void onUpPress() {
-            }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
-     * Display a zoom out button
+     * Display a zoom in button
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param minZoom Minimum zoom. 0.25f is usually a good default
      */
     public static void addZoomInButton(int x, int y, int width, int height, String imgName,
             final float minZoom) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level._currLevel._gameCam.zoom;
@@ -1040,27 +961,24 @@ public class Controls {
                     Level._currLevel._bgCam.zoom /= 2;
                 }
             }
-
-            @Override
-            void onUpPress() {
-            }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
      * Add a button that rotates the hero
      * 
-     * @param x X coordinate of top left corner of the button
-     * @param y Y coordinate of top left corner of the button
-     * @param width Width of the button
-     * @param height Height of the button
-     * @param imgName Name of the image to use for this button
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param rate Amount of rotation to apply to the hero on each press
      */
     public static void addRotateButton(int x, int y, int width, int height, String imgName,
             final float rate, final Hero h) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.increaseRotation(rate);
@@ -1071,43 +989,45 @@ public class Controls {
                 h.increaseRotation(rate);
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 
     /**
-     * Add an image to the heads-up display
+     * Add an image to the heads-up display. Touching the image has no effect
      * 
-     * @param x X coordinate of top left corner of the image
-     * @param y Y coordinate of top left corner of the image
-     * @param width Width of the image
-     * @param height Height of the image
-     * @param imgName Name of the image to use
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      */
     public static void addImage(int x, int y, int width, int height, String imgName) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height);
-        pe._isTouchable = false;
-        Level._currLevel._controls.add(pe);
+        HudEntity he = new HudEntity(imgName, x, y, width, height);
+        he.mIsTouchable = false;
+        Level._currLevel._controls.add(he);
     }
 
     /**
-     * Add a button to the heads-up display that runs custom code via
-     * onControlPress
+     * Add a button to the heads-up display that runs custom code via an
+     * onControlPress trigger
      * 
-     * @param x X coordinate of top left corner of the image
-     * @param y Y coordinate of top left corner of the image
-     * @param width Width of the image
-     * @param height Height of the image
-     * @param imgName Name of the image to use
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *            button
      * @param id An id to use for the trigger event
      */
     public static void addTriggerControl(int x, int y, int width, int height, String imgName,
             final int id) {
-        HudEntity pe = new HudEntity(imgName, x, y, width, height) {
+        HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 LOL._game.onControlPressTrigger(id, LOL._game._currLevel);
             }
         };
-        Level._currLevel._controls.add(pe);
+        Level._currLevel._controls.add(he);
     }
 }

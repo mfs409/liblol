@@ -37,38 +37,152 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * frames (numbered 0 to 4) that can be shown. We can then set an animation such
  * as (0,300)->(2,100)->(0,600)->(4,100) to indicate that the animation should
  * show the 0th frame for 300 milliseconds, then the 2nd frame for 100
- * milliseconds., then the 0th frame for 600 milliseconds, then the 4th frame
- * for 100 milliseconds.
+ * milliseconds, then the 0th frame for 600 milliseconds, then the 4th frame for
+ * 100 milliseconds.
  */
 public class Animation {
     /**
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
      */
-    TextureRegion[] _cells;
+    private TextureRegion[] mCells;
 
     /**
      * This array holds the indices that should be displayed.
      */
-    int[] _frames;
+    int[] mFrames;
 
     /**
      * This array holds the durations for which each of the indices should be
      * displayed
      */
-    long[] _durations;
+    long[] mDurations;
 
     /**
      * Should the animation repeat?
      */
-    boolean _loop;
+    private boolean mLoop;
 
     /**
      * The next available position in the _frames and _durations arrays. Note
      * that _frames and _durations should have the same length, and the same
      * number of entries.
      */
-    int _nextCell;
+    int mNextCell;
+
+    /**
+     * AnimationDriver is an internal class that PhysicsSprites can use to
+     * figure out which frame of an animation to show next
+     */
+    static class AnimationDriver {
+        /**
+         * The images that comprise the current animation will be the elements
+         * of this array
+         */
+        TextureRegion[] mImages;
+
+        /**
+         * The index to display from _tra for the case where there is no active
+         * animation. This is useful for animateByGoodieCount.
+         */
+        int mImageIndex;
+
+        /**
+         * The currently running animation
+         */
+        private Animation mCurrentAnimation;
+
+        /**
+         * The frame of the currently running animation that is being displayed
+         */
+        private int mCurrentAnimationFrame;
+
+        /**
+         * The amout of time for which the current frame has been displayed
+         */
+        private float mCurrentAnimationTime;
+
+        /**
+         * Build an AnimationDriver by giving it an imageName. This allows us to
+         * use AnimationDriver for displaying non-animated images
+         * 
+         * @param imgName The name of the image file to use
+         */
+        AnimationDriver(String imgName) {
+            updateImage(imgName);
+        }
+
+        /**
+         * Set the current animation, and reset internal fields
+         * 
+         * @param a The animation to start using
+         */
+        void setCurrentAnimation(Animation a) {
+            mCurrentAnimation = a;
+            mCurrentAnimationFrame = 0;
+            mCurrentAnimationTime = 0;
+        }
+
+        /**
+         * Change the source for the default image to display
+         * 
+         * @param imgName The name of the image file to use
+         */
+        void updateImage(String imgName) {
+            mImages = Media.getImage(imgName);
+            mImageIndex = 0;
+        }
+
+        /**
+         * Change the index of the default image to display
+         * 
+         * @param i The index to use
+         */
+        void setIndex(int i) {
+            mImageIndex = i;
+        }
+
+        /**
+         * Request a random index from the _tra array to pick an image to
+         * display
+         */
+        void pickRandomIndex() {
+            mImageIndex = Util.getRandom(mImages.length);
+        }
+
+        /**
+         * When a PhysicsSprite renders, we use this method to figure out which
+         * textureRegion to display
+         * 
+         * @param delta The time since the last render
+         * @return The TextureRegion to display
+         */
+        TextureRegion getTr(float delta) {
+            if (mCurrentAnimation == null) {
+                if (mImages == null)
+                    return null;
+                return mImages[mImageIndex];
+            }
+            mCurrentAnimationTime += delta;
+            long millis = (long)(1000 * mCurrentAnimationTime);
+            // are we still in this frame?
+            if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+            // are we on the last frame, with no loop? If so, stay where we
+            // are...
+            else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1
+                    && !mCurrentAnimation.mLoop) {
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+            // else advance, reset, go
+            else {
+                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
+                mCurrentAnimationTime = 0;
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+        }
+    }
 
     /*
      * PUBLIC INTERFACE
@@ -79,39 +193,40 @@ public class Animation {
      * but none will be initialized yet. You will need to use the "to" method to
      * initialize the steps.
      * 
-     * @param imgName The animatable image that should be used
+     * @param imgName The animate-able image that should be used
      * @param sequenceCount The number of frames in the animation
-     * @param repeat true or false, depending on whether the animation should
-     *            repeat
+     * @param repeat Either true or false, depending on whether the animation
+     *            should repeat
      */
     public Animation(String imgName, int sequenceCount, boolean repeat) {
-        _cells = Media.getImage(imgName);
-        _frames = new int[sequenceCount];
-        _durations = new long[sequenceCount];
-        _loop = repeat;
-        _nextCell = 0;
+        mCells = Media.getImage(imgName);
+        mFrames = new int[sequenceCount];
+        mDurations = new long[sequenceCount];
+        mLoop = repeat;
+        mNextCell = 0;
     }
 
     /**
      * Create an animation where all of the frames are displayed for the same
      * amount of time
      * 
-     * @param imgName The animatable image that should be used
+     * @param imgName The animate-able image that should be used
      * @param timePerFrame The time in milliseconds that each frame should be
      *            shown
      * @param repeat true or false, depending on whether the animation should
      *            repeat
-     * @param frameIndices The indices of the image that should be shown
+     * @param frameIndices The indices of the image that should each be shown
+     *            for timePerFrame milliseconds
      */
     public Animation(String imgName, int timePerFrame, boolean repeat, int... frameIndices) {
-        _cells = Media.getImage(imgName);
-        _frames = new int[frameIndices.length];
-        _durations = new long[frameIndices.length];
-        _loop = repeat;
-        _nextCell = frameIndices.length;
-        for (int i = 0; i < _nextCell; ++i) {
-            _durations[i] = timePerFrame;
-            _frames[i] = frameIndices[i];
+        mCells = Media.getImage(imgName);
+        mFrames = new int[frameIndices.length];
+        mDurations = new long[frameIndices.length];
+        mLoop = repeat;
+        mNextCell = frameIndices.length;
+        for (int i = 0; i < mNextCell; ++i) {
+            mDurations[i] = timePerFrame;
+            mFrames[i] = frameIndices[i];
         }
     }
 
@@ -123,80 +238,9 @@ public class Animation {
      * @return the Animation, so that we can chain calls to "to()"
      */
     public Animation to(int frame, long duration) {
-        _frames[_nextCell] = frame;
-        _durations[_nextCell] = duration;
-        _nextCell++;
+        mFrames[mNextCell] = frame;
+        mDurations[mNextCell] = duration;
+        mNextCell++;
         return this;
-    }
-
-    static class AnimationDriver {
-
-        AnimationDriver(String imgName) {
-            updateImage(imgName);
-        }
-
-        /**
-         * The default image to display 
-         */
-        TextureRegion [] _tra;
-        int _traIndex;
-
-        /**
-         * The currently running animation
-         */
-        private Animation _currentAnimation;
-
-        private int _currAnimationFrame;
-
-        private float _currAnimationTime;
-
-        void setCurrentAnimation(Animation a) {
-            _currentAnimation = a;
-            _currAnimationFrame = 0;
-            _currAnimationTime = 0;
-        }
-
-        void updateImage(String imgName) {
-            // minor hack so that we can have invalid png files for invisible
-            // images
-            _tra = Media.getImage(imgName);
-            _traIndex = 0;
-        }
-        
-        void setIndex(int i)
-        {
-            _traIndex = i;
-        }
-        
-        void pickRandomIndex(){
-            _traIndex = Util.getRandom(_tra.length);
-        }
-        
-        TextureRegion getTr(float delta) {
-            if (_currentAnimation == null) {
-                if (_tra == null)
-                    return null;
-                return _tra[_traIndex];
-            }
-            _currAnimationTime += delta;
-            long millis = (long)(1000 * _currAnimationTime);
-            // are we still in this frame?
-            if (millis <= _currentAnimation._durations[_currAnimationFrame]) {
-                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-            }
-            // are we on the last frame, with no loop? If so, stay where we
-            // are...
-            else if (_currAnimationFrame == _currentAnimation._nextCell - 1
-                    && !_currentAnimation._loop) {
-                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-            }
-            // else advance, reset, go
-            else {
-                _currAnimationFrame = (_currAnimationFrame + 1) % _currentAnimation._nextCell;
-                _currAnimationTime = 0;
-                return _currentAnimation._cells[_currentAnimation._frames[_currAnimationFrame]];
-            }
-
-        }
     }
 }

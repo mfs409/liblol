@@ -434,7 +434,7 @@ public class Level extends ScreenAdapter {
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(_background._c.r, _background._c.g, _background._c.b, 1);
+        Gdx.gl.glClearColor(_background.mColor.r, _background.mColor.g, _background.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // prepare the main camera... we do it here, so that the parallax code
@@ -473,8 +473,8 @@ public class Level extends ScreenAdapter {
             _shapeRender.begin(ShapeType.Line);
             _shapeRender.setColor(Color.RED);
             for (HudEntity pe : _controls)
-                if (pe._range != null)
-                    _shapeRender.rect(pe._range.x, pe._range.y, pe._range.width, pe._range.height);
+                if (pe.mRange != null)
+                    _shapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
             _shapeRender.end();
         }
     }
@@ -588,7 +588,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
@@ -621,7 +621,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first...
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 _gameCam.unproject(_touchVec.set(x, y, 0));
@@ -652,7 +652,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first
         _hudCam.unproject(_touchVec.set(x, y, 0));
         for (HudEntity pe : _controls) {
-            if (pe._isTouchable && pe._range.contains(_touchVec.x, _touchVec.y)) {
+            if (pe.mIsTouchable && pe.mRange.contains(_touchVec.x, _touchVec.y)) {
                 pe.onUpPress();
                 return;
             }

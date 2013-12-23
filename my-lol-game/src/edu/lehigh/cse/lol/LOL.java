@@ -33,7 +33,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: aggressively comment and reduce visibility as much as possible.  Files remaining: MyLolGame, all of this namespace
+// TODO: aggressively comment and reduce visibility as much as possible.
+// DONE: Animation, Background, Controls, Destination, Enemy
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -65,8 +66,6 @@ package edu.lehigh.cse.lol;
 // TODO: consider making a tool for proper sprite sheet manipulation
 
 // TODO: Hover has a zoom bug
-
-// TODO: zoom bounds are probably backwards... do max before min?
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

@@ -134,8 +134,8 @@ public class Score {
     void defeatHero(Enemy e) {
         _heroesDefeated++;
         if (_heroesDefeated == _heroesCreated) {
-            if (e._onDefeatHeroText != "")
-                PostScene.setDefaultLoseText(e._onDefeatHeroText);
+            if (e.mOnDefeatHeroText != "")
+                PostScene.setDefaultLoseText(e.mOnDefeatHeroText);
             endLevel(false);
         }
     }
@@ -148,7 +148,7 @@ public class Score {
     void onGoodieCollected(Goodie g) {
         // Update goodie counts
         for (int i = 0; i < 4; ++i)
-            _goodiesCollected[i] += g._score[i];
+            _goodiesCollected[i] += g.mScore[i];
 
         // possibly win the level, but only if we win on goodie count and all
         // four counts are high enough
