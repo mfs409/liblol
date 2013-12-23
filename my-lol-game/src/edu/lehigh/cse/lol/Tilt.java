@@ -97,15 +97,19 @@ public class Tilt {
         if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
             float rot = Gdx.input.getRotation();
             if (rot == 0) {
-                xGravity = Gdx.input.getAccelerometerX();
+                Gdx.app.log("rot", "0");
+                xGravity = -Gdx.input.getAccelerometerX();
                 yGravity = -Gdx.input.getAccelerometerY();
             } else if (rot == 90) {
+                Gdx.app.log("rot", "90");
                 xGravity = Gdx.input.getAccelerometerY();
                 yGravity = -Gdx.input.getAccelerometerX();
             } else if (rot == 180) {
-                xGravity = -Gdx.input.getAccelerometerX();
+                Gdx.app.log("rot", "180");
+                xGravity = Gdx.input.getAccelerometerX();
                 yGravity = Gdx.input.getAccelerometerY();
             } else if (rot == 270) {
+                Gdx.app.log("rot", "270");
                 xGravity = -Gdx.input.getAccelerometerY();
                 yGravity = Gdx.input.getAccelerometerX();
             }
