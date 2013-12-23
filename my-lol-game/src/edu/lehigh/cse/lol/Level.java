@@ -184,7 +184,7 @@ public class Level extends ScreenAdapter {
     ArrayList<Action> _oneTimeEvents = new ArrayList<Action>();
 
     Action _endGameEvent;
-    
+
     /**
      * Events that get processed on every render
      */
@@ -430,7 +430,7 @@ public class Level extends ScreenAdapter {
         // check for end of game
         if (_endGameEvent != null)
             _endGameEvent.go();
-        
+
         // The world is now static for this time step... we can display it!
 
         // clear the screen
@@ -505,12 +505,7 @@ public class Level extends ScreenAdapter {
         // figure out the entity's position
         float x = _chase._physBody.getWorldCenter().x + _chase._cameraOffset.x;
         float y = _chase._physBody.getWorldCenter().y + _chase._cameraOffset.y;
-        // if x or y is too close to 0,0, stick with minimum acceptable values
-        if (x < LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-
+        
         // if x or y is too close to MAX,MAX, stick with max acceptable values
         if (x > _camBoundX - LOL._game._config.getScreenWidth() * _gameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
@@ -520,6 +515,12 @@ public class Level extends ScreenAdapter {
                 / Physics.PIXEL_METER_RATIO / 2)
             y = _camBoundY - LOL._game._config.getScreenHeight() * _gameCam.zoom
                     / Physics.PIXEL_METER_RATIO / 2;
+
+        // if x or y is too close to 0,0, stick with minimum acceptable values
+        if (x < LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = LOL._game._config.getScreenWidth() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = LOL._game._config.getScreenHeight() * _gameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         _gameCam.position.set(x, y, 0);

@@ -35,7 +35,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: aggressively comment and reduce visibility as much as possible.  Files remaining: MyLolGame, all of this namespace
 
-// TODO: hero-enemy triggers would allow neat animation effects
+// TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it? (Status: only Chooser is a serious issue)
@@ -65,8 +65,6 @@ package edu.lehigh.cse.lol;
 // TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
 
 // TODO: consider making a tool for proper sprite sheet manipulation
-
-// TODO: test Tilt in portrait mode
 
 // TODO: Parallax has zoom bug, and has a performance bug for vertical parallax (it's fixed for horizontal)
 

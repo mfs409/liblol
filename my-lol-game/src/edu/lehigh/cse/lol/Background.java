@@ -97,27 +97,51 @@ public class Background {
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
             if (pl._xRepeat) {
-                // get the camera center, translate to pixels, and scale by speed
-                float startX = x*Physics.PIXEL_METER_RATIO*pl._xSpeed;
+                // get the camera center, translate to pixels, and scale by
+                // speed
+                float startX = x * Physics.PIXEL_METER_RATIO * pl._xSpeed;
                 // subtract one and a half screens worth of repeated pictures
-                startX -= 1.5f*LOL._game._config.getScreenWidth();
+                float screensBefore = 1.5f;
+                // adjust by zoom... for every level of zoom, we need that much
+                // more beforehand
+                screensBefore += Level._currLevel._bgCam.zoom;
+                startX -= (screensBefore * LOL._game._config.getScreenWidth());
                 // round down to nearest screen width
                 startX = startX - startX % pl._tr.getRegionWidth();
                 float currX = startX;
-                // draw picture repeatedly until we've drawn 2 screens worth of data
-                while (currX < startX + 2*LOL._game._config.getScreenWidth()) {
-                    sb.draw(pl._tr,  currX, pl._yOffset);
+                // draw picture repeatedly until we've drawn enough to cover the
+                // screen. "enough" can be approximated as 2 screens plus twice
+                // the zoom factor
+                float limit = 2 + 2 * Level._currLevel._bgCam.zoom;
+                while (currX < startX + limit * LOL._game._config.getScreenWidth()) {
+                    sb.draw(pl._tr, currX, pl._yOffset);
                     currX += pl._tr.getRegionWidth();
                 }
             }
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl._yRepeat) {
-                // NB: this while loop is not the most efficient way to draw the background
+                // get the camera center, translate, and scale
+                float startY = y * Physics.PIXEL_METER_RATIO * pl._ySpeed;
+                // subtract enough screens, as above
+                startY -= (1.5f + Level._currLevel._bgCam.zoom) * LOL._game._config.getScreenHeight();
+                // round
+                startY = startY - startY % pl._tr.getRegionHeight();
+                float currY = startY;
+                // draw a bunch of repeated images
+                float limit = 2 + 2 * Level._currLevel._bgCam.zoom;
+                while (currY < startY + limit * LOL._game._config.getScreenHeight()) {
+                    sb.draw(pl._tr, pl._xOffset, currY);
+                    currY += pl._tr.getRegionHeight();
+                }
+/*
+                // NB: this while loop is not the most efficient way to draw the
+                // background
                 int i = 0;
                 while (i / Physics.PIXEL_METER_RATIO < y + Level._currLevel._camBoundY) {
                     sb.draw(pl._tr, pl._xOffset, i);
                     i += pl._tr.getRegionHeight();
                 }
+ */
             }
             // draw a layer that never changes based on the camera's X
             // coordinate

@@ -110,11 +110,11 @@ public class MyLolGame extends LOL {
          *               nothing has physics properties attached to it, the
          *               behavior when the ball crashes into the bounding box
          *               doesn't really feel right.
-         * @demonstrates: draw a bounding box around the level, so the hero can't
-         *            fall into infinity
+         * @demonstrates: draw a bounding box around the level, so the hero
+         *                can't fall into infinity
          * @demonstrates: custom text when the level is won
-         * @demonstrates: a pop up scene shows for one second at the start of the
-         *            level
+         * @demonstrates: a pop up scene shows for one second at the start of
+         *                the level
          */
         else if (whichLevel == 2) {
             // start by setting everything up just like in level 1
@@ -143,10 +143,10 @@ public class MyLolGame extends LOL {
          * @level: 3
          * @description: In this level, we change the physics from level 2 so
          *               that things roll and bounce a little bit more nicely
-         * @demonstrates: the hero and bounding box now have nonzero physics so that
-         *            things are a little bit more smooth
+         * @demonstrates: the hero and bounding box now have nonzero physics so
+         *                that things are a little bit more smooth
          * @demonstrates: we don't set the win text anymore, so now when we win
-         *            we'll go back to the default message
+         *                we'll go back to the default message
          */
         else if (whichLevel == 3) {
             // start by setting up the level just like in level 1
@@ -177,8 +177,8 @@ public class MyLolGame extends LOL {
          *               each destination to only hold one hero
          * @demonstrates: we are showing a popup image instead of popup text
          * @demonstrates: there are two heroes
-         * @demonstrates: it takes two heroes to reach destinations before the level
-         *            is won
+         * @demonstrates: it takes two heroes to reach destinations before the
+         *                level is won
          */
         else if (whichLevel == 4) {
 
@@ -345,8 +345,8 @@ public class MyLolGame extends LOL {
          * @level: 9
          * @description: This level explores a bit more of what we can do with
          *               paths.
-         * @demonstrates: The path end point is the same as the start point, so that
-         *            we get cleaner movement
+         * @demonstrates: The path end point is the same as the start point, so
+         *                that we get cleaner movement
          */
         else if (whichLevel == 9) {
             // configure a basic level
@@ -379,14 +379,14 @@ public class MyLolGame extends LOL {
          * @level: 10
          * @description: This level fleshes out a bunch of additional enemy
          *               features, as well as sound features
-         * @demonstrates: any entity can be controlled by tilt, so here we add an
-         *            enemy that is controlled by tilt.
-         * @demonstrates: any entity can have a continuous rotation, so we do that
-         *            to the Destination
-         * @demonstrates: this level also demonstrates background music, and sounds
-         *            to play on victory or defeat.
-         * @demonstrates: this level shows a popup message that uses an image, and
-         *            that does not go away until it is touched
+         * @demonstrates: any entity can be controlled by tilt, so here we add
+         *                an enemy that is controlled by tilt.
+         * @demonstrates: any entity can have a continuous rotation, so we do
+         *                that to the Destination
+         * @demonstrates: this level also demonstrates background music, and
+         *                sounds to play on victory or defeat.
+         * @demonstrates: this level shows a popup message that uses an image,
+         *                and that does not go away until it is touched
          * @demonstrates: there is a custom message when the level is lost
          */
         else if (whichLevel == 10) {
@@ -427,9 +427,10 @@ public class MyLolGame extends LOL {
          *               larger than one screen. It also demonstrates zoom
          *               buttons, and introduces the notion of invisibile
          *               controls.
-         * @demonstrates: zoom buttons on the left and right halves of the screen
-         * @demonstrates: the level is larger than the screen, but the screen always
-         *            shows the hero
+         * @demonstrates: zoom buttons on the left and right halves of the
+         *                screen
+         * @demonstrates: the level is larger than the screen, but the screen
+         *                always shows the hero
          */
         else if (whichLevel == 11) {
 
@@ -537,7 +538,7 @@ public class MyLolGame extends LOL {
          *               destination.
          * @demonstrates: introduce goodies
          * @demonstrates: destination does not work until enough goodies are
-         *            collected
+         *                collected
          * @demonstrates: display the goodie count on the heads-up display
          */
         else if (whichLevel == 14) {
@@ -581,11 +582,12 @@ public class MyLolGame extends LOL {
          * @description: All entities can have a fixed motion path. Here, we'll
          *               attach a path to a few kinds of entities to show this
          *               ability
-         * @demonstrates: show that destinations, goodies, and obstacles can have
-         *            motion paths too
-         * @demonstrates: also show how to change the color and size of on-screen
-         *            text, and show how when the goodie counter's max field is
-         *            0, the display is just the number of goodies collected
+         * @demonstrates: show that destinations, goodies, and obstacles can
+         *                have motion paths too
+         * @demonstrates: also show how to change the color and size of
+         *                on-screen text, and show how when the goodie counter's
+         *                max field is 0, the display is just the number of
+         *                goodies collected
          */
         else if (whichLevel == 15) {
             // set up a basic tilt-based level
@@ -721,15 +723,16 @@ public class MyLolGame extends LOL {
          * @description: This level shows that it is possible to give heroes and
          *               enemies different strengths, so that a hero doesn't
          *               disappear after a single collision
-         * @demonstrates: when an enemy defeats a hero, we can customize the message
-         *            that prints
-         * @demonstrates: setting the strength of heroes, and the damage caused by
-         *            enemies. The default is for enemies to have "2" units of
-         *            damage, and heroes to have "1" unit of strength, so that
-         *            any collision defeats the hero without removing the enemy.
+         * @demonstrates: when an enemy defeats a hero, we can customize the
+         *                message that prints
+         * @demonstrates: setting the strength of heroes, and the damage caused
+         *                by enemies. The default is for enemies to have "2"
+         *                units of damage, and heroes to have "1" unit of
+         *                strength, so that any collision defeats the hero
+         *                without removing the enemy.
          * @demonstrates: show how much strength the hero has left. Note that if
-         *            there were several heroes in this level, we'd only see the
-         *            strength of the last hero
+         *                there were several heroes in this level, we'd only see
+         *                the strength of the last hero
          */
         else if (whichLevel == 18) {
             // set up a basic level
@@ -904,7 +907,7 @@ public class MyLolGame extends LOL {
          * @description: Some goodies can "count" for more than one point...
          *               they can even count for negative points.
          * @demonstrates: goodie values that change how many points we get for
-         *            collecting a goodie
+         *                collecting a goodie
          */
         else if (whichLevel == 22) {
 
@@ -979,7 +982,7 @@ public class MyLolGame extends LOL {
          *               location. Double-tapping an obstacle removes it.
          * @demonstrates: pokeable obstacles
          * @demonstrates: we can draw pictures on the screen that don't have an
-         *            influence on the physics of the game
+         *                influence on the physics of the game
          */
         else if (whichLevel == 24) {
             // a basic level:
@@ -1010,9 +1013,10 @@ public class MyLolGame extends LOL {
         /**
          * @level: 25
          * @description: In this level, the enemy chases the hero
-         * @demonstrates: an enemy that follows the hero, wherever the hero goes...
-         * @demonstrates: use of drawPictureBehindScene to draw something behind the
-         *            hero
+         * @demonstrates: an enemy that follows the hero, wherever the hero
+         *                goes...
+         * @demonstrates: use of drawPictureBehindScene to draw something behind
+         *                the hero
          */
         else if (whichLevel == 25) {
             // basic setup
@@ -1094,10 +1098,10 @@ public class MyLolGame extends LOL {
 
         /**
          * @level: 28
-         * @description: This level shows two things. The first is that a
-         *               custom motion path can allow things to violate the laws
-         *               of physics and pass through other things. The second is
-         *               that motion paths can go off-screen. 
+         * @description: This level shows two things. The first is that a custom
+         *               motion path can allow things to violate the laws of
+         *               physics and pass through other things. The second is
+         *               that motion paths can go off-screen.
          * @demonstrates: paths that go off screen
          */
         else if (whichLevel == 28) {
@@ -1151,10 +1155,10 @@ public class MyLolGame extends LOL {
          * @description: this level shows that we can "flick" things to move
          *               them
          * @demonstrates: In this level, notice that we did not enable tilt!
-         *            Instead, we specified that there is a default gravity in
-         *            the Y dimension pushing everything down. This is much like
-         *            gravity on earth. The only way to move things, then, is
-         *            via flicking them.
+         *                Instead, we specified that there is a default gravity
+         *                in the Y dimension pushing everything down. This is
+         *                much like gravity on earth. The only way to move
+         *                things, then, is via flicking them.
          * @demonstrates: using flick to move the hero
          */
         else if (whichLevel == 30) {
@@ -1184,8 +1188,8 @@ public class MyLolGame extends LOL {
          *               too, that the hero will fall to the floor, since there
          *               is a constant downward force, but there is not any
          *               mechanism to apply a Y force to make it move back up.
-         * @demonstrates: we changed the physics, so that now we have a tilt-based
-         *            side scroller
+         * @demonstrates: we changed the physics, so that now we have a
+         *                tilt-based side scroller
          */
         else if (whichLevel == 31) {
             // make a long level but not a tall level, and provide a constant
@@ -1212,8 +1216,8 @@ public class MyLolGame extends LOL {
          *               transparency to show the blue color for part of the
          *               screen
          * @demonstrates: background colors and background images
-         * @demonstrates: demonstrate that we can have things hover on the screen
-         *            despite the fact that the screen is scrolling
+         * @demonstrates: demonstrate that we can have things hover on the
+         *                screen despite the fact that the screen is scrolling
          */
         else if (whichLevel == 32) {
             // start by repeating the previous level:
@@ -1239,7 +1243,7 @@ public class MyLolGame extends LOL {
             // make an obstacle that hovers...
             Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
             o.setHover(100, 100);
-            
+
             // add zoom buttons
             Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
@@ -1296,8 +1300,8 @@ public class MyLolGame extends LOL {
          *               hero itself to make it jump. Now, we use an invisible
          *               button so touching any part of the screen makes the
          *               hero jump.
-         * @demonstrates: camera offset on the hero, so that it stays a bit to the
-         *            left of the center of the screen
+         * @demonstrates: camera offset on the hero, so that it stays a bit to
+         *                the left of the center of the screen
          * @demonstrates: fixed velocity on the hero
          * @demonstrates: jump button on the HUD
          */
@@ -1614,6 +1618,10 @@ public class MyLolGame extends LOL {
             Background.addVerticalLayer(1, 0, "back.png", 0);
             Background.addVerticalLayer(1, .5f, "mid.png", 0);
             Background.addVerticalLayer(1, 1, "front.png", 0);
+
+            // zoom buttons so that we can see the whole obstacle
+            Controls.addZoomInButton(0, 0, 20, 20, "red.png", .25f);
+            Controls.addZoomOutButton(460, 0, 20, 20, "red.png", 8);
         }
 
         /**
@@ -1688,8 +1696,8 @@ public class MyLolGame extends LOL {
          * @level 45
          * @description: this level demonstrates that we can defeat enemies by
          *               throwing projectiles at them
-         * @demonstrates: show that we can defeat enemies by throwing projectiles at
-         *            them
+         * @demonstrates: show that we can defeat enemies by throwing
+         *                projectiles at them
          * @demonstrates: holding the button doesn't make multiple shots fire
          */
         else if (whichLevel == 45) {
@@ -1763,10 +1771,10 @@ public class MyLolGame extends LOL {
          * @description: this level shows that with the "vector" projectiles, we
          *               can still have gravity affect the projectiles. This is
          *               very good for basketball-style games.
-         * @demonstrates: holding the screen no longer throws multiple projectiles
-         *            in that direction
-         * @demonstrates: projectiles can be prevented from disappearing when they
-         *            collide with certain types of obstacles
+         * @demonstrates: holding the screen no longer throws multiple
+         *                projectiles in that direction
+         * @demonstrates: projectiles can be prevented from disappearing when
+         *                they collide with certain types of obstacles
          */
         else if (whichLevel == 47) {
             // set up a basic level
@@ -1880,8 +1888,8 @@ public class MyLolGame extends LOL {
          * @level: 50
          * @description: this level shows simple animation. Every entity can
          *               have a default animation.
-         * @demonstrates: the hero has an animation in this level, which makes it
-         *            look like a star with streamers underneath it
+         * @demonstrates: the hero has an animation in this level, which makes
+         *                it look like a star with streamers underneath it
          */
         else if (whichLevel == 50) {
             // set up a basic level
@@ -1993,7 +2001,8 @@ public class MyLolGame extends LOL {
          *               hero while they are invincible.
          * @demonstrates: invincibility animation
          * @demonstrates: enemies that resist invincibility
-         * @demonstrates: enemies that do damage even when the hero is invincible
+         * @demonstrates: enemies that do damage even when the hero is
+         *                invincible
          * @demonstrates: display a picture when the level is won
          */
         else if (whichLevel == 53) {
@@ -2143,10 +2152,11 @@ public class MyLolGame extends LOL {
          * @description: demonstrate that obstacles can defeat enemies, and that
          *               we can use this feature to have obstacles that only
          *               defeat certain "marked" enemies
-         * @demonstrates: gravity multiplier, to make the forces happen more quickly
-         * @demonstrates: use of enemyCollisionTrigger to make some obstacles able
-         *            to defeat some enemies, and enable some of these obstacles
-         *            to disappear after defeating an enemy
+         * @demonstrates: gravity multiplier, to make the forces happen more
+         *                quickly
+         * @demonstrates: use of enemyCollisionTrigger to make some obstacles
+         *                able to defeat some enemies, and enable some of these
+         *                obstacles to disappear after defeating an enemy
          * @demonstrates: moveable obstacles
          */
         else if (whichLevel == 56) {
@@ -2245,7 +2255,8 @@ public class MyLolGame extends LOL {
          *               It also shows that we can make entities that shrink
          *               over time... growth is possible too, with a negative
          *               value.
-         * @demonstrates: limit the total number of projectiles that can be thrown
+         * @demonstrates: limit the total number of projectiles that can be
+         *                thrown
          * @demonstrates: make an entity shrink over time
          * @demonstrates: make projectiles that have a randomly selected image
          * @demonstrates: show how many shots are left
@@ -2308,8 +2319,8 @@ public class MyLolGame extends LOL {
          *               rotate. Rotation doesn't do anything, but it looks
          *               nice...
          * @demonstrates: rotation buttons
-         * @demonstrates: this level relies on being able to jump after touching a
-         *            side wall
+         * @demonstrates: this level relies on being able to jump after touching
+         *                a side wall
          */
         else if (whichLevel == 59) {
             // make a simple level
@@ -2338,7 +2349,7 @@ public class MyLolGame extends LOL {
          *               so in this case, we attach it to an obstacle to get an
          *               arkanoid-like effect.
          * @demonstrates: attaching left/right buttons to an obstacle instead of
-         *            controlling the last hero created
+         *                controlling the last hero created
          */
         else if (whichLevel == 60) {
             // make a simple level
@@ -2444,7 +2455,7 @@ public class MyLolGame extends LOL {
          * @demonstrates: obstacles that are collision triggers
          * @demonstrates: obstacles with collision sounds
          * @demonstrates: collision triggers that depend on collecting enough
-         *            goodies before they work
+         *                goodies before they work
          */
         else if (whichLevel == 63) {
             // make a tilt level with just a hero
@@ -2520,8 +2531,8 @@ public class MyLolGame extends LOL {
          *               to be unique for *any* triggers. We can use the same ID
          *               every time...
          * @demonstrates: use enemy defeat triggers
-         * @demonstrates: the trigger code uses random number generation to place a
-         *            reward goodie whenever an enemy is defeated
+         * @demonstrates: the trigger code uses random number generation to
+         *                place a reward goodie whenever an enemy is defeated
          */
         else if (whichLevel == 65) {
             // draw a simple level
@@ -2647,7 +2658,7 @@ public class MyLolGame extends LOL {
          * @level: 68
          * @description Test hovering heroes that stop hovering after a press
          * @demonstrates: setCanFall to allow an entity to be subject to gravity
-         *            without having a pre-set motion
+         *                without having a pre-set motion
          */
         else if (whichLevel == 68) {
             // set up a simple level
@@ -2738,7 +2749,7 @@ public class MyLolGame extends LOL {
             o.setPassThrough(7);
 
         }
-         /**
+        /**
          * @level: 71
          * @description: A test of the PokeVelocity feature
          * @demonstrates: setPokeVelocity to move an entity along a path
@@ -2763,8 +2774,9 @@ public class MyLolGame extends LOL {
         /**
          * @level: 72
          * @description: This level tests sticky obstacles
-         * @demonstrates: sticky obstacles. Note that the obstacle must have more
-         *            density than the hero for these to work correctly.
+         * @demonstrates: sticky obstacles. Note that the obstacle must have
+         *                more density than the hero for these to work
+         *                correctly.
          */
         else if (whichLevel == 72) {
             // set up a basic side scroller without tilt
@@ -2851,8 +2863,10 @@ public class MyLolGame extends LOL {
          * @demonstrates: Different activationscores for destinations
          * @demonstrates: different goodiecounts from controls
          * @demonstrates: Goodies with different score types that increment
-         * @demonstrates: triggers with multiple types of goodies in the activation
-         * @demonstrates: adding to the countdown timer via updateTimerExpiration
+         * @demonstrates: triggers with multiple types of goodies in the
+         *                activation
+         * @demonstrates: adding to the countdown timer via
+         *                updateTimerExpiration
          */
         else if (whichLevel == 74) {
             // set up a simple level
@@ -3023,14 +3037,14 @@ public class MyLolGame extends LOL {
         /**
          * @level: 79
          * @description: A test of extended PokePath features
-         * @demonstrates: setKeepPokeEntity to avoid re-touching the hero every time
-         *            we want to register a new movement
-         * @demonstrates: setPokePathFixedVelocity to always have the same velocity,
-         *            regardless of distance
-         * @demonstrates: setPokeChaseMode to track movement of poke presses, not
-         *            just down presses
-         * @demonstrates: Controls.addTriggerControl for an on-screen button that
-         *            runs custom code
+         * @demonstrates: setKeepPokeEntity to avoid re-touching the hero every
+         *                time we want to register a new movement
+         * @demonstrates: setPokePathFixedVelocity to always have the same
+         *                velocity, regardless of distance
+         * @demonstrates: setPokeChaseMode to track movement of poke presses,
+         *                not just down presses
+         * @demonstrates: Controls.addTriggerControl for an on-screen button
+         *                that runs custom code
          */
         else if (whichLevel == 79) {
             // start by setting everything up just like in level 1

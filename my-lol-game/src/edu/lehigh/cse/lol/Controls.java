@@ -991,8 +991,7 @@ public class Controls {
 
     /**
      * Display a zoom in button. Note that zooming in and out does not work well
-     * with Background layers or elements that hover on the screen. Use with
-     * care.
+     * with elements that hover on the screen. Use with care.
      * 
      * @param x X coordinate of top left corner of the button
      * @param y Y coordinate of top left corner of the button
