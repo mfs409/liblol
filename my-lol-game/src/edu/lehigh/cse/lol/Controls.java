@@ -477,7 +477,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h._strength + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + h.mStrength + " " + text, bf, sb);
             }
         };
         Level._currLevel._controls.add(he);

@@ -237,7 +237,7 @@ public class Projectile extends PhysicsSprite {
      *            projectile and the origin of the hero throwing the projectile
      * @param offsetY specifies the y distance between the origin of the
      *            projectile and the origin of the hero throwing the projectile
-     * @param _strength specifies the amount of _damage that a projectile does
+     * @param mStrength specifies the amount of _damage that a projectile does
      *            to an enemy
      */
     public static void configure(int size, float width, float height, String imgName,

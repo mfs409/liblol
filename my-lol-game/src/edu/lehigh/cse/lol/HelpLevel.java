@@ -40,35 +40,32 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * HelpLevel provides an interface for drawing to the help screens of a game
  */
 public class HelpLevel extends ScreenAdapter {
-    /*
-     * INTERNAL DATA FOR RENDERING A HELP LEVEL
-     */
 
     /**
      * The background color of the help level
      */
-    private Color _c = new Color();
+    private Color mColor = new Color();
 
     /**
      * All the sprites that need to be drawn
      */
-    private ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
+    private ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * The camera to use when drawing
      */
-    private OrthographicCamera _camera;
+    private OrthographicCamera mHelpCam;
 
     /**
      * The spritebatch to use when drawing
      */
-    private SpriteBatch _sb;
+    private SpriteBatch mSb;
 
     /**
      * In LOL, we avoid having the game designer construct objects. To that end,
      * the HelpLevel is accessed through a singleton.
      */
-    static HelpLevel _currLevel;
+    static HelpLevel sCurrentLevel;
 
     /**
      * When the game designer creates a help level, she uses configure, which
@@ -76,16 +73,16 @@ public class HelpLevel extends ScreenAdapter {
      */
     private HelpLevel() {
         // save the static context
-        _currLevel = this;
+        sCurrentLevel = this;
 
         // set up the camera
         int camWidth = LOL._game._config.getScreenWidth();
         int camHeight = LOL._game._config.getScreenHeight();
-        _camera = new OrthographicCamera(camWidth, camHeight);
-        _camera.position.set(camWidth / 2, camHeight / 2, 0);
+        mHelpCam = new OrthographicCamera(camWidth, camHeight);
+        mHelpCam.position.set(camWidth / 2, camHeight / 2, 0);
 
         // set up the renderer
-        _sb = new SpriteBatch();
+        mSb = new SpriteBatch();
     }
 
     /**
@@ -108,17 +105,15 @@ public class HelpLevel extends ScreenAdapter {
             return;
         }
 
-        // next we clear the color buffer and set the camera matrices
-        Gdx.gl.glClearColor(_c.r, _c.g, _c.b, _c.a);
+        // render all sprites
+        Gdx.gl.glClearColor(mColor.r, mColor.g, mColor.b, mColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // render
-        _camera.update();
-        _sb.setProjectionMatrix(_camera.combined);
-        _sb.begin();
-        for (Renderable c : _sprites)
-            c.render(_sb, 0);
-        _sb.end();
+        mHelpCam.update();
+        mSb.setProjectionMatrix(mHelpCam.combined);
+        mSb.begin();
+        for (Renderable c : mSprites)
+            c.render(mSb, 0);
+        mSb.end();
     }
 
     /*
@@ -128,15 +123,15 @@ public class HelpLevel extends ScreenAdapter {
     /**
      * Configure a help level by setting its background color
      * 
-     * @param red The red component of the background color
-     * @param green The green component of the background color
-     * @param blue The blue component of the background color
+     * @param red The red component of the background color (0-255)
+     * @param green The green component of the background color (0-255)
+     * @param blue The blue component of the background color (0-255)
      */
     public static void configure(int red, int green, int blue) {
-        _currLevel = new HelpLevel();
-        _currLevel._c.r = ((float)red) / 256;
-        _currLevel._c.g = ((float)green) / 256;
-        _currLevel._c.b = ((float)blue) / 256;
+        sCurrentLevel = new HelpLevel();
+        sCurrentLevel.mColor.r = ((float)red) / 256;
+        sCurrentLevel.mColor.g = ((float)green) / 256;
+        sCurrentLevel.mColor.b = ((float)blue) / 256;
     }
 
     /**
@@ -153,7 +148,7 @@ public class HelpLevel extends ScreenAdapter {
     public static void drawPicture(final int x, final int y, final int width, final int height,
             String imgName) {
         // set up the image to display
-        _currLevel._sprites.add(Util.makePicture(x, y, width, height, imgName));
+        sCurrentLevel.mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -165,30 +160,27 @@ public class HelpLevel extends ScreenAdapter {
      * @param message The message to display
      */
     static public void drawText(int x, int y, String message) {
-        _currLevel._sprites.add(Util.makeText(x, y, message, LOL._game._config.getDefaultFontRed(),
-                LOL._game._config.getDefaultFontGreen(), LOL._game._config.getDefaultFontBlue(),
-                LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
+        sCurrentLevel.mSprites.add(Util.makeText(x, y, message,
+                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
+                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontFace(),
+                LOL._game._config.getDefaultFontSize()));
     }
 
     /**
-     * Print a message on the _current help scene. This version of the addText
+     * Print a message on the current help scene. This version of the addText
      * method allows the programmer to specify the appearance of the font
      * 
-     * @param x X coordinate of the top left corner of where the text should
-     *            appear on screen
-     * @param y Y coordinate of the top left corner of where the text should
-     *            appear on screen
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      * @param message The message to display
-     * @param red A value between 0 and 255, indicating the red aspect of the
-     *            font color
-     * @param green A value between 0 and 255, indicating the green aspect of
-     *            the font color
-     * @param blue A value between 0 and 255, indicating the blue aspect of the
-     *            font color
-     * @param size The size of the font used to display the message
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param fontname The name of the font file to use
+     * @param size The font size to use (20 is usually a good value)
      */
     static public void drawText(final int x, final int y, final String message, final int red,
             final int green, final int blue, String fontName, int size) {
-        _currLevel._sprites.add(Util.makeText(x, y, message, red, green, blue, fontName, size));
+        sCurrentLevel.mSprites.add(Util.makeText(x, y, message, red, green, blue, fontName, size));
     }
 }

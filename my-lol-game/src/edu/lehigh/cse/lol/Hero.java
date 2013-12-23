@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -35,9 +34,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 public class Hero extends PhysicsSprite {
-    /*
-     * BASIC HERO CONFIGURATION
-     */
 
     /**
      * Strength of the hero This determines how many collisions with enemies the
@@ -46,109 +42,106 @@ public class Hero extends PhysicsSprite {
      * be defeated on any collision with an enemy, with the enemy *not*
      * disappearing
      */
-    int _strength = 1;
+    int mStrength = 1;
 
     /**
      * Time until the hero's invincibility runs out
      */
-    private float _invincibleRemaining;
+    private float mInvincibleRemaining;
 
     /**
      * Animation support: cells involved in animation for invincibility
      */
-    private Animation _invincibleAnimation;
+    private Animation mInvincibleAnimation;
 
     /**
      * Is the hero currently in crawl mode?
      */
-    private boolean _crawling;
+    private boolean mCrawling;
 
     /**
      * Animation support: cells involved in animation for crawling
      */
-    private Animation _crawlAnimation;
+    private Animation mCrawlAnimation;
 
     /**
      * Animation support: cells involved in animation for throwing
      */
-    private Animation _throwAnimation;
+    private Animation mThrowAnimation;
 
     /**
      * Animation support: seconds that constitute a throw action
      */
-    private float _throwAnimateTotalLength;
+    private float mThrowAnimateTotalLength;
 
     /**
      * Animation support: how long until we stop showing the throw animation
      */
-    private float _throwAnimationTimeRemaining;
+    private float mThrowAnimationTimeRemaining;
 
     /**
      * Animation support: an Animation sequence that correlates goodie counts to
      * specific frames of an animation
      */
-    private Animation _goodieCountAnimation;
+    private Animation mGoodieCountAnimation;
 
     /**
      * Track if the hero is in the air, so that it can't jump when it isn't
      * touching anything. This does not quite work as desired, but is good
      * enough for LOL
      */
-    private boolean _inAir;
+    private boolean mInAir;
 
     /**
      * When the hero jumps, this specifies the amount of velocity to add to
      * simulate a jump
      */
-    private Vector2 _jumpImpulses;
+    private Vector2 mJumpImpulses;
 
     /**
      * Indicate that the hero can jump while in the air
      */
-    private boolean _allowMultiJump;
+    private boolean mAllowMultiJump;
 
     /**
      * Does the hero jump when we touch it?
      */
-    private boolean _isTouchJump;
+    private boolean mIsTouchJump;
 
     /**
      * Animation support: cells involved in animation for jumping
      */
-    private Animation _jumpAnimation;
+    private Animation mJumpAnimation;
 
     /**
      * Sound to play when a jump occurs
      */
-    private Sound _jumpSound;
+    private Sound mJumpSound;
 
     /**
      * Does the hero only start moving when we touch it?
      */
-    private Vector2 _touchAndGo;
+    private Vector2 mTouchAndGo;
 
     /**
      * For tracking the current amount of rotation of the hero
      */
-    private float _currentRotation;
+    private float mCurrentRotation;
 
     /**
      * Construct a Hero by creating a PhysicsSprite and incrementing the number
-     * of heroes created.
+     * of heroes created. This code should never be called directly by the game
+     * designer.
      * 
      * @param width The width of the hero
      * @param height The height of the hero
      * @param imgName The name of the file that has the default image for this
      *            hero
      */
-    Hero(float width, float height, String imgName) {
+    private Hero(float width, float height, String imgName) {
         super(imgName, SpriteId.HERO, width, height);
         Level._currLevel._score._heroesCreated++;
     }
-
-    /*
-     * INTERNAL INTERFACE: NON-COLLISION EVENTS
-     */
 
     /**
      * We can't just use the basic PhysicsSprite renderer, because we might need
@@ -160,22 +153,21 @@ public class Hero extends PhysicsSprite {
     @Override
     public void render(SpriteBatch sb, float delta) {
         // determine when to turn off throw animations
-        if (_throwAnimationTimeRemaining > 0) {
-            _throwAnimationTimeRemaining -= delta;
-            if (_throwAnimationTimeRemaining <= 0) {
-                _throwAnimationTimeRemaining = 0;
+        if (mThrowAnimationTimeRemaining > 0) {
+            mThrowAnimationTimeRemaining -= delta;
+            if (mThrowAnimationTimeRemaining <= 0) {
+                mThrowAnimationTimeRemaining = 0;
                 _animator.setCurrentAnimation(_defaultAnimation);
             }
         }
 
         // determine when to turn off invincibility. When we turn it off, if we
-        // had an invincibility animation, turn it
-        // off too
-        if (_invincibleRemaining > 0) {
-            _invincibleRemaining -= delta;
-            if (_invincibleRemaining <= 0) {
-                _invincibleRemaining = 0;
-                if (_invincibleAnimation != null)
+        // had an invincibility animation, turn it off too
+        if (mInvincibleRemaining > 0) {
+            mInvincibleRemaining -= delta;
+            if (mInvincibleRemaining <= 0) {
+                mInvincibleRemaining = 0;
+                if (mInvincibleAnimation != null)
                     _animator.setCurrentAnimation(_defaultAnimation);
             }
         }
@@ -187,50 +179,51 @@ public class Hero extends PhysicsSprite {
      * Make the hero jump, unless it is in the air and not multijump
      */
     void jump() {
-        if (_inAir)
+        if (mInAir)
             return;
         Vector2 v = _physBody.getLinearVelocity();
-        v.add(_jumpImpulses);
+        v.add(mJumpImpulses);
         updateVelocity(v.x, v.y);
-        if (!_allowMultiJump)
-            _inAir = true;
-        if (_jumpAnimation != null)
-            _animator.setCurrentAnimation(_jumpAnimation);
-        if (_jumpSound != null)
-            _jumpSound.play();
+        if (!mAllowMultiJump)
+            mInAir = true;
+        if (mJumpAnimation != null)
+            _animator.setCurrentAnimation(mJumpAnimation);
+        if (mJumpSound != null)
+            mJumpSound.play();
+        // break any sticky joints, so the hero can actually move
         _stickyDelay = System.nanoTime() + 10000000;
     }
 
     /**
      * Stop the jump animation for a hero, and make it eligible to jump again
      */
-    void stopJump() {
-        if (_inAir || _allowMultiJump) {
-            _inAir = false;
+    private void stopJump() {
+        if (mInAir || mAllowMultiJump) {
+            mInAir = false;
             _animator.setCurrentAnimation(_defaultAnimation);
         }
     }
 
     /**
      * When the hero is touched, we might need to take action. If so, we use
-     * this to detemrine what to do.
+     * this to determine what to do.
      */
     @Override
     void handleTouchDown(float x, float y) {
         // if the hero is touch-to-jump, then try to jump
-        if (_isTouchJump) {
+        if (mIsTouchJump) {
             jump();
             return;
         }
         // if the hero is touch and go, make the hero start moving
-        if (_touchAndGo != null) {
+        if (mTouchAndGo != null) {
             _hoverVector = null;
+            // if it was hovering, its body type won't be Dynamic
             if (_physBody.getType() != BodyType.DynamicBody)
-                _physBody.setType(BodyType.DynamicBody); // in case hero is
-                                                         // hovering
-            setAbsoluteVelocity(_touchAndGo.x, _touchAndGo.y, false);
-            // turn off _isTouchAndGo, so we can't double-touch
-            _touchAndGo = null;
+                _physBody.setType(BodyType.DynamicBody);
+            setAbsoluteVelocity(mTouchAndGo.x, mTouchAndGo.y, false);
+            // turn off isTouchAndGo, so we can't double-touch
+            mTouchAndGo = null;
             return;
         }
         super.handleTouchDown(x, y);
@@ -241,9 +234,9 @@ public class Hero extends PhysicsSprite {
      * throwing a projectile
      */
     void doThrowAnimation() {
-        if (_throwAnimation != null) {
-            _animator.setCurrentAnimation(_throwAnimation);
-            _throwAnimationTimeRemaining = _throwAnimateTotalLength;
+        if (mThrowAnimation != null) {
+            _animator.setCurrentAnimation(mThrowAnimation);
+            mThrowAnimationTimeRemaining = mThrowAnimateTotalLength;
         }
     }
 
@@ -252,17 +245,17 @@ public class Hero extends PhysicsSprite {
      * crawling
      */
     void crawlOn() {
-        _crawling = true;
+        mCrawling = true;
         _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
-        if (_crawlAnimation != null)
-            _animator.setCurrentAnimation(_crawlAnimation);
+        if (mCrawlAnimation != null)
+            _animator.setCurrentAnimation(mCrawlAnimation);
     }
 
     /**
      * Take the hero out of crawl mode
      */
     void crawlOff() {
-        _crawling = false;
+        mCrawling = false;
         _physBody.setTransform(_physBody.getPosition(), 0);
         _animator.setCurrentAnimation(_defaultAnimation);
     }
@@ -273,16 +266,12 @@ public class Hero extends PhysicsSprite {
      * @param delta How much to add to the current rotation
      */
     void increaseRotation(float delta) {
-        if (_inAir) {
-            _currentRotation += delta;
+        if (mInAir) {
+            mCurrentRotation += delta;
             _physBody.setAngularVelocity(0);
-            _physBody.setTransform(_physBody.getPosition(), _currentRotation);
+            _physBody.setTransform(_physBody.getPosition(), mCurrentRotation);
         }
     }
-
-    /*
-     * INTERNAL INTERFACE: COLLISION DETECTION
-     */
 
     /**
      * The Hero is the dominant participant in all collisions. Whenever the hero
@@ -341,24 +330,24 @@ public class Hero extends PhysicsSprite {
             return;
         }
         // handle hero invincibility
-        if (_invincibleRemaining > 0) {
+        if (mInvincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
             if (e.mImmuneToInvincibility)
                 return;
             e.defeat(true);
         }
         // defeat by _crawling?
-        else if (_crawling && e.mDefeatByCrawl) {
+        else if (mCrawling && e.mDefeatByCrawl) {
             e.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
-        else if (e.mDamage >= _strength) {
+        else if (e.mDamage >= mStrength) {
             remove(false);
             Level._currLevel._score.defeatHero(e);
         }
         // when we can defeat it by losing strength
         else {
-            _strength -= e.mDamage;
+            mStrength -= e.mDamage;
             e.defeat(true);
         }
     }
@@ -373,8 +362,8 @@ public class Hero extends PhysicsSprite {
         o.playCollideSound();
 
         // reset rotation of hero if this obstacle is not a sensor
-        if ((_currentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
-            increaseRotation(-_currentRotation);
+        if ((mCurrentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
+            increaseRotation(-mCurrentRotation);
 
         // if there is code attached to the obstacle for modifying the hero's
         // behavior, run it
@@ -384,7 +373,7 @@ public class Hero extends PhysicsSprite {
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enable
         // jumps for the hero.
-        if ((_inAir || _allowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor()
+        if ((mInAir || mAllowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor()
                 && !o._noJumpReenable)
             stopJump();
     }
@@ -413,23 +402,23 @@ public class Hero extends PhysicsSprite {
         Level._currLevel._score.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
-        _strength += g.mStrengthBoost;
+        mStrength += g.mStrengthBoost;
 
         // deal with invincibility
         if (g.mInvincibilityDuration > 0) {
             // update the time to end invincibility
-            _invincibleRemaining += g.mInvincibilityDuration;
+            mInvincibleRemaining += g.mInvincibilityDuration;
             // invincible animation
-            if (_invincibleAnimation != null)
-                _animator.setCurrentAnimation(_invincibleAnimation);
+            if (mInvincibleAnimation != null)
+                _animator.setCurrentAnimation(mInvincibleAnimation);
         }
 
         // deal with animation changes due to goodie count
-        if (_goodieCountAnimation != null) {
+        if (mGoodieCountAnimation != null) {
             int goodies = Level._currLevel._score._goodiesCollected[0];
-            for (int i = 0; i < _goodieCountAnimation.mNextCell; ++i) {
-                if (_goodieCountAnimation.mDurations[i] == goodies) {
-                    _animator.setIndex(_goodieCountAnimation.mFrames[i]);
+            for (int i = 0; i < mGoodieCountAnimation.mNextCell; ++i) {
+                if (mGoodieCountAnimation.mDurations[i] == goodies) {
+                    _animator.setIndex(mGoodieCountAnimation.mFrames[i]);
                     break;
                 }
             }
@@ -482,7 +471,16 @@ public class Hero extends PhysicsSprite {
      * @param amount The new strength of the hero
      */
     public void setStrength(int amount) {
-        _strength = amount;
+        mStrength = amount;
+    }
+
+    /**
+     * Return the hero's strength, in case it is useful to trigger code
+     * 
+     * @return The strength of the hero
+     */
+    public int getStrength() {
+        return mStrength;
     }
 
     /**
@@ -493,25 +491,25 @@ public class Hero extends PhysicsSprite {
      * @param y Velocity in Y dimension
      */
     public void setTouchAndGo(float x, float y) {
-        _touchAndGo = new Vector2(x, y);
+        mTouchAndGo = new Vector2(x, y);
     }
 
     /**
-     * Specify the X and Y force to apply to the hero whenever it is instructed
+     * Specify the X and Y velocity to give to the hero whenever it is instructed
      * to jump
      * 
-     * @param x Force in X direction
-     * @param y Force in Y direction
+     * @param x Velocity in X direction
+     * @param y Velocity in Y direction
      */
     public void setJumpImpulses(float x, float y) {
-        _jumpImpulses = new Vector2(x, y);
+        mJumpImpulses = new Vector2(x, y);
     }
 
     /**
      * Indicate that this hero can jump while it is in the air
      */
     public void setMultiJumpOn() {
-        _allowMultiJump = true;
+        mAllowMultiJump = true;
     }
 
     /**
@@ -519,7 +517,7 @@ public class Hero extends PhysicsSprite {
      */
 
     public void setTouchToJump() {
-        _isTouchJump = true;
+        mIsTouchJump = true;
     }
 
     /**
@@ -529,7 +527,7 @@ public class Hero extends PhysicsSprite {
      * @param a The animation to display
      */
     public void setJumpAnimation(Animation a) {
-        _jumpAnimation = a;
+        mJumpAnimation = a;
     }
 
     /**
@@ -538,7 +536,7 @@ public class Hero extends PhysicsSprite {
      * @param soundName The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
-        _jumpSound = Media.getSound(soundName);
+        mJumpSound = Media.getSound(soundName);
     }
 
     /**
@@ -548,13 +546,13 @@ public class Hero extends PhysicsSprite {
      * @param a The animation to display
      */
     public void setThrowAnimation(Animation a) {
-        _throwAnimation = a;
+        mThrowAnimation = a;
         // compute the length of the throw sequence, so that we can get our
         // timer right for restoring the default animation
-        _throwAnimateTotalLength = 0;
+        mThrowAnimateTotalLength = 0;
         for (long l : a.mDurations)
-            _throwAnimateTotalLength += l;
-        _throwAnimateTotalLength /= 1000; // convert to seconds
+            mThrowAnimateTotalLength += l;
+        mThrowAnimateTotalLength /= 1000; // convert to seconds
     }
 
     /**
@@ -564,7 +562,7 @@ public class Hero extends PhysicsSprite {
      * @param a The animation to display
      */
     public void setCrawlAnimation(Animation a) {
-        _crawlAnimation = a;
+        mCrawlAnimation = a;
     }
 
     /**
@@ -574,7 +572,7 @@ public class Hero extends PhysicsSprite {
      * @param a The animation to display
      */
     public void setInvincibleAnimation(Animation a) {
-        _invincibleAnimation = a;
+        mInvincibleAnimation = a;
     }
 
     /**
@@ -584,6 +582,6 @@ public class Hero extends PhysicsSprite {
      * @param a An animation that encodes the information we want to display
      */
     public void setAnimateByGoodieCount(Animation a) {
-        _goodieCountAnimation = a;
+        mGoodieCountAnimation = a;
     }
 }

@@ -34,7 +34,8 @@ package edu.lehigh.cse.lol;
 // TODO: the unlock mechanism is untested
 
 // TODO: aggressively comment and reduce visibility as much as possible.
-// DONE: Animation, Background, Controls, Destination, Enemy
+// DONE: Animation, Background, Controls, Destination, Enemy, Goodie, HelpLevel
+// Remaining: Chooser, L*.java->U*.java; MyLolGame.java
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -221,7 +222,7 @@ public abstract class LOL extends Game {
         _currLevel = 0;
         _mode = Modes.HELP;
         configureHelpScene(which);
-        setScreen(HelpLevel._currLevel);
+        setScreen(HelpLevel.sCurrentLevel);
     }
 
     void doQuit() {
