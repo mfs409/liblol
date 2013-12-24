@@ -40,7 +40,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  */
 public class Enemy extends PhysicsSprite {
     /**
-     * Amount of _damage this enemy does to a hero on a collision. The default
+     * Amount of damage this enemy does to a hero on a collision. The default
      * is 2, so that an enemy will defeat a hero and not disappear.
      */
     int mDamage = 2;
@@ -104,10 +104,10 @@ public class Enemy extends PhysicsSprite {
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // collision with obstacles
-        if (other._psType == SpriteId.OBSTACLE)
+        if (other.mSpriteType == SpriteId.OBSTACLE)
             onCollideWithObstacle((Obstacle)other, contact);
         // collision with projectiles
-        if (other._psType == SpriteId.PROJECTILE)
+        if (other.mSpriteType == SpriteId.PROJECTILE)
             onCollideWithProjectile((Projectile)other);
     }
 
@@ -129,10 +129,10 @@ public class Enemy extends PhysicsSprite {
      */
     private void onCollideWithProjectile(Projectile p) {
         // only work with active projectiles
-        if (!p._visible)
+        if (!p.mVisible)
             return;
         // compute damage to determine if the enemy is defeated
-        mDamage -= Projectile._strength;
+        mDamage -= Projectile.sStrength;
         if (mDamage <= 0) {
             // hide the projectile quietly, so that the sound of the enemy can
             // be heard
@@ -154,7 +154,7 @@ public class Enemy extends PhysicsSprite {
     @Override
     void handleTouchDown(float x, float y) {
         if (mDisappearOnTouch) {
-            LOL._game.vibrate(100);
+            LOL.sGame.vibrate(100);
             defeat(true);
             return;
         }
@@ -283,7 +283,7 @@ public class Enemy extends PhysicsSprite {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                LOL._game.onEnemyDefeatTrigger(id, LOL._game._currLevel, Enemy.this);
+                LOL.sGame.onEnemyDefeatTrigger(id, LOL.sGame.mCurrLevelNum, Enemy.this);
             }
         };
     }

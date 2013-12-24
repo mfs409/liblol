@@ -75,19 +75,19 @@ public abstract class LOL extends Game {
     /**
      * The current mode of the program
      */
-    private Modes _mode;
+    private Modes mMode;
 
     /**
      * The current level being played
      */
-    int _currLevel;
+    int mCurrLevelNum;
 
     /**
      * Track the current help scene being displayed
      */
-    int _currHelp;
+    int mCurrHelpNum;
 
-    static LOL _game;
+    static LOL sGame;
 
     /**
      * This variable lets us track whether the user pressed 'back' on an
@@ -96,17 +96,17 @@ public abstract class LOL extends Game {
      * can't exit all the way out... you must press 'back' repeatedly, once for
      * each screen to revert.
      */
-    boolean _keyDown;
+    boolean mKeyDown;
 
     /**
      * The configuration of the game is accessible through this
      */
-    LOLConfiguration _config;
+    LOLConfiguration mConfig;
 
     /**
      * The configuration of the splash screen is accessible through this
      */
-    SplashConfiguration _splashConfig;
+    SplashConfiguration mSplashConfig;
 
     /**
      * Modes of the game: we can be showing the main screen, the help screens,
@@ -119,38 +119,38 @@ public abstract class LOL extends Game {
 
     void doSplash() {
         // set the default display mode
-        _currLevel = 0;
-        _mode = Modes.SPLASH;
-        _currHelp = 0;
+        mCurrLevelNum = 0;
+        mMode = Modes.SPLASH;
+        mCurrHelpNum = 0;
         setScreen(new Splash());
     }
 
     void doChooser() {
-        if (_config.getNumLevels() == 1) {
-            if (_currLevel == 1)
+        if (mConfig.getNumLevels() == 1) {
+            if (mCurrLevelNum == 1)
                 doSplash();
             else
                 doPlayLevel(1);
             return;
         }
-        _currLevel = 0;
-        _currHelp = 0;
-        _mode = Modes.CHOOSE;
+        mCurrLevelNum = 0;
+        mCurrHelpNum = 0;
+        mMode = Modes.CHOOSE;
         setScreen(new Chooser(this));
     }
 
     void doPlayLevel(int which) {
-        _currLevel = which;
-        _currHelp = 0;
-        _mode = Modes.PLAY;
+        mCurrLevelNum = which;
+        mCurrHelpNum = 0;
+        mMode = Modes.PLAY;
         configureLevel(which);
         setScreen(Level.sCurrent);
     }
 
     void doHelpLevel(int which) {
-        _currHelp = which;
-        _currLevel = 0;
-        _mode = Modes.HELP;
+        mCurrHelpNum = which;
+        mCurrLevelNum = 0;
+        mMode = Modes.HELP;
         configureHelpScene(which);
         setScreen(HelpLevel.sCurrentLevel);
     }
@@ -168,7 +168,7 @@ public abstract class LOL extends Game {
      * @param millis The amount of time to vibrate
      */
     void vibrate(int millis) {
-        if (_config.getVibration())
+        if (mConfig.getVibration())
             Gdx.input.vibrate(millis);
     }
 
@@ -179,26 +179,26 @@ public abstract class LOL extends Game {
         // if neither BACK nor ESCAPE is being pressed, do nothing, but
         // recognize future presses
         if (!Gdx.input.isKeyPressed(Keys.BACK) && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            _keyDown = false;
+            mKeyDown = false;
             return;
         }
         // if they key is being held down, ignore it
-        if (_keyDown)
+        if (mKeyDown)
             return;
         // recognize a new back press as being a 'down' press
-        _keyDown = true;
+        mKeyDown = true;
         handleBack();
     }
 
     void handleBack() {
         // if we're looking at main menu, then exit
-        if (_mode == Modes.SPLASH) {
+        if (mMode == Modes.SPLASH) {
             dispose();
             Gdx.app.exit();
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (_mode == Modes.CHOOSE || _mode == Modes.HELP) {
+        else if (mMode == Modes.CHOOSE || mMode == Modes.HELP) {
             doSplash();
         } else {
             // ok, we're looking at a game scene... switch to chooser
@@ -217,16 +217,16 @@ public abstract class LOL extends Game {
      * @param value The value to save as the most recently unlocked level
      */
     void saveUnlocked(int value) {
-        Preferences prefs = Gdx.app.getPreferences(_config.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(mConfig.getStorageKey());
         prefs.putInteger("unlock", value);
         prefs.flush();
     }
 
     /**
-     * read the _current value of 'unlocked' to know how many levels to unlock
+     * read the current value of 'unlocked' to know how many levels to unlock
      */
     int readUnlocked() {
-        Preferences prefs = Gdx.app.getPreferences(_config.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(mConfig.getStorageKey());
         return prefs.getInteger("unlock", 1);
     }
 
@@ -240,10 +240,10 @@ public abstract class LOL extends Game {
      */
     @Override
     public void create() {
-        _game = this;
+        sGame = this;
         // get configuration
-        _config = config();
-        _splashConfig = splashConfig();
+        mConfig = config();
+        mSplashConfig = splashConfig();
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);

@@ -157,7 +157,7 @@ public class Hero extends PhysicsSprite {
             mThrowAnimationTimeRemaining -= delta;
             if (mThrowAnimationTimeRemaining <= 0) {
                 mThrowAnimationTimeRemaining = 0;
-                _animator.setCurrentAnimation(_defaultAnimation);
+                mAnimator.setCurrentAnimation(mDefaultAnimation);
             }
         }
 
@@ -168,7 +168,7 @@ public class Hero extends PhysicsSprite {
             if (mInvincibleRemaining <= 0) {
                 mInvincibleRemaining = 0;
                 if (mInvincibleAnimation != null)
-                    _animator.setCurrentAnimation(_defaultAnimation);
+                    mAnimator.setCurrentAnimation(mDefaultAnimation);
             }
         }
 
@@ -181,17 +181,17 @@ public class Hero extends PhysicsSprite {
     void jump() {
         if (mInAir)
             return;
-        Vector2 v = _physBody.getLinearVelocity();
+        Vector2 v = mBody.getLinearVelocity();
         v.add(mJumpImpulses);
         updateVelocity(v.x, v.y);
         if (!mAllowMultiJump)
             mInAir = true;
         if (mJumpAnimation != null)
-            _animator.setCurrentAnimation(mJumpAnimation);
+            mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
             mJumpSound.play();
         // break any sticky joints, so the hero can actually move
-        _stickyDelay = System.nanoTime() + 10000000;
+        mStickyDelay = System.nanoTime() + 10000000;
     }
 
     /**
@@ -200,7 +200,7 @@ public class Hero extends PhysicsSprite {
     private void stopJump() {
         if (mInAir || mAllowMultiJump) {
             mInAir = false;
-            _animator.setCurrentAnimation(_defaultAnimation);
+            mAnimator.setCurrentAnimation(mDefaultAnimation);
         }
     }
 
@@ -217,10 +217,10 @@ public class Hero extends PhysicsSprite {
         }
         // if the hero is touch and go, make the hero start moving
         if (mTouchAndGo != null) {
-            _hoverVector = null;
+            mHover = null;
             // if it was hovering, its body type won't be Dynamic
-            if (_physBody.getType() != BodyType.DynamicBody)
-                _physBody.setType(BodyType.DynamicBody);
+            if (mBody.getType() != BodyType.DynamicBody)
+                mBody.setType(BodyType.DynamicBody);
             setAbsoluteVelocity(mTouchAndGo.x, mTouchAndGo.y, false);
             // turn off isTouchAndGo, so we can't double-touch
             mTouchAndGo = null;
@@ -235,7 +235,7 @@ public class Hero extends PhysicsSprite {
      */
     void doThrowAnimation() {
         if (mThrowAnimation != null) {
-            _animator.setCurrentAnimation(mThrowAnimation);
+            mAnimator.setCurrentAnimation(mThrowAnimation);
             mThrowAnimationTimeRemaining = mThrowAnimateTotalLength;
         }
     }
@@ -246,9 +246,9 @@ public class Hero extends PhysicsSprite {
      */
     void crawlOn() {
         mCrawling = true;
-        _physBody.setTransform(_physBody.getPosition(), -3.14159f / 2);
+        mBody.setTransform(mBody.getPosition(), -3.14159f / 2);
         if (mCrawlAnimation != null)
-            _animator.setCurrentAnimation(mCrawlAnimation);
+            mAnimator.setCurrentAnimation(mCrawlAnimation);
     }
 
     /**
@@ -256,8 +256,8 @@ public class Hero extends PhysicsSprite {
      */
     void crawlOff() {
         mCrawling = false;
-        _physBody.setTransform(_physBody.getPosition(), 0);
-        _animator.setCurrentAnimation(_defaultAnimation);
+        mBody.setTransform(mBody.getPosition(), 0);
+        mAnimator.setCurrentAnimation(mDefaultAnimation);
     }
 
     /**
@@ -268,8 +268,8 @@ public class Hero extends PhysicsSprite {
     void increaseRotation(float delta) {
         if (mInAir) {
             mCurrentRotation += delta;
-            _physBody.setAngularVelocity(0);
-            _physBody.setTransform(_physBody.getPosition(), mCurrentRotation);
+            mBody.setAngularVelocity(0);
+            mBody.setTransform(mBody.getPosition(), mCurrentRotation);
         }
     }
 
@@ -282,16 +282,16 @@ public class Hero extends PhysicsSprite {
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
-        // NB: we currently ignore (other._psType == SpriteId.PROJECTILE)
-        if (other._psType == SpriteId.ENEMY)
+        // NB: we currently ignore SpriteId.PROJECTILE
+        if (other.mSpriteType == SpriteId.ENEMY)
             onCollideWithEnemy((Enemy)other);
-        else if (other._psType == SpriteId.DESTINATION)
+        else if (other.mSpriteType == SpriteId.DESTINATION)
             onCollideWithDestination((Destination)other);
-        else if (other._psType == SpriteId.OBSTACLE)
+        else if (other.mSpriteType == SpriteId.OBSTACLE)
             onCollideWithObstacle((Obstacle)other, contact);
-        else if (other._psType == SpriteId.SVG)
+        else if (other.mSpriteType == SpriteId.SVG)
             onCollideWithSVG(other);
-        else if (other._psType == SpriteId.GOODIE)
+        else if (other.mSpriteType == SpriteId.GOODIE)
             onCollideWithGoodie((Goodie)other);
     }
 
@@ -306,7 +306,7 @@ public class Hero extends PhysicsSprite {
         boolean match = true;
         for (int i = 0; i < 4; ++i)
             match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
-        if (match && (d.mHolding < d.mCapacity) && _visible) {
+        if (match && (d.mHolding < d.mCapacity) && mVisible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
@@ -336,7 +336,7 @@ public class Hero extends PhysicsSprite {
                 return;
             e.defeat(true);
         }
-        // defeat by _crawling?
+        // defeat by crawling?
         else if (mCrawling && e.mDefeatByCrawl) {
             e.defeat(true);
         }
@@ -362,7 +362,7 @@ public class Hero extends PhysicsSprite {
         o.playCollideSound();
 
         // reset rotation of hero if this obstacle is not a sensor
-        if ((mCurrentRotation != 0) && !o._physBody.getFixtureList().get(0).isSensor())
+        if ((mCurrentRotation != 0) && !o.mBody.getFixtureList().get(0).isSensor())
             increaseRotation(-mCurrentRotation);
 
         // if there is code attached to the obstacle for modifying the hero's
@@ -373,7 +373,7 @@ public class Hero extends PhysicsSprite {
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enable
         // jumps for the hero.
-        if ((mInAir || mAllowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor()
+        if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor()
                 && !o.mNoJumpReenable)
             stopJump();
     }
@@ -410,7 +410,7 @@ public class Hero extends PhysicsSprite {
             mInvincibleRemaining += g.mInvincibilityDuration;
             // invincible animation
             if (mInvincibleAnimation != null)
-                _animator.setCurrentAnimation(mInvincibleAnimation);
+                mAnimator.setCurrentAnimation(mInvincibleAnimation);
         }
 
         // deal with animation changes due to goodie count
@@ -418,7 +418,7 @@ public class Hero extends PhysicsSprite {
             int goodies = Level.sCurrent.mScore.mGoodiesCollected[0];
             for (int i = 0; i < mGoodieCountAnimation.mNextCell; ++i) {
                 if (mGoodieCountAnimation.mDurations[i] == goodies) {
-                    _animator.setIndex(mGoodieCountAnimation.mFrames[i]);
+                    mAnimator.setIndex(mGoodieCountAnimation.mFrames[i]);
                     break;
                 }
             }

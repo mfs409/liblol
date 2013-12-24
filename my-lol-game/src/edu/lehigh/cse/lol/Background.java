@@ -134,7 +134,7 @@ public class Background {
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
                 screensBefore += Level.sCurrent.mBgCam.zoom;
-                startX -= (screensBefore * LOL._game._config.getScreenWidth());
+                startX -= (screensBefore * LOL.sGame.mConfig.getScreenWidth());
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
                 float currX = startX;
@@ -142,7 +142,7 @@ public class Background {
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currX < startX + limit * LOL._game._config.getScreenWidth()) {
+                while (currX < startX + limit * LOL.sGame.mConfig.getScreenWidth()) {
                     sb.draw(pl.mImage, currX, pl.mYOffset);
                     currX += pl.mImage.getRegionWidth();
                 }
@@ -153,13 +153,13 @@ public class Background {
                 float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + Level.sCurrent.mBgCam.zoom)
-                        * LOL._game._config.getScreenHeight();
+                        * LOL.sGame.mConfig.getScreenHeight();
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currY < startY + limit * LOL._game._config.getScreenHeight()) {
+                while (currY < startY + limit * LOL.sGame.mConfig.getScreenHeight()) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
                 }

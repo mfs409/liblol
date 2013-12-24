@@ -47,8 +47,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class Chooser extends ScreenAdapter {
-    // for managing the camera...
-
     final Vector3 curr = new Vector3();
 
     final Vector3 last = new Vector3(-1, -1, -1);
@@ -80,24 +78,18 @@ public class Chooser extends ScreenAdapter {
     LevelSprite[] levels;
 
     /**
-     * Since we're going to create other screens via this screen, we need a
-     * reference to the game...
-     */
-    LOL _game;
-
-    /**
      * The camera we will use
      */
-    OrthographicCamera _camera;
+    OrthographicCamera mCamera;
 
     /**
      * For rendering
      */
-    SpriteBatch _sb;
+    SpriteBatch mSpriteBatch;
 
-    BitmapFont _bf;
+    BitmapFont mFont;
 
-    ShapeRenderer _shapeRenderer;
+    ShapeRenderer mShapeRender;
 
     // TODO: externalize these constants?
     static final int bWidth = 60;
@@ -111,16 +103,13 @@ public class Chooser extends ScreenAdapter {
     float cameraCapY;
 
     public Chooser(LOL game) {
-        // save a reference to the game
-        _game = game;
-
-        int numLevels = _game._config.getNumLevels();
+        int numLevels = LOL.sGame.mConfig.getNumLevels();
 
         levels = new LevelSprite[numLevels];
 
         // figure out number of rows and columns...
-        int camWidth = _game._config.getScreenWidth();
-        int camHeight = _game._config.getScreenHeight();
+        int camWidth = LOL.sGame.mConfig.getScreenWidth();
+        int camHeight = LOL.sGame.mConfig.getScreenHeight();
 
         int vpad = camHeight;
 
@@ -140,31 +129,31 @@ public class Chooser extends ScreenAdapter {
         // figure out the boundary for the camera
         cameraCapY = levels[0].r.y + bHeight - camHeight / 2 + vGutter;
         // configure the camera
-        _camera = new OrthographicCamera(camWidth, camHeight);
-        _camera.position.set(camWidth / 2, cameraCapY, 0);
+        mCamera = new OrthographicCamera(camWidth, camHeight);
+        mCamera.position.set(camWidth / 2, cameraCapY, 0);
 
         // create a font
-        _bf = Media.getFont(LOL._game._config.getDefaultFontFace(), 30);
+        mFont = Media.getFont(LOL.sGame.mConfig.getDefaultFontFace(), 30);
 
         // and our renderers
-        _sb = new SpriteBatch();
-        _shapeRenderer = new ShapeRenderer();
+        mSpriteBatch = new SpriteBatch();
+        mShapeRender = new ShapeRenderer();
     }
 
     @Override
     public void render(float delta) {
         manageTouches();
 
-        int camWidth = _game._config.getScreenWidth();
-        int camHeight = _game._config.getScreenHeight();
+        int camWidth = LOL.sGame.mConfig.getScreenWidth();
+        int camHeight = LOL.sGame.mConfig.getScreenHeight();
 
         // keep camera in foreground layer bounds
-        _camera.position.x = camWidth / 2;
-        if (_camera.position.y < camHeight / 2)
-            _camera.position.y = camHeight / 2;
-        else if (_camera.position.y > cameraCapY)
-            _camera.position.y = cameraCapY;
-        _camera.update();
+        mCamera.position.x = camWidth / 2;
+        if (mCamera.position.y < camHeight / 2)
+            mCamera.position.y = camHeight / 2;
+        else if (mCamera.position.y > cameraCapY)
+            mCamera.position.y = cameraCapY;
+        mCamera.update();
 
         // clear the screen
         GLCommon gl = Gdx.gl;
@@ -172,33 +161,33 @@ public class Chooser extends ScreenAdapter {
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // draw squares...
-        _shapeRenderer.setProjectionMatrix(_camera.combined);
-        _shapeRenderer.begin(ShapeType.Line);
-        _shapeRenderer.setColor(Color.BLUE);
+        mShapeRender.setProjectionMatrix(mCamera.combined);
+        mShapeRender.begin(ShapeType.Line);
+        mShapeRender.setColor(Color.BLUE);
         for (LevelSprite ls : levels) {
-            _shapeRenderer.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
-            _shapeRenderer.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
+            mShapeRender.rect(ls.r.x, ls.r.y, ls.r.width, ls.r.height);
+            mShapeRender.rect(ls.r.x + 1, ls.r.y + 1, ls.r.width - 2, ls.r.height - 2);
         }
-        _shapeRenderer.end();
+        mShapeRender.end();
 
-        _shapeRenderer.begin(ShapeType.Filled);
-        _shapeRenderer.setColor(.4f, .4f, .4f, 0.9f);
-        int unlocked = LOL._game.readUnlocked();
+        mShapeRender.begin(ShapeType.Filled);
+        mShapeRender.setColor(.4f, .4f, .4f, 0.9f);
+        int unlocked = LOL.sGame.readUnlocked();
         for (LevelSprite ls : levels) {
-            if (ls.l > unlocked && !_game._config.getUnlockMode()) {
-                _shapeRenderer.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
+            if (ls.l > unlocked && !LOL.sGame.mConfig.getUnlockMode()) {
+                mShapeRender.rect(ls.r.x + 2, ls.r.y + 2, ls.r.width - 4, ls.r.height - 4);
             }
         }
-        _shapeRenderer.end();
+        mShapeRender.end();
 
-        _sb.setProjectionMatrix(_camera.combined);
-        _sb.begin();
+        mSpriteBatch.setProjectionMatrix(mCamera.combined);
+        mSpriteBatch.begin();
         for (LevelSprite ls : levels) {
-            float x = _bf.getBounds(ls.t).width;
-            float y = _bf.getBounds(ls.t).height;
-            _bf.draw(_sb, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
+            float x = mFont.getBounds(ls.t).width;
+            float y = mFont.getBounds(ls.t).height;
+            mFont.draw(mSpriteBatch, ls.t, ls.r.x + bWidth / 2 - x / 2, ls.r.y + bHeight - y);
         }
-        _sb.end();
+        mSpriteBatch.end();
     }
 
     // Here's a quick and dirty way to manage multitouch via polling
@@ -224,12 +213,12 @@ public class Chooser extends ScreenAdapter {
     }
 
     public boolean touchDown(int x, int y, int pointer, int newParam) {
-        _camera.unproject(curr.set(x, y, 0));
-        int unlocked = LOL._game.readUnlocked();
+        mCamera.unproject(curr.set(x, y, 0));
+        int unlocked = LOL.sGame.readUnlocked();
         for (LevelSprite ls : levels) {
-            if (ls.l <= unlocked || _game._config.getUnlockMode()) {
+            if (ls.l <= unlocked || LOL.sGame.mConfig.getUnlockMode()) {
                 if (ls.r.contains(curr.x, curr.y)) {
-                    _game.doPlayLevel(ls.l);
+                    LOL.sGame.doPlayLevel(ls.l);
                     return true;
                 }
             }
@@ -238,11 +227,11 @@ public class Chooser extends ScreenAdapter {
     }
 
     public boolean touchDragged(int x, int y, int pointer) {
-        _camera.unproject(curr.set(x, y, 0));
+        mCamera.unproject(curr.set(x, y, 0));
         if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
-            _camera.unproject(delta.set(last.x, last.y, 0));
+            mCamera.unproject(delta.set(last.x, last.y, 0));
             delta.sub(curr);
-            _camera.position.add(delta.x, delta.y, 0);
+            mCamera.position.add(delta.x, delta.y, 0);
         }
         last.set(x, y, 0);
         return false;

@@ -51,97 +51,93 @@ import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
  * that the player knows that there is a physics entity on the screen.
  */
 public class SVG {
-    /*
-     * INTERNAL: STATE
-     */
-
     /**
      * This description will be used for every line we create
      */
-    private FixtureDef _fixture;
+    private FixtureDef mFixture;
 
     /**
      * The offset, in the X dimension, by which we shift the line drawing
      */
-    private float _userTransformX = 0f;
+    private float mUserTransformX = 0f;
 
     /**
      * The offset, in the Y dimension, by which we shift the line drawing
      */
-    private float _userTransformY = 0f;
+    private float mUserTransformY = 0f;
 
     /**
      * The amount by which we stretch the drawing in the X dimension
      */
-    private float _userStretchX = 1f;
+    private float mUserStretchX = 1f;
 
     /**
      * The amount by which we stretch the drawing in the Y dimension
      */
-    private float _userStretchY = 1f;
+    private float mUserStretchY = 1f;
 
     /**
      * SVG files can have an internal "translate" field... while parsing, we
      * save the field here
      */
-    private float _svgTranslateX = 0f;
+    private float mSvgTranslateX = 0f;
 
     /**
      * SVG files can have an internal "translate" field... while parsing, we
      * save the field here
      */
-    private float _svgTranslateY = 0f;
+    private float mSvgTranslateY = 0f;
 
     /**
      * X coordinate of the last point we drew
      */
-    private float _lastX = 0;
+    private float mLastX = 0;
 
     /**
      * Y coordinate of the last point we drew
      */
-    private float _lastY = 0;
+    private float mLastY = 0;
 
     /**
      * X coordinate of the first point we drew
      */
-    private float _firstX = 0;
+    private float mFirstX = 0;
 
     /**
      * Y coordinate of the first point we drew
      */
-    private float _firstY = 0;
+    private float mFirstY = 0;
 
     /**
      * X coordinate of the current point being drawn
      */
-    private float _nextX = 0;
+    private float mNextX = 0;
 
     /**
      * Y coordinate of the current point being drawn
      */
-    private float _nextY = 0;
+    private float mNextY = 0;
 
     /**
      * The parser is essentially a finite state machine. The states are 0 for
      * "read next x", 1 for "read next y", -2 for "read first x", and -1 for
      * "read first y"
      */
-    private int _state = 0;
+    private int mState = 0;
 
     /**
      * Our parser can't handle curves. When we encounter a curve, we use this
      * field to swallow a fixed number of values, so that the curve definition
      * becomes a line definition
      */
-    private int _swallow = 0;
+    private int mSwallow = 0;
 
     /**
      * Track if we're parsing a curve or a line. Valid values are 0 for
      * "uninitialized", 1 for "starting to read", 2 for "parsing curve", and 3
      * for "parsing line"
      */
-    private int _mode = 0;
+    private int mMode = 0;
 
     /**
      * Configure a parser that we can use to load an SVG file and draw each of
@@ -159,18 +155,18 @@ public class SVG {
      */
     private SVG(float density, float elasticity, float friction, float stretchX, float stretchY,
             float xposeX, float xposeY) {
-        // create the _physics _fixture in a manner that is visible to the
+        // create the physics fixture in a manner that is visible to the
         // addLine routine of the parser
-        _fixture = new FixtureDef();
-        _fixture.density = density;
-        _fixture.restitution = elasticity;
-        _fixture.friction = friction;
+        mFixture = new FixtureDef();
+        mFixture.density = density;
+        mFixture.restitution = elasticity;
+        mFixture.friction = friction;
 
         // specify transpose and stretch information
-        _userStretchX = stretchX / Physics.PIXEL_METER_RATIO;
-        _userStretchY = stretchY / Physics.PIXEL_METER_RATIO;
-        _userTransformX = xposeX;
-        _userTransformY = xposeY;
+        mUserStretchX = stretchX / Physics.PIXEL_METER_RATIO;
+        mUserStretchY = stretchY / Physics.PIXEL_METER_RATIO;
+        mUserTransformX = xposeX;
+        mUserTransformY = xposeY;
     }
 
     /*
@@ -193,8 +189,8 @@ public class SVG {
             String delims = "[,]+";
             String[] points = x2.split(delims);
             try {
-                _svgTranslateX = Float.valueOf(points[0]).floatValue();
-                _svgTranslateY = Float.valueOf(points[1]).floatValue();
+                mSvgTranslateX = Float.valueOf(points[0]).floatValue();
+                mSvgTranslateY = Float.valueOf(points[1]).floatValue();
             } catch (NumberFormatException nfs) {
             }
         }
@@ -218,12 +214,12 @@ public class SVG {
             String s = s0.trim();
             // start of the path, relative mode
             if (s.equals("m")) {
-                _state = -2;
+                mState = -2;
                 absolute = false;
             }
             // start of the path, absolute mode
             else if (s.equals("M")) {
-                _state = -2;
+                mState = -2;
                 absolute = true;
             }
             // beginning of a (set of) curve definitions, relative mode
@@ -232,34 +228,34 @@ public class SVG {
             // parameters... this leaves us with just the
             // endpoints
             else if (s.equals("c")) {
-                _mode = 2;
-                _swallow = 4;
+                mMode = 2;
+                mSwallow = 4;
             }
             // end of path, relative mode
             else if (s.equals("z")) {
                 // draw a connecting line to complete the shape
-                addLine((_userStretchX * (_lastX + _svgTranslateX) + _userTransformX),
-                        (_userStretchY * (_lastY + _svgTranslateY) + _userTransformY),
-                        (_userStretchX * (_firstX + _svgTranslateX) + _userTransformX),
-                        (_userStretchY * (_firstY + _svgTranslateY) + _userTransformY));
+                addLine((mUserStretchX * (mLastX + mSvgTranslateX) + mUserTransformX),
+                        (mUserStretchY * (mLastY + mSvgTranslateY) + mUserTransformY),
+                        (mUserStretchX * (mFirstX + mSvgTranslateX) + mUserTransformX),
+                        (mUserStretchY * (mFirstY + mSvgTranslateY) + mUserTransformY));
             }
             // beginning of a (set of) line definitions, relative mode
             else if (s.equals("l")) {
-                _mode = 3;
+                mMode = 3;
                 absolute = false;
-                _swallow = 0;
+                mSwallow = 0;
             }
             // beginning of a (set of) line definitions, absolute mode
             else if (s.equals("L")) {
-                _mode = 3;
+                mMode = 3;
                 absolute = true;
-                _swallow = 0;
+                mSwallow = 0;
             }
             // floating point data that defines an endpoint of a line or curve
             else {
                 // if it's a curve, we might need to swallow this value
-                if (_swallow > 0) {
-                    _swallow--;
+                if (mSwallow > 0) {
+                    mSwallow--;
                 }
                 // get the next point
                 else {
@@ -267,44 +263,44 @@ public class SVG {
                         // convert next point to float
                         float val = Float.valueOf(s).floatValue();
                         // if it's the initial x, save it
-                        if (_state == -2) {
-                            _state = -1;
-                            _lastX = val;
-                            _firstX = val;
+                        if (mState == -2) {
+                            mState = -1;
+                            mLastX = val;
+                            mFirstX = val;
                         }
                         // if it's the initial y, save it... can't draw a line
                         // yet, because we have 1 endpoint
-                        else if (_state == -1) {
-                            _state = 0;
-                            _lastY = val;
-                            _firstY = val;
+                        else if (mState == -1) {
+                            mState = 0;
+                            mLastY = val;
+                            mFirstY = val;
                         }
                         // if it's an X value, save it
-                        else if (_state == 0) {
+                        else if (mState == 0) {
                             if (absolute)
-                                _nextX = val;
+                                mNextX = val;
                             else
-                                _nextX = _lastX + val;
-                            _state = 1;
+                                mNextX = mLastX + val;
+                            mState = 1;
                         }
                         // if it's a Y value, save it and draw a line
-                        else if (_state == 1) {
-                            _state = 0;
+                        else if (mState == 1) {
+                            mState = 0;
                             if (absolute)
-                                _nextY = val;
+                                mNextY = val;
                             else
-                                _nextY = _lastY - val;
+                                mNextY = mLastY - val;
                             // draw the line
-                            addLine((_userStretchX * (_lastX + _svgTranslateX) + _userTransformX),
-                                    (_userStretchY * (_lastY + _svgTranslateY) + _userTransformY),
-                                    (_userStretchX * (_nextX + _svgTranslateX) + _userTransformX),
-                                    (_userStretchY * (_nextY + _svgTranslateY) + _userTransformY));
-                            _lastX = _nextX;
-                            _lastY = _nextY;
-                            // if we are in curve _mode, reinitialize the
+                            addLine((mUserStretchX * (mLastX + mSvgTranslateX) + mUserTransformX),
+                                    (mUserStretchY * (mLastY + mSvgTranslateY) + mUserTransformY),
+                                    (mUserStretchX * (mNextX + mSvgTranslateX) + mUserTransformX),
+                                    (mUserStretchY * (mNextY + mSvgTranslateY) + mUserTransformY));
+                            mLastX = mNextX;
+                            mLastY = mNextY;
+                            // if we are in curve mode, reinitialize the
                             // swallower
-                            if (_mode == 2)
-                                _swallow = 4;
+                            if (mMode == 2)
+                                mSwallow = 4;
                         }
                     }
                     // ignore errors...
@@ -345,19 +341,19 @@ public class SVG {
         // set the line position as an offset from center, rotate it, and
         // connect a fixture
         line.set(-len / 2, 0, len / 2, 0);
-        _fixture.shape = line;
-        b.createFixture(_fixture);
-        _fixture.shape.dispose(); // i.e., line.dispose()
+        mFixture.shape = line;
+        b.createFixture(mFixture);
+        mFixture.shape.dispose(); // i.e., line.dispose()
         b.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
 
         // connect it to an invisible PhysicsSprite, so that collision callbacks
-        // will work (i.e., for _inAir)
+        // will work (i.e., for inAir)
         PhysicsSprite invis = new PhysicsSprite(null, SpriteId.SVG, len, .1f) {
             @Override
             void onCollide(PhysicsSprite other, Contact contact) {
             }
         };
-        invis._physBody = b;
+        invis.mBody = b;
         b.setUserData(invis);
         // NB: we probably don't need to put the invisible sprite on the screen,
         // since we don't overload render()... this is invisible.

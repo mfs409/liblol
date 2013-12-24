@@ -45,61 +45,95 @@ public class Projectile extends PhysicsSprite {
     /**
      * The velocity of a projectile when it is thrown
      */
-    private static final Vector2 _velocity = new Vector2();
+    private static final Vector2 sVelocity = new Vector2();
 
     /**
      * When throwing, we start from the top left corner of the thrower, and then
      * use this to determine the initial x and y position of the projectile
      */
-    private static final Vector2 _offset = new Vector2();
+    private static final Vector2 sOffset = new Vector2();
 
     /**
      * We have to be careful in side-scrollers, or else projectiles can continue
      * traveling off-screen forever. This field lets us cap the distance away
      * from the hero that a projectile can travel before we make it disappear.
      */
-    private static float _range;
+    private static float sRange;
 
     /**
      * This is the initial point of the throw
      */
-    private final Vector2 _rangeFrom = new Vector2();
+    private final Vector2 mRangeFrom = new Vector2();
 
     /**
-     * How much _damage does this projectile do?
+     * How much damage does this projectile do?
      */
-    static int _strength;
+    static int sStrength;
 
     /**
      * A dampening factor to apply to projectiles thrown via Vector
      */
-    private static float _vectorDamp;
+    private static float sVectorDamp;
 
     /**
      * Indicates that projectiles should be sensors
      */
-    private static boolean _sensorProjectiles;
+    private static boolean sSensorProjectiles;
 
     /**
      * Indicates that vector projectiles should have a fixed velocity
      */
-    private static boolean _enableFixedVectorVelocity;
+    private static boolean sEnableFixedVectorVelocity;
 
     /**
      * The magnitude of the velocity for vector projectiles thrown with a fixed
      * velocity
      */
-    private static float _fixedVectorVelocity;
+    private static float sFixedVectorVelocity;
 
     /**
      * Indicate that projectiles should face in the direction they are initially
      * thrown
      */
-    private static boolean _rotateVectorThrow;
+    private static boolean sRotateVectorThrow;
+
+    /**
+     * A collection of all the available projectiles
+     */
+    private static Projectile sPool[];
+
+    /**
+     * The number of projectiles in the pool
+     */
+    private static int sPoolSize;
+
+    /**
+     * Index of next available projectile in the pool
+     */
+    private static int sNextIndex;
+
+    /**
+     * For limiting the number of projectiles that can be thrown
+     */
+    static int sProjectilesRemaining;
+
+    private static boolean sDisappearOnCollide;
+
+    private static boolean sRandomizeImages;
+    
+    /**
+     * Sound to play when projectiles are fired
+     */
+    private static Sound sThrowSound;
+
+    /**
+     * The sound to play when a projectile disappears
+     */
+    private static Sound sProjectileDisappearSound;
 
     /**
      * Internal method to create a projectile. Projectiles have an underlying
-     * circle as their _physics body
+     * circle as their physics body
      * 
      * @param x initial x position of the projectile
      * @param y initial y position of the projectile
@@ -116,7 +150,7 @@ public class Projectile extends PhysicsSprite {
         } else {
             setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
         }
-        _physBody.setGravityScale(0);
+        mBody.setGravityScale(0);
         setCollisionEffect(false);
         disableRotation();
         Level.sCurrent.addSprite(this, zIndex);
@@ -130,7 +164,7 @@ public class Projectile extends PhysicsSprite {
      * @param y Maximum y distance from the hero that a projectile can travel
      */
     public static void setRange(float distance) {
-        _range = distance;
+        sRange = distance;
     }
 
     /**
@@ -138,12 +172,10 @@ public class Projectile extends PhysicsSprite {
      * they will be (more or less) immune to gravitational forces.
      */
     public static void setProjectileGravityOn() {
-        for (Projectile p : _pool)
-            p._physBody.setGravityScale(1);
+        for (Projectile p : sPool)
+            p.mBody.setGravityScale(1);
     }
 
-    static boolean _randomizeImages;
-    
     /**
      * Specify the number of cells from which to choose a random projectile
      * image
@@ -151,9 +183,9 @@ public class Projectile extends PhysicsSprite {
      * @param range This number indicates the number of cells
      */
     public static void setImageSource(String imgName) {
-        for (Projectile p : _pool)
-            p._animator.updateImage(imgName);
-        _randomizeImages = true;
+        for (Projectile p : sPool)
+            p.mAnimator.updateImage(imgName);
+        sRandomizeImages = true;
         
     }
 
@@ -164,14 +196,14 @@ public class Projectile extends PhysicsSprite {
      * @param factor The value to multiply against the projectile speed.
      */
     public static void setProjectileVectorDampeningFactor(float factor) {
-        _vectorDamp = factor;
+        sVectorDamp = factor;
     }
 
     /**
      * Indicate that all projectiles should participate in collisions
      */
     public static void enableCollisionsForProjectiles() {
-        _sensorProjectiles = false;
+        sSensorProjectiles = false;
     }
 
     /**
@@ -181,8 +213,8 @@ public class Projectile extends PhysicsSprite {
      * @param velocity The magnitude of the velocity for projectiles
      */
     public static void setFixedVectorThrowVelocity(float velocity) {
-        _enableFixedVectorVelocity = true;
-        _fixedVectorVelocity = velocity;
+        sEnableFixedVectorVelocity = true;
+        sFixedVectorVelocity = velocity;
     }
 
     /**
@@ -190,37 +222,11 @@ public class Projectile extends PhysicsSprite {
      * rotated to face in their initial direction
      */
     public static void setRotateVectorThrow() {
-        _rotateVectorThrow = true;
+        sRotateVectorThrow = true;
     }
 
-    /*
-     * PROJECTILE POOL SUPPORT
-     */
-
-    /**
-     * A collection of all the available projectiles
-     */
-    private static Projectile _pool[];
-
-    /**
-     * The number of projectiles in the pool
-     */
-    private static int _poolSize;
-
-    /**
-     * Index of next available projectile in the pool
-     */
-    private static int _nextIndex;
-
-    /**
-     * For limiting the number of projectiles that can be thrown
-     */
-    static int _projectilesRemaining;
-
-    static boolean _disappearOnCollide;
-
-    void setCollisionOk() {
-        _disappearOnCollide = false;
+    public void setCollisionOk() {
+        sDisappearOnCollide = false;
     }
 
     /**
@@ -237,34 +243,34 @@ public class Projectile extends PhysicsSprite {
      *            projectile and the origin of the hero throwing the projectile
      * @param offsetY specifies the y distance between the origin of the
      *            projectile and the origin of the hero throwing the projectile
-     * @param mStrength specifies the amount of _damage that a projectile does
+     * @param mStrength specifies the amount of damage that a projectile does
      *            to an enemy
      */
     public static void configure(int size, float width, float height, String imgName,
             float velocityX, float velocityY, float offsetX, float offsetY, int strength,
             int zIndex, boolean isCircle) {
         // set up the pool
-        _pool = new Projectile[size];
+        sPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            _pool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
+            sPool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
                     zIndex, isCircle);
-            _pool[i]._visible = false;
-            _pool[i]._physBody.setBullet(true);
-            _pool[i]._physBody.setActive(false);
+            sPool[i].mVisible = false;
+            sPool[i].mBody.setBullet(true);
+            sPool[i].mBody.setActive(false);
         }
-        _nextIndex = 0;
-        _poolSize = size;
+        sNextIndex = 0;
+        sPoolSize = size;
         // record vars that describe how the projectile behaves
-        _strength = strength;
-        _velocity.set(velocityX, velocityY);
-        _offset.set(offsetX, offsetY);
-        _range = 1000;
-        _throwSound = null;
-        _projectileDisappearSound = null;
-        _projectilesRemaining = -1;
-        _sensorProjectiles = true;
-        _disappearOnCollide = true;
+        sStrength = strength;
+        sVelocity.set(velocityX, velocityY);
+        sOffset.set(offsetX, offsetY);
+        sRange = 1000;
+        sThrowSound = null;
+        sProjectileDisappearSound = null;
+        sProjectilesRemaining = -1;
+        sSensorProjectiles = true;
+        sDisappearOnCollide = true;
     }
 
     /**
@@ -273,22 +279,8 @@ public class Projectile extends PhysicsSprite {
      * @param number How many projectiles are available
      */
     public static void setNumberOfProjectiles(int number) {
-        _projectilesRemaining = number;
+        sProjectilesRemaining = number;
     }
-
-    /*
-     * AUDIO SUPPORT
-     */
-
-    /**
-     * Sound to play when projectiles are fired
-     */
-    static Sound _throwSound;
-
-    /**
-     * The sound to play when a projectile disappears
-     */
-    private static Sound _projectileDisappearSound;
 
     /**
      * Specify a sound to play when the projectile is thrown
@@ -296,7 +288,7 @@ public class Projectile extends PhysicsSprite {
      * @param soundName Name of the sound file to play
      */
     public static void setThrowSound(String soundName) {
-        _throwSound = Media.getSound(soundName);
+        sThrowSound = Media.getSound(soundName);
     }
 
     /**
@@ -305,7 +297,7 @@ public class Projectile extends PhysicsSprite {
      * @param soundName the name of the sound file to play
      */
     public static void setProjectileDisappearSound(String soundName) {
-        _projectileDisappearSound = Media.getSound(soundName);
+        sProjectileDisappearSound = Media.getSound(soundName);
     }
 
     /*
@@ -320,13 +312,9 @@ public class Projectile extends PhysicsSprite {
      * @param durations time to display each frame
      */
     public static void setAnimation(Animation a) {
-        for (Projectile p : _pool)
+        for (Projectile p : sPool)
             p.setDefaultAnimation(a);
     }
-
-    /*
-     * COLLISION SUPPORT
-     */
 
     /**
      * Standard collision detection routine Since we have a careful ordering
@@ -339,7 +327,7 @@ public class Projectile extends PhysicsSprite {
     protected void onCollide(PhysicsSprite other, Contact contact) {
         // if this is an obstacle, check if it is a projectile trigger, and if
         // so, do the callback
-        if (other._psType == SpriteId.OBSTACLE) {
+        if (other.mSpriteType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle)other;
             if (o.mProjectileCollision != null) {
                 o.mProjectileCollision.go(this, contact);
@@ -347,19 +335,15 @@ public class Projectile extends PhysicsSprite {
                 return;
             }
         }
-        if (other._psType == SpriteId.PROJECTILE) {
-            if (!_disappearOnCollide)
+        if (other.mSpriteType == SpriteId.PROJECTILE) {
+            if (!sDisappearOnCollide)
                 return;
         }
         // only disappear if other is not a sensor
-        if (other._physBody.getFixtureList().get(0).isSensor())
+        if (other.mBody.getFixtureList().get(0).isSensor())
             return;
         remove(false);
     }
-
-    /*
-     * MECHANICS FOR THROWING PROJECTILES
-     */
 
     /**
      * Throw a projectile
@@ -369,42 +353,42 @@ public class Projectile extends PhysicsSprite {
      */
     static void throwFixed(float xx, float yy, Hero h) {
         // have we reached our limit?
-        if (_projectilesRemaining == 0)
+        if (sProjectilesRemaining == 0)
             return;
         // do we need to decrease our limit?
-        if (_projectilesRemaining != -1)
-            _projectilesRemaining--;
+        if (sProjectilesRemaining != -1)
+            sProjectilesRemaining--;
 
         // is there an available projectile?
-        if (_pool[_nextIndex]._visible)
+        if (sPool[sNextIndex].mVisible)
             return;
         // calculate offset for starting position of projectile
         // get the next projectile
-        Projectile b = _pool[_nextIndex];
-        b._rangeFrom.x = xx + _offset.x;
-        b._rangeFrom.y = yy + _offset.y;
+        Projectile b = sPool[sNextIndex];
+        b.mRangeFrom.x = xx + sOffset.x;
+        b.mRangeFrom.y = yy + sOffset.y;
 
         // reset its sensor
-        b.setCollisionEffect(!_sensorProjectiles);
+        b.setCollisionEffect(!sSensorProjectiles);
 
-        // set its _sprite
-        if (_randomizeImages)
-            b._animator.pickRandomIndex();
+        // set its sprite
+        if (sRandomizeImages)
+            b.mAnimator.pickRandomIndex();
 
-        _nextIndex = (_nextIndex + 1) % _poolSize;
+        sNextIndex = (sNextIndex + 1) % sPoolSize;
 
-        // put the projectile on the screen and place it in the _physics world
-        b._physBody.setActive(true);
-        b._physBody.setTransform(b._rangeFrom, 0);
+        // put the projectile on the screen and place it in the physics world
+        b.mBody.setActive(true);
+        b.mBody.setTransform(b.mRangeFrom, 0);
 
         // give the projectile velocity
-        b.updateVelocity(_velocity.x, _velocity.y);
+        b.updateVelocity(sVelocity.x, sVelocity.y);
 
         // make the projectile visible
-        b._visible = true;
-        if (_throwSound != null)
-            _throwSound.play();
-        b._disappearSound = _projectileDisappearSound;
+        b.mVisible = true;
+        if (sThrowSound != null)
+            sThrowSound.play();
+        b.mDisappearSound = sProjectileDisappearSound;
 
         // now animate the hero to do the throw:
         h.doThrowAnimation();
@@ -421,70 +405,66 @@ public class Projectile extends PhysicsSprite {
      */
     static void throwAt(float heroX, float heroY, float toX, float toY, Hero h) {
         // have we reached our limit?
-        if (_projectilesRemaining == 0)
+        if (sProjectilesRemaining == 0)
             return;
         // do we need to decrease our limit?
-        if (_projectilesRemaining != -1)
-            _projectilesRemaining--;
+        if (sProjectilesRemaining != -1)
+            sProjectilesRemaining--;
 
         // is there an available projectile?
-        if (_pool[_nextIndex]._visible)
+        if (sPool[sNextIndex].mVisible)
             return;
         // get the next projectile
-        Projectile b = _pool[_nextIndex];
+        Projectile b = sPool[sNextIndex];
         // calculate offset for starting position of projectile
-        b._rangeFrom.x = heroX + _offset.x;
-        b._rangeFrom.y = heroY + _offset.y;
+        b.mRangeFrom.x = heroX + sOffset.x;
+        b.mRangeFrom.y = heroY + sOffset.y;
 
         // reset its sensor
-        b.setCollisionEffect(!_sensorProjectiles);
+        b.setCollisionEffect(!sSensorProjectiles);
 
-        _nextIndex = (_nextIndex + 1) % _poolSize;
-        // put the projectile on the screen and place it in the _physics world
-        b._physBody.setActive(true);
-        b._physBody.setTransform(b._rangeFrom, 0);
+        sNextIndex = (sNextIndex + 1) % sPoolSize;
+        // put the projectile on the screen and place it in the physics world
+        b.mBody.setActive(true);
+        b.mBody.setTransform(b.mRangeFrom, 0);
 
         // give the projectile velocity
-        if (_enableFixedVectorVelocity) {
+        if (sEnableFixedVectorVelocity) {
             // compute a unit vector
-            float dX = toX - heroX - _offset.x;
-            float dY = toY - heroY - _offset.y;
+            float dX = toX - heroX - sOffset.x;
+            float dY = toY - heroY - sOffset.y;
             float hypotenuse = (float)Math.sqrt(dX * dX + dY * dY);
             float tmpX = dX / hypotenuse;
             float tmpY = dY / hypotenuse;
             // multiply by fixed velocity
-            tmpX *= _fixedVectorVelocity;
-            tmpY *= _fixedVectorVelocity;
+            tmpX *= sFixedVectorVelocity;
+            tmpY *= sFixedVectorVelocity;
             b.updateVelocity(tmpX, tmpY);
         } else {
-            float dX = toX - heroX - _offset.x;
-            float dY = toY - heroY - _offset.y;
+            float dX = toX - heroX - sOffset.x;
+            float dY = toY - heroY - sOffset.y;
             // compute absolute vector, multiply by dampening factor
-            float tmpX = dX * _vectorDamp;
-            float tmpY = dY * _vectorDamp;
+            float tmpX = dX * sVectorDamp;
+            float tmpY = dY * sVectorDamp;
             b.updateVelocity(tmpX, tmpY);
         }
 
         // rotate the projectile
-        if (_rotateVectorThrow) {
-            double angle = Math.atan2(toY - heroY - _offset.y, toX - heroX - _offset.x)
+        if (sRotateVectorThrow) {
+            double angle = Math.atan2(toY - heroY - sOffset.y, toX - heroX - sOffset.x)
                     - Math.atan2(-1, 0);
-            b._physBody.setTransform(b._physBody.getPosition(), (float)angle);
+            b.mBody.setTransform(b.mBody.getPosition(), (float)angle);
         }
 
         // make the projectile visible
-        b._visible = true;
-        if (_throwSound != null)
-            _throwSound.play();
-        b._disappearSound = _projectileDisappearSound;
+        b.mVisible = true;
+        if (sThrowSound != null)
+            sThrowSound.play();
+        b.mDisappearSound = sProjectileDisappearSound;
 
         // now animate the hero to do the throw:
         h.doThrowAnimation();
     }
-
-    /*
-     * INTERNAL METHODS
-     */
 
     /**
      * Internal method for negating gravity in side scrollers and for enforcing
@@ -493,11 +473,11 @@ public class Projectile extends PhysicsSprite {
     @Override
     public void render(SpriteBatch sb, float delta) {
         // eliminate the projectile quietly if it has traveled too far
-        float dx = Math.abs(_physBody.getPosition().x - _rangeFrom.x);
-        float dy = Math.abs(_physBody.getPosition().y - _rangeFrom.y);
-        if (dx * dx + dy * dy > _range * _range) {
+        float dx = Math.abs(mBody.getPosition().x - mRangeFrom.x);
+        float dy = Math.abs(mBody.getPosition().y - mRangeFrom.y);
+        if (dx * dx + dy * dy > sRange * sRange) {
             remove(true);
-            _physBody.setActive(false);
+            mBody.setActive(false);
             return;
         }
         super.render(sb, delta);

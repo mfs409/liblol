@@ -76,8 +76,8 @@ public class HelpLevel extends ScreenAdapter {
         sCurrentLevel = this;
 
         // set up the camera
-        int camWidth = LOL._game._config.getScreenWidth();
-        int camHeight = LOL._game._config.getScreenHeight();
+        int camWidth = LOL.sGame.mConfig.getScreenWidth();
+        int camHeight = LOL.sGame.mConfig.getScreenHeight();
         mHelpCam = new OrthographicCamera(camWidth, camHeight);
         mHelpCam.position.set(camWidth / 2, camHeight / 2, 0);
 
@@ -96,12 +96,12 @@ public class HelpLevel extends ScreenAdapter {
         // On down-press, either advance to the next help scene, or return to
         // the splash screen
         if (Gdx.input.justTouched()) {
-            if (LOL._game._currHelp < LOL._game._config.getNumHelpScenes()) {
-                LOL._game._currHelp++;
-                LOL._game.doHelpLevel(LOL._game._currHelp);
+            if (LOL.sGame.mCurrHelpNum < LOL.sGame.mConfig.getNumHelpScenes()) {
+                LOL.sGame.mCurrHelpNum++;
+                LOL.sGame.doHelpLevel(LOL.sGame.mCurrHelpNum);
                 return;
             }
-            LOL._game.doSplash();
+            LOL.sGame.doSplash();
             return;
         }
 
@@ -161,9 +161,9 @@ public class HelpLevel extends ScreenAdapter {
      */
     static public void drawText(int x, int y, String message) {
         sCurrentLevel.mSprites.add(Util.makeText(x, y, message,
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontSize()));
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontSize()));
     }
 
     /**

@@ -67,19 +67,19 @@ public class Physics {
      */
     static void handleSticky(final PhysicsSprite sticky, final PhysicsSprite other, Contact contact) {
         // don't create a joint if we've already got one
-        if (other._dJoint != null)
+        if (other.mDJoint != null)
             return;
         // don't create a joint if we're supposed to wait
-        if (System.nanoTime() < other._stickyDelay)
+        if (System.nanoTime() < other.mStickyDelay)
             return;
         // handle sticky obstacles... only do something if we're hitting the
         // obstacle from the right direction
-        if ((sticky.isStickyTop && other.getYPosition() >= sticky.getYPosition() + sticky._height)
-                || (sticky.isStickyLeft && other.getXPosition() + other._width <= sticky
+        if ((sticky.mIsStickyTop && other.getYPosition() >= sticky.getYPosition() + sticky.mHeight)
+                || (sticky.mIsStickyLeft && other.getXPosition() + other.mWidth <= sticky
                         .getXPosition())
-                || (sticky.isStickyRight && other.getXPosition() >= sticky.getXPosition()
-                        + sticky._width)
-                || (sticky.isStickyBottom && other.getYPosition() + other._height <= sticky
+                || (sticky.mIsStickyRight && other.getXPosition() >= sticky.getXPosition()
+                        + sticky.mWidth)
+                || (sticky.mIsStickyBottom && other.getYPosition() + other.mHeight <= sticky
                         .getYPosition())) {
             // create distance and weld joints... somehow, the combination is
             // needed to get this to work. Note that this function runs during
@@ -89,15 +89,15 @@ public class Physics {
             Level.sCurrent.mOneTimeEvents.add(new Action() {
                 @Override
                 public void go() {
-                    other._physBody.setLinearVelocity(0, 0);
+                    other.mBody.setLinearVelocity(0, 0);
                     DistanceJointDef d = new DistanceJointDef();
-                    d.initialize(sticky._physBody, other._physBody, v, v);
+                    d.initialize(sticky.mBody, other.mBody, v, v);
                     d.collideConnected = true;
-                    other._dJoint = (DistanceJoint)Level.sCurrent.mWorld.createJoint(d);
+                    other.mDJoint = (DistanceJoint)Level.sCurrent.mWorld.createJoint(d);
                     WeldJointDef w = new WeldJointDef();
-                    w.initialize(sticky._physBody, other._physBody, v);
+                    w.initialize(sticky.mBody, other.mBody, v);
                     w.collideConnected = true;
-                    other._wJoint = (WeldJoint)Level.sCurrent.mWorld.createJoint(w);
+                    other.mWJoint = (WeldJoint)Level.sCurrent.mWorld.createJoint(w);
                 }
             });
         }
@@ -132,24 +132,24 @@ public class Physics {
                 // Figure out which one has the smaller type (Hero is smallest)
                 PhysicsSprite gfoA = (PhysicsSprite)a;
                 PhysicsSprite gfoB = (PhysicsSprite)b;
-                if (gfoA._psType._id > gfoB._psType._id) {
+                if (gfoA.mSpriteType.mId > gfoB.mSpriteType.mId) {
                     PhysicsSprite tmp = gfoA;
                     gfoA = gfoB;
                     gfoB = tmp;
                 }
-                final PhysicsSprite _a = gfoA;
-                final PhysicsSprite _b = gfoB;
-                final Contact _c = contact;
+                final PhysicsSprite psA = gfoA;
+                final PhysicsSprite psB = gfoB;
+                final Contact c = contact;
                 // Schedule an event to run as soon as the physics world
                 // finishes its step.
                 //
-                // NB: this is called from render, while _world is updating...
+                // NB: this is called from render, while world is updating...
                 // you can't modify the world or its entities until the update
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
                 Level.sCurrent.mOneTimeEvents.add(new Action() {
                     public void go() {
-                        _a.onCollide(_b, _c);
+                        psA.onCollide(psB, c);
                     }
                 });
             }
@@ -177,19 +177,19 @@ public class Physics {
 
                 // handle sticky obstacles... only do something if at least one
                 // entity is a sticky entity
-                if (gfoA.isStickyBottom || gfoA.isStickyTop || gfoA.isStickyLeft
-                        || gfoA.isStickyRight) {
+                if (gfoA.mIsStickyBottom || gfoA.mIsStickyTop || gfoA.mIsStickyLeft
+                        || gfoA.mIsStickyRight) {
                     handleSticky(gfoA, gfoB, contact);
                     return;
-                } else if (gfoB.isStickyBottom || gfoB.isStickyTop || gfoB.isStickyLeft
-                        || gfoB.isStickyRight) {
+                } else if (gfoB.mIsStickyBottom || gfoB.mIsStickyTop || gfoB.mIsStickyLeft
+                        || gfoB.mIsStickyRight) {
                     handleSticky(gfoB, gfoA, contact);
                     return;
                 }
 
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact
-                if (gfoA._passThroughId != 0 && gfoA._passThroughId == gfoB._passThroughId) {
+                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
                     contact.setEnabled(false);
                     return;
                 }
@@ -197,10 +197,10 @@ public class Physics {
                 // is either one-sided? If not, we're done
                 PhysicsSprite onesided = null;
                 PhysicsSprite other = null;
-                if (gfoA._isOneSided > -1) {
+                if (gfoA.mIsOneSided > -1) {
                     onesided = gfoA;
                     other = gfoB;
-                } else if (gfoB._isOneSided > -1) {
+                } else if (gfoB.mIsOneSided > -1) {
                     onesided = gfoB;
                     other = gfoA;
                 } else {
@@ -212,17 +212,17 @@ public class Physics {
                 WorldManifold worldManiFold = contact.getWorldManifold();
                 int numPoints = worldManiFold.getNumberOfContactPoints();
                 for (int i = 0; i < numPoints; i++) {
-                    Vector2 vector2 = other._physBody.getLinearVelocityFromWorldPoint(worldManiFold
+                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold
                             .getPoints()[i]);
-                    // disable based on the value of _isOneSided and the vector
+                    // disable based on the value of isOneSided and the vector
                     // between the entities
-                    if (onesided._isOneSided == 0 && vector2.y < 0)
+                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
                         contact.setEnabled(false);
-                    else if (onesided._isOneSided == 2 && vector2.y > 0)
+                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
                         contact.setEnabled(false);
-                    else if (onesided._isOneSided == 1 && vector2.x > 0)
+                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
                         contact.setEnabled(false);
-                    else if (onesided._isOneSided == 3 && vector2.x < 0)
+                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
                         contact.setEnabled(false);
                 }
             }

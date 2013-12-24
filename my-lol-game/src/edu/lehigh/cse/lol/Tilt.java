@@ -136,20 +136,20 @@ public class Tilt {
             // unchanged
             if (mGravityMax.x == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
-                    if (gfo._physBody.isActive())
-                        gfo.updateVelocity(gfo._physBody.getLinearVelocity().x, yGravity);
+                    if (gfo.mBody.isActive())
+                        gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
             }
             // if Y is clipped to zero, set each entitiy's X velocity, leave Y
             // unchanged
             else if (mGravityMax.y == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
-                    if (gfo._physBody.isActive())
-                        gfo.updateVelocity(xGravity, gfo._physBody.getLinearVelocity().y);
+                    if (gfo.mBody.isActive())
+                        gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {
                 for (PhysicsSprite gfo : mAccelEntities)
-                    if (gfo._physBody.isActive())
+                    if (gfo.mBody.isActive())
                         gfo.updateVelocity(xGravity, yGravity);
             }
         }
@@ -157,8 +157,8 @@ public class Tilt {
         // entity as a force
         else {
             for (PhysicsSprite gfo : mAccelEntities)
-                if (gfo._physBody.isActive())
-                    gfo._physBody.applyForceToCenter(xGravity, yGravity, true);
+                if (gfo.mBody.isActive())
+                    gfo.mBody.applyForceToCenter(xGravity, yGravity, true);
         }
     }
 

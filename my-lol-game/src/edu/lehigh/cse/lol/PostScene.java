@@ -36,33 +36,33 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class PostScene {
     
-    boolean _visible;
+    boolean mVisible;
 
-    boolean _disable;
+    boolean mDisable;
 
-    String _winText;
+    String mWinText;
 
-    String _loseText;
+    String mLoseText;
 
-    ArrayList<Renderable> _winSprites = new ArrayList<Renderable>();
+    ArrayList<Renderable> mWinSprites = new ArrayList<Renderable>();
 
-    ArrayList<Renderable> _loseSprites = new ArrayList<Renderable>();
+    ArrayList<Renderable> mLoseSprites = new ArrayList<Renderable>();
 
-    private boolean _win;
+    private boolean mWin;
 
     /**
      * Sound to play when the level is won
      */
-    Sound _winSound;
+    Sound mWinSound;
 
     /**
      * Sound to play when the level is lost
      */
-    Sound _loseSound;
+    Sound mLoseSound;
 
     PostScene() {
-        _winText = LOL._game._config.getDefaultWinText();
-        _loseText = LOL._game._config.getDefaultLoseText();
+        mWinText = LOL.sGame.mConfig.getDefaultWinText();
+        mLoseText = LOL.sGame.mConfig.getDefaultLoseText();
     }
 
     /**
@@ -71,7 +71,7 @@ public class PostScene {
      * @param soundName Name of the sound file to play
      */
     public static void setWinSound(String soundName) {
-        getCurrPostScene()._winSound = Media.getSound(soundName);
+        getCurrPostScene().mWinSound = Media.getSound(soundName);
     }
 
     /**
@@ -80,7 +80,7 @@ public class PostScene {
      * @param soundName Name of the sound file to play
      */
     public static void setLoseSound(String soundName) {
-        getCurrPostScene()._loseSound = Media.getSound(soundName);
+        getCurrPostScene().mLoseSound = Media.getSound(soundName);
     }
 
     /**
@@ -101,73 +101,73 @@ public class PostScene {
     public static void addExtraWinText(String text, int x, int y, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp._winSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        tmp.mWinSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp._loseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        tmp.mLoseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     public static void addExtraWinTextCentered(String text, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp._winSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
+        tmp.mWinSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
     public static void addExtraLoseTextCentered(String text, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp._loseSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
+        tmp.mLoseSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
     }
 
     public static void addWinImage(String imgName, int x, int y, int width, int height) {
         PostScene tmp = getCurrPostScene();
-        tmp._winSprites.add(Util.makePicture(x, y, width, height, imgName));
+        tmp.mWinSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     public static void addLoseImage(String imgName, int x, int y, int width, int height) {
         PostScene tmp = getCurrPostScene();
-        tmp._loseSprites.add(Util.makePicture(x, y, width, height, imgName));
+        tmp.mLoseSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     // Use "" to disable
     public static void setDefaultWinText(String text) {
-        getCurrPostScene()._winText = text;
+        getCurrPostScene().mWinText = text;
     }
 
     // Use "" to disable
     public static void setDefaultLoseText(String text) {
-        getCurrPostScene()._loseText = text;
+        getCurrPostScene().mLoseText = text;
     }
 
     public static void disable() {
-        getCurrPostScene()._disable = true;
+        getCurrPostScene().mDisable = true;
     }
 
     void setWin(boolean win) {
-        _win = win;
+        mWin = win;
 
-        if (_disable) {
+        if (mDisable) {
             finish();
             return;
         }
 
-        _visible = true;
+        mVisible = true;
 
         // The default text to display can change at the last second, so we
         // don't compute it until right here
         if (win) {
-            if (_winSound != null)
-                _winSound.play();
-            _winSprites.add(Util.makeCenteredText(_winText, 255, 255, 255,
-                    LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
+            if (mWinSound != null)
+                mWinSound.play();
+            mWinSprites.add(Util.makeCenteredText(mWinText, 255, 255, 255,
+                    LOL.sGame.mConfig.getDefaultFontFace(), LOL.sGame.mConfig.getDefaultFontSize()));
         } else {
-            if (_loseSound != null)
-                _loseSound.play();
-            _loseSprites.add(Util.makeCenteredText(_loseText, 255, 255, 255,
-                    LOL._game._config.getDefaultFontFace(), LOL._game._config.getDefaultFontSize()));
+            if (mLoseSound != null)
+                mLoseSound.play();
+            mLoseSprites.add(Util.makeCenteredText(mLoseText, 255, 255, 255,
+                    LOL.sGame.mConfig.getDefaultFontFace(), LOL.sGame.mConfig.getDefaultFontSize()));
         }
     }
 
@@ -175,27 +175,27 @@ public class PostScene {
         // we turn off music here, so that music plays during the PostScene
         Level.sCurrent.stopMusic();
 
-        if (!_win) {
-            LOL._game.doPlayLevel(LOL._game._currLevel);
+        if (!mWin) {
+            LOL.sGame.doPlayLevel(LOL.sGame.mCurrLevelNum);
         } else {
-            if (LOL._game._currLevel == LOL._game._config.getNumLevels()) {
-                LOL._game.doChooser();
+            if (LOL.sGame.mCurrLevelNum == LOL.sGame.mConfig.getNumLevels()) {
+                LOL.sGame.doChooser();
             } else {
-                LOL._game._currLevel++;
-                LOL._game.doPlayLevel(LOL._game._currLevel);
+                LOL.sGame.mCurrLevelNum++;
+                LOL.sGame.doPlayLevel(LOL.sGame.mCurrLevelNum);
             }
         }
     }
 
     boolean render(SpriteBatch sb) {
-        if (!_visible)
+        if (!mVisible)
             return false;
         if (Gdx.input.justTouched()) {
-            _visible = false;
+            mVisible = false;
             finish();
             return true;
         }
-        ArrayList<Renderable> _sprites = (_win) ? _winSprites : _loseSprites;
+        ArrayList<Renderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
 
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
@@ -203,7 +203,7 @@ public class PostScene {
         Level.sCurrent.mHudCam.update();
         sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
-        for (Renderable r : _sprites)
+        for (Renderable r : sprites)
             r.render(sb, 0);
         sb.end();
         return true;

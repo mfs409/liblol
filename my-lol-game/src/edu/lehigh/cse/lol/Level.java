@@ -325,16 +325,16 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(LOL._game._config.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO, LOL._game._config.getScreenHeight()
+        mGameCam = new OrthographicCamera(LOL.sGame.mConfig.getScreenWidth()
+                / Physics.PIXEL_METER_RATIO, LOL.sGame.mConfig.getScreenHeight()
                 / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(LOL._game._config.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
-                LOL._game._config.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
+        mGameCam.position.set(LOL.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
+                LOL.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
-        int camWidth = LOL._game._config.getScreenWidth();
-        int camHeight = LOL._game._config.getScreenHeight();
+        int camWidth = LOL.sGame.mConfig.getScreenWidth();
+        int camHeight = LOL.sGame.mConfig.getScreenHeight();
         mHudCam = new OrthographicCamera(camWidth, camHeight);
         mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
@@ -356,7 +356,7 @@ public class Level extends ScreenAdapter {
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
                     PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
-                    if (hs._visible) {
+                    if (hs.mVisible) {
                         mHitSprite = hs;
                         return false;
                     }
@@ -366,10 +366,10 @@ public class Level extends ScreenAdapter {
         };
 
         // When debug mode is on, print the frames per second
-        if (LOL._game._config.showDebugBoxes())
-            Controls.addFPS(400, 15, LOL._game._config.getDefaultFontFace(),
-                    LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                    LOL._game._config.getDefaultFontBlue(), 12);
+        if (LOL.sGame.mConfig.showDebugBoxes())
+            Controls.addFPS(400, 15, LOL.sGame.mConfig.getDefaultFontFace(),
+                    LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                    LOL.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 
     /**
@@ -484,7 +484,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: draw outlines of physics entities
-        if (LOL._game._config.showDebugBoxes())
+        if (LOL.sGame.mConfig.showDebugBoxes())
             mDebugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
@@ -496,7 +496,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
-        if (LOL._game._config.showDebugBoxes()) {
+        if (LOL.sGame.mConfig.showDebugBoxes()) {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -531,27 +531,27 @@ public class Level extends ScreenAdapter {
         if (mChaseEntity == null)
             return;
         // figure out the entity's position
-        float x = mChaseEntity._physBody.getWorldCenter().x + mChaseEntity._cameraOffset.x;
-        float y = mChaseEntity._physBody.getWorldCenter().y + mChaseEntity._cameraOffset.y;
+        float x = mChaseEntity.mBody.getWorldCenter().x + mChaseEntity.mCameraOffset.x;
+        float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - LOL._game._config.getScreenWidth() * mGameCam.zoom
+        if (x > mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - LOL._game._config.getScreenWidth() * mGameCam.zoom
+            x = mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
                     / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - LOL._game._config.getScreenHeight() * mGameCam.zoom
+        if (y > mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - LOL._game._config.getScreenHeight() * mGameCam.zoom
+            y = mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
                     / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < LOL._game._config.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = LOL._game._config.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < LOL._game._config.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = LOL._game._config.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x < LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -738,7 +738,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL._game.onTimeTrigger(timerId, LOL._game._currLevel);
+                    LOL.sGame.onTimeTrigger(timerId, LOL.sGame.mCurrLevelNum);
             }
         }, howLong);
     }
@@ -757,7 +757,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, enemy);
+                    LOL.sGame.onEnemyTimeTrigger(timerId, LOL.sGame.mCurrLevelNum, enemy);
             }
         }, howLong);
     }
@@ -791,7 +791,7 @@ public class Level extends ScreenAdapter {
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
              */
-            long _lastTime;
+            long mLastTime;
 
             /**
              * On a down press, draw a new obstacle if enough time has
@@ -804,16 +804,16 @@ public class Level extends ScreenAdapter {
             public void onDown(float x, float y) {
                 // check if enough milliseconds have passed
                 long now = System.nanoTime();
-                if (now < _lastTime + interval * 1000000)
+                if (now < mLastTime + interval * 1000000)
                     return;
-                _lastTime = now;
+                mLastTime = now;
 
                 // make a circular obstacle
                 final Obstacle o = Obstacle.makeAsCircle(x - width / 2, y - height / 2, width,
                         height, imgName);
                 o.setPhysics(density, elasticity, friction);
                 if (moveable)
-                    o._physBody.setType(BodyType.DynamicBody);
+                    o.mBody.setType(BodyType.DynamicBody);
 
                 // possibly set a timer to remove the scribble
                 if (duration > 0) {

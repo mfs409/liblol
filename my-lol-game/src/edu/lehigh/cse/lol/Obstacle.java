@@ -172,7 +172,7 @@ public class Obstacle extends PhysicsSprite {
         mHeroCollision = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite h, Contact c) {
-                Vector2 v = h._physBody.getLinearVelocity();
+                Vector2 v = h.mBody.getLinearVelocity();
                 v.scl(factor);
                 h.updateVelocity(v.x, v.y);
             }
@@ -197,7 +197,7 @@ public class Obstacle extends PhysicsSprite {
             @Override
             public void go(final PhysicsSprite h, Contact c) {
                 // boost the speed
-                Vector2 v = h._physBody.getLinearVelocity();
+                Vector2 v = h.mBody.getLinearVelocity();
                 v.x += boostAmountX;
                 v.y += boostAmountY;
                 h.updateVelocity(v.x, v.y);
@@ -207,7 +207,7 @@ public class Obstacle extends PhysicsSprite {
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
-                            Vector2 v = h._physBody.getLinearVelocity();
+                            Vector2 v = h.mBody.getLinearVelocity();
                             v.x -= boostAmountX;
                             v.y -= boostAmountY;
                             h.updateVelocity(v.x, v.y);
@@ -267,14 +267,14 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
+                            LOL.sGame.onHeroCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this,
                                     (Hero)ps);
                             return;
                         }
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel,
+                                LOL.sGame.onHeroCollideTrigger(id, LOL.sGame.mCurrLevelNum,
                                         Obstacle.this, (Hero)ps);
                             }
                         }, delay);
@@ -306,7 +306,7 @@ public class Obstacle extends PhysicsSprite {
         /**
          * Enemy triggers can require certain Goodie counts in order to run
          */
-        final int[] _enemyTriggerActivation = new int[] {
+        final int[] enemyTriggerActivation = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
         };
 
@@ -315,17 +315,17 @@ public class Obstacle extends PhysicsSprite {
             public void go(final PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _enemyTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= enemyTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel, Obstacle.this, (Enemy)ps);
+                        LOL.sGame.onEnemyCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this, (Enemy)ps);
                         return;
                     }
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
-                            LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel,
+                            LOL.sGame.onEnemyCollideTrigger(id, LOL.sGame.mCurrLevelNum,
                                     Obstacle.this, (Enemy)ps);
                         }
                     }, delay);
@@ -350,7 +350,7 @@ public class Obstacle extends PhysicsSprite {
      */
     public void setProjectileCollisionTrigger(final int id, int activationGoodies1,
             int activationGoodies2, int activationGoodies3, int activationGoodies4) {
-        final int[] _projectileTriggerActivation = new int[] {
+        final int[] projectileTriggerActivation = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
         };
 
@@ -359,9 +359,9 @@ public class Obstacle extends PhysicsSprite {
             public void go(PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
-                    LOL._game.onProjectileCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
+                    LOL.sGame.onProjectileCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this,
                             (Projectile)ps);
             }
         };

@@ -36,16 +36,16 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class PauseScene {
-    ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
+    ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
-    boolean _visible = true;
+    boolean mVisible = true;
 
-    Rectangle _pauseRectangle;
+    Rectangle mPauseRectangle;
     
     /**
      * For handling touches
      */
-    private Vector3 _v = new Vector3();
+    private Vector3 mV = new Vector3();
     
     private static PauseScene getCurrPauseScene() {
         PauseScene ps = Level.sCurrent.mPauseScene;
@@ -60,40 +60,40 @@ public class PauseScene {
     
     public static void addText(String text, int x, int y, int red, int green, int blue,
             String fontName, int size) {
-        getCurrPauseScene()._sprites.add(Util.makeText(x, y, text, red, green, blue,
+        getCurrPauseScene().mSprites.add(Util.makeText(x, y, text, red, green, blue,
                 fontName, size));
     }
 
     public static void addCenteredText(String text, int red, int green, int blue, String fontName,
             int size) {
-        getCurrPauseScene()._sprites.add(Util.makeCenteredText(text, red, green, blue,
+        getCurrPauseScene().mSprites.add(Util.makeCenteredText(text, red, green, blue,
                 fontName, size));
     }
 
     public static void addImage(String imgName, int x, int y, int width, int height) {
-        getCurrPauseScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     public static void addBackButton(String imgName, int x, int y, int width, int height) {
-        getCurrPauseScene()._pauseRectangle = new Rectangle(x, y, width, height);
-        getCurrPauseScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
+        getCurrPauseScene().mPauseRectangle = new Rectangle(x, y, width, height);
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
     
-    boolean render(SpriteBatch _spriteRender) {
+    boolean render(SpriteBatch sb) {
         // if the pop-up scene is not visible, do nothing
-        if (!_visible)
+        if (!mVisible)
             return false;
         // if there's a touch, return
         //
         // TODO: need to make this more nuanced if we want to add buttons...
         if (Gdx.input.justTouched()) {
-            Level.sCurrent.mHudCam.unproject(_v.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (_pauseRectangle.contains(_v.x, _v.y)) {
-                LOL._game.handleBack();
-                _visible = false;
+            Level.sCurrent.mHudCam.unproject(mV.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (mPauseRectangle.contains(mV.x, mV.y)) {
+                LOL.sGame.handleBack();
+                mVisible = false;
                 return false;
             }
-            _visible = false;
+            mVisible = false;
             return false;
         }
         // OK, we should render the scene...
@@ -102,11 +102,11 @@ public class PauseScene {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Level.sCurrent.mHudCam.update();
-        _spriteRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
-        _spriteRender.begin();
-        for (Renderable r : _sprites)
-            r.render(_spriteRender, 0);
-        _spriteRender.end();
+        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+        sb.begin();
+        for (Renderable r : mSprites)
+            r.render(sb, 0);
+        sb.end();
         return true;
     }
 }

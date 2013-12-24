@@ -192,9 +192,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addCountdown(float timeout, String text, int x, int y) {
-        addCountdown(timeout, text, x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
+        addCountdown(timeout, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -272,9 +272,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addWinCountdown(float timeout, int x, int y) {
-        addWinCountdown(timeout, x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
+        addWinCountdown(timeout, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -318,9 +318,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addGoodieCount1(int max, String text, int x, int y) {
-        addGoodieCount(1, max, text, x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
+        addGoodieCount(1, max, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -365,9 +365,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addDefeatedCount(int max, String text, int x, int y) {
-        addDefeatedCount(max, text, x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
+        addDefeatedCount(max, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -408,9 +408,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     static public void addStopwatch(int x, int y) {
-        addStopwatch(x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize());
+        addStopwatch(x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -429,13 +429,13 @@ public class Controls {
             final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         HudEntity he = new HudEntity(red, green, blue) {
-            float _stopWatchProgress;
+            float mStopWatchProgress;
 
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                _stopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int)_stopWatchProgress, bf, sb);
+                mStopWatchProgress += Gdx.graphics.getDeltaTime();
+                drawTextTransposed(x, y, "" + (int)mStopWatchProgress, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -451,16 +451,16 @@ public class Controls {
      */
     static public void addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        addStrengthMeter(text, x, y, LOL._game._config.getDefaultFontFace(),
-                LOL._game._config.getDefaultFontRed(), LOL._game._config.getDefaultFontGreen(),
-                LOL._game._config.getDefaultFontBlue(), LOL._game._config.getDefaultFontSize(), h);
+        addStrengthMeter(text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
+                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
+                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize(), h);
     }
 
     /**
      * Display a strength meter for a specific hero, with extra features for
      * describing the appearance of the font
      * 
-     * @param text The text to display after the remaining _strength value
+     * @param text The text to display after the remaining strength value
      * @param x The X coordinate of the bottom left corner (in pixels)
      * @param y The Y coordinate of the bottom left corner (in pixels)
      * @param fontname The name of the font file to use
@@ -502,7 +502,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Projectile._projectilesRemaining + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + Projectile.sProjectilesRemaining + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -524,7 +524,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Level.sCurrent.mPauseScene._visible = true;
+                Level.sCurrent.mPauseScene.mVisible = true;
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -548,7 +548,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
+                Vector2 v = entity.mBody.getLinearVelocity();
                 if (dx != 0)
                     v.x = dx;
                 if (dy != 0)
@@ -563,7 +563,7 @@ public class Controls {
 
             @Override
             void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
+                Vector2 v = entity.mBody.getLinearVelocity();
                 if (dx != 0)
                     v.x = 0;
                 if (dy != 0)
@@ -669,7 +669,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
+                Vector2 v = entity.mBody.getLinearVelocity();
                 v.x = rateDownX;
                 v.y = rateDownY;
                 entity.updateVelocity(v.x, v.y);
@@ -682,7 +682,7 @@ public class Controls {
 
             @Override
             void onUpPress() {
-                Vector2 v = entity._physBody.getLinearVelocity();
+                Vector2 v = entity.mBody.getLinearVelocity();
                 v.x = rateUpX;
                 v.y = rateUpY;
                 entity.updateVelocity(v.x, v.y);
@@ -712,16 +712,16 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Vector2 v = entity._physBody.getLinearVelocity();
+                Vector2 v = entity.mBody.getLinearVelocity();
                 v.x = rateX;
                 v.y = rateY;
-                entity._physBody.setLinearDamping(0);
+                entity.mBody.setLinearDamping(0);
                 entity.updateVelocity(v.x, v.y);
             }
 
             @Override
             void onUpPress() {
-                entity._physBody.setLinearDamping(dampening);
+                entity.mBody.setLinearDamping(dampening);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -797,7 +797,7 @@ public class Controls {
 
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
+                Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
                 mLastThrow = System.nanoTime();
             }
 
@@ -806,7 +806,7 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y,
+                    Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y,
                             h);
                 }
             }
@@ -831,7 +831,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwFixed(h._physBody.getPosition().x, h._physBody.getPosition().y, h);
+                Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
             }
 
             @Override
@@ -865,7 +865,7 @@ public class Controls {
 
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x,
+                Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, vv.x,
                         vv.y, h);
                 mLastThrow = System.nanoTime();
             }
@@ -875,7 +875,7 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y,
+                    Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
                             vv.x, vv.y, h);
                 }
             }
@@ -901,7 +901,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwAt(h._physBody.getPosition().x, h._physBody.getPosition().y, vv.x,
+                Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, vv.x,
                         vv.y, h);
             }
 
@@ -1025,7 +1025,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                LOL._game.onControlPressTrigger(id, LOL._game._currLevel);
+                LOL.sGame.onControlPressTrigger(id, LOL.sGame.mCurrLevelNum);
             }
         };
         Level.sCurrent.mControls.add(he);

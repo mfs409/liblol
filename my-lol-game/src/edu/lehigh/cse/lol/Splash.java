@@ -104,15 +104,15 @@ public class Splash extends ScreenAdapter {
      */
     public Splash() {
         // configure the camera, center it on the screen
-        int w = LOL._game._config.getScreenWidth();
-        int h = LOL._game._config.getScreenHeight();
+        int w = LOL.sGame.mConfig.getScreenWidth();
+        int h = LOL.sGame.mConfig.getScreenHeight();
         mCamera = new OrthographicCamera(w, h);
         mCamera.position.set(w / 2, h / 2, 0);
 
         // set up the play, help, and quit buttons
-        SplashConfiguration sc = LOL._game._splashConfig;
+        SplashConfiguration sc = LOL.sGame.mSplashConfig;
         mPlay = new Rectangle(sc.getPlayX(), sc.getPlayY(), sc.getPlayWidth(), sc.getPlayHeight());
-        if (LOL._game._config.getNumHelpScenes() > 0) {
+        if (LOL.sGame.mConfig.getNumHelpScenes() > 0) {
             mHelp = new Rectangle(sc.getHelpX(), sc.getHelpY(), sc.getHelpWidth(),
                     sc.getHelpHeight());
         }
@@ -120,7 +120,7 @@ public class Splash extends ScreenAdapter {
 
         // get the background image and music
         mImage = new TextureRegion(new Texture(Gdx.files.internal(sc.getBackgroundImage())));
-        if (LOL._game._splashConfig.getMusic() != null)
+        if (LOL.sGame.mSplashConfig.getMusic() != null)
             mMusic = Media.getMusic(sc.getMusic());
     }
 
@@ -170,22 +170,22 @@ public class Splash extends ScreenAdapter {
             mCamera.unproject(mV.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             // DEBUG: print the location of the touch... this is really useful
             // when trying to figure out the coordinates of the rectangles
-            if (LOL._game._config.showDebugBoxes()) {
+            if (LOL.sGame.mConfig.showDebugBoxes()) {
                 Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
             }
             // check if the touch was inside one of our buttons, and act
             // accordingly
             if (mQuit.contains(mV.x, mV.y)) {
                 stopMusic();
-                LOL._game.doQuit();
+                LOL.sGame.doQuit();
             }
             if (mPlay.contains(mV.x, mV.y)) {
                 stopMusic();
-                LOL._game.doChooser();
+                LOL.sGame.doChooser();
             }
             if (mHelp != null && mHelp.contains(mV.x, mV.y)) {
                 stopMusic();
-                LOL._game.doHelpLevel(1);
+                LOL.sGame.doHelpLevel(1);
             }
         }
 
@@ -197,12 +197,12 @@ public class Splash extends ScreenAdapter {
         mSpriteBatch.setProjectionMatrix(mCamera.combined);
         mSpriteBatch.begin();
         mSpriteBatch.enableBlending();
-        mSpriteBatch.draw(mImage, 0, 0, LOL._game._config.getScreenWidth(),
-                LOL._game._config.getScreenHeight());
+        mSpriteBatch.draw(mImage, 0, 0, LOL.sGame.mConfig.getScreenWidth(),
+                LOL.sGame.mConfig.getScreenHeight());
         mSpriteBatch.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (LOL._game._config.showDebugBoxes()) {
+        if (LOL.sGame.mConfig.showDebugBoxes()) {
             mShapeRender.setProjectionMatrix(mCamera.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);

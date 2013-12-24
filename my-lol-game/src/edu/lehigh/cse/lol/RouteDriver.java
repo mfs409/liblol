@@ -30,51 +30,51 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.math.Vector2;
 
 class RouteDriver {
-    Route _myRoute;
+    Route mMyRoute;
 
-    float _routeVelocity;
+    float mRouteVelocity;
 
-    boolean _routeLoop;
+    boolean mRouteLoop;
 
-    Vector2 _routeVec = new Vector2();
+    Vector2 mRouteVec = new Vector2();
 
-    boolean _routeDone;
+    boolean mRouteDone;
 
-    int _nextRouteGoal;
+    int mNextRouteGoal;
 
-    PhysicsSprite _entity;
+    PhysicsSprite mEntity;
 
     void haltRoute() {
-        _routeDone = true;
+        mRouteDone = true;
         // NB: third parameter doesn't matter, because the entity isn't a static
         // body, so its bodytype won't change.
-        _entity.setAbsoluteVelocity(0, 0, false);
+        mEntity.setAbsoluteVelocity(0, 0, false);
     }
 
     RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity) {
-        _myRoute = route;
-        _routeVelocity = velocity;
-        _routeLoop = loop;
-        _entity = entity;
+        mMyRoute = route;
+        mRouteVelocity = velocity;
+        mRouteLoop = loop;
+        mEntity = entity;
 
         // this is how we initialize a route driver:
         // first, move to the starting point
-        _entity._physBody.setTransform(_myRoute.mXIndices[0] + _entity._width / 2,
-                _myRoute.mYIndices[0] + _entity._height / 2, 0);
+        mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mWidth / 2,
+                mMyRoute.mYIndices[0] + mEntity.mHeight / 2, 0);
         // second, indicate that we are working on goal #1, and set velocity
         startRoute();
         // and indicate that we aren't all done yet
-        _routeDone = false;
+        mRouteDone = false;
 
     }
 
     void startRoute() {
-        _nextRouteGoal = 1;
-        _routeVec.x = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
-        _routeVec.y = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
-        _routeVec.nor();
-        _routeVec.scl(_routeVelocity);
-        _entity._physBody.setLinearVelocity(_routeVec);
+        mNextRouteGoal = 1;
+        mRouteVec.x = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+        mRouteVec.y = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+        mRouteVec.nor();
+        mRouteVec.scl(mRouteVelocity);
+        mEntity.mBody.setLinearVelocity(mRouteVec);
     }
 
     /**
@@ -83,39 +83,39 @@ class RouteDriver {
      */
     void drive() {
         // quit if we're done and we don't loop
-        if (_routeDone)
+        if (mRouteDone)
             return;
         // if we haven't passed the goal, keep going. we tell if we've passed
         // the goal by comparing the magnitudes
         // of
         // the vectors from source to here and from goal to here
-        float sx = _myRoute.mXIndices[_nextRouteGoal - 1] - _entity.getXPosition();
-        float sy = _myRoute.mYIndices[_nextRouteGoal - 1] - _entity.getYPosition();
-        float gx = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
-        float gy = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
+        float sx = mMyRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
+        float sy = mMyRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
+        float gx = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+        float gy = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
         boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
         boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
         if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
-            _nextRouteGoal++;
-            if (_nextRouteGoal == _myRoute.mPoints) {
+            mNextRouteGoal++;
+            if (mNextRouteGoal == mMyRoute.mPoints) {
                 // reset if it's a loop, else terminate Route
-                if (_routeLoop) {
-                    _entity._physBody.setTransform(_myRoute.mXIndices[0] + _entity._width / 2,
-                            _myRoute.mYIndices[0] + _entity._height / 2, 0);
+                if (mRouteLoop) {
+                    mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mWidth / 2,
+                            mMyRoute.mYIndices[0] + mEntity.mHeight / 2, 0);
                     startRoute();
                     return;
                 } else {
-                    _routeDone = true;
-                    _entity._physBody.setLinearVelocity(0, 0);
+                    mRouteDone = true;
+                    mEntity.mBody.setLinearVelocity(0, 0);
                     return;
                 }
             } else {
                 // advance to next point
-                _routeVec.x = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
-                _routeVec.y = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
-                _routeVec.nor();
-                _routeVec.scl(_routeVelocity);
-                _entity._physBody.setLinearVelocity(_routeVec);
+                mRouteVec.x = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+                mRouteVec.y = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+                mRouteVec.nor();
+                mRouteVec.scl(mRouteVelocity);
+                mEntity.mBody.setLinearVelocity(mRouteVec);
                 return;
             }
         }

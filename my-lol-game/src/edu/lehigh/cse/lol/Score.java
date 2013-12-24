@@ -199,11 +199,11 @@ public class Score {
                 mGameOver = true;
 
                 // Run the level-complete trigger
-                LOL._game.levelCompleteTrigger(win);
+                LOL.sGame.levelCompleteTrigger(win);
 
                 // if we won, unlock the next level
-                if (win && LOL._game.readUnlocked() == LOL._game._currLevel)
-                    LOL._game.saveUnlocked(LOL._game._currLevel + 1);
+                if (win && LOL.sGame.readUnlocked() == LOL.sGame.mCurrLevelNum)
+                    LOL.sGame.saveUnlocked(LOL.sGame.mCurrLevelNum + 1);
 
                 // drop everything from the hud
                 Level.sCurrent.mControls.clear();

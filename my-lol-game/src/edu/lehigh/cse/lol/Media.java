@@ -46,22 +46,22 @@ public class Media {
     /**
      * Store the fonts used by this game
      */
-    static private final Hashtable<String, BitmapFont> _fonts = new Hashtable<String, BitmapFont>();
+    static private final Hashtable<String, BitmapFont> sFonts = new Hashtable<String, BitmapFont>();
 
     /**
      * Store the sounds used by this game
      */
-    static private final Hashtable<String, Sound> _sounds = new Hashtable<String, Sound>();
+    static private final Hashtable<String, Sound> sSounds = new Hashtable<String, Sound>();
 
     /**
      * Store the music used by this game
      */
-    static private final Hashtable<String, Music> _tunes = new Hashtable<String, Music>();
+    static private final Hashtable<String, Music> sTunes = new Hashtable<String, Music>();
 
     /**
      * Store the images used by this game
      */
-    static private final Hashtable<String, TextureRegion[]> _images = new Hashtable<String, TextureRegion[]>();
+    static private final Hashtable<String, TextureRegion[]> sImages = new Hashtable<String, TextureRegion[]>();
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
@@ -70,7 +70,7 @@ public class Media {
      * glitches when the game comes back to the foreground.
      */
     static void onDispose() {
-        _fonts.clear();
+        sFonts.clear();
     }
 
     /**
@@ -86,7 +86,7 @@ public class Media {
         String key = fontFileName + "--" + fontSize;
 
         // check if we've already got this font, return it if we do
-        BitmapFont f = _fonts.get(key);
+        BitmapFont f = sFonts.get(key);
         if (f != null) {
             // just to play it safe, make the font white... the caller can
             // change this
@@ -102,7 +102,7 @@ public class Media {
                 Gdx.files.internal(fontFileName));
         f = generator.generateFont(fontSize, FreeTypeFontGenerator.DEFAULT_CHARS, false);
         generator.dispose();
-        _fonts.put(key, f);
+        sFonts.put(key, f);
         return f;
     }
 
@@ -113,7 +113,7 @@ public class Media {
      * @return a Sound object that can be used for sound effects
      */
     static Sound getSound(String soundName) {
-        Sound ret = _sounds.get(soundName);
+        Sound ret = sSounds.get(soundName);
         if (ret == null)
             Gdx.app.log("ERROR", "Error retreiving sound '" + soundName + "'");
         return ret;
@@ -122,11 +122,11 @@ public class Media {
     /**
      * Internal method to retrieve a music object by name
      * 
-     * @param musicName Name of the _music file to retrieve
-     * @return a Music object that can be used to play background _music
+     * @param musicName Name of the music file to retrieve
+     * @return a Music object that can be used to play background music
      */
     static Music getMusic(String musicName) {
-        Music ret = _tunes.get(musicName);
+        Music ret = sTunes.get(musicName);
         if (ret == null)
             Gdx.app.log("ERROR", "Error retreiving music '" + musicName + "'");
         return ret;
@@ -140,7 +140,7 @@ public class Media {
      *         AnimatedSprites
      */
     static TextureRegion[] getImage(String imgName) {
-        TextureRegion[] ret = _images.get(imgName);
+        TextureRegion[] ret = sImages.get(imgName);
         if (ret == null)
             Gdx.app.log("ERROR", "Error retreiving image '" + imgName + "'");
         return ret;
@@ -164,7 +164,7 @@ public class Media {
         // Create an array with one entry
         TextureRegion[] tr = new TextureRegion[1];
         tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
-        _images.put(imgName, tr);
+        sImages.put(imgName, tr);
     }
 
     /**
@@ -197,7 +197,7 @@ public class Media {
                 index++;
             }
         }
-        _images.put(imgName, trs);
+        sImages.put(imgName, trs);
     }
 
     /**
@@ -205,7 +205,7 @@ public class Media {
      * .ogg files. You can use Audacity to convert music as needed. mp3 files
      * should work too.
      * 
-     * @param musicName the name of the _music file (assumed to be in the
+     * @param musicName the name of the music file (assumed to be in the
      *            "assets" folder). This should be of the form "song.ogg", and
      *            should be of type "ogg".
      * @param loop either true or false, to indicate whether the song should
@@ -214,7 +214,7 @@ public class Media {
     static public void registerMusic(String musicName, boolean loop) {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
-        _tunes.put(musicName, m);
+        sTunes.put(musicName, m);
     }
 
     /**
@@ -228,6 +228,6 @@ public class Media {
      */
     static public void registerSound(String soundName) {
         Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
-        _sounds.put(soundName, s);
+        sSounds.put(soundName, s);
     }
 }
