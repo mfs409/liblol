@@ -348,7 +348,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore._goodiesCollected[type - 1]
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1]
                         + suffix, bf, sb);
             }
         };
@@ -394,7 +394,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore._enemiesDefeated + suffix,
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix,
                         bf, sb);
             }
         };

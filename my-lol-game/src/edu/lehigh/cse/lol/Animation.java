@@ -64,8 +64,8 @@ public class Animation {
     private boolean mLoop;
 
     /**
-     * The next available position in the _frames and _durations arrays. Note
-     * that _frames and _durations should have the same length, and the same
+     * The next available position in the frames and durations arrays. Note
+     * that frames and durations should have the same length, and the same
      * number of entries.
      */
     int mNextCell;
@@ -82,7 +82,7 @@ public class Animation {
         TextureRegion[] mImages;
 
         /**
-         * The index to display from _tra for the case where there is no active
+         * The index to display from mImages for the case where there is no active
          * animation. This is useful for animateByGoodieCount.
          */
         int mImageIndex;
@@ -143,7 +143,7 @@ public class Animation {
         }
 
         /**
-         * Request a random index from the _tra array to pick an image to
+         * Request a random index from the mImages array to pick an image to
          * display
          */
         void pickRandomIndex() {

@@ -56,6 +56,15 @@ public class Physics {
      */
     static final float PIXEL_METER_RATIO = 10;
 
+    /**
+     * When a hero collides with a "sticky" obstacle, this is the code we run to
+     * figure out what to do
+     * 
+     * @param sticky The sticky entity... it should always be an obstacle for
+     *            now
+     * @param other The other entity... it should always be a hero for now
+     * @param contact A description of the contact event
+     */
     static void handleSticky(final PhysicsSprite sticky, final PhysicsSprite other, Contact contact) {
         // don't create a joint if we've already got one
         if (other._dJoint != null)
@@ -73,7 +82,9 @@ public class Physics {
                 || (sticky.isStickyBottom && other.getYPosition() + other._height <= sticky
                         .getYPosition())) {
             // create distance and weld joints... somehow, the combination is
-            // needed to get this to work
+            // needed to get this to work. Note that this function runs during
+            // the box2d step, so we need to make the joint in a callback that
+            // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
             Level.sCurrent.mOneTimeEvents.add(new Action() {
                 @Override
@@ -133,10 +144,9 @@ public class Physics {
                 // finishes its step.
                 //
                 // NB: this is called from render, while _world is updating...
-                // you can't modify the world or its
-                // entities until the update finishes, so we have to schedule
-                // collision-based updates to run after the
-                // world update.
+                // you can't modify the world or its entities until the update
+                // finishes, so we have to schedule collision-based updates to
+                // run after the world update.
                 Level.sCurrent.mOneTimeEvents.add(new Action() {
                     public void go() {
                         _a.onCollide(_b, _c);

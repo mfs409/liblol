@@ -40,24 +40,20 @@ import com.badlogic.gdx.utils.Timer.Task;
  * A PreScene can include arbitrary text and pictures.
  */
 public class PreScene {
-    /*
-     * INTERNAL INTERFACE
-     */
-
     /**
      * The text and pictures to display
      */
-    ArrayList<Renderable> _sprites = new ArrayList<Renderable>();
+    private ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * True if we must click in order to clear the PreScene
      */
-    boolean _clickToClear = true;
+    private boolean mClickToClear = true;
 
     /**
      * True when the scene is being displayed
      */
-    boolean _visible = true;
+    private boolean mVisible = true;
 
     /**
      * Get the PreScene that is configured for the current level, or create a
@@ -85,13 +81,13 @@ public class PreScene {
      */
     boolean render(SpriteBatch sb) {
         // if the scene is not visible, do nothing
-        if (!_visible)
+        if (!mVisible)
             return false;
         // if we're supposed to be listening for clicks, and we get one, then
         // disable the scene
-        if (_clickToClear) {
+        if (mClickToClear) {
             if (Gdx.input.justTouched()) {
-                _visible = false;
+                mVisible = false;
                 return false;
             }
         }
@@ -103,7 +99,7 @@ public class PreScene {
         Level.sCurrent.mHudCam.update();
         sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
-        for (Renderable r : _sprites)
+        for (Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
         return true;
@@ -127,11 +123,11 @@ public class PreScene {
      */
     public static void addText(String text, int x, int y, int red, int green, int blue,
             String fontName, int size) {
-        getCurrPreScene()._sprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        getCurrPreScene().mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
-     * Add some text to the PreScene, and center it
+     * Add some text to the PreScene, and center it vertically and horizontally
      * 
      * @param text The text to display
      * @param red Redness of the text color
@@ -142,7 +138,7 @@ public class PreScene {
      */
     public static void addCenteredText(String text, int red, int green, int blue, String fontName,
             int size) {
-        getCurrPreScene()._sprites.add(Util
+        getCurrPreScene().mSprites.add(Util
                 .makeCenteredText(text, red, green, blue, fontName, size));
     }
 
@@ -156,7 +152,7 @@ public class PreScene {
      * @param height Height of the image
      */
     public static void addImage(String imgName, int x, int y, int width, int height) {
-        getCurrPreScene()._sprites.add(Util.makePicture(x, y, width, height, imgName));
+        getCurrPreScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -169,11 +165,11 @@ public class PreScene {
      */
     public static void setExpire(float duration) {
         if (duration > 0) {
-            getCurrPreScene()._clickToClear = false;
+            getCurrPreScene().mClickToClear = false;
             Timer.schedule(new Task() {
                 @Override
                 public void run() {
-                    Level.sCurrent.mPreScene._visible = false;
+                    Level.sCurrent.mPreScene.mVisible = false;
                 }
             }, duration);
         }

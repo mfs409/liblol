@@ -140,7 +140,7 @@ public class Hero extends PhysicsSprite {
      */
     private Hero(float width, float height, String imgName) {
         super(imgName, SpriteId.HERO, width, height);
-        Level.sCurrent.mScore._heroesCreated++;
+        Level.sCurrent.mScore.mHeroesCreated++;
     }
 
     /**
@@ -305,7 +305,7 @@ public class Hero extends PhysicsSprite {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Level.sCurrent.mScore._goodiesCollected[i] >= d.mActivation[i];
+            match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && _visible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
@@ -367,14 +367,14 @@ public class Hero extends PhysicsSprite {
 
         // if there is code attached to the obstacle for modifying the hero's
         // behavior, run it
-        if (o._heroCollision != null)
-            o._heroCollision.go(this, contact);
+        if (o.mHeroCollision != null)
+            o.mHeroCollision.go(this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enable
         // jumps for the hero.
         if ((mInAir || mAllowMultiJump) && !o._physBody.getFixtureList().get(0).isSensor()
-                && !o._noJumpReenable)
+                && !o.mNoJumpReenable)
             stopJump();
     }
 
@@ -415,7 +415,7 @@ public class Hero extends PhysicsSprite {
 
         // deal with animation changes due to goodie count
         if (mGoodieCountAnimation != null) {
-            int goodies = Level.sCurrent.mScore._goodiesCollected[0];
+            int goodies = Level.sCurrent.mScore.mGoodiesCollected[0];
             for (int i = 0; i < mGoodieCountAnimation.mNextCell; ++i) {
                 if (mGoodieCountAnimation.mDurations[i] == goodies) {
                     _animator.setIndex(mGoodieCountAnimation.mFrames[i]);

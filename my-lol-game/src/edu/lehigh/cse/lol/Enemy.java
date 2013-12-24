@@ -79,8 +79,8 @@ public class Enemy extends PhysicsSprite {
     /**
      * Create an Enemy This should never be called directly.
      * 
-     * @param x X coordinate of top left corner of this enemy
-     * @param y X coordinate of top left corner of this enemy
+     * @param x X coordinate of bottom left corner of this enemy
+     * @param y X coordinate of bottom left corner of this enemy
      * @param width Width of this enemy
      * @param height Height of this enemy
      * @param ttr Image to display
@@ -90,7 +90,7 @@ public class Enemy extends PhysicsSprite {
      */
     private Enemy(float width, float height, String imgName) {
         super(imgName, SpriteId.ENEMY, width, height);
-        Level.sCurrent.mScore._enemiesCreated++;
+        Level.sCurrent.mScore.mEnemiesCreated++;
     }
 
     /**
@@ -118,8 +118,8 @@ public class Enemy extends PhysicsSprite {
      */
     private void onCollideWithObstacle(final Obstacle o, Contact c) {
         // handle any callbacks the obstacle has
-        if (o._enemyCollision != null)
-            o._enemyCollision.go(this, c);
+        if (o.mEnemyCollision != null)
+            o.mEnemyCollision.go(this, c);
     }
 
     /**

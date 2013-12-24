@@ -59,8 +59,8 @@ public class Goodie extends PhysicsSprite {
      * Build a Goodie This should never be invoked directly. Instead, LOL game
      * designers should use the makeAsXYZ methods
      * 
-     * @param x X position of top left corner
-     * @param y Y position of top left corner
+     * @param x X position of bottom left corner
+     * @param y Y position of bottom left corner
      * @param width width of this Obstacle
      * @param height height of this Obstacle
      * @param tr image to use for this Obstacle
@@ -91,8 +91,8 @@ public class Goodie extends PhysicsSprite {
      * Draw a goodie with an underlying box shape, and a default score of
      * [1,0,0,0]
      * 
-     * @param x X coordinate of top left corner
-     * @param y Y coordinate of top left corner
+     * @param x X coordinate of bottom left corner
+     * @param y Y coordinate of bottom left corner
      * @param width Width of the image
      * @param height Height of the image
      * @param imgName Name of image file to use
@@ -110,8 +110,8 @@ public class Goodie extends PhysicsSprite {
      * Draw a goodie with an underlying circle shape, and a default score of
      * [1,0,0,0]
      * 
-     * @param x X coordinate of top left corner
-     * @param y Y coordinate of top left corner
+     * @param x X coordinate of bottom left corner
+     * @param y Y coordinate of bottom left corner
      * @param width Width of the image
      * @param height Height of the image
      * @param imgName Name of image file to use

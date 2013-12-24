@@ -144,7 +144,7 @@ public class Destination extends PhysicsSprite {
      * Change the number of heroes that can be accepted by this destination (the
      * default is 1)
      * 
-     * @param heroes The number of _heroes that can be accepted
+     * @param heroes The number of heroes that can be accepted
      */
     public void setHeroCount(int heroes) {
         mCapacity = heroes;

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Tilt provides a mechanism for moving entities on the screen. To use tilt, you
@@ -44,50 +45,36 @@ import com.badlogic.gdx.Input.Keys;
  * make your game playable and enjoyable.
  */
 public class Tilt {
-    /*
-     * INTERNAL INTERFACE
-     */
-
     /**
-     * Maximum gravity the accelerometer can create in X dimension
+     * Magnitude of the maximum gravity the accelerometer can create
      */
-    private float _xGravityMax;
-
-    /**
-     * Maximum gravity the accelerometer can create in Y dimension
-     */
-    private float _yGravityMax;
+    private Vector2 mGravityMax;
 
     /**
      * Track if we have an override for gravity to be translated into velocity
      */
-    private boolean _tiltVelocityOverride;
+    private boolean mTiltVelocityOverride;
 
     /**
      * A multiplier to make gravity change faster or slower than the
      * accelerometer default
      */
-    private float _gravityMultiplier = 1;
-
-    /**
-     * Track if tilt support is turned on
-     */
-    private boolean _enabled;
+    private float mMultiplier = 1;
 
     /**
      * List of entities that change behavior based on tilt
      */
-    ArrayList<PhysicsSprite> _accelEntities = new ArrayList<PhysicsSprite>();
+    ArrayList<PhysicsSprite> mAccelEntities = new ArrayList<PhysicsSprite>();
 
     /**
      * The main render loop calls this to determine what to do when there is a
      * phone tilt
      */
     void handleTilt() {
-        if (!_enabled)
+        if (mGravityMax == null)
             return;
 
-        // these temps are for storing the forces we measure
+        // these temps are for storing the accelerometer forces we measure
         float xGravity = 0;
         float yGravity = 0;
 
@@ -97,19 +84,15 @@ public class Tilt {
         if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
             float rot = Gdx.input.getRotation();
             if (rot == 0) {
-                Gdx.app.log("rot", "0");
                 xGravity = -Gdx.input.getAccelerometerX();
                 yGravity = -Gdx.input.getAccelerometerY();
             } else if (rot == 90) {
-                Gdx.app.log("rot", "90");
                 xGravity = Gdx.input.getAccelerometerY();
                 yGravity = -Gdx.input.getAccelerometerX();
             } else if (rot == 180) {
-                Gdx.app.log("rot", "180");
                 xGravity = Gdx.input.getAccelerometerX();
                 yGravity = Gdx.input.getAccelerometerY();
             } else if (rot == 270) {
-                Gdx.app.log("rot", "270");
                 xGravity = -Gdx.input.getAccelerometerY();
                 yGravity = Gdx.input.getAccelerometerX();
             }
@@ -127,45 +110,45 @@ public class Tilt {
         }
 
         // Apply the gravity multiplier
-        xGravity *= _gravityMultiplier;
-        yGravity *= _gravityMultiplier;
+        xGravity *= mMultiplier;
+        yGravity *= mMultiplier;
 
-        // ensure x is within the -xGravityMax : xGravityMax range
-        xGravity = (xGravity > Physics.PIXEL_METER_RATIO * _xGravityMax) ? Physics.PIXEL_METER_RATIO
-                * _xGravityMax
+        // ensure x is within the -GravityMax.x : GravityMax.x range
+        xGravity = (xGravity > Physics.PIXEL_METER_RATIO * mGravityMax.x) ? Physics.PIXEL_METER_RATIO
+                * mGravityMax.x
                 : xGravity;
-        xGravity = (xGravity < Physics.PIXEL_METER_RATIO * -_xGravityMax) ? Physics.PIXEL_METER_RATIO
-                * -_xGravityMax
+        xGravity = (xGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.x) ? Physics.PIXEL_METER_RATIO
+                * -mGravityMax.x
                 : xGravity;
 
-        // ensure y is within the -yGravityMax : yGravityMax range
-        yGravity = (yGravity > Physics.PIXEL_METER_RATIO * _yGravityMax) ? Physics.PIXEL_METER_RATIO
-                * _yGravityMax
+        // ensure y is within the -GravityMax.y : GravityMax.y range
+        yGravity = (yGravity > Physics.PIXEL_METER_RATIO * mGravityMax.y) ? Physics.PIXEL_METER_RATIO
+                * mGravityMax.y
                 : yGravity;
-        yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -_yGravityMax) ? Physics.PIXEL_METER_RATIO
-                * -_yGravityMax
+        yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.y) ? Physics.PIXEL_METER_RATIO
+                * -mGravityMax.y
                 : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
         // entity as a fixed velocity
-        if (_tiltVelocityOverride) {
+        if (mTiltVelocityOverride) {
             // if X is clipped to zero, set each entity's Y velocity, leave X
             // unchanged
-            if (_xGravityMax == 0) {
-                for (PhysicsSprite gfo : _accelEntities)
+            if (mGravityMax.x == 0) {
+                for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(gfo._physBody.getLinearVelocity().x, yGravity);
             }
             // if Y is clipped to zero, set each entitiy's X velocity, leave Y
             // unchanged
-            else if (_yGravityMax == 0) {
-                for (PhysicsSprite gfo : _accelEntities)
+            else if (mGravityMax.y == 0) {
+                for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(xGravity, gfo._physBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {
-                for (PhysicsSprite gfo : _accelEntities)
+                for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo._physBody.isActive())
                         gfo.updateVelocity(xGravity, yGravity);
             }
@@ -173,7 +156,7 @@ public class Tilt {
         // when not in velocity mode, apply the accelerometer reading to each
         // entity as a force
         else {
-            for (PhysicsSprite gfo : _accelEntities)
+            for (PhysicsSprite gfo : mAccelEntities)
                 if (gfo._physBody.isActive())
                     gfo._physBody.applyForceToCenter(xGravity, yGravity, true);
         }
@@ -191,9 +174,7 @@ public class Tilt {
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
     public static void enable(float xGravityMax, float yGravityMax) {
-        Level.sCurrent.mTilt._enabled = true;
-        Level.sCurrent.mTilt._xGravityMax = xGravityMax;
-        Level.sCurrent.mTilt._yGravityMax = yGravityMax;
+        Level.sCurrent.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
@@ -206,7 +187,7 @@ public class Tilt {
      *            of the phone directly sets velocities
      */
     public static void setAsVelocity(boolean toggle) {
-        Level.sCurrent.mTilt._tiltVelocityOverride = toggle;
+        Level.sCurrent.mTilt.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -214,9 +195,10 @@ public class Tilt {
      * multiplying accelerometer values by a constant.
      * 
      * @param multiplier The constant that should be multiplied by the
-     *            accelerometer data
+     *            accelerometer data. This can be a fraction, like 0.5f, to make
+     *            the accelerometer less sensitive
      */
     public static void setGravityMultiplier(float multiplier) {
-        Level.sCurrent.mTilt._gravityMultiplier = multiplier;
+        Level.sCurrent.mTilt.mMultiplier = multiplier;
     }
 }

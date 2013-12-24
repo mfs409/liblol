@@ -59,8 +59,8 @@ class RouteDriver {
 
         // this is how we initialize a route driver:
         // first, move to the starting point
-        _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2,
-                _myRoute._yIndices[0] + _entity._height / 2, 0);
+        _entity._physBody.setTransform(_myRoute.mXIndices[0] + _entity._width / 2,
+                _myRoute.mYIndices[0] + _entity._height / 2, 0);
         // second, indicate that we are working on goal #1, and set velocity
         startRoute();
         // and indicate that we aren't all done yet
@@ -70,8 +70,8 @@ class RouteDriver {
 
     void startRoute() {
         _nextRouteGoal = 1;
-        _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
-        _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+        _routeVec.x = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
+        _routeVec.y = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
         _routeVec.nor();
         _routeVec.scl(_routeVelocity);
         _entity._physBody.setLinearVelocity(_routeVec);
@@ -89,19 +89,19 @@ class RouteDriver {
         // the goal by comparing the magnitudes
         // of
         // the vectors from source to here and from goal to here
-        float sx = _myRoute._xIndices[_nextRouteGoal - 1] - _entity.getXPosition();
-        float sy = _myRoute._yIndices[_nextRouteGoal - 1] - _entity.getYPosition();
-        float gx = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
-        float gy = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+        float sx = _myRoute.mXIndices[_nextRouteGoal - 1] - _entity.getXPosition();
+        float sy = _myRoute.mYIndices[_nextRouteGoal - 1] - _entity.getYPosition();
+        float gx = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
+        float gy = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
         boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
         boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
         if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
             _nextRouteGoal++;
-            if (_nextRouteGoal == _myRoute._points) {
+            if (_nextRouteGoal == _myRoute.mPoints) {
                 // reset if it's a loop, else terminate Route
                 if (_routeLoop) {
-                    _entity._physBody.setTransform(_myRoute._xIndices[0] + _entity._width / 2,
-                            _myRoute._yIndices[0] + _entity._height / 2, 0);
+                    _entity._physBody.setTransform(_myRoute.mXIndices[0] + _entity._width / 2,
+                            _myRoute.mYIndices[0] + _entity._height / 2, 0);
                     startRoute();
                     return;
                 } else {
@@ -111,8 +111,8 @@ class RouteDriver {
                 }
             } else {
                 // advance to next point
-                _routeVec.x = _myRoute._xIndices[_nextRouteGoal] - _entity.getXPosition();
-                _routeVec.y = _myRoute._yIndices[_nextRouteGoal] - _entity.getYPosition();
+                _routeVec.x = _myRoute.mXIndices[_nextRouteGoal] - _entity.getXPosition();
+                _routeVec.y = _myRoute.mYIndices[_nextRouteGoal] - _entity.getYPosition();
                 _routeVec.nor();
                 _routeVec.scl(_routeVelocity);
                 _entity._physBody.setLinearVelocity(_routeVec);

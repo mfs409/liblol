@@ -341,8 +341,8 @@ public class Projectile extends PhysicsSprite {
         // so, do the callback
         if (other._psType == SpriteId.OBSTACLE) {
             Obstacle o = (Obstacle)other;
-            if (o._projectileCollision != null) {
-                o._projectileCollision.go(this, contact);
+            if (o.mProjectileCollision != null) {
+                o.mProjectileCollision.go(this, contact);
                 // return... don't remove the projectile
                 return;
             }

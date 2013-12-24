@@ -112,7 +112,7 @@ public class Background {
      * @param sb The SpriteBatch that is being used to do the drawing.
      */
     void renderLayers(SpriteBatch sb) {
-        // center camera on _gameCam's camera
+        // center camera on mGameCam's camera
         float x = Level.sCurrent.mGameCam.position.x;
         float y = Level.sCurrent.mGameCam.position.y;
         Level.sCurrent.mBgCam.position.set(x, y, 0);

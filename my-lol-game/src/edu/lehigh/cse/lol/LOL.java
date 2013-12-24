@@ -34,8 +34,7 @@ package edu.lehigh.cse.lol;
 // TODO: the unlock mechanism is untested
 
 // TODO: aggressively comment and reduce visibility as much as possible.
-// DONE: Animation, Background, Controls, Destination, Enemy, Goodie, HelpLevel
-// Remaining: Chooser, LOL, O*.java->U*.java; MyLolGame.java
+// Remaining: Chooser, LOL, PauseScene, PhysicsSprite, PostScene, Projectile, RouteDriver, SVG, MyLolGame
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -58,13 +57,11 @@ package edu.lehigh.cse.lol;
 
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 
-// TODO: demonstrate obstacle._peer?
-
 // TODO: Demo projectile setCollisionOk?
 
-// TODO: demo setEnemyCollideTriggerDelay and setEnemyJump (do we need setEnemyJump?)
+// TODO: demo Enemy collide triggers with delay
 
-// TODO: consider making a tool for proper sprite sheet manipulation
+// TODO: consider making sprite sheets more useful
 
 // TODO: Hover has a zoom bug
 
@@ -75,14 +72,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class LOL extends Game {
-    /**
-     * Modes of the game: we can be showing the main screen, the help screens,
-     * the level chooser, or a playable level
-     */
-    private enum Modes {
-        SPLASH, HELP, CHOOSE, PLAY
-    };
-
     /**
      * The current mode of the program
      */
@@ -119,73 +108,14 @@ public abstract class LOL extends Game {
      */
     SplashConfiguration _splashConfig;
 
-    /*
-     * PUBLIC INTERFACE: GAME CONFIGURATION
-     */
-
     /**
-     * The programmer configures the splash screen by implementing this method,
-     * and returning a SplashConfiguration object
+     * Modes of the game: we can be showing the main screen, the help screens,
+     * the level chooser, or a playable level
      */
-    abstract public LOLConfiguration config();
+    private enum Modes {
+        SPLASH, HELP, CHOOSE, PLAY
+    };
 
-    /*
-     * PUBLIC INTERFACE: SPLASH SCREEN CONFIGURATION
-     */
-
-    /**
-     * The programmer configures the splash screen by implementing this method,
-     * and returning a SplashConfiguration object
-     */
-    abstract public SplashConfiguration splashConfig();
-
-    /*
-     * PUBLIC INTERFACE: CORE GAME LAYOUT METHODS: RESOURCES, LEVELS, HELP
-     */
-
-    /**
-     * Register any sound or image files to be used by the game
-     */
-    abstract public void nameResources();
-
-    /**
-     * Describe how to draw the levels of the game
-     * 
-     * @param whichLevel The number of the level being drawn
-     */
-    abstract public void configureLevel(int whichLevel);
-
-    /**
-     * Describe how to draw the help scenes
-     * 
-     * @param whichScene The number of the help scene being drawn
-     */
-    abstract public void configureHelpScene(int whichScene);
-
-    /*
-     * PUBLIC INTERFACE: CORE EVENT METHODS
-     */
-    abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
-
-    abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
-
-    abstract public void onTimeTrigger(int id, int whichLevel);
-
-    abstract public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e);
-
-    abstract public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
-
-    abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
-
-    abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
-
-    abstract public void levelCompleteTrigger(boolean win);
-
-    abstract public void onControlPressTrigger(int id, int whichLevel);
-
-    /*
-     * INTERNAL INTERFACE: NAVIGATION BETWEEN SCENES
-     */
 
     void doSplash() {
         // set the default display mode
@@ -301,7 +231,7 @@ public abstract class LOL extends Game {
     }
 
     /*
-     * INTERNAL INTERFACE: INTERNAL METHODS
+     * INTERNAL INTERFACE
      */
 
     /**
@@ -357,6 +287,59 @@ public abstract class LOL extends Game {
         // Draw the current scene
         super.render();
     }
+
+    /*
+     * PUBLIC INTERFACE
+     */
+
+    /**
+     * The programmer configures the splash screen by implementing this method,
+     * and returning a SplashConfiguration object
+     */
+    abstract public LOLConfiguration config();
+
+    /**
+     * The programmer configures the splash screen by implementing this method,
+     * and returning a SplashConfiguration object
+     */
+    abstract public SplashConfiguration splashConfig();
+
+    /**
+     * Register any sound or image files to be used by the game
+     */
+    abstract public void nameResources();
+
+    /**
+     * Describe how to draw the levels of the game
+     * 
+     * @param whichLevel The number of the level being drawn
+     */
+    abstract public void configureLevel(int whichLevel);
+
+    /**
+     * Describe how to draw the help scenes
+     * 
+     * @param whichScene The number of the help scene being drawn
+     */
+    abstract public void configureHelpScene(int whichScene);
+
+    abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
+
+    abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
+
+    abstract public void onTimeTrigger(int id, int whichLevel);
+
+    abstract public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e);
+
+    abstract public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
+
+    abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
+
+    abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
+
+    abstract public void levelCompleteTrigger(boolean win);
+
+    abstract public void onControlPressTrigger(int id, int whichLevel);
 }
 
 interface Renderable {

@@ -35,68 +35,56 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 /**
- * Obstacles are entities that change the hero's velocity upon a collision There
- * are many flavors of obstacles. They can have a physics shape that is circular
- * or square. They can have default collision behavior or custom behavior. They
- * can be moved by dragging. They can move by touching the object and then
- * touching a point on the screen. They can have "damp" behavior, which is a way
- * to do tricks with Physics (such as zoom strips or friction pads). A method
- * for drawing bounding boxes on the screen is also available, as is a means of
- * creating "trigger" obstacles that cause user-specified code to run upon any
- * collision. There is also a simple object type for loading SVG files, such as
- * those created by Inkscape.
+ * Obstacles are usually walls, except they can move, and can be used to run all
+ * sorts of abritrary code that changes the game, or the behavior of the things
+ * that collide with them
  */
 public class Obstacle extends PhysicsSprite {
-    /*
-     * BASIC FUNCTIONALITY
-     */
-
     /**
      * One of the main uses of obstacles is to use hero/obstacle collisions as a
      * way to run custom code. This callback defines what code to run when a
      * hero collides with this obstacle.
      */
-    CollisionCallback _heroCollision;
+    CollisionCallback mHeroCollision;
 
-    CollisionCallback _enemyCollision;
+    /**
+     * This callback is for when an enemy collides with an obstacle
+     */
+    CollisionCallback mEnemyCollision;
 
-    CollisionCallback _projectileCollision;
+    /**
+     * This callback is for when a projectile collides with an obstacle
+     */
+    CollisionCallback mProjectileCollision;
 
     /**
      * Indicate that this obstacle does not re-enable jumping for the hero
      */
-    boolean _noJumpReenable;
+    boolean mNoJumpReenable;
 
     /**
      * a sound to play when the obstacle is hit by a hero
      */
-    private Sound _collideSound;
+    private Sound mCollideSound;
 
     /**
      * how long to delay (in nanoseconds) between attempts to play the collide
      * sound
      */
-    private long _collideSoundDelay;
+    private long mCollideSoundDelay;
 
     /**
      * Time of last collision sound
      */
-    private long _lastCollideSoundTime;
-
-    /**
-     * Holds the peer obstacle, as set by the programmer
-     */
-    Obstacle _peer;
+    private long mLastCollideSoundTime;
 
     /**
      * Internal constructor to build an Obstacle. This should never be invoked
      * directly. Instead, use the 'addXXX' methods of the Object class.
      * 
-     * @param x X position of top left corner
-     * @param y Y position of top left corner
      * @param width width of this Obstacle
      * @param height height of this Obstacle
-     * @param tr image to use for this Obstacle
+     * @param imgName Name of the image file to use
      */
     protected Obstacle(float width, float height, String imgName) {
         super(imgName, SpriteId.OBSTACLE, width, height);
@@ -107,15 +95,15 @@ public class Obstacle extends PhysicsSprite {
      * obstacle
      */
     void playCollideSound() {
-        if (_collideSound == null)
+        if (mCollideSound == null)
             return;
 
         // Make sure we have waited long enough
         long now = System.nanoTime();
-        if (now < _lastCollideSoundTime + _collideSoundDelay)
+        if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
-        _lastCollideSoundTime = now;
-        _collideSound.play();
+        mLastCollideSoundTime = now;
+        mCollideSound.play();
     }
 
     /**
@@ -124,6 +112,7 @@ public class Obstacle extends PhysicsSprite {
      * is #6 or #7
      * 
      * @param other The other entity involved in this collision
+     * @param contact A description of the collision
      */
     void onCollide(PhysicsSprite other, Contact contact) {
     }
@@ -135,10 +124,10 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Draw an obstacle with an underlying box shape
      * 
-     * @param x X coordinate of top left corner
-     * @param y Y coordinate of top left corner
-     * @param width Width of the image
-     * @param height Height of the image
+     * @param x X coordinate of the bottom left corner
+     * @param y Y coordinate of the bottom left corner
+     * @param width Width of the obstacle
+     * @param height Height of the obstacle
      * @param imgName Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
@@ -152,10 +141,10 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Draw an obstacle with an underlying circle shape
      * 
-     * @param x X coordinate of top left corner
-     * @param y Y coordinate of top left corner
-     * @param width Width of the image
-     * @param height Height of the image
+     * @param x X coordinate of the bottom left corner
+     * @param y Y coordinate of the bottom left corner
+     * @param width Width of the obstacle
+     * @param height Height of the obstacle
      * @param imgName Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
@@ -173,19 +162,18 @@ public class Obstacle extends PhysicsSprite {
      * direction, less than 1 to cause a slowdown (friction pads), or greater
      * than 1 to serve as zoom pads.
      * 
-     * @param factor Value to multiply the hero's velocity when it is on this
-     *            Obstacle
+     * @param factor Value to multiply the hero's velocity when it collides with
+     *            this Obstacle
      */
     public void setDamp(final float factor) {
         // disable collisions on this obstacle
-        _physBody.getFixtureList().get(0).setSensor(true);
+        setCollisionEffect(false);
         // register a callback to multiply the hero's speed by factor
-        _heroCollision = new CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite h, Contact c) {
                 Vector2 v = h._physBody.getLinearVelocity();
-                v.x *= factor;
-                v.y *= factor;
+                v.scl(factor);
                 h.updateVelocity(v.x, v.y);
             }
         };
@@ -203,9 +191,9 @@ public class Obstacle extends PhysicsSprite {
     public void setSpeedBoost(final float boostAmountX, final float boostAmountY,
             final float boostDuration) {
         // disable collisions on this obstacle
-        _physBody.getFixtureList().get(0).setSensor(true);
+        setCollisionEffect(false);
         // register a callback to change the hero's speed
-        _heroCollision = new CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(final PhysicsSprite h, Contact c) {
                 // boost the speed
@@ -237,30 +225,12 @@ public class Obstacle extends PhysicsSprite {
      * @param enable true if the hero can jump again, false otherwise
      */
     public void setReJump(boolean enable) {
-        _noJumpReenable = !enable;
-    }
-
-    /**
-     * Method to set an obstacle that modifies the enemy jump velocity.
-     * 
-     * @param x The new x velocity
-     * @param y The new y velocity
-     */
-    public void setEnemyJump(final float x, final float y) {
-        _enemyCollision = new CollisionCallback() {
-            @Override
-            public void go(PhysicsSprite ps, Contact c) {
-                Vector2 v = ps._physBody.getLinearVelocity();
-                v.y += y;
-                v.x += x;
-                ps.updateVelocity(v.x, v.y);
-            }
-        };
+        mNoJumpReenable = !enable;
     }
 
     /**
      * Make the object a trigger object, so that custom code will run when a
-     * hero runs over (or under) it
+     * hero collides with it
      * 
      * @param id identifier for the trigger
      * @param activationGoodies1 Number of type-1 goodies that must be collected
@@ -271,9 +241,12 @@ public class Obstacle extends PhysicsSprite {
      *            before this trigger works
      * @param activationGoodies4 Number of type-4 goodies that must be collected
      *            before this trigger works
+     * @param delay The time between when the collision happens, and when the
+     *            trigger code runs. Use 0 for immediately
      */
     public void setHeroCollisionTrigger(final int id, int activationGoodies1,
-            int activationGoodies2, int activationGoodies3, int activationGoodies4, final float delay) {
+            int activationGoodies2, int activationGoodies3, int activationGoodies4,
+            final float delay) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
@@ -281,31 +254,30 @@ public class Obstacle extends PhysicsSprite {
         setCollisionEffect(false);
 
         // register a callback
-        _heroCollision = new CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(final PhysicsSprite ps, Contact c) {
-                // Handle callback if this obstacle is a trigger, but only if
-                // the contact wasn't disabled (due to
-                // pass-through)
+                // Make sure the contact is active (it's not if this is a
+                // pass-through event)
                 if (c.isEnabled()) {
                     // check if trigger is activated, if so run Trigger code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= Level.sCurrent.mScore._goodiesCollected[i];
+                        match &= counts[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                     if (match) {
-                        if (delay <= 0) { 
-                        LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
-                                (Hero)ps);
+                        // run now, or delay?
+                        if (delay <= 0) {
+                            LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
+                                    (Hero)ps);
+                            return;
                         }
-                        else {
-                            Timer.schedule(new Task() {
-                                @Override
-                                public void run() {
-                                    LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
-                                            (Hero)ps);
-                                }}, delay);   
-                        }
-                        return;
+                        Timer.schedule(new Task() {
+                            @Override
+                            public void run() {
+                                LOL._game.onHeroCollideTrigger(id, LOL._game._currLevel,
+                                        Obstacle.this, (Hero)ps);
+                            }
+                        }, delay);
                     }
                 }
             }
@@ -313,8 +285,8 @@ public class Obstacle extends PhysicsSprite {
     }
 
     /**
-     * Make the object a trigger object, so that custom code will run when a
-     * enemy runs over (or under) it
+     * Make the object a trigger object, so that custom code will run when an
+     * enemy collides with it
      * 
      * @param id identifier for the trigger
      * @param activationGoodies1 Number of type-1 goodies that must be collected
@@ -325,10 +297,12 @@ public class Obstacle extends PhysicsSprite {
      *            before this trigger works
      * @param activationGoodies4 Number of type-4 goodies that must be collected
      *            before this trigger works
+     * @param delay The time between when the collision happens, and when the
+     *            trigger code runs. Use 0 for immediately
      */
-    public void setEnemyCollisionTrigger(final int id, final float delayDuration,
-            int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4) {
+    public void setEnemyCollisionTrigger(final int id, int activationGoodies1,
+            int activationGoodies2, int activationGoodies3, int activationGoodies4,
+            final float delay) {
         /**
          * Enemy triggers can require certain Goodie counts in order to run
          */
@@ -336,27 +310,25 @@ public class Obstacle extends PhysicsSprite {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
         };
 
-        _enemyCollision = new CollisionCallback() {
-
+        mEnemyCollision = new CollisionCallback() {
             @Override
             public void go(final PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _enemyTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
+                    match &= _enemyTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
-                    final Enemy e = (Enemy)ps;
                     // run the callback after a delay, or immediately?
-                    if (delayDuration <= 0) {
-                        LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel, Obstacle.this, e);
+                    if (delay <= 0) {
+                        LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel, Obstacle.this, (Enemy)ps);
                         return;
                     }
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
                             LOL._game.onEnemyCollideTrigger(id, LOL._game._currLevel,
-                                    Obstacle.this, e);
+                                    Obstacle.this, (Enemy)ps);
                         }
-                    }, delayDuration);
+                    }, delay);
                 }
             }
         };
@@ -364,7 +336,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Make the object a trigger object, so that custom code will run when a
-     * projectile hits it.
+     * projectile collides with it.
      * 
      * @param id identifier for the trigger
      * @param activationGoodies1 Number of type-1 goodies that must be collected
@@ -382,12 +354,12 @@ public class Obstacle extends PhysicsSprite {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
         };
 
-        _projectileCollision = new CollisionCallback() {
+        mProjectileCollision = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _projectileTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
+                    match &= _projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
                     LOL._game.onProjectileCollideTrigger(id, LOL._game._currLevel, Obstacle.this,
                             (Projectile)ps);
@@ -404,27 +376,7 @@ public class Obstacle extends PhysicsSprite {
      *            milliseconds
      */
     public void setCollideSound(String sound, long delay) {
-        _collideSound = Media.getSound(sound);
-        _collideSoundDelay = delay * 1000000;
-    }
-
-    /**
-     * Store an obstacle that is the peer of this obstacle. This is useful when
-     * we want to allow one obstacle's trigger to cause another obstacle to be
-     * changed.
-     * 
-     * @param peer The "other" obstacle
-     */
-    public void setParent(Obstacle peer) {
-        _peer = peer;
-    }
-
-    /**
-     * Return an obstacle's peer, as was saved earlier
-     * 
-     * @return The peer obstacle
-     */
-    public Obstacle getPeer() {
-        return _peer;
+        mCollideSound = Media.getSound(sound);
+        mCollideSoundDelay = delay * 1000000;
     }
 }

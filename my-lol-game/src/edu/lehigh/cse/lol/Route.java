@@ -35,27 +35,27 @@ public class Route {
     /**
      * The X coordinates of the points in the route
      */
-    float[] _xIndices;
+    float[] mXIndices;
 
     /**
      * The Y coordinates of the points in the route
      */
-    float[] _yIndices;
+    float[] mYIndices;
 
     /**
      * The speed at which the entity should move along the route
      */
-    float _velocity;
+    float mVelocity;
 
     /**
      * The maximum number of points in this route
      */
-    int _size;
+    int mSize;
 
     /**
      * The current number of points that have been set
      */
-    int _points;
+    int mPoints;
 
     /**
      * Define a new path, by specifying the number of points in the path. Note
@@ -67,9 +67,9 @@ public class Route {
     public Route(int numberOfPoints) {
         // NB: it doesn't make sense to have a route with only one point!
         assert (numberOfPoints > 1);
-        _size = numberOfPoints;
-        _xIndices = new float[_size];
-        _yIndices = new float[_size];
+        mSize = numberOfPoints;
+        mXIndices = new float[mSize];
+        mYIndices = new float[mSize];
     }
 
     /**
@@ -80,9 +80,9 @@ public class Route {
      * @param y Y value of the new coordinate
      */
     public Route to(float x, float y) {
-        _xIndices[_points] = x;
-        _yIndices[_points] = y;
-        _points++;
+        mXIndices[mPoints] = x;
+        mYIndices[mPoints] = y;
+        mPoints++;
         return this;
     }
 }

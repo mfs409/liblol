@@ -572,13 +572,13 @@ public abstract class PhysicsSprite implements Renderable {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (Level.sCurrent.mTilt._accelEntities.contains(this))
+        if (Level.sCurrent.mTilt.mAccelEntities.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt entities
         if (_physBody.getType() != BodyType.DynamicBody)
             _physBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mTilt._accelEntities.add(this);
+        Level.sCurrent.mTilt.mAccelEntities.add(this);
         // turn off sensor behavior, so this collides with stuff...
         _physBody.getFixtureList().get(0).setSensor(false);
     }
@@ -698,7 +698,7 @@ public abstract class PhysicsSprite implements Renderable {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= _touchTriggerActivation[i] <= Level.sCurrent.mScore._goodiesCollected[i];
+                    match &= _touchTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 // if so, run the trigger
                 if (match) {
                     if (disappear)

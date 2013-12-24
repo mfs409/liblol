@@ -737,7 +737,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level.sCurrent.mScore._gameOver)
+                if (!Level.sCurrent.mScore.mGameOver)
                     LOL._game.onTimeTrigger(timerId, LOL._game._currLevel);
             }
         }, howLong);
@@ -756,7 +756,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level.sCurrent.mScore._gameOver)
+                if (!Level.sCurrent.mScore.mGameOver)
                     LOL._game.onEnemyTimeTrigger(timerId, LOL._game._currLevel, enemy);
             }
         }, howLong);
