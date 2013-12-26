@@ -74,12 +74,12 @@ public class Physics {
             return;
         // handle sticky obstacles... only do something if we're hitting the
         // obstacle from the right direction
-        if ((sticky.mIsStickyTop && other.getYPosition() >= sticky.getYPosition() + sticky.mHeight)
-                || (sticky.mIsStickyLeft && other.getXPosition() + other.mWidth <= sticky
+        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
+                || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky
                         .getXPosition())
-                || (sticky.mIsStickyRight && other.getXPosition() >= sticky.getXPosition()
-                        + sticky.mWidth)
-                || (sticky.mIsStickyBottom && other.getYPosition() + other.mHeight <= sticky
+                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition()
+                        + sticky.mSize.x)
+                || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky
                         .getYPosition())) {
             // create distance and weld joints... somehow, the combination is
             // needed to get this to work. Note that this function runs during
@@ -177,12 +177,12 @@ public class Physics {
 
                 // handle sticky obstacles... only do something if at least one
                 // entity is a sticky entity
-                if (gfoA.mIsStickyBottom || gfoA.mIsStickyTop || gfoA.mIsStickyLeft
-                        || gfoA.mIsStickyRight) {
+                if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2]
+                        || gfoA.mIsSticky[3]) {
                     handleSticky(gfoA, gfoB, contact);
                     return;
-                } else if (gfoB.mIsStickyBottom || gfoB.mIsStickyTop || gfoB.mIsStickyLeft
-                        || gfoB.mIsStickyRight) {
+                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2]
+                        || gfoB.mIsSticky[3]) {
                     handleSticky(gfoB, gfoA, contact);
                     return;
                 }

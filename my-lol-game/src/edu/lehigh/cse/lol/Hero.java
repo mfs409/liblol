@@ -283,9 +283,9 @@ public class Hero extends PhysicsSprite {
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // NB: we currently ignore SpriteId.PROJECTILE
-        if (other.mSpriteType == SpriteId.ENEMY)
+        if (other instanceof Enemy)
             onCollideWithEnemy((Enemy)other);
-        else if (other.mSpriteType == SpriteId.DESTINATION)
+        else if (other instanceof Destination)
             onCollideWithDestination((Destination)other);
         else if (other.mSpriteType == SpriteId.OBSTACLE)
             onCollideWithObstacle((Obstacle)other, contact);
@@ -457,7 +457,7 @@ public class Hero extends PhysicsSprite {
      * @return The hero that was created
      */
     public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = (width > height) ? width : height;
+        float radius = Math.max(width,  height);
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(h, 0);

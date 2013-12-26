@@ -93,14 +93,9 @@ public abstract class PhysicsSprite implements Renderable {
     int mZIndex = 0;
 
     /**
-     * The width of the PhysicsSprite
+     * The dimensions of the PhysicsSprite... x is width, y is height
      */
-    float mWidth;
-
-    /**
-     * The height of the PhysicsSprite
-     */
-    float mHeight;
+    Vector2 mSize = new Vector2();
 
     /**
      * Does this entity follow a route? If so, the RouteDriver will be used to
@@ -178,12 +173,7 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * Animation support: the width of the disappearance animation
      */
-    float mDisappearAnimateWidth;
-
-    /**
-     * Animation support: the height of the disappearance animation
-     */
-    float mDisappearAnimateHeight;
+    Vector2 mDisappearAnimateSize = new Vector2();
 
     /**
      * A vector for computing hover placement
@@ -191,34 +181,20 @@ public abstract class PhysicsSprite implements Renderable {
     Vector3 mHover = new Vector3();
 
     /**
-     * Track if heroes stick to the top of this PhysicsSprite
+     * Track if heroes stick to this PhysicsSprite. The array has 4 positions,
+     * corresponding to top, right, bottom, left
      */
-    boolean mIsStickyTop;
-
-    /**
-     * Track if heroes stick to the bottom of this PhysicsSprite
-     */
-    boolean mIsStickyBottom;
-
-    /**
-     * Track if heroes stick to the left side of this PhysicsSprite
-     */
-    boolean mIsStickyLeft;
-
-    /**
-     * Track if heroes stick to the right side of this PhysicsSprite
-     */
-    boolean mIsStickyRight;
+    boolean[] mIsSticky = new boolean[4];
 
     /**
      * Sound to play when this disappears
      */
-    protected Sound mDisappearSound = null;
+    protected Sound mDisappearSound;
 
     /**
      * Disable 3 of 4 sides of a PhysicsSprite, to allow walking through walls.
-     * The value reflects the side that remains active. 0 is bottom, 1 is right,
-     * 2 is top, 3 is left
+     * The value reflects the side that remains active. 0 is top, 1 is right, 2
+     * is bottom, 3 is left
      */
     int mIsOneSided = -1;
 
@@ -278,8 +254,8 @@ public abstract class PhysicsSprite implements Renderable {
     PhysicsSprite(String imgName, SpriteId id, float width, float height) {
         mSpriteType = id;
         mAnimator = new AnimationDriver(imgName);
-        mWidth = width;
-        mHeight = height;
+        mSize.x = width;
+        mSize.y = height;
     }
 
     /**
@@ -370,9 +346,8 @@ public abstract class PhysicsSprite implements Renderable {
                 }
             }
             if (tr != null)
-                sb.draw(tr, pos.x - mWidth / 2, pos.y - mHeight / 2, mWidth / 2,
-                        mHeight / 2, mWidth, mHeight, 1, 1,
-                        MathUtils.radiansToDegrees * mBody.getAngle());
+                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2,
+                        mSize.x, mSize.y, 1, 1, MathUtils.radiansToDegrees * mBody.getAngle());
         }
     }
 
@@ -390,11 +365,11 @@ public abstract class PhysicsSprite implements Renderable {
     void setBoxPhysics(float density, float elasticity, float friction, BodyType type,
             boolean isProjectile, float x, float y) {
         PolygonShape boxPoly = new PolygonShape();
-        boxPoly.setAsBox(mWidth / 2, mHeight / 2);
+        boxPoly.setAsBox(mSize.x / 2, mSize.y / 2);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
-        boxBodyDef.position.x = x + mWidth / 2;
-        boxBodyDef.position.y = y + mHeight / 2;
+        boxBodyDef.position.x = x + mSize.x / 2;
+        boxBodyDef.position.y = y + mSize.y / 2;
         mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
@@ -429,14 +404,14 @@ public abstract class PhysicsSprite implements Renderable {
      * @param radius The radius of the underlying circle
      */
     void setCirclePhysics(float density, float elasticity, float friction, BodyType type,
-            boolean isProjectile, float x, float y, float r) {
+            boolean isProjectile, float x, float y, float radius) {
         mIsCircle = true;
         CircleShape c = new CircleShape();
-        c.setRadius(r);
+        c.setRadius(radius);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
-        boxBodyDef.position.x = x + mWidth / 2;
-        boxBodyDef.position.y = y + mHeight / 2;
+        boxBodyDef.position.x = x + mSize.x / 2;
+        boxBodyDef.position.y = y + mSize.y / 2;
         mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
@@ -528,7 +503,7 @@ public abstract class PhysicsSprite implements Renderable {
      * @return x coordinate of bottom left corner
      */
     public float getXPosition() {
-        return mBody.getPosition().x - mWidth / 2;
+        return mBody.getPosition().x - mSize.x / 2;
     }
 
     /**
@@ -537,7 +512,7 @@ public abstract class PhysicsSprite implements Renderable {
      * @return y coordinate of bottom left corner
      */
     public float getYPosition() {
-        return mBody.getPosition().y - mHeight / 2;
+        return mBody.getPosition().y - mSize.y / 2;
     }
 
     /**
@@ -546,7 +521,7 @@ public abstract class PhysicsSprite implements Renderable {
      * @return the entity's width
      */
     public float getWidth() {
-        return mWidth;
+        return mSize.x;
     }
 
     /**
@@ -555,7 +530,7 @@ public abstract class PhysicsSprite implements Renderable {
      * @return the entity's height
      */
     public float getHeight() {
-        return mHeight;
+        return mSize.y;
     }
 
     /**
@@ -597,17 +572,16 @@ public abstract class PhysicsSprite implements Renderable {
         mVisible = false;
         mBody.setActive(false);
 
-        // play a sound when we hit this thing?
+        // play a sound when we remove this thing?
         if (mDisappearSound != null && !quiet)
             mDisappearSound.play();
 
         // This is a bit slimy... we draw an obstacle here, so that we have a
-        // clean hook into the animation system, but
-        // we disable its physics
+        // clean hook into the animation system, but we disable its physics
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
-            Obstacle o = Obstacle.makeAsBox(x, y, mDisappearAnimateWidth, mDisappearAnimateHeight,
+            Obstacle o = Obstacle.makeAsBox(x, y, mDisappearAnimateSize.x, mDisappearAnimateSize.y,
                     "");
             o.mBody.setActive(false);
             o.setDefaultAnimation(mDisappearAnimation);
@@ -655,10 +629,7 @@ public abstract class PhysicsSprite implements Renderable {
                 mBody.setType(BodyType.DynamicBody);
 
         // change its velocity
-        Vector2 v = mBody.getLinearVelocity();
-        v.y = y;
-        v.x = x;
-        updateVelocity(v.x, v.y);
+        updateVelocity(x, y);
         // Disable sensor, or else this entity will go right through walls
         setCollisionEffect(true);
     }
@@ -720,7 +691,7 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Make this entity move according to a route. The entity will loop back to
+     * Make this entity move according to a route. The entity can loop back to
      * the beginning of the route.
      * 
      * @param route The route to follow.
@@ -777,9 +748,13 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Call this on an Entity to make it pokeable Poke the entity, then poke the
-     * screen, and the entity will move to the location that was pressed. Poke
-     * the entity twice in rapid succession to delete it.
+     * Call this on an Entity to make it pokeable. Poke the entity, then poke
+     * the screen, and the entity will move to the location that was pressed.
+     * Poke the entity twice in rapid succession to delete it.
+     * 
+     * @param deleteThresholdMillis If two touches happen within this many
+     *            milliseconds, the entity will be deleted. Use 0 to disable
+     *            this "delete by double-touch" feature.
      */
     public void setPokeToPlace(long deleteThresholdMillis) {
         // convert threshold to nanoseconds
@@ -860,11 +835,20 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Indicate that the poke path mechanism should cause the entity to move at
-     * a constant velocity, rather than a velocity scaled to the distance of
-     * travel
+     * Configure an entity so that touching an arbitrary point on the screen
+     * makes the entity move toward that point. The behavior is similar to
+     * pokeToPlace, in that one touches the entity, then where she wants the
+     * entity to go. However, this is much more configurable. Note that while
+     * there are three boolean parameters, all 8 combinations don't necessarily
+     * work in interesting ways.
      * 
      * @param velocity The constant velocity for poke movement
+     * @param oncePerTouch After starting a path, does the player need to
+     *            re-select (re-touch) the entity before giving it a new
+     *            destinaion point?
+     * @param updateOnMove Should drags cause the destination point to change?
+     * @param stopOnUp When the touch is released, should the entity stop
+     *            moving, or continue until it reaches the release point?
      */
     public void setPokePath(final float velocity, final boolean oncePerTouch,
             final boolean updateOnMove, final boolean stopOnUp) {
@@ -878,7 +862,7 @@ public abstract class PhysicsSprite implements Renderable {
                     @Override
                     public void onDown(float x, float y) {
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(
-                                x - mWidth / 2, y - mHeight / 2);
+                                x - mSize.x / 2, y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
                         // clear the pokePathEntity, so a future touch starts
@@ -907,8 +891,7 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * Save the animation sequence and start it right away
      * 
-     * @param cells which cells of the sprite to show
-     * @param durations duration for each cell
+     * @param a The animation do display
      */
     public void setDefaultAnimation(Animation a) {
         mDefaultAnimation = a;
@@ -920,21 +903,21 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * Save an animation sequence for showing when we get rid of a sprite
      * 
-     * @param cells which cells of the sprite to show
-     * @param durations duration for each cell
-     * @param imageName Name of the image to display for the disappear animation
-     * @param offsetX X offset of top left corner relative to hero top left
-     * @param offsetY Y offset of top left corner relative to hero top left
-     * @param width Width of the animation image
-     * @param height Height of the animation image
+     * @param a The animation to display
+     * @param offsetX We can offset the animation from the bottom left of the
+     *            sprite (useful if animation is larger than sprite dimensions).
+     *            This is the x offset.
+     * @param offsetY The Y offset (see offsetX for more information)
+     * @param width The width of the frames of this animation
+     * @param height The height of the frames of this animation
      */
     public void setDisappearAnimation(Animation a, float offsetX, float offsetY, float width,
             float height) {
         mDisappearAnimation = a;
         mDisappearAnimateOffset.x = offsetX;
         mDisappearAnimateOffset.y = offsetY;
-        mDisappearAnimateWidth = width;
-        mDisappearAnimateHeight = height;
+        mDisappearAnimateSize.x = width;
+        mDisappearAnimateSize.y = height;
     }
 
     /**
@@ -983,11 +966,22 @@ public abstract class PhysicsSprite implements Renderable {
         mAnimator.updateImage(imgName);
     }
 
+    /**
+     * Change the size of an entity, and/or change its position
+     * 
+     * @param x The new X coordinate of its bottom left corner
+     * @param y The new Y coordinate of its bototm left corner
+     * @param width The new width of the entity
+     * @param height The new height of the entity
+     */
     public void resize(float x, float y, float width, float height) {
-        mWidth = width;
-        mHeight = height;
+        // set new height and width
+        mSize.x = width;
+        mSize.y = height;
+        // read old body information
         Body oldBody = mBody;
         Fixture oldFix = oldBody.getFixtureList().get(0);
+        // make a new body
         if (mIsCircle) {
             setCirclePhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(),
                     oldBody.getType(), oldBody.isBullet(), x, y, (width > height) ? width / 2
@@ -1002,9 +996,8 @@ public abstract class PhysicsSprite implements Renderable {
         mBody.setGravityScale(oldBody.getGravityScale());
         mBody.setLinearDamping(oldBody.getLinearDamping());
         mBody.setLinearVelocity(oldBody.getLinearVelocity());
-        // now disable the old body
+        // disable the old body
         oldBody.setActive(false);
-
     }
 
     /**
@@ -1014,6 +1007,9 @@ public abstract class PhysicsSprite implements Renderable {
      *            shrink each second
      * @param shrinkY The number of pixels by which the Y dimension should
      *            shrink each second
+     * @param keepCentered Should the entity's center point stay the same as it
+     *            shrinks (true), or should its bototm left corner stay i?n the
+     *            same position (false)
      */
     public void setShrinkOverTime(final float shrinkX, final float shrinkY,
             final boolean keepCentered) {
@@ -1029,30 +1025,12 @@ public abstract class PhysicsSprite implements Renderable {
                         x = getXPosition();
                         y = getYPosition();
                     }
-                    float w = mWidth - shrinkX / 20;
-                    float h = mHeight - shrinkY / 20;
+                    float w = mSize.x - shrinkX / 20;
+                    float h = mSize.y - shrinkY / 20;
+                    // if the area remains >0, resize it and schedule a timer to
+                    // run again
                     if ((w > 0) && (h > 0)) {
-                        mWidth = w;
-                        mHeight = h;
-                        Body oldBody = mBody;
-                        Fixture oldFix = oldBody.getFixtureList().get(0);
-                        if (mIsCircle) {
-                            setCirclePhysics(oldFix.getDensity(), oldFix.getRestitution(),
-                                    oldFix.getFriction(), oldBody.getType(), oldBody.isBullet(),
-                                    x, y, (w > h) ? w / 2 : h / 2);
-                        } else {
-                            setBoxPhysics(oldFix.getDensity(), oldFix.getRestitution(),
-                                    oldFix.getFriction(), oldBody.getType(), oldBody.isBullet(),
-                                    x, y);
-                        }
-                        // clone forces
-                        mBody.setAngularVelocity(oldBody.getAngularVelocity());
-                        mBody.setTransform(mBody.getPosition(), oldBody.getAngle());
-                        mBody.setGravityScale(oldBody.getGravityScale());
-                        mBody.setLinearDamping(oldBody.getLinearDamping());
-                        mBody.setLinearVelocity(oldBody.getLinearVelocity());
-                        // now disable the old body
-                        oldBody.setActive(false);
+                        resize(x, y, w, h);
                         Timer.schedule(this, .05f);
                     } else {
                         remove(false);
@@ -1067,10 +1045,12 @@ public abstract class PhysicsSprite implements Renderable {
      * Indicate that this entity should hover at a specific location on the
      * screen, rather than being placed at some point on the level itself. Note
      * that the coordinates to this command are the center position of the
-     * hovering entity.
+     * hovering entity. Also, be careful about using hover with zoom... hover is
+     * relative to screen coordinates (pixels), not world coordinates, so it's
+     * going to look funny to use this with zoom
      * 
-     * @param x the X coordinate where the entity should appear
-     * @param y the Y coordinate where the entity should appear
+     * @param x the X coordinate (in pixels) where the entity should appear
+     * @param y the Y coordinate (in pixels) where the entity should appear
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
@@ -1089,11 +1069,7 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Indicate that this entity should have a force applied to it at all times,
-     * e.g., to defy gravity.
-     * 
-     * @param x The magnitude of the force in the X direction
-     * @param y The magnitude of the force in the Y direction
+     * Indicate that this entity should be immune to the force of gravity
      */
     public void setGravityDefy() {
         mBody.setGravityScale(0);
@@ -1101,12 +1077,16 @@ public abstract class PhysicsSprite implements Renderable {
 
     /**
      * Make this obstacle sticky, so that a hero will stick to it
+     * 
+     * @param top Is the top sticky?
+     * @param right Is the right side sticky?
+     * @param bottom Is the bottom sticky?
+     * @param left Is the left side sticky?
      */
     public void setSticky(boolean top, boolean right, boolean bottom, boolean left) {
-        mIsStickyTop = top;
-        mIsStickyRight = right;
-        mIsStickyBottom = bottom;
-        mIsStickyLeft = left;
+        mIsSticky = new boolean[] {
+                top, right, bottom, left
+        };
     }
 
     /**
@@ -1119,7 +1099,9 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Indicate that touching this hero should make it throw a projectile
+     * Indicate that touching this entity should make a hero throw a projectile
+     * 
+     * @param h The hero who should throw a projectile when this is touched
      */
     public void setTouchToThrow(final Hero h) {
         mTouchResponder = new TouchAction() {
@@ -1151,18 +1133,22 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * By default, non-hero entities are not subject to gravity until they are
-     * given a path, velocity, or other form of motion. This lets an entity
-     * simply fall.
+     * By default, non-hero entities are not subject to gravity or forces until
+     * they are given a path, velocity, or other form of motion. This lets an
+     * entity be subject to forces... in practice, using this in a side-scroller
+     * means the entity will fall to the ground.
      */
     public void setCanFall() {
         mBody.setType(BodyType.DynamicBody);
     }
 
     /**
-     * Specify that this enemy is supposed to chase the hero
+     * Specify that this entity is supposed to chase another entity
      * 
-     * @param speed The speed with which the enemy chases the hero
+     * @param speed The speed with which it chases the other entity
+     * @param target The entity to chase
+     * @param chaseInX Should the entity change its x velocity?
+     * @param chaseInY Should the entity change its y velocity?
      */
     public void setChaseSpeed(final float speed, final PhysicsSprite target,
             final boolean chaseInX, final boolean chaseInY) {
@@ -1176,32 +1162,29 @@ public abstract class PhysicsSprite implements Renderable {
                 // don't run if this sprite isn't visible
                 if (!mVisible)
                     return;
-
-                // chase the chaseTarget
-                // compute vector between hero and enemy
+                // compute vector between entities, and normalize it
                 float x = target.mBody.getPosition().x - mBody.getPosition().x;
                 float y = target.mBody.getPosition().y - mBody.getPosition().y;
-
-                // normalize it
                 float denom = (float)Math.sqrt(x * x + y * y);
                 x /= denom;
                 y /= denom;
                 // multiply by speed
                 x *= speed;
                 y *= speed;
+                // remove changes for disabled directions
                 if (!chaseInX)
                     x = mBody.getLinearVelocity().x;
                 if (!chaseInY)
                     y = mBody.getLinearVelocity().y;
-                // set Enemy velocity accordingly
+                // apply velocity
                 updateVelocity(x, y);
             }
         });
     }
 
     /**
-     * Indicate that this hero's rotation should be determined by the direction
-     * in which it is traveling
+     * Indicate that this entity's rotation should be determined by the
+     * direction in which it is traveling
      */
     public void setRotationByDirection() {
         Level.sCurrent.mRepeatEvents.add(new Action() {
@@ -1219,13 +1202,13 @@ public abstract class PhysicsSprite implements Renderable {
     }
 
     /**
-     * Set the z plane for this sprite
+     * Set the z plane for this entity
      * 
      * @param zIndex The z plane. Values range from -2 to 2. The default is 0.
      */
     public void setZIndex(int zIndex) {
         Level.sCurrent.removeSprite(this, mZIndex);
-        this.mZIndex = zIndex;
+        mZIndex = zIndex;
         Level.sCurrent.addSprite(this, mZIndex);
     }
 }

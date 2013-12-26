@@ -149,7 +149,7 @@ public class Obstacle extends PhysicsSprite {
      * @return The obstacle, so that it can be further modified
      */
     public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = (width > height) ? width : height;
+        float radius = Math.max(width,  height);
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(o, 0);

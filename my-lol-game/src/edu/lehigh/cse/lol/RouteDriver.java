@@ -59,8 +59,8 @@ class RouteDriver {
 
         // this is how we initialize a route driver:
         // first, move to the starting point
-        mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mWidth / 2,
-                mMyRoute.mYIndices[0] + mEntity.mHeight / 2, 0);
+        mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mSize.x / 2,
+                mMyRoute.mYIndices[0] + mEntity.mSize.y / 2, 0);
         // second, indicate that we are working on goal #1, and set velocity
         startRoute();
         // and indicate that we aren't all done yet
@@ -100,8 +100,8 @@ class RouteDriver {
             if (mNextRouteGoal == mMyRoute.mPoints) {
                 // reset if it's a loop, else terminate Route
                 if (mRouteLoop) {
-                    mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mWidth / 2,
-                            mMyRoute.mYIndices[0] + mEntity.mHeight / 2, 0);
+                    mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mSize.x / 2,
+                            mMyRoute.mYIndices[0] + mEntity.mSize.y / 2, 0);
                     startRoute();
                     return;
                 } else {

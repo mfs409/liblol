@@ -145,7 +145,7 @@ public class Projectile extends PhysicsSprite {
             boolean isCircle) {
         super(imgName, SpriteId.PROJECTILE, width, height);
         if (isCircle) {
-            float radius = (width > height) ? width : height;
+            float radius = Math.max(width,  height);
             setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
         } else {
             setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
@@ -327,7 +327,7 @@ public class Projectile extends PhysicsSprite {
     protected void onCollide(PhysicsSprite other, Contact contact) {
         // if this is an obstacle, check if it is a projectile trigger, and if
         // so, do the callback
-        if (other.mSpriteType == SpriteId.OBSTACLE) {
+        if (other instanceof Obstacle) {
             Obstacle o = (Obstacle)other;
             if (o.mProjectileCollision != null) {
                 o.mProjectileCollision.go(this, contact);
@@ -335,7 +335,7 @@ public class Projectile extends PhysicsSprite {
                 return;
             }
         }
-        if (other.mSpriteType == SpriteId.PROJECTILE) {
+        if (other instanceof Projectile) {
             if (!sDisappearOnCollide)
                 return;
         }
