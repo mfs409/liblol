@@ -31,6 +31,7 @@ import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -45,8 +46,9 @@ import com.badlogic.gdx.utils.XmlReader.Element;
  * SVG allows the game designer to load SVG line drawings into a game. SVG line
  * drawings can be made in Inkscape. In LOL, we do not use line drawings to the
  * full extend. We only use them to define a set of invisible lines for a
- * immobile obstacle. You should draw a picture on top of your line drawing, so
- * that the player knows that there is a physics entity on the screen.
+ * simple, stationary obstacle. You should draw a picture on top of your line
+ * drawing, so that the player knows that there is a physics entity on the
+ * screen.
  */
 public class SVG {
     /**
@@ -55,66 +57,35 @@ public class SVG {
     private FixtureDef mFixture;
 
     /**
-     * The offset, in the X dimension, by which we shift the line drawing
+     * The offset by which we shift the line drawing
      */
-    private float mUserTransformX = 0f;
+    private Vector2 mUserTransform = new Vector2(0, 0);
 
     /**
-     * The offset, in the Y dimension, by which we shift the line drawing
+     * The amount by which we stretch the drawing
      */
-    private float mUserTransformY = 0f;
-
-    /**
-     * The amount by which we stretch the drawing in the X dimension
-     */
-    private float mUserStretchX = 1f;
-
-    /**
-     * The amount by which we stretch the drawing in the Y dimension
-     */
-    private float mUserStretchY = 1f;
+    private Vector2 mUserStretch = new Vector2(1, 1);
 
     /**
      * SVG files can have an internal "translate" field... while parsing, we
      * save the field here
      */
-    private float mSvgTranslateX = 0f;
+    private Vector2 mSvgTranslate = new Vector2(0, 0);
 
     /**
-     * SVG files can have an internal "translate" field... while parsing, we
-     * save the field here
+     * Coordinate of the last point we drew
      */
-    private float mSvgTranslateY = 0f;
+    private Vector2 mLast = new Vector2(0, 0);
 
     /**
-     * X coordinate of the last point we drew
+     * Coordinate of the first point we drew
      */
-    private float mLastX = 0;
-
-    /**
-     * Y coordinate of the last point we drew
-     */
-    private float mLastY = 0;
-
-    /**
-     * X coordinate of the first point we drew
-     */
-    private float mFirstX = 0;
-
-    /**
-     * Y coordinate of the first point we drew
-     */
-    private float mFirstY = 0;
+    private Vector2 mFirst = new Vector2(0, 0);
 
     /**
      * X coordinate of the current point being drawn
      */
-    private float mNextX = 0;
-
-    /**
-     * Y coordinate of the current point being drawn
-     */
-    private float mNextY = 0;
+    private Vector2 mCurr = new Vector2(0, 0);
 
     /**
      * The parser is essentially a finite state machine. The states are 0 for
@@ -137,8 +108,12 @@ public class SVG {
      */
     private int mMode = 0;
 
-    class SVGSprite extends PhysicsSprite
-    {
+    /**
+     * When we draw a line, we must make it a PhysicsSprite or else hero
+     * collisions with the SVG won't enable it to re-jump. This class is a very
+     * lightweight PhysicsSprite that serves our need.
+     */
+    class SVGSprite extends PhysicsSprite {
         SVGSprite(String imgName, float width, float height) {
             super(imgName, width, height);
         }
@@ -172,15 +147,11 @@ public class SVG {
         mFixture.friction = friction;
 
         // specify transpose and stretch information
-        mUserStretchX = stretchX / Physics.PIXEL_METER_RATIO;
-        mUserStretchY = stretchY / Physics.PIXEL_METER_RATIO;
-        mUserTransformX = xposeX;
-        mUserTransformY = xposeY;
+        mUserStretch.x = stretchX / Physics.PIXEL_METER_RATIO;
+        mUserStretch.y = stretchY / Physics.PIXEL_METER_RATIO;
+        mUserTransform.x = xposeX;
+        mUserTransform.y = xposeY;
     }
-
-    /*
-     * INTERNAL METHODS RELATED TO PARSING
-     */
 
     /**
      * When we encounter a "transform" attribute, we use this code to parse it,
@@ -198,8 +169,8 @@ public class SVG {
             String delims = "[,]+";
             String[] points = x2.split(delims);
             try {
-                mSvgTranslateX = Float.valueOf(points[0]).floatValue();
-                mSvgTranslateY = Float.valueOf(points[1]).floatValue();
+                mSvgTranslate.x = Float.valueOf(points[0]).floatValue();
+                mSvgTranslate.y = Float.valueOf(points[1]).floatValue();
             } catch (NumberFormatException nfs) {
             }
         }
@@ -211,7 +182,7 @@ public class SVG {
      * stores the points and information about how to connect them. The "d" is a
      * single string, which we parse in this file
      * 
-     * @param d
+     * @param d The string that describes the path
      */
     private void processD(String d) {
         // split the string into characters and floating point values
@@ -234,8 +205,7 @@ public class SVG {
             // beginning of a (set of) curve definitions, relative mode
             //
             // NB: we coerce curves into lines by ignoring the first four
-            // parameters... this leaves us with just the
-            // endpoints
+            // parameters... this leaves us with just the endpoints
             else if (s.equals("c")) {
                 mMode = 2;
                 mSwallow = 4;
@@ -243,10 +213,10 @@ public class SVG {
             // end of path, relative mode
             else if (s.equals("z")) {
                 // draw a connecting line to complete the shape
-                addLine((mUserStretchX * (mLastX + mSvgTranslateX) + mUserTransformX),
-                        (mUserStretchY * (mLastY + mSvgTranslateY) + mUserTransformY),
-                        (mUserStretchX * (mFirstX + mSvgTranslateX) + mUserTransformX),
-                        (mUserStretchY * (mFirstY + mSvgTranslateY) + mUserTransformY));
+                addLine((mUserStretch.x * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
+                        (mUserStretch.y * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
+                        (mUserStretch.x * (mFirst.x + mSvgTranslate.x) + mUserTransform.x),
+                        (mUserStretch.y * (mFirst.y + mSvgTranslate.y) + mUserTransform.y));
             }
             // beginning of a (set of) line definitions, relative mode
             else if (s.equals("l")) {
@@ -274,38 +244,38 @@ public class SVG {
                         // if it's the initial x, save it
                         if (mState == -2) {
                             mState = -1;
-                            mLastX = val;
-                            mFirstX = val;
+                            mLast.x = val;
+                            mFirst.x = val;
                         }
                         // if it's the initial y, save it... can't draw a line
                         // yet, because we have 1 endpoint
                         else if (mState == -1) {
                             mState = 0;
-                            mLastY = val;
-                            mFirstY = val;
+                            mLast.y = val;
+                            mFirst.y = val;
                         }
                         // if it's an X value, save it
                         else if (mState == 0) {
                             if (absolute)
-                                mNextX = val;
+                                mCurr.x = val;
                             else
-                                mNextX = mLastX + val;
+                                mCurr.x = mLast.x + val;
                             mState = 1;
                         }
                         // if it's a Y value, save it and draw a line
                         else if (mState == 1) {
                             mState = 0;
                             if (absolute)
-                                mNextY = val;
+                                mCurr.y = val;
                             else
-                                mNextY = mLastY - val;
+                                mCurr.y = mLast.y - val;
                             // draw the line
-                            addLine((mUserStretchX * (mLastX + mSvgTranslateX) + mUserTransformX),
-                                    (mUserStretchY * (mLastY + mSvgTranslateY) + mUserTransformY),
-                                    (mUserStretchX * (mNextX + mSvgTranslateX) + mUserTransformX),
-                                    (mUserStretchY * (mNextY + mSvgTranslateY) + mUserTransformY));
-                            mLastX = mNextX;
-                            mLastY = mNextY;
+                            addLine((mUserStretch.x * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
+                                    (mUserStretch.y * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
+                                    (mUserStretch.x * (mCurr.x + mSvgTranslate.x) + mUserTransform.x),
+                                    (mUserStretch.y * (mCurr.y + mSvgTranslate.y) + mUserTransform.y));
+                            mLast.x = mCurr.x;
+                            mLast.y = mCurr.y;
                             // if we are in curve mode, reinitialize the
                             // swallower
                             if (mMode == 2)
@@ -327,7 +297,7 @@ public class SVG {
      * hack, in that we create a simple Box2d Edge, and then we make an
      * invisible PhysicsSprite that we connect to the Edge, so that LOL
      * collision detection works correctly. There are no images being displayed,
-     * and this is an "SVG" entity, not an "Obstacle"
+     * and this is not a proper "Obstacle"
      * 
      * @param x1 X coordinate of first endpoint
      * @param y1 Y coordinate of first endpoint
@@ -364,7 +334,7 @@ public class SVG {
         // since we don't overload render()... this is invisible.
         Level.sCurrent.addSprite(invis, 0);
     }
-    
+
     /**
      * The main parse routine. We slurp the file into an XML DOM object, and
      * then iterate over it, finding the <path>s within the <g>, and processing
