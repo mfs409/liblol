@@ -29,21 +29,68 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * RouteDriver is an internal class, used by LOL to determine placement for an
+ * Entity whose motion is controlled by a Route.
+ */
 class RouteDriver {
-    Route mMyRoute;
 
-    float mRouteVelocity;
+    /**
+     * The route that is being applied
+     */
+    private Route mRoute;
 
-    boolean mRouteLoop;
+    /**
+     * The entity to which the route is being applied
+     */
+    private PhysicsSprite mEntity;
 
-    Vector2 mRouteVec = new Vector2();
+    /**
+     * The speed at which the entity moves along the route
+     */
+    private float mRouteVelocity;
 
-    boolean mRouteDone;
+    /**
+     * When the entity reaches the end of the route, should it start again?
+     */
+    private boolean mRouteLoop;
 
-    int mNextRouteGoal;
+    /**
+     * A temp for computing position
+     */
+    private Vector2 mRouteVec = new Vector2();
 
-    PhysicsSprite mEntity;
+    /**
+     * Is the route still running?
+     */
+    private boolean mRouteDone;
 
+    /**
+     * Index of the next point in the route
+     */
+    private int mNextRouteGoal;
+
+    /**
+     * The constructor actually gets the route motion started
+     * 
+     * @param route The route to apply
+     * @param velocity The speed at which the entity moves
+     * @param loop Should the route repeat when it completes?
+     * @param entity The entity to which the route should be applied
+     */
+    RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity) {
+        mRoute = route;
+        mRouteVelocity = velocity;
+        mRouteLoop = loop;
+        mEntity = entity;
+        // kick off the route, indicate that we aren't all done yet
+        startRoute();
+        mRouteDone = false;
+    }
+
+    /**
+     * Stop a route
+     */
     void haltRoute() {
         mRouteDone = true;
         // NB: third parameter doesn't matter, because the entity isn't a static
@@ -51,27 +98,17 @@ class RouteDriver {
         mEntity.setAbsoluteVelocity(0, 0, false);
     }
 
-    RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity) {
-        mMyRoute = route;
-        mRouteVelocity = velocity;
-        mRouteLoop = loop;
-        mEntity = entity;
-
-        // this is how we initialize a route driver:
-        // first, move to the starting point
-        mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mSize.x / 2,
-                mMyRoute.mYIndices[0] + mEntity.mSize.y / 2, 0);
-        // second, indicate that we are working on goal #1, and set velocity
-        startRoute();
-        // and indicate that we aren't all done yet
-        mRouteDone = false;
-
-    }
-
-    void startRoute() {
+    /**
+     * Begin running a route
+     */
+    private void startRoute() {
+        // move to the starting point
+        mEntity.mBody.setTransform(mRoute.mXIndices[0] + mEntity.mSize.x / 2, mRoute.mYIndices[0]
+                + mEntity.mSize.y / 2, 0);
+        // set up our next goal, start moving toward it
         mNextRouteGoal = 1;
-        mRouteVec.x = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-        mRouteVec.y = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+        mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+        mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
         mRouteVec.nor();
         mRouteVec.scl(mRouteVelocity);
         mEntity.mBody.setLinearVelocity(mRouteVec);
@@ -86,39 +123,33 @@ class RouteDriver {
         if (mRouteDone)
             return;
         // if we haven't passed the goal, keep going. we tell if we've passed
-        // the goal by comparing the magnitudes
-        // of
-        // the vectors from source to here and from goal to here
-        float sx = mMyRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
-        float sy = mMyRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
-        float gx = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-        float gy = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+        // the goal by comparing the magnitudes of the vectors from source (s)
+        // to here and from goal (g) to here
+        float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
+        float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
+        float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+        float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
         boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
         boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
         if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
             mNextRouteGoal++;
-            if (mNextRouteGoal == mMyRoute.mPoints) {
+            if (mNextRouteGoal == mRoute.mPoints) {
                 // reset if it's a loop, else terminate Route
                 if (mRouteLoop) {
-                    mEntity.mBody.setTransform(mMyRoute.mXIndices[0] + mEntity.mSize.x / 2,
-                            mMyRoute.mYIndices[0] + mEntity.mSize.y / 2, 0);
                     startRoute();
-                    return;
                 } else {
                     mRouteDone = true;
                     mEntity.mBody.setLinearVelocity(0, 0);
-                    return;
                 }
             } else {
                 // advance to next point
-                mRouteVec.x = mMyRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-                mRouteVec.y = mMyRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+                mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+                mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
                 mRouteVec.nor();
                 mRouteVec.scl(mRouteVelocity);
                 mEntity.mBody.setLinearVelocity(mRouteVec);
-                return;
             }
         }
-        // NB: if we get here, we didn't need to change the velocity
+        // NB: 'else keep going at current velocity'
     }
 }

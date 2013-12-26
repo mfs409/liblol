@@ -34,7 +34,7 @@ package edu.lehigh.cse.lol;
 // TODO: the unlock mechanism is untested
 
 // TODO: aggressively comment and reduce visibility as much as possible.
-// Remaining: Chooser, LOL, PauseScene, PostScene, Projectile, RouteDriver, SVG, MyLolGame
+// Remaining: Chooser, LOL, Projectile, SVG, MyLolGame
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
