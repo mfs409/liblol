@@ -40,11 +40,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -218,6 +218,11 @@ public class Level extends ScreenAdapter {
      * can use this.
      */
     TouchAction mTouchResponder;
+
+    /**
+     * In levels with a projectile pool, the pool is accessed from here
+     */
+    ProjectilePool mProjectilePool;
 
     /**
      * Wrapper for actions that we generate and then want handled during the
@@ -688,7 +693,7 @@ public class Level extends ScreenAdapter {
 
         // Up presses are not handled by entities, only by the screen
         mGameCam.unproject(mTouchVec.set(x, y, 0));
-        if (mTouchResponder != null) 
+        if (mTouchResponder != null)
             mTouchResponder.onUp(mTouchVec.x, mTouchVec.y);
     }
 

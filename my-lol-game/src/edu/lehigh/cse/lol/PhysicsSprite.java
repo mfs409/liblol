@@ -1077,7 +1077,7 @@ public abstract class PhysicsSprite implements Renderable {
         mTouchResponder = new TouchAction() {
             @Override
             public void onDown(float x, float y) {
-                Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
+                Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
             }
         };
     }

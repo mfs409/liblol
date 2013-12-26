@@ -132,7 +132,7 @@ public class Enemy extends PhysicsSprite {
         if (!p.mVisible)
             return;
         // compute damage to determine if the enemy is defeated
-        mDamage -= Projectile.sStrength;
+        mDamage -= p.mStrength;
         if (mDamage <= 0) {
             // hide the projectile quietly, so that the sound of the enemy can
             // be heard

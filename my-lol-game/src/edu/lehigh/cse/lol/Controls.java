@@ -394,8 +394,8 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix,
-                        bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf,
+                        sb);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -502,7 +502,8 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Projectile.sProjectilesRemaining + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining
+                        + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -797,7 +798,8 @@ public class Controls {
 
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
+                Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
+                        h.mBody.getPosition().y, h);
                 mLastThrow = System.nanoTime();
             }
 
@@ -806,8 +808,8 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y,
-                            h);
+                    Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
+                            h.mBody.getPosition().y, h);
                 }
             }
         };
@@ -831,7 +833,8 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwFixed(h.mBody.getPosition().x, h.mBody.getPosition().y, h);
+                Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
+                        h.mBody.getPosition().y, h);
             }
 
             @Override
@@ -865,8 +868,8 @@ public class Controls {
 
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, vv.x,
-                        vv.y, h);
+                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                        h.mBody.getPosition().y, vv.x, vv.y, h);
                 mLastThrow = System.nanoTime();
             }
 
@@ -875,8 +878,8 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
-                            vv.x, vv.y, h);
+                    Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                            h.mBody.getPosition().y, vv.x, vv.y, h);
                 }
             }
 
@@ -901,8 +904,8 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Projectile.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, vv.x,
-                        vv.y, h);
+                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                        h.mBody.getPosition().y, vv.x, vv.y, h);
             }
 
             @Override
