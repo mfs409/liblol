@@ -137,14 +137,14 @@ public class PostScene {
             if (mWinSound != null)
                 mWinSound.play();
             mWinSprites
-                    .add(Util.makeCenteredText(mWinText, 255, 255, 255,
+                    .add(Util.makeText(mWinText, 255, 255, 255,
                             LOL.sGame.mConfig.getDefaultFontFace(),
                             LOL.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play();
             mLoseSprites
-                    .add(Util.makeCenteredText(mLoseText, 255, 255, 255,
+                    .add(Util.makeText(mLoseText, 255, 255, 255,
                             LOL.sGame.mConfig.getDefaultFontFace(),
                             LOL.sGame.mConfig.getDefaultFontSize()));
         }
@@ -289,10 +289,10 @@ public class PostScene {
      * @param fontName The name of the font to use
      * @param size The font size to use
      */
-    public static void addExtraWinTextCentered(String text, int red, int green, int blue,
+    public static void addExtraWinText(String text, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mWinSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
+        tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -306,10 +306,10 @@ public class PostScene {
      * @param fontName The name of the font to use
      * @param size The font size to use
      */
-    public static void addExtraLoseTextCentered(String text, int red, int green, int blue,
+    public static void addExtraLoseText(String text, int red, int green, int blue,
             String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mLoseSprites.add(Util.makeCenteredText(text, red, green, blue, fontName, size));
+        tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**

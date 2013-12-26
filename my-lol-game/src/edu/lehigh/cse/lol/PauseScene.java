@@ -146,9 +146,8 @@ public class PauseScene {
      * @param fontName The name of the font to use
      * @param size The font size to use
      */
-    public static void addCenteredText(String text, int red, int green, int blue, String fontName,
-            int size) {
-        getCurrPauseScene().mSprites.add(Util.makeCenteredText(text, red, green, blue, fontName,
+    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
+        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue, fontName,
                 size));
     }
 

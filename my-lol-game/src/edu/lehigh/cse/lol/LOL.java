@@ -33,7 +33,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: aggressively comment Chooser and MyLolGame (up to level 11)
+// TODO: aggressively comment Chooser and MyLolGame (up to level 25)
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 

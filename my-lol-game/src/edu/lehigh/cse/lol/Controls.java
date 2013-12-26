@@ -309,21 +309,6 @@ public class Controls {
     }
 
     /**
-     * Add a count of the current number of goodies of type 1
-     * 
-     * @param max If this is > 0, then the message will be of the form XX/max
-     *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     */
-    public static void addGoodieCount1(int max, String text, int x, int y) {
-        addGoodieCount(1, max, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
-    }
-
-    /**
      * Add a count of the current number of goodies of the specified type, with
      * extra features for describing the appearance of the font
      * 

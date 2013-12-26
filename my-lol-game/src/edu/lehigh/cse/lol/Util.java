@@ -109,7 +109,7 @@ public class Util {
      * @param size The font size
      * @return A Renderable of the text
      */
-    static Renderable makeCenteredText(final String message, final int red, final int green,
+    static Renderable makeText(final String message, final int red, final int green,
             final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = LOL.sGame.mConfig.getScreenWidth() / 2

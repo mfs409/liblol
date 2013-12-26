@@ -1177,6 +1177,8 @@ public abstract class PhysicsSprite implements Renderable {
      * @param zIndex The z plane. Values range from -2 to 2. The default is 0.
      */
     public void setZIndex(int zIndex) {
+        assert(zIndex <=2);
+        assert(zIndex >=-2);
         Level.sCurrent.removeSprite(this, mZIndex);
         mZIndex = zIndex;
         Level.sCurrent.addSprite(this, mZIndex);

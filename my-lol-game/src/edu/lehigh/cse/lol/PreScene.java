@@ -136,10 +136,10 @@ public class PreScene {
      * @param fontName The font file to use
      * @param size The size of the text
      */
-    public static void addCenteredText(String text, int red, int green, int blue, String fontName,
+    public static void addText(String text, int red, int green, int blue, String fontName,
             int size) {
         getCurrPreScene().mSprites.add(Util
-                .makeCenteredText(text, red, green, blue, fontName, size));
+                .makeText(text, red, green, blue, fontName, size));
     }
 
     /**
