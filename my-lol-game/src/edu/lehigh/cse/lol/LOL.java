@@ -34,7 +34,7 @@ package edu.lehigh.cse.lol;
 // TODO: the unlock mechanism is untested
 
 // TODO: aggressively comment and reduce visibility as much as possible.
-// Remaining: Chooser, LOL, Projectile, MyLolGame
+// Remaining: Chooser, MyLolGame
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -87,6 +87,9 @@ public abstract class LOL extends Game {
      */
     int mCurrHelpNum;
 
+    /**
+     * A reference to the game object
+     */
     static LOL sGame;
 
     /**
@@ -116,7 +119,9 @@ public abstract class LOL extends Game {
         SPLASH, HELP, CHOOSE, PLAY
     };
 
-
+    /**
+     * Use this to load the splash screen
+     */
     void doSplash() {
         // set the default display mode
         mCurrLevelNum = 0;
@@ -125,6 +130,11 @@ public abstract class LOL extends Game {
         setScreen(new Splash());
     }
 
+    /**
+     * Use this to load the level-chooser screen. Note that when a game has only
+     * one level, we'll never draw the level-picker screen, thereby mimicing the
+     * behavior of "infinite" games.
+     */
     void doChooser() {
         if (mConfig.getNumLevels() == 1) {
             if (mCurrLevelNum == 1)
@@ -139,6 +149,11 @@ public abstract class LOL extends Game {
         setScreen(new Chooser(this));
     }
 
+    /**
+     * Use this to load a playable level.
+     * 
+     * @param which The index of the level to load
+     */
     void doPlayLevel(int which) {
         mCurrLevelNum = which;
         mCurrHelpNum = 0;
@@ -147,6 +162,11 @@ public abstract class LOL extends Game {
         setScreen(Level.sCurrent);
     }
 
+    /**
+     * Use this to load a help level.
+     * 
+     * @param which The index of the help level to load
+     */
     void doHelpLevel(int which) {
         mCurrHelpNum = which;
         mCurrLevelNum = 0;
@@ -155,6 +175,9 @@ public abstract class LOL extends Game {
         setScreen(HelpLevel.sCurrentLevel);
     }
 
+    /**
+     * Use this to quit the app
+     */
     void doQuit() {
         getScreen().dispose();
         Gdx.app.exit();
@@ -190,6 +213,10 @@ public abstract class LOL extends Game {
         handleBack();
     }
 
+    /**
+     * When the back key is pressed, or when we are simulating the back key
+     * being pressed (e.g., a back button), this code runs.
+     */
     void handleBack() {
         // if we're looking at main menu, then exit
         if (mMode == Modes.SPLASH) {
@@ -200,15 +227,12 @@ public abstract class LOL extends Game {
         // screen
         else if (mMode == Modes.CHOOSE || mMode == Modes.HELP) {
             doSplash();
-        } else {
-            // ok, we're looking at a game scene... switch to chooser
+        }
+        // ok, we're looking at a game scene... switch to chooser
+        else {
             doChooser();
         }
     }
-
-    /*
-     * INTERNAL INTERFACE: SAVING PROGRESS THROUGH LEVELS
-     */
 
     /**
      * save the value of 'unlocked' so that the next time we play, we don't have
@@ -229,10 +253,6 @@ public abstract class LOL extends Game {
         Preferences prefs = Gdx.app.getPreferences(mConfig.getStorageKey());
         return prefs.getInteger("unlock", 1);
     }
-
-    /*
-     * INTERNAL INTERFACE
-     */
 
     /**
      * This is an internal method for initializing a game. User code should
@@ -323,22 +343,91 @@ public abstract class LOL extends Game {
      */
     abstract public void configureHelpScene(int whichScene);
 
+    /**
+     * When a Hero collides with an Obstacle for which a HeroCollideTrigger has
+     * been set, this code will run
+     * 
+     * @param id The number assigned to the Obstacle's HeroCollideTrigger
+     * @param whichLevel The current level
+     * @param o The obstacle involved in the collision
+     * @param h The hero involved in the collision
+     */
     abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
 
+    /**
+     * When the player touches an entity that has a TouchTrigger attached to it,
+     * this code will run
+     * 
+     * @param id The number assigned to the entity's TouchTrigger
+     * @param whichLevel The current level
+     * @param o The entity involved in the collision
+     */
     abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
 
+    /**
+     * When the player requests a TimerTrigger, and the required time passes,
+     * this code will run
+     * 
+     * @param id The number assigned to the TimerTrigger
+     * @param whichLevel The current level
+     */
     abstract public void onTimeTrigger(int id, int whichLevel);
 
+    /**
+     * When a player requests an EnemyTimerTrigger, and the required time
+     * passes, and the enemy is still visible, this code will run
+     * 
+     * @param id The number assigned to the EnemyTimerTrigger
+     * @param whichLevel The current level
+     * @param e The enemy to which the timer was attached
+     */
     abstract public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e);
 
+    /**
+     * When an enemy is defeated, this code will run if the enemy has an
+     * EnemyDefeatTrigger
+     * 
+     * @param id The number assigned to this trigger
+     * @param whichLevel The current level
+     * @param e The enemy who was defeated
+     */
     abstract public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
 
+    /**
+     * When an obstacle collides with an enemy, if the obstacle has an
+     * EnemyCollideTrigger, then this code will run.
+     * 
+     * @param id The number assigned to this trigger
+     * @param whichLevel The current level
+     * @param o The obstacle involved in the collision
+     * @param e The enemy involved in the collision
+     */
     abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
 
+    /**
+     * When a projectile collides with an obstacle, if the obstacle has a
+     * ProjectileCollideTrigger, then this code will run
+     * 
+     * @param id The number assigned to this trigger
+     * @param whichLevel The current level
+     * @param o The obstacle involved in the collision
+     * @param p The projectile involved in the collision
+     */
     abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
 
-    abstract public void levelCompleteTrigger(boolean win);
+    /**
+     * When a leve finishes, this code will run
+     * 
+     * @param whichLevel The current level
+     * @param win True if the level was won, false otherwise
+     */
+    abstract public void levelCompleteTrigger(int whichLevel, boolean win);
 
+    /**
+     * When a Control is pressed, for which there is a ControlTrigger, this code will run.
+     * @param id The number assigned to this trigger
+     * @param whichLevel The current level
+     */
     abstract public void onControlPressTrigger(int id, int whichLevel);
 }
 

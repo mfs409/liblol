@@ -199,7 +199,7 @@ public class Score {
                 mGameOver = true;
 
                 // Run the level-complete trigger
-                LOL.sGame.levelCompleteTrigger(win);
+                LOL.sGame.levelCompleteTrigger(LOL.sGame.mCurrLevelNum, win);
 
                 // if we won, unlock the next level
                 if (win && LOL.sGame.readUnlocked() == LOL.sGame.mCurrLevelNum)

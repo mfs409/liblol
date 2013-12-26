@@ -3392,10 +3392,11 @@ public class MyLolGame extends LOL {
      * If you want to do something when the level ends (like record a high
      * score), you will need to override this method
      * 
+     * @param whichLevel The current level
      * @param win true if the level was won, false otherwise
      */
     @Override
-    public void levelCompleteTrigger(boolean win) {
+    public void levelCompleteTrigger(int whichLevel, boolean win) {
     }
 
     /**
