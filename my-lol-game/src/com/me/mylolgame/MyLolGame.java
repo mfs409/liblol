@@ -30,6 +30,10 @@ package com.me.mylolgame;
 import edu.lehigh.cse.lol.*;
 
 public class MyLolGame extends LOL {
+
+    /**
+     * Configure all the images and sounds used by our game
+     */
     @Override
     public void nameResources() {
         // load regular (non-animated) images
@@ -47,18 +51,18 @@ public class MyLolGame extends LOL {
         // load the image we show on the main screen
         Media.registerImage("splash.png");
 
-        // parallax stuff
+        // load background images
         Media.registerImage("mid.png");
         Media.registerImage("front.png");
         Media.registerImage("back.png");
 
-        // animated images
+        // load animated images (a.k.a. Sprite Sheets)
         Media.registerAnimatableImage("stars.png", 8, 1);
         Media.registerAnimatableImage("flystar.png", 2, 1);
         Media.registerAnimatableImage("starburst.png", 4, 1);
         Media.registerAnimatableImage("colorstar.png", 8, 1);
 
-        // sounds
+        // load sounds
         Media.registerSound("hipitch.ogg");
         Media.registerSound("lowpitch.ogg");
         Media.registerSound("losesound.ogg");
@@ -67,10 +71,15 @@ public class MyLolGame extends LOL {
         Media.registerSound("fwapfwap.ogg");
         Media.registerSound("winsound.ogg");
 
-        // Background music
+        // load background music
         Media.registerMusic("tune.ogg", true);
     }
 
+    /**
+     * Describe how to draw the initial state of each level of our game
+     * 
+     * @param whichLevel The level to be drawn
+     */
     @Override
     public void configureLevel(int whichLevel) {
         /**
@@ -83,9 +92,9 @@ public class MyLolGame extends LOL {
          * @demonstrates: win by reaching a destination
          */
         if (whichLevel == 1) {
-            // set the screen to 48 meters by 32 meters
+            // set the screen to 48 meters wide by 32 meters high
             Level.configure(48, 32);
-            // there is no default force pushing everything
+            // there is no default gravitational force
             Physics.configure(0, 0);
 
             // in this level, we'll use tilt to move some things around. The
@@ -98,14 +107,15 @@ public class MyLolGame extends LOL {
             Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
 
-            // finally, let's draw a circular destination
+            // finally, let's draw a circular destination, and indicate that the
+            // level is won when the hero reaches the destination
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
         }
 
         /**
          * @level: 2
-         * @description: In this level, we add a few features to level 1 to make
+         * @description: In this level, we introduce add a few features to level 1 to make
          *               it a bit more playable. Note, though, that since
          *               nothing has physics properties attached to it, the
          *               behavior when the ball crashes into the bounding box
@@ -1990,7 +2000,8 @@ public class MyLolGame extends LOL {
             // make a projectile pool and give an animation pattern for the
             // projectiles
             ProjectilePool.configure(100, 1, 1, "flystar.png", 0, 10, 0, -.5f, 1, 0, true);
-            ProjectilePool.setAnimation(new Animation("flystar.png", 2, true).to(0, 100).to(1, 100));
+            ProjectilePool
+                    .setAnimation(new Animation("flystar.png", 2, true).to(0, 100).to(1, 100));
         }
 
         /**
@@ -2278,8 +2289,9 @@ public class MyLolGame extends LOL {
 
             // set up our projectiles
             ProjectilePool.configure(3, 1, 1, "colorstar.png", 0, 15, 0, 0, 2, 0, true);
-            ProjectilePool.setNumberOfProjectiles(20); // there are only 20... throw
-                                                   // them carefully
+            ProjectilePool.setNumberOfProjectiles(20); // there are only 20...
+                                                       // throw
+            // them carefully
             // Allow the projectile image to be chosen randomly from a sprite
             // sheet
             ProjectilePool.setImageSource("colorstar.png");
@@ -3429,5 +3441,13 @@ public class MyLolGame extends LOL {
     @Override
     public SplashConfiguration splashConfig() {
         return new SplashConfig();
+    }
+
+    /**
+     * Mandatory method. Don't change this.
+     */
+    @Override
+    public ChooserConfiguration chooserConfig() {
+        return new ChooserConfig();
     }
 }

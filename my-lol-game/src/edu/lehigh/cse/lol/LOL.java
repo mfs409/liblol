@@ -34,7 +34,7 @@ package edu.lehigh.cse.lol;
 // TODO: the unlock mechanism is untested
 
 // TODO: aggressively comment and reduce visibility as much as possible.
-// Remaining: Chooser, MyLolGame
+// Remaining: Chooser, MyLolGame (done up to level 2)
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -110,6 +110,11 @@ public abstract class LOL extends Game {
      * The configuration of the splash screen is accessible through this
      */
     SplashConfiguration mSplashConfig;
+
+    /**
+     * The configuratoin of the chooser screen is accessible through this
+     */
+    ChooserConfiguration mChooserConfig;
 
     /**
      * Modes of the game: we can be showing the main screen, the help screens,
@@ -264,6 +269,7 @@ public abstract class LOL extends Game {
         // get configuration
         mConfig = config();
         mSplashConfig = splashConfig();
+        mChooserConfig = chooserConfig();
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
@@ -317,6 +323,12 @@ public abstract class LOL extends Game {
      * and returning a SplashConfiguration object
      */
     abstract public LOLConfiguration config();
+
+    /**
+     * The programmer configures the chooser screen by implementing this method,
+     * and returning a ChooserConfiguration object
+     */
+    abstract public ChooserConfiguration chooserConfig();
 
     /**
      * The programmer configures the splash screen by implementing this method,
@@ -416,7 +428,7 @@ public abstract class LOL extends Game {
     abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
 
     /**
-     * When a leve finishes, this code will run
+     * When a level finishes, this code will run
      * 
      * @param whichLevel The current level
      * @param win True if the level was won, false otherwise
@@ -424,7 +436,9 @@ public abstract class LOL extends Game {
     abstract public void levelCompleteTrigger(int whichLevel, boolean win);
 
     /**
-     * When a Control is pressed, for which there is a ControlTrigger, this code will run.
+     * When a Control is pressed, for which there is a ControlTrigger, this code
+     * will run.
+     * 
      * @param id The number assigned to this trigger
      * @param whichLevel The current level
      */
