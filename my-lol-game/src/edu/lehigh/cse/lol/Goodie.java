@@ -66,7 +66,7 @@ public class Goodie extends PhysicsSprite {
      * @param tr image to use for this Obstacle
      */
     private Goodie(float width, float height, String imgName) {
-        super(imgName, SpriteId.GOODIE, width, height);
+        super(imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;
         mScore[2] = 0;

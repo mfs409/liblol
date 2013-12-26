@@ -89,7 +89,7 @@ public class Enemy extends PhysicsSprite {
      *            collision detection, and false if a box should be used
      */
     private Enemy(float width, float height, String imgName) {
-        super(imgName, SpriteId.ENEMY, width, height);
+        super(imgName, width, height);
         Level.sCurrent.mScore.mEnemiesCreated++;
     }
 
@@ -104,10 +104,10 @@ public class Enemy extends PhysicsSprite {
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // collision with obstacles
-        if (other.mSpriteType == SpriteId.OBSTACLE)
+        if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle)other, contact);
         // collision with projectiles
-        if (other.mSpriteType == SpriteId.PROJECTILE)
+        if (other instanceof Projectile)
             onCollideWithProjectile((Projectile)other);
     }
 

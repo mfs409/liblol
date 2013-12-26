@@ -66,7 +66,7 @@ public class Destination extends PhysicsSprite {
      * @param imgName Name of the image to display
      */
     private Destination(float width, float height, String imgName) {
-        super(imgName, SpriteId.DESTINATION, width, height);
+        super(imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
     }

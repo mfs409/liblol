@@ -51,13 +51,6 @@ import edu.lehigh.cse.lol.Level.Action;
 import edu.lehigh.cse.lol.Level.TouchAction;
 
 public abstract class PhysicsSprite implements Renderable {
-
-    /**
-     * Type of this PhysicsSprite; useful for disambiguation in collision
-     * detection
-     */
-    SpriteId mSpriteType;
-
     /**
      * Physics body for this PhysicsSprite
      */
@@ -204,28 +197,6 @@ public abstract class PhysicsSprite implements Renderable {
     int mPassThroughId = 0;
 
     /**
-     * This enum encapsulates the different types of PhysicsSprite entities
-     */
-    enum SpriteId {
-        UNKNOWN(0), HERO(1), ENEMY(2), GOODIE(3), PROJECTILE(4), OBSTACLE(5), SVG(6), DESTINATION(7);
-
-        /**
-         * To each ID, we attach an integer value, so that we can compare the
-         * different IDs and establish a hierarchy for collision management
-         */
-        public final int mId;
-
-        /**
-         * Construct by providing the integral id
-         * 
-         * @param id The unique integer for this SpriteId
-         */
-        SpriteId(int id) {
-            mId = id;
-        }
-    }
-
-    /**
      * When a PhysicsSprite collides with another PhysicsSprite, and that
      * collision is intended to cause some custom code to run, we use this
      * interface
@@ -251,8 +222,7 @@ public abstract class PhysicsSprite implements Renderable {
      * @param width The width
      * @param height The height
      */
-    PhysicsSprite(String imgName, SpriteId id, float width, float height) {
-        mSpriteType = id;
+    PhysicsSprite(String imgName, float width, float height) {
         mAnimator = new AnimationDriver(imgName);
         mSize.x = width;
         mSize.y = height;

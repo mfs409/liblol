@@ -143,7 +143,7 @@ public class Projectile extends PhysicsSprite {
      */
     private Projectile(float width, float height, String imgName, float x, float y, int zIndex,
             boolean isCircle) {
-        super(imgName, SpriteId.PROJECTILE, width, height);
+        super(imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width,  height);
             setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);

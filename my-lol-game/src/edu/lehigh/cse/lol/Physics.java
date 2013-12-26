@@ -122,24 +122,48 @@ public class Physics {
              * our onCollide methods
              */
             @Override
-            public void beginContact(Contact contact) {
+            public void beginContact(final Contact contact) {
                 // Get the bodies, make sure both are PhysicsSprites
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
                 if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
                     return;
 
-                // Figure out which one has the smaller type (Hero is smallest)
-                PhysicsSprite gfoA = (PhysicsSprite)a;
-                PhysicsSprite gfoB = (PhysicsSprite)b;
-                if (gfoA.mSpriteType.mId > gfoB.mSpriteType.mId) {
-                    PhysicsSprite tmp = gfoA;
-                    gfoA = gfoB;
-                    gfoB = tmp;
+                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, SVG,
+                // Destination
+                //
+                // Of those, Hero, Enemy, and Projectile are the only ones with
+                // a non-empty onCollide
+                final PhysicsSprite c0;
+                final PhysicsSprite c1;
+                if (a instanceof Hero) {
+                    c0 = (PhysicsSprite)a;
+                    c1 = (PhysicsSprite)b;
                 }
-                final PhysicsSprite psA = gfoA;
-                final PhysicsSprite psB = gfoB;
-                final Contact c = contact;
+                else if (b instanceof Hero) {
+                    c0 = (PhysicsSprite)b;
+                    c1 = (PhysicsSprite)a;
+                }
+                else if (a instanceof Enemy) {
+                    c0 = (PhysicsSprite)a;
+                    c1 = (PhysicsSprite)b;
+                }
+                else if (b instanceof Enemy) {
+                    c0 = (PhysicsSprite)b;
+                    c1 = (PhysicsSprite)a;
+                }
+                else if (a instanceof Projectile) {
+                    c0 = (PhysicsSprite)a;
+                    c1 = (PhysicsSprite)b;
+                }
+                else if (b instanceof Projectile) {
+                    c0 = (PhysicsSprite)b;
+                    c1 = (PhysicsSprite)a;
+                }
+                else {
+                    return;
+                }
+
                 // Schedule an event to run as soon as the physics world
                 // finishes its step.
                 //
@@ -149,7 +173,7 @@ public class Physics {
                 // run after the world update.
                 Level.sCurrent.mOneTimeEvents.add(new Action() {
                     public void go() {
-                        psA.onCollide(psB, c);
+                        c0.onCollide(c1, contact);
                     }
                 });
             }

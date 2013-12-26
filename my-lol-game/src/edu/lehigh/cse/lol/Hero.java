@@ -139,7 +139,7 @@ public class Hero extends PhysicsSprite {
      *            hero
      */
     private Hero(float width, float height, String imgName) {
-        super(imgName, SpriteId.HERO, width, height);
+        super(imgName, width, height);
         Level.sCurrent.mScore.mHeroesCreated++;
     }
 
@@ -287,11 +287,11 @@ public class Hero extends PhysicsSprite {
             onCollideWithEnemy((Enemy)other);
         else if (other instanceof Destination)
             onCollideWithDestination((Destination)other);
-        else if (other.mSpriteType == SpriteId.OBSTACLE)
+        else if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle)other, contact);
-        else if (other.mSpriteType == SpriteId.SVG)
+        else if (other instanceof SVG.SVGSprite)
             onCollideWithSVG(other);
-        else if (other.mSpriteType == SpriteId.GOODIE)
+        else if (other instanceof Goodie)
             onCollideWithGoodie((Goodie)other);
     }
 

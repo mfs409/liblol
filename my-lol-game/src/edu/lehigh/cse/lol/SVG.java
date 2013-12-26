@@ -41,8 +41,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
-import edu.lehigh.cse.lol.PhysicsSprite.SpriteId;
-
 /**
  * SVG allows the game designer to load SVG line drawings into a game. SVG line
  * drawings can be made in Inkscape. In LOL, we do not use line drawings to the
@@ -138,6 +136,17 @@ public class SVG {
      * for "parsing line"
      */
     private int mMode = 0;
+
+    class SVGSprite extends PhysicsSprite
+    {
+        SVGSprite(String imgName, float width, float height) {
+            super(imgName, width, height);
+        }
+
+        @Override
+        void onCollide(PhysicsSprite other, Contact contact) {
+        }
+    }
 
     /**
      * Configure a parser that we can use to load an SVG file and draw each of
@@ -348,18 +357,14 @@ public class SVG {
 
         // connect it to an invisible PhysicsSprite, so that collision callbacks
         // will work (i.e., for inAir)
-        PhysicsSprite invis = new PhysicsSprite(null, SpriteId.SVG, len, .1f) {
-            @Override
-            void onCollide(PhysicsSprite other, Contact contact) {
-            }
-        };
+        SVGSprite invis = new SVGSprite("", len, .1f);
         invis.mBody = b;
         b.setUserData(invis);
         // NB: we probably don't need to put the invisible sprite on the screen,
         // since we don't overload render()... this is invisible.
         Level.sCurrent.addSprite(invis, 0);
     }
-
+    
     /**
      * The main parse routine. We slurp the file into an XML DOM object, and
      * then iterate over it, finding the <path>s within the <g>, and processing

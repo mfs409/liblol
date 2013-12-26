@@ -87,7 +87,7 @@ public class Obstacle extends PhysicsSprite {
      * @param imgName Name of the image file to use
      */
     protected Obstacle(float width, float height, String imgName) {
-        super(imgName, SpriteId.OBSTACLE, width, height);
+        super(imgName, width, height);
     }
 
     /**
