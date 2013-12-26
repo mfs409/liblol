@@ -329,6 +329,12 @@ public class Level extends ScreenAdapter {
         mCamBoundX = width;
         mCamBoundY = height;
 
+        // warn on strange dimensions
+        if (width < LOL.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
+            Gdx.app.log("Warning", "Your game width is less than 1/10 of the screen width");
+        if (height < LOL.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
+            Gdx.app.log("Warning", "Your game height is less than 1/10 of the screen height");
+
         // set up the game camera, with 0,0 in the bottom left
         mGameCam = new OrthographicCamera(LOL.sGame.mConfig.getScreenWidth()
                 / Physics.PIXEL_METER_RATIO, LOL.sGame.mConfig.getScreenHeight()

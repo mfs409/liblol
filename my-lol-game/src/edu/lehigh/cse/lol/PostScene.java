@@ -158,6 +158,9 @@ public class PostScene {
         // we turn off music here, so that music plays during the PostScene
         Level.sCurrent.stopMusic();
 
+        // remove the previous level
+        Level.sCurrent = null;
+        
         // repeat on loss, else go to next level (or chooser)
         if (!mWin) {
             LOL.sGame.doPlayLevel(LOL.sGame.mCurrLevelNum);

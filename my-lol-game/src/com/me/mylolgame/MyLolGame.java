@@ -82,126 +82,121 @@ public class MyLolGame extends LOL {
      */
     @Override
     public void configureLevel(int whichLevel) {
-        /**
-         * @level: 1
-         * @description: In this level, all we have is a hero (the green ball)
-         *               who needs to make it to the destination (a mustard
-         *               colored ball). The game is configured to use tilt to
-         *               control the hero.
-         * @demonstrates: control a hero with tilt
-         * @demonstrates: win by reaching a destination
+        /*
+         * In this level, all we have is a hero (the green ball) who needs to
+         * make it to the destination (a mustard colored ball). The game is
+         * configured to use tilt to control the hero.
          */
         if (whichLevel == 1) {
-            // set the screen to 48 meters wide by 32 meters high
+            // set the screen to 48 meters wide by 32 meters high... this is
+            // important, because Config.java says the screen is 480x320, and
+            // LOL likes a 10:1 pixel to meter ratio. If we went smaller than
+            // 48x32, things would get really weird. And, of course, if you make
+            // your screen resolution higher in Config.java, these numbers would
+            // need to get bigger.
+            //
+            // Level.configure MUST BE THE FIRST LINE WHEN DRAWING A LEVEL!!!
             Level.configure(48, 32);
             // there is no default gravitational force
             Physics.configure(0, 0);
 
             // in this level, we'll use tilt to move some things around. The
-            // maximum force that tilt can exert on anything is 10 in the X
-            // dimension, and 10 in the Y dimension
+            // maximum force that tilt can exert on anything is +/- 10 in the X
+            // dimension, and +/- 10 in the Y dimension
             Tilt.enable(10, 10);
 
             // now let's create a hero, and indicate that the hero can move by
-            // tilting the phone.
+            // tilting the phone. "greenball.png" must be registered in
+            // the registerMedia() method, which is also in this file. It must
+            // also be in your android game's assets folder.
             Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
 
-            // finally, let's draw a circular destination, and indicate that the
-            // level is won when the hero reaches the destination
+            // draw a circular destination, and indicate that the level is won
+            // when the hero reaches the destination. "mustardball.png" must be
+            // registered in registerMedia()
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
         }
 
-        /**
-         * @level: 2
-         * @description: In this level, we introduce add a few features to level 1 to make
-         *               it a bit more playable. Note, though, that since
-         *               nothing has physics properties attached to it, the
-         *               behavior when the ball crashes into the bounding box
-         *               doesn't really feel right.
-         * @demonstrates: draw a bounding box around the level, so the hero
-         *                can't fall into infinity
-         * @demonstrates: custom text when the level is won
-         * @demonstrates: a pop up scene shows for one second at the start of
-         *                the level
+        /*
+         * In this level, we make the play a bit smoother by adding a bounding
+         * box and changing the way that LibLOL interacts with the player
          */
         else if (whichLevel == 2) {
             // start by setting everything up just like in level 1
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // new: add a bounding box so the hero can't fall off the screen
+            // add a bounding box so the hero can't fall off the screen
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
-            // new: change the text that we display when the level is won
+            // change the text that we display when the level is won
             PostScene.setDefaultWinText("Good job!");
 
-            // new: add a pop-up message that shows for one second at the
-            // beginning of the level
+            // add a pop-up message that shows for one second at the
+            // beginning of the level. The '50, 50' indicates the bottom left
+            // corner of the text we display. 255,255,255 represents the red,
+            // green, and blue components of the text color (the color will be
+            // white). We'll write our text in the Arial font, with a size of 32
+            // pt. The "\n" in the middle of the text causes a line break. Note
+            // that "arial.ttf" must be in your android game's assets folder.
             PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255,
                     "arial.ttf", 32);
-            PreScene.addImage("red.png", 50, 50, 10, 1);
         }
 
-        /**
-         * @level: 3
-         * @description: In this level, we change the physics from level 2 so
-         *               that things roll and bounce a little bit more nicely
-         * @demonstrates: the hero and bounding box now have nonzero physics so
-         *                that things are a little bit more smooth
-         * @demonstrates: we don't set the win text anymore, so now when we win
-         *                we'll go back to the default message
+        /*
+         * In this level, we change the physics from level 2 so that things roll
+         * and bounce a little bit more nicely.
          */
         else if (whichLevel == 3) {
-            // start by setting up the level just like in level 1
+            // These lines should be familiar after the last two levels
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
-            // new: give the hero some density and friction, so that it can roll
-            // when it encounters a wall... notice that once it has density, it
-            // has mass, and it moves a lot slower...
-            h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // new: the bounding box now also has nonzero density,
-            // elasticity, and friction
+            // give the hero some density and friction, so that it can roll when
+            // it encounters a wall... notice that once it has density, it has
+            // mass, and it moves a lot slower...
+            h.setPhysics(1, 0, 0.6f);
+
+            // the bounding box now also has nonzero density, elasticity, and
+            // friction... you should check out what happens if the friction
+            // stays at 0.
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            PreScene.addText("Reach the destination\nto win this level.", 50, 50, 255, 255, 255,
+            // Let's draw our message in the center of the screen this time
+            PreScene.addCenteredText("Reach the destination\nto win this level.", 255, 255, 255,
                     "arial.ttf", 32);
+            // And let's say that instead of touching the message to make it go
+            // away, we'll have it go away automatically after 2 seconds
             PreScene.setExpire(2);
+            // Note that we're going back to the default PostScene text...
         }
 
-        /**
-         * @level: 4
-         * @description: This level shows that we the natural behavior is for
-         *               each destination to only hold one hero
-         * @demonstrates: we are showing a popup image instead of popup text
-         * @demonstrates: there are two heroes
-         * @demonstrates: it takes two heroes to reach destinations before the
-         *                level is won
+        /*
+         * It's confusing to have multiple heroes in a level, but we can... this
+         * shows how to have multiple destinations and heroes
          */
         else if (whichLevel == 4) {
-
-            // start by setting up the level boundaries, tilt, and bounding box
+            // standard stuff...
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // now let's draw two heroes who can both move by tilting, and
-            // who both have density and friction
-            //
-            // NB: less density, so faster movement
+            // who both have density and friction. Note that we lower the
+            // density, so they move faster
             Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
@@ -210,27 +205,24 @@ public class MyLolGame extends LOL {
             h2.setMoveByTilting();
 
             // notice that now we will make two destinations, each of which
-            // defaults to only holding ONE hero, but we
-            // still need to get two heroes to destinations in order to complete
-            // the level
+            // defaults to only holding ONE hero, but we still need to get two
+            // heroes to destinations in order to complete the level
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
             Score.setVictoryDestination(2);
 
             // Let's show msg1.png instead of text. Note that we had to
-            // register it in registerMedia()
-            PreScene.addImage("msg1.png", 0, 0, 460, 320);
+            // register it in registerMedia(), and that we're stretching it
+            // slightly, since its dimensions are 460x320
+            PreScene.addImage("msg1.png", 0, 0, 480, 320);
         }
 
-        /**
-         * @level: 5
-         * @description: This level demonstrates that we can have many heroes
-         *               that can reach the same destination
-         * @demonstrates: the destination can hold two heroes
-         * @demonstrates: when the hero reaches the destination, we play a sound
+        /*
+         * This level demonstrates that we can have many heroes that can reach
+         * the same destination. It also shows our first sound effect
          */
         else if (whichLevel == 5) {
-            // begin by configuring the level and heroes just like in level 4
+            // standard stuff...
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -241,6 +233,8 @@ public class MyLolGame extends LOL {
             Hero h2 = Hero.makeAsCircle(14, 7, 3, 3, "greenball.png");
             h2.setPhysics(.1f, 0, 0.6f);
             h2.setMoveByTilting();
+            PreScene.addCenteredText("All heroes must\nreach the destination", 255, 255, 255,
+                    "arial.ttf", 32);
 
             // now let's make a destination, but indicate that it can hold TWO
             // heroes
@@ -251,27 +245,17 @@ public class MyLolGame extends LOL {
             // sound will play
             d.setArrivalSound("hipitch.ogg");
 
-            // Indicate that two heroes have to reach destinations in order to
-            // finish the level
+            // Notice that this line didn't change from level 4
             Score.setVictoryDestination(2);
-
-            // Change the pop-up message slightly
-            PreScene.addText("All heroes must\nreach the destination", 50, 50, 255, 255, 255,
-                    "arial.ttf", 32);
         }
 
-        /**
-         * @level: 6
-         * @description: this demonstrates an alternative way of using tilt.
-         *               Instead of tilt representing a force applied to
-         *               entities, tilt now represents a velocity to apply to
-         *               those entities. Note that this form of tilt behaves
-         *               oddly when we have friction on the ball and wall.
-         * @demonstrates: using tilt as velocity instead of tilt as force
+        /*
+         * Tilt can be used to control velocity, instead of applying forces to
+         * the entities on the screen. It doesn't always work well, but it's a
+         * nice option to have...
          */
         else if (whichLevel == 6) {
-
-            // configure a basic level, just like the start of level 2:
+            // standard stuff...
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -280,24 +264,18 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
+            PreScene.addCenteredText("A different way\nto use tilt.", 255, 255, 255, "arial.ttf",
+                    32);
 
             // change the behavior or tilt
             Tilt.setAsVelocity(true);
-
-            // and print a popup to tell the user what's going on...
-            PreScene.addText("A different way\nto use tilt.", 50, 50, 255, 255, 255, "arial.ttf",
-                    32);
         }
 
-        /**
-         * @level: 7
-         * @description: This level adds an enemy, to demonstrate that we can
-         *               make it possible to lose a level
-         * @demonstrates: there is a stationary enemy
-         * @demonstrates: a pop-up message that stays until it is pressed
+        /*
+         * This level adds an enemy, to demonstrate that we can make it possible
+         * to lose a level
          */
         else if (whichLevel == 7) {
-            // configure a basic level, just like the start of level 2:
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -306,23 +284,22 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
-
-            // draw an enemy:
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
-            e.setPhysics(1.0f, 0.3f, 0.6f);
-
-            // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
+            // Notice that we changed the font size and color
+            PreScene.addCenteredText("Avoid the enemy and\nreach the destination", 25, 255, 255,
                     "arial.ttf", 20);
 
+            // draw an enemy... we don't need to give it physics for now...
+            Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+
+            // turn off the postscene... whether the player wins or loses, we'll
+            // just start the appropriate level. Be sure to test the game by
+            // losing *and* winning!
             PostScene.disable();
         }
 
-        /**
-         * @level: 8
-         * @description: This level explores a bit more of what we can do with
-         *               enemies, by having an enemy with a fixed path.
-         * @demonstrates: make a moveable enemy and attach a fixed path to it
+        /*
+         * This level explores a bit more of what we can do with enemies, by
+         * having an enemy with a fixed path.
          */
         else if (whichLevel == 8) {
             // configure a basic level, just like the start of level 2:
@@ -334,32 +311,31 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
+            PreScene.addCenteredText("Avoid the enemy and\nreach the destination", 255, 255, 255,
+                    "arial.ttf", 20);
 
-            // draw an enemy that can move
+            // put some extra text on the PreScene
+            PreScene.addText("(the enemy is red)", 5, 5, 50, 200, 122, "arial.ttf", 10);
+
+            // draw an enemy
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
-            e.setPhysics(100.0f, 0.3f, 0.6f);
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
             // since it loops, it is not going to gracefully move back to its
-            // starting point
-
+            // starting point. Also note that the first point is the same as the
+            // enemy's original position. If it wasn't, then there would be an
+            // odd glitch at the beginning of the level.
             e.setRoute(new Route(2).to(25, 25).to(25, 2), 10, true);
 
-            // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
-                    "arial.ttf", 20);
+            // Note that when the level is lost, the default lose text will be
+            // displayed on a PostScene
         }
 
-        /**
-         * @level: 9
-         * @description: This level explores a bit more of what we can do with
-         *               paths.
-         * @demonstrates: The path end point is the same as the start point, so
-         *                that we get cleaner movement
+        /*
+         * This level explores a bit more of what we can do with paths.
          */
         else if (whichLevel == 9) {
-            // configure a basic level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -368,39 +344,24 @@ public class MyLolGame extends LOL {
             h.setMoveByTilting();
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
+            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
+                    "arial.ttf", 20);
 
             // draw an enemy that can move
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
-            e.setPhysics(1.0f, 0.3f, 0.6f);
-
-            // attach a path to the enemy. This time, we add a third point,
-            // which is the same as the starting point. This will give us a
-            // nicer sort of movement. Also note the diagonal movement.
+            // This time, we add a third point, which is the same as the
+            // starting point. This will give us a nicer sort of movement. Also
+            // note the diagonal movement.
             e.setRoute(new Route(3).to(25, 25).to(12, 2).to(25, 25), 2, true);
             // note that any number of points is possible... you could have
-            // extremely complex shapes!
-
-            // display a message that stays until it is pressed
-            PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
-                    "arial.ttf", 20);
+            // extremely complex Routes!
         }
 
-        /**
-         * @level: 10
-         * @description: This level fleshes out a bunch of additional enemy
-         *               features, as well as sound features
-         * @demonstrates: any entity can be controlled by tilt, so here we add
-         *                an enemy that is controlled by tilt.
-         * @demonstrates: any entity can have a continuous rotation, so we do
-         *                that to the Destination
-         * @demonstrates: this level also demonstrates background music, and
-         *                sounds to play on victory or defeat.
-         * @demonstrates: this level shows a popup message that uses an image,
-         *                and that does not go away until it is touched
-         * @demonstrates: there is a custom message when the level is lost
+        /*
+         * We can make enemies move via tilt. We can also configure some other
+         * kinds of sounds
          */
         else if (whichLevel == 10) {
-            // configure a basic level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -408,23 +369,24 @@ public class MyLolGame extends LOL {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(0.1f, 0, 0.6f);
             h.setMoveByTilting();
+            PreScene.addImage("msg2.png", 10, 10, 460, 320);
 
-            // update: let's make the destination rotate:
+            // let's make the destination rotate:
             Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             d.setRotationSpeed(1);
             Score.setVictoryDestination(1);
 
-            // update: draw an enemy who moves via tilt
+            // draw an enemy who moves via tilt
             Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
             e3.setPhysics(1.0f, 0.3f, 0.6f);
             e3.setMoveByTilting();
 
-            // show a message that must be touched in order to remove it
-            PreScene.addImage("msg2.png", 10, 10, 460, 320);
-
-            // configure some sounds
+            // configure some sounds to play on win and lose. Of course, all
+            // these sounds must be registered!
             PostScene.setWinSound("winsound.ogg");
             PostScene.setLoseSound("losesound.ogg");
+
+            // set background music
             Level.setMusic("tune.ogg");
 
             // custom text for when the level is lost
@@ -443,7 +405,6 @@ public class MyLolGame extends LOL {
          *                always shows the hero
          */
         else if (whichLevel == 11) {
-
             // make the level really big
             Level.configure(400, 300);
             Physics.configure(0, 0);
