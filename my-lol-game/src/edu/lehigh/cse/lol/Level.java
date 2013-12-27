@@ -792,7 +792,7 @@ public class Level extends ScreenAdapter {
      *            scribble events... use this to avoid outrageously high rates
      *            of scribbling
      */
-    public static void setScribbleOn(final String imgName, final float duration, final float width,
+    public static void setScribbleMode(final String imgName, final float duration, final float width,
             final float height, final float density, final float elasticity, final float friction,
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,

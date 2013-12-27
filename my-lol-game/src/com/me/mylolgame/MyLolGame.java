@@ -972,12 +972,9 @@ public class MyLolGame extends LOL {
             e3.setZIndex(-2);
         }
 
-        /**
-         * @level: 26
-         * @description: demonstrate that we can make obstacles play sounds
-         *               either when we collide with them, or touch them
-         * @demonstrates: touch an obstacle to make it play a sound
-         * @demonstrates: collide with an obstacle to make it play a sound
+        /*
+         * We can make obstacles play sounds either when we collide with them,
+         * or touch them
          */
         else if (whichLevel == 26) {
             // set up a basic level
@@ -1001,11 +998,10 @@ public class MyLolGame extends LOL {
             o.setCollideSound("hipitch.ogg", 2000);
         }
 
-        /**
-         * @level: 27
-         * @description: this hero rotates so that it faces in the direction of
-         *               movement
-         * @demonstrates: heroes whose rotation changes with their direction
+        /*
+         * this hero rotates so that it faces in the direction of movement. This
+         * can be useful in games where the perspective is from overhead, and
+         * the hero is moving in any X or Y direction
          */
         else if (whichLevel == 27) {
             // set up a big screen
@@ -1026,13 +1022,10 @@ public class MyLolGame extends LOL {
             Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 28
-         * @description: This level shows two things. The first is that a custom
-         *               motion path can allow things to violate the laws of
-         *               physics and pass through other things. The second is
-         *               that motion paths can go off-screen.
-         * @demonstrates: paths that go off screen
+        /*
+         * This level shows two things. The first is that a custom motion path
+         * can allow things to violate the laws of physics and pass through
+         * other things. The second is that motion paths can go off-screen.
          */
         else if (whichLevel == 28) {
             // set up a regular level
@@ -1054,14 +1047,12 @@ public class MyLolGame extends LOL {
             e.setRoute(new Route(3).to(1, -90).to(1, 26).to(1, -20), 30, true);
         }
 
-        /**
-         * @level: 29
-         * @description: this level shows that we can draw on the screen to
-         *               create obstacles.
-         * @demonstrates: scribblemode for drawing obstacles on the screen
+        /*
+         * This level shows that we can draw on the screen to create obstacles.
+         * In truth, you'll probably want to change the code for this a lot, but
+         * at least you'll know where to start!
          */
         else if (whichLevel == 29) {
-            // set up a basic level:
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -1074,52 +1065,41 @@ public class MyLolGame extends LOL {
             Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // turn on 'scribble mode'. Be sure to play with the last parameter
-            // to see the difference between scribbles
-            // that can move and that can't move
-            Level.setScribbleOn("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
+            // turn on 'scribble mode'. Be sure to play with the last two
+            // parameters
+            Level.setScribbleMode("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
         }
 
-        /**
-         * @level: 30
-         * @description: this level shows that we can "flick" things to move
-         *               them
-         * @demonstrates: In this level, notice that we did not enable tilt!
-         *                Instead, we specified that there is a default gravity
-         *                in the Y dimension pushing everything down. This is
-         *                much like gravity on earth. The only way to move
-         *                things, then, is via flicking them.
-         * @demonstrates: using flick to move the hero
+        /*
+         * This level shows that we can "flick" things to move them. Notice that
+         * we do not enable tilt! Instead, we specified that there is a default
+         * gravity in the Y dimension pushing everything down. This is much like
+         * gravity on earth. The only way to move things, then, is via flicking
+         * them.
          */
         else if (whichLevel == 30) {
             // create a level with a constant force downward in the Y dimension
             Level.configure(48, 32);
             Physics.configure(0, -10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
+            Score.setVictoryDestination(1);
 
             // create a hero who we can flick
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setFlickable(1f);
             h.disableRotation();
-
-            // set up a destination
-            Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
-            Score.setVictoryDestination(1);
         }
 
-        /**
-         * @level: 31
-         * @description: this level introduces a new concept: side-scrolling
-         *               games. just like in level 30, we have a constant force
-         *               in the negative direction. However, in this level, we
-         *               say that tilt can produce forces in X but not in Y.
-         *               Thus we can tilt to move the hero left/right. Note,
-         *               too, that the hero will fall to the floor, since there
-         *               is a constant downward force, but there is not any
-         *               mechanism to apply a Y force to make it move back up.
-         * @demonstrates: we changed the physics, so that now we have a
-         *                tilt-based side scroller
+        /*
+         * this level introduces a new concept: side-scrolling games. Just like
+         * in level 30, we have a constant force in the negative Y direction.
+         * However, in this level, we say that tilt can produce forces in X but
+         * not in Y. Thus we can tilt to move the hero left/right. Note, too,
+         * that the hero will fall to the floor, since there is a constant
+         * downward force, but there is not any mechanism to apply a Y force to
+         * make it move back up.
          */
         else if (whichLevel == 31) {
             // make a long level but not a tall level, and provide a constant
@@ -1138,22 +1118,16 @@ public class MyLolGame extends LOL {
             Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 32
-         * @description: In the previous level, it was hard to see that the hero
-         *               was moving. We can make a background layer to remedy
-         *               this situation. Notice that the background uses
-         *               transparency to show the blue color for part of the
-         *               screen
-         * @demonstrates: background colors and background images
-         * @demonstrates: demonstrate that we can have things hover on the
-         *                screen despite the fact that the screen is scrolling
+        /*
+         * In the previous level, it was hard to see that the hero was moving.
+         * We can make a background layer to remedy this situation. Notice that
+         * the background uses transparency to show the blue color for part of
+         * the screen
          */
         else if (whichLevel == 32) {
             // start by repeating the previous level:
             Level.configure(30 * 48, 32);
             Physics.configure(0, -10);
-            // turn on tilt, but only in the X dimension
             Tilt.enable(10, 0);
             PreScene.addText("Side scroller / tilt demo", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 30 * 48, 32, "red.png", 1, 0, 1);
@@ -1166,30 +1140,24 @@ public class MyLolGame extends LOL {
 
             // now paint the background blue
             Background.setColor(0, 0, 255);
+
             // put in a picture that scrolls at half the speed of the hero in
-            // the x direction (ignore y scrolling for now)
+            // the x direction. Note that background "layers" are all drawn
+            // *before* anything that is drawn with a z index... so the
+            // background will be behind the hero
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
-            // make an obstacle that hovers...
+            // make an obstacle that hovers in a fixed place. Note that hovering
+            // and zoom do not work together nicely.
             Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
             o.setHover(100, 100);
-
-            // add zoom buttons
-            Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
-            Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
-
         }
 
-        /**
-         * @level: 33
-         * @description: this level adds multiple background layers, and it also
-         *               allows the hero to jump via touch
-         * @demonstrates: jumping via touching heroes
-         * @demonstrates: background layers
-         * @demonstrates: jump sounds
+        /*
+         * this level adds multiple background layers, and it also allows the
+         * hero to jump via touch
          */
         else if (whichLevel == 33) {
-
             // set up a standard side scroller with tilt:
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
@@ -1203,6 +1171,7 @@ public class MyLolGame extends LOL {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
+            Level.setCameraChase(h);
             // this says that touching makes the hero jump
             h.setTouchToJump();
             // this is the force of a jump. remember that up is positive.
@@ -1218,21 +1187,14 @@ public class MyLolGame extends LOL {
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
             // this layer is faster than the hero
             Background.addHorizontalLayer(1.25f, 1, "front.png", 20);
-            Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 34
-         * @description: tilt doesn't always work so nicely in side scrollers.
-         *               An alternative is for the hero to have a fixed rate of
-         *               motion. Another issue was that you had to touch the
-         *               hero itself to make it jump. Now, we use an invisible
-         *               button so touching any part of the screen makes the
-         *               hero jump.
-         * @demonstrates: camera offset on the hero, so that it stays a bit to
-         *                the left of the center of the screen
-         * @demonstrates: fixed velocity on the hero
-         * @demonstrates: jump button on the HUD
+        /*
+         * tilt doesn't always work so nicely in side scrollers. An alternative
+         * is for the hero to have a fixed rate of motion. Another issue was
+         * that you had to touch the hero itself to make it jump. Now, we use an
+         * invisible button so touching any part of the screen makes the hero
+         * jump.
          */
         else if (whichLevel == 34) {
             // set up a side scroller, but don't turn on tilt
@@ -1246,7 +1208,7 @@ public class MyLolGame extends LOL {
             // the hero
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 0, 0, 0);
 
-            // make a hero, but don't let it rotate:
+            // make a hero, and ensure that it doesn't rotate
             Hero h = Hero.makeAsCircle(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
@@ -1266,24 +1228,20 @@ public class MyLolGame extends LOL {
             Controls.addJumpButton(0, 0, 480, 320, "", h);
 
             // if the hero jumps over the destination, we have a problem. To fix
-            // it, let's put an
-            // invisible enemy right after the destination, so that if the hero
-            // misses the
-            // destination, it hits the enemy and we can start over
+            // it, let's put an invisible enemy right after the destination, so
+            // that if the hero misses the destination, it hits the enemy and we
+            // can start over. Of course, we could just do the destination like
+            // this instead, but this is more fun...
             Enemy.makeAsBox(130, 0, .5f, 32, "");
         }
 
-        /**
-         * @level: 35
-         * @description: the default is that once a hero jumps, it can't jump
-         *               again until it touches an obstacle (floor or wall).
-         *               Here, we enable multiple jumps. Coupled with a small
-         *               jump impulse, this makes jumping feel more like
-         *               swimming or controlling a helicopter.
+        /*
+         * the default is that once a hero jumps, it can't jump again until it
+         * touches an obstacle (floor or wall). Here, we enable multiple jumps.
+         * Coupled with a small jump impulse, this makes jumping feel more like
+         * swimming or controlling a helicopter.
          */
         else if (whichLevel == 35) {
-
-            // set up a standard side scroller without tilt
             Level.configure(3 * 48, 38);
             Physics.configure(0, -10);
             PreScene.addText("Multi-jump is enabled", 255, 255, 255, "arial.ttf", 32);
@@ -1291,12 +1249,12 @@ public class MyLolGame extends LOL {
             Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
-            // the hero now has multijump, with small jumps:
-            h.setMultiJumpOn();
+            h.addVelocity(5, 0, false);
             Level.setCameraChase(h);
             h.setCameraOffset(15, 0);
+            // the hero now has multijump, with small jumps:
+            h.setMultiJumpOn();
             h.setJumpImpulses(0, 6);
-            h.addVelocity(5, 0, false);
 
             // this is all the same as before, to include the invisible enemy
             Background.setColor(0, 0, 255);
@@ -1307,15 +1265,11 @@ public class MyLolGame extends LOL {
             Score.setVictoryDestination(1);
         }
 
-        /**
-         * @level: 36
-         * @description: This level shows that we can make a hero move based on
-         *               how we touch the screen
-         * @demonstrates: controls on the screen for moving the hero
-         * @demonstrates: the hero can face backwards when it moves backwards
+        /*
+         * This level shows that we can make a hero move based on how we touch
+         * the screen
          */
         else if (whichLevel == 36) {
-            // set up a basic side scroller without tilt
             Level.configure(3 * 48, 32);
             Physics.configure(0, 0);
             PreScene.addText("Press screen borders\nto move the hero", 255, 255, 255, "arial.ttf",
@@ -1324,11 +1278,11 @@ public class MyLolGame extends LOL {
             Hero h = Hero.makeAsCircle(2, 0, 3, 3, "stars.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
+            Level.setCameraChase(h);
 
             // this lets the hero flip its image when it moves backwards
             h.setCanFaceBackwards();
 
-            Level.setCameraChase(h);
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
@@ -1346,27 +1300,24 @@ public class MyLolGame extends LOL {
             Controls.addDownButton(50, 0, 380, 50, "", 15, h);
         }
 
-        /**
-         * @level: 37
-         * @description: In the last level, we had complete control of the
-         *               hero's movement. Here, we give the hero a fixed
-         *               velocity, and only control its up/down movement.
+        /*
+         * In the last level, we had complete control of the hero's movement.
+         * Here, we give the hero a fixed velocity, and only control its up/down
+         * movement.
          */
         else if (whichLevel == 37) {
-            // set up a basic side-scroller
             Level.configure(3 * 48, 32);
             Physics.configure(0, 0);
             PreScene.addText("Press screen borders\nto move up and down", 255, 255, 255,
                     "arial.ttf", 32);
+            // The box and hero should not have friction
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            // be careful about friction!
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
-            // as with the bounding box, be careful about friction on the hero!
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
@@ -1383,17 +1334,12 @@ public class MyLolGame extends LOL {
             Controls.addUpButton(50, 270, 380, 50, "", 15, h);
         }
 
-        /**
-         * @level: 38
-         * @description: this level demonstrates crawling heroes. We can use
-         *               this to simulate crawling, ducking, rolling, spinning,
-         *               etc. Note, too, that we can use it to make the hero
-         *               defeat certain enemies via crawl.
-         * @demonstrates: buttons for making heroes crawl
-         * @demonstrates:
+        /*
+         * this level demonstrates crawling heroes. We can use this to simulate
+         * crawling, ducking, rolling, spinning, etc. Note, too, that we can use
+         * it to make the hero defeat certain enemies via crawl.
          */
         else if (whichLevel == 38) {
-            // basic configuration:
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             PreScene.addText("Press the screen\nto crawl", 255, 255, 255, "arial.ttf", 32);
@@ -1414,13 +1360,13 @@ public class MyLolGame extends LOL {
             e.setDefeatByCrawl();
         }
 
-        /**
-         * @level: 39
-         * @description: we can make a hero start moving only when it is pressed
-         * @demonstrates: touch and go
+        /*
+         * We can make a hero start moving only when it is pressed. This can
+         * even let the hero hover until it is pressed. We could also use this
+         * to have a game where the player puts obstacles in place, then starts
+         * the hero moving.
          */
         else if (whichLevel == 39) {
-            // set up a basic side scroller
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             PreScene.addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
@@ -1432,9 +1378,8 @@ public class MyLolGame extends LOL {
 
             // make a hero who doesn't start moving until it is touched
             //
-            // note that this hero is not a perfect circle, and the hero is
-            // "norotate".
-            // You will probably get strange behaviors if you choose any other
+            // note that this hero is a box, and the hero is "norotate". You
+            // will probably get strange behaviors if you choose any other
             // options
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
             h.disableRotation();
