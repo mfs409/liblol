@@ -783,8 +783,7 @@ public class Controls {
 
             @Override
             void onDownPress(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, h);
+                Level.sCurrent.mProjectilePool.throwFixed(h);
                 mLastThrow = System.nanoTime();
             }
 
@@ -793,8 +792,7 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
-                            h.mBody.getPosition().y, h);
+                    Level.sCurrent.mProjectilePool.throwFixed(h);
                 }
             }
         };
@@ -818,8 +816,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwFixed(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, h);
+                Level.sCurrent.mProjectilePool.throwFixed(h);
             }
 
             @Override

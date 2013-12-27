@@ -162,11 +162,9 @@ public class ProjectilePool {
      * Throw a projectile. This is for throwing in a single, predetermined
      * direction
      * 
-     * @param x x coordinate of the bottom left corner of the thrower
-     * @param y y coordinate of the bottom left corner of the thrower
      * @param h The hero who is performing the throw
      */
-    void throwFixed(float x, float y, Hero h) {
+    void throwFixed(Hero h) {
         // have we reached our limit?
         if (mProjectilesRemaining == 0)
             return;
@@ -186,8 +184,8 @@ public class ProjectilePool {
 
         // calculate offset for starting position of projectile, put it on
         // screen
-        b.mRangeFrom.x = x + mOffset.x;
-        b.mRangeFrom.y = y + mOffset.y;
+        b.mRangeFrom.x = h.getXPosition() + mOffset.x;
+        b.mRangeFrom.y = h.getYPosition() + mOffset.y;
         b.mBody.setActive(true);
         b.mBody.setTransform(b.mRangeFrom, 0);
 

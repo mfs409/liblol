@@ -749,7 +749,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL.sGame.onTimeTrigger(timerId, LOL.sGame.mCurrLevelNum);
+                    LOL.sGame.onTimerTrigger(timerId, LOL.sGame.mCurrLevelNum);
             }
         }, howLong);
     }
@@ -768,7 +768,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL.sGame.onEnemyTimeTrigger(timerId, LOL.sGame.mCurrLevelNum, enemy);
+                    LOL.sGame.onEnemyTimerTrigger(timerId, LOL.sGame.mCurrLevelNum, enemy);
             }
         }, howLong);
     }

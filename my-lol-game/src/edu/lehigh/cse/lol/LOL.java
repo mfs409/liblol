@@ -33,7 +33,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: aggressively comment Chooser and MyLolGame (up to level 39)
+// TODO: aggressively comment MyLolGame (done up to level 49)
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
 
@@ -382,7 +382,7 @@ public abstract class LOL extends Game {
      * @param id The number assigned to the TimerTrigger
      * @param whichLevel The current level
      */
-    abstract public void onTimeTrigger(int id, int whichLevel);
+    abstract public void onTimerTrigger(int id, int whichLevel);
 
     /**
      * When a player requests an EnemyTimerTrigger, and the required time
@@ -392,7 +392,7 @@ public abstract class LOL extends Game {
      * @param whichLevel The current level
      * @param e The enemy to which the timer was attached
      */
-    abstract public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e);
+    abstract public void onEnemyTimerTrigger(int id, int whichLevel, Enemy e);
 
     /**
      * When an enemy is defeated, this code will run if the enemy has an

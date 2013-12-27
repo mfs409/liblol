@@ -1388,19 +1388,14 @@ public class MyLolGame extends LOL {
             Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 40
-         * @description: ALE has limited support for SVG. If you draw a picture
-         *               in Inkscape or another SVG tool, and it only consists
-         *               of lines, then you can import it into your game as an
-         *               obstacle. Drawing a picture on top of the obstacle is
-         *               probably a good idea, though we don't bother in this
-         *               level
-         * @demonstrates: import an svg as an obstacle
-         * @demonstrates: side scroller with velocity tilt override
+        /*
+         * LibLOL has limited support for SVG. If you draw a picture in Inkscape
+         * or another SVG tool, and it only consists of lines, then you can
+         * import it into your game as an obstacle. Drawing a picture on top of
+         * the obstacle is probably a good idea, though we don't bother in this
+         * level
          */
         else if (whichLevel == 40) {
-            // set up a tilt-based side scroller
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
@@ -1424,30 +1419,28 @@ public class MyLolGame extends LOL {
             // *on top of* the obstacle
             Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
-
-            // zoom buttons so that we can see the whole obstacle
-            Controls.addZoomInButton(0, 0, 20, 20, "red.png", .25f);
-            Controls.addZoomOutButton(460, 0, 20, 20, "red.png", 8);
         }
 
-        /**
-         * @level: 41
-         * @description: this is a side-scroller with speed boosters for
-         *               changing the hero's velocity
-         * @demonstrates: speed booster obstacles
+        /*
+         * In a side-scrolling game, it is useful to be able to change the
+         * hero's speed either permanently or temporarily. In LibLOL, we can use
+         * a collision between a hero and an obstacle to achieve this effect.
          */
         else if (whichLevel == 41) {
-            // set up a basic level with a fixed velocity hero and a destination
             Level.configure(10 * 48, 32);
             Physics.configure(0, 0);
             PreScene.addText("Speed boosters and reducers", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 10 * 480, 320, "", 1, 0, 1);
+
             Hero h = Hero.makeAsCircle(2, 0, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
+            h.addVelocity(10, 0, false);
+            Level.setCameraChase(h);
+
             Destination.makeAsCircle(450, 1, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
-            h.addVelocity(10, 0, false);
+
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
@@ -1459,18 +1452,15 @@ public class MyLolGame extends LOL {
             Obstacle o2 = Obstacle.makeAsCircle(120, 1, 4, 6, "purpleball.png");
             o2.setSpeedBoost(-9, 0, 3);
 
-            // place a permanent +3 speedup obstacle
+            // place a permanent +3 speedup obstacle... the -1 means "forever"
             Obstacle o3 = Obstacle.makeAsCircle(240, 1, 4, 4, "purpleball.png");
             o3.setSpeedBoost(20, 0, -1);
 
-            Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 42
-         * @description: this is a very gross level, which exists just to show
-         *               that backgrounds can scroll vertically.
-         * @demonstrates: vertical background colors and images
+        /*
+         * this is a very gross level, which exists just to show that
+         * backgrounds can scroll vertically.
          */
         else if (whichLevel == 42) {
             // set up a level where tilt only makes the hero move up and down
@@ -1479,39 +1469,35 @@ public class MyLolGame extends LOL {
             Tilt.enable(0, 10);
             PreScene.addText("Vertical scroller demo", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
+
             Hero h = Hero.makeAsCircle(2, 120, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsBox(0, 2, 48, 1, "mustardball.png");
-            Score.setVictoryDestination(1);
             Level.setCameraChase(h);
 
-            // set up a vertical scrolling background
+            Destination.makeAsBox(0, 2, 48, 1, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // set up vertical scrolling backgrounds
             Background.setColor(255, 0, 255);
             Background.addVerticalLayer(1, 0, "back.png", 0);
             Background.addVerticalLayer(1, .5f, "mid.png", 0);
             Background.addVerticalLayer(1, 1, "front.png", 0);
-
-            // zoom buttons so that we can see the whole obstacle
-            Controls.addZoomInButton(0, 0, 20, 20, "red.png", .25f);
-            Controls.addZoomOutButton(460, 0, 20, 20, "red.png", 8);
         }
 
-        /**
-         * @level: 43
-         * @description: the next few levels demonstrate support for throwing
-         *               projectiles. In this level, we throw projectiles by
-         *               touching the hero
-         * @demonstrates: throw a projectile by touching the hero
+        /*
+         * the next few levels demonstrate support for throwing projectiles. In
+         * this level, we throw projectiles by touching the hero. Here, the
+         * projectile always goes in the same direction
          */
         else if (whichLevel == 43) {
-            // set up a simple level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             PreScene.addText("Press the hero\nto make it throw\nprojectiles", 255, 255, 255,
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
             Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
@@ -1522,25 +1508,21 @@ public class MyLolGame extends LOL {
             h.setTouchToThrow(h);
             h.setMoveByTilting();
 
-            // configure a pool of projectiles. be sure to hover the mouse over
-            // 'configure' to see what all the parameters do. In particular,
-            // note how the projectiles fly out of the hero, and how many can be
-            // on screen at any time
-            ProjectilePool.configure(3, 1, 1, "greyball.png", 0, 10, 1, .5f, 1, 0, true);
+            // configure a pool of projectiles. We say that there can be no more
+            // than 3 projectiles in flight at any time, that the projectiles
+            // fly straight up, and that they fly out of the top of the hero.
+            ProjectilePool.configure(3, 1, 1, "greyball.png", 0, 10, 1.5f, 3, 1, 0, true);
         }
 
-        /**
-         * @level: 44
-         * @description: this is another demo of how throwing projectiles works.
-         *               Like the previous demo, it doesn't actually use
-         *               projectiles for anything, it is just to show how to get
-         *               some different behaviors in terms of how the
-         *               projectiles move.
-         * @demonstrates: limiting the range of projectiles
-         * @demonstrates: throw projectiles by touching the screen
+        /*
+         * This is another demo of how throwing projectiles works. Like the
+         * previous demo, it doesn't actually use projectiles for anything, it
+         * is just to show how to get some different behaviors in terms of how
+         * the projectiles move. In this case, we show that we can limit the
+         * distance that projectiles travel, and that we can put a control on
+         * the HUD for throwing projectiles
          */
         else if (whichLevel == 44) {
-            // set up a basic tilt level
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
@@ -1554,43 +1536,40 @@ public class MyLolGame extends LOL {
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // set up a pool of projectiles, but now once the projectiles move
-            // more than 250x20 away
-            // from the hero, they disappear
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
+            // set up a pool of projectiles, but now once the projectiles travel
+            // more than 25 meters, they disappear
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 3, 1.5f, 1, 0, true);
             ProjectilePool.setRange(25);
 
-            // add a button for throwing projectiles
+            // add a button for throwing projectiles. Notice that this butotn
+            // keeps throwing as long as it is held, but we've capped it to
+            // throw no more than once per 100 milliseconds
             Controls.addThrowButton(0, 0, 480, 320, "", h, 100);
             Level.setCameraChase(h);
         }
 
-        /**
-         * @level 45
-         * @description: this level demonstrates that we can defeat enemies by
-         *               throwing projectiles at them
-         * @demonstrates: show that we can defeat enemies by throwing
-         *                projectiles at them
-         * @demonstrates: holding the button doesn't make multiple shots fire
+        /*
+         * this level demonstrates that we can defeat enemies by throwing
+         * projectiles at them
          */
         else if (whichLevel == 45) {
-            // set up a simple, small level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             PreScene.addText("Defeat all enemies\nto win", 255, 255, 255, "arial.ttf", 32);
+
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            // set up our projectiles... note that the last parameter means that
-            // projectiles each do
-            // 2 units of damage
+            // set up our projectiles... note that now projectiles each do 2
+            // units of damage
             ProjectilePool.configure(3, .4f, .1f, "greyball.png", 0, 10, .2f, -.5f, 2, 0, true);
 
             // draw a few enemies... note that they have different amounts of
-            // damage
+            // damage, so it takes different numbers of projectiles to defeat
+            // them.
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
@@ -1599,33 +1578,35 @@ public class MyLolGame extends LOL {
                 ee.setPhysics(1.0f, 0.3f, 0.6f);
                 ee.setDamage(i);
             }
+
+            // win by defeating enemies, of course!
             Score.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
             Controls.addSingleThrowButton(0, 0, 480, 320, "", h);
         }
 
-        /**
-         * @level: 46
-         * @description: this level shows how to throw projectiles in a variety
-         *               of directions
-         * @demonstrates: the "vector throw" mechanism
+        /*
+         * This level shows how to throw projectiles in a variety of directions.
          */
         else if (whichLevel == 46) {
-            // set up a simple level
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
+            Level.setCameraChase(h);
+
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // draw a button for throwing projectiles in many directions
+            // draw a button for throwing projectiles in many directions...
+            // again, note that if we hold the button, it keeps throwing
             Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
 
             // set up our pool of projectiles. The main challenge here is that
@@ -1634,115 +1615,130 @@ public class MyLolGame extends LOL {
             ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 0, 0, 1, 0, true);
             ProjectilePool.setProjectileVectorDampeningFactor(.8f);
             ProjectilePool.setRange(30);
-
-            Level.setCameraChase(h);
         }
 
-        /**
-         * @level: 47
-         * @description: this level shows that with the "vector" projectiles, we
-         *               can still have gravity affect the projectiles. This is
-         *               very good for basketball-style games.
-         * @demonstrates: holding the screen no longer throws multiple
-         *                projectiles in that direction
-         * @demonstrates: projectiles can be prevented from disappearing when
-         *                they collide with certain types of obstacles
+        /*
+         * this level shows that with the "vector" projectiles, we can still
+         * have gravity affect the projectiles. This is very good for
+         * basketball-style games.
          */
         else if (whichLevel == 47) {
-            // set up a basic level
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
             PreScene.addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
-            h.disableRotation(); // Remember: disableRotation doesn't work well
-                                 // if we have mass...
+            h.disableRotation();
             h.setPhysics(0, 0, 0.6f);
             h.setMoveByTilting();
+            Level.setCameraChase(h);
+
             Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // the only differences here are that we turn gravity back on for
-            // the projectiles, and
-            // we use a "single throw" button
+            // we use a "single throw" button so that holding doesn't throw more
+            // projectiles.
             Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h);
+
+            // we turn on projectile gravity, and then we enable collisions for
+            // projectiles. This means that when a projectile collides with
+            // something, it will transfer its momentum to that thing, if that
+            // thing is moveable. This is a step toward our goal of being able
+            // to bounce a basketball off of a backboard, but it's not quite
+            // enough...
             ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
             ProjectilePool.setProjectileVectorDampeningFactor(.8f);
             ProjectilePool.setRange(40);
             ProjectilePool.setProjectileGravityOn();
-            Obstacle o = Obstacle.makeAsBox(10, 20, 2, 2, "red.png");
-            // This is a rather complex trick: we can specify that when a
-            // projectile collides with things, it is allowed
-            // to bounce off of them, and that when it collides with /this/
-            // obstacle, we want custom code to run. The
-            // custom code appears below, as onProjectileCollideTrigger, and
-            // when it is called, our id (the first "0")
-            // will be passed along to the code, along with the specific
-            // obstacle and projectile that were involved in
-            // the collision. The default is that when a projectile hits one of
-            // these special obstacles, it doesn't
-            // automatically disappear, because in that code you could say
-            // "p.remove(true)" if that was the behavior you
-            // wanted. So, by default, it doesn't disappear, and instead we get
-            // the projectile bouncing off of the
-            // obstacle, but not off of anything else.
             ProjectilePool.enableCollisionsForProjectiles();
-            o.setProjectileCollisionTrigger(0, 0, 0, 0, 0);
-            Level.setCameraChase(h);
+
+            // Draw an obstacle... this is like our backboard, but we're putting
+            // it in a spot that's more useful for testing than for playing a
+            // game
+            Obstacle o = Obstacle.makeAsBox(10, 20, 2, 2, "red.png");
+
+            // now comes the tricky part... we want to make it so that when the
+            // ball hits the obstacle (the backboard), it doesn't disappear. The
+            // only time a projectile does not disappear when hitting an
+            // obstacle is when you provide custom code to run on a
+            // projectile/obstacle collision... in that case, you are
+            // responsible for removing the projectile (or for not removing it).
+            // That being the case, we can set a "trigger" to run custom code
+            // when the projectile and obstacle collide, and then just have the
+            // custom code do nothing.
+
+            // this line says when a projectile and obstacle collide, if the
+            // goodie counts are at least 0,0,0,0, then run the
+            // "onProjectileCollideTrigger()" method that appears later in this
+            // file. When onProjectileCollideTrigger() runs, it will have an id
+            // of 7, because we arbitrarily picked 7 as the id... for this
+            // simple example, our use of an id isn't important, but for more
+            // complex games, having different ids can be really useful.
+            o.setProjectileCollisionTrigger(7, 0, 0, 0, 0);
         }
 
-        /**
-         * @level: 48
-         * @description: this level shows how enemies can reproduce. This can
-         *               simulate cancer cells, or fire on a building. We do
-         *               this by using a timer connected to an enemy. Whenever
-         *               the timer goes off, we will have access to the enemy so
-         *               that we can copy it.
-         * @demonstrates: enemy timer triggers
-         * @demonstrates: sound when the projectile is thrown
+        /*
+         * This level shows how we can attach a timer to an enemy. When the
+         * timer runs out, if the enemy is still visible, then some custom code
+         * will run. We can use this to simulate cancer cells or fire on a
+         * building. The value of attaching the timer to the enemy is that we
+         * can change the game state at the position where the enemy is. One
+         * team even had an enemy that dropped goodies at its current location.
+         * Note that the timer only runs once... you'll need to make a new timer
+         * from within the code that runs when the timer expires.
          */
         else if (whichLevel == 48) {
-            // set up a basic level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 0);
             PreScene.addText("Throw balls at \nthe enemies before\nthey reproduce", 255, 255, 255,
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setTouchToThrow(h);
             h.setMoveByTilting();
 
-            // configure a pool of projectiles
+            // configure a pool of projectiles... now we have a sound that plays
+            // when a projectile is thrown, and another for when it disappears
             ProjectilePool.configure(100, .5f, .5f, "greyball.png", 0, 10, 2, -.5f, 1, 0, true);
             ProjectilePool.setThrowSound("fwapfwap.ogg");
             ProjectilePool.setProjectileDisappearSound("slowdown.ogg");
 
-            // draw an enemy that reproduces via a timer trigger
+            // draw an enemy that makes a sound when it disappears
             Enemy e = Enemy.makeAsCircle(23, 20, 1, 1, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
+
+            // request that in 2 seconds, if the enemy is still visible,
+            // onEnemyTimerTrigger() will run, with id == 2. Be sure to look at
+            // the onEnemyTimerTrigger code (below) for more information.
             Level.setEnemyTimerTrigger(2, 2, e);
+
+            // win by defeating enemies
             Score.setVictoryEnemyCount();
+
+            // put a count of defeated enemies on the screen
             Controls.addDefeatedCount(0, "Enemies Defeated", 20, 20);
         }
 
-        /**
-         * @level: 49
-         * @description: this level shows what happens when enemies reproduce
-         *               when they are moveable
+        /*
+         * This level shows that we can have moveable enemies that reproduce. Be
+         * careful... it is possible to make a lot of enemies, really quickly
          */
         else if (whichLevel == 49) {
-            // set up a basic level
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
             PreScene.addText("These enemies are\nreally tricky", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
+
             Destination.makeAsCircle(29, 29, 1, 1, "mustardball.png");
             Score.setVictoryDestination(1);
 
@@ -1750,14 +1746,17 @@ public class MyLolGame extends LOL {
             Enemy e = Enemy.makeAsCircle(23, 2, 1, 1, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setMoveByTilting();
-            // warning: "6" is going to lead to 127 enemies eventually...
+
+            // set a timer trigger on the enemy. warning: "6" is going to lead
+            // to lots of enemies eventually, and there's no way to defeat them
+            // in this level! Again, be sure to look at onEnemyTimerTrigger()
+            // below.
             Level.setEnemyTimerTrigger(6, 2, e);
         }
 
         /**
-         * @level: 50
-         * @description: this level shows simple animation. Every entity can
-         *               have a default animation.
+         * @level: 50 this level shows simple animation. Every entity can have a
+         *         default animation.
          * @demonstrates: the hero has an animation in this level, which makes
          *                it look like a star with streamers underneath it
          */
@@ -1781,9 +1780,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 51
-         * @description: this level introduces jumping animations and
-         *               disappearance animations
+         * @level: 51 this level introduces jumping animations and disappearance
+         *         animations
          * @demonstrates: jump animation
          * @demonstrates: disappearance animation
          */
@@ -1831,8 +1829,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 52
-         * @description: this level shows that projectiles can be animated
+         * @level: 52 this level shows that projectiles can be animated
          * @demonstrates: projectile animations
          * @demonstrates: animations when the hero throws a projectile
          */
@@ -1864,11 +1861,10 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 53
-         * @description: this level explores invincibility animation. While
-         *               we're at it, we make some enemies that aren't affected
-         *               by invincibility, and some that can even damage the
-         *               hero while they are invincible.
+         * @level: 53 this level explores invincibility animation. While we're
+         *         at it, we make some enemies that aren't affected by
+         *         invincibility, and some that can even damage the hero while
+         *         they are invincible.
          * @demonstrates: invincibility animation
          * @demonstrates: enemies that resist invincibility
          * @demonstrates: enemies that do damage even when the hero is
@@ -1934,10 +1930,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 54
-         * @description: demonstrate crawl animation, and also show that on
-         *               multitouch phones, we can "crawl" in the air while
-         *               jumping.
+         * @level: 54 demonstrate crawl animation, and also show that on
+         *         multitouch phones, we can "crawl" in the air while jumping.
          * @demonstrates: crawl animation
          * @demonstrates: show a picture when the level is lost
          */
@@ -1979,12 +1973,11 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 55
-         * @description: This isn't quite the same as animation, but it's nice.
-         *               We can indicate that a hero's image changes via goodie
-         *               count. This can, for example, allow a hero to change
-         *               (e.g., get healthier) by swapping through images as
-         *               goodies are collected
+         * @level: 55 This isn't quite the same as animation, but it's nice. We
+         *         can indicate that a hero's image changes via goodie count.
+         *         This can, for example, allow a hero to change (e.g., get
+         *         healthier) by swapping through images as goodies are
+         *         collected
          */
         else if (whichLevel == 55) {
             // set up a basic level with a bunch of goodies
@@ -2018,10 +2011,9 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 56
-         * @description: demonstrate that obstacles can defeat enemies, and that
-         *               we can use this feature to have obstacles that only
-         *               defeat certain "marked" enemies
+         * @level: 56 demonstrate that obstacles can defeat enemies, and that we
+         *         can use this feature to have obstacles that only defeat
+         *         certain "marked" enemies
          * @demonstrates: gravity multiplier, to make the forces happen more
          *                quickly
          * @demonstrates: use of enemyCollisionTrigger to make some obstacles
@@ -2085,10 +2077,9 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 57
-         * @description: this level shows an odd way of moving the hero. There's
-         *               friction on the floor, so it can only move by tilting
-         *               while the hero is in the air
+         * @level: 57 this level shows an odd way of moving the hero. There's
+         *         friction on the floor, so it can only move by tilting while
+         *         the hero is in the air
          */
         else if (whichLevel == 57) {
             // set up a side scroller level, but give the bounding box some
@@ -2118,12 +2109,10 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 58
-         * @description: this level shows that we can put an obstacle on the
-         *               screen and use it to make the hero throw projectiles.
-         *               It also shows that we can make entities that shrink
-         *               over time... growth is possible too, with a negative
-         *               value.
+         * @level: 58 this level shows that we can put an obstacle on the screen
+         *         and use it to make the hero throw projectiles. It also shows
+         *         that we can make entities that shrink over time... growth is
+         *         possible too, with a negative value.
          * @demonstrates: limit the total number of projectiles that can be
          *                thrown
          * @demonstrates: make an entity shrink over time
@@ -2184,10 +2173,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 59
-         * @description: this level shows that we can make a hero in the air
-         *               rotate. Rotation doesn't do anything, but it looks
-         *               nice...
+         * @level: 59 this level shows that we can make a hero in the air
+         *         rotate. Rotation doesn't do anything, but it looks nice...
          * @demonstrates: rotation buttons
          * @demonstrates: this level relies on being able to jump after touching
          *                a side wall
@@ -2214,10 +2201,9 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level 60
-         * @description: we can attach movement buttons to any moveable entity,
-         *               so in this case, we attach it to an obstacle to get an
-         *               arkanoid-like effect.
+         * @level 60 we can attach movement buttons to any moveable entity, so
+         *        in this case, we attach it to an obstacle to get an
+         *        arkanoid-like effect.
          * @demonstrates: attaching left/right buttons to an obstacle instead of
          *                controlling the last hero created
          */
@@ -2244,8 +2230,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 61
-         * @description: this level demonstrates that things can appear and
+         * @level: 61 this level demonstrates that things can appear and
          * @demonstrates: use of disappearDelay and appearanceDelay
          */
         else if (whichLevel == 61) {
@@ -2276,13 +2261,12 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 62
-         * @description: this level demonstrates the use of timer triggers. We
-         *               can use timers to make more of the level appear over
-         *               time. In this case, we'll chain the timer triggers
-         *               together, so that we can get more and more things to
-         *               develop. Be sure to look at the onTimeTrigger code to
-         *               see how the rest of this level works.
+         * @level: 62 this level demonstrates the use of timer triggers. We can
+         *         use timers to make more of the level appear over time. In
+         *         this case, we'll chain the timer triggers together, so that
+         *         we can get more and more things to develop. Be sure to look
+         *         at the onTimeTrigger code to see how the rest of this level
+         *         works.
          * @demonstrates: destinations and goodies with fixed velocities
          * @demonstrates: enemy who disappears when it is touched
          * @demonstrates: enemy who can be dragged around
@@ -2311,16 +2295,14 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 63
-         * @description: this level shows triggers that run on a collision. In
-         *               this case, it lets us draw out the next part of the
-         *               level later, instead of drawing the whole thing right
-         *               now. In a real level, we'd draw a few screens at a
-         *               time, and not put the trigger obstacle at the end of a
-         *               screen, so that we'd never see the drawing of stuff
-         *               taking place, but for this demo, that's actually a nice
-         *               effect. Be sure to look at onCollideTrigger for more
-         *               details.
+         * @level: 63 this level shows triggers that run on a collision. In this
+         *         case, it lets us draw out the next part of the level later,
+         *         instead of drawing the whole thing right now. In a real
+         *         level, we'd draw a few screens at a time, and not put the
+         *         trigger obstacle at the end of a screen, so that we'd never
+         *         see the drawing of stuff taking place, but for this demo,
+         *         that's actually a nice effect. Be sure to look at
+         *         onCollideTrigger for more details.
          * @demonstrates: obstacles that are collision triggers
          * @demonstrates: obstacles with collision sounds
          * @demonstrates: collision triggers that depend on collecting enough
@@ -2353,10 +2335,9 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 64
-         * @description: this level demonstrates triggers that happen when we
-         *               touch an obstacle. Be sure to look at the
-         *               onTouchTrigger() method for more details
+         * @level: 64 this level demonstrates triggers that happen when we touch
+         *         an obstacle. Be sure to look at the onTouchTrigger() method
+         *         for more details
          * @demonstrates: touchtrigger obstacles
          */
         else if (whichLevel == 64) {
@@ -2391,14 +2372,12 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 65
-         * @description: this level shows how to use enemy defeat triggers.
-         *               There are four ways to defeat an enemy, so we enable
-         *               all mechanisms in this level, to see if they all work
-         *               to cause enemy triggers to run the onEnemyTrigger code.
-         *               Another important point here is that the IDs don't need
-         *               to be unique for *any* triggers. We can use the same ID
-         *               every time...
+         * @level: 65 this level shows how to use enemy defeat triggers. There
+         *         are four ways to defeat an enemy, so we enable all mechanisms
+         *         in this level, to see if they all work to cause enemy
+         *         triggers to run the onEnemyTrigger code. Another important
+         *         point here is that the IDs don't need to be unique for *any*
+         *         triggers. We can use the same ID every time...
          * @demonstrates: use enemy defeat triggers
          * @demonstrates: the trigger code uses random number generation to
          *                place a reward goodie whenever an enemy is defeated
@@ -2455,12 +2434,11 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 66
-         * @description: This level shows that we can resize a hero on the fly,
-         *               and change its image. We use a collision trigger to
-         *               cause the effect. Furthermore, we can increment scores
-         *               inside of the trigger code, which lets us activate the
-         *               destination on an obstacle collision
+         * @level: 66 This level shows that we can resize a hero on the fly, and
+         *         change its image. We use a collision trigger to cause the
+         *         effect. Furthermore, we can increment scores inside of the
+         *         trigger code, which lets us activate the destination on an
+         *         obstacle collision
          * @demonstrates: resizing a hero
          * @demonstrates: changing a hero's image on-the-fly
          * @demonstrates: manually modifying the scores
@@ -2490,10 +2468,9 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 67
-         * @description: This level shows how to use countdown timers to win a
-         *               level, tests some color features, and introduces a
-         *               vector throw mechanism with fixed velocity
+         * @level: 67 This level shows how to use countdown timers to win a
+         *         level, tests some color features, and introduces a vector
+         *         throw mechanism with fixed velocity
          */
         else if (whichLevel == 67) {
             // set up a simple level
@@ -2550,9 +2527,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 69
-         * @description: this level shows that not all obstacles cause the hero
-         *               to be able to jump again
+         * @level: 69 this level shows that not all obstacles cause the hero to
+         *         be able to jump again
          * @demonstrates: obstacles that don't re-enable jumping
          */
         else if (whichLevel == 69) {
@@ -2585,8 +2561,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 70
-         * @description: Show that chasing can be one-dimensional
+         * @level: 70 Show that chasing can be one-dimensional
          */
         else if (whichLevel == 70) {
             // set up a simple level
@@ -2615,8 +2590,7 @@ public class MyLolGame extends LOL {
 
         }
         /**
-         * @level: 71
-         * @description: A test of the PokeVelocity feature
+         * @level: 71 A test of the PokeVelocity feature
          * @demonstrates: setPokeVelocity to move an entity along a path
          * @demonstrates: draw an image directly onto the heads-up display
          */
@@ -2637,8 +2611,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 72
-         * @description: This level tests sticky obstacles
+         * @level: 72 This level tests sticky obstacles
          * @demonstrates: sticky obstacles. Note that the obstacle must have
          *                more density than the hero for these to work
          *                correctly.
@@ -2677,9 +2650,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 73
-         * @description: this level shows how to throw projectiles that rotate
-         *               correctly, and how to add one-sided entities
+         * @level: 73 this level shows how to throw projectiles that rotate
+         *         correctly, and how to add one-sided entities
          * @demonstrates: setRotateVectorThrow
          * @demonstrates: setOneSided
          */
@@ -2722,8 +2694,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 74
-         * @description: this level shows how to use multiple types of goodies
+         * @level: 74 this level shows how to use multiple types of goodies
          * @demonstrates: Different activationscores for destinations
          * @demonstrates: different goodiecounts from controls
          * @demonstrates: Goodies with different score types that increment
@@ -2768,8 +2739,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 75
-         * @description: this level shows passthrough objects
+         * @level: 75 this level shows passthrough objects
          * @demonstrates: setting passthrough
          */
         else if (whichLevel == 75) {
@@ -2795,8 +2765,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 76
-         * @description: Demonstrate the use of a turbo boost button
+         * @level: 76 Demonstrate the use of a turbo boost button
          * @demonstrates: Controls.addTurboButton
          */
         else if (whichLevel == 76) {
@@ -2833,9 +2802,8 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 77
-         * @description: Demonstrate a control that doesn't stop the hero upon
-         *               release
+         * @level: 77 Demonstrate a control that doesn't stop the hero upon
+         *         release
          * @demonstrates: Controls.addDampenedMotionButton
          */
         else if (whichLevel == 77) {
@@ -2867,8 +2835,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 78
-         * @description: Demonstrate how onesided and triggers interact
+         * @level: 78 Demonstrate how onesided and triggers interact
          */
         else if (whichLevel == 78) {
             // set up a simple level
@@ -2898,8 +2865,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 79
-         * @description: A test of extended PokePath features
+         * @level: 79 A test of extended PokePath features
          * @demonstrates: setKeepPokeEntity to avoid re-touching the hero every
          *                time we want to register a new movement
          * @demonstrates: setPokePathFixedVelocity to always have the same
@@ -2926,8 +2892,7 @@ public class MyLolGame extends LOL {
         }
 
         /**
-         * @level: 80
-         * @description: A test of gravity-defying objects
+         * @level: 80 A test of gravity-defying objects
          * @demonstrates: setGravityDefy
          */
         else if (whichLevel == 80) {
@@ -3105,7 +3070,7 @@ public class MyLolGame extends LOL {
      * @param whichLevel The current level
      */
     @Override
-    public void onTimeTrigger(int id, int whichLevel) {
+    public void onTimerTrigger(int id, int whichLevel) {
         // here's the code for level 62
         if (whichLevel == 62) { // after first trigger, print a message, draw an
                                 // enemy, register a new timer
@@ -3159,29 +3124,41 @@ public class MyLolGame extends LOL {
      * @param e The enemy to modify
      */
     @Override
-    public void onEnemyTimeTrigger(int id, int whichLevel, Enemy e) {
+    public void onEnemyTimerTrigger(int id, int whichLevel, Enemy e) {
+        // Code for level 48's EnemyTimerTrigger
         if (whichLevel == 48) {
-            // the ID represents the number of remaining reproductions for the
-            // current enemy (e), so that we don't reproduce forever (note that
-            // we could, if we wanted to...)
+            // we're simulating cancer cells that can reproduce a fixed number
+            // of times. The ID here represents the number of remaining
+            // reproductions for the current enemy (e), so that we don't
+            // reproduce forever (note that we could, if we wanted to...)
+
+            // make an enemy just like "e", but to the left
             Enemy left = Enemy.makeAsCircle(e.getXPosition() - 2 * id, e.getYPosition() + 2 * id,
                     e.getWidth(), e.getHeight(), "redball.png");
             left.setDisappearSound("lowpitch.ogg");
+
+            // make an enemy just like "e", but to the right
             Enemy right = Enemy.makeAsCircle(e.getXPosition() + 2 * id, e.getYPosition() + 2 * id,
                     e.getWidth(), e.getHeight(), "redball.png");
             right.setDisappearSound("lowpitch.ogg");
+
+            // if there are reproductions left, then have e and its two new
+            // children all reproduce in 2 seconds
             if (id > 0) {
                 Level.setEnemyTimerTrigger(id - 1, 2, left);
                 Level.setEnemyTimerTrigger(id - 1, 2, e);
                 Level.setEnemyTimerTrigger(id - 1, 2, right);
             }
-        } else if (whichLevel == 49) {
+        }
+        // Code for level 49's EnemyTimerTrigger
+        else if (whichLevel == 49) {
             // in this case, every enemy will produce one offspring on each
             // timer
             Enemy e2 = Enemy.makeAsCircle(e.getXPosition(), e.getYPosition(), e.getWidth(),
                     e.getHeight(), "redball.png");
             e2.setPhysics(1.0f, 0.3f, 0.6f);
             e2.setMoveByTilting();
+            // make more enemies?
             if (id > 0) {
                 Level.setEnemyTimerTrigger(id - 1, 2, e);
                 Level.setEnemyTimerTrigger(id - 1, 2, e2);
@@ -3245,10 +3222,16 @@ public class MyLolGame extends LOL {
      */
     @Override
     public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p) {
-        /*
-         * if (whichLevel == 47) { // do nothing... as long as there is a
-         * collision registered, the projectile won't disappear... }
-         */
+        if (whichLevel == 47) {
+            if (id == 7) {
+                // don't do anything... we want the projectile to stay on the
+                // screen!
+            } else {
+                // the ID is not 7... remove the projectile without making a
+                // projectile disappear sound.
+                p.remove(true);
+            }
+        }
     }
 
     /**
