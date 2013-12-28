@@ -27,21 +27,18 @@
 
 package edu.lehigh.cse.lol;
 
+// TODO: does splash work with "" for sound and background image?
+
 // TODO: Should we allow the creation of arbitrary polygons?
 
 // TODO: verify that flipped animations work correctly, even when they change while flipped
 
 // TODO: the unlock mechanism is untested
 
-// TODO: aggressively comment MyLolGame (done up to level 49)
-
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects, without
 // resorting to the ugliness in level 55
 
-// TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
-// feature, and on-screen 'back' buttons that go with it? (Status: only Chooser is a serious issue)
-
-// TODO: Chooser.java should be redesigned into multiple screens
+// TODO: Finish Chooser.java
 
 // TODO: Hero animation sequences could use work.  The problem is that goodie count animation information
 // can be lost if we animate, then return from the animation.  Furthermore, we don't have support for
@@ -63,11 +60,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: Demo projectile setCollisionOk?
 
-// TODO: demo Enemy collide triggers with delay
-
 // TODO: consider making sprite sheets more useful
-
-// TODO: Hover has a zoom bug
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -135,8 +128,8 @@ public abstract class LOL extends Game {
     void doSplash() {
         // set the default display mode
         mCurrLevelNum = 0;
-        mMode = Modes.SPLASH;
         mCurrHelpNum = 0;
+        mMode = Modes.SPLASH;
         setScreen(new Splash());
     }
 
@@ -153,7 +146,6 @@ public abstract class LOL extends Game {
                 doPlayLevel(1);
             return;
         }
-        mCurrLevelNum = 0;
         mCurrHelpNum = 0;
         mMode = Modes.CHOOSE;
         setScreen(new Chooser(this));

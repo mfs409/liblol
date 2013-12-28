@@ -85,11 +85,15 @@ public class PreScene {
      * Hide the PreScene, and resume any timers.
      */
     private void hide() {
+        // resume timers only on clickToClear, because that's the only time
+        // they're suspended
+        if (mClickToClear) {
+            long showTime = System.nanoTime() - showingAt;
+            showTime /= 1000000;
+            Timer.instance().delay(showTime);
+            Timer.instance().start();
+        }
         Level.sCurrent.mPreScene.mVisible = false;
-        long showTime = System.nanoTime() - showingAt;
-        showTime /= 1000000;
-        Timer.instance().delay(showTime);
-        Timer.instance().start();
     }
 
     /**
@@ -183,6 +187,8 @@ public class PreScene {
     public static void setExpire(float duration) {
         if (duration > 0) {
             getCurrPreScene().mClickToClear = false;
+            // resume timers, or this won't work
+            Timer.instance().start();
             Timer.schedule(new Task() {
                 @Override
                 public void run() {

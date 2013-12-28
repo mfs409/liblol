@@ -51,12 +51,12 @@ public class Splash extends ScreenAdapter {
     /**
      * The camera for displaying the scene
      */
-    private OrthographicCamera mCamera;
+    private final OrthographicCamera mCamera;
 
     /**
      * A rectangle for tracking the location of the play button
      */
-    private Rectangle mPlay;
+    private final Rectangle mPlay;
 
     /**
      * A rectangle for tracking the location of the help button
@@ -66,27 +66,27 @@ public class Splash extends ScreenAdapter {
     /**
      * A rectangle for tracking the location of the quit button
      */
-    private Rectangle mQuit;
+    private final Rectangle mQuit;
 
     /**
      * For handling touches
      */
-    private Vector3 mV = new Vector3();
+    private final Vector3 mV = new Vector3();
 
     /**
      * For rendering
      */
-    private SpriteBatch mSpriteBatch = new SpriteBatch();
+    private final SpriteBatch mSpriteBatch = new SpriteBatch();
 
     /**
      * For debug rendering
      */
-    private ShapeRenderer mShapeRender = new ShapeRenderer();
+    private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
     /**
      * The image to display
      */
-    private TextureRegion mImage;
+    private final TextureRegion mImage;
 
     /**
      * The music to play
@@ -128,7 +128,7 @@ public class Splash extends ScreenAdapter {
      * Start the music if it's not already playing
      */
     public void playMusic() {
-        if (!mMusicPlaying) {
+        if (!mMusicPlaying && mMusic != null) {
             mMusicPlaying = true;
             mMusic.play();
         }
