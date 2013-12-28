@@ -27,13 +27,13 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+
+import java.util.ArrayList;
 
 /**
  * PreScene provides a way to put a pop-up on the screen before a level begins.
@@ -43,7 +43,7 @@ public class PreScene {
     /**
      * The text and pictures to display
      */
-    private ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * True if we must click in order to clear the PreScene
@@ -54,6 +54,11 @@ public class PreScene {
      * True when the scene is being displayed
      */
     private boolean mVisible = true;
+
+    /**
+     * Time that the PauseScene started being shown, so we can update timers
+     */
+    private long showingAt;
 
     /**
      * Get the PreScene that is configured for the current level, or create a
@@ -70,7 +75,21 @@ public class PreScene {
         ps = new PreScene();
         Level.sCurrent.suspendTouch();
         Level.sCurrent.mPreScene = ps;
+        // pause the timer
+        Timer.instance().stop();
+        ps.showingAt = System.nanoTime();
         return ps;
+    }
+
+    /**
+     * Hide the PreScene, and resume any timers.
+     */
+    private void hide() {
+        Level.sCurrent.mPreScene.mVisible = false;
+        long showTime = System.nanoTime() - showingAt;
+        showTime /= 1000000;
+        Timer.instance().delay(showTime);
+        Timer.instance().start();
     }
 
     /**
@@ -87,7 +106,7 @@ public class PreScene {
         // disable the scene
         if (mClickToClear) {
             if (Gdx.input.justTouched()) {
-                mVisible = false;
+                hide();
                 return false;
             }
         }
@@ -136,10 +155,8 @@ public class PreScene {
      * @param fontName The font file to use
      * @param size The size of the text
      */
-    public static void addText(String text, int red, int green, int blue, String fontName,
-            int size) {
-        getCurrPreScene().mSprites.add(Util
-                .makeText(text, red, green, blue, fontName, size));
+    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
+        getCurrPreScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -169,7 +186,7 @@ public class PreScene {
             Timer.schedule(new Task() {
                 @Override
                 public void run() {
-                    Level.sCurrent.mPreScene.mVisible = false;
+                    getCurrPreScene().hide();
                 }
             }, duration);
         }

@@ -27,13 +27,14 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Timer;
+
+import java.util.ArrayList;
 
 /**
  * PauseScene provides a way to suspend gameplay briefly and display information
@@ -43,12 +44,12 @@ public class PauseScene {
     /**
      * All text and images that go on the PauseScreen are stored here
      */
-    private ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * Track if the PauseScene is visible. Initially it is not.
      */
-    boolean mVisible;
+    private boolean mVisible;
 
     /**
      * A PauseScene can have a back button, which we represent with this
@@ -59,7 +60,12 @@ public class PauseScene {
     /**
      * For handling touches
      */
-    private Vector3 mV = new Vector3();
+    private final Vector3 mV = new Vector3();
+
+    /**
+     * Time that the PauseScene started being shown, so we can update timers
+     */
+    private long showingAt;
 
     /**
      * Get the PauseScene that is configured for the current level, or create a
@@ -97,8 +103,12 @@ public class PauseScene {
                 mVisible = false;
                 return false;
             }
-            // otherwise, just clear the pauseScene
+            // otherwise, just clear the pauseScene (be sure to resume timers)
             mVisible = false;
+            long showTime = System.nanoTime() - showingAt;
+            showTime /= 1000000;
+            Timer.instance().delay(showTime);
+            Timer.instance().start();
             return false;
         }
         // clear screen and draw sprites via HudCam
@@ -147,8 +157,7 @@ public class PauseScene {
      * @param size The font size to use
      */
     public static void addText(String text, int red, int green, int blue, String fontName, int size) {
-        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue, fontName,
-                size));
+        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -178,5 +187,22 @@ public class PauseScene {
     public static void addBackButton(String imgName, int x, int y, int width, int height) {
         getCurrPauseScene().mBackRectangle = new Rectangle(x, y, width, height);
         getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
+    }
+
+    /**
+     * Show the pause screen
+     */
+    public static void show() {
+        Timer.instance().stop();
+        getCurrPauseScene().mVisible = true;
+        getCurrPauseScene().showingAt = System.nanoTime();
+    }
+
+    /**
+     * Clear everything off of the level's pause scene, so it can be reused
+     */
+    public static void reset() {
+        getCurrPauseScene().mSprites.clear();
+        getCurrPauseScene().mBackRectangle = null;
     }
 }

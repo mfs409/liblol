@@ -35,16 +35,21 @@ package edu.lehigh.cse.lol;
 
 // TODO: aggressively comment MyLolGame (done up to level 49)
 
-// TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects
+// TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects, without
+// resorting to the ugliness in level 55
 
 // TODO: we're too dependent on the 'back' key on android phones right now... consider having a universal 'pause'
 // feature, and on-screen 'back' buttons that go with it? (Status: only Chooser is a serious issue)
 
 // TODO: Chooser.java should be redesigned into multiple screens
 
-// TODO: Hero animation sequences could use work.  The problem is that goodie count animation information 
-// can be lost if we animate, then return from the animation.  Furthermore, we don't have support for 
+// TODO: Hero animation sequences could use work.  The problem is that goodie count animation information
+// can be lost if we animate, then return from the animation.  Furthermore, we don't have support for
 // invincible+X animation, or jump+crawl animation
+
+// TODO: it would be good to have persistent scores... can we easily do it in a general way?
+
+// TODO: how about displaying distance traveled?
 
 // TODO: add jump-to-defeat enemies
 
@@ -69,6 +74,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Timer;
 
 public abstract class LOL extends Game {
     /**
@@ -222,6 +228,8 @@ public abstract class LOL extends Game {
      * being pressed (e.g., a back button), this code runs.
      */
     void handleBack() {
+        // clear all timers, just in case...
+        Timer.instance().clear();
         // if we're looking at main menu, then exit
         if (mMode == Modes.SPLASH) {
             dispose();

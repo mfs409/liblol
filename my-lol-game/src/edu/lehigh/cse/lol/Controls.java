@@ -510,7 +510,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                Level.sCurrent.mPauseScene.mVisible = true;
+                PauseScene.show();
             }
         };
         Level.sCurrent.mControls.add(he);
