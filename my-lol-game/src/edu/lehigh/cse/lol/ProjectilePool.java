@@ -78,12 +78,12 @@ public class ProjectilePool {
     /**
      * A collection of all the available projectiles
      */
-    private Projectile mPool[];
+    private final Projectile mPool[];
 
     /**
      * The number of projectiles in the pool
      */
-    private int mPoolSize;
+    private final int mPoolSize;
 
     /**
      * Index of next available projectile in the pool
@@ -145,7 +145,7 @@ public class ProjectilePool {
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
-            mPool[i].mStickyDelay = strength;
+            mPool[i].mStrength = strength;
         }
         mNextIndex = 0;
         mPoolSize = size;

@@ -1141,11 +1141,15 @@ public abstract class PhysicsSprite implements Renderable {
                 // multiply by speed
                 x *= speed;
                 y *= speed;
-                // remove changes for disabled directions
-                if (!chaseInX)
+                // remove changes for disabled directions, and boost the other dimension a little bit
+                if (!chaseInX) {
                     x = mBody.getLinearVelocity().x;
-                if (!chaseInY)
+                    y*= 2;
+                }
+                if (!chaseInY) {
                     y = mBody.getLinearVelocity().y;
+                    x*= 2;
+                }
                 // apply velocity
                 updateVelocity(x, y);
             }

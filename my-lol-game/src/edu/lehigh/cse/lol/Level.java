@@ -27,8 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
@@ -49,6 +47,8 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Controls.HudEntity;
+
+import java.util.ArrayList;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they
@@ -109,7 +109,7 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(5);
+    private final ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(5);
 
     /**
      * The controls / heads-up-display
@@ -165,23 +165,23 @@ public class Level extends ScreenAdapter {
     /**
      * The debug renderer, for printing circles and boxes for each entity
      */
-    private Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
+    private final Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
 
     /**
      * The spritebatch for drawing all texture regions and fonts
      */
-    private SpriteBatch mSpriteBatch = new SpriteBatch();
+    private final SpriteBatch mSpriteBatch = new SpriteBatch();
 
     /**
      * The debug shape renderer, for putting boxes around HUD entities
      */
-    private ShapeRenderer mShapeRender = new ShapeRenderer();
+    private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
     /**
      * We use this to avoid garbage collection when converting screen touches to
      * camera coordinates
      */
-    private Vector3 mTouchVec = new Vector3();
+    private final Vector3 mTouchVec = new Vector3();
 
     /**
      * When there is a touch of an entity in the physics world, this is how we
@@ -198,7 +198,7 @@ public class Level extends ScreenAdapter {
      * Our polling-based multitouch uses this array to track the previous state
      * of 4 fingers
      */
-    private boolean[] mLastTouches = new boolean[4];
+    private final boolean[] mLastTouches = new boolean[4];
 
     /**
      * When transitioning between a pre-scene and the game, we need to be sure
@@ -271,22 +271,22 @@ public class Level extends ScreenAdapter {
         /**
          * This matrix helps us compute the view
          */
-        private Matrix4 parallaxView = new Matrix4();
+        private final Matrix4 parallaxView = new Matrix4();
 
         /**
          * This matrix helps us compute the camera.combined
          */
-        private Matrix4 parallaxCombined = new Matrix4();
+        private final Matrix4 parallaxCombined = new Matrix4();
 
         /**
          * A temporary vector for doing the calculations
          */
-        private Vector3 tmp = new Vector3();
+        private final Vector3 tmp = new Vector3();
 
         /**
          * Another temporary vector for doing the calculations
          */
-        private Vector3 tmp2 = new Vector3();
+        private final Vector3 tmp2 = new Vector3();
 
         /**
          * The constructor simply forwards to the OrthographicCamera constructor
@@ -435,12 +435,12 @@ public class Level extends ScreenAdapter {
         playMusic();
 
         // Handle pauses due to pre, pause, or post scenes... Note that these
-        // handle their own screen touches
+        // handle their own screen touches... Note that postscene should come first.
+        if (mPostScene != null && mPostScene.render(mSpriteBatch))
+            return;
         if (mPreScene != null && mPreScene.render(mSpriteBatch))
             return;
         if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
-            return;
-        if (mPostScene != null && mPostScene.render(mSpriteBatch))
             return;
 
         // check for any scene touches that should generate new events to
@@ -549,11 +549,11 @@ public class Level extends ScreenAdapter {
         if (x > mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
             x = mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2;
+            / Physics.PIXEL_METER_RATIO / 2;
         if (y > mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
             y = mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2;
+            / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
