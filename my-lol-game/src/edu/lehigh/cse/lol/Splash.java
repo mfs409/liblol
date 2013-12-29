@@ -34,7 +34,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -86,7 +85,7 @@ public class Splash extends ScreenAdapter {
     /**
      * The image to display
      */
-    private final TextureRegion mImage;
+    private final TextureRegion[] mImage;
 
     /**
      * The music to play
@@ -119,7 +118,7 @@ public class Splash extends ScreenAdapter {
         mQuit = new Rectangle(sc.getQuitX(), sc.getQuitY(), sc.getQuitWidth(), sc.getQuitHeight());
 
         // get the background image and music
-        mImage = new TextureRegion(new Texture(Gdx.files.internal(sc.getBackgroundImage())));
+        mImage = Media.getImage(sc.getBackgroundImage());
         if (LOL.sGame.mSplashConfig.getMusic() != null)
             mMusic = Media.getMusic(sc.getMusic());
     }
@@ -191,14 +190,15 @@ public class Splash extends ScreenAdapter {
 
         // now draw the screen...
         GLCommon gl = Gdx.gl;
-        gl.glClearColor(1, 0, 0, 1);
+        gl.glClearColor(0, 0, 0, 1);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mCamera.update();
         mSpriteBatch.setProjectionMatrix(mCamera.combined);
         mSpriteBatch.begin();
         mSpriteBatch.enableBlending();
-        mSpriteBatch.draw(mImage, 0, 0, LOL.sGame.mConfig.getScreenWidth(),
-                LOL.sGame.mConfig.getScreenHeight());
+        if (mImage != null)
+            mSpriteBatch.draw(mImage[0], 0, 0, LOL.sGame.mConfig.getScreenWidth(),
+                    LOL.sGame.mConfig.getScreenHeight());
         mSpriteBatch.end();
 
         // DEBUG: show where the buttons' boxes are

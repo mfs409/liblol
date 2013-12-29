@@ -98,14 +98,32 @@ public interface ChooserConfiguration {
     int getLevelFontSize();
 
     /**
+     * This is the red component of the font for level buttons
+     */
+    int getLevelFontRed();
+
+    /**
+     * This is the green component of the font for level buttons
+     */
+    int getLevelFontGreen();
+
+    /**
+     * This is the blue component of the font for level buttons
+     */
+    int getLevelFontBlue();
+
+    /**
+     * This is the text to display on locked levels... it's usually "X"
+     */
+    String getLevelLockText();
+
+    /**
      * This is the name of the music file to play for the Chooser scenes
      */
     String getMusicName();
 
     /**
      * This is the name of the background image to display on the Chooser scenes
-     * 
-     * @return
      */
     String getBackgroundName();
 
@@ -140,12 +158,14 @@ public interface ChooserConfiguration {
     String getPrevButtonName();
 
     /**
-     * The X coordinate of bottom left corner of the "previous chooser screen" button
+     * The X coordinate of bottom left corner of the "previous chooser screen"
+     * button
      */
     int getPrevButtonX();
 
     /**
-     * The Y coordinate of bottom left corner of the "previous chooser screen" button
+     * The Y coordinate of bottom left corner of the "previous chooser screen"
+     * button
      */
     int getPrevButtonY();
 
@@ -165,12 +185,14 @@ public interface ChooserConfiguration {
     String getNextButtonName();
 
     /**
-     * The X coordinate of the bottom left corner of the "next chooser screen" button
+     * The X coordinate of the bottom left corner of the "next chooser screen"
+     * button
      */
     int getNextButtonX();
 
     /**
-     * The Y coordinate of the bottom left corner of the "next chooser screen" button
+     * The Y coordinate of the bottom left corner of the "next chooser screen"
+     * button
      */
     int getNextButtonY();
 

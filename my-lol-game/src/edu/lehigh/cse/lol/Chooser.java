@@ -42,78 +42,76 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
+/**
+ * The Chooser is a screen that gives the player a choice of levels of the game
+ * to play.
+ */
 public class Chooser extends ScreenAdapter {
 
     /**
      * The "Previous Chooser Screen" button
      */
-    Button mPrev;
+    private Button mPrev;
 
     /**
      * The "Next Chooser Screen" button
      */
-    Button mNext;
+    private Button mNext;
 
     /**
      * The "Back To Splash" button
      */
-    Button mBack;
+    private final Button mBack;
 
     /**
-     * The image to display
+     * The image to display as the background
      */
-    TextureRegion[] mImage;
+    private final TextureRegion[] mImage;
 
     /**
      * The music to play
      */
-    Music mMusic;
+    private Music mMusic;
 
     /**
      * Track if the music is actually playing
      */
-    boolean mMusicPlaying;
-
-    /**
-     * Start the music if it's not already playing
-     */
-    public void playMusic() {
-        if (!mMusicPlaying && mMusic != null) {
-            mMusicPlaying = true;
-            mMusic.play();
-        }
-    }
-
-    /**
-     * Pause the music if it's playing
-     */
-    public void pauseMusic() {
-        if (mMusicPlaying) {
-            mMusicPlaying = false;
-            mMusic.pause();
-        }
-    }
-
-    /**
-     * Stop the music if it's playing
-     */
-    public void stopMusic() {
-        if (mMusicPlaying) {
-            mMusicPlaying = false;
-            mMusic.stop();
-        }
-    }
+    private boolean mMusicPlaying;
 
     /**
      * For tracking touches
      */
-    private final Vector3 mTouchVec = new Vector3();
+    private final Vector3 mV = new Vector3();
 
     /**
-     * A helper class for tracking where the buttons are, since we don't have an
-     * easy way to know which lines are touched.
+     * All the level boxes we drew
      */
-    class Button {
+    private final Button[] levels;
+
+    /**
+     * The camera we will use
+     */
+    private final OrthographicCamera mCamera;
+
+    /**
+     * For rendering
+     */
+    private final SpriteBatch mSpriteBatch;
+
+    /**
+     * For making text
+     */
+    private final BitmapFont mFont;
+
+    /**
+     * For debug rendering
+     */
+    private final ShapeRenderer mShapeRender;
+
+    /**
+     * A helper class for tracking where the buttons are
+     */
+    private class Button {
         /**
          * The rectangle that describes the coordinates of this button
          */
@@ -144,94 +142,79 @@ public class Chooser extends ScreenAdapter {
             mLevel = level;
             mTr = Media.getImage(imgName);
         }
-
-        void render(SpriteBatch sb, BitmapFont bf) {
-        }
     }
 
     /**
-     * All the level boxes we drew
+     * Construct a chooser for the currently selected set of levels, and prepare
+     * all the buttons
      */
-    Button[] levels;
-
-    /**
-     * The camera we will use
-     */
-    OrthographicCamera mCamera;
-
-    /**
-     * For rendering
-     */
-    SpriteBatch mSpriteBatch;
-
-    BitmapFont mFont;
-
-    ShapeRenderer mShapeRender;
-
-    int bWidth;
-
-    int bHeight;
-
-    int hGutter;
-
-    int vGutter;
-
-    public Chooser(LOL game) {
-
-        Gdx.app.log("num", "" + LOL.sGame.mCurrLevelNum);
+    public Chooser() {
+        // start by getting the pieces of configuration that we use over and
+        // over again
         ChooserConfiguration cc = LOL.sGame.mChooserConfig;
+        int levelsPerChooser = cc.getColumns() * cc.getRows();
+        int totalLevels = LOL.sGame.mConfig.getNumLevels();
 
-        bWidth = cc.getLevelButtonWidth();
-        bHeight = cc.getLevelButtonHeight();
-        hGutter = cc.getHPadding();
-        vGutter = cc.getBPadding();
-
-        // get the background image and music
+        // set up the background image and music
         mImage = Media.getImage(cc.getBackgroundName());
         if (cc.getMusicName() != null)
             mMusic = Media.getMusic(cc.getMusicName());
 
+        // always make the back button
         mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(), cc.getBackButtonWidth(),
                 cc.getBackButtonHeight(), 0, cc.getBackButtonName());
-        mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
-                cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
-        mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
-                cc.getNextButtonHeight(), 0, cc.getNextButtonName());
 
-        int numLevels = LOL.sGame.mConfig.getNumLevels();
+        // make the previous button if we aren't drawing the first set of
+        // choices
+        if (LOL.sGame.mCurrLevelNum > levelsPerChooser) {
+            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
+                    cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
+        }
 
+        // make the next button if we aren't drawing the last set of choices
+        if (LOL.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
+            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
+                    cc.getNextButtonHeight(), 0, cc.getNextButtonName());
+        }
 
-        int maxnum = cc.getColumns() * cc.getRows();
+        // figure out the first level to draw on this chooser. Note that '0' is
+        // a possible value of mCurrLevelNum when we come straight from Splash,
+        // so we must handle it
         int first = LOL.sGame.mCurrLevelNum;
-        if (first > 0) first--;
-        first -= first % maxnum;
-        first += 1;
-        int q = first + maxnum - 1;
-        Gdx.app.log("note", "first=" + first + " maxnum=" + maxnum + " q=" + q);
+        if (first > 0)
+            first--;
+        first = first - (first % levelsPerChooser) + 1;
+        // figure out the last level to draw on this chooser
+        int last = Math.min(totalLevels, first + levelsPerChooser - 1);
 
-        int last = Math.min(numLevels, q);
-        Gdx.app.log("last", "" + last);
-
-        levels = new Button[maxnum];
-        // figure out number of rows and columns...
+        // get screen dimensions, and figure out the *top* left corner of the
+        // first level button
         int camWidth = LOL.sGame.mConfig.getScreenWidth();
         int camHeight = LOL.sGame.mConfig.getScreenHeight();
-
         int top = camHeight - cc.getTopMargin();
         int left = cc.getLeftMargin();
 
-        int next = 0;
+        // button dimensions
+        int bWidth = cc.getLevelButtonWidth();
+        int bHeight = cc.getLevelButtonHeight();
+        // padding
+        int hGutter = cc.getHPadding();
+        int vGutter = cc.getBPadding();
+        // position of next button
         int mytop = top - bHeight;
         int myleft = left;
+        // now let's make buttons for the levels
+        levels = new Button[levelsPerChooser];
+        int index = 0;
         for (int i = first; i <= last; ++i) {
+            // move down a row?
             if (i % cc.getColumns() == 1 && i != first) {
-                Gdx.app.log("h", "newline");
                 mytop = mytop - bHeight - vGutter;
                 myleft = left;
             }
-            levels[next] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
+            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
             myleft = myleft + bWidth + hGutter;
-            next++;
+            index++;
         }
 
         // configure the camera
@@ -240,138 +223,120 @@ public class Chooser extends ScreenAdapter {
 
         // create a font
         mFont = Media.getFont(cc.getLevelFont(), cc.getLevelFontSize());
-
-        // and our renderers
+        mFont.setColor(((float)cc.getLevelFontRed()) / 255, ((float)cc.getLevelFontGreen()) / 255,
+                ((float)cc.getLevelFontBlue()) / 255, 1);
+        // and create our renderers
         mSpriteBatch = new SpriteBatch();
         mShapeRender = new ShapeRenderer();
     }
 
+    /**
+     * Start the music if it's not already playing
+     */
+    private void playMusic() {
+        if (!mMusicPlaying && mMusic != null) {
+            mMusicPlaying = true;
+            mMusic.play();
+        }
+    }
+
+    /**
+     * Pause the music if it's playing
+     */
+    private void pauseMusic() {
+        if (mMusicPlaying) {
+            mMusicPlaying = false;
+            mMusic.pause();
+        }
+    }
+
+    /**
+     * Stop the music if it's playing
+     */
+    private void stopMusic() {
+        if (mMusicPlaying) {
+            mMusicPlaying = false;
+            mMusic.stop();
+        }
+    }
+
+    /**
+     * Render the chooser
+     * 
+     * @param delta The time since the last call to render
+     */
     @Override
     public void render(float delta) {
+        // make sure music is playing, and check for touches
         playMusic();
-        manageTouches();
+        if (Gdx.input.justTouched())
+            touchDown(Gdx.input.getX(0), Gdx.input.getY(0));
 
+        // update the camera
         mCamera.update();
 
         // clear the screen
         GLCommon gl = Gdx.gl;
-        gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
+        gl.glClearColor(0, 0, 0, 1);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // draw squares...
-        mShapeRender.setProjectionMatrix(mCamera.combined);
-        mShapeRender.begin(ShapeType.Line);
-        mShapeRender.setColor(Color.BLUE);
-
-        mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width, mBack.mRect.height);
-        mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width, mPrev.mRect.height);
-        mShapeRender.rect(mNext.mRect.x, mNext.mRect.y, mNext.mRect.width, mNext.mRect.height);
-
-        for (Button ls : levels) {
-            if (ls != null) {
-                mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
-                mShapeRender.rect(ls.mRect.x + 1, ls.mRect.y + 1, ls.mRect.width - 2,
-                        ls.mRect.height - 2);
-            }
-        }
-        mShapeRender.end();
-
-        mShapeRender.begin(ShapeType.Filled);
-        mShapeRender.setColor(.4f, .4f, .4f, 0.9f);
-        int unlocked = LOL.sGame.readUnlocked();
-        for (Button ls : levels) {
-            if (ls != null) {
-                if (ls.mLevel > unlocked && !LOL.sGame.mConfig.getUnlockMode()) {
-                    mShapeRender.rect(ls.mRect.x + 2, ls.mRect.y + 2, ls.mRect.width - 4,
-                            ls.mRect.height - 4);
-                }
-            }
-        }
-        mShapeRender.end();
 
         mSpriteBatch.setProjectionMatrix(mCamera.combined);
         mSpriteBatch.begin();
-
+        // draw the background image
         if (mImage != null)
             mSpriteBatch.draw(mImage[0], 0, 0, LOL.sGame.mConfig.getScreenWidth(),
                     LOL.sGame.mConfig.getScreenHeight());
-
-        if (mBack.mTr != null)
-            mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
-                    mBack.mRect.height);
-        if (mPrev.mTr != null)
+        // draw back/prev/next
+        mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
+                mBack.mRect.height);
+        if (mPrev != null && mPrev.mTr != null)
             mSpriteBatch.draw(mPrev.mTr[0], mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width,
                     mPrev.mRect.height);
-        if (mNext.mTr != null)
+        if (mNext != null && mNext.mTr != null)
             mSpriteBatch.draw(mNext.mTr[0], mNext.mRect.x, mNext.mRect.y, mNext.mRect.width,
                     mNext.mRect.height);
 
-        for (Button ls : levels) {
-            if (ls != null) {
-                float x = mFont.getBounds(ls.mLevel + "").width;
-                float y = mFont.getBounds(ls.mLevel + "").height;
-                mFont.draw(mSpriteBatch, ls.mLevel + "", ls.mRect.x + bWidth / 2 - x / 2,
-                        ls.mRect.y + bHeight - y);
-            }
-        }
-
-        mSpriteBatch.end();
-    }
-
-    // Here's a quick and dirty way to manage multitouch via polling
-    boolean[] lastTouches = new boolean[4];
-
-    void manageTouches() {
-        // poll for touches
-        // assume no more than 4 simultaneous touches
-        boolean[] touchStates = new boolean[4];
-        for (int i = 0; i < 4; ++i) {
-            touchStates[i] = Gdx.input.isTouched(i);
-            float x = Gdx.input.getX(i);
-            float y = Gdx.input.getY(i);
-            if (touchStates[i] && lastTouches[i]) {
-                // touchDragged((int)x, (int)y, i);
-            } else if (touchStates[i] && !lastTouches[i]) {
-                touchDown((int)x, (int)y, i, 0);
-            } else if (!touchStates[i] && lastTouches[i]) {
-                // touchUp((int)x, (int)y, i, 0);
-            }
-            lastTouches[i] = touchStates[i];
-        }
-    }
-
-    private boolean touchDown(int x, int y, int pointer, int newParam) {
-        mCamera.unproject(mTouchVec.set(x, y, 0));
-        ChooserConfiguration cc = LOL.sGame.mChooserConfig;
-        if (mBack.mRect.contains(mTouchVec.x, mTouchVec.y)) {
-            Gdx.app.log("hey", "back");
-            LOL.sGame.handleBack();
-        }
-        if (mPrev.mRect.contains(mTouchVec.x, mTouchVec.y)) {
-            Gdx.app.log("hey", "prev");
-            LOL.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
-            LOL.sGame.doChooser();
-        }
-        if (mNext.mRect.contains(mTouchVec.x, mTouchVec.y)) {
-            Gdx.app.log("hey", "Next");
-            if (LOL.sGame.mCurrLevelNum == 0)
-                LOL.sGame.mCurrLevelNum = 1;
-            LOL.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
-            LOL.sGame.doChooser();
-        }
-
+        // draw the level buttons
         int unlocked = LOL.sGame.readUnlocked();
         for (Button ls : levels) {
             if (ls != null) {
-                if (ls.mLevel <= unlocked || LOL.sGame.mConfig.getUnlockMode()) {
-                    if (ls.mRect.contains(mTouchVec.x, mTouchVec.y)) {
-                        LOL.sGame.doPlayLevel(ls.mLevel);
-                        return true;
-                    }
-                }
+                // draw picture
+                mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y, ls.mRect.width,
+                        ls.mRect.height);
+                // draw overlay text
+                String txt = ls.mLevel + "";
+                if (ls.mLevel > unlocked && !LOL.sGame.mConfig.getUnlockMode())
+                    txt = LOL.sGame.mChooserConfig.getLevelLockText();
+                float x = mFont.getBounds(txt).width;
+                float y = mFont.getBounds(txt).height;
+                mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2 - x / 2, ls.mRect.y
+                        + ls.mRect.height / 2 + y / 2);
             }
         }
-        return false;
+        mSpriteBatch.end();
+
+        // DEBUG: show the buttons' boxes
+        if (LOL.sGame.mConfig.showDebugBoxes()) {
+            // draw squares...
+            mShapeRender.setProjectionMatrix(mCamera.combined);
+            mShapeRender.begin(ShapeType.Line);
+            mShapeRender.setColor(Color.GRAY);
+
+            mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width, mBack.mRect.height);
+            if (mPrev != null)
+                mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width,
+                        mPrev.mRect.height);
+            if (mNext != null)
+                mShapeRender.rect(mNext.mRect.x, mNext.mRect.y, mNext.mRect.width,
+                        mNext.mRect.height);
+
+            for (Button ls : levels) {
+                if (ls != null) {
+                    mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
+                }
+            }
+            mShapeRender.end();
+        }
     }
 
     /**
@@ -388,5 +353,51 @@ public class Chooser extends ScreenAdapter {
     @Override
     public void hide() {
         pauseMusic();
+    }
+
+    /**
+     * Handle a screen touch by figuring out what button was pressed, and then
+     * taking action
+     * 
+     * @param x The X coordinate of the touch
+     * @param y The Y coordinate of the touch
+     */
+    private void touchDown(int x, int y) {
+        ChooserConfiguration cc = LOL.sGame.mChooserConfig;
+        // get the coordinates of the touch
+        mCamera.unproject(mV.set(x, y, 0));
+        // DEBUG: display touch coordinates
+        if (LOL.sGame.mConfig.showDebugBoxes()) {
+            Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
+        }
+        // handle 'back' presses
+        if (mBack.mRect.contains(mV.x, mV.y)) {
+            LOL.sGame.handleBack();
+            return;
+        }
+        // handle 'previous screen' requests
+        if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
+            LOL.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
+            LOL.sGame.doChooser();
+            return;
+        }
+        // handle 'next screen' requests
+        if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
+            // special case for when we came straight from the Splash screen
+            if (LOL.sGame.mCurrLevelNum == 0)
+                LOL.sGame.mCurrLevelNum = 1;
+            LOL.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
+            LOL.sGame.doChooser();
+            return;
+        }
+
+        // check for press to an unlocked level
+        int unlocked = LOL.sGame.readUnlocked();
+        for (Button ls : levels) {
+            if (ls != null && (ls.mLevel <= unlocked || LOL.sGame.mConfig.getUnlockMode())) {
+                if (ls.mRect.contains(mV.x, mV.y))
+                    LOL.sGame.doPlayLevel(ls.mLevel);
+            }
+        }
     }
 }

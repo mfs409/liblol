@@ -27,7 +27,7 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: does splash work with "" for sound and background image?
+// TODO: verify chooser and level music stops on Android events
 
 // TODO: Should we allow the creation of arbitrary polygons?
 
@@ -37,8 +37,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects, without
 // resorting to the ugliness in level 55
-
-// TODO: Finish Chooser.java
 
 // TODO: Hero animation sequences could use work.  The problem is that goodie count animation information
 // can be lost if we animate, then return from the animation.  Furthermore, we don't have support for
@@ -148,7 +146,7 @@ public abstract class LOL extends Game {
         }
         mCurrHelpNum = 0;
         mMode = Modes.CHOOSE;
-        setScreen(new Chooser(this));
+        setScreen(new Chooser());
     }
 
     /**

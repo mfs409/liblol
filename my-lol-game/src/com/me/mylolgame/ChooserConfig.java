@@ -52,7 +52,7 @@ public class ChooserConfig implements ChooserConfiguration {
     /**
      * This is the space, in pixels, between the top of the screen and the first
      * row of buttons
-     *
+     * 
      * @return
      */
     @Override
@@ -127,11 +127,43 @@ public class ChooserConfig implements ChooserConfiguration {
     }
 
     /**
+     * This is the red component of the font for level buttons
+     */
+    @Override
+    public int getLevelFontRed() {
+        return 255;
+    }
+
+    /**
+     * This is the green component of the font for level buttons
+     */
+    @Override
+    public int getLevelFontGreen() {
+        return 255;
+    }
+
+    /**
+     * This is the blue component of the font for level buttons
+     */
+    @Override
+    public int getLevelFontBlue() {
+        return 255;
+    }
+
+    /**
+     * This is the text to display on locked levels
+     */
+    @Override
+    public String getLevelLockText() {
+        return "X";
+    }
+
+    /**
      * This is the name of the music file to play for the Chooser scenes
      */
     @Override
     public String getMusicName() {
-        return "";
+        return "tune.ogg";
     }
 
     /**
@@ -139,7 +171,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getBackgroundName() {
-        return "";
+        return "fade.png";
     }
 
     /**

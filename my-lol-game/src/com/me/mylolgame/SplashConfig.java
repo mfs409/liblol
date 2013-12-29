@@ -58,6 +58,7 @@ public class SplashConfig implements SplashConfiguration {
      * you're not sure, click on the screen, and your 'console' in Eclipse
      * should tell you the coordinate where you clicked.
      */
+    @Override
     public int getPlayX() {
         return 92;
     }
@@ -65,6 +66,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The Y coordinate of the bottom left corner of the "PLAY" button.
      */
+    @Override
     public int getPlayY() {
         return 150;
     }
@@ -72,6 +74,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The width of the "PLAY" button
      */
+    @Override
     public int getPlayWidth() {
         return 75;
     }
@@ -79,6 +82,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The height of the "PLAY" button
      */
+    @Override
     public int getPlayHeight() {
         return 25;
     }
@@ -86,6 +90,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The X coordinate of the bottom left corner of the "HELP" button.
      */
+    @Override
     public int getHelpX() {
         return 284;
     }
@@ -93,6 +98,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The Y coordinate of the bottom left corner of the "HELP" button.
      */
+    @Override
     public int getHelpY() {
         return 140;
     }
@@ -100,6 +106,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The width of the "HELP" button
      */
+    @Override
     public int getHelpWidth() {
         return 70;
     }
@@ -107,6 +114,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The height of the "HELP" button
      */
+    @Override
     public int getHelpHeight() {
         return 25;
     }
@@ -114,6 +122,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The X coordinate of the bottom left corner of the "QUIT" button.
      */
+    @Override
     public int getQuitX() {
         return 163;
     }
@@ -121,6 +130,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The Y coordinate of the bottom left corner of the "QUIT" button.
      */
+    @Override
     public int getQuitY() {
         return 89;
     }
@@ -128,6 +138,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The width of the "QUIT" button
      */
+    @Override
     public int getQuitWidth() {
         return 75;
     }
@@ -135,6 +146,7 @@ public class SplashConfig implements SplashConfiguration {
     /**
      * The height of the "QUIT" button
      */
+    @Override
     public int getQuitHeight() {
         return 25;
     }
