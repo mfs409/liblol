@@ -1,7 +1,7 @@
 <!-- Fetch the latest stuff and put it in the right places -->
 <project name="fetch-natives" default="all">
   <property name="domain" value="http://libgdx.badlogicgames.com/nightlies/dist"/>
-  <property name="root" value="./my-gdx-game"/>
+  <property name="root" value="./my-lol-game"/>
 
   <target name="basic">
     <mkdir dir="${root}/libs"/>
@@ -44,7 +44,7 @@
 
   
   <!-- fetch gdx-backend-android.jar and gdx-backend-android-sources.jar to
-       my-gdx-game-android/libs -->
+       my-lol-game-android/libs -->
   <!-- get the appropriate libgdx-freetype.so and libgdx.so into each of
        armeabe, armeabi-v7a, and x86 folders within android/libs -->
 </project>
