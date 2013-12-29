@@ -114,6 +114,7 @@ public class Obstacle extends PhysicsSprite {
      * @param other The other entity involved in this collision
      * @param contact A description of the collision
      */
+    @Override
     void onCollide(PhysicsSprite other, Contact contact) {
     }
 
@@ -139,6 +140,26 @@ public class Obstacle extends PhysicsSprite {
     }
 
     /**
+     * Draw an obstacle with an underlying polygon shape
+     * 
+     * @param x X coordinate of the bottom left corner
+     * @param y Y coordinate of the bottom left corner
+     * @param width Width of the obstacle
+     * @param height Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param vertices Up to 16 coordinates representing the vertexes of this
+     *            polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The obstacle, so that it can be further modified
+     */
+    public static Obstacle makeAsPolygon(float x, float y, float width, float height,
+            String imgName, float... verts) {
+        Obstacle o = new Obstacle(width, height, imgName);
+        o.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
+        Level.sCurrent.addSprite(o, 0);
+        return o;
+    }
+
+    /**
      * Draw an obstacle with an underlying circle shape
      * 
      * @param x X coordinate of the bottom left corner
@@ -149,7 +170,7 @@ public class Obstacle extends PhysicsSprite {
      * @return The obstacle, so that it can be further modified
      */
     public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width,  height);
+        float radius = Math.max(width, height);
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(o, 0);
@@ -267,8 +288,8 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this,
-                                    (Hero)ps);
+                            Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum,
+                                    Obstacle.this, (Hero)ps);
                             return;
                         }
                         Timer.schedule(new Task() {
@@ -319,7 +340,8 @@ public class Obstacle extends PhysicsSprite {
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy)ps);
+                        Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this,
+                                (Enemy)ps);
                         return;
                     }
                     Timer.schedule(new Task() {
@@ -361,8 +383,8 @@ public class Obstacle extends PhysicsSprite {
                 for (int i = 0; i < 4; ++i)
                     match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
-                    Lol.sGame.onProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this,
-                            (Projectile)ps);
+                    Lol.sGame.onProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum,
+                            Obstacle.this, (Projectile)ps);
             }
         };
     }

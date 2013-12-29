@@ -36,9 +36,9 @@ import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.HelpLevel;
 import edu.lehigh.cse.lol.Hero;
+import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolConfiguration;
-import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Media;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.PauseScene;
@@ -49,9 +49,9 @@ import edu.lehigh.cse.lol.PreScene;
 import edu.lehigh.cse.lol.Projectile;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
-import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Score;
 import edu.lehigh.cse.lol.SplashConfiguration;
+import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Tilt;
 import edu.lehigh.cse.lol.Util;
 
@@ -2925,6 +2925,28 @@ public class MyLolGame extends Lol {
             d.setAbsoluteVelocity(-2, 0, false);
             d.setGravityDefy();
             Score.setVictoryDestination(1);
+        }
+
+        /*
+         * Test to show that we can have obstacles with a polygon shape
+         */
+        else if (whichLevel == 81) {
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.addText("Testing Polygons", 255, 255, 255, "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.disableRotation();
+            h.setMoveByTilting();
+
+            Destination.makeAsCircle(42, 14, 1, 1, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // create a polygon obstacle
+            Obstacle o = Obstacle.makeAsPolygon(10, 10, 2, 5, "blueball.png", -1,2,-1,0,0,-3,1,0,1,1);
+            o.setShrinkOverTime(1, 1, true);
         }
     }
 

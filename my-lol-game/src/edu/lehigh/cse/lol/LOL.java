@@ -29,7 +29,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: verify chooser and level music stops on Android events
 
-// TODO: Should we allow the creation of arbitrary polygons and multi-fixture bodies?
+// TODO: Should we allow the creation of multi-fixture bodies?  It probably won't work with resize...
 
 // TODO: verify that flipped animations work correctly, even when they change while flipped
 
@@ -38,9 +38,10 @@ package edu.lehigh.cse.lol;
 // TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects, without
 // resorting to the ugliness in level 55
 
-// TODO: Hero animation sequences could use work.  The problem is that goodie count animation information
-// can be lost if we animate, then return from the animation.  Furthermore, we don't have support for
-// invincible+X animation, or jump+crawl animation
+// TODO: Hero animation sequences could use work.  The problem is that goodie count animation
+// information can be lost if we animate, then return from the animation.  Part of the problem is
+// that animateByGoodieCount is ugly.  Furthermore, we don't have support for invincible+X
+// animation, or jump+crawl animation
 
 // TODO: it would be good to have persistent scores... can we easily do it in a general way?
 
@@ -49,10 +50,6 @@ package edu.lehigh.cse.lol;
 // TODO: add jump-to-defeat enemies
 
 // TODO: consider adding a wrapper to expose Box2d collision groups?
-
-// TODO: consider making the public interface use pixels instead of meters?
-
-// TODO: I'm not thrilled with the current animateByGoodieCount mechanism
 
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 

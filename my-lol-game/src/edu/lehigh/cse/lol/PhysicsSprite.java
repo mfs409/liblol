@@ -27,6 +27,7 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -57,9 +58,19 @@ public abstract class PhysicsSprite implements Renderable {
     Body mBody;
 
     /**
-     * Track whether the underlying body is a circle or box
+     * Track if the underlying body is a circle
      */
-    boolean mIsCircle;
+    private boolean mIsCircleBody;
+
+    /**
+     * Track if the underlying body is a box
+     */
+    private boolean mIsBoxBody;
+
+    /**
+     * Track if the underlying body is a polygon
+     */
+    private boolean mIsPolygonBody;
 
     /**
      * Track if the entity is currently being rendered. This is a proxy for
@@ -195,6 +206,11 @@ public abstract class PhysicsSprite implements Renderable {
      * Entities with a matching nonzero Id don't collide with each other
      */
     int mPassThroughId = 0;
+
+    /**
+     * A temporary vertex that we use when resizing
+     */
+    Vector2 tmpVert = new Vector2();
 
     /**
      * When a PhysicsSprite collides with another PhysicsSprite, and that
@@ -358,7 +374,61 @@ public abstract class PhysicsSprite implements Renderable {
             mBody.setBullet(true);
 
         // remember this is a box
-        mIsCircle = false;
+        mIsCircleBody = false;
+        mIsBoxBody = true;
+        mIsPolygonBody = false;
+    }
+
+    /**
+     * Specify that this entity should have a polygon physics shape. You must
+     * take extreme care when using this method. Polygon vertices must be given
+     * in counter-clockwise order, and they must describe a convex shape.
+     * 
+     * @param density Density of the entity
+     * @param elasticity Elasticity of the entity
+     * @param friction Friction of the entity
+     * @param type Is this static or dynamic?
+     * @param isProjectile Is this a fast-moving object
+     * @param x The X coordinate of the bottom left corner
+     * @param y The Y coordinate of the bottom left corner
+     * @param vertices Up to 16 coordinates representing the vertexes of this
+     *            polygon, listed as x0,y0,x1,y1,x2,y2,...
+     */
+    void setPolygonPhysics(float density, float elasticity, float friction, BodyType type,
+            boolean isProjectile, float x, float y, float... vertices) {
+        PolygonShape boxPoly = new PolygonShape();
+        Vector2[] verts = new Vector2[vertices.length / 2];
+        for (int i = 0; i < vertices.length; i += 2) {
+            verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
+        }
+        for (int i = 0; i < verts.length; ++i)
+            Gdx.app.log("vert", "at " + verts[i].x + "," + verts[i].y);
+        boxPoly.set(verts);
+        BodyDef boxBodyDef = new BodyDef();
+        boxBodyDef.type = type;
+        boxBodyDef.position.x = x + mSize.x / 2;
+        boxBodyDef.position.y = y + mSize.y / 2;
+        mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
+
+        FixtureDef fd = new FixtureDef();
+        fd.density = density;
+        fd.restitution = elasticity;
+        fd.friction = friction;
+        fd.shape = boxPoly;
+        // NB: could use fd.filter to prevent some from colliding with others...
+        mBody.createFixture(fd);
+
+        // link the body to the sprite
+        mBody.setUserData(this);
+        boxPoly.dispose();
+
+        if (isProjectile)
+            mBody.setBullet(true);
+
+        // remember this is a polygon
+        mIsCircleBody = false;
+        mIsBoxBody = false;
+        mIsPolygonBody = true;
     }
 
     /**
@@ -375,7 +445,6 @@ public abstract class PhysicsSprite implements Renderable {
      */
     void setCirclePhysics(float density, float elasticity, float friction, BodyType type,
             boolean isProjectile, float x, float y, float radius) {
-        mIsCircle = true;
         CircleShape c = new CircleShape();
         c.setRadius(radius);
         BodyDef boxBodyDef = new BodyDef();
@@ -398,6 +467,11 @@ public abstract class PhysicsSprite implements Renderable {
 
         // link the body to the sprite
         mBody.setUserData(this);
+
+        // remember this is a box
+        mIsCircleBody = true;
+        mIsBoxBody = false;
+        mIsPolygonBody = false;
     }
 
     /*
@@ -442,7 +516,10 @@ public abstract class PhysicsSprite implements Renderable {
      *            will not.
      */
     public void setCollisionEffect(boolean state) {
-        mBody.getFixtureList().get(0).setSensor(!state);
+        // In LibLOL, we maintain the invariant that all fixtures have the same
+        // sensor state
+        for (Fixture f : mBody.getFixtureList())
+            f.setSensor(!state);
     }
 
     /**
@@ -454,10 +531,12 @@ public abstract class PhysicsSprite implements Renderable {
      * @param friction New friction of the entity
      */
     public void setPhysics(float density, float elasticity, float friction) {
-        mBody.getFixtureList().get(0).setDensity(density);
+        for (Fixture f : mBody.getFixtureList()) {
+            f.setDensity(density);
+            f.setRestitution(elasticity);
+            f.setFriction(friction);
+        }
         mBody.resetMassData();
-        mBody.getFixtureList().get(0).setRestitution(elasticity);
-        mBody.getFixtureList().get(0).setFriction(friction);
     }
 
     /**
@@ -517,7 +596,7 @@ public abstract class PhysicsSprite implements Renderable {
             mBody.setType(BodyType.DynamicBody);
         Level.sCurrent.mTilt.mAccelEntities.add(this);
         // turn off sensor behavior, so this collides with stuff...
-        mBody.getFixtureList().get(0).setSensor(false);
+        setCollisionEffect(true);
     }
 
     /**
@@ -945,20 +1024,37 @@ public abstract class PhysicsSprite implements Renderable {
      * @param height The new height of the entity
      */
     public void resize(float x, float y, float width, float height) {
+        // To scale a polygon, we'll need to scaling factor here, so we can
+        // manually scale each point
+        float xscale = height / mSize.y;
+        float yscale = width / mSize.x;
         // set new height and width
         mSize.x = width;
         mSize.y = height;
         // read old body information
         Body oldBody = mBody;
-        Fixture oldFix = oldBody.getFixtureList().get(0);
         // make a new body
-        if (mIsCircle) {
+        if (mIsCircleBody) {
+            Fixture oldFix = oldBody.getFixtureList().get(0);
             setCirclePhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(),
                     oldBody.getType(), oldBody.isBullet(), x, y, (width > height) ? width / 2
                             : height / 2);
-        } else {
+        } else if (mIsBoxBody) {
+            Fixture oldFix = oldBody.getFixtureList().get(0);
             setBoxPhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(),
                     oldBody.getType(), oldBody.isBullet(), x, y);
+        } else if (mIsPolygonBody) {
+            Fixture oldFix = oldBody.getFixtureList().get(0);
+            // we need to manually scale all the vertices
+            PolygonShape ps = (PolygonShape)oldFix.getShape();
+            float[] verts = new float[ps.getVertexCount() * 2];
+            for (int i = 0; i < ps.getVertexCount(); ++i) {
+                ps.getVertex(i, tmpVert);
+                verts[2 * i] = tmpVert.x * xscale;
+                verts[2 * i + 1] = tmpVert.y * yscale;
+            }
+            setPolygonPhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(),
+                    oldBody.getType(), oldBody.isBullet(), x, y, verts);
         }
         // clone forces
         mBody.setAngularVelocity(oldBody.getAngularVelocity());
@@ -973,12 +1069,12 @@ public abstract class PhysicsSprite implements Renderable {
     /**
      * Indicate that this entity should shrink over time
      * 
-     * @param shrinkX The number of pixels by which the X dimension should
+     * @param shrinkX The number of meters by which the X dimension should
      *            shrink each second
-     * @param shrinkY The number of pixels by which the Y dimension should
+     * @param shrinkY The number of meters by which the Y dimension should
      *            shrink each second
      * @param keepCentered Should the entity's center point stay the same as it
-     *            shrinks (true), or should its bototm left corner stay i?n the
+     *            shrinks (true), or should its bottom left corner stay in the
      *            same position (false)
      */
     public void setShrinkOverTime(final float shrinkX, final float shrinkY,
@@ -999,7 +1095,7 @@ public abstract class PhysicsSprite implements Renderable {
                     float h = mSize.y - shrinkY / 20;
                     // if the area remains >0, resize it and schedule a timer to
                     // run again
-                    if ((w > 0) && (h > 0)) {
+                    if ((w > 0.05f) && (h > 0.05f)) {
                         resize(x, y, w, h);
                         Timer.schedule(this, .05f);
                     } else {
@@ -1141,14 +1237,15 @@ public abstract class PhysicsSprite implements Renderable {
                 // multiply by speed
                 x *= speed;
                 y *= speed;
-                // remove changes for disabled directions, and boost the other dimension a little bit
+                // remove changes for disabled directions, and boost the other
+                // dimension a little bit
                 if (!chaseInX) {
                     x = mBody.getLinearVelocity().x;
-                    y*= 2;
+                    y *= 2;
                 }
                 if (!chaseInY) {
                     y = mBody.getLinearVelocity().y;
-                    x*= 2;
+                    x *= 2;
                 }
                 // apply velocity
                 updateVelocity(x, y);
@@ -1181,8 +1278,8 @@ public abstract class PhysicsSprite implements Renderable {
      * @param zIndex The z plane. Values range from -2 to 2. The default is 0.
      */
     public void setZIndex(int zIndex) {
-        assert(zIndex <=2);
-        assert(zIndex >=-2);
+        assert (zIndex <= 2);
+        assert (zIndex >= -2);
         Level.sCurrent.removeSprite(this, mZIndex);
         mZIndex = zIndex;
         Level.sCurrent.addSprite(this, mZIndex);
