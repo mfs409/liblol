@@ -36,8 +36,8 @@ import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.HelpLevel;
 import edu.lehigh.cse.lol.Hero;
-import edu.lehigh.cse.lol.LOL;
-import edu.lehigh.cse.lol.LOLConfiguration;
+import edu.lehigh.cse.lol.Lol;
+import edu.lehigh.cse.lol.LolConfiguration;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Media;
 import edu.lehigh.cse.lol.Obstacle;
@@ -49,13 +49,13 @@ import edu.lehigh.cse.lol.PreScene;
 import edu.lehigh.cse.lol.Projectile;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
-import edu.lehigh.cse.lol.SVG;
+import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Score;
 import edu.lehigh.cse.lol.SplashConfiguration;
 import edu.lehigh.cse.lol.Tilt;
 import edu.lehigh.cse.lol.Util;
 
-public class MyLolGame extends LOL {
+public class MyLolGame extends Lol {
 
     /**
      * Configure all the images and sounds used by our game
@@ -1439,7 +1439,7 @@ public class MyLolGame extends LOL {
             Level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            SVG.importLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
+            Svg.importLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
 
             // notice that we can only get to the destination by jumping from
             // *on top of* the obstacle
@@ -3319,7 +3319,7 @@ public class MyLolGame extends LOL {
      * Mandatory method. Don't change this.
      */
     @Override
-    public LOLConfiguration config() {
+    public LolConfiguration config() {
         return new Config();
     }
 

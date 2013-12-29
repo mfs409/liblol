@@ -151,9 +151,9 @@ public class Chooser extends ScreenAdapter {
     public Chooser() {
         // start by getting the pieces of configuration that we use over and
         // over again
-        ChooserConfiguration cc = LOL.sGame.mChooserConfig;
+        ChooserConfiguration cc = Lol.sGame.mChooserConfig;
         int levelsPerChooser = cc.getColumns() * cc.getRows();
-        int totalLevels = LOL.sGame.mConfig.getNumLevels();
+        int totalLevels = Lol.sGame.mConfig.getNumLevels();
 
         // set up the background image and music
         mImage = Media.getImage(cc.getBackgroundName());
@@ -166,13 +166,13 @@ public class Chooser extends ScreenAdapter {
 
         // make the previous button if we aren't drawing the first set of
         // choices
-        if (LOL.sGame.mCurrLevelNum > levelsPerChooser) {
+        if (Lol.sGame.mCurrLevelNum > levelsPerChooser) {
             mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
                     cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
         }
 
         // make the next button if we aren't drawing the last set of choices
-        if (LOL.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
+        if (Lol.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
             mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
                     cc.getNextButtonHeight(), 0, cc.getNextButtonName());
         }
@@ -180,7 +180,7 @@ public class Chooser extends ScreenAdapter {
         // figure out the first level to draw on this chooser. Note that '0' is
         // a possible value of mCurrLevelNum when we come straight from Splash,
         // so we must handle it
-        int first = LOL.sGame.mCurrLevelNum;
+        int first = Lol.sGame.mCurrLevelNum;
         if (first > 0)
             first--;
         first = first - (first % levelsPerChooser) + 1;
@@ -189,8 +189,8 @@ public class Chooser extends ScreenAdapter {
 
         // get screen dimensions, and figure out the *top* left corner of the
         // first level button
-        int camWidth = LOL.sGame.mConfig.getScreenWidth();
-        int camHeight = LOL.sGame.mConfig.getScreenHeight();
+        int camWidth = Lol.sGame.mConfig.getScreenWidth();
+        int camHeight = Lol.sGame.mConfig.getScreenHeight();
         int top = camHeight - cc.getTopMargin();
         int left = cc.getLeftMargin();
 
@@ -284,8 +284,8 @@ public class Chooser extends ScreenAdapter {
         mSpriteBatch.begin();
         // draw the background image
         if (mImage != null)
-            mSpriteBatch.draw(mImage[0], 0, 0, LOL.sGame.mConfig.getScreenWidth(),
-                    LOL.sGame.mConfig.getScreenHeight());
+            mSpriteBatch.draw(mImage[0], 0, 0, Lol.sGame.mConfig.getScreenWidth(),
+                    Lol.sGame.mConfig.getScreenHeight());
         // draw back/prev/next
         mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
                 mBack.mRect.height);
@@ -297,7 +297,7 @@ public class Chooser extends ScreenAdapter {
                     mNext.mRect.height);
 
         // draw the level buttons
-        int unlocked = LOL.sGame.readUnlocked();
+        int unlocked = Lol.sGame.readUnlocked();
         for (Button ls : levels) {
             if (ls != null) {
                 // draw picture
@@ -305,8 +305,8 @@ public class Chooser extends ScreenAdapter {
                         ls.mRect.height);
                 // draw overlay text
                 String txt = ls.mLevel + "";
-                if (ls.mLevel > unlocked && !LOL.sGame.mConfig.getUnlockMode())
-                    txt = LOL.sGame.mChooserConfig.getLevelLockText();
+                if (ls.mLevel > unlocked && !Lol.sGame.mConfig.getUnlockMode())
+                    txt = Lol.sGame.mChooserConfig.getLevelLockText();
                 float x = mFont.getBounds(txt).width;
                 float y = mFont.getBounds(txt).height;
                 mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2 - x / 2, ls.mRect.y
@@ -316,7 +316,7 @@ public class Chooser extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: show the buttons' boxes
-        if (LOL.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
             // draw squares...
             mShapeRender.setProjectionMatrix(mCamera.combined);
             mShapeRender.begin(ShapeType.Line);
@@ -363,40 +363,40 @@ public class Chooser extends ScreenAdapter {
      * @param y The Y coordinate of the touch
      */
     private void touchDown(int x, int y) {
-        ChooserConfiguration cc = LOL.sGame.mChooserConfig;
+        ChooserConfiguration cc = Lol.sGame.mChooserConfig;
         // get the coordinates of the touch
         mCamera.unproject(mV.set(x, y, 0));
         // DEBUG: display touch coordinates
-        if (LOL.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
             Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
         }
         // handle 'back' presses
         if (mBack.mRect.contains(mV.x, mV.y)) {
-            LOL.sGame.handleBack();
+            Lol.sGame.handleBack();
             return;
         }
         // handle 'previous screen' requests
         if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
-            LOL.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
-            LOL.sGame.doChooser();
+            Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
+            Lol.sGame.doChooser();
             return;
         }
         // handle 'next screen' requests
         if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
             // special case for when we came straight from the Splash screen
-            if (LOL.sGame.mCurrLevelNum == 0)
-                LOL.sGame.mCurrLevelNum = 1;
-            LOL.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
-            LOL.sGame.doChooser();
+            if (Lol.sGame.mCurrLevelNum == 0)
+                Lol.sGame.mCurrLevelNum = 1;
+            Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
+            Lol.sGame.doChooser();
             return;
         }
 
         // check for press to an unlocked level
-        int unlocked = LOL.sGame.readUnlocked();
+        int unlocked = Lol.sGame.readUnlocked();
         for (Button ls : levels) {
-            if (ls != null && (ls.mLevel <= unlocked || LOL.sGame.mConfig.getUnlockMode())) {
+            if (ls != null && (ls.mLevel <= unlocked || Lol.sGame.mConfig.getUnlockMode())) {
                 if (ls.mRect.contains(mV.x, mV.y))
-                    LOL.sGame.doPlayLevel(ls.mLevel);
+                    Lol.sGame.doPlayLevel(ls.mLevel);
             }
         }
     }

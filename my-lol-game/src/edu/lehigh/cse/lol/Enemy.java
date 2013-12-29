@@ -154,7 +154,7 @@ public class Enemy extends PhysicsSprite {
     @Override
     void handleTouchDown(float x, float y) {
         if (mDisappearOnTouch) {
-            LOL.sGame.vibrate(100);
+            Lol.sGame.vibrate(100);
             defeat(true);
             return;
         }
@@ -283,7 +283,7 @@ public class Enemy extends PhysicsSprite {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                LOL.sGame.onEnemyDefeatTrigger(id, LOL.sGame.mCurrLevelNum, Enemy.this);
+                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum, Enemy.this);
             }
         };
     }

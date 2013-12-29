@@ -50,7 +50,7 @@ import com.badlogic.gdx.utils.XmlReader.Element;
  * drawing, so that the player knows that there is a physics entity on the
  * screen.
  */
-public class SVG {
+public class Svg {
     /**
      * This description will be used for every line we create
      */
@@ -137,7 +137,7 @@ public class SVG {
      * @param xposeY Shift the drawing in the Y dimension. Note that shifting
      *            occurs after stretching
      */
-    private SVG(float density, float elasticity, float friction, float stretchX, float stretchY,
+    private Svg(float density, float elasticity, float friction, float stretchX, float stretchY,
             float xposeX, float xposeY) {
         // create the physics fixture in a manner that is visible to the
         // addLine routine of the parser
@@ -390,7 +390,7 @@ public class SVG {
             float friction, float stretchX, float stretchY, float xposeX, float xposeY) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
-        SVG s = new SVG(density, elasticity, friction, stretchX, stretchY, xposeX, xposeY);
+        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY, xposeX, xposeY);
         s.parse(svgName);
     }
 }

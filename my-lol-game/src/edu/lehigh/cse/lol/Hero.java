@@ -289,7 +289,7 @@ public class Hero extends PhysicsSprite {
             onCollideWithDestination((Destination)other);
         else if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle)other, contact);
-        else if (other instanceof SVG.SVGSprite)
+        else if (other instanceof Svg.SVGSprite)
             onCollideWithSVG(other);
         else if (other instanceof Goodie)
             onCollideWithGoodie((Goodie)other);

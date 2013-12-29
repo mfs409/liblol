@@ -31,7 +31,7 @@ package edu.lehigh.cse.lol;
  * The LOLConfiguration interface describes some configuration details of the
  * game
  */
-public interface LOLConfiguration {
+public interface LolConfiguration {
     /**
      * The width of the screen of your device, in pixels. The actual value here
      * isn't too important, the main point is that the ratio between this and

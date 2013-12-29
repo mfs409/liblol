@@ -636,7 +636,7 @@ public abstract class PhysicsSprite implements Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    LOL.sGame.onTouchTrigger(id, LOL.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    Lol.sGame.onTouchTrigger(id, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
                 }
             }
         };
@@ -735,7 +735,7 @@ public abstract class PhysicsSprite implements Renderable {
 
             @Override
             public void onDown(float x, float y) {
-                LOL.sGame.vibrate(100);
+                Lol.sGame.vibrate(100);
                 long time = System.nanoTime();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
@@ -753,7 +753,7 @@ public abstract class PhysicsSprite implements Renderable {
                 Level.sCurrent.mTouchResponder = new TouchAction() {
                     @Override
                     public void onDown(float x, float y) {
-                        LOL.sGame.vibrate(100);
+                        Lol.sGame.vibrate(100);
                         // move the object
                         mBody.setTransform(x, y, mBody.getAngle());
                         // clear the Level responder
@@ -781,7 +781,7 @@ public abstract class PhysicsSprite implements Renderable {
         mTouchResponder = new TouchAction() {
             @Override
             public void onDown(float x, float y) {
-                LOL.sGame.vibrate(100);
+                Lol.sGame.vibrate(100);
                 // remember the current position of the entity
                 final float initialX = mBody.getPosition().x;
                 final float initialY = mBody.getPosition().y;
@@ -827,7 +827,7 @@ public abstract class PhysicsSprite implements Renderable {
         mTouchResponder = new TouchAction() {
             @Override
             public void onDown(float x, float y) {
-                LOL.sGame.vibrate(5);
+                Lol.sGame.vibrate(5);
                 Level.sCurrent.mTouchResponder = new TouchAction() {
                     @Override
                     public void onDown(float x, float y) {

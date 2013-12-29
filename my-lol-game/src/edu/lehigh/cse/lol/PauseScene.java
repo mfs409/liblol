@@ -99,7 +99,7 @@ public class PauseScene {
             // check if it's to the 'back to chooser' button
             Level.sCurrent.mHudCam.unproject(mV.set(Gdx.input.getX(), Gdx.input.getY(), 0));
             if (mBackRectangle != null && mBackRectangle.contains(mV.x, mV.y)) {
-                LOL.sGame.handleBack();
+                Lol.sGame.handleBack();
                 mVisible = false;
                 return false;
             }

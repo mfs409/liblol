@@ -112,9 +112,9 @@ public class Util {
     static Renderable makeText(final String message, final int red, final int green,
             final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        final float x = LOL.sGame.mConfig.getScreenWidth() / 2
+        final float x = Lol.sGame.mConfig.getScreenWidth() / 2
                 - bf.getMultiLineBounds(message).width / 2;
-        final float y = LOL.sGame.mConfig.getScreenHeight() / 2
+        final float y = Lol.sGame.mConfig.getScreenHeight() / 2
                 + bf.getMultiLineBounds(message).height / 2;
         return new Renderable() {
             @Override

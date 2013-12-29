@@ -29,7 +29,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: verify chooser and level music stops on Android events
 
-// TODO: Should we allow the creation of arbitrary polygons?
+// TODO: Should we allow the creation of arbitrary polygons and multi-fixture bodies?
 
 // TODO: verify that flipped animations work correctly, even when they change while flipped
 
@@ -67,7 +67,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 
-public abstract class LOL extends Game {
+public abstract class Lol extends Game {
     /**
      * The current mode of the program
      */
@@ -86,7 +86,7 @@ public abstract class LOL extends Game {
     /**
      * A reference to the game object
      */
-    static LOL sGame;
+    static Lol sGame;
 
     /**
      * This variable lets us track whether the user pressed 'back' on an
@@ -100,7 +100,7 @@ public abstract class LOL extends Game {
     /**
      * The configuration of the game is accessible through this
      */
-    LOLConfiguration mConfig;
+    LolConfiguration mConfig;
 
     /**
      * The configuration of the splash screen is accessible through this
@@ -319,7 +319,7 @@ public abstract class LOL extends Game {
      * The programmer configures the splash screen by implementing this method,
      * and returning a SplashConfiguration object
      */
-    abstract public LOLConfiguration config();
+    abstract public LolConfiguration config();
 
     /**
      * The programmer configures the chooser screen by implementing this method,

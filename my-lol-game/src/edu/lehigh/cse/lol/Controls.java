@@ -192,9 +192,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addCountdown(float timeout, String text, int x, int y) {
-        addCountdown(timeout, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
+        addCountdown(timeout, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -272,9 +272,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addWinCountdown(float timeout, int x, int y) {
-        addWinCountdown(timeout, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
+        addWinCountdown(timeout, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -350,9 +350,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public static void addDefeatedCount(int max, String text, int x, int y) {
-        addDefeatedCount(max, text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
+        addDefeatedCount(max, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -393,9 +393,9 @@ public class Controls {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     static public void addStopwatch(int x, int y) {
-        addStopwatch(x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize());
+        addStopwatch(x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -436,9 +436,9 @@ public class Controls {
      */
     static public void addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        addStrengthMeter(text, x, y, LOL.sGame.mConfig.getDefaultFontFace(),
-                LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                LOL.sGame.mConfig.getDefaultFontBlue(), LOL.sGame.mConfig.getDefaultFontSize(), h);
+        addStrengthMeter(text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize(), h);
     }
 
     /**
@@ -1010,7 +1010,7 @@ public class Controls {
         HudEntity he = new HudEntity(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
-                LOL.sGame.onControlPressTrigger(id, LOL.sGame.mCurrLevelNum);
+                Lol.sGame.onControlPressTrigger(id, Lol.sGame.mCurrLevelNum);
             }
         };
         Level.sCurrent.mControls.add(he);

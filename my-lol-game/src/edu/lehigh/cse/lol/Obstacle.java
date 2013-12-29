@@ -267,14 +267,14 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            LOL.sGame.onHeroCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this,
+                            Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this,
                                     (Hero)ps);
                             return;
                         }
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                LOL.sGame.onHeroCollideTrigger(id, LOL.sGame.mCurrLevelNum,
+                                Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum,
                                         Obstacle.this, (Hero)ps);
                             }
                         }, delay);
@@ -319,13 +319,13 @@ public class Obstacle extends PhysicsSprite {
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        LOL.sGame.onEnemyCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this, (Enemy)ps);
+                        Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy)ps);
                         return;
                     }
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
-                            LOL.sGame.onEnemyCollideTrigger(id, LOL.sGame.mCurrLevelNum,
+                            Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum,
                                     Obstacle.this, (Enemy)ps);
                         }
                     }, delay);
@@ -361,7 +361,7 @@ public class Obstacle extends PhysicsSprite {
                 for (int i = 0; i < 4; ++i)
                     match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
-                    LOL.sGame.onProjectileCollideTrigger(id, LOL.sGame.mCurrLevelNum, Obstacle.this,
+                    Lol.sGame.onProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this,
                             (Projectile)ps);
             }
         };

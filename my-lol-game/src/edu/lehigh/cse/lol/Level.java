@@ -330,22 +330,22 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < LOL.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
+        if (width < Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
             Gdx.app.log("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < LOL.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
+        if (height < Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
             Gdx.app.log("Warning", "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(LOL.sGame.mConfig.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO, LOL.sGame.mConfig.getScreenHeight()
+        mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
+                / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
                 / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(LOL.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
-                LOL.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
+        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
+                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
-        int camWidth = LOL.sGame.mConfig.getScreenWidth();
-        int camHeight = LOL.sGame.mConfig.getScreenHeight();
+        int camWidth = Lol.sGame.mConfig.getScreenWidth();
+        int camHeight = Lol.sGame.mConfig.getScreenHeight();
         mHudCam = new OrthographicCamera(camWidth, camHeight);
         mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
@@ -377,10 +377,10 @@ public class Level extends ScreenAdapter {
         };
 
         // When debug mode is on, print the frames per second
-        if (LOL.sGame.mConfig.showDebugBoxes())
-            Controls.addFPS(400, 15, LOL.sGame.mConfig.getDefaultFontFace(),
-                    LOL.sGame.mConfig.getDefaultFontRed(), LOL.sGame.mConfig.getDefaultFontGreen(),
-                    LOL.sGame.mConfig.getDefaultFontBlue(), 12);
+        if (Lol.sGame.mConfig.showDebugBoxes())
+            Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(),
+                    Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                    Lol.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 
     /**
@@ -495,7 +495,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: draw outlines of physics entities
-        if (LOL.sGame.mConfig.showDebugBoxes())
+        if (Lol.sGame.mConfig.showDebugBoxes())
             mDebugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
@@ -507,7 +507,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
-        if (LOL.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -546,23 +546,23 @@ public class Level extends ScreenAdapter {
         float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
+        if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom
+            x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
             / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
+        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom
+            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
             / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = LOL.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = LOL.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -749,7 +749,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL.sGame.onTimerTrigger(timerId, LOL.sGame.mCurrLevelNum);
+                    Lol.sGame.onTimerTrigger(timerId, Lol.sGame.mCurrLevelNum);
             }
         }, howLong);
     }
@@ -768,7 +768,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    LOL.sGame.onEnemyTimerTrigger(timerId, LOL.sGame.mCurrLevelNum, enemy);
+                    Lol.sGame.onEnemyTimerTrigger(timerId, Lol.sGame.mCurrLevelNum, enemy);
             }
         }, howLong);
     }

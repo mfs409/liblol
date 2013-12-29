@@ -92,8 +92,8 @@ public class PostScene {
      * are set
      */
     PostScene() {
-        mWinText = LOL.sGame.mConfig.getDefaultWinText();
-        mLoseText = LOL.sGame.mConfig.getDefaultLoseText();
+        mWinText = Lol.sGame.mConfig.getDefaultWinText();
+        mLoseText = Lol.sGame.mConfig.getDefaultLoseText();
     }
 
     /**
@@ -138,15 +138,15 @@ public class PostScene {
                 mWinSound.play();
             mWinSprites
                     .add(Util.makeText(mWinText, 255, 255, 255,
-                            LOL.sGame.mConfig.getDefaultFontFace(),
-                            LOL.sGame.mConfig.getDefaultFontSize()));
+                            Lol.sGame.mConfig.getDefaultFontFace(),
+                            Lol.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play();
             mLoseSprites
                     .add(Util.makeText(mLoseText, 255, 255, 255,
-                            LOL.sGame.mConfig.getDefaultFontFace(),
-                            LOL.sGame.mConfig.getDefaultFontSize()));
+                            Lol.sGame.mConfig.getDefaultFontFace(),
+                            Lol.sGame.mConfig.getDefaultFontSize()));
         }
     }
 
@@ -163,13 +163,13 @@ public class PostScene {
         
         // repeat on loss, else go to next level (or chooser)
         if (!mWin) {
-            LOL.sGame.doPlayLevel(LOL.sGame.mCurrLevelNum);
+            Lol.sGame.doPlayLevel(Lol.sGame.mCurrLevelNum);
         } else {
-            if (LOL.sGame.mCurrLevelNum == LOL.sGame.mConfig.getNumLevels()) {
-                LOL.sGame.doChooser();
+            if (Lol.sGame.mCurrLevelNum == Lol.sGame.mConfig.getNumLevels()) {
+                Lol.sGame.doChooser();
             } else {
-                LOL.sGame.mCurrLevelNum++;
-                LOL.sGame.doPlayLevel(LOL.sGame.mCurrLevelNum);
+                Lol.sGame.mCurrLevelNum++;
+                Lol.sGame.doPlayLevel(Lol.sGame.mCurrLevelNum);
             }
         }
     }

@@ -27,7 +27,7 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.LOLConfiguration;
+import edu.lehigh.cse.lol.LolConfiguration;
 
 /**
  * This file provides configuration information about the game
@@ -44,7 +44,7 @@ import edu.lehigh.cse.lol.LOLConfiguration;
  * to have get into a situation where the game plays differently on a phone than
  * on the desktop.
  */
-public class Config implements LOLConfiguration {
+public class Config implements LolConfiguration {
     /**
      * The width of the screen of your device, in pixels. The actual value here
      * isn't too important, the main point is that the ratio between this and
