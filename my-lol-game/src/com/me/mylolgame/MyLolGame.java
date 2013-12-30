@@ -66,6 +66,8 @@ public class MyLolGame extends Lol {
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");
         Media.registerImage("red.png");
+        Media.registerImage("leftarrow.png");
+        Media.registerImage("rightarrow.png");
         Media.registerImage("redball.png");
         Media.registerImage("blueball.png");
         Media.registerImage("purpleball.png");
