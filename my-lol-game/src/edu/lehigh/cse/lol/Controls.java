@@ -43,18 +43,6 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class Controls {
     /**
-     * In levels that have a lose-on-timer feature, we store the timer here, so
-     * that we can extend the time left to complete a game
-     */
-    private static float sCountDownRemaining;
-
-    /**
-     * This is the same as sCountDownRemaining, but for levels where the hero
-     * wins by lasting until time runs out.
-     */
-    private static float sWinCountRemaining;
-
-    /**
      * This is for handling everything that gets drawn on the HUD, whether it is
      * pressable or not
      */
@@ -213,30 +201,22 @@ public class Controls {
      */
     public static void addCountdown(final float timeout, final String text, final int x,
             final int y, String fontName, final int red, final int green, final int blue, int size) {
-        sCountDownRemaining = timeout;
+        Level.sCurrent.mScore.mCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                sCountDownRemaining -= Gdx.graphics.getDeltaTime();
-                if (sCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int)sCountDownRemaining, bf, sb);
+                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
+                if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
+                    drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mCountDownRemaining,
+                            bf, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
                     Level.sCurrent.mScore.endLevel(false);
                 }
             }
         });
-    }
-
-    /**
-     * Change the amount of time left in a countdown timer
-     * 
-     * @param delta The amount of time to add before the timer expires
-     */
-    public static void updateTimerExpiration(float delta) {
-        sCountDownRemaining += delta;
     }
 
     /**
@@ -292,16 +272,17 @@ public class Controls {
      */
     public static void addWinCountdown(final float timeout, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
-        sWinCountRemaining = timeout;
+        Level.sCurrent.mScore.mWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                sWinCountRemaining -= Gdx.graphics.getDeltaTime();
-                if (sWinCountRemaining > 0)
+                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+                if (Level.sCurrent.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int)sWinCountRemaining, bf, sb);
+                    drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mWinCountRemaining,
+                            bf, sb);
                 else
                     Level.sCurrent.mScore.endLevel(true);
             }
@@ -414,13 +395,11 @@ public class Controls {
             final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         HudEntity he = new HudEntity(red, green, blue) {
-            float mStopWatchProgress;
-
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int)mStopWatchProgress, bf, sb);
+                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+                drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mStopWatchProgress, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);
@@ -463,6 +442,33 @@ public class Controls {
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, "" + h.mStrength + " " + text, bf, sb);
+            }
+        };
+        Level.sCurrent.mControls.add(he);
+    }
+
+    /**
+     * Display a meter showing how far a hero has traveled
+     * 
+     * @param text The text to display after the remaining strength value
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
+     * @param h The Hero whose strength should be displayed
+     */
+    static public void addDistanceMeter(final String text, final int x, final int y,
+            String fontName, final int red, final int green, final int blue, int size, final Hero h) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        HudEntity he = new HudEntity(red, green, blue) {
+            @Override
+            void render(SpriteBatch sb) {
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                Level.sCurrent.mScore.mDistance = (int)h.getXPosition();
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);

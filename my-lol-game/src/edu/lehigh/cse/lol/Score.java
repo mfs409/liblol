@@ -90,7 +90,7 @@ public class Score {
      * This is the number of goodies that must be collected, if we're in
      * GOODIECOUNT mode
      */
-    private int[] mVictoryGoodieCount = new int[4];
+    private final int[] mVictoryGoodieCount = new int[4];
 
     /**
      * This is the number of enemies that must be defeated, if we're in
@@ -113,6 +113,29 @@ public class Score {
     enum VictoryType {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     };
+
+    /**
+     * In levels that have a lose-on-timer feature, we store the timer here, so
+     * that we can extend the time left to complete a game
+     */
+    float mCountDownRemaining;
+
+    /**
+     * This is the same as CountDownRemaining, but for levels where the hero
+     * wins by lasting until time runs out.
+     */
+    float mWinCountRemaining;
+
+    /**
+     * This is a stopwatch, for levels where we count how long the game has been
+     * running
+     */
+    float mStopWatchProgress;
+
+    /**
+     * This is how far the hero has traveled
+     */
+    int mDistance;
 
     /**
      * Use this to inform the level that a hero has been defeated
@@ -190,7 +213,7 @@ public class Score {
      */
     void endLevel(final boolean win) {
         if (Level.sCurrent.mEndGameEvent == null)
-        Level.sCurrent.mEndGameEvent = new Action(){
+            Level.sCurrent.mEndGameEvent = new Action() {
             @Override
             public void go() {
                 // Safeguard: only call this method once per level
@@ -211,10 +234,12 @@ public class Score {
                 // clear any pending timers
                 Timer.instance().clear();
 
-                // display the PostScene, which provides a pause before we retry/start
+                // display the PostScene, which provides a pause before we
+                // retry/start
                 // the next level
-                Level.sCurrent.mPostScene.setWin(win);                
-            }};
+                Level.sCurrent.mPostScene.setWin(win);
+            }
+        };
     }
 
     /*
@@ -375,5 +400,35 @@ public class Score {
     static public void setVictoryDestination(int howMany) {
         Level.sCurrent.mScore.mVictoryType = VictoryType.DESTINATION;
         Level.sCurrent.mScore.mVictoryHeroCount = howMany;
+    }
+
+    /**
+     * Change the amount of time left in a countdown timer
+     * 
+     * @param delta The amount of time to add before the timer expires
+     */
+    public static void updateTimerExpiration(float delta) {
+        Level.sCurrent.mScore.mCountDownRemaining += delta;
+    }
+
+    /**
+     * Report the total distance the hero has traveled
+     */
+    public static int getDistance() {
+        return Level.sCurrent.mScore.mDistance;
+    }
+
+    /**
+     * Report the stopwatch value
+     */
+    public static int getStopwatch() {
+        return (int)Level.sCurrent.mScore.mStopWatchProgress;
+    }
+
+    /**
+     * Report the number of enemies that have been defeated
+     */
+    public static int getEnemiesDefeated() {
+        return Level.sCurrent.mScore.mEnemiesDefeated;
     }
 }

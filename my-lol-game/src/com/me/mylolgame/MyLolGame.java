@@ -1177,6 +1177,9 @@ public class MyLolGame extends Lol {
             // and zoom do not work together nicely.
             Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
             o.setHover(100, 100);
+
+            // Add a meter to show how far the hero has traveled
+            Controls.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 255, 255, 16, h);
         }
 
         /*
@@ -3072,7 +3075,7 @@ public class MyLolGame extends Lol {
         // time's up.
         else if (whichLevel == 74) {
             // add 15 seconds to the timer
-            Controls.updateTimerExpiration(15);
+            Score.updateTimerExpiration(15);
             obstacle.remove(true);
         }
         // on level 78, we make the hero jump by giving it an upward velocity.
