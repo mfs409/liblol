@@ -179,7 +179,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getBackButtonName() {
-        return "red.png";
+        return "backarrow.png";
     }
 
     /**
