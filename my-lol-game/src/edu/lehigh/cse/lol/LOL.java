@@ -45,8 +45,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: it would be good to have persistent scores... can we easily do it in a general way?
 
-// TODO: how about displaying distance traveled?
-
 // TODO: add jump-to-defeat enemies
 
 // TODO: consider adding a wrapper to expose Box2d collision groups?
