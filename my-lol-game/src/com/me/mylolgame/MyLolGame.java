@@ -75,9 +75,13 @@ public class MyLolGame extends Lol {
         Media.registerImage("msg2.png");
         Media.registerImage("fade.png");
         Media.registerImage("greyball.png");
+        Media.registerImage("leveltile.png");
 
         // load the image we show on the main screen
         Media.registerImage("splash.png");
+        
+        // load the image we show on the chooser screen
+        Media.registerImage("chooser.png");
 
         // load background images
         Media.registerImage("mid.png");

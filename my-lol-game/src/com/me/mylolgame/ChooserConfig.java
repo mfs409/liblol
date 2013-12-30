@@ -57,7 +57,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getTopMargin() {
-        return 100;
+        return 130;
     }
 
     /**
@@ -66,7 +66,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getLeftMargin() {
-        return 50;
+        return 85;
     }
 
     /**
@@ -91,7 +91,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getLevelButtonName() {
-        return "redball.png";
+        return "leveltile.png";
     }
 
     /**
@@ -171,7 +171,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getBackgroundName() {
-        return "fade.png";
+        return "chooser.png";
     }
 
     /**
@@ -237,7 +237,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getPrevButtonY() {
-        return 140;
+        return 110;
     }
 
     /**
@@ -279,7 +279,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getNextButtonY() {
-        return 140;
+        return 110;
     }
 
     /**
