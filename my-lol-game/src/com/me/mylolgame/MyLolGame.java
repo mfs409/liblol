@@ -1172,7 +1172,7 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             // now paint the background blue
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
 
             // put in a picture that scrolls at half the speed of the hero in
             // the x direction. Note that background "layers" are all drawn
@@ -1213,7 +1213,7 @@ public class MyLolGame extends Lol {
             h.setJumpSound("fwapfwap.ogg");
 
             // set up our background again, but add a few more layers
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             // this layer has a scroll factor of 0... it won't move
             Background.addHorizontalLayer(0, 1, "back.png", 0);
             // this layer moves at half the speed of the hero
@@ -1254,7 +1254,7 @@ public class MyLolGame extends Lol {
             h.setJumpImpulses(0, 10);
             Level.setCameraChase(h);
             // set up the background
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // draw a jump button that covers the whole screen
@@ -1290,7 +1290,7 @@ public class MyLolGame extends Lol {
             h.setJumpImpulses(0, 6);
 
             // this is all the same as before, to include the invisible enemy
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
             Controls.addJumpButton(0, 0, 480, 320, "", h);
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
@@ -1319,7 +1319,7 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // let's draw an enemy, just in case anyone wants to try to go to
@@ -1348,7 +1348,7 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -1474,7 +1474,7 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(450, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // place a speed-up obstacle that lasts for 2 seconds
@@ -1824,7 +1824,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
@@ -2125,7 +2125,7 @@ public class MyLolGame extends Lol {
             h.setJumpImpulses(0, 15);
 
             // draw a background
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
         }
 
@@ -2811,7 +2811,7 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             // set up the background
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // draw a turbo boost button that covers the whole screen... make
@@ -2837,7 +2837,7 @@ public class MyLolGame extends Lol {
             h.setCameraOffset(15, 0);
             Level.setCameraChase(h);
 
-            Background.setColor(0, 0, 255);
+            Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
             // This control has a dampening effect, so that on release, the hero
