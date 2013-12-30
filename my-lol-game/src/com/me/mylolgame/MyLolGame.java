@@ -148,7 +148,7 @@ public class MyLolGame extends Lol {
             // draw a circular destination, and indicate that the level is won
             // when the hero reaches the destination. "mustardball.png" must be
             // registered in registerMedia()
-            Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }
 
@@ -163,7 +163,7 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // add a bounding box so the hero can't fall off the screen
@@ -194,7 +194,7 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // give the hero some density and friction, so that it can roll when
@@ -240,8 +240,8 @@ public class MyLolGame extends Lol {
             // notice that now we will make two destinations, each of which
             // defaults to only holding ONE hero, but we still need to get two
             // heroes to destinations in order to complete the level
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
-            Destination.makeAsCircle(29, 26, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
             Score.setVictoryDestination(2);
 
             // Let's show msg1.png instead of text. Note that we had to
@@ -271,7 +271,7 @@ public class MyLolGame extends Lol {
 
             // now let's make a destination, but indicate that it can hold TWO
             // heroes
-            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setHeroCount(2);
 
             // let's also say that whenever a hero reaches the destination, a
@@ -295,7 +295,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             PreScene.addText("A different way\nto use tilt.", 255, 255, 255, "arial.ttf", 32);
 
@@ -314,7 +314,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             // Notice that we changed the font size and color
             PreScene.addText("Avoid the enemy and\nreach the destination", 25, 255, 255,
@@ -341,7 +341,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             PreScene.addText("Avoid the enemy and\nreach the destination", 255, 255, 255,
                     "arial.ttf", 20);
@@ -374,7 +374,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             PreScene.addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255,
                     "arial.ttf", 20);
@@ -404,7 +404,7 @@ public class MyLolGame extends Lol {
             PreScene.addImage("msg2.png", 10, 10, 460, 320);
 
             // let's make the destination rotate:
-            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setRotationSpeed(1);
             Score.setVictoryDestination(1);
 
@@ -477,7 +477,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // let's draw an obstacle whose underlying shape is a box, but whose
@@ -520,7 +520,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             // Colliding the hero with these obstacles can have interesting
             // effects
@@ -554,13 +554,13 @@ public class MyLolGame extends Lol {
             //
             // Note that LibLOL allows goodies to have one of 4 "types". By
             // default, collecting a goodie increases the "type 1" score by 1.
-            Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(0, 15, 1, 1, "blueball.png");
+            Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(0, 15, 2, 2, "blueball.png");
 
             // here we create a destination. Note that we now set its activation
             // score to 2, so that you must collect two goodies before the
             // destination will "work"
-            Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             // we must provide an activation score for each of the 4 types of
             // goodies
@@ -589,7 +589,7 @@ public class MyLolGame extends Lol {
 
             // make a destination that moves, and that requires one goodie to be
             // collected before it works
-            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setActivationScore(1, 0, 0, 0);
             d.setRoute(new Route(3).to(29, 6).to(29, 26).to(29, 6), 4, true);
             Score.setVictoryDestination(1);
@@ -624,11 +624,11 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
 
             // draw 5 goodies
-            Goodie.makeAsCircle(.5f, .5f, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(5.5f, 1.5f, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(10.5f, 2.5f, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(15.5f, 3.5f, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(20.5f, 4.5f, 1, 1, "blueball.png");
+            Goodie.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(5.5f, 1.5f, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(10.5f, 2.5f, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(15.5f, 3.5f, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(20.5f, 4.5f, 2, 2, "blueball.png");
 
             // indicate that we win by collecting enough goodies
             Score.setVictoryGoodies(5, 0, 0, 0);
@@ -664,7 +664,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // add a stopwatch... note that there are two ways to add a
@@ -714,7 +714,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("The hero can defeat \nup to two enemies...", 255, 255, 255,
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // draw a hero and give it strength of 10. The default is for
@@ -821,7 +821,7 @@ public class MyLolGame extends Lol {
             e.setPhysics(1.0f, 0.3f, 0.6f);
 
             // this goodie gives an extra "5" strength:
-            Goodie g = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
+            Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
             g.setStrengthBoost(5);
             g.setDisappearSound("woowoowoo.ogg");
 
@@ -856,14 +856,14 @@ public class MyLolGame extends Lol {
             }
 
             // this goodie makes us invincible
-            Goodie g = Goodie.makeAsCircle(30, 30, 1, 1, "blueball.png");
+            Goodie g = Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
 
             // we'll still say you win by reaching the destination. Defeating
             // enemies is just for fun...
-            Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // display a goodie count for type-1 goodies
@@ -889,20 +889,20 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
             d.setActivationScore(7, 0, 0, 0);
             Score.setVictoryDestination(1);
 
             // create some goodies with special scores. Note that we're still
             // only dealing with type-1 scores
-            Goodie g1 = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
+            Goodie g1 = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
             g1.setScore(-2, 0, 0, 0);
-            Goodie g2 = Goodie.makeAsCircle(0, 15, 1, 1, "blueball.png");
+            Goodie g2 = Goodie.makeAsCircle(0, 15, 2, 2, "blueball.png");
             g2.setScore(7, 0, 0, 0);
 
             // create some regular goodies
-            Goodie.makeAsCircle(30, 30, 1, 1, "blueball.png");
-            Goodie.makeAsCircle(35, 30, 1, 1, "blueball.png");
+            Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
+            Goodie.makeAsCircle(35, 30, 2, 2, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
             Controls.addGoodieCount(1, 0, "Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
@@ -923,7 +923,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // draw an obstacle that we can drag
@@ -960,7 +960,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a pokeable obstacle
@@ -985,7 +985,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // create an enemy who chases the hero
@@ -1020,7 +1020,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // set up our obstacle so that collision and touch make it play
@@ -1044,7 +1044,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("The star rotates in\nthe direction of movement", 255, 255, 255,
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 60, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 60, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
@@ -1146,7 +1146,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             Level.setCameraChase(h);
         }
@@ -1167,7 +1167,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(30 * 48 - 5, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(30 * 48 - 5, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             Level.setCameraChase(h);
 
@@ -1197,7 +1197,7 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 0);
             PreScene.addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a hero
@@ -1234,7 +1234,7 @@ public class MyLolGame extends Lol {
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             PreScene.addText("Press anywhere to jump", 255, 255, 255, "arial.ttf", 32);
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // note: the bounding box does not have friction, and neither does
@@ -1293,7 +1293,7 @@ public class MyLolGame extends Lol {
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
             Controls.addJumpButton(0, 0, 480, 320, "", h);
-            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Enemy.makeAsBox(130, 0, .5f, 38, "");
             Score.setVictoryDestination(1);
         }
@@ -1316,7 +1316,7 @@ public class MyLolGame extends Lol {
             // this lets the hero flip its image when it moves backwards
             h.setCanFaceBackwards();
 
-            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
@@ -1345,7 +1345,7 @@ public class MyLolGame extends Lol {
                     "arial.ttf", 32);
             // The box and hero should not have friction
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
@@ -1377,7 +1377,7 @@ public class MyLolGame extends Lol {
             Physics.configure(0, -10);
             PreScene.addText("Press the screen\nto crawl", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
-            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
             h.setPhysics(.1f, 0, 0);
@@ -1406,7 +1406,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
-            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a hero who doesn't start moving until it is touched
@@ -1450,7 +1450,7 @@ public class MyLolGame extends Lol {
 
             // notice that we can only get to the destination by jumping from
             // *on top of* the obstacle
-            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }
 
@@ -1471,7 +1471,7 @@ public class MyLolGame extends Lol {
             h.addVelocity(10, 0, false);
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(450, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(450, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Background.setColor(0, 0, 255);
@@ -1531,7 +1531,7 @@ public class MyLolGame extends Lol {
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // create a hero, and indicate that touching it makes it throw
@@ -1566,7 +1566,7 @@ public class MyLolGame extends Lol {
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // set up a pool of projectiles, but now once the projectiles travel
@@ -1635,7 +1635,7 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions...
@@ -1668,7 +1668,7 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(120, 0, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // we use a "single throw" button so that holding doesn't throw more
@@ -1772,7 +1772,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(29, 29, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 29, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make our initial enemy
@@ -1799,7 +1799,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("Make a wish!", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // this hero will be animated:
@@ -1827,7 +1827,7 @@ public class MyLolGame extends Lol {
             Background.setColor(0, 0, 255);
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
 
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a hero, and give it two animations: one for when it is in
@@ -1873,7 +1873,7 @@ public class MyLolGame extends Lol {
                     "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // set up our hero
@@ -1904,7 +1904,7 @@ public class MyLolGame extends Lol {
                     255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make an animated hero, and give it an invincibility animation
@@ -1940,7 +1940,7 @@ public class MyLolGame extends Lol {
             e.setDamage(0);
 
             // add a goodie that makes the hero invincible
-            Goodie g = Goodie.makeAsCircle(30, 30, 1, 1, "blueball.png");
+            Goodie g = Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
@@ -1963,7 +1963,7 @@ public class MyLolGame extends Lol {
                     + "or the right side\nto jump.", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
 
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a hero with fixed velocity, and give it crawl and jump
@@ -2009,7 +2009,7 @@ public class MyLolGame extends Lol {
             for (int i = 0; i < 8; ++i)
                 Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
 
-            Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setActivationScore(8, 0, 0, 0);
             Score.setVictoryDestination(1);
 
@@ -2109,7 +2109,7 @@ public class MyLolGame extends Lol {
             // note: the floor has friction
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // make a box hero with friction... it won't roll on the floor, so
@@ -2260,7 +2260,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // create an enemy that will quietly disappear after 2 seconds
@@ -2363,7 +2363,7 @@ public class MyLolGame extends Lol {
 
             // make a destination... notice that it needs a lot more goodies
             // than are on the screen...
-            Destination d = Destination.makeAsCircle(29, 1, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
             d.setActivationScore(3, 0, 0, 0);
             Score.setVictoryDestination(1);
 
@@ -2375,7 +2375,7 @@ public class MyLolGame extends Lol {
             o.setTouchTrigger(39, 1, 0, 0, 0, true);
             o.setDisappearSound("hipitch.ogg");
 
-            Goodie g = Goodie.makeAsCircle(0, 30, 1, 1, "blueball.png");
+            Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
             g.setDisappearSound("lowpitch.ogg");
         }
 
@@ -2549,7 +2549,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -2582,7 +2582,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // These obstacles chase the hero, but only in one dimension
@@ -2626,7 +2626,7 @@ public class MyLolGame extends Lol {
             h.setCanFaceBackwards();
             h.setPokePath(4, false, true, true);
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // sometimes a control needs to have a large touchable area, but a
@@ -2656,7 +2656,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(2, 0, .5f);
 
             // create a destination
-            Destination.makeAsCircle(20, 15, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(20, 15, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // This obstacle is sticky on top... Jump onto it and watch what
@@ -2693,7 +2693,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions. It
@@ -2734,7 +2734,7 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
 
             // the destination requires lots of goodies of different types
-            Destination d = Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
             d.setActivationScore(1, 1, 3, 0);
             Score.setVictoryDestination(1);
 
@@ -2746,7 +2746,7 @@ public class MyLolGame extends Lol {
 
             // draw the goodies
             for (int i = 0; i < 3; ++i) {
-                Goodie b = Goodie.makeAsCircle(10 * i, 30, 1, 1, "blueball.png");
+                Goodie b = Goodie.makeAsCircle(10 * i, 30, 2, 2, "blueball.png");
                 b.setScore(1, 0, 0, 0);
                 Goodie g = Goodie.makeAsCircle(10 * i + 2.5f, 30, 1, 1, "greenball.png");
                 g.setScore(0, 1, 0, 0);
@@ -2777,7 +2777,7 @@ public class MyLolGame extends Lol {
             h.setPassThrough(7); // make sure obstacle has same value
 
             // the destination requires lots of goodies of different types
-            Destination.makeAsCircle(42, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // the enemy chases the hero, but can't get through the wall
@@ -2798,7 +2798,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("Press anywhere to speed up", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
 
-            Destination.makeAsCircle(120, 31, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Hero h = Hero.makeAsBox(2, 25, 3, 7, "greenball.png");
@@ -2830,7 +2830,7 @@ public class MyLolGame extends Lol {
             PreScene.addText("Press anywhere to start moving", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
 
-            Destination.makeAsCircle(120, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
@@ -2864,7 +2864,7 @@ public class MyLolGame extends Lol {
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
 
-            Destination.makeAsCircle(42, 1, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(42, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // create a platform that we can jump through from above
@@ -2898,7 +2898,7 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
             h.setPokePath(4, true, false, false);
 
-            Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // A trigger control is a way to run arbitrary code whenever the
@@ -2925,7 +2925,7 @@ public class MyLolGame extends Lol {
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
 
-            Destination d = Destination.makeAsCircle(42, 14, 1, 1, "mustardball.png");
+            Destination d = Destination.makeAsCircle(42, 14, 2, 2, "mustardball.png");
             // note: it must not be immune to physics (third parameter true), or
             // it will pass through the bounding box, but we do want it to move
             // and not fall downward
@@ -2948,7 +2948,7 @@ public class MyLolGame extends Lol {
             h.disableRotation();
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 14, 1, 1, "mustardball.png");
+            Destination.makeAsCircle(42, 14, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
             // create a polygon obstacle
@@ -3029,7 +3029,7 @@ public class MyLolGame extends Lol {
                 // get rid of the obstacle we just collided with
                 obstacle.remove(false);
                 // make a goodie
-                Goodie.makeAsCircle(45, 1, 1, 1, "blueball.png");
+                Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
                 // make an obstacle that is a trigger, but that doesn't work
                 // until the goodie count is 1
                 Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
@@ -3038,7 +3038,7 @@ public class MyLolGame extends Lol {
             // The second trigger works the same way
             else if (id == 1) {
                 obstacle.remove(false);
-                Goodie.makeAsCircle(75, 21, 1, 1, "blueball.png");
+                Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
 
                 Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
                 oo.setHeroCollisionTrigger(2, 2, 0, 0, 0, 0);
@@ -3046,7 +3046,7 @@ public class MyLolGame extends Lol {
             // same for the third trigger
             else if (id == 2) {
                 obstacle.remove(false);
-                Goodie.makeAsCircle(105, 1, 1, 1, "blueball.png");
+                Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
 
                 Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
                 oo.setHeroCollisionTrigger(3, 3, 0, 0, 0, 0);
@@ -3165,7 +3165,7 @@ public class MyLolGame extends Lol {
                 PauseScene.addText("Now you can see the rest of the level", 255, 255, 0,
                         "arial.ttf", 12);
                 PauseScene.show();
-                Destination d = Destination.makeAsCircle(29, 6, 1, 1, "mustardball.png");
+                Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
                 d.addVelocity(-.5f, -1, false);
 
                 Enemy e5 = Enemy.makeAsCircle(35, 15, 2, 2, "redball.png");
