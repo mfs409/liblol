@@ -140,7 +140,7 @@ public class Config implements LolConfiguration {
      */
     @Override
     public int getDefaultFontRed() {
-        return 255;
+        return 0;
     }
 
     /**
@@ -148,7 +148,7 @@ public class Config implements LolConfiguration {
      */
     @Override
     public int getDefaultFontGreen() {
-        return 255;
+        return 0;
     }
 
     /**
@@ -156,7 +156,7 @@ public class Config implements LolConfiguration {
      */
     @Override
     public int getDefaultFontBlue() {
-        return 255;
+        return 0;
     }
 
     /**

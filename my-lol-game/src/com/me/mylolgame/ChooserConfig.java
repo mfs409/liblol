@@ -57,7 +57,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getTopMargin() {
-        return 100;
+        return 130;
     }
 
     /**
@@ -66,7 +66,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getLeftMargin() {
-        return 50;
+        return 85;
     }
 
     /**
@@ -91,7 +91,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getLevelButtonName() {
-        return "redball.png";
+        return "leveltile.png";
     }
 
     /**
@@ -171,7 +171,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getBackgroundName() {
-        return "fade.png";
+        return "chooser.png";
     }
 
     /**
@@ -179,7 +179,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getBackButtonName() {
-        return "red.png";
+        return "backarrow.png";
     }
 
     /**
@@ -219,7 +219,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getPrevButtonName() {
-        return "red.png";
+        return "leftarrow.png";
     }
 
     /**
@@ -237,7 +237,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getPrevButtonY() {
-        return 140;
+        return 110;
     }
 
     /**
@@ -245,7 +245,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getPrevButtonWidth() {
-        return 25;
+        return 40;
     }
 
     /**
@@ -253,7 +253,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getPrevButtonHeight() {
-        return 25;
+        return 40;
     }
 
     /**
@@ -261,7 +261,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public String getNextButtonName() {
-        return "red.png";
+        return "rightarrow.png";
     }
 
     /**
@@ -270,7 +270,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getNextButtonX() {
-        return 455;
+        return 440;
     }
 
     /**
@@ -279,7 +279,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getNextButtonY() {
-        return 140;
+        return 110;
     }
 
     /**
@@ -287,7 +287,7 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getNextButtonWidth() {
-        return 25;
+        return 40;
     }
 
     /**
@@ -295,6 +295,6 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public int getNextButtonHeight() {
-        return 25;
+        return 40;
     }
 }

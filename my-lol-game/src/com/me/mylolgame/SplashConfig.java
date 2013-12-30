@@ -60,7 +60,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getPlayX() {
-        return 92;
+        return 192;
     }
 
     /**
@@ -68,7 +68,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getPlayY() {
-        return 150;
+        return 91;
     }
 
     /**
@@ -76,7 +76,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getPlayWidth() {
-        return 75;
+        return 93;
     }
 
     /**
@@ -84,7 +84,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getPlayHeight() {
-        return 25;
+        return 52;
     }
 
     /**
@@ -92,7 +92,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getHelpX() {
-        return 284;
+        return 48;
     }
 
     /**
@@ -100,7 +100,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getHelpY() {
-        return 140;
+        return 93;
     }
 
     /**
@@ -108,7 +108,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getHelpWidth() {
-        return 70;
+        return 80;
     }
 
     /**
@@ -116,7 +116,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getHelpHeight() {
-        return 25;
+        return 40;
     }
 
     /**
@@ -124,7 +124,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getQuitX() {
-        return 163;
+        return 363;
     }
 
     /**
@@ -132,7 +132,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getQuitY() {
-        return 89;
+        return 93;
     }
 
     /**
@@ -140,7 +140,7 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getQuitWidth() {
-        return 75;
+        return 69;
     }
 
     /**
@@ -148,6 +148,6 @@ public class SplashConfig implements SplashConfiguration {
      */
     @Override
     public int getQuitHeight() {
-        return 25;
+        return 39;
     }
 }

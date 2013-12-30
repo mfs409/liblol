@@ -41,7 +41,7 @@ public class Background {
     /**
      * The color that should be shown behind everything
      */
-    Color mColor = new Color(0, 0, 0, 1);
+    Color mColor = new Color(1, 1, 1, 1);
 
     /**
      * All the background layers to show for the current level
