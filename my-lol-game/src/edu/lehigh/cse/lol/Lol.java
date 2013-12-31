@@ -95,11 +95,6 @@ public abstract class Lol extends Game {
     LolConfiguration mConfig;
 
     /**
-     * The configuration of the splash screen is accessible through this
-     */
-    SplashConfiguration mSplashConfig;
-
-    /**
      * The configuratoin of the chooser screen is accessible through this
      */
     ChooserConfiguration mChooserConfig;
@@ -236,8 +231,7 @@ public abstract class Lol extends Game {
     public void create() {
         sGame = this;
         // get configuration
-        mConfig = config();
-        mSplashConfig = splashConfig();
+        mConfig = lolConfig();
         mChooserConfig = chooserConfig();
 
         // for handling back presses
@@ -285,22 +279,16 @@ public abstract class Lol extends Game {
      */
 
     /**
-     * The programmer configures the splash screen by implementing this method,
-     * and returning a SplashConfiguration object
+     * The programmer configures the game by implementing this method,
+     * and returning a LolConfiguration object
      */
-    abstract public LolConfiguration config();
+    abstract public LolConfiguration lolConfig();
 
     /**
      * The programmer configures the chooser screen by implementing this method,
      * and returning a ChooserConfiguration object
      */
     abstract public ChooserConfiguration chooserConfig();
-
-    /**
-     * The programmer configures the splash screen by implementing this method,
-     * and returning a SplashConfiguration object
-     */
-    abstract public SplashConfiguration splashConfig();
 
     /**
      * Register any sound or image files to be used by the game
@@ -320,6 +308,11 @@ public abstract class Lol extends Game {
      * @param whichScene The number of the help scene being drawn
      */
     abstract public void configureHelpScene(int whichScene);
+
+    /**
+     * Describe how to draw the splash scene
+     */
+    abstract public void configureSplash();
 
     /**
      * When a Hero collides with an Obstacle for which a HeroCollideTrigger has

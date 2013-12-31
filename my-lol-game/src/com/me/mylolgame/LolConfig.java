@@ -44,7 +44,7 @@ import edu.lehigh.cse.lol.LolConfiguration;
  * to have get into a situation where the game plays differently on a phone than
  * on the desktop.
  */
-public class Config implements LolConfiguration {
+public class LolConfig implements LolConfiguration {
     /**
      * The width of the screen of your device, in pixels. The actual value here
      * isn't too important, the main point is that the ratio between this and

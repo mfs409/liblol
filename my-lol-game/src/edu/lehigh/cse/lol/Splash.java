@@ -47,6 +47,14 @@ import com.badlogic.gdx.math.Vector3;
  * a SplashConfiguration object.
  */
 public class Splash extends ScreenAdapter {
+
+    /**
+     * A static reference to the current splash screen, so that we can use a
+     * static context to configure a Splash screen from the game developer's
+     * main file.
+     */
+    private static Splash sCurrent;
+
     /**
      * The camera for displaying the scene
      */
@@ -55,7 +63,7 @@ public class Splash extends ScreenAdapter {
     /**
      * A rectangle for tracking the location of the play button
      */
-    private final Rectangle mPlay;
+    private Rectangle mPlay;
 
     /**
      * A rectangle for tracking the location of the help button
@@ -65,7 +73,7 @@ public class Splash extends ScreenAdapter {
     /**
      * A rectangle for tracking the location of the quit button
      */
-    private final Rectangle mQuit;
+    private Rectangle mQuit;
 
     /**
      * For handling touches
@@ -85,7 +93,7 @@ public class Splash extends ScreenAdapter {
     /**
      * The image to display
      */
-    private final TextureRegion[] mImage;
+    private TextureRegion[] mImage;
 
     /**
      * The music to play
@@ -101,32 +109,22 @@ public class Splash extends ScreenAdapter {
      * Basic configuration: get the image and music, configure the locations of
      * the play/help/quit buttons
      */
-    public Splash() {
+    Splash() {
         // configure the camera, center it on the screen
         int w = Lol.sGame.mConfig.getScreenWidth();
         int h = Lol.sGame.mConfig.getScreenHeight();
         mCamera = new OrthographicCamera(w, h);
         mCamera.position.set(w / 2, h / 2, 0);
-
-        // set up the play, help, and quit buttons
-        SplashConfiguration sc = Lol.sGame.mSplashConfig;
-        mPlay = new Rectangle(sc.getPlayX(), sc.getPlayY(), sc.getPlayWidth(), sc.getPlayHeight());
-        if (Lol.sGame.mConfig.getNumHelpScenes() > 0) {
-            mHelp = new Rectangle(sc.getHelpX(), sc.getHelpY(), sc.getHelpWidth(),
-                    sc.getHelpHeight());
-        }
-        mQuit = new Rectangle(sc.getQuitX(), sc.getQuitY(), sc.getQuitWidth(), sc.getQuitHeight());
-
-        // get the background image and music
-        mImage = Media.getImage(sc.getBackgroundImage());
-        if (Lol.sGame.mSplashConfig.getMusic() != null)
-            mMusic = Media.getMusic(sc.getMusic());
+        // save a reference
+        sCurrent = this;
+        // call user code to configure the objects
+        Lol.sGame.configureSplash();
     }
 
     /**
      * Start the music if it's not already playing
      */
-    public void playMusic() {
+    void playMusic() {
         if (!mMusicPlaying && mMusic != null) {
             mMusicPlaying = true;
             mMusic.play();
@@ -136,7 +134,7 @@ public class Splash extends ScreenAdapter {
     /**
      * Pause the music if it's playing
      */
-    public void pauseMusic() {
+    void pauseMusic() {
         if (mMusicPlaying) {
             mMusicPlaying = false;
             mMusic.pause();
@@ -146,7 +144,7 @@ public class Splash extends ScreenAdapter {
     /**
      * Stop the music if it's playing
      */
-    public void stopMusic() {
+    void stopMusic() {
         if (mMusicPlaying) {
             mMusicPlaying = false;
             mMusic.stop();
@@ -227,5 +225,29 @@ public class Splash extends ScreenAdapter {
     @Override
     public void hide() {
         pauseMusic();
+    }
+
+    /*
+     * PUBLIC INTERFACE
+     */
+
+    public static void drawPlayButton(int x, int y, int width, int height) {
+        sCurrent.mPlay = new Rectangle(x, y, width, height);
+    }
+
+    public static void drawHelpButton(int x, int y, int width, int height) {
+        sCurrent.mHelp = new Rectangle(x, y, width, height);
+    }
+
+    public static void drawQuitButton(int x, int y, int width, int height) {
+        sCurrent.mQuit = new Rectangle(x, y, width, height);
+    }
+
+    public static void setMusic(String soundName) {
+        sCurrent.mMusic = Media.getMusic(soundName);
+    }
+
+    public static void setBackground(String imgName) {
+        sCurrent.mImage = Media.getImage(imgName);
     }
 }

@@ -50,7 +50,7 @@ import edu.lehigh.cse.lol.Projectile;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.Score;
-import edu.lehigh.cse.lol.SplashConfiguration;
+import edu.lehigh.cse.lol.Splash;
 import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Tilt;
 import edu.lehigh.cse.lol.Util;
@@ -106,6 +106,18 @@ public class MyLolGame extends Lol {
 
         // load background music
         Media.registerMusic("tune.ogg", true);
+    }
+
+    /**
+     * Describe how to draw the first scene that displays when the game app is started
+     */
+    @Override
+    public void configureSplash() {
+        Splash.drawQuitButton(363, 93, 69, 39);
+        Splash.drawHelpButton(48, 93, 80, 40);
+        Splash.drawPlayButton(192, 91, 93, 52);
+        Splash.setBackground("splash.png");
+        Splash.setMusic("tune.ogg");
     }
 
     /**
@@ -3368,16 +3380,8 @@ public class MyLolGame extends Lol {
      * Mandatory method. Don't change this.
      */
     @Override
-    public LolConfiguration config() {
-        return new Config();
-    }
-
-    /**
-     * Mandatory method. Don't change this.
-     */
-    @Override
-    public SplashConfiguration splashConfig() {
-        return new SplashConfig();
+    public LolConfiguration lolConfig() {
+        return new LolConfig();
     }
 
     /**
