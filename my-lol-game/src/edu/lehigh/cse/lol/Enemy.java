@@ -32,16 +32,16 @@ import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be
- * defeated via projectiles. They can also be defeated by colliding with invincible
- * heroes, or by colliding with a hero whose strength is >= the enemy's
- * damage, though that case results in the hero losing strength. A level can
- * require all enemies to be defeated before the level can be won. Note that
+ * defeated via projectiles. They can also be defeated by colliding with
+ * invincible heroes, or by colliding with a hero whose strength is >= the
+ * enemy's damage, though that case results in the hero losing strength. A level
+ * can require all enemies to be defeated before the level can be won. Note that
  * Enemies can move in a variety of ways
  */
 public class Enemy extends PhysicsSprite {
     /**
-     * Amount of damage this enemy does to a hero on a collision. The default
-     * is 2, so that an enemy will defeat a hero and not disappear.
+     * Amount of damage this enemy does to a hero on a collision. The default is
+     * 2, so that an enemy will defeat a hero and not disappear.
      */
     int mDamage = 2;
 
@@ -74,7 +74,7 @@ public class Enemy extends PhysicsSprite {
     /**
      * A callback to run when the enemy is defeated
      */
-    CollisionCallback mDefeatCallback;
+    private CollisionCallback mDefeatCallback;
 
     /**
      * Create an Enemy This should never be called directly.
@@ -96,8 +96,8 @@ public class Enemy extends PhysicsSprite {
     /**
      * Collision behavior of enemies. Based on our PhysicsSprite numbering
      * scheme, the only concerns are to ensure that when a projectile hits this
-     * enemy, we remove the enemy and hide the projectile, and to handle collisions
-     * with SubClass obstacles
+     * enemy, we remove the enemy and hide the projectile, and to handle
+     * collisions with SubClass obstacles
      * 
      * @param other The other entity involved in the collision
      */
@@ -203,9 +203,9 @@ public class Enemy extends PhysicsSprite {
     /**
      * Set the amount of damage that this enemy does to a hero
      * 
-     * @param amount Amount of damage. Default is 2, since heroes have a
-     *            default strength of 1, so that the enemy defeats the hero but
-     *            does not disappear.
+     * @param amount Amount of damage. Default is 2, since heroes have a default
+     *            strength of 1, so that the enemy defeats the hero but does not
+     *            disappear.
      */
     public void setDamage(int amount) {
         mDamage = amount;
@@ -246,7 +246,8 @@ public class Enemy extends PhysicsSprite {
      */
     public void setDefeatByCrawl() {
         mDefeatByCrawl = true;
-        // make sure heroes don't ricochet off of this enemy when defeating it via crawling
+        // make sure heroes don't ricochet off of this enemy when defeating it
+        // via crawling
         setCollisionEffect(false);
     }
 

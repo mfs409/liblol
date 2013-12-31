@@ -79,6 +79,7 @@ public class Destination extends PhysicsSprite {
      * @param contact A description of the collision between this destination
      *            and the other entity
      */
+    @Override
     void onCollide(PhysicsSprite other, Contact contact) {
     }
 
@@ -116,7 +117,7 @@ public class Destination extends PhysicsSprite {
      */
     public static Destination makeAsCircle(float x, float y, float width, float height,
             String imgName) {
-        float radius = Math.max(width,  height);
+        float radius = Math.max(width, height);
         Destination d = new Destination(radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionEffect(false);

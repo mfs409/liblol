@@ -1011,8 +1011,16 @@ public abstract class PhysicsSprite implements Renderable {
         }, delay);
     }
 
-    public void setImage(String imgName) {
+    /**
+     * Change the image being used by the entity
+     * 
+     * @param imgName The name of the new image file to use
+     * @param index The index to use, in the case that the image was registered
+     *            as animatable. When in doubt, use 0.
+     */
+    public void setImage(String imgName, int index) {
         mAnimator.updateImage(imgName);
+        mAnimator.setIndex(index);
     }
 
     /**

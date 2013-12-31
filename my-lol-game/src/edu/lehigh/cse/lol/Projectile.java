@@ -34,7 +34,8 @@ import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
  * Projectiles are entities that can be thrown from the hero's location in order
- * to remove enemies.  Note that there is no public interface to this file.  Projectiles should be controlled via ProjectilePool.
+ * to remove enemies. Note that there is no public interface to this file.
+ * Projectiles should be controlled via ProjectilePool.
  */
 public class Projectile extends PhysicsSprite {
     /**

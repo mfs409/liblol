@@ -27,12 +27,12 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 
 /**
  * Tilt provides a mechanism for moving entities on the screen. To use tilt, you

@@ -38,27 +38,27 @@ class RouteDriver {
     /**
      * The route that is being applied
      */
-    private Route mRoute;
+    private final Route mRoute;
 
     /**
      * The entity to which the route is being applied
      */
-    private PhysicsSprite mEntity;
+    private final PhysicsSprite mEntity;
 
     /**
      * The speed at which the entity moves along the route
      */
-    private float mRouteVelocity;
+    private final float mRouteVelocity;
 
     /**
      * When the entity reaches the end of the route, should it start again?
      */
-    private boolean mRouteLoop;
+    private final boolean mRouteLoop;
 
     /**
      * A temp for computing position
      */
-    private Vector2 mRouteVec = new Vector2();
+    private final Vector2 mRouteVec = new Vector2();
 
     /**
      * Is the route still running?

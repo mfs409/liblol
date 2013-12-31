@@ -441,7 +441,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.mStrength + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(he);

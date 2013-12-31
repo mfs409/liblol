@@ -45,7 +45,7 @@ public class Animation {
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
      */
-    private TextureRegion[] mCells;
+    private final TextureRegion[] mCells;
 
     /**
      * This array holds the indices that should be displayed.
@@ -61,12 +61,12 @@ public class Animation {
     /**
      * Should the animation repeat?
      */
-    private boolean mLoop;
+    private final boolean mLoop;
 
     /**
-     * The next available position in the frames and durations arrays. Note
-     * that frames and durations should have the same length, and the same
-     * number of entries.
+     * The next available position in the frames and durations arrays. Note that
+     * frames and durations should have the same length, and the same number of
+     * entries.
      */
     int mNextCell;
 
@@ -82,8 +82,8 @@ public class Animation {
         TextureRegion[] mImages;
 
         /**
-         * The index to display from mImages for the case where there is no active
-         * animation. This is useful for animateByGoodieCount.
+         * The index to display from mImages for the case where there is no
+         * active animation. This is useful for animateByGoodieCount.
          */
         int mImageIndex;
 

@@ -2027,9 +2027,11 @@ public class MyLolGame extends Lol {
 
         /*
          * This isn't quite the same as animation, but it's nice. We can
-         * indicate that a hero's image changes via goodie count. This can, for
-         * example, allow a hero to change (e.g., get healthier) by swapping
-         * through images as goodies are collected
+         * indicate that a hero's image changes depending on its strength. This
+         * can, for example, allow a hero to change (e.g., get healthier) by
+         * swapping through images as goodies are collected, or allow the hero
+         * to switch its animation depending on how many enemies it has collided
+         * with
          */
         else if (whichLevel == 55) {
             // set up a basic level with a bunch of goodies
@@ -2038,29 +2040,32 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            for (int i = 0; i < 8; ++i)
-                Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
+            // Since colorstar.png has 8 frames, and we're displaying frame 0 as
+            // "health == 0", let's add 7 more goodies, each of which adds 1 to
+            // the hero's strength.
+            for (int i = 0; i < 7; ++i) {
+                Goodie g = Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
+                g.setStrengthBoost(1);
+            }
 
-            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
-            d.setActivationScore(8, 0, 0, 0);
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
+
+            // make 8 enemies, each with strength == 1. This means we can lose
+            // the level, and that we can test moving our strength all the way
+            // up to 7, and all the way back down to 0.
+            for (int i = 0; i < 8; ++i) {
+                Enemy e = Enemy.makeAsCircle(5 + 2 * i, 1 + 2 * i, 2, 2, "redball.png");
+                e.setDamage(1);
+            }
 
             // Note: colorstar.png has 8 cells...
             Hero h = Hero.makeAsCircle(4, 27, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            // set up the animation by matching the cell in the image to a
-            // specific goodie count. That is, when the count is 1, we show
-            // picture 2. When the count is 2, we show picture 1, etc.
-            //
-            // note: no change for goodie count 3, and remember that 0 is the
-            // default picture so it's showing already
-            //
-            // Note: this is ugly, because we are matching the frames, but
-            // duration is actually the goodie count
-            h.setAnimateByGoodieCount(new Animation("colorstar.png", 7, false).to(2, 1).to(1, 2)
-                    .to(4, 3).to(5, 4).to(6, 5).to(7, 6).to(3, 8));
+            // Be sure to look at onStrengthChangeTrigger. As the hero's
+            // strength moves up and down, its image will change.
         }
 
         /*
@@ -3106,7 +3111,7 @@ public class MyLolGame extends Lol {
             obstacle.remove(true);
             // resize the hero, and change its image
             hero.resize(hero.getXPosition(), hero.getYPosition(), 5, 5);
-            hero.setImage("stars.png");
+            hero.setImage("stars.png", 0);
         }
         // on level 74, we use a collision as an excuse to add more time before
         // time's up.
@@ -3383,6 +3388,28 @@ public class MyLolGame extends Lol {
                 PauseScene.show();
             }
         }
+    }
+
+    /**
+     * Whenever a hero's strength changes due to a collision with a goodie or
+     * enemy, this is called. The most common use is to change the hero's
+     * appearance.
+     * 
+     * @param whichLevel The current level
+     * @param h The hero involved in the collision
+     */
+    @Override
+    public void onStrengthChangeTrigger(int whichLevel, Hero h) {
+        if (whichLevel == 55) {
+            // get the hero's strength. Since the hero isn't dead, the strength
+            // is at least 1. Since there are 7 strength booster goodies, the
+            // strength is at most 8.
+            int s = h.getStrength();
+            // set the hero's image index to (s-1), i.e., one of the indices in
+            // the range 0..7, depending on strength
+            h.setImage("colorstar.png", s - 1);
+        }
+
     }
 
     /**

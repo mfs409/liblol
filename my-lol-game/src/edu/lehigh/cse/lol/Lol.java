@@ -33,15 +33,11 @@ package edu.lehigh.cse.lol;
 
 // TODO: verify that flipped animations work correctly, even when they change while flipped
 
+// TODO: Hero animation sequences could use work... we can lose information (e.g., if
+// invincibility runs out while jumping), and we don't have invincible+X or jump+crawl
+// animation
+
 // TODO: the unlock mechanism is untested
-
-// TODO: hero-enemy triggers and hero-goodie triggers would allow neat animation effects, without
-// resorting to the ugliness in level 55
-
-// TODO: Hero animation sequences could use work.  The problem is that goodie count animation
-// information can be lost if we animate, then return from the animation.  Part of the problem is
-// that animateByGoodieCount is ugly.  Furthermore, we don't have support for invincible+X
-// animation, or jump+crawl animation
 
 // TODO: add jump-to-defeat enemies
 
@@ -51,7 +47,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: Demo projectile setCollisionOk?
 
-// TODO: consider making sprite sheets more useful
+// TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -279,8 +275,8 @@ public abstract class Lol extends Game {
      */
 
     /**
-     * The programmer configures the game by implementing this method,
-     * and returning a LolConfiguration object
+     * The programmer configures the game by implementing this method, and
+     * returning a LolConfiguration object
      */
     abstract public LolConfiguration lolConfig();
 
@@ -402,6 +398,15 @@ public abstract class Lol extends Game {
      * @param whichLevel The current level
      */
     abstract public void onControlPressTrigger(int id, int whichLevel);
+
+    /**
+     * When a hero collides with a goodie or enemy, and it leads to the hero's
+     * strength changing, we can opt to run this code.
+     * 
+     * @param whichLevel The current level
+     * @param h The hero whose strength just changed
+     */
+    abstract public void onStrengthChangeTrigger(int whichLevel, Hero h);
 }
 
 /**
@@ -410,6 +415,7 @@ public abstract class Lol extends Game {
 interface Renderable {
     /**
      * Render something to the screen
+     * 
      * @param sb The SpriteBatch to use for rendering
      * @param elapsed The time since the last render
      */

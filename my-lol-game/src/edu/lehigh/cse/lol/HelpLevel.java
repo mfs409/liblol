@@ -27,14 +27,14 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import java.util.ArrayList;
 
 /**
  * HelpLevel provides an interface for drawing to the help screens of a game
@@ -44,22 +44,22 @@ public class HelpLevel extends ScreenAdapter {
     /**
      * The background color of the help level
      */
-    private Color mColor = new Color();
+    private final Color mColor = new Color();
 
     /**
      * All the sprites that need to be drawn
      */
-    private ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * The camera to use when drawing
      */
-    private OrthographicCamera mHelpCam;
+    private final OrthographicCamera mHelpCam;
 
     /**
      * The spritebatch to use when drawing
      */
-    private SpriteBatch mSb;
+    private final SpriteBatch mSb;
 
     /**
      * In LOL, we avoid having the game designer construct objects. To that end,

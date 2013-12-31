@@ -109,7 +109,8 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(5);
+    private final ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(
+            5);
 
     /**
      * The controls / heads-up-display
@@ -435,7 +436,8 @@ public class Level extends ScreenAdapter {
         playMusic();
 
         // Handle pauses due to pre, pause, or post scenes... Note that these
-        // handle their own screen touches... Note that postscene should come first.
+        // handle their own screen touches... Note that postscene should come
+        // first.
         if (mPostScene != null && mPostScene.render(mSpriteBatch))
             return;
         if (mPreScene != null && mPreScene.render(mSpriteBatch))
@@ -792,9 +794,9 @@ public class Level extends ScreenAdapter {
      *            scribble events... use this to avoid outrageously high rates
      *            of scribbling
      */
-    public static void setScribbleMode(final String imgName, final float duration, final float width,
-            final float height, final float density, final float elasticity, final float friction,
-            final boolean moveable, final int interval) {
+    public static void setScribbleMode(final String imgName, final float duration,
+            final float width, final float height, final float density, final float elasticity,
+            final float friction, final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
         Level.sCurrent.mTouchResponder = new TouchAction() {

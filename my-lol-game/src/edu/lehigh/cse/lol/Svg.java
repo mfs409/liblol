@@ -27,8 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -42,6 +40,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 
+import java.io.IOException;
+
 /**
  * SVG allows the game designer to load SVG line drawings into a game. SVG line
  * drawings can be made in Inkscape. In LOL, we do not use line drawings to the
@@ -54,38 +54,38 @@ public class Svg {
     /**
      * This description will be used for every line we create
      */
-    private FixtureDef mFixture;
+    private final FixtureDef mFixture;
 
     /**
      * The offset by which we shift the line drawing
      */
-    private Vector2 mUserTransform = new Vector2(0, 0);
+    private final Vector2 mUserTransform = new Vector2(0, 0);
 
     /**
      * The amount by which we stretch the drawing
      */
-    private Vector2 mUserStretch = new Vector2(1, 1);
+    private final Vector2 mUserStretch = new Vector2(1, 1);
 
     /**
      * SVG files can have an internal "translate" field... while parsing, we
      * save the field here
      */
-    private Vector2 mSvgTranslate = new Vector2(0, 0);
+    private final Vector2 mSvgTranslate = new Vector2(0, 0);
 
     /**
      * Coordinate of the last point we drew
      */
-    private Vector2 mLast = new Vector2(0, 0);
+    private final Vector2 mLast = new Vector2(0, 0);
 
     /**
      * Coordinate of the first point we drew
      */
-    private Vector2 mFirst = new Vector2(0, 0);
+    private final Vector2 mFirst = new Vector2(0, 0);
 
     /**
      * X coordinate of the current point being drawn
      */
-    private Vector2 mCurr = new Vector2(0, 0);
+    private final Vector2 mCurr = new Vector2(0, 0);
 
     /**
      * The parser is essentially a finite state machine. The states are 0 for

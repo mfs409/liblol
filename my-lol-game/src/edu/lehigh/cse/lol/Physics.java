@@ -76,11 +76,11 @@ public class Physics {
         // obstacle from the right direction
         if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
                 || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky
-                        .getXPosition())
+                .getXPosition())
                 || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition()
-                        + sticky.mSize.x)
+                + sticky.mSize.x)
                 || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky
-                        .getYPosition())) {
+                .getYPosition())) {
             // create distance and weld joints... somehow, the combination is
             // needed to get this to work. Note that this function runs during
             // the box2d step, so we need to make the joint in a callback that
@@ -139,28 +139,22 @@ public class Physics {
                 if (a instanceof Hero) {
                     c0 = (PhysicsSprite)a;
                     c1 = (PhysicsSprite)b;
-                }
-                else if (b instanceof Hero) {
+                } else if (b instanceof Hero) {
                     c0 = (PhysicsSprite)b;
                     c1 = (PhysicsSprite)a;
-                }
-                else if (a instanceof Enemy) {
+                } else if (a instanceof Enemy) {
                     c0 = (PhysicsSprite)a;
                     c1 = (PhysicsSprite)b;
-                }
-                else if (b instanceof Enemy) {
+                } else if (b instanceof Enemy) {
                     c0 = (PhysicsSprite)b;
                     c1 = (PhysicsSprite)a;
-                }
-                else if (a instanceof Projectile) {
+                } else if (a instanceof Projectile) {
                     c0 = (PhysicsSprite)a;
                     c1 = (PhysicsSprite)b;
-                }
-                else if (b instanceof Projectile) {
+                } else if (b instanceof Projectile) {
                     c0 = (PhysicsSprite)b;
                     c1 = (PhysicsSprite)a;
-                }
-                else {
+                } else {
                     return;
                 }
 
@@ -172,6 +166,7 @@ public class Physics {
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
                 Level.sCurrent.mOneTimeEvents.add(new Action() {
+                    @Override
                     public void go() {
                         c0.onCollide(c1, contact);
                     }

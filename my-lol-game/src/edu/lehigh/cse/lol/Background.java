@@ -27,11 +27,11 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import java.util.ArrayList;
 
 /**
  * The Background class provides a way to declare images that go in the
@@ -46,7 +46,7 @@ public class Background {
     /**
      * All the background layers to show for the current level
      */
-    private ArrayList<ParallaxLayer> mLayers = new ArrayList<ParallaxLayer>();
+    private final ArrayList<ParallaxLayer> mLayers = new ArrayList<ParallaxLayer>();
 
     /**
      * This object holds the configuration information for a Parallax layer.
@@ -55,27 +55,27 @@ public class Background {
         /**
          * How fast should this layer scroll in the X dimension
          */
-        private float mXSpeed;
+        private final float mXSpeed;
 
         /**
          * How fast should it scroll in Y
          */
-        private float mYSpeed;
+        private final float mYSpeed;
 
         /**
          * The image to display
          */
-        private TextureRegion mImage;
+        private final TextureRegion mImage;
 
         /**
          * How much X offset when drawing this (only useful for Y repeat)
          */
-        private float mXOffset;
+        private final float mXOffset;
 
         /**
          * How much Y offset when drawing this (only useful for X repeat)
          */
-        private float mYOffset;
+        private final float mYOffset;
 
         /**
          * Loop in X?
@@ -152,8 +152,7 @@ public class Background {
                 // get the camera center, translate, and scale
                 float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + Level.sCurrent.mBgCam.zoom)
-                        * Lol.sGame.mConfig.getScreenHeight();
+                startY -= (1.5f + Level.sCurrent.mBgCam.zoom) * Lol.sGame.mConfig.getScreenHeight();
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;

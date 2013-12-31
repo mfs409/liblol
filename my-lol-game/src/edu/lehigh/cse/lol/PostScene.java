@@ -27,12 +27,12 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import java.util.ArrayList;
 
 /**
  * PostScene provides a way to display text and images after a level is
@@ -65,12 +65,12 @@ public class PostScene {
     /**
      * The pictures and text to display when a level is won.
      */
-    private ArrayList<Renderable> mWinSprites = new ArrayList<Renderable>();
+    private final ArrayList<Renderable> mWinSprites = new ArrayList<Renderable>();
 
     /**
      * The pictures and text to display when a level is lost.
      */
-    private ArrayList<Renderable> mLoseSprites = new ArrayList<Renderable>();
+    private final ArrayList<Renderable> mLoseSprites = new ArrayList<Renderable>();
 
     /**
      * Track if the level has been won or lost
@@ -137,16 +137,16 @@ public class PostScene {
             if (mWinSound != null)
                 mWinSound.play();
             mWinSprites
-                    .add(Util.makeText(mWinText, 255, 255, 255,
-                            Lol.sGame.mConfig.getDefaultFontFace(),
-                            Lol.sGame.mConfig.getDefaultFontSize()));
+            .add(Util.makeText(mWinText, 255, 255, 255,
+                    Lol.sGame.mConfig.getDefaultFontFace(),
+                    Lol.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play();
             mLoseSprites
-                    .add(Util.makeText(mLoseText, 255, 255, 255,
-                            Lol.sGame.mConfig.getDefaultFontFace(),
-                            Lol.sGame.mConfig.getDefaultFontSize()));
+            .add(Util.makeText(mLoseText, 255, 255, 255,
+                    Lol.sGame.mConfig.getDefaultFontFace(),
+                    Lol.sGame.mConfig.getDefaultFontSize()));
         }
     }
 
@@ -160,7 +160,7 @@ public class PostScene {
 
         // remove the previous level
         Level.sCurrent = null;
-        
+
         // repeat on loss, else go to next level (or chooser)
         if (!mWin) {
             Lol.sGame.doPlayLevel(Lol.sGame.mCurrLevelNum);
@@ -289,8 +289,8 @@ public class PostScene {
      * @param fontName The name of the font to use
      * @param size The font size to use
      */
-    public static void addExtraWinText(String text, int red, int green, int blue,
-            String fontName, int size) {
+    public static void addExtraWinText(String text, int red, int green, int blue, String fontName,
+            int size) {
         PostScene tmp = getCurrPostScene();
         tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
@@ -306,8 +306,8 @@ public class PostScene {
      * @param fontName The name of the font to use
      * @param size The font size to use
      */
-    public static void addExtraLoseText(String text, int red, int green, int blue,
-            String fontName, int size) {
+    public static void addExtraLoseText(String text, int red, int green, int blue, String fontName,
+            int size) {
         PostScene tmp = getCurrPostScene();
         tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }

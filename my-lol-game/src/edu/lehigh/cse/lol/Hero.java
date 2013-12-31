@@ -42,7 +42,7 @@ public class Hero extends PhysicsSprite {
      * be defeated on any collision with an enemy, with the enemy *not*
      * disappearing
      */
-    int mStrength = 1;
+    private int mStrength = 1;
 
     /**
      * Time until the hero's invincibility runs out
@@ -78,12 +78,6 @@ public class Hero extends PhysicsSprite {
      * Animation support: how long until we stop showing the throw animation
      */
     private float mThrowAnimationTimeRemaining;
-
-    /**
-     * Animation support: an Animation sequence that correlates goodie counts to
-     * specific frames of an animation
-     */
-    private Animation mGoodieCountAnimation;
 
     /**
      * Track if the hero is in the air, so that it can't jump when it isn't
@@ -306,14 +300,14 @@ public class Hero extends PhysicsSprite {
         boolean match = true;
         for (int i = 0; i < 4; ++i)
             match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
-        if (match && (d.mHolding < d.mCapacity) && mVisible) {
-            // hide the hero quietly, since the destination might make a sound
-            remove(true);
-            d.mHolding++;
-            if (d.mArrivalSound != null)
-                d.mArrivalSound.play();
-            Level.sCurrent.mScore.onDestinationArrive();
-        }
+            if (match && (d.mHolding < d.mCapacity) && mVisible) {
+                // hide the hero quietly, since the destination might make a sound
+                remove(true);
+                d.mHolding++;
+                if (d.mArrivalSound != null)
+                    d.mArrivalSound.play();
+                Level.sCurrent.mScore.onDestinationArrive();
+            }
     }
 
     /**
@@ -347,9 +341,20 @@ public class Hero extends PhysicsSprite {
         }
         // when we can defeat it by losing strength
         else {
-            mStrength -= e.mDamage;
+            addStrength(-e.mDamage);
             e.defeat(true);
         }
+    }
+
+    /**
+     * Update the hero's strength, and then run any strength change callback
+     * that has been registered
+     * 
+     * @param amount The amount to add (use a negative value to subtract)
+     */
+    private void addStrength(int amount) {
+        mStrength += amount;
+        Lol.sGame.onStrengthChangeTrigger(Lol.sGame.mCurrLevelNum, this);
     }
 
     /**
@@ -402,7 +407,7 @@ public class Hero extends PhysicsSprite {
         Level.sCurrent.mScore.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
-        mStrength += g.mStrengthBoost;
+        addStrength(g.mStrengthBoost);
 
         // deal with invincibility
         if (g.mInvincibilityDuration > 0) {
@@ -411,17 +416,6 @@ public class Hero extends PhysicsSprite {
             // invincible animation
             if (mInvincibleAnimation != null)
                 mAnimator.setCurrentAnimation(mInvincibleAnimation);
-        }
-
-        // deal with animation changes due to goodie count
-        if (mGoodieCountAnimation != null) {
-            int goodies = Level.sCurrent.mScore.mGoodiesCollected[0];
-            for (int i = 0; i < mGoodieCountAnimation.mNextCell; ++i) {
-                if (mGoodieCountAnimation.mDurations[i] == goodies) {
-                    mAnimator.setIndex(mGoodieCountAnimation.mFrames[i]);
-                    break;
-                }
-            }
         }
     }
 
@@ -457,7 +451,7 @@ public class Hero extends PhysicsSprite {
      * @return The hero that was created
      */
     public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width,  height);
+        float radius = Math.max(width, height);
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(h, 0);
@@ -466,7 +460,9 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Give the hero more strength than the default, so it can survive more
-     * collisions with enemies
+     * collisions with enemies. Note that calling this will not run any strength
+     * change callbacks... they only run in conjunction with collisions with
+     * goodies or enemies.
      * 
      * @param amount The new strength of the hero
      */
@@ -495,8 +491,8 @@ public class Hero extends PhysicsSprite {
     }
 
     /**
-     * Specify the X and Y velocity to give to the hero whenever it is instructed
-     * to jump
+     * Specify the X and Y velocity to give to the hero whenever it is
+     * instructed to jump
      * 
      * @param x Velocity in X direction
      * @param y Velocity in Y direction
@@ -573,15 +569,5 @@ public class Hero extends PhysicsSprite {
      */
     public void setInvincibleAnimation(Animation a) {
         mInvincibleAnimation = a;
-    }
-
-    /**
-     * Indicate that this hero should change its animation cell depending on how
-     * many (type-1) goodies have been collected
-     * 
-     * @param a An animation that encodes the information we want to display
-     */
-    public void setAnimateByGoodieCount(Animation a) {
-        mGoodieCountAnimation = a;
     }
 }
