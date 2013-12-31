@@ -43,8 +43,6 @@ package edu.lehigh.cse.lol;
 // that animateByGoodieCount is ugly.  Furthermore, we don't have support for invincible+X
 // animation, or jump+crawl animation
 
-// TODO: it would be good to have persistent scores... can we easily do it in a general way?
-
 // TODO: add jump-to-defeat enemies
 
 // TODO: consider adding a wrapper to expose Box2d collision groups?
@@ -58,7 +56,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 
@@ -232,26 +229,6 @@ public abstract class Lol extends Game {
     }
 
     /**
-     * save the value of 'unlocked' so that the next time we play, we don't have
-     * to start at level 0
-     * 
-     * @param value The value to save as the most recently unlocked level
-     */
-    void saveUnlocked(int value) {
-        Preferences prefs = Gdx.app.getPreferences(mConfig.getStorageKey());
-        prefs.putInteger("unlock", value);
-        prefs.flush();
-    }
-
-    /**
-     * read the current value of 'unlocked' to know how many levels to unlock
-     */
-    int readUnlocked() {
-        Preferences prefs = Gdx.app.getPreferences(mConfig.getStorageKey());
-        return prefs.getInteger("unlock", 1);
-    }
-
-    /**
      * This is an internal method for initializing a game. User code should
      * never call this.
      */
@@ -265,9 +242,6 @@ public abstract class Lol extends Game {
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
-
-        // get number of unlocked levels
-        readUnlocked();
 
         // Load Resources
         nameResources();
@@ -437,6 +411,14 @@ public abstract class Lol extends Game {
     abstract public void onControlPressTrigger(int id, int whichLevel);
 }
 
+/**
+ * This interface is used to store items that can be rendered
+ */
 interface Renderable {
+    /**
+     * Render something to the screen
+     * @param sb The SpriteBatch to use for rendering
+     * @param elapsed The time since the last render
+     */
     void render(SpriteBatch sb, float elapsed);
 }

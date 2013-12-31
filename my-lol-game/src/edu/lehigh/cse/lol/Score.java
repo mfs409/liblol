@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Timer;
 
 import edu.lehigh.cse.lol.Level.Action;
@@ -225,8 +227,8 @@ public class Score {
                 Lol.sGame.levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
 
                 // if we won, unlock the next level
-                if (win && Lol.sGame.readUnlocked() == Lol.sGame.mCurrLevelNum)
-                    Lol.sGame.saveUnlocked(Lol.sGame.mCurrLevelNum + 1);
+                if (win && readUnlocked() == Lol.sGame.mCurrLevelNum)
+                    saveUnlocked(Lol.sGame.mCurrLevelNum + 1);
 
                 // drop everything from the hud
                 Level.sCurrent.mControls.clear();
@@ -240,6 +242,26 @@ public class Score {
                 Level.sCurrent.mPostScene.setWin(win);
             }
         };
+    }
+
+    /**
+     * save the value of 'unlocked' so that the next time we play, we don't have
+     * to start at level 0
+     * 
+     * @param value The value to save as the most recently unlocked level
+     */
+    static void saveUnlocked(int value) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        prefs.putInteger("unlock", value);
+        prefs.flush();
+    }
+
+    /**
+     * read the current value of 'unlocked' to know how many levels to unlock
+     */
+    static int readUnlocked() {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        return prefs.getInteger("unlock", 1);
     }
 
     /*
@@ -431,4 +453,30 @@ public class Score {
     public static int getEnemiesDefeated() {
         return Level.sCurrent.mScore.mEnemiesDefeated;
     }
+
+    /**
+     * Access the persistent storage to set a key/value pair, so that the
+     * information will be available forever
+     * 
+     * @param key The key to use to remember this value
+     * @param value The value to save
+     */
+    public static void savePersistent(String key, int value) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        prefs.putInteger(key, value);
+        prefs.flush();
+    }
+
+    /**
+     * Access the persistent storage to read the value associated with a key
+     * 
+     * @param key The key to use to get the value
+     * @param defaultVal The default value to return if the key is not found
+     * @returns The current value saved for the give
+     */
+    public static int readPersistent(String key, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        return prefs.getInteger(key, defaultVal);
+    }
+
 }

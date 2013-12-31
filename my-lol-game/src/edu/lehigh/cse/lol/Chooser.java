@@ -297,7 +297,7 @@ public class Chooser extends ScreenAdapter {
                     mNext.mRect.height);
 
         // draw the level buttons
-        int unlocked = Lol.sGame.readUnlocked();
+        int unlocked = Score.readUnlocked();
         for (Button ls : levels) {
             if (ls != null) {
                 // draw picture
@@ -392,7 +392,7 @@ public class Chooser extends ScreenAdapter {
         }
 
         // check for press to an unlocked level
-        int unlocked = Lol.sGame.readUnlocked();
+        int unlocked = Score.readUnlocked();
         for (Button ls : levels) {
             if (ls != null && (ls.mLevel <= unlocked || Lol.sGame.mConfig.getUnlockMode())) {
                 if (ls.mRect.contains(mV.x, mV.y))

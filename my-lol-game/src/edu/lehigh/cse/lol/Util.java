@@ -27,11 +27,11 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import java.util.Random;
 
 /**
  * The Util class stores a few helper functions that we use inside of LOL, and a
@@ -183,5 +183,36 @@ public class Util {
     public static void drawPicture(final int x, final int y, final int width, final int height,
             final String imgName, int zIndex) {
         Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
+    }
+
+    /**
+     * Draw some text on the current level Note: the order in which this is
+     * called relative to other entities will determine whether they go under or
+     * over this text.
+     * 
+     * @param x X coordinate of bottom left corner of the text
+     * @param y Y coordinate of bottom left corner of the text
+     * @param text The text to display
+     * @param red The red component of the color (0-255)
+     * @param green The green component of the color (0-255)
+     * @param blue The blue component of the color (0-255)
+     * @param fontName The name of the font file to use
+     * @param size The font size to use
+     * @param zIndex The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     *            and 2. By default, everything goes to plane 0
+     */
+    public static void drawText(final int x, final int y, final String text, final int red,
+            final int green, final int blue, String fontName, int size, int zIndex) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        Renderable r = new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
+                bf.setScale(1 / Physics.PIXEL_METER_RATIO);
+                bf.drawMultiLine(sb, text, x, y + bf.getMultiLineBounds(text).height);
+                bf.setScale(1);
+            }
+        };
+        Level.sCurrent.addSprite(r, zIndex);
     }
 }

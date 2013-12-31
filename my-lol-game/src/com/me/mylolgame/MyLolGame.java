@@ -80,7 +80,7 @@ public class MyLolGame extends Lol {
 
         // load the image we show on the main screen
         Media.registerImage("splash.png");
-        
+
         // load the image we show on the chooser screen
         Media.registerImage("chooser.png");
 
@@ -1187,6 +1187,14 @@ public class MyLolGame extends Lol {
 
             // Add a meter to show how far the hero has traveled
             Controls.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 255, 255, 16, h);
+
+            // Add some text about the previous best score. If you look in the
+            // onLevelCompleteTrigger() code (far below in this file), you'll
+            // see that when this level ends, we save the best score. Once the
+            // score is saved, it is saved permanently on the phone, though
+            // every re-execution on the desktop resets the best score.
+            Util.drawText(30, 30, "best: " + Score.readPersistent("HighScore", 0) + "M", 0, 0, 0,
+                    "arial.ttf", 12, 0);
         }
 
         /*
@@ -2955,7 +2963,8 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             // create a polygon obstacle
-            Obstacle o = Obstacle.makeAsPolygon(10, 10, 2, 5, "blueball.png", -1,2,-1,0,0,-3,1,0,1,1);
+            Obstacle o = Obstacle.makeAsPolygon(10, 10, 2, 5, "blueball.png", -1, 2, -1, 0, 0, -3,
+                    1, 0, 1, 1);
             o.setShrinkOverTime(1, 1, true);
         }
     }
@@ -3326,6 +3335,14 @@ public class MyLolGame extends Lol {
      */
     @Override
     public void levelCompleteTrigger(int whichLevel, boolean win) {
+        // if we are on level 32, see if this is the farthest the hero has ever
+        // traveled, and if so, update the persistent score
+        if (whichLevel == 32) {
+            int oldBest = Score.readPersistent("HighScore", 0);
+            if (oldBest < Score.getDistance()) {
+                Score.savePersistent("HighScore", Score.getDistance());
+            }
+        }
     }
 
     /**
