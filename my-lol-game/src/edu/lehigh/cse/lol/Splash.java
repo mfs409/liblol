@@ -172,11 +172,11 @@ public class Splash extends ScreenAdapter {
             }
             // check if the touch was inside one of our buttons, and act
             // accordingly
-            if (mQuit.contains(mV.x, mV.y)) {
+            if (mQuit != null && mQuit.contains(mV.x, mV.y)) {
                 stopMusic();
                 Lol.sGame.doQuit();
             }
-            if (mPlay.contains(mV.x, mV.y)) {
+            if (mPlay != null && mPlay.contains(mV.x, mV.y)) {
                 stopMusic();
                 Lol.sGame.doChooser();
             }
@@ -204,9 +204,12 @@ public class Splash extends ScreenAdapter {
             mShapeRender.setProjectionMatrix(mCamera.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            mShapeRender.rect(mPlay.x, mPlay.y, mPlay.width, mPlay.height);
-            mShapeRender.rect(mHelp.x, mHelp.y, mHelp.width, mHelp.height);
-            mShapeRender.rect(mQuit.x, mQuit.y, mQuit.width, mQuit.height);
+            if (mPlay != null)
+                mShapeRender.rect(mPlay.x, mPlay.y, mPlay.width, mPlay.height);
+            if (mHelp != null)
+                mShapeRender.rect(mHelp.x, mHelp.y, mHelp.width, mHelp.height);
+            if (mQuit != null)
+                mShapeRender.rect(mQuit.x, mQuit.y, mQuit.width, mQuit.height);
             mShapeRender.end();
         }
     }
@@ -231,22 +234,69 @@ public class Splash extends ScreenAdapter {
      * PUBLIC INTERFACE
      */
 
+    /**
+     * Describe the coordinates of the Play button, so that clicks to the
+     * correct region of the splash screen will cause the chooser to be drawn or
+     * the only level of the game to start playing
+     * 
+     * @param x The X coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param y The Y coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param width The width of the button, in pixels
+     * @param height The height of the button, in pixels
+     */
     public static void drawPlayButton(int x, int y, int width, int height) {
         sCurrent.mPlay = new Rectangle(x, y, width, height);
     }
 
+    /**
+     * Describe the coordinates of the Help button, so that clicks to the
+     * correct region of the splash screen will cause the first help scene to be
+     * drawn
+     * 
+     * @param x The X coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param y The Y coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param width The width of the button, in pixels
+     * @param height The height of the button, in pixels
+     */
     public static void drawHelpButton(int x, int y, int width, int height) {
         sCurrent.mHelp = new Rectangle(x, y, width, height);
     }
 
+    /**
+     * Describe the coordinates of the Quit button, so that clicks to the
+     * correct region of the splash screen will cause the app to terminate
+     * 
+     * @param x The X coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param y The Y coordinate of the bottom left corner of the button, in
+     *            pixels
+     * @param width The width of the button, in pixels
+     * @param height The height of the button, in pixels
+     */
     public static void drawQuitButton(int x, int y, int width, int height) {
         sCurrent.mQuit = new Rectangle(x, y, width, height);
     }
 
+    /**
+     * Configure the music to play when the splash screen is showing
+     * 
+     * @param soundName The music file name. Be sure that it is registered!
+     */
     public static void setMusic(String soundName) {
         sCurrent.mMusic = Media.getMusic(soundName);
     }
 
+    /**
+     * Configure the image to display as the background of the splash screen. It
+     * should include your game name and text regions for Play and Quit, as well
+     * as optional Help.
+     * 
+     * @param imgName The image file name. Be sure that it is registered!
+     */
     public static void setBackground(String imgName) {
         sCurrent.mImage = Media.getImage(imgName);
     }

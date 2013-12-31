@@ -109,14 +109,23 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * Describe how to draw the first scene that displays when the game app is started
+     * Describe how to draw the first scene that displays when the game app is
+     * started
      */
     @Override
     public void configureSplash() {
-        Splash.drawQuitButton(363, 93, 69, 39);
-        Splash.drawHelpButton(48, 93, 80, 40);
+        // Describe the regions of the screen that correspond to the play, help,
+        // and quit buttons. If you are having trouble figuring these out, note
+        // that clicking on the splash screen will display xy coordinates in the
+        // Console to help
         Splash.drawPlayButton(192, 91, 93, 52);
+        Splash.drawHelpButton(48, 93, 80, 40);
+        Splash.drawQuitButton(363, 93, 69, 39);
+
+        // Provide a name for the background image
         Splash.setBackground("splash.png");
+
+        // Provide a name for the music file
         Splash.setMusic("tune.ogg");
     }
 
