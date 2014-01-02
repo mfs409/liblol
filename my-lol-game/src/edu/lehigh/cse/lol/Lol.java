@@ -39,13 +39,7 @@ package edu.lehigh.cse.lol;
 
 // TODO: the unlock mechanism is untested
 
-// TODO: add jump-to-defeat enemies
-
-// TODO: consider adding a wrapper to expose Box2d collision groups?
-
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
-
-// TODO: Demo projectile setCollisionOk?
 
 // TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
 

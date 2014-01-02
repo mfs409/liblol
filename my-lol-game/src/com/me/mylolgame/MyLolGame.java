@@ -1713,11 +1713,15 @@ public class MyLolGame extends Lol {
             // thing is moveable. This is a step toward our goal of being able
             // to bounce a basketball off of a backboard, but it's not quite
             // enough...
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 4, 0, 1, 0, true);
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 1.5f, 1.5f, 1, 0, true);
             ProjectilePool.setProjectileVectorDampeningFactor(.8f);
             ProjectilePool.setRange(40);
             ProjectilePool.setProjectileGravityOn();
             ProjectilePool.enableCollisionsForProjectiles();
+
+            // This next line is interesting... it lets projectiles collide with
+            // each other without disappearing
+            ProjectilePool.setCollisionOk();
 
             // Draw an obstacle... this is like our backboard, but we're putting
             // it in a spot that's more useful for testing than for playing a
@@ -2992,6 +2996,34 @@ public class MyLolGame extends Lol {
             Obstacle o = Obstacle.makeAsPolygon(10, 10, 2, 5, "blueball.png", -1, 2, -1, 0, 0, -3,
                     1, 0, 1, 1);
             o.setShrinkOverTime(1, 1, true);
+        }
+
+        /*
+         * A place for playing with a side-scrolling platformer that has lots of
+         * features
+         */
+        else if (whichLevel == 82) {
+            // set up a standard side scroller with tilt:
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            PreScene.addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // set up a simple jumping hero
+            Hero h = Hero.makeAsBox(5, 0, 2, 6, "greenball.png");
+            h.setJumpImpulses(0, 15);
+            h.setTouchToJump();
+            h.setMoveByTilting();
+            Level.setCameraChase(h);
+
+            // This enemy can be defeated by jumping. Note that the hero's
+            // bottom must be higher than the enemy's middle point, or the jump
+            // won't defeat the enemy.
+            Enemy e = Enemy.makeAsCircle(15, 0, 5, 5, "redball.png");
+            e.setDefeatByJump();
         }
     }
 

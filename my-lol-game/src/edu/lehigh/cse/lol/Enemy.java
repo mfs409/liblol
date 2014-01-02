@@ -56,6 +56,11 @@ public class Enemy extends PhysicsSprite {
     boolean mDefeatByCrawl;
 
     /**
+     * Does an in-air hero avoid being damaged by this enemy?
+     */
+    boolean mDefeatByJump;
+
+    /**
      * Is this enemy immune to invincibility? That means it won't hurt the
      * enemy, but it won't disappear
      */
@@ -294,5 +299,12 @@ public class Enemy extends PhysicsSprite {
      */
     public void clearDefeatTrigger() {
         mDefeatCallback = null;
+    }
+
+    /**
+     * Mark this enemy as one that can be defeated by jumping
+     */
+    public void setDefeatByJump() {
+        mDefeatByJump = true;
     }
 }
