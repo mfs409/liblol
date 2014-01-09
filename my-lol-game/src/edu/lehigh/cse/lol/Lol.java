@@ -29,8 +29,6 @@ package edu.lehigh.cse.lol;
 
 // TODO: verify chooser and level music stops on Android events
 
-// TODO: Should we allow the creation of multi-fixture bodies?  It probably won't work with resize...
-
 // TODO: verify that flipped animations work correctly, even when they change while flipped
 
 // TODO: Hero animation sequences could use work... we can lose information (e.g., if
