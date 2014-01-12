@@ -1,0 +1,13 @@
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\LOL02.csprojResolveAssemblyReference.cache
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\Default.xnb
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.dll
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.pdb
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\LOL02.dll
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\LOL02.pdb
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\AppManifest.xaml
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\WMAppManifest.xml.g
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\WMAppManifest.xml
+bin\Windows Phone\Debug\
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.xap
+C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\XapCacheFile.xml
