@@ -73,7 +73,7 @@ namespace LibLOL
 
         //internal Vector2 mTmpVert = new Vector2();
 
-        
+        internal delegate void CollisionCallback(PhysicsSprite ps, Contact c);
 
         internal PhysicsSprite(String imgName, float width, float height)
         {
@@ -100,7 +100,7 @@ namespace LibLOL
             mBody.LinearVelocity = new Vector2(x, y);
         }
 
-        internal void HandleTouchDown(float x, float y)
+        internal virtual void HandleTouchDown(float x, float y)
         {
             if (mTouchSound != null)
             {
@@ -122,7 +122,7 @@ namespace LibLOL
             return true;
         }
 
-        internal void Update(GameTime gameTime)
+        internal virtual void Update(GameTime gameTime)
         {
             if (mVisible)
             {
@@ -133,7 +133,7 @@ namespace LibLOL
             }
         }
 
-        internal void Draw(SpriteBatch sb, GameTime gameTime)
+        internal virtual void Draw(SpriteBatch sb, GameTime gameTime)
         {
             Texture2D tr = mAnimator.GetTr(gameTime);
             SpriteEffects flipH = SpriteEffects.None;
@@ -403,7 +403,7 @@ namespace LibLOL
             {
                 mBody.BodyType = BodyType.Dynamic;
             }
-            Level.OnTouch onMove = (x, y) => { mBody.SetTransform(new Vector2(x, y), mBody.Rotation); };
+            Level.OnTouchDelegate onMove = (x, y) => { mBody.SetTransform(new Vector2(x, y), mBody.Rotation); };
             mTouchResponder = new Level.TouchAction(null, onMove, null);
 
         }
@@ -420,10 +420,10 @@ namespace LibLOL
 
             // Go go closures
             long mLastPokeTicks = 0;
-            Level.OnTouch onDown = delegate(float x, float y)
+            Level.OnTouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(100);
-                long ticks = Lol.GameTime.ElapsedTicks;
+                long ticks = Lol.GlobalGameTime.ElapsedTicks;
                 if ((ticks - mLastPokeTicks) < deleteThresholdTicks)
                 {
                     mBody.Enabled = false;
@@ -435,7 +435,7 @@ namespace LibLOL
                 {
                     mLastPokeTicks = ticks;
                 }
-                Level.OnTouch sCurrentOnDown = delegate(float xx, float yy)
+                Level.OnTouchDelegate sCurrentOnDown = delegate(float xx, float yy)
                 {
                     // Lol.sGame.Vibrate(100);
                     mBody.SetTransform(new Vector2(xx, yy), mBody.Rotation);
@@ -453,13 +453,13 @@ namespace LibLOL
                 mBody.BodyType = BodyType.Dynamic;
             }
 
-            Level.OnTouch onDown = delegate(float x, float y)
+            Level.OnTouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(100);
                 float initialX = mBody.Position.X;
                 float initialY = mBody.Position.Y;
 
-                Level.OnTouch sLevelOnUp = delegate(float xx, float yy)
+                Level.OnTouchDelegate sLevelOnUp = delegate(float xx, float yy)
                 {
                     if (mVisible)
                     {
@@ -480,10 +480,10 @@ namespace LibLOL
                 mBody.BodyType = BodyType.Kinematic;
             }
 
-            Level.OnTouch onDown = delegate(float x, float y)
+            Level.OnTouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(5);
-                Level.OnTouch sLevelOnDown = delegate(float xx, float yy)
+                Level.OnTouchDelegate sLevelOnDown = delegate(float xx, float yy)
                 {
                     Route r = new Route(2).To(GetXPosition(), GetYPosition()).To(xx - mSize.X / 2, yy - mSize.Y / 2);
                     SetAbsoluteVelocity(0, 0, false);
@@ -493,14 +493,14 @@ namespace LibLOL
                         Level.sCurrent.mTouchResponder = null;
                     }
                 };
-                Level.OnTouch sLevelOnMove = delegate(float xx, float yy)
+                Level.OnTouchDelegate sLevelOnMove = delegate(float xx, float yy)
                 {
                     if (updateOnMove)
                     {
                         sLevelOnDown(xx, yy);
                     }
                 };
-                Level.OnTouch sLevelOnUp = delegate(float xx, float yy)
+                Level.OnTouchDelegate sLevelOnUp = delegate(float xx, float yy)
                 {
                     if (stopOnUp && mRoute != null)
                     {

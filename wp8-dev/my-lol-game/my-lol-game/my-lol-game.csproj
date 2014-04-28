@@ -192,12 +192,26 @@
     <Compile Include="Library\Farseer\Factories\LinkFactory.cs" />
     <Compile Include="Library\Farseer\Settings.cs" />
     <Compile Include="Library\LibLOL\Animation.cs" />
+    <Compile Include="Library\LibLOL\Chooser.cs" />
+    <Compile Include="Library\LibLOL\ChooserConfiguration.cs" />
+    <Compile Include="Library\LibLOL\Destination.cs" />
+    <Compile Include="Library\LibLOL\Enemy.cs" />
+    <Compile Include="Library\LibLOL\Font.cs" />
+    <Compile Include="Library\LibLOL\GameScreen.cs" />
+    <Compile Include="Library\LibLOL\Goodie.cs" />
     <Compile Include="Library\LibLOL\Hero.cs" />
     <Compile Include="Library\LibLOL\Level.cs" />
     <Compile Include="Library\LibLOL\Lol.cs" />
+    <Compile Include="Library\LibLOL\LolConfiguration.cs" />
     <Compile Include="Library\LibLOL\Media.cs" />
+    <Compile Include="Library\LibLOL\Music.cs" />
+    <Compile Include="Library\LibLOL\Obstacle.cs" />
+    <Compile Include="Library\LibLOL\Physics.cs" />
+    <Compile Include="Library\LibLOL\Projectile.cs" />
+    <Compile Include="Library\LibLOL\ProjectilePool.cs" />
     <Compile Include="Library\LibLOL\Route.cs" />
     <Compile Include="Library\LibLOL\RouteDriver.cs" />
+    <Compile Include="Library\LibLOL\Util.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>

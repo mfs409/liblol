@@ -45,29 +45,27 @@ namespace LibLOL
 
         internal TouchAction mTouchResponder;
 
-        // internal ProjectilePool mProjectilePool;
+        internal ProjectilePool mProjectilePool;
 
-        internal delegate void Action();
-
-        internal delegate void OnTouch(float x, float y);
+        internal delegate void OnTouchDelegate(float x, float y);
 
         internal class TouchAction
         {
-            private OnTouch onDown, onMove, onUp;
-            public OnTouch OnDown
+            private OnTouchDelegate onDown, onMove, onUp;
+            public OnTouchDelegate OnDown
             {
                 get { return onDown; }
             }
-            public OnTouch OnMove
+            public OnTouchDelegate OnMove
             {
                 get { return onMove; }
             }
-            public OnTouch OnUp
+            public OnTouchDelegate OnUp
             {
                 get { return onUp; }
             }
 
-            internal TouchAction(OnTouch down, OnTouch move, OnTouch up)
+            internal TouchAction(OnTouchDelegate down, OnTouchDelegate move, OnTouchDelegate up)
             {
                 onDown = (down != null ? down : (x, y) => {});
                 onMove = (move != null ? move : (x, y) => {});
@@ -78,16 +76,6 @@ namespace LibLOL
         internal Level(Game game) : base(game)
         {
             mSpriteBatch = new SpriteBatch(game.GraphicsDevice);
-        }
-
-        public static void CreateTestLevel(Game game)
-        {
-            if (Level.sCurrent == null)
-            {
-                Level.sCurrent = new Level(game);
-                Level.sCurrent.mWorld = new World(new Vector2(0, 0));
-            }
-
         }
     }
 }
