@@ -7,6 +7,7 @@ using FarseerPhysics.Dynamics.Contacts;
 
 namespace LibLOL
 {
+    // Uncomment code then done
     public class Projectile : PhysicsSprite
     {
         internal Vector2 mRangeFrom = new Vector2();
@@ -17,27 +18,47 @@ namespace LibLOL
 
         internal int mStrength;
 
-        internal Projectile(float width, float height, String imgName, float x, float y, int zIndex,
+        internal Projectile(float width, float height, string imgName, float x, float y, int zIndex,
             bool isCircle) : base(imgName, width, height)
         {
             if (isCircle)
             {
                 float radius = Math.Max(width, height);
-                SetCirclePhysics(0, 0, 0, BodyType.Dynamic, true, x, y, radius);
+                SetCirclePhysics(0, 0, 0, BodyType.Dynamic, true, x, y, radius / 2);
             }
             else
             {
                 SetBoxPhysics(0, 0, 0, BodyType.Dynamic, true, x, y);
             }
             mBody.GravityScale = 0;
-            SetCollisionEffect(false);
+            CollisionEffect = false;
             DisableRotation();
             // Level.sCurrent.AddSprite(this, zIndex);
         }
 
         internal override void OnCollide(PhysicsSprite other, Contact contact)
         {
-            throw new NotImplementedException();
+            if (other is Obstacle)
+            {
+                Obstacle o = (Obstacle)other;
+                if (o.mProjectileCollision != null)
+                {
+                    o.mProjectileCollision(this, contact);
+                    return;
+                }
+            }
+            if (other is Projectile)
+            {
+                if (!mDisappearOnCollide)
+                {
+                    return;
+                }
+            }
+            if (other.mBody.FixtureList[0].IsSensor)
+            {
+                return;
+            }
+            Remove(false);
         }
 
         internal override void Update(GameTime gameTime)

@@ -16,7 +16,7 @@ namespace LibLOL
 
         private bool mMusicPlaying;
 
-        // internal Score mScore = new Score();
+        internal Score mScore = new Score();
 
         // internal Tilt mTilt = new Tilt();
 

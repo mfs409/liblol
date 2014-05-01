@@ -11,6 +11,7 @@ using FarseerPhysics.Factories;
 
 namespace LibLOL
 {
+    // Conversion done!
     public class Physics
     {
         internal static float PIXEL_METER_RATIO = 10;
@@ -22,16 +23,16 @@ namespace LibLOL
             {
                 return;
             }
-            if ((sticky.mIsSticky[0] && other.GetYPosition() >= sticky.GetYPosition() + sticky.mSize.Y)
-                || (sticky.mIsSticky[1] && other.GetXPosition() + other.mSize.X <= sticky.GetXPosition())
-                || (sticky.mIsSticky[3] && other.GetXPosition() >= sticky.GetXPosition() + sticky.mSize.X)
-                || (sticky.mIsSticky[2] && other.GetYPosition() + other.mSize.Y <= sticky.GetYPosition()))
+            if ((sticky.mIsSticky[0] && other.YPosition >= sticky.YPosition + sticky.mSize.Y)
+                || (sticky.mIsSticky[1] && other.XPosition + other.mSize.X <= sticky.XPosition)
+                || (sticky.mIsSticky[3] && other.XPosition >= sticky.XPosition + sticky.mSize.X)
+                || (sticky.mIsSticky[2] && other.YPosition + other.mSize.Y <= sticky.YPosition))
             {
                 Vector2 normal;
                 FixedArray2<Vector2> points;
                 contact.GetWorldManifold(out normal, out points);
                 Vector2 v = points[0];
-                Level.sCurrent.mOneTimeEvents.Add(delegate()
+                Level.sCurrent.mOneTimeEvents.Add(() =>
                 {
                     other.mBody.LinearVelocity = new Vector2(0, 0);
                     DistanceJoint d = JointFactory.CreateDistanceJoint(Level.sCurrent.mWorld, sticky.mBody, other.mBody, v, v);

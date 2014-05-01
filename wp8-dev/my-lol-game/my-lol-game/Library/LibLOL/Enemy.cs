@@ -5,11 +5,12 @@ using FarseerPhysics.Dynamics.Contacts;
 
 namespace LibLOL
 {
+    // Uncomment code to be done
     public class Enemy : PhysicsSprite
     {
         internal int mDamage = 2;
 
-        internal String mOnDefeatHeroText = "";
+        internal string mOnDefeatHeroText = "";
 
         internal bool mDefeatByCrawl;
 
@@ -23,9 +24,9 @@ namespace LibLOL
 
         private CollisionCallback mDefeatCallback;
 
-        private Enemy(float width, float height, String imgName) : base(imgName, width, height)
+        private Enemy(float width, float height, string imgName) : base(imgName, width, height)
         {
-            // Level.sCurrent.mScore.mEnemiesCreate++;
+            Level.sCurrent.mScore.mEnemiesCreated++;
         }
 
         internal override void OnCollide(PhysicsSprite other, Contact contact)
@@ -73,15 +74,15 @@ namespace LibLOL
             base.HandleTouchDown(x, y);
         }
 
-        public static Enemy MakeAsBox(float x, float y, float width, float height, String imgName)
+        public static Enemy MakeAsBox(float x, float y, float width, float height, string imgName)
         {
             Enemy e = new Enemy(width, height, imgName);
             e.SetBoxPhysics(0, 0, 0, BodyType.Static, false, x, y);
-            // Level.sCurrent.AddSprite(e, 0);
+            //Level.sCurrent.AddSprite(e, 0);
             return e;
         }
 
-        public static Enemy MakeAsCircle(float x, float y, float width, float height, String imgName)
+        public static Enemy MakeAsCircle(float x, float y, float width, float height, string imgName)
         {
             float radius = Math.Max(width, height);
             Enemy e = new Enemy(width, height, imgName);
@@ -90,14 +91,24 @@ namespace LibLOL
             return e;
         }
 
-        public void SetDamage(int amount)
+        /*public void SetDamage(int amount)
         {
             mDamage = amount;
+        }*/
+
+        public int Damage
+        {
+            set { mDamage = value; }
         }
 
-        public void SetDefeatHeroText(String message)
+        /*public void SetDefeatHeroText(string message)
         {
             mOnDefeatHeroText = message;
+        }*/
+
+        public string DefeatHeroText
+        {
+            set { mOnDefeatHeroText = value; }
         }
 
         public void Defeat(bool increaseScore)
@@ -106,7 +117,7 @@ namespace LibLOL
 
             if (increaseScore)
             {
-                // Level.sCurrent.mScore.OnEnemyDefeat();
+                Level.sCurrent.mScore.OnDefeatEnemy();
             }
 
             if (mDefeatCallback != null)
@@ -119,7 +130,7 @@ namespace LibLOL
         {
             mDefeatByCrawl = true;
 
-            SetCollisionEffect(false);
+            CollisionEffect = false;
         }
 
         public void SetResistInvicibility()
@@ -139,7 +150,7 @@ namespace LibLOL
 
         public void SetDefeatTrigger(int id)
         {
-            //mDefeatCallback = (ps, c) => { Lol.sGame.OnEnemyDefeatTrigger(id, Lol.sGame,mCurrLevelNum, Enemy.this); };
+            mDefeatCallback = (ps, c) => { Lol.sGame.OnEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum, this); };
         }
 
         public void ClearDefeatTrigger()

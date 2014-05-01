@@ -7,6 +7,7 @@ using FarseerPhysics.Dynamics.Contacts;
 
 namespace LibLOL
 {
+    // Uncomment code to be done
     public class Destination : PhysicsSprite
     {
         internal int mCapacity;
@@ -17,7 +18,7 @@ namespace LibLOL
 
         internal SoundEffect mArrivalSound;
 
-        private Destination(float width, float height, String imgName) : base(imgName, width, height)
+        private Destination(float width, float height, string imgName) : base(imgName, width, height)
         {
             mCapacity = 1;
             mHolding = 0;
@@ -27,22 +28,22 @@ namespace LibLOL
         {
         }
 
-        public static Destination MakeAsBox(float x, float y, float width, float height, String imgName)
+        public static Destination MakeAsBox(float x, float y, float width, float height, string imgName)
         {
             Destination d = new Destination(width, height, imgName);
             d.SetBoxPhysics(0, 0, 0, BodyType.Static, false, x, y);
-            d.SetCollisionEffect(false);
-            // Level.sCurrent.AddSprite(d, 0);
+            d.CollisionEffect = false;
+            //Level.sCurrent.AddSprite(d, 0);
             return d;
         }
 
-        public static Destination MakeAsCircle(float x, float y, float width, float height, String imgName)
+        public static Destination MakeAsCircle(float x, float y, float width, float height, string imgName)
         {
             float radius = Math.Max(width, height);
             Destination d = new Destination(width, height, imgName);
-            d.SetCirclePhysics(0, 0, 0, BodyType.Static, false, x, y, radius);
-            d.SetCollisionEffect(false);
-            // Level.sCurrent.AddSprite(d, 0);
+            d.SetCirclePhysics(0, 0, 0, BodyType.Static, false, x, y, radius / 2);
+            d.CollisionEffect = false;
+            //Level.sCurrent.AddSprite(d, 0);
             return d;
         }
 
@@ -54,14 +55,14 @@ namespace LibLOL
             mActivation[3] = score4;
         }
 
-        public void SetHeroCount(int heroes)
+        public int HeroCount
         {
-            mCapacity = heroes;
+            set { mCapacity = value; }
         }
 
-        public void SetArrivalSound(String soundName)
+        public string ArrivalSound
         {
-
+            set { mArrivalSound = Media.GetSound(value); }
         }
     }
 }

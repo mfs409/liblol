@@ -42,9 +42,9 @@ namespace LibLOL
 
         private float mCurrentRotation;
 
-        private Hero(float width, float height, String imgName) : base(imgName, width, height)
+        private Hero(float width, float height, string imgName) : base(imgName, width, height)
         {
-            // Level.sCurrent.mScore.mHeroesCreated++;
+            Level.sCurrent.mScore.mHeroesCreated++;
         }
 
         internal override void Update(GameTime gameTime)
@@ -55,7 +55,7 @@ namespace LibLOL
                 if (mThrowAnimationTimeRemaining <= 0)
                 {
                     mThrowAnimationTimeRemaining = 0;
-                    mAnimator.SetCurrentAnimation(mDefaultAnimation);
+                    mAnimator.CurrentAnimation = mDefaultAnimation;
                 }
             }
 
@@ -67,7 +67,7 @@ namespace LibLOL
                     mInvicibilityRemaining = 0;
                     if (mInvincibleAnimation != null)
                     {
-                        mAnimator.SetCurrentAnimation(mDefaultAnimation);
+                        mAnimator.CurrentAnimation = mDefaultAnimation;
                     }
                 }
             }
@@ -90,15 +90,13 @@ namespace LibLOL
             }
             if (mJumpAnimation != null)
             {
-                mAnimator.SetCurrentAnimation(mJumpAnimation);
+                mAnimator.CurrentAnimation = mJumpAnimation;
             }
             if (mJumpSound != null)
             {
                 mJumpSound.Play();
             }
             mStickyDelay = Lol.GlobalGameTime.ElapsedTicks + (long)(0.01 * System.Diagnostics.Stopwatch.Frequency);
-
-
         }
 
         private void StopJump()
@@ -106,7 +104,7 @@ namespace LibLOL
             if (mInAir || mAllowMultiJump)
             {
                 mInAir = false;
-                mAnimator.SetCurrentAnimation(mDefaultAnimation);
+                mAnimator.CurrentAnimation = mDefaultAnimation;
             }
         }
 
@@ -135,7 +133,7 @@ namespace LibLOL
         {
             if (mThrowAnimation != null)
             {
-                mAnimator.SetCurrentAnimation(mThrowAnimation);
+                mAnimator.CurrentAnimation = mThrowAnimation;
                 mThrowAnimationTimeRemaining = mThrowAnimateTotalLength;
             }
         }
@@ -146,7 +144,7 @@ namespace LibLOL
             mBody.SetTransform(mBody.Position, -3.14159f / 2);
             if (mCrawlAnimation != null)
             {
-                mAnimator.SetCurrentAnimation(mCrawlAnimation);
+                mAnimator.CurrentAnimation = mCrawlAnimation;
             }
         }
 
@@ -154,7 +152,7 @@ namespace LibLOL
         {
             mCrawling = false;
             mBody.SetTransform(mBody.Position, 0f);
-            mAnimator.SetCurrentAnimation(mDefaultAnimation);
+            mAnimator.CurrentAnimation = mDefaultAnimation;
         }
 
         internal void IncreaseRotation(float delta)
@@ -179,35 +177,108 @@ namespace LibLOL
             }
             else if (other is Obstacle)
             {
-
+                OnCollideWithObstacle((Obstacle)other, contact);
             }
             else if (other is Goodie)
             {
-
+                OnCollideWithGoodie((Goodie)other);
             }
+            // Need SVGSprite handler
         }
 
         private void OnCollideWithEnemy(Enemy e)
         {
+            if (e.mAlwaysDoesDamage)
+            {
+                Remove(false);
+                Level.sCurrent.mScore.DefeatHero(e);
+                return;
+            }
+            if (mInvicibilityRemaining > 0)
+            {
+                if (e.mImmuneToInvicibility) { return; }
+                e.Defeat(true);
+            }
+            else if (mCrawling && e.mDefeatByCrawl)
+            {
+                e.Defeat(true);
+            }
+            else if (mInAir && e.mDefeatByJump && YPosition > e.YPosition + e.mSize.Y / 2)
+            {
+                e.Defeat(true);
+            }
+            else if (e.mDamage >= mStrength)
+            {
+                Remove(false);
+                Level.sCurrent.mScore.DefeatHero(e);
+            }
+            else
+            {
+                AddStrength(-e.mDamage);
+                e.Defeat(true);
+            }
+        }
 
+        private void AddStrength(int amount)
+        {
+            mStrength += amount;
+            Lol.sGame.OnStrengthChangeTrigger(Lol.sGame.mCurrLevelNum, this);
         }
 
         private void OnCollideWithDestination(Destination d)
         {
-            System.Diagnostics.Debug.WriteLine("OnCollideWithDestination");
+            bool match = true;
+            for (int i = 0; i < 4; ++i)
+            {
+                match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
+            }
+
+            if (match && (d.mHolding < d.mCapacity) && mVisible)
+            {
+                Remove(true);
+                d.mHolding++;
+                if (d.mArrivalSound != null)
+                {
+                    d.mArrivalSound.Play();
+                }
+                Level.sCurrent.mScore.OnDestinationArrive();
+            }
         }
 
         private void OnCollideWithObstacle(Obstacle o, Contact c)
         {
+            o.PlayCollideSound();
 
+            if ((mCurrentRotation != 0) && !o.mBody.FixtureList[0].IsSensor)
+            {
+                IncreaseRotation(-mCurrentRotation);
+            }
+            if (o.mHeroCollision != null)
+            {
+                o.mHeroCollision(this, c);
+            }
+            if ((mInAir || mAllowMultiJump) && !o.mBody.FixtureList[0].IsSensor && !o.mNoJumpReenable)
+            {
+                StopJump();
+            }
         }
 
         private void OnCollideWithGoodie(Goodie g)
         {
-
+            g.Remove(false);
+            Level.sCurrent.mScore.OnGoodieCollected(g);
+            AddStrength(g.mStrengthBoost);
+            if (g.mInvincibilityDuration > 0)
+            {
+                mInvicibilityRemaining += g.mInvincibilityDuration;
+                if (mInvincibleAnimation != null)
+                {
+                    mAnimator.CurrentAnimation = mInvincibleAnimation;
+                }
+            }
         }
 
-        public static Hero MakeAsBox(float x, float y, float width, float height, String imgName)
+        public static Hero MakeAsBox(float x, float y, float width, float height, string imgName)
         {
             Hero h = new Hero(width, height, imgName);
             h.SetBoxPhysics(0, 0, 0, BodyType.Dynamic, false, x, y);
@@ -215,7 +286,7 @@ namespace LibLOL
             return h;
         }
 
-        public static Hero MakeAsCircle(float x, float y, float width, float height, String imgName)
+        public static Hero MakeAsCircle(float x, float y, float width, float height, string imgName)
         {
             float radius = Math.Max(width, height);
             Hero h = new Hero(width, height, imgName);
@@ -224,15 +295,20 @@ namespace LibLOL
             return h;
         }
 
-        public void SetStrength(int amount)
+        /*public void SetStrength(int amount)
         {
             mStrength = amount;
-
         }
 
         public int GetStrength()
         {
             return mStrength;
+        }*/
+
+        public int Strength
+        {
+            set { mStrength = value; }
+            get { return mStrength; }
         }
 
         public void SetTouchAndGo(float x, float y)
@@ -255,12 +331,12 @@ namespace LibLOL
             mIsTouchJump = true;
         }
 
-        public void SetJumpAnimation(Animation a)
+        /*public void SetJumpAnimation(Animation a)
         {
             mJumpAnimation = a;
         }
 
-        public void SetJumpSound(String soundName)
+        public void SetJumpSound(string soundName)
         {
 
         }
@@ -285,6 +361,31 @@ namespace LibLOL
         public void SetInvicibleAnimation(Animation a)
         {
             mInvincibleAnimation = a;
+        }*/
+
+        public Animation JumpAnimation
+        {
+            set { mJumpAnimation = value; }
+        }
+
+        public string JumpSound
+        {
+            set { mJumpSound = Media.GetSound(value); }
+        }
+
+        public Animation ThrowAnimation
+        {
+            set { mThrowAnimation = value; }
+        }
+
+        public Animation CrawlAnimation
+        {
+            set { mCrawlAnimation = value; }
+        }
+
+        public Animation InvicibleAnimation
+        {
+            set { mInvincibleAnimation = value; }
         }
     }
 }

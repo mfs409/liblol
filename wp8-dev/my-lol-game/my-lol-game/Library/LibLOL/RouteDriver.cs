@@ -44,8 +44,8 @@ namespace LibLOL
                 mRoute.mYIndices[0] + mEntity.mSize.Y / 2);
             mEntity.mBody.SetTransform(pos, 0f);
             mNextRouteGoal = 1;
-            mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.GetXPosition();
-            mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.GetYPosition();
+            mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+            mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
             mRouteVec.Normalize();
             mRouteVec.X *= mRouteVelocity;
             mRouteVec.Y *= mRouteVelocity;
@@ -59,15 +59,13 @@ namespace LibLOL
                 return;
             }
 
-            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.GetXPosition();
-            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.GetYPosition();
-            float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.GetXPosition();
-            float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.GetYPosition();
+            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.XPosition;
+            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.YPosition;
+            float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+            float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
             
             bool sameXSign = (sx >= 0 && gx >= 0) || (sx <= 0 && gx <= 0);
             bool sameYSign = (sy >= 0 && gy >= 0) || (sy <= 0 && gy <= 0);
-
-            //Debug.WriteLine("sx: " + sx + ", sy: " + sy + ", gx: " + gx + ", gy: " + gy + " " + (sameXSign && sameYSign));
             
             if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign))
             {
@@ -86,8 +84,8 @@ namespace LibLOL
                 }
                 else
                 {
-                    mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.GetXPosition();
-                    mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.GetYPosition();
+                    mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+                    mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
                     mRouteVec.Normalize();
                     mRouteVec.X *= mRouteVelocity;
                     mRouteVec.Y *= mRouteVelocity;

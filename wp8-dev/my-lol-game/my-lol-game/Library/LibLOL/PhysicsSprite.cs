@@ -15,7 +15,7 @@ using FarseerPhysics.Factories;
 
 namespace LibLOL
 {
-    public abstract class PhysicsSprite
+    public abstract class PhysicsSprite : Renderable
     {
         internal Body mBody;
 
@@ -37,7 +37,7 @@ namespace LibLOL
 
         private RouteDriver mRoute;
 
-        internal String mInfoText = "";
+        internal string mInfoText = "";
 
         internal Level.TouchAction mTouchResponder;
 
@@ -65,17 +65,15 @@ namespace LibLOL
 
         internal bool[] mIsSticky = new bool[4];
 
-        protected SoundEffect mDisappearSound;
+        protected internal SoundEffect mDisappearSound;
 
         internal int mIsOneSided = -1;
 
         internal int mPassThroughId = 0;
 
-        //internal Vector2 mTmpVert = new Vector2();
-
         internal delegate void CollisionCallback(PhysicsSprite ps, Contact c);
 
-        internal PhysicsSprite(String imgName, float width, float height)
+        internal PhysicsSprite(string imgName, float width, float height)
         {
             mAnimator = new Animation.AnimationDriver(imgName);
             mSize.X = width;
@@ -122,7 +120,7 @@ namespace LibLOL
             return true;
         }
 
-        internal virtual void Update(GameTime gameTime)
+        internal override void Update(GameTime gameTime)
         {
             if (mVisible)
             {
@@ -133,7 +131,7 @@ namespace LibLOL
             }
         }
 
-        internal virtual void Draw(SpriteBatch sb, GameTime gameTime)
+        internal override void Draw(SpriteBatch sb, GameTime gameTime)
         {
             Texture2D tr = mAnimator.GetTr(gameTime);
             SpriteEffects flipH = SpriteEffects.None;
@@ -237,28 +235,46 @@ namespace LibLOL
          * PUBLIC INTERFACE
          */
 
-        public void SetTextInfo(String text)
+        public string TextInfo
+        {
+            get { return mInfoText; }
+            set { mInfoText = value; }
+        }
+
+        /*public void SetTextInfo(string text)
         {
             mInfoText = text;
         }
 
-        public String GetTextInfo()
+        public string GetTextInfo()
         {
             return mInfoText;
-        }
+        }*/
 
         public void SetCameraOffset(float x, float y)
         {
-
+            mCameraOffset.X = x;
+            mCameraOffset.Y = y;
         }
 
-        public void SetCollisionEffect(bool state)
+        public bool CollisionEffect
+        {
+            set
+            {
+                foreach (Fixture f in mBody.FixtureList)
+                {
+                    f.IsSensor = !value;
+                }
+            }
+        }
+
+        /*public void SetCollisionEffect(bool state)
         {
             foreach (Fixture f in mBody.FixtureList)
             {
                 f.IsSensor = !state;
             }
-        }
+        }*/
 
         public void SetPhysics(float density, float elasticity, float friction)
         {
@@ -276,7 +292,27 @@ namespace LibLOL
             mBody.FixedRotation = true;
         }
 
-        public float GetXPosition()
+        public float XPosition
+        {
+            get { return mBody.Position.X - mSize.X / 2; }
+        }
+
+        public float YPosition
+        {
+            get { return mBody.Position.Y - mSize.Y / 2; }
+        }
+
+        public float Width
+        {
+            get { return mSize.X; }
+        }
+        
+        public float Height
+        {
+            get { return mSize.Y; }
+        }
+
+        /*public float GetXPosition()
         {
             return mBody.Position.X - mSize.X / 2;
         }
@@ -294,18 +330,23 @@ namespace LibLOL
         public float GetHeight()
         {
             return mSize.Y;
-        }
+        }*/
 
         public void SetMoveByTilting()
         {
             // Some stuff regarding Level
-            SetCollisionEffect(true);
+            CollisionEffect = true;
         }
 
-        public void SetRotation(float rotation)
+        public float Rotation
+        {
+            set { mBody.SetTransform(mBody.Position, value); }
+        }
+
+        /*public void SetRotation(float rotation)
         {
             mBody.SetTransform(mBody.Position, rotation);
-        }
+        }*/
 
         public void Remove(bool quiet)
         {
@@ -319,7 +360,12 @@ namespace LibLOL
 
             if (mDisappearAnimation != null)
             {
-                // do stuff
+                float x = XPosition + mDisappearAnimateOffset.X;
+                float y = YPosition + mDisappearAnimateOffset.Y;
+
+                Obstacle o = Obstacle.MakeAsBox(x, y, mDisappearAnimateSize.X, mDisappearAnimateSize.Y, "");
+                o.mBody.Enabled = false;
+                o.DefaultAnimation = mDisappearAnimation;
             }
         }
 
@@ -341,7 +387,7 @@ namespace LibLOL
             v.X += x;
             v.Y += y;
             UpdateVelocity(v.X, v.Y);
-            SetCollisionEffect(true);
+            CollisionEffect = true;
         }
 
         public void SetAbsoluteVelocity(float x, float y, bool immuteToPhysics)
@@ -359,12 +405,45 @@ namespace LibLOL
             }
 
             UpdateVelocity(x, y);
-            SetCollisionEffect(true);
+            CollisionEffect = true;
         }
 
-        //public void SetTouchTrigger(...)
+        public void SetTouchTrigger(int id, int activationGoodies1, int activationGoodies2,
+            int activationGoodies3, int activationGoodies4, bool disappear)
+        {
+            int[] touchTriggerActivation = new int[] {
+                activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
+            };
+            Level.OnTouchDelegate onDown = delegate(float x, float y)
+            {
+                bool match = true;
+                for (int i = 0; i < 4; ++i)
+                {
+                    match &= touchTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    if (match)
+                    {
+                        if (disappear)
+                        {
+                            Remove(false);
+                        }
+                        Lol.sGame.OnTouchTrigger(id, Lol.sGame.mCurrLevelNum, this);
+                    }
+                }
+            };
+            mTouchResponder = new Level.TouchAction(onDown, null, null);
+        }
 
-        public float GetXVelocity()
+        public float XVelocity
+        {
+            get { return mBody.LinearVelocity.X; }
+        }
+
+        public float YVelocity
+        {
+            get { return mBody.LinearVelocity.Y; }
+        }
+
+        /*public float GetXVelocity()
         {
             return mBody.LinearVelocity.X;
         }
@@ -372,7 +451,7 @@ namespace LibLOL
         public float GetYVelocity()
         {
             return mBody.LinearVelocity.Y;
-        }
+        }*/
 
         public void SetRoute(Route route, float velocity, bool loop)
         {
@@ -408,10 +487,16 @@ namespace LibLOL
 
         }
 
-        public void SetTouchSound(String sound)
+
+        public string TouchSound
+        {
+            set { mTouchSound = Media.GetSound(value); }
+        }
+
+        /*public void SetTouchSound(string sound)
         {
 
-        }
+        }*/
 
         public void SetPokeToPlace(long deleteThresholdMillis)
         {
@@ -485,7 +570,7 @@ namespace LibLOL
                 // Lol.sGame.Vibrate(5);
                 Level.OnTouchDelegate sLevelOnDown = delegate(float xx, float yy)
                 {
-                    Route r = new Route(2).To(GetXPosition(), GetYPosition()).To(xx - mSize.X / 2, yy - mSize.Y / 2);
+                    Route r = new Route(2).To(XPosition, YPosition).To(xx - mSize.X / 2, yy - mSize.Y / 2);
                     SetAbsoluteVelocity(0, 0, false);
                     SetRoute(r, velocity, false);
                     if (oncePerTouch)
@@ -512,11 +597,20 @@ namespace LibLOL
             mTouchResponder = new Level.TouchAction(onDown, null, null);
         }
 
-        public void SetDefaultAnimation(Animation a)
+        public Animation DefaultAnimation
+        {
+            set
+            {
+                mDefaultAnimation = value;
+                mAnimator.CurrentAnimation = mDefaultAnimation;
+            }
+        }
+
+        /*public void SetDefaultAnimation(Animation a)
         {
             mDefaultAnimation = a;
             mAnimator.SetCurrentAnimation(mDefaultAnimation);
-        }
+        }*/
 
         public void SetDisappearAnimation(Animation a, float offsetX, float offsetY, float width, float height)
         {
@@ -532,7 +626,7 @@ namespace LibLOL
             mReverseFace = true;
         }
 
-        public void SetAppearDelay(float delay)
+        /*public void SetAppearDelay(float delay)
         {
 
         }
@@ -540,12 +634,27 @@ namespace LibLOL
         public void SetDisappearDelay(float delay)
         {
 
+        }*/
+
+        public float AppearDelay
+        {
+            set
+            {
+                mVisible = false;
+                mBody.Enabled = false;
+                Timer.Schedule(() => { mVisible = true; mBody.Enabled = true; }, value);
+            }
         }
 
-        public void SetImage(String imgName, int index)
+        public void SetDisappearDelay(float delay, bool quiet)
         {
-            mAnimator.UpdateImage(imgName);
-            mAnimator.SetIndex(index);
+            Timer.Schedule(() => { Remove(quiet); }, delay);
+        }
+
+        public void SetImage(string imgName, int index)
+        {
+            mAnimator.Image = imgName;
+            mAnimator.Index = index;
         }
 
         public void Resize(float x, float y, float width, float height)
@@ -594,12 +703,49 @@ namespace LibLOL
 
         public void SetShrinkOverTime(float shrinkX, float shrinkY, bool keepCentered)
         {
+            Timer.Schedule(() => { ShrinkOverTimeHelper(shrinkX, shrinkY, keepCentered); }, 0.05f);
+        }
 
+        private void ShrinkOverTimeHelper(float shrinkX, float shrinkY, bool keepCentered)
+        {
+            if (mVisible)
+            {
+                float x, y;
+                if (keepCentered)
+                {
+                    x = XPosition + shrinkX / 20 / 2;
+                    y = YPosition + shrinkY / 20 / 2;
+                }
+                else
+                {
+                    x = XPosition;
+                    y = YPosition;
+                }
+                float w = mSize.X - shrinkX / 20;
+                float h = mSize.Y - shrinkY / 20;
+                if (w > 0.05f && h > 0.05f)
+                {
+                    Resize(x, y, w, h);
+                    Timer.Schedule(() => { ShrinkOverTimeHelper(shrinkX, shrinkY, keepCentered); }, 0.05f);
+                }
+            }
+            else
+            {
+                Remove(false);
+            }
         }
 
         public void SetHover(int x, int y)
         {
-
+            mHover = new Vector3();
+            Action a = delegate()
+            {
+                if (mHover == null) { return; }
+                mHover = new Vector3(x, y, 0);
+                //Level.sCurrent.mGameCam.Unproject(mHover);
+                mBody.SetTransform(new Vector2(mHover.Value.X, mHover.Value.Y), mBody.Rotation);
+            };
+            Level.sCurrent.mRepeatEvents.Add(a);
         }
 
         public void SetGravityDefy()
@@ -614,25 +760,43 @@ namespace LibLOL
             };
         }
 
-        public void SetDisappearSound(String soundName)
+        /*public void SetDisappearSound(string soundName)
         {
 
+        }*/
+
+        public string DisappearSound
+        {
+            set
+            {
+                mDisappearSound = Media.GetSound(value);
+            }
         }
 
         public void SetTouchToThrow(Hero h)
         {
-            //Level.OnTouch onDown = (x, y) => { Level.sCurrent.mProjectilePool.throwFixed(h); };
-            // mTouchResponder = new Level.TouchAction(onDown, null, null);
+            Level.OnTouchDelegate onDown = (x, y) => { Level.sCurrent.mProjectilePool.ThrowFixed(h); };
+            mTouchResponder = new Level.TouchAction(onDown, null, null);
         }
 
-        public void SetOneSided(int side)
+        /*public void SetOneSided(int side)
         {
             mIsOneSided = side;
+        }*/
+
+        public int OneSided
+        {
+            set { mIsOneSided = value; }
         }
 
-        public void SetPassThrough(int id)
+        /*public void SetPassThrough(int id)
         {
             mPassThroughId = id;
+        }*/
+
+        public int PassThrough
+        {
+            set { mPassThroughId = value; }
         }
 
         public void SetCanFall()
@@ -682,13 +846,25 @@ namespace LibLOL
             });
         }
 
-        public void SetZIndex(int zIndex)
+        /*public void SetZIndex(int zIndex)
         {
             Debug.Assert(zIndex <= 2);
             Debug.Assert(zIndex >= -2);
             //Level.sCurrent.RemoveSprite(this, mZIndex);
             mZIndex = zIndex;
             //Level.sCurrent.AddSprite(this, mZIndex);
+        }*/
+
+        public int ZIndex
+        {
+            set
+            {
+                Debug.Assert(value <= 2);
+                Debug.Assert(value >= -2);
+                //Level.sCurrent.RemoveSprite(this, mZIndex);
+                mZIndex = value;
+                //Level.sCurrent.AddSprite(this, mZIndex);
+            }
         }
     }
 }

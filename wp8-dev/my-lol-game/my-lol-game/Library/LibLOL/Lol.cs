@@ -30,6 +30,42 @@ namespace LibLOL
             SPLASH, HELP, CHOOSE, PLAY
         };
 
+        internal void DoSplash()
+        {
+            mCurrLevelNum = 0;
+            mCurrHelpNum = 0;
+            mMode = Modes.SPLASH;
+            //SetScreen(new Splash());
+        }
+
+        internal void DoChooser()
+        {
+            if (mConfig.GetNumLevels() == 1)
+            {
+                if (mCurrLevelNum == 1)
+                {
+                    DoSplash();
+                }
+                else
+                {
+                    DoPlayLevel(1);
+                }
+                return;
+            }
+            mCurrHelpNum = 0;
+            mMode = Modes.CHOOSE;
+            //SetScreen(new Chooser());
+        }
+
+        internal void DoPlayLevel(int which)
+        {
+            mCurrLevelNum = which;
+            mCurrHelpNum = 0;
+            mMode = Modes.PLAY;
+            ConfigureLevel(which);
+            //SetScreen(Level.sCurrent);
+        }
+
 
         // Currently for testing right now.
         GraphicsDeviceManager graphics;
@@ -51,6 +87,12 @@ namespace LibLOL
         protected override void Initialize()
         {
             base.Initialize();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            Media.OnDispose();
         }
 
         protected override void LoadContent()
@@ -93,5 +135,37 @@ namespace LibLOL
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        public abstract LolConfiguration LolConfig();
+
+        public abstract ChooserConfiguration ChooserConfig();
+
+        public abstract void NameResources();
+
+        public abstract void ConfigureLevel(int whichLevel);
+
+        public abstract void ConfigureHelpScene(int whichScene);
+
+        public abstract void ConfigureSplash();
+
+        public abstract void OnHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
+
+        public abstract void OnTouchTrigger(int id, int whichLevel, PhysicsSprite p);
+
+        public abstract void OnTimerTrigger(int id, int whichLevel);
+
+        public abstract void OnEnemyTimerTrigger(int id, int whichLevel, Enemy e);
+
+        public abstract void OnEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
+
+        public abstract void OnEnemyCollideTrigger(int id, int whichLevel, Enemy e);
+
+        public abstract void OnProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
+
+        public abstract void LevelCompleteTrigger(int whichLevel, bool win);
+
+        public abstract void OnControlPressTrigger(int id, int whichLevel);
+
+        public abstract void OnStrengthChangeTrigger(int whichLevel, Hero h);
     }
 }

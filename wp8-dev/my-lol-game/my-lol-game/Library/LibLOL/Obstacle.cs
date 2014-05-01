@@ -8,6 +8,7 @@ using FarseerPhysics.Dynamics.Contacts;
 
 namespace LibLOL
 {
+    // Uncomment code and done.
     class Obstacle : PhysicsSprite
     {
         internal CollisionCallback mHeroCollision, mEnemyCollision,
@@ -21,15 +22,7 @@ namespace LibLOL
 
         private long mLastCollideSoundTime;
 
-        public bool ReSet
-        {
-            set
-            {
-                mNoJumpReenable = !value;
-            }
-        }
-
-        protected Obstacle(float width, float height, String imgName) : base(imgName, width, height)
+        protected Obstacle(float width, float height, string imgName) : base(imgName, width, height)
         {
         }
 
@@ -46,7 +39,7 @@ namespace LibLOL
         {
         }
 
-        public static Obstacle MakeAsBox(float x, float y, float width, float height, String imgName)
+        public static Obstacle MakeAsBox(float x, float y, float width, float height, string imgName)
         {
             Obstacle o = new Obstacle(width, height, imgName);
             o.SetBoxPhysics(0, 0, 0, BodyType.Static, false, x, y);
@@ -55,7 +48,7 @@ namespace LibLOL
         }
 
         public static Obstacle MakeAsPolygon(float x, float y, float width, float height,
-            String imgName, params float[] verts)
+            string imgName, params float[] verts)
         {
             Obstacle o = new Obstacle(width, height, imgName);
             o.SetPolygonPhysics(0, 0, 0, BodyType.Static, false, x, y, verts);
@@ -63,7 +56,7 @@ namespace LibLOL
             return o;
         }
 
-        public static Obstacle MakeAsCircle(float x, float y, float width, float height, String imgName)
+        public static Obstacle MakeAsCircle(float x, float y, float width, float height, string imgName)
         {
             float radius = Math.Max(width, height);
             Obstacle o = new Obstacle(width, height, imgName);
@@ -72,21 +65,50 @@ namespace LibLOL
             return o;
         }
 
-        public void SetDamp(float factor)
+        public float Damp
         {
-            SetCollisionEffect(false);
+            set
+            {
+                CollisionEffect = false;
+                mHeroCollision = delegate(PhysicsSprite h, Contact c)
+                {
+                    Vector2 v = h.mBody.LinearVelocity;
+                    v.X *= value;
+                    v.Y *= value;
+                    UpdateVelocity(v.X, v.Y);
+                };
+            }
+        }
+
+        public void SetSpeedBoost(float boostAmountX, float boostAmountY, float boostDuration)
+        {
+            CollisionEffect = false;
             mHeroCollision = delegate(PhysicsSprite h, Contact c)
             {
                 Vector2 v = h.mBody.LinearVelocity;
-                v.X *= factor;
-                v.Y *= factor;
-                UpdateVelocity(v.X, v.Y);
+                v.X += boostAmountX;
+                v.Y += boostAmountY;
+                h.UpdateVelocity(v.X, v.Y);
+                if (boostDuration > 0)
+                {
+                    Action a = delegate()
+                    {
+                        Vector2 vv = h.mBody.LinearVelocity;
+                        vv.X -= boostAmountX;
+                        vv.Y -= boostAmountY;
+                        h.UpdateVelocity(vv.X, vv.Y);
+                    };
+                    Timer.Schedule(a, boostDuration);
+                }
             };
         }
 
-        public void SetSpeedBoost(float boostAmountX, float boostAmountY, float duration)
+        public bool ReJump
         {
-
+            set
+            {
+                mNoJumpReenable = !value;
+            }
         }
 
         public void SetHeroCollisionTrigger(int id, int activationGoodies1, int activationGoodies2,
@@ -95,23 +117,73 @@ namespace LibLOL
             int[] counts = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
             };
-            SetCollisionEffect(false);
-
+            CollisionEffect = false;
+            mHeroCollision = delegate(PhysicsSprite ps, Contact c)
+            {
+                if (c.Enabled)
+                {
+                    bool match = true;
+                    for (int i = 0; i < 4; ++i)
+                    {
+                        match &= counts[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    }
+                    if (match)
+                    {
+                        if (delay <= 0)
+                        {
+                            Lol.sGame.OnHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, this, (Hero)ps);
+                            return;
+                        }
+                        Timer.Schedule(() => { Lol.sGame.OnHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, this, (Hero)ps); },
+                            delay);
+                    }
+                }
+            };
         }
 
         public void SetEnemyCollisionTrigger(int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4, float delay)
         {
-            int[] counts = new int[] {
+            int[] enemyTriggerActivation = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
+            };
+            mEnemyCollision = delegate(PhysicsSprite ps, Contact c)
+            {
+                bool match = true;
+                for (int i = 0; i < 4; ++i)
+                {
+                    match &= enemyTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                }
+                if (match)
+                {
+                    if (delay <= 0)
+                    {
+                        Lol.sGame.OnEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, (Enemy)ps);
+                        return;
+                    }
+                    Timer.Schedule(() => { Lol.sGame.OnEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, (Enemy)ps); },
+                        delay);
+                }
             };
         }
 
         public void SetProjectileCollisionTrigger(int id, int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4, float delay)
+            int activationGoodies3, int activationGoodies4)
         {
-            int[] counts = new int[] {
+            int[] projectileTriggerActivation = new int[] {
                 activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4
+            };
+            mProjectileCollision = delegate(PhysicsSprite ps, Contact c)
+            {
+                bool match = true;
+                for (int i = 0; i < 4; ++i)
+                {
+                    match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                }
+                if (match)
+                {
+                    Lol.sGame.OnProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum, this, (Projectile)ps);
+                }
             };
 
         }

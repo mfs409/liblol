@@ -4,7 +4,6 @@ namespace LibLOL
 {
     public interface ChooserConfiguration
     {
-
         /*
          * Each chooser screen will have a bunch of buttons for playing specific
          * levels. This defines the number of rows of buttons on each screen.

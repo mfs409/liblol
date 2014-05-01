@@ -1,15 +1,14 @@
 ﻿using System;
 
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input.Touch;
-
 namespace LibLOL
 {
     public static class Util
     {
-        internal static Vector2 touch = Vector2.Zero;
+        private static Random sGenerator = new Random();
 
-        
+        public static int GetRandom(int max)
+        {
+            return sGenerator.Next(max);
+        }
     }
 }

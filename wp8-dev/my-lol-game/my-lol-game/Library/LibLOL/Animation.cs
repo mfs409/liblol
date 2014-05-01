@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LibLOL
 {
+    // Conversion complete!
     public class Animation
     {
         private readonly Texture2D[] mCells;
@@ -29,32 +30,56 @@ namespace LibLOL
 
             private float mCurrentAnimationTime;
 
-            internal AnimationDriver(String imgName)
+            internal AnimationDriver(string imgName)
             {
-                UpdateImage(imgName);
+                Image = imgName;
             }
 
-            internal void SetCurrentAnimation(Animation a)
+            /*internal void SetCurrentAnimation(Animation a)
             {
                 mCurrentAnimation = a;
                 mCurrentAnimationFrame = 0;
                 mCurrentAnimationTime = 0;
+            }*/
+
+            internal Animation CurrentAnimation
+            {
+                set
+                {
+                    mCurrentAnimation = value;
+                    mCurrentAnimationFrame = 0;
+                    mCurrentAnimationTime = 0;
+                }
             }
 
-            internal void UpdateImage(String imgName)
+            /*internal void UpdateImage(string imgName)
             {
                 mImages = Media.GetImage(imgName);
                 mImageIndex = 0;
+            }*/
+
+            internal string Image
+            {
+                set
+                {
+                    mImages = Media.GetImage(value);
+                    mImageIndex = 0;
+                }
             }
 
-            internal void SetIndex(int i)
+            /*internal void SetIndex(int i)
             {
                 mImageIndex = i;
+            }*/
+
+            internal int Index
+            {
+                set { mImageIndex = value; }
             }
 
             internal void PickRandomIndex()
             {
-
+                mImageIndex = Util.GetRandom(mImages.Length);
             }
 
             internal Texture2D GetTr(GameTime gameTime)
@@ -86,14 +111,27 @@ namespace LibLOL
             }
         }
 
-        public Animation(String imgName, int sequenceCount, bool repeat)
+        public Animation(string imgName, int sequenceCount, bool repeat)
         {
-
+            mCells = Media.GetImage(imgName);
+            mFrames = new int[sequenceCount];
+            mDurations = new long[sequenceCount];
+            mLoop = repeat;
+            mNextCell = 0;
         }
 
-        public Animation(String imgName, int timePerFrame, bool repeat, params int[] frameIndices)
+        public Animation(string imgName, int timePerFrame, bool repeat, params int[] frameIndices)
         {
-            
+            mCells = Media.GetImage(imgName);
+            mFrames = new int[frameIndices.Length];
+            mDurations = new long[frameIndices.Length];
+            mLoop = repeat;
+            mNextCell = frameIndices.Length;
+            for (int i = 0; i < mNextCell; ++i)
+            {
+                mDurations[i] = timePerFrame;
+                mFrames[i] = frameIndices[i];
+            }
         }
 
         public Animation To(int frame, long duration)

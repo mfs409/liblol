@@ -192,6 +192,7 @@
     <Compile Include="Library\Farseer\Factories\LinkFactory.cs" />
     <Compile Include="Library\Farseer\Settings.cs" />
     <Compile Include="Library\LibLOL\Animation.cs" />
+    <Compile Include="Library\LibLOL\AnonRender.cs" />
     <Compile Include="Library\LibLOL\Chooser.cs" />
     <Compile Include="Library\LibLOL\ChooserConfiguration.cs" />
     <Compile Include="Library\LibLOL\Destination.cs" />
@@ -209,8 +210,11 @@
     <Compile Include="Library\LibLOL\Physics.cs" />
     <Compile Include="Library\LibLOL\Projectile.cs" />
     <Compile Include="Library\LibLOL\ProjectilePool.cs" />
+    <Compile Include="Library\LibLOL\Renderable.cs" />
     <Compile Include="Library\LibLOL\Route.cs" />
     <Compile Include="Library\LibLOL\RouteDriver.cs" />
+    <Compile Include="Library\LibLOL\Score.cs" />
+    <Compile Include="Library\LibLOL\Timer.cs" />
     <Compile Include="Library\LibLOL\Util.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="GamePage.xaml.cs">
