@@ -138,7 +138,7 @@ namespace LibLOL
             }
         }
 
-        internal void OnCrawl()
+        internal void CrawlOn()
         {
             mCrawling = true;
             mBody.SetTransform(mBody.Position, -3.14159f / 2);
@@ -290,7 +290,7 @@ namespace LibLOL
         {
             Hero h = new Hero(width, height, imgName);
             h.SetBoxPhysics(0, 0, 0, BodyType.Dynamic, false, x, y);
-            // Level.sCurrent.AddSprite(h, 0);
+            Level.sCurrent.AddSprite(h, 0);
             return h;
         }
 
@@ -299,7 +299,7 @@ namespace LibLOL
             float radius = Math.Max(width, height);
             Hero h = new Hero(width, height, imgName);
             h.SetCirclePhysics(0, 0, 0, BodyType.Dynamic, false, x, y, radius / 2);
-            // Leve.sCurrent.AddSprite(h, 0);
+            Level.sCurrent.AddSprite(h, 0);
             return h;
         }
 

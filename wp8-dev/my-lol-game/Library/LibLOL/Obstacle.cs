@@ -9,7 +9,7 @@ using FarseerPhysics.Dynamics.Contacts;
 namespace LibLOL
 {
     // Uncomment code and done.
-    class Obstacle : PhysicsSprite
+    public class Obstacle : PhysicsSprite
     {
         internal CollisionCallback mHeroCollision, mEnemyCollision,
             mProjectileCollision;

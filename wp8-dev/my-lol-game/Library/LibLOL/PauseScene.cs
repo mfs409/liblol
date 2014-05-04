@@ -70,7 +70,7 @@ namespace LibLOL
             {
                 // check if it's to the 'back to chooser' button
                 mV = new Vector3(loc.X, loc.Y, 0);
-                Level.sCurrent.mHudCam.unproject(mV);
+                Level.sCurrent.mHudCam.Unproject(mV);
                 if (mBackRectangle != null && mBackRectangle.Contains((int)mV.X, (int)mV.Y))
                 {
                     Lol.sGame.HandleBack();
@@ -86,7 +86,7 @@ namespace LibLOL
             }
             // clear screen and draw sprites via HudCam
             Lol.sGame.GraphicsDevice.Clear(Color.Black);
-            Level.sCurrent.mHudCam.update();
+            Level.sCurrent.mHudCam.Update();
             // NOTE: Uncomment
             //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();

@@ -6,10 +6,10 @@ namespace LibLOL
 {
     public class OrthographicCamera
     {
-        //public Vector3 position;
+        public Vector3 position;
         public float zoom = 1;
-        //public Matrix projection;
-        //public Vector3 direction;
+        public Matrix projection;
+        public Vector3 direction;
 
         public OrthographicCamera(float w, float h)
         {

@@ -90,7 +90,7 @@ namespace LibLOL
             float y = Level.sCurrent.mGameCam.position.Y;
 
             Level.sCurrent.mBgCam.position = new Vector3(x, y, 0);
-            Level.sCurrent.mBgCam.update();
+            Level.sCurrent.mBgCam.Update();
 
             // draw the layers
             foreach (ParallaxLayer pl in mLayers)

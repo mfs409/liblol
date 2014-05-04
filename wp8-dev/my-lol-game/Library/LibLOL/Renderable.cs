@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LibLOL
 {
-    internal class Renderable
+    public abstract class Renderable
     {
         internal abstract void Update(GameTime gameTime);
 

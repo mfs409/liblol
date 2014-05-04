@@ -66,7 +66,7 @@ namespace LibLOL
             mCurrHelpNum = 0;
             mMode = Modes.PLAY;
             ConfigureLevel(which);
-            //SetScreen(Level.sCurrent);
+            SetScreen(Level.sCurrent);
         }
 
         internal void DoHelpLevel(int which)
@@ -161,7 +161,9 @@ namespace LibLOL
         protected override void LoadContent()
         {
             NameResources();
-            DoSplash();
+            //DoSplash();
+            // For testing
+            DoPlayLevel(1);
             /*spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D tex = this.Content.Load<Texture2D>("Graphics\\greenball");
             Texture2D xet = this.Content.Load<Texture2D>("Graphics\\blueball");

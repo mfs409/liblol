@@ -4,13 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace LibLOL
 {
-    internal abstract class GameScreen : DrawableGameComponent
+    public abstract class GameScreen : DrawableGameComponent
     {
-        private Game mGame;
-
-        internal abstract void Update(GameTime gameTime);
-
-        internal abstract void Draw(GameTime gameTime);
+        protected Game mGame;
 
         protected GameScreen(Game game) : base(game)
         {

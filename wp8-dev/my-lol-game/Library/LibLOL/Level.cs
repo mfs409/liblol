@@ -10,7 +10,7 @@ using FarseerPhysics.Dynamics;
 
 namespace LibLOL
 {
-    public class Level : DrawableGameComponent
+    public class Level : GameScreen
     {
         private Song mMusic;
 
@@ -22,15 +22,17 @@ namespace LibLOL
 
         internal World mWorld;
 
-        internal Background mBackground = new Background();
+        internal Background mBackground;
 
         internal PreScene mPreScene;
 
-        internal PostScene mPostScene = new PostScene();
+        internal PostScene mPostScene;
 
         internal PauseScene mPauseScene;
 
         internal List<List<Renderable>> mSprites = new List<List<Renderable>>(5);
+
+        internal List<Controls.HudEntity> mControls = new List<Controls.HudEntity>();
 
         internal List<Action> mOneTimeEvents = new List<Action>();
 
@@ -92,12 +94,20 @@ namespace LibLOL
 
         internal class ParallaxCamera : OrthographicCamera
         {
+            internal ParallaxCamera(float width, float height) : base(width, height)
+            {
 
+            }
         }
 
         internal Level(Game game) : base(game)
         {
+            //sCurrent = this;
             mSpriteBatch = new SpriteBatch(game.GraphicsDevice);
+            for (int i = 0; i < 5; ++i)
+            {
+                mSprites.Add(new List<Renderable>());
+            }
         }
 
         internal void PlayMusic()
@@ -118,6 +128,53 @@ namespace LibLOL
         internal void SuspendTouch()
         {
             
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            mWorld.Step(1 / 60f);
+            foreach (Action a in mOneTimeEvents) { a(); }
+            mOneTimeEvents.Clear();
+
+            foreach (Action a in mRepeatEvents) { a(); }
+
+            if (mEndGameEvent != null) { mEndGameEvent(); }
+
+            foreach (List<Renderable> l in mSprites)
+            {
+                foreach (Renderable r in l)
+                {
+                    r.Update(gameTime);
+                }
+            }
+
+            base.Update(gameTime);
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            mSpriteBatch.Begin();
+            foreach (List<Renderable> l in mSprites)
+            {
+                foreach (Renderable r in l)
+                {
+                    r.Draw(mSpriteBatch, gameTime);
+                }
+            }
+            mSpriteBatch.End();
+            base.Draw(gameTime);
+        }
+
+        internal void AddSprite(Renderable r, int zIndex)
+        {
+            System.Diagnostics.Debug.Assert(zIndex >= -2);
+            System.Diagnostics.Debug.Assert(zIndex <= 2);
+            mSprites[zIndex + 2].Add(r);
+        }
+
+        public static void Configure(int x, int y)
+        {
+            sCurrent = new Level(Lol.sGame);
         }
     }
 }

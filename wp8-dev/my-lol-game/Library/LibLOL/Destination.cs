@@ -33,7 +33,7 @@ namespace LibLOL
             Destination d = new Destination(width, height, imgName);
             d.SetBoxPhysics(0, 0, 0, BodyType.Static, false, x, y);
             d.CollisionEffect = false;
-            //Level.sCurrent.AddSprite(d, 0);
+            Level.sCurrent.AddSprite(d, 0);
             return d;
         }
 
@@ -43,7 +43,7 @@ namespace LibLOL
             Destination d = new Destination(width, height, imgName);
             d.SetCirclePhysics(0, 0, 0, BodyType.Static, false, x, y, radius / 2);
             d.CollisionEffect = false;
-            //Level.sCurrent.AddSprite(d, 0);
+            Level.sCurrent.AddSprite(d, 0);
             return d;
         }
 
