@@ -18,6 +18,7 @@ namespace LibLOL
         internal Color Color
         {
             get { return mColor; }
+            set { mColor = value; }
         }
 
         internal Font(SpriteFont sf, Color c)

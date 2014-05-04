@@ -22,13 +22,15 @@ namespace LibLOL
 
         internal World mWorld;
 
-        // internal Background mBackground = new Background();
+        internal Background mBackground = new Background();
 
-        // internal PreScene mPreScene;
+        internal PreScene mPreScene;
 
-        // internal PostScene mPostScene = new PostScene();
+        internal PostScene mPostScene = new PostScene();
 
-        // internal PauseScene mPauseScene;
+        internal PauseScene mPauseScene;
+
+        internal List<List<Renderable>> mSprites = new List<List<Renderable>>(5);
 
         internal List<Action> mOneTimeEvents = new List<Action>();
 
@@ -36,10 +38,25 @@ namespace LibLOL
 
         internal List<Action> mRepeatEvents = new List<Action>();
 
+        internal OrthographicCamera mGameCam, mHudCam;
 
-        // More stuff missing.
+        internal ParallaxCamera mBgCam;
+
+        private PhysicsSprite mChaseEntity;
+
+        internal int mCamBoundX, mCamBoundY;
 
         private SpriteBatch mSpriteBatch;
+
+        private Vector3 mTouchVec = new Vector3();
+
+        private PhysicsSprite mHitSprite = null;
+
+        private Func<Fixture, bool> mTouchCallback;
+
+        private bool[] mLastTouches = new bool[4];
+
+        private bool mTouchActive = true;
 
         internal static Level sCurrent;
 
@@ -73,9 +90,34 @@ namespace LibLOL
             }
         }
 
+        internal class ParallaxCamera : OrthographicCamera
+        {
+
+        }
+
         internal Level(Game game) : base(game)
         {
             mSpriteBatch = new SpriteBatch(game.GraphicsDevice);
+        }
+
+        internal void PlayMusic()
+        {
+            
+        }
+
+        internal void PauseMusic()
+        {
+
+        }
+
+        internal void StopMusic()
+        {
+
+        }
+
+        internal void SuspendTouch()
+        {
+            
         }
     }
 }

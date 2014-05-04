@@ -183,7 +183,10 @@ namespace LibLOL
             {
                 OnCollideWithGoodie((Goodie)other);
             }
-            // Need SVGSprite handler
+            else if (other is Svg.SVGSprite)
+            {
+                OnCollideWithSVG(other);
+            }
         }
 
         private void OnCollideWithEnemy(Enemy e)
@@ -276,6 +279,11 @@ namespace LibLOL
                     mAnimator.CurrentAnimation = mInvincibleAnimation;
                 }
             }
+        }
+
+        private void OnCollideWithSVG(PhysicsSprite ps)
+        {
+            StopJump();
         }
 
         public static Hero MakeAsBox(float x, float y, float width, float height, string imgName)

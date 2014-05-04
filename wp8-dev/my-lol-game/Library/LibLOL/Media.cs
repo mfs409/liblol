@@ -105,7 +105,6 @@ namespace LibLOL
                     tiles[index++] = part;
                 }
             }
-            original.Dispose();
             sImages.Add(imgName, tiles);
         }
 

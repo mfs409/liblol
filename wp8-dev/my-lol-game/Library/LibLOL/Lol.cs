@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace LibLOL
 {
@@ -12,6 +13,8 @@ namespace LibLOL
         internal static Stopwatch GlobalGameTime;
 
         private Modes mMode;
+
+        private GameScreen mCurrScreen;
 
         internal int mCurrLevelNum;
 
@@ -54,7 +57,7 @@ namespace LibLOL
             }
             mCurrHelpNum = 0;
             mMode = Modes.CHOOSE;
-            //SetScreen(new Chooser());
+            SetScreen(new Chooser(this));
         }
 
         internal void DoPlayLevel(int which)
@@ -66,11 +69,68 @@ namespace LibLOL
             //SetScreen(Level.sCurrent);
         }
 
+        internal void DoHelpLevel(int which)
+        {
+            mCurrHelpNum = which;
+            mCurrLevelNum = 0;
+            mMode = Modes.HELP;
+            ConfigureHelpScene(which);
+            //SetScreen(HelpLevel.sCurrent);
+        }
+
+        internal void DoQuit()
+        {
+            Exit();
+        }
+
+        private void SetScreen(GameScreen screen)
+        {
+            if (mCurrScreen != null) { mCurrScreen.Dispose(); }
+            mCurrScreen = screen;
+            Components.Add(screen);
+        }
+
+        private void HandleKeyDown()
+        {
+            // if neither BACK nor ESCAPE is being pressed, do nothing, but
+            // recognize future presses
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back != ButtonState.Pressed)
+            {
+                mKeyDown = false;
+                return;
+            }
+            // if they key is being held down, ignore it
+            if (mKeyDown)
+                return;
+            // recognize a new back press as being a 'down' press
+            mKeyDown = true;
+            HandleBack();
+        }
+
+        internal void HandleBack()
+        {
+            Timer.Instance.Clear();
+
+            if (mMode == Modes.SPLASH)
+            {
+                Dispose();
+                Exit();
+            }
+            else if (mMode == Modes.CHOOSE || mMode == Modes.HELP)
+            {
+                DoSplash();
+            }
+            else
+            {
+                DoChooser();
+            }
+        }
+
 
         // Currently for testing right now.
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        PhysicsSprite test, test2;
+        private GraphicsDeviceManager graphics;
+        //SpriteBatch spriteBatch;
+        //PhysicsSprite test, test2;
 
         static Lol()
         {
@@ -86,6 +146,9 @@ namespace LibLOL
 
         protected override void Initialize()
         {
+            sGame = this;
+            mConfig = LolConfig();
+            mChooserConfig = ChooserConfig();
             base.Initialize();
         }
 
@@ -97,6 +160,8 @@ namespace LibLOL
 
         protected override void LoadContent()
         {
+            NameResources();
+            DoSplash();
             /*spriteBatch = new SpriteBatch(GraphicsDevice);
             Texture2D tex = this.Content.Load<Texture2D>("Graphics\\greenball");
             Texture2D xet = this.Content.Load<Texture2D>("Graphics\\blueball");
@@ -116,23 +181,25 @@ namespace LibLOL
 
         protected override void Update(GameTime gameTime)
         {
-            Level.sCurrent.mWorld.Step(1 / 60f);
+            //mCurrScreen.Update(gameTime);
+            /*Level.sCurrent.mWorld.Step(1 / 60f);
             foreach (Action a in Level.sCurrent.mOneTimeEvents)
             {
                 a();
             }
             Level.sCurrent.mOneTimeEvents.Clear();
             test.Update(gameTime);
-            test2.Update(gameTime);
+            test2.Update(gameTime);*/
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin();
+            //mCurrScreen.Draw(gameTime);
+            /*spriteBatch.Begin();
             test.Draw(spriteBatch, gameTime);
             test2.Draw(spriteBatch, gameTime);
-            spriteBatch.End();
+            spriteBatch.End();*/
             base.Draw(gameTime);
         }
 
