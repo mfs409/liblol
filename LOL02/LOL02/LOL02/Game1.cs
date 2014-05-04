@@ -66,47 +66,7 @@ namespace LOL02
         {
             // TODO: Add your initialization logic here
             SpriteFont sf = Content.Load<SpriteFont>("Default");
-            /*GameScreen s1 = new GameScreen();
-            s1.fDraw = delegate(GameTime gameTime)
-            {
-                GraphicsDevice.Clear(Color.Red);
-                spriteBatch.Begin();
-                spriteBatch.DrawString(sf, "ONE", new Vector2(100,100), Color.White);
-                spriteBatch.End();
-            };
-            GameScreen s2 = new GameScreen();
-            s2.fDraw = delegate(GameTime gameTime)
-            {
-                GraphicsDevice.Clear(Color.Green);
-                spriteBatch.Begin();
-                spriteBatch.DrawString(sf, "TWO", new Vector2(100,100), Color.White);
-                spriteBatch.End();
-            };
-            GameScreen s3 = new GameScreen();
-            s3.fDraw = delegate(GameTime gameTime)
-            {
-                GraphicsDevice.Clear(Color.Blue);
-                spriteBatch.Begin();
-                spriteBatch.DrawString(sf, "THREE", new Vector2(100,100), Color.White);
-                spriteBatch.End();
-            };
-            int screen = 0;
-            GameScreen.UpdateDelegate update1 = delegate(GameTime gameTime)
-            {
-                if (TouchPanel.GetState().Count > 0)
-                {
-                    mgr.Display((screen++) % 3);
-                }
-            };
-            s1.fUpdate = update1;
-            s2.fUpdate = update1;
-            s3.fUpdate = update1;
-
-            mgr.Add(s1);
-            mgr.Add(s2);
-            mgr.Add(s3);
-            mgr.Display(0);*/
-            //mgr.Display();
+            
             base.Initialize();
             create();
         }
@@ -192,9 +152,9 @@ namespace LOL02
             // and quit buttons. If you are having trouble figuring these out, note
             // that clicking on the splash screen will display xy coordinates in the
             // Console to help
-            Splash.drawPlayButton(Util.ax(192), Util.ay(91), Util.ax(93), Util.ay(52));
-            Splash.drawHelpButton(Util.ax(48), Util.ay(93), Util.ax(80), Util.ay(40));
-            Splash.drawQuitButton(Util.ax(363), Util.ay(93), Util.ax(69), Util.ay(39));
+            Splash.drawPlayButton(Util.ax(192), Util.ay(91,52), Util.ax(93), Util.ah(52));
+            Splash.drawHelpButton(Util.ax(48), Util.ay(93,40), Util.ax(80), Util.ah(40));
+            Splash.drawQuitButton(Util.ax(363), Util.ay(93,39), Util.ax(69), Util.ah(39));
 
             // Provide a name for the background image
             Splash.setBackground("splash");
@@ -225,7 +185,7 @@ namespace LOL02
                 // Level.configure MUST BE THE FIRST LINE WHEN DRAWING A LEVEL!!!
                 Level.configure(48, 32);
                 // there is no default gravitational force
-                Physics.configure(0, 0);
+                Physics.Configure(0, 0);
 
                 // in this level, we'll use tilt to move some things around. The
                 // maximum force that tilt can exert on anything is +/- 10 in the X
@@ -236,14 +196,14 @@ namespace LOL02
                 // tilting the phone. "greenball.png" must be registered in
                 // the registerMedia() method, which is also in this file. It must
                 // also be in your android game's assets folder.
-                /*Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
-                h.setMoveByTilting();
+                Hero h = Hero.MakeAsCircle(4, 17, 3, 3, "greenball");
+                h.SetMoveByTilting();
 
                 // draw a circular destination, and indicate that the level is won
                 // when the hero reaches the destination. "mustardball.png" must be
                 // registered in registerMedia()
-                Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
-                Score.setVictoryDestination(1);*/
+                Destination.MakeAsCircle(29, 26, 2, 2, "mustardball");
+                Score.setVictoryDestination(1);
             }
         }
 

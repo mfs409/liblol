@@ -153,7 +153,7 @@ namespace LOL
             // first level button
             int camWidth = Lol.sGame.mConfig.getScreenWidth();
             int camHeight = Lol.sGame.mConfig.getScreenHeight();
-            int top = camHeight - cc.getTopMargin();
+            int top = cc.getTopMargin();//camHeight - cc.getTopMargin();
             int left = cc.getLeftMargin();
 
             // button dimensions
@@ -163,7 +163,7 @@ namespace LOL
             int hGutter = cc.getHPadding();
             int vGutter = cc.getBPadding();
             // position of next button
-            int mytop = top - bHeight;
+            int mytop = top;
             int myleft = left;
             // now let's make buttons for the levels
             levels = new Button[levelsPerChooser];
@@ -171,7 +171,7 @@ namespace LOL
             for (int i = first; i <= last; ++i) {
                 // move down a row?
                 if (i % cc.getColumns() == 1 && i != first) {
-                    mytop = mytop - bHeight - vGutter;
+                    mytop = mytop + bHeight + vGutter;//- bHeight - vGutter;
                     myleft = left;
                 }
                 levels[index] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
@@ -250,7 +250,7 @@ namespace LOL
                 mSpriteBatch.Draw(mImage[0], new Rectangle(0, 0, Lol.sGame.mConfig.getScreenWidth(),
                         Lol.sGame.mConfig.getScreenHeight()), Color.White);
             // draw back/prev/next
-            mSpriteBatch.Draw(mBack.mTr[0], mBack.mRect, Color.White);
+            mSpriteBatch.Draw(mBack.mTr[0], mBack.mRect, Color.Green);
             if (mPrev != null && mPrev.mTr != null)
                 mSpriteBatch.Draw(mPrev.mTr[0], mPrev.mRect, Color.White);
             if (mNext != null && mNext.mTr != null)
@@ -269,18 +269,15 @@ namespace LOL
                     float x = mFont.Face.MeasureString(txt).X;
                     float y = mFont.Face.MeasureString(txt).Y;
                     mSpriteBatch.DrawString(mFont.Face, txt, new Vector2(ls.mRect.X + ls.mRect.Width / 2 - x / 2, ls.mRect.Y
-                            + ls.mRect.Height / 2 + y / 2), mFont.Color);
+                            + ls.mRect.Height / 2 - y / 2), mFont.Color);
                 }
             }
             mSpriteBatch.End();
 
             // DEBUG: show the buttons' boxes
-            // NOTE: UNCOMMENT
-            /*if (Lol.sGame.mConfig.showDebugBoxes()) {
+            if (Lol.sGame.mConfig.showDebugBoxes()) {
                 // draw squares...
-                mShapeRender.setProjectionMatrix(mCamera.combined);
-                mShapeRender.begin(ShapeType.Line);
-                mShapeRender.setColor(Color.Gray);
+                mShapeRender.Color = Color.Gray;
 
                 mShapeRender.rect(mBack.mRect.X, mBack.mRect.Y, mBack.mRect.Width, mBack.mRect.Height);
                 if (mPrev != null)
@@ -295,8 +292,7 @@ namespace LOL
                         mShapeRender.rect(ls.mRect.X, ls.mRect.Y, ls.mRect.Width, ls.mRect.Height);
                     }
                 }
-                mShapeRender.end();
-            }*/
+            }
         }
 
         /**
@@ -359,6 +355,5 @@ namespace LOL
                 }
             }
         }
-
     }
 }

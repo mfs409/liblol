@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using FarseerPhysics.Dynamics;
 using System.Diagnostics;
 
 namespace LOL
@@ -15,6 +16,8 @@ namespace LOL
          * The music, if any
          */
         private Music mMusic;
+
+        public bool ShowArrows = true;
 
         /**
          * Whether the music is playing or not
@@ -179,15 +182,22 @@ namespace LOL
          * Wrapper for actions that we generate and then want handled during the
          * render loop
          */
-        public class Action {
-            public delegate void ActionEventDelegate();
-            public ActionEventDelegate go;
-        }
+        public delegate void Action ();
+        
+        internal delegate void OnTouch(float x, float y);
 
         /**
          * Wrapper for handling code that needs to run in response to a screen touch
          */
         public class TouchAction {
+            public TouchAction() { }
+            public TouchAction(TouchDelegate onDown, TouchDelegate onMove, TouchDelegate onUp)
+            {
+                this.OnDown = onDown;
+                this.OnMove = onMove;
+                this.OnUp = onUp;
+            }
+
             public delegate void TouchDelegate (float x, float y);
             /**
              * Run this when the screen is initially pressed down
@@ -277,7 +287,7 @@ namespace LOL
          */
         public Level(int width, int height) {
             // clear any timers
-            Timer.instance().clear();
+            Timer.Instance.Clear();
             // save the singleton and camera bounds
             sCurrent = this;
             mCamBoundX = width;
@@ -339,6 +349,16 @@ namespace LOL
                         Lol.sGame.mConfig.getDefaultFontBlue(), 12);
         }
 
+        public int dx(float x)
+        {
+            return (int)((x / mCamBoundX) * Lol.sGame.mConfig.getScreenWidth());
+        }
+
+        public int dy(float y)
+        {
+            return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
+        }
+
         /**
          * If the level has music attached to it, this starts playing it
          */
@@ -387,6 +407,8 @@ namespace LOL
         public override void Draw (GameTime gameTime) {
             // Make sure the music is playing... Note that we start music before the
             // PreScene shows
+            //Lol.sGame.GraphicsDevice.Clear(Color.Green);
+            //return;
             playMusic();
 
             // Handle pauses due to pre, pause, or post scenes... Note that these
@@ -398,7 +420,7 @@ namespace LOL
                 return;
             if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
                 return;
-
+            
             // check for any scene touches that should generate new events to
             // process
             manageTouches();
@@ -412,22 +434,21 @@ namespace LOL
             //
             // NB: in Box2d, This is the recommended rate for phones, though it
             // seems like we should be using /delta/ instead of 1/45f
-            // NOTE: UNCOMMENT
-            //mWorld.step(1 / 45f, 8, 3);
+            mWorld.Step(0.5f);
 
             // now handle any events that occurred on account of the world movement
             // or screen touches
             foreach (Action pe in mOneTimeEvents)
-                pe.go();
+                pe();
             mOneTimeEvents.Clear();
 
             // handle repeat events
             foreach (Action pe in mRepeatEvents)
-                pe.go();
+                pe();
 
             // check for end of game
             if (mEndGameEvent != null)
-                mEndGameEvent.go();
+                mEndGameEvent();
 
             // The world is now static for this time step... we can display it!
 
@@ -449,7 +470,7 @@ namespace LOL
             mSpriteBatch.Begin();
             foreach (List<Renderable> a in mSprites)
                 foreach (Renderable r in a)
-                    r.render(mSpriteBatch, gameTime);
+                    r.Draw(mSpriteBatch, gameTime);
             mSpriteBatch.End();
 
             // DEBUG: draw outlines of physics entities
@@ -468,15 +489,33 @@ namespace LOL
 
             // DEBUG: render Controls' outlines
             // NOTE: UNCOMMENT
-            /*if (Lol.sGame.mConfig.showDebugBoxes()) {
-                mShapeRender.setProjectionMatrix(mHudCam.combined);
-                mShapeRender.begin(ShapeType.Line);
-                mShapeRender.setColor(Color.Red);
+            if (Lol.sGame.mConfig.showDebugBoxes()) {
+                //mShapeRender.setProjectionMatrix(mHudCam.combined);
+                mShapeRender.begin();
+                mShapeRender.Color = Color.Red;
                 foreach (Controls.HudEntity pe in mControls)
                     if (pe.mRange != null)
                         mShapeRender.rect(pe.mRange.X, pe.mRange.Y, pe.mRange.Width, pe.mRange.Height);
                 mShapeRender.end();
-            }*/
+            }
+
+            // Draw arrows
+            if (ShowArrows)
+            {
+                mSpriteBatch.Begin();
+                int w = Lol.sGame.mConfig.getScreenWidth(),
+                    h = Lol.sGame.mConfig.getScreenHeight();
+                Texture2D LeftBtn = Media.getImage("leftarrow")[0],
+                    RightBtn = Media.getImage("rightarrow")[0],
+                    UpBtn = Media.getImage("leftarrow")[0],
+                    DownBtn= Media.getImage("rightarrow")[0];
+                int btnWidth = 64, btnHeight = 64;
+                mSpriteBatch.Draw(LeftBtn, new Rectangle(0, (h-btnHeight)/2, btnWidth, btnHeight), Color.White);
+                mSpriteBatch.Draw(RightBtn, new Rectangle(w - btnWidth, (h - btnHeight) / 2, btnWidth, btnHeight), Color.White);
+                mSpriteBatch.Draw(UpBtn, new Rectangle((w - btnWidth) / 2, 0, btnWidth, btnHeight), Color.White);
+                mSpriteBatch.Draw(DownBtn, new Rectangle((w - btnWidth) / 2, h - btnHeight, btnWidth, btnHeight), Color.White);
+                mSpriteBatch.End();
+            }
         }
 
         /**
@@ -571,9 +610,14 @@ namespace LOL
                 // hold
                 TouchCollection tc = TouchPanel.GetState();
                 // TODO: Evaluate touch state information for this function
-                touchStates[i] = tc.Count > 0 && tc[0].State == TouchLocationState.Pressed;
-                float x = tc[0].Position.X;
-                float y = tc[0].Position.Y;
+                touchStates[i] = tc.Count > i && tc[i].State == TouchLocationState.Pressed;
+                
+                float x=0, y=0;
+                if (touchStates[i])
+                {
+                    x = tc[i].Position.X;
+                    y = tc[i].Position.Y;
+                }
                 // if there is a touch, call the appropriate method
                 if (touchStates[i] && mLastTouches[i] && mTouchActive)
                     touchMove((int)x, (int)y);
@@ -718,7 +762,7 @@ namespace LOL
          * @param howLong How long to wait before the timer code runs
          */
         public static void setTimerTrigger(int timerId, float howLong) {
-            Timer.schedule(delegate() {
+            Timer.Schedule(delegate() {
                 if (!Level.sCurrent.mScore.mGameOver)
                     Lol.sGame.onTimerTrigger(timerId, Lol.sGame.mCurrLevelNum);
             }, howLong);
@@ -734,7 +778,7 @@ namespace LOL
          * @param enemy The enemy that should be passed along
          */
         public static void setEnemyTimerTrigger(int timerId, float howLong, Enemy enemy) {
-            Timer.schedule(delegate() {
+            Timer.Schedule(delegate() {
                 if (!Level.sCurrent.mScore.mGameOver)
                     Lol.sGame.onEnemyTimerTrigger(timerId, Lol.sGame.mCurrLevelNum, enemy);
             }, howLong);

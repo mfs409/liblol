@@ -12,7 +12,7 @@ namespace LOL
         /**
          * Magnitude of the maximum gravity the accelerometer can create
          */
-        private Vector2 mGravityMax;
+        private Vector2 mGravityMax = Vector2.Zero;
 
         /**
          * Track if we have an override for gravity to be translated into velocity
@@ -28,17 +28,16 @@ namespace LOL
         /**
          * List of entities that change behavior based on tilt
          */
-        List<PhysicsSprite> mAccelEntities = new List<PhysicsSprite>();
+        public List<PhysicsSprite> mAccelEntities = new List<PhysicsSprite>();
 
         // Accelerometer readings
         protected Accelerometer accel;
-        float ax, ay, az;
+        float ax = 0, ay = 0, az = 0;
         
         public Tilt ()
         {
             accel = new Accelerometer();
             accel.CurrentValueChanged += new EventHandler<SensorReadingEventArgs<AccelerometerReading>>(AccelUpdate);
-            accel.Start();
         }
 
         protected void AccelUpdate (Object o, SensorReadingEventArgs<AccelerometerReading> e)
@@ -53,7 +52,7 @@ namespace LOL
          * phone tilt
          */
         public void handleTilt() {
-            if (mGravityMax == null)
+            if (mGravityMax == Vector2.Zero)
                 return;
 
             // these temps are for storing the accelerometer forces we measure
@@ -65,16 +64,16 @@ namespace LOL
                 
                 if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Default) {
                     xGravity = -ax;
-                    yGravity = -ay;
+                    yGravity = -ay*-1;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeRight) {
                     xGravity = ay;
-                    yGravity = -ax;
+                    yGravity = -ax * -1;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Portrait) {
                     xGravity = ax;
-                    yGravity = ay;
+                    yGravity = ay * -1;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeLeft) {
                     xGravity = -ay;
-                    yGravity = ax;
+                    yGravity = ax * -1;
                 }
             //}
 
@@ -117,34 +116,37 @@ namespace LOL
                 // if X is clipped to zero, set each entity's Y velocity, leave X
                 // unchanged
                 if (mGravityMax.X == 0) {
-                    // NOTE: UNCOMMENT
-                    /*foreach (PhysicsSprite gfo in mAccelEntities)
-                        if (gfo.mBody.isActive())
-                            gfo.updateVelocity(gfo.mBody.getLinearVelocity().X, yGravity);*/
+                    foreach (PhysicsSprite gfo in mAccelEntities)
+                        if (gfo.mBody.Awake)
+                            gfo.UpdateVelocity(gfo.mBody.LinearVelocity.X, yGravity);
                 }
                 // if Y is clipped to zero, set each entitiy's X velocity, leave Y
                 // unchanged
                 else if (mGravityMax.Y == 0) {
-                    // NOTE: UNCOMMENT
-                    /*foreach (PhysicsSprite gfo in mAccelEntities)
-                        if (gfo.mBody.isActive())
-                            gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().Y);*/
+                    foreach (PhysicsSprite gfo in mAccelEntities)
+                        if (gfo.mBody.Awake)
+                            gfo.UpdateVelocity(xGravity, gfo.mBody.LinearVelocity.Y);
                 }
                 // otherwise we set X and Y velocity
                 else {
-                    // NOTE: UNCOMMENT
-                    /*foreach (PhysicsSprite gfo in mAccelEntities)
-                        if (gfo.mBody.isActive())
-                            gfo.updateVelocity(xGravity, yGravity);*/
+                    foreach (PhysicsSprite gfo in mAccelEntities)
+                        if (gfo.mBody.Awake)
+                            gfo.UpdateVelocity(xGravity, yGravity);
                 }
             }
             // when not in velocity mode, apply the accelerometer reading to each
             // entity as a force
             else {
-                // NOTE: UNCOMMENT
-                /*foreach (PhysicsSprite gfo in mAccelEntities)
-                    if (gfo.mBody.isActive())
-                        gfo.mBody.applyForceToCenter(xGravity, yGravity, true);*/
+                System.Diagnostics.Debug.WriteLine("TRY MOVING STUFF");
+                    
+                foreach (PhysicsSprite gfo in mAccelEntities)
+                {
+                    System.Diagnostics.Debug.WriteLine(gfo.mBody.Position.X + ", " + gfo.mBody.Position.Y);
+                    System.Diagnostics.Debug.WriteLine(xGravity + ", " + yGravity);
+                    gfo.AddVelocity(xGravity, yGravity, true);
+                    //if (gfo.mBody.Awake)
+                        gfo.mBody.ApplyForce(new Vector2(xGravity, yGravity));
+                }
             }
         }
 
@@ -162,6 +164,7 @@ namespace LOL
         public static void enable(float xGravityMax, float yGravityMax)
         {
             Level.sCurrent.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+            Level.sCurrent.mTilt.accel.Start();
         }
 
         /**

@@ -35,7 +35,7 @@ namespace LOL02
          */
     
         public int getTopMargin() {
-            return 130;
+            return Util.ah(130);
         }
 
         /**
@@ -44,7 +44,7 @@ namespace LOL02
          */
     
         public int getLeftMargin() {
-            return 85;
+            return Util.ax(85);
         }
 
         /**
@@ -52,7 +52,7 @@ namespace LOL02
          */
     
         public int getHPadding() {
-            return 15;
+            return Util.ax(15);
         }
 
         /**
@@ -60,7 +60,7 @@ namespace LOL02
          */
     
         public int getBPadding() {
-            return 15;
+            return Util.ah(15);
         }
 
         /**
@@ -77,7 +77,7 @@ namespace LOL02
          */
     
         public int getLevelButtonWidth() {
-            return 50;
+            return Util.ax(50);
         }
 
         /**
@@ -85,7 +85,7 @@ namespace LOL02
          */
     
         public int getLevelButtonHeight() {
-            return 50;
+            return Util.ah(50);
         }
 
         /**
@@ -181,7 +181,7 @@ namespace LOL02
          */
     
         public int getBackButtonWidth() {
-            return 25;
+            return Util.ax(25);
         }
 
         /**
@@ -189,7 +189,7 @@ namespace LOL02
          */
     
         public int getBackButtonHeight() {
-            return 25;
+            return Util.ah(25);
         }
 
         /**
@@ -215,7 +215,7 @@ namespace LOL02
          */
     
         public int getPrevButtonY() {
-            return 110;
+            return Util.ay(110, 40);
         }
 
         /**
@@ -223,7 +223,7 @@ namespace LOL02
          */
     
         public int getPrevButtonWidth() {
-            return 40;
+            return Util.ax(40);
         }
 
         /**
@@ -231,7 +231,7 @@ namespace LOL02
          */
     
         public int getPrevButtonHeight() {
-            return 40;
+            return Util.ah(40);
         }
 
         /**
@@ -248,7 +248,7 @@ namespace LOL02
          */
     
         public int getNextButtonX() {
-            return 440;
+            return Util.ax(440);
         }
 
         /**
@@ -257,7 +257,7 @@ namespace LOL02
          */
     
         public int getNextButtonY() {
-            return 110;
+            return Util.ay(110, 40);
         }
 
         /**
@@ -265,7 +265,7 @@ namespace LOL02
          */
     
         public int getNextButtonWidth() {
-            return 40;
+            return Util.ax(40);
         }
 
         /**
@@ -273,7 +273,7 @@ namespace LOL02
          */
     
         public int getNextButtonHeight() {
-            return 40;
+            return Util.ah(40);
         }
     }
 }

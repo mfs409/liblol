@@ -1,115 +1,124 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-using System.ComponentModel;
 using System.Windows;
-using Microsoft.Xna.Framework;
-
+using System.Windows.Threading;
 
 namespace LOL
 {
-    public class Timer
+    internal class Timer
     {
-        public class TimerTask
-        {
-            public long waitTicks;
-            public TimerDelegate task;
 
-            public TimerTask(TimerDelegate t)
+        internal class TimerTask
+        {
+            //private long waitTicks;
+            private DateTime executeTime;
+            private Action task;
+
+            internal DateTime ExecuteTime
             {
-                waitTicks = 0;
-                task = t;
+                get { return executeTime; }
             }
 
-            public TimerTask(TimerDelegate t, long delay)
+            /*internal long WaitTicks
             {
-                waitTicks = delay;
-                task = t;
+                get { return waitTicks; }
+            }*/
+
+            internal Action Task
+            {
+                get { return task; }
+            }
+
+            internal TimerTask(Action a): this(a, 0)
+            {
+                
+            }
+
+            internal TimerTask(Action a, long delay)
+            {
+                task = a;
+                executeTime = DateTime.Now.AddMilliseconds(delay);
+                //waitTicks = delay;
             }
         }
 
-        // Singleton instance
-        private static Timer inst;
-        // Dispatcher Timer object
-        private DispatcherTimer t;
-        // Task list
-        private List<TimerTask> tasks;
-        // Global tick counter
-        private long tickCounter;
+        private static Timer inst = new Timer();
 
-        // Constructor
-        Timer()
+        private DispatcherTimer t;
+
+        private List<TimerTask> tasks;
+
+        //private long tickCounter;
+
+        internal Timer()
         {
             tasks = new List<TimerTask>();
             t = new DispatcherTimer();
             t.Stop();
             t.Tick += OnTick;
-            tickCounter = 0;
-            // Wait only for 100ms
+            //tickCounter = 0;
             t.Interval = TimeSpan.FromMilliseconds(100);
         }
 
-        // Timer pulsating/ticking event
-        private void OnTick(Object sender, EventArgs args)
+        private void OnTick(object sender, EventArgs args)
         {
-            // Concerns about thread safety or even multithreading capabilities (tls)
-            tickCounter++;
-            for (int j = tasks.Count - 1; j >= 0; j--)
+            //++tickCounter;
+            lock (tasks)
             {
-                if (tasks[j].waitTicks <= tickCounter)
+                for (int j = tasks.Count - 1; j >= 0; --j)
                 {
-                    TimerTask tmp = tasks[j];
-                    tasks.RemoveAt(j);
+                    if (tasks[j].ExecuteTime <= DateTime.Now)
+                    {
+                        TimerTask tmp = tasks[j];
+                        tasks.RemoveAt(j);
 
-                    // Run the task in a background thread -- may cause issues (tls)
-                    Deployment.Current.Dispatcher.BeginInvoke(tmp.task, null);
+                        Deployment.Current.Dispatcher.BeginInvoke(tmp.Task);
+                    }
                 }
             }
         }
 
-        // Singletons (yay)
-        public static Timer instance()
+        internal static Timer Instance
         {
-            if (inst == null)
+            get { return inst; }
+        }
+
+        internal void Clear()
+        {
+            lock (tasks)
             {
-                inst = new Timer();
+                tasks.Clear();
             }
-            return inst;
         }
 
-	    /** Cancels all tasks. */
-	    public void clear () {
-            tasks.Clear();
-	    }
-
-        /** Stops the timer, tasks will not be executed and time that passes will not be applied to the task delays. */
-        public void stop() {
-            t.Stop();
-	    }
-
-        /** Starts the timer if it was stopped. */
-        public void start() {
-            t.Start();
-	    }
-
-	    /** Adds the specified delay to all tasks. */
-	    public void delay (long delayMillis) {
-            // Because intervals are 100ms each
-            tickCounter -= (delayMillis / 100);
-	    }
-
-        // Delegate for Timer tasks
-        public delegate void TimerDelegate();
-
-        /** Schedules a task on {@link #instance}.
-	     * @see #scheduleTask(Task, float) */
-        public static void schedule(TimerDelegate t, float delaySec)
+        internal void Stop()
         {
-            // Concerns about synchronization / thread-safety with use of tickCounter and active timer (tls)
-            long actualDelay = (long)delaySec + Timer.instance().tickCounter;
-            Timer.instance().tasks.Add(new TimerTask(t, actualDelay));
+            t.Stop();
         }
+
+        internal void Start()
+        {
+            t.Start();
+        }
+
+        internal void Delay(long delayMillis)
+        {
+            lock (tasks)
+            {
+                foreach (TimerTask t in tasks)
+                {
+                    t.ExecuteTime.AddMilliseconds(delayMillis);
+                }
+            }
+        }
+
+        internal static void Schedule(Action a, float delaySeconds)
+        {
+            lock (Timer.Instance.tasks)
+            {
+                Timer.Instance.tasks.Add(new TimerTask(a, (long)(delaySeconds * 1000.0)));
+            }
+        }
+
     }
 }

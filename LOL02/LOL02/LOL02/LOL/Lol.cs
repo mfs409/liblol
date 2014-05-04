@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Devices;
+using FarseerPhysics.Common;
 
 
 namespace LOL
@@ -14,6 +15,7 @@ namespace LOL
     public abstract class Lol: Game
     {
         public static ScreenManager Screen;
+        public static Stopwatch GlobalGameTime = new Stopwatch();
         
         /**
          * The current mode of the program
@@ -164,7 +166,7 @@ namespace LOL
          */
         public void handleBack() {
             // clear all timers, just in case...
-            Timer.instance().clear();
+            Timer.Instance.Clear();
             // if we're looking at main menu, then exit
             if (mMode == Modes.SPLASH) {
                 dispose();

@@ -68,7 +68,7 @@ namespace LOL
             mRouteDone = true;
             // NB: third parameter doesn't matter, because the entity isn't a static
             // body, so its bodytype won't change.
-            mEntity.setAbsoluteVelocity(0, 0, false);
+            mEntity.SetAbsoluteVelocity(0, 0, false);
         }
 
         /**
@@ -76,15 +76,15 @@ namespace LOL
          */
         private void startRoute() {
             // move to the starting point
-            mEntity.mBody.setTransform(mRoute.mXIndices[0] + mEntity.mSize.X / 2, mRoute.mYIndices[0]
-                    + mEntity.mSize.Y / 2, 0);
+            mEntity.mBody.SetTransform(new Vector2(mRoute.mXIndices[0] + mEntity.mSize.X / 2, mRoute.mYIndices[0]
+                    + mEntity.mSize.Y / 2), 0);
             // set up our next goal, start moving toward it
             mNextRouteGoal = 1;
-            mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-            mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+            mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+            mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
             mRouteVec.Normalize();
             mRouteVec *= mRouteVelocity;
-            mEntity.mBody.setLinearVelocity(mRouteVec);
+            mEntity.mBody.LinearVelocity  = mRouteVec;
         }
 
         /**
@@ -98,10 +98,10 @@ namespace LOL
             // if we haven't passed the goal, keep going. we tell if we've passed
             // the goal by comparing the magnitudes of the vectors from source (s)
             // to here and from goal (g) to here
-            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
-            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
-            float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-            float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.XPosition;
+            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.YPosition;
+            float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+            float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
             bool sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
             bool sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
             if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
@@ -112,15 +112,15 @@ namespace LOL
                         startRoute();
                     } else {
                         mRouteDone = true;
-                        mEntity.mBody.setLinearVelocity(0, 0);
+                        mEntity.mBody.LinearVelocity = new Vector2(0, 0);
                     }
                 } else {
                     // advance to next point
-                    mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
-                    mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+                    mRouteVec.X = mRoute.mXIndices[mNextRouteGoal] - mEntity.XPosition;
+                    mRouteVec.Y = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
                     mRouteVec.Normalize();
                     mRouteVec *= mRouteVelocity;
-                    mEntity.mBody.setLinearVelocity(mRouteVec);
+                    mEntity.mBody.LinearVelocity = mRouteVec;
                 }
             }
             // NB: 'else keep going at current velocity'

@@ -77,8 +77,8 @@ namespace LOL
                 // otherwise, just clear the pauseScene (be sure to resume timers)
                 mVisible = false;
                 TimeSpan showTime = DateTime.Now - showingAt;
-                Timer.instance().delay((long) showTime.TotalMilliseconds);
-                Timer.instance().start();
+                Timer.Instance.Delay((long) showTime.TotalMilliseconds);
+                Timer.Instance.Start();
                 return false;
             }
             // clear screen and draw sprites via HudCam
@@ -88,7 +88,7 @@ namespace LOL
             //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();
             foreach (Renderable r in mSprites)
-                r.render(sb, new GameTime());
+                r.Draw(sb, new GameTime());
             sb.End();
             return true;
         }
@@ -163,7 +163,7 @@ namespace LOL
          * Show the pause screen
          */
         public static void show() {
-            Timer.instance().stop();
+            Timer.Instance.Stop();
             getCurrPauseScene().mVisible = true;
             getCurrPauseScene().showingAt = DateTime.Now;
         }

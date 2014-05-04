@@ -46,7 +46,7 @@ namespace LOL
             Level.sCurrent.suspendTouch();
             Level.sCurrent.mPreScene = ps;
             // pause the timer
-            Timer.instance().stop();
+            Timer.Instance.Stop();
             ps.showingAt = DateTime.Now;
             return ps;
         }
@@ -59,8 +59,8 @@ namespace LOL
             // they're suspended
             if (mClickToClear) {
                 TimeSpan showTime = DateTime.Now - showingAt;
-                Timer.instance().delay((long) showTime.TotalMilliseconds);
-                Timer.instance().start();
+                Timer.Instance.Delay((long) showTime.TotalMilliseconds);
+                Timer.Instance.Start();
             }
             Level.sCurrent.mPreScene.mVisible = false;
         }
@@ -92,7 +92,7 @@ namespace LOL
             //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();
             foreach (Renderable r in mSprites)
-                r.render(sb, new GameTime());
+                r.Draw(sb, new GameTime());
             sb.End();
             return true;
         }
@@ -157,8 +157,8 @@ namespace LOL
             if (duration > 0) {
                 getCurrPreScene().mClickToClear = false;
                 // resume timers, or this won't work
-                Timer.instance().start();
-                Timer.schedule(delegate() {
+                Timer.Instance.Start();
+                Timer.Schedule(delegate() {
                     getCurrPreScene().hide();
                 }, duration);
             }

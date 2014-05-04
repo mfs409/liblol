@@ -414,8 +414,7 @@ namespace LOL
             HudEntity he = new HudEntity(red, green, blue);
             he.Render = delegate(SpriteBatch sb) {
                     bf.Color = he.mColor;
-                    // NOTE: UNCOMMENT
-                    //drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf, sb);
+                    drawTextTransposed(x, y, "" + h.Strength + " " + text, bf, sb);
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -439,7 +438,7 @@ namespace LOL
             HudEntity he = new HudEntity(red, green, blue);
             he.Render = delegate(SpriteBatch sb) {
                     bf.Color = he.mColor;
-                    Level.sCurrent.mScore.mDistance = (int)h.getXPosition();
+                    Level.sCurrent.mScore.mDistance = (int)h.XPosition;
                     drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, bf, sb);
                 };
             Level.sCurrent.mControls.Add(he);
@@ -506,13 +505,12 @@ namespace LOL
                 PhysicsSprite entity, float dx, float dy) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                    // NOTE: UNCOMMENT
-                    /*Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = entity.mBody.LinearVelocity;
                     if (dx != 0)
                         v.X = dx;
                     if (dy != 0)
                         v.Y = dy;
-                    entity.updateVelocity(v.X, v.Y);*/
+                    entity.UpdateVelocity(v.X, v.Y);
                 };
 
             he.OnHold = delegate(Vector3 vv) {
@@ -520,13 +518,12 @@ namespace LOL
                 };
 
             he.OnUpPress = delegate() {
-                    // NOTE: UNCOMMENT
-                    /*Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = entity.mBody.LinearVelocity;
                     if (dx != 0)
                         v.X = 0;
                     if (dy != 0)
                         v.Y = 0;
-                    entity.updateVelocity(v.X, v.Y);*/
+                    entity.UpdateVelocity(v.X, v.Y);
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -625,11 +622,10 @@ namespace LOL
                 PhysicsSprite entity) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    /*Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = entity.mBody.LinearVelocity;
                     v.X = rateDownX;
                     v.Y = rateDownY;
-                    entity.updateVelocity(v.X, v.Y);*/
+                    entity.UpdateVelocity(v.X, v.Y);
                 };
 
             he.OnHold = delegate(Vector3 vv) {
@@ -637,11 +633,10 @@ namespace LOL
                 };
 
             he.OnUpPress = delegate() {
-                // NOTE: UNCOMMENT
-                    /*Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = entity.mBody.LinearVelocity;
                     v.X = rateUpX;
                     v.Y = rateUpY;
-                    entity.updateVelocity(v.X, v.Y);*/
+                    entity.UpdateVelocity(v.X, v.Y);
                 };
 
             Level.sCurrent.mControls.Add(he);
@@ -667,17 +662,15 @@ namespace LOL
                 float rateX, float rateY, float dampening, PhysicsSprite entity) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    /*Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = entity.mBody.LinearVelocity;
                     v.X = rateX;
                     v.Y = rateY;
-                    entity.mBody.setLinearDamping(0);
-                    entity.updateVelocity(v.X, v.Y);*/
+                    entity.mBody.LinearDamping = 0;
+                    entity.UpdateVelocity(v.X, v.Y);
                 };
 
             he.OnUpPress = delegate() {
-                // NOTE: UNCOMMENT
-                    //entity.mBody.setLinearDamping(dampening);
+                    entity.mBody.LinearDamping = dampening;
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -698,13 +691,11 @@ namespace LOL
                 Hero h) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    //h.crawlOn();
+                    h.CrawlOn();
                 };
 
             he.OnUpPress = delegate() {
-                // NOTE: UNCOMMENT
-                    //h.crawlOff();
+                    h.CrawlOff();
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -724,8 +715,7 @@ namespace LOL
                 Hero h) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    //h.jump();
+                    h.Jump();
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -806,9 +796,8 @@ namespace LOL
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             DateTime mLastThrow = DateTime.Now;
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    /*Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().X,
-                            h.mBody.getPosition().Y, vv.X, vv.Y, h);*/
+                    Level.sCurrent.mProjectilePool.throwAt(h.mBody.Position.X,
+                            h.mBody.Position.Y, vv.X, vv.Y, h);
                     mLastThrow = DateTime.Now;
                 };
 
@@ -816,9 +805,8 @@ namespace LOL
                     DateTime delayed = mLastThrow.AddMilliseconds(milliDelay);
                     if (delayed < DateTime.Now) {
                         mLastThrow = DateTime.Now;
-                        // NOTE: UNCOMMENT
-                        /*Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().X,
-                                h.mBody.getPosition().Y, vv.X, vv.Y, h);*/
+                        Level.sCurrent.mProjectilePool.throwAt(h.mBody.Position.X,
+                                h.mBody.Position.Y, vv.X, vv.Y, h);
                     }
                 };
             Level.sCurrent.mControls.Add(he);
@@ -840,9 +828,8 @@ namespace LOL
                 String imgName, Hero h) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    /*Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().X,
-                            h.mBody.getPosition().Y, vv.X, vv.Y, h);*/
+                    Level.sCurrent.mProjectilePool.throwAt(h.mBody.Position.X,
+                            h.mBody.Position.Y, vv.X, vv.Y, h);
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -911,13 +898,11 @@ namespace LOL
                 float rate, Hero h) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    //h.increaseRotation(rate);
+                h.IncreaseRotation(rate);
                 };
 
             he.OnHold = delegate(Vector3 vv) {
-                // NOTE: UNCOMMENT
-                    //h.increaseRotation(rate);
+                h.IncreaseRotation(rate);
                 };
 
             Level.sCurrent.mControls.Add(he);

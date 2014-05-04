@@ -12,7 +12,7 @@ namespace LOL
         /**
          * The color that should be shown behind everything
          */
-        public Color mColor = new Color(1, 1, 1, 1);
+        public Color mColor = Color.White;
 
         /**
          * All the background layers to show for the current level
@@ -162,9 +162,7 @@ namespace LOL
          * @param blue The amount of blueness (0-255)
          */
         static public void setColor(int red, int green, int blue) {
-            Level.sCurrent.mBackground.mColor.R = (byte)(((float)red) / 255);
-            Level.sCurrent.mBackground.mColor.G = (byte)(((float)green) / 255);
-            Level.sCurrent.mBackground.mColor.B = (byte)(((float)blue) / 255);
+            Level.sCurrent.mBackground.mColor = new Color((float)red / 255, (float)green / 255, (float)blue / 255);
         }
 
         /**

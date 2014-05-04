@@ -180,8 +180,7 @@ namespace LOL
         public void endLevel(bool win) {
             if (Level.sCurrent.mEndGameEvent == null)
             {
-                Level.sCurrent.mEndGameEvent = new Level.Action();
-                Level.sCurrent.mEndGameEvent.go = delegate()
+                Level.sCurrent.mEndGameEvent = delegate()
                 {
                     // Safeguard: only call this method once per level
                     if (mGameOver)
@@ -199,7 +198,7 @@ namespace LOL
                     Level.sCurrent.mControls.Clear();
 
                     // clear any pending timers
-                    Timer.instance().clear();
+                    Timer.Instance.Clear();
 
                     // display the PostScene, which provides a pause before we
                     // retry/start

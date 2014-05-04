@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using FarseerPhysics.Dynamics.Contacts;
 
 namespace LOL
 {
@@ -75,9 +76,8 @@ namespace LOL
                 
             }
 
-            public delegate void CollideDelegate(PhysicsSprite other, Contact contact);
-
-            public CollideDelegate OnCollide;
+            internal override void OnCollide(PhysicsSprite other, Contact contact)
+            { }
         }
 
         /**

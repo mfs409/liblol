@@ -1,17 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace LOL
 {
-    // Replace with DrawableGameComponent?
-    // Must be able to draw to specific SpriteBatch
-    public class Renderable
+    public abstract class Renderable
     {
-        public delegate void RenderDelegate(SpriteBatch sb, GameTime delta);
-        public RenderDelegate render;
+        public abstract void Update(GameTime gameTime);
+
+        public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
+    }
+
+    public class AnonRenderable : Renderable
+    {
+        public delegate void RenderDelegate(SpriteBatch sb, GameTime gt);
+        protected RenderDelegate Render;
+
+        public AnonRenderable(RenderDelegate d)
+        {
+            Render = d;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            Render(spriteBatch, gameTime);
+        }
     }
 }
