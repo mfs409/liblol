@@ -163,10 +163,8 @@ namespace LOL
                 pos.Y = Level.sCurrent.dy(pos.Y);
 
                 // Scale down for size
-                float scale = (float)Level.sCurrent.dx(mSize.X) / (float) tr.Width;
+                float scale = Level.sCurrent.dx(mSize.X) / (float) tr.Width;
                 sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mSize.Y) / 2), scale, flipH, 0f);
-                /*sb.Draw(tr, pos, null, null, new Vector2(mSize.X / 2, mSize.Y / 2), 
-                    mBody.Rotation, null, Color.White, flipH, 0f);*/
             }
         }
 
