@@ -19,6 +19,8 @@ namespace LOL
 
         public bool ShowArrows = true;
 
+        //internal delegate void AABBDelegate(Fixture f, bool b);
+
         /**
          * Whether the music is playing or not
          */
@@ -146,7 +148,7 @@ namespace LOL
         /**
          * This callback is used to get a touched entity from the physics world
          */
-        private QueryCallback mTouchCallback;
+        //private AABBDelegate mTouchCallback;
 
         /**
          * Our polling-based multitouch uses this array to track the previous state
@@ -324,30 +326,28 @@ namespace LOL
 
             // set up the callback for finding out who in the physics world was
             // touched
-            // TODO: Create QueryCallback class
-            mTouchCallback = new QueryCallback();
-
-            // public bool reportFixture(Fixture fixture) {
-            // NOTE: UNCOMMENT
-            /*mTouchCallback = delegate (Fixture fixture) {
-                    // if the hit point is inside the fixture of the body we report
-                    // it
-                    if (fixture.testPoint(mTouchVec.X, mTouchVec.Y)) {
-                        PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
-                        if (hs.mVisible) {
-                            mHitSprite = hs;
-                            return false;
-                        }
-                    }
-                    return true;
-                };
-            */
+            
+            
             // When debug mode is on, print the frames per second
             if (Lol.sGame.mConfig.showDebugBoxes())
                 Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(),
                         Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
                         Lol.sGame.mConfig.getDefaultFontBlue(), 12);
         }
+
+        internal bool mTouchCallback (Fixture fixture) {
+                    // if the hit point is inside the fixture of the body we report
+                    // it
+                    Vector2 touch = new Vector2(mTouchVec.X, mTouchVec.Y);
+                    if (fixture.TestPoint(ref touch)) {
+                        PhysicsSprite hs = (PhysicsSprite)fixture.Body.UserData;
+                        if (hs.mVisible) {
+                            mHitSprite = hs;
+                            return false;
+                        }
+                    }
+                    return true;
+                }
 
         public int dx(float x)
         {
@@ -540,10 +540,8 @@ namespace LOL
             if (mChaseEntity == null)
                 return;
             // figure out the entity's position
-            // NOTE: UNCOMMENT
-            float x=0, y=0;
-            //float x = mChaseEntity.mBody.getWorldCenter().X + mChaseEntity.mCameraOffset.X;
-            //float y = mChaseEntity.mBody.getWorldCenter().Y + mChaseEntity.mCameraOffset.Y;
+            float x = mChaseEntity.mBody.WorldCenter.X + mChaseEntity.mCameraOffset.X;
+            float y = mChaseEntity.mBody.WorldCenter.Y + mChaseEntity.mCameraOffset.Y;
 
             // if x or y is too close to MAX,MAX, stick with max acceptable values
             if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
@@ -657,13 +655,19 @@ namespace LOL
             mTouchVec = new Vector3(x,y,0);
             mGameCam.unproject(mTouchVec);
             // NOTE: UNCOMMENT
-            /*mWorld.QueryAABB(mTouchCallback, mTouchVec.X - 0.1f, mTouchVec.Y - 0.1f,
-                    mTouchVec.X + 0.1f, mTouchVec.Y + 0.1f);
+            Vector2 minTouch = new Vector2(mTouchVec.X, mTouchVec.Y), maxTouch = new Vector2(mTouchVec.X, mTouchVec.Y);
+            minTouch.X -= 0.1f;
+            minTouch.Y -= 0.1f;
+            maxTouch.X += 0.1f;
+            maxTouch.Y += 0.1f;
+
+            FarseerPhysics.Collision.AABB aabb = new FarseerPhysics.Collision.AABB(minTouch, maxTouch);
+            mWorld.QueryAABB(mTouchCallback, ref aabb);
             if (mHitSprite != null)
-                mHitSprite.handleTouchDown(x, y);
+                mHitSprite.HandleTouchDown(x, y);
             // Handle level touches for which we've got a registered handler
             else if (mTouchResponder != null)
-                mTouchResponder.OnDown(mTouchVec.X, mTouchVec.Y);*/
+                mTouchResponder.OnDown(mTouchVec.X, mTouchVec.Y);
         }
 
         /**
@@ -691,9 +695,8 @@ namespace LOL
             mGameCam.unproject(mTouchVec);
             if (mTouchResponder != null)
                 mTouchResponder.OnMove(mTouchVec.X, mTouchVec.Y);
-            // NOTE: UNCOMMENT
-            //else if (mHitSprite != null)
-            //    mHitSprite.handleTouchDrag(mTouchVec.X, mTouchVec.Y);
+            else if (mHitSprite != null)
+                mHitSprite.HandleTouchDrag(mTouchVec.X, mTouchVec.Y);
         }
 
         /**
@@ -831,19 +834,18 @@ namespace LOL
                     mLastTime = DateTime.Now;
 
                     // make a circular obstacle
-                    // NOTE: UNCOMMENT
-                    /*Obstacle o = Obstacle.makeAsCircle(x - width / 2, y - height / 2, width,
+                    Obstacle o = Obstacle.MakeAsCircle(x - width / 2, y - height / 2, width,
                             height, imgName);
-                    o.setPhysics(density, elasticity, friction);
+                    o.SetPhysics(density, elasticity, friction);
                     if (moveable)
-                        o.mBody.setType(BodyType.DynamicBody);
+                        o.mBody.BodyType = BodyType.Dynamic;
 
                     // possibly set a timer to remove the scribble
                     if (duration > 0) {
-                        Timer.schedule(delegate() {
-                            o.remove(false);
+                        Timer.Schedule(delegate() {
+                            o.Remove(false);
                         }, duration);
-                    }*/
+                    }
                 };
 
                 /**

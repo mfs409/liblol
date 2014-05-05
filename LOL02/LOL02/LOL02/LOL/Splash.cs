@@ -164,7 +164,6 @@ namespace LOL
             mSpriteBatch.End();
 
             // DEBUG: show where the buttons' boxes are
-            // NOTE: UNCOMMENT
             if (Lol.sGame.mConfig.showDebugBoxes()) {
                 //mShapeRender.setProjectionMatrix(mCamera.combined);
                 //mShapeRender.begin(ShapeType.Line);

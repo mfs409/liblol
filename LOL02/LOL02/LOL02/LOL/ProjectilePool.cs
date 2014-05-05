@@ -113,13 +113,12 @@ namespace LOL
             mPool = new Projectile[size];
             // don't draw all projectiles in same place...
             for (int i = 0; i < size; ++i) {
-                // NOTE: UNCOMMENT
-                /*mPool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
+                mPool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
                         zIndex, isCircle);
                 mPool[i].mVisible = false;
-                mPool[i].mBody.setBullet(true);
-                mPool[i].mBody.setActive(false);
-                mPool[i].mStrength = strength;*/
+                mPool[i].mBody.IsBullet = true;
+                mPool[i].mBody.Awake = false;
+                mPool[i].mStrength = strength;
             }
             mNextIndex = 0;
             mPoolSize = size;
@@ -147,31 +146,30 @@ namespace LOL
                 mProjectilesRemaining--;
 
             // is there an available projectile?
-            // NOTE: UNCOMMENT
-            //if (mPool[mNextIndex].mVisible)
-            //    return;
+            if (mPool[mNextIndex].mVisible)
+                return;
             // get the next projectile, reset sensor, set sprite
             Projectile b = mPool[mNextIndex];
             mNextIndex = (mNextIndex + 1) % mPoolSize;
-            // NOTE: UNCOMMENT
-            /*b.setCollisionEffect(!mSensorProjectiles);
+            
+            b.CollisionEffect = !mSensorProjectiles;
             if (mRandomizeImages)
                 b.mAnimator.pickRandomIndex();
 
             // calculate offset for starting position of projectile, put it on
             // screen
-            b.mRangeFrom.X = h.getXPosition() + mOffset.X;
-            b.mRangeFrom.Y = h.getYPosition() + mOffset.Y;
-            b.mBody.setActive(true);
-            b.mBody.setTransform(b.mRangeFrom, 0);
+            b.mRangeFrom.X = h.XPosition + mOffset.X;
+            b.mRangeFrom.Y = h.YPosition + mOffset.Y;
+            b.mBody.Awake = true;
+            b.mBody.SetTransform(b.mRangeFrom, 0);
 
             // give the projectile velocity, show it, play sound, animate the hero
-            b.updateVelocity(mVelocity.X, mVelocity.Y);
+            b.UpdateVelocity(mVelocity.X, mVelocity.Y);
             b.mVisible = true;
             if (mThrowSound != null)
                 mThrowSound.Play();
             b.mDisappearSound = mProjectileDisappearSound;
-            h.doThrowAnimation();*/
+            h.DoThrowAnimation();
         }
 
         /**
@@ -193,14 +191,13 @@ namespace LOL
                 mProjectilesRemaining--;
 
             // is there an available projectile?
-            // NOTE: UNCOMMENT
-            /*if (mPool[mNextIndex].mVisible)
-                return;*/
+            if (mPool[mNextIndex].mVisible)
+                return;
             // get the next projectile, set sensor, set sprite
             Projectile b = mPool[mNextIndex];
             mNextIndex = (mNextIndex + 1) % mPoolSize;
-            // NOTE: UNCOMMENT
-            /*b.setCollisionEffect(!mSensorProjectiles);
+            
+            b.CollisionEffect = !mSensorProjectiles;
             if (mRandomizeImages)
                 b.mAnimator.pickRandomIndex();
 
@@ -208,8 +205,8 @@ namespace LOL
             // screen
             b.mRangeFrom.X = heroX + mOffset.X;
             b.mRangeFrom.Y = heroY + mOffset.Y;
-            b.mBody.setActive(true);
-            b.mBody.setTransform(b.mRangeFrom, 0);
+            b.mBody.Awake = true;
+            b.mBody.SetTransform(b.mRangeFrom, 0);
 
             // give the projectile velocity
             if (mEnableFixedVectorVelocity) {
@@ -222,21 +219,21 @@ namespace LOL
                 // multiply by fixed velocity
                 tmpX *= mFixedVectorVelocity;
                 tmpY *= mFixedVectorVelocity;
-                b.updateVelocity(tmpX, tmpY);
+                b.UpdateVelocity(tmpX, tmpY);
             } else {
                 float dX = toX - heroX - mOffset.X;
                 float dY = toY - heroY - mOffset.Y;
                 // compute absolute vector, multiply by dampening factor
                 float tmpX = dX * mVectorDamp;
                 float tmpY = dY * mVectorDamp;
-                b.updateVelocity(tmpX, tmpY);
+                b.UpdateVelocity(tmpX, tmpY);
             }
 
             // rotate the projectile
             if (mRotateVectorThrow) {
                 double angle = Math.Atan2(toY - heroY - mOffset.Y, toX - heroX - mOffset.X)
                         - Math.Atan2(-1, 0);
-                b.mBody.setTransform(b.mBody.getPosition(), (float)angle);
+                b.mBody.SetTransform(b.mBody.Position, (float)angle);
             }
 
             // show the projectile, play sound, and animate the hero
@@ -244,7 +241,7 @@ namespace LOL
             if (mThrowSound != null)
                 mThrowSound.Play();
             b.mDisappearSound = mProjectileDisappearSound;
-            h.doThrowAnimation();*/
+            h.DoThrowAnimation();
         }
 
         /*
@@ -259,9 +256,8 @@ namespace LOL
          *            travel
          */
         public static void setRange(float distance) {
-            // NOTE: UNCOMMENT
-            /*foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
-                p.mRange = distance;*/
+            foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
+                p.mRange = distance;
         }
 
         /**
@@ -269,9 +265,8 @@ namespace LOL
          * they will be (more or less) immune to gravitational forces.
          */
         public static void setProjectileGravityOn() {
-            // NOTE: UNCOMMENT
-            /*foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
-                p.mBody.setGravityScale(1);*/
+            foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
+                p.mBody.GravityScale = 1;
         }
 
         /**
@@ -280,9 +275,8 @@ namespace LOL
          * @param range This number indicates the number of cells
          */
         public static void setImageSource(String imgName) {
-            // NOTE: UNCOMMENT
-            /*foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
-                p.mAnimator.updateImage(imgName);*/
+            foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
+                p.mAnimator.updateImage(imgName);
             Level.sCurrent.mProjectilePool.mRandomizeImages = true;
         }
 
@@ -328,9 +322,8 @@ namespace LOL
          * screen
          */
         public static void setCollisionOk() {
-            // NOTE: UNCOMMENT
-            /*foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
-                p.mDisappearOnCollide = false;*/
+            foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
+                p.mDisappearOnCollide = false;
         }
 
         /**
@@ -397,9 +390,8 @@ namespace LOL
          * @param durations time to display each frame
          */
         public static void setAnimation(Animation a) {
-            // NOTE: UNCOMMENT
-            /*foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
-                p.setDefaultAnimation(a);*/
+            foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
+                p.DefaultAnimation = a;
         }
 
     }

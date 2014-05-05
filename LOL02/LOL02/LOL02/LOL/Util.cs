@@ -172,19 +172,24 @@ namespace LOL
          */
         static public void drawBoundingBox(int x0, int y0, int x1, int y1, String imgName,
                 float density, float elasticity, float friction) {
+            // Convert to screen coordinates
+            x0 = Level.sCurrent.dx(x0);
+            x1 = Level.sCurrent.dx(x1);
+            y0 = Level.sCurrent.dy(y0);
+            y1 = Level.sCurrent.dy(y1);
+
             // draw four rectangles and we're good
-            // NOTE: UNCOMMENT
-            /*Obstacle bottom = Obstacle.makeAsBox(x0 - 1, y0 - 1, Math.Abs(x0 - x1) + 2, 1, imgName);
-            bottom.setPhysics(density, elasticity, friction);
+            Obstacle bottom = Obstacle.MakeAsBox(x0 - 1, y0 - 1, Math.Abs(x0 - x1) + 2, 1, imgName);
+            bottom.SetPhysics(density, elasticity, friction);
 
-            Obstacle top = Obstacle.makeAsBox(x0 - 1, y1, Math.Abs(x0 - x1) + 2, 1, imgName);
-            top.setPhysics(density, elasticity, friction);
+            Obstacle top = Obstacle.MakeAsBox(x0 - 1, y1, Math.Abs(x0 - x1) + 2, 1, imgName);
+            top.SetPhysics(density, elasticity, friction);
 
-            Obstacle left = Obstacle.makeAsBox(x0 - 1, y0 - 1, 1, Math.Abs(y0 - y1) + 2, imgName);
-            left.setPhysics(density, elasticity, friction);
+            Obstacle left = Obstacle.MakeAsBox(x0 - 1, y0 - 1, 1, Math.Abs(y0 - y1) + 2, imgName);
+            left.SetPhysics(density, elasticity, friction);
 
-            Obstacle right = Obstacle.makeAsBox(x1, y0 - 1, 1, Math.Abs(y0 - y1) + 2, imgName);
-            right.setPhysics(density, elasticity, friction);*/
+            Obstacle right = Obstacle.MakeAsBox(x1, y0 - 1, 1, Math.Abs(y0 - y1) + 2, imgName);
+            right.SetPhysics(density, elasticity, friction);
         }
 
         /**

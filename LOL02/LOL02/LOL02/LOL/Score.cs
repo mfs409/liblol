@@ -109,9 +109,8 @@ namespace LOL
         public void defeatHero(Enemy e) {
             mHeroesDefeated++;
             if (mHeroesDefeated == mHeroesCreated) {
-                // NOTE: UNCOMMENT
-                //if (e.mOnDefeatHeroText != "")
-                //    PostScene.setDefaultLoseText(e.mOnDefeatHeroText);
+                if (e.mOnDefeatHeroText != "")
+                    PostScene.setDefaultLoseText(e.mOnDefeatHeroText);
                 endLevel(false);
             }
         }
@@ -123,9 +122,8 @@ namespace LOL
          */
         public void onGoodieCollected(Goodie g) {
             // Update goodie counts
-            // NOTE: UNCOMMENT
-            /*for (int i = 0; i < 4; ++i)
-                mGoodiesCollected[i] += g.mScore[i];*/
+            for (int i = 0; i < 4; ++i)
+                mGoodiesCollected[i] += g.mScore[i];
 
             // possibly win the level, but only if we win on goodie count and all
             // four counts are high enough
