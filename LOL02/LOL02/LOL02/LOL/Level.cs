@@ -351,12 +351,14 @@ namespace LOL
 
         public int dx(float x)
         {
-            return (int)((x / mCamBoundX) * Lol.sGame.mConfig.getScreenWidth());
+            return (int)((x / mCamBoundX) * Lol.sGame.GraphicsDevice.DisplayMode.Height);
+            //return (int)((x / mCamBoundX) * Lol.sGame.mConfig.getScreenWidth());
         }
 
         public int dy(float y)
         {
-            return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
+            return (int)((y / mCamBoundY) * Lol.sGame.GraphicsDevice.DisplayMode.Width);
+            //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
         }
 
         /**
@@ -434,7 +436,7 @@ namespace LOL
             //
             // NB: in Box2d, This is the recommended rate for phones, though it
             // seems like we should be using /delta/ instead of 1/45f
-            mWorld.Step(0.5f);
+            mWorld.Step(1/45f);
 
             // now handle any events that occurred on account of the world movement
             // or screen touches
@@ -470,7 +472,10 @@ namespace LOL
             mSpriteBatch.Begin();
             foreach (List<Renderable> a in mSprites)
                 foreach (Renderable r in a)
+                {
+                    r.Update(gameTime);
                     r.Draw(mSpriteBatch, gameTime);
+                }
             mSpriteBatch.End();
 
             // DEBUG: draw outlines of physics entities

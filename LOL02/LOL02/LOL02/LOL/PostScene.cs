@@ -168,7 +168,11 @@ namespace LOL
             //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();
             foreach (Renderable r in sprites)
-                r.Draw(sb, new GameTime());
+            {
+                GameTime gt = new GameTime();
+                r.Update(gt);
+                r.Draw(sb, gt);
+            }
             sb.End();
             return true;
         }

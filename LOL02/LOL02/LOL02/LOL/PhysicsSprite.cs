@@ -133,10 +133,12 @@ namespace LOL
 
         public override void Draw(SpriteBatch sb, GameTime gameTime)
         {
+            if (!mVisible)
+            {
+                return;
+            }
             // TODO: Add delta for gametime (tls)
             Texture2D tr = mAnimator.getTr(0);
-            //Texture2D tr = Media.getImage("greenball")[0];
-            Debug.Assert(tr != null, "ANIMATION IS NULL!");
             SpriteEffects flipH = SpriteEffects.None;
             if (mReverseFace && mBody.LinearVelocity.X < 0)
             {
@@ -156,15 +158,15 @@ namespace LOL
             }
             if (tr != null)
             {
-                Vector2 pos = new Vector2(mBody.Position.X - mSize.X / 2, mBody.Position.Y - mSize.Y / 2);
+                Vector2 pos = new Vector2(Level.sCurrent.dx(mBody.Position.X) - Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mBody.Position.Y) - Level.sCurrent.dy(mSize.Y) / 2);
 
                 // Converts to screen coords
-                pos.X = Level.sCurrent.dx(pos.X);
-                pos.Y = Level.sCurrent.dy(pos.Y);
+                //pos.X = Level.sCurrent.dx(pos.X);
+                //pos.Y = Level.sCurrent.dy(pos.Y);
 
                 // Scale down for size
-                float scale = Level.sCurrent.dx(mSize.X) / (float) tr.Width;
-                sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mSize.Y) / 2), scale, flipH, 0f);
+                float scale = Math.Min(Level.sCurrent.dx(mSize.X) / (float)tr.Width, Level.sCurrent.dy(mSize.Y) / (float)tr.Height);
+                sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);
             }
         }
 

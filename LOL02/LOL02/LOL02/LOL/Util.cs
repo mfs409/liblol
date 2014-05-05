@@ -172,11 +172,6 @@ namespace LOL
          */
         static public void drawBoundingBox(int x0, int y0, int x1, int y1, String imgName,
                 float density, float elasticity, float friction) {
-            // Convert to screen coordinates
-            x0 = Level.sCurrent.dx(x0);
-            x1 = Level.sCurrent.dx(x1);
-            y0 = Level.sCurrent.dy(y0);
-            y1 = Level.sCurrent.dy(y1);
 
             // draw four rectangles and we're good
             Obstacle bottom = Obstacle.MakeAsBox(x0 - 1, y0 - 1, Math.Abs(x0 - x1) + 2, 1, imgName);

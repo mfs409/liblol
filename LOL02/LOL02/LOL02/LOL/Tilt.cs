@@ -137,14 +137,10 @@ namespace LOL
             // when not in velocity mode, apply the accelerometer reading to each
             // entity as a force
             else {
-                System.Diagnostics.Debug.WriteLine("TRY MOVING STUFF");
-                    
                 foreach (PhysicsSprite gfo in mAccelEntities)
                 {
-                    System.Diagnostics.Debug.WriteLine(gfo.mBody.Position.X + ", " + gfo.mBody.Position.Y);
-                    System.Diagnostics.Debug.WriteLine(xGravity + ", " + yGravity);
                     gfo.AddVelocity(xGravity, yGravity, true);
-                    //if (gfo.mBody.Awake)
+                    if (gfo.mBody.Awake)
                         gfo.mBody.ApplyForce(new Vector2(xGravity, yGravity));
                 }
             }

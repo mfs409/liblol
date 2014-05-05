@@ -636,7 +636,7 @@ namespace LOL02
                 // let's put a display on the screen to see how many type-1 goodies
                 // we've collected. Since the second parameter is "2", we'll display
                 // the count as "X/2 Goodies" instead of "X Goodies"
-                Controls.addGoodieCount(1, 2, "Goodies", 220, 280, "Default", 255, 255, 255, 20);
+                Controls.addGoodieCount(1, 2, "Goodies", 220, 280, "Default", 0, 0, 0, 20);
             }
 
             /*

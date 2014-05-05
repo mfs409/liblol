@@ -75,7 +75,7 @@ namespace LOL
                     Vector2 v = h.mBody.LinearVelocity;
                     v.X *= value;
                     v.Y *= value;
-                    UpdateVelocity(v.X, v.Y);
+                    h.UpdateVelocity(v.X, v.Y);
                 };
             }
         }

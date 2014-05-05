@@ -104,6 +104,8 @@ namespace LOL
             float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.YPosition;
             bool sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
             bool sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
+            //System.Diagnostics.Debug.WriteLine(sx+", "+sy+" -> "+gx+", "+gy);
+                
             if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
                 mNextRouteGoal++;
                 if (mNextRouteGoal == mRoute.mPoints) {

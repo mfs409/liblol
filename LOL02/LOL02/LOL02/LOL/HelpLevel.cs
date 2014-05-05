@@ -80,7 +80,11 @@ namespace LOL
             //mSb.setProjectionMatrix(mHelpCam.combined);
             mSb.Begin();
             foreach (Renderable c in mSprites)
-                c.Draw(mSb, new GameTime());
+            {
+                GameTime gt = new GameTime();
+                c.Update(gt);
+                c.Draw(mSb, gt);
+            }
             mSb.End();
         }
 
