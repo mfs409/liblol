@@ -357,6 +357,12 @@ namespace LOL
 
         public int dy(float y)
         {
+            return (int)(((mCamBoundY-y) / mCamBoundY) * Lol.sGame.GraphicsDevice.DisplayMode.Width);
+            //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
+        }
+
+        public int dh(float y)
+        {
             return (int)((y / mCamBoundY) * Lol.sGame.GraphicsDevice.DisplayMode.Width);
             //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
         }
@@ -368,7 +374,7 @@ namespace LOL
 
         public float ly(float y)
         {
-            return ((y / Lol.sGame.GraphicsDevice.DisplayMode.Width) * mCamBoundY);
+            return (((Lol.sGame.GraphicsDevice.DisplayMode.Width-y) / Lol.sGame.GraphicsDevice.DisplayMode.Width) * mCamBoundY);
         }
 
         /**
@@ -647,13 +653,18 @@ namespace LOL
          */
         private void touchDown(int x, int y) {
             // check for HUD touch first...
-            mTouchVec = new Vector3(x,y,0);
+            
+            // Convert to level coordinates
+            float fx = Level.sCurrent.lx(x),
+                  fy = Level.sCurrent.ly(y);
+
+            mTouchVec = new Vector3(fx,fy,0);
             mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.mRange.Contains((int) mTouchVec.X, (int) mTouchVec.Y)) {
                     // now convert the touch to world coordinates and pass to the
                     // control (useful for vector throw)
-                    mTouchVec = new Vector3(x,y,0);
+                    mTouchVec = new Vector3(fx,fy,0);
                     mGameCam.unproject(mTouchVec);
                     pe.OnDownPress(mTouchVec);
                     return;
@@ -663,7 +674,7 @@ namespace LOL
             // check for sprite touch, by looking at gameCam coordinates... on
             // touch, hitSprite will change
             mHitSprite = null;
-            mTouchVec = new Vector3(x,y,0);
+            mTouchVec = new Vector3(fx,fy,0);
             mGameCam.unproject(mTouchVec);
             // NOTE: UNCOMMENT
             Vector2 minTouch = new Vector2(mTouchVec.X, mTouchVec.Y), maxTouch = new Vector2(mTouchVec.X, mTouchVec.Y);
@@ -675,7 +686,7 @@ namespace LOL
             FarseerPhysics.Collision.AABB aabb = new FarseerPhysics.Collision.AABB(minTouch, maxTouch);
             mWorld.QueryAABB(mTouchCallback, ref aabb);
             if (mHitSprite != null)
-                mHitSprite.HandleTouchDown(x, y);
+                mHitSprite.HandleTouchDown(fx, fy);
             // Handle level touches for which we've got a registered handler
             else if (mTouchResponder != null)
                 mTouchResponder.OnDown(mTouchVec.X, mTouchVec.Y);
@@ -705,7 +716,7 @@ namespace LOL
             // check for screen touch, then for dragging an entity
             mTouchVec = new Vector3(x, y, 0);
             mGameCam.unproject(mTouchVec);
-            if (mTouchResponder != null)
+            if (mTouchResponder != null && mTouchResponder.OnMove != null)
                 mTouchResponder.OnMove(mTouchVec.X, mTouchVec.Y);
             else if (mHitSprite != null)
                 mHitSprite.HandleTouchDrag(mTouchVec.X, mTouchVec.Y);

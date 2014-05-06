@@ -127,14 +127,15 @@ namespace LOL
              */
             public Texture2D getTr(float delta) {
                 if (mCurrentAnimation == null) {
-                    if (mImages == null)
+                    if (mImages == null || mImageIndex >= mImages.Length)
                         return null;
                     return mImages[mImageIndex];
                 }
                 mCurrentAnimationTime += delta;
                 long millis = (long)(1000 * mCurrentAnimationTime);
                 // are we still in this frame?
-                if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
+                if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame])
+                {
                     return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
                 }
                 // are we on the last frame, with no loop? If so, stay where we

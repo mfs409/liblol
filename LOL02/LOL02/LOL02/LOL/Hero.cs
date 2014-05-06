@@ -160,7 +160,9 @@ namespace LOL
         internal void CrawlOn()
         {
             mCrawling = true;
-            // TODO: DID NOT EXIST IN OLD LIBLOL (DOES THIS DO SOMETHING IMPORTANT?)
+            mBody.SetTransform(mBody.Position, 3.14159f / 2);
+            if(mCrawlAnimation!=null)
+                mAnimator.setCurrentAnimation(mCrawlAnimation);
         }
 
         internal void IncreaseRotation(float delta)

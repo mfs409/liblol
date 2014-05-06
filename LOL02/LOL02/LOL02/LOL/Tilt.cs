@@ -64,16 +64,16 @@ namespace LOL
                 
                 if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Default) {
                     xGravity = -ax;
-                    yGravity = -ay*-1;
+                    yGravity = -ay/**-1*/;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeRight) {
                     xGravity = ay;
-                    yGravity = -ax * -1;
+                    yGravity = -ax/* * -1*/;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Portrait) {
                     xGravity = ax;
-                    yGravity = ay * -1;
+                    yGravity = ay /** -1*/;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeLeft) {
                     xGravity = -ay;
-                    yGravity = ax * -1;
+                    yGravity = ax /** -1*/;
                 }
             //}
 

@@ -1430,8 +1430,8 @@ namespace LOL02
                 // draw some buttons for moving the hero
                 Controls.addLeftButton(0, 50, 50, 220, "", 15, h);
                 Controls.addRightButton(430, 50, 50, 220, "", 15, h);
-                Controls.addUpButton(50, 270, 380, 50, "", 15, h);
-                Controls.addDownButton(50, 0, 380, 50, "", 15, h);
+                Controls.addDownButton(50, 270, 380, 50, "", 15, h);
+                Controls.addUpButton(50, 0, 380, 50, "", 15, h);
             }
 
             /*

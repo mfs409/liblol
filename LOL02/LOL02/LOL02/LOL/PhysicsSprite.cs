@@ -104,7 +104,7 @@ namespace LOL
             {
                 mTouchSound.Play();
             }
-            if (mTouchResponder != null)
+            if (mTouchResponder != null && mTouchResponder.OnDown != null)
             {
                 mTouchResponder.OnDown(x, y);
             }
@@ -112,7 +112,7 @@ namespace LOL
 
         internal bool HandleTouchDrag(float x, float y)
         {
-            if (mTouchResponder != null)
+            if (mTouchResponder != null && mTouchResponder.OnMove != null)
             {
                 mTouchResponder.OnMove(x, y);
                 return false;
@@ -158,17 +158,13 @@ namespace LOL
             }
             if (tr != null)
             {
-                Vector2 pos = new Vector2(Level.sCurrent.dx(mBody.Position.X) - Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mBody.Position.Y) - Level.sCurrent.dy(mSize.Y) / 2);
-
-                // Converts to screen coords
-                //pos.X = Level.sCurrent.dx(pos.X);
-                //pos.Y = Level.sCurrent.dy(pos.Y);
+                Vector2 pos = new Vector2(Level.sCurrent.dx(mBody.Position.X) - Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mBody.Position.Y) - Level.sCurrent.dh(mSize.Y) / 2);
 
                 // Scale down for size
                 /*float scale = Math.Min(Level.sCurrent.dx(mSize.X) / (float)tr.Width, Level.sCurrent.dy(mSize.Y) / (float)tr.Height);
                 sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);*/
 
-                sb.Draw(tr, new Rectangle((int)pos.X, (int)pos.Y, Level.sCurrent.dx(mSize.X), Level.sCurrent.dy(mSize.Y)), null, Color.White, mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
+                sb.Draw(tr, new Rectangle(Level.sCurrent.dx(mBody.Position.X), Level.sCurrent.dy(mBody.Position.Y), Level.sCurrent.dx(mSize.X), Level.sCurrent.dh(mSize.Y)), null, Color.White, -mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
             }
         }
 

@@ -86,7 +86,7 @@ namespace LOL
             x = Level.sCurrent.dx(x);
             y = Level.sCurrent.dy(y);
             width = Level.sCurrent.dx(width);
-            height = Level.sCurrent.dy(height);
+            height = Level.sCurrent.dh(height);
 
 
             // NB: this will fail gracefully (no crash) for invalid file names
