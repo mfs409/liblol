@@ -165,8 +165,10 @@ namespace LOL
                 //pos.Y = Level.sCurrent.dy(pos.Y);
 
                 // Scale down for size
-                float scale = Math.Min(Level.sCurrent.dx(mSize.X) / (float)tr.Width, Level.sCurrent.dy(mSize.Y) / (float)tr.Height);
-                sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);
+                /*float scale = Math.Min(Level.sCurrent.dx(mSize.X) / (float)tr.Width, Level.sCurrent.dy(mSize.Y) / (float)tr.Height);
+                sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);*/
+
+                sb.Draw(tr, new Rectangle((int)pos.X, (int)pos.Y, Level.sCurrent.dx(mSize.X), Level.sCurrent.dy(mSize.Y)), null, Color.White, mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
             }
         }
 
@@ -524,15 +526,13 @@ namespace LOL
             // Convert deleteThresholdMillis to seconds, then multiple by frequency of stopwatch to get number of ticks.
             // TODO: Solve stopwatch runtime missing issue
             //long deleteThresholdTicks = (long)(deleteThresholdMillis / 1000.0) * System.Diagnostics.Stopwatch.Frequency;
-            long deleteThresholdTicks = deleteThresholdMillis;
+            DateTime thresh = DateTime.Now.AddMilliseconds(deleteThresholdMillis);
 
             // Go go closures
-            long mLastPokeTicks = 0;
             Level.TouchAction.TouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(100);
-                long ticks = Lol.GlobalGameTime.ElapsedTicks;
-                if ((ticks - mLastPokeTicks) < deleteThresholdTicks)
+                if (DateTime.Now < thresh)
                 {
                     mBody.Enabled = false;
                     mVisible = false;
@@ -541,7 +541,7 @@ namespace LOL
                 }
                 else
                 {
-                    mLastPokeTicks = ticks;
+                    thresh = DateTime.Now.AddMilliseconds(deleteThresholdMillis);
                 }
                 Level.TouchAction.TouchDelegate sCurrentOnDown = delegate(float xx, float yy)
                 {

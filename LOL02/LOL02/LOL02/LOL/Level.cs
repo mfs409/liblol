@@ -361,6 +361,16 @@ namespace LOL
             //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
         }
 
+        public float lx(float x)
+        {
+            return ((x / Lol.sGame.GraphicsDevice.DisplayMode.Height) * mCamBoundX);
+        }
+
+        public float ly(float y)
+        {
+            return ((y / Lol.sGame.GraphicsDevice.DisplayMode.Width) * mCamBoundY);
+        }
+
         /**
          * If the level has music attached to it, this starts playing it
          */
@@ -606,30 +616,26 @@ namespace LOL
          */
         private void manageTouches() {
             // poll for touches... we assume no more than 4 simultaneous touches
-            bool[] touchStates = new bool[4];
-            for (int i = 0; i < 4; ++i) {
+            TouchCollection tc = TouchPanel.GetState();
+                
+            for (int i = 0; i < tc.Count; ++i) {
                 // we compare the current state to the prior state, to detect down,
                 // up, or move/hold. Note that we don't distinguish between move and
                 // hold
-                TouchCollection tc = TouchPanel.GetState();
                 // TODO: Evaluate touch state information for this function
-                touchStates[i] = tc.Count > i && tc[i].State == TouchLocationState.Pressed;
                 
-                float x=0, y=0;
-                if (touchStates[i])
-                {
-                    x = tc[i].Position.X;
-                    y = tc[i].Position.Y;
-                }
+                float x = tc[i].Position.X,
+                      y = tc[i].Position.Y;
+                
                 // if there is a touch, call the appropriate method
-                if (touchStates[i] && mLastTouches[i] && mTouchActive)
+                if (mTouchActive && tc[i].State == TouchLocationState.Moved)
                     touchMove((int)x, (int)y);
-                else if (touchStates[i] && !mLastTouches[i]) {
+                else if (tc[i].State == TouchLocationState.Pressed) {
                     mTouchActive = true;
                     touchDown((int)x, (int)y);
-                } else if (!touchStates[i] && mLastTouches[i] && mTouchActive)
+                }
+                else if (mTouchActive && tc[i].State == TouchLocationState.Released)
                     touchUp((int)x, (int)y);
-                mLastTouches[i] = touchStates[i];
             }
         }
 
@@ -686,7 +692,8 @@ namespace LOL
             mTouchVec = new Vector3(x, y, 0);
             mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
-                if (pe.mIsTouchable && pe.mRange.Contains((int) mTouchVec.X, (int) mTouchVec.Y)) {
+                if (pe.mIsTouchable && pe.OnHold != null && pe.mRange.Contains((int)mTouchVec.X, (int)mTouchVec.Y))
+                {
                     // now convert the touch to world coordinates and pass to the
                     // control (useful for vector throw)
                     mTouchVec = new Vector3(x, y, 0);
@@ -715,7 +722,8 @@ namespace LOL
             mTouchVec = new Vector3(x, y, 0);
             mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
-                if (pe.mIsTouchable && pe.mRange.Contains((int) mTouchVec.X, (int) mTouchVec.Y)) {
+                if (pe.mIsTouchable && pe.OnUpPress != null && pe.mRange.Contains((int)mTouchVec.X, (int)mTouchVec.Y))
+                {
                     pe.OnUpPress();
                     return;
                 }
@@ -724,7 +732,7 @@ namespace LOL
             // Up presses are not handled by entities, only by the screen
             mTouchVec = new Vector3(x, y, 0);
             mGameCam.unproject(mTouchVec);
-            if (mTouchResponder != null)
+            if (mTouchResponder != null && mTouchResponder.OnUp != null)
                 mTouchResponder.OnUp(mTouchVec.X, mTouchVec.Y);
         }
 

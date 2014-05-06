@@ -14,6 +14,8 @@ namespace LOL
          * pressable or not
          */
         public class HudEntity {
+            public DateTime LastRender = DateTime.MinValue;
+
             /**
              * Should we run code when this HudEntity is touched?
              */
@@ -29,7 +31,7 @@ namespace LOL
              * What color should we use to draw text, if this HudEntity is a text
              * entity?
              */
-            public Color mColor = new Color(0, 0, 0, 1);
+            public Color mColor = Color.Black;
 
             /**
              * What image should we display, if this HudEntity has an image
@@ -77,9 +79,7 @@ namespace LOL
              * @param blue The blue portion of text color (0-255)
              */
             public HudEntity(int red, int green, int blue) {
-                mColor.R = (byte)(((float)red) / 256);
-                mColor.G = (byte)(((float)green) / 256);
-                mColor.B = (byte)(((float)blue) / 256);
+                mColor = new Color(red / 255f, green / 255f, blue / 255f);
                 mIsTouchable = false;
             }
 
@@ -184,15 +184,20 @@ namespace LOL
             HudEntity hud = new HudEntity(red,green,blue);
             hud.Render = delegate(SpriteBatch sb) {
                     bf.Color = hud.mColor;
-                    // TODO: Calculate time between calls to Draw OR use a timer and use this for the count Down
-                    Level.sCurrent.mScore.mCountDownRemaining -= 0.01F;
-                    if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
+                    if (hud.LastRender != DateTime.MinValue)
+                    {
+                        TimeSpan ts = DateTime.Now.Subtract(hud.LastRender);
+                        Level.sCurrent.mScore.mCountDownRemaining -= (float)ts.TotalMilliseconds / 1000f;
+                    }
+                    if (Level.sCurrent.mScore.mCountDownRemaining > 0)
+                    {
                         drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mCountDownRemaining,
                                 bf, sb);
                     } else {
                         PostScene.setDefaultLoseText(text);
                         Level.sCurrent.mScore.endLevel(false);
                     }
+                    hud.LastRender = DateTime.Now;
                 };
             Level.sCurrent.mControls.Add(hud);
         }

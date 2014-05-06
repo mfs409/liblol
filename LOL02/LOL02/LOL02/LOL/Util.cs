@@ -83,12 +83,18 @@ namespace LOL
                 float height, String imgName) {
             // set up the image to display
             //
+            x = Level.sCurrent.dx(x);
+            y = Level.sCurrent.dy(y);
+            width = Level.sCurrent.dx(width);
+            height = Level.sCurrent.dy(height);
+
+
             // NB: this will fail gracefully (no crash) for invalid file names
             Texture2D[] trs = Media.getImage(imgName);
             Texture2D tr = (trs != null) ? trs[0] : null;
             return new AnonRenderable(delegate(SpriteBatch sb, GameTime gameTime) {
                     if (tr != null)
-                        sb.Draw(tr, new Vector2(x, y), new Rectangle(0, 0, (int) width, (int) height), Color.White);
+                        sb.Draw(tr, new Rectangle((int)x, (int)y, (int) width, (int) height), null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
                 });
         }
 

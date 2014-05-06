@@ -1,6 +1,4 @@
 Level 11 (no zooming with camera, controls need work)
-Level 16 (timer does not work; controls not visible)
-Level 19 (timer too slow)
 Level 23 (oblong obstacle isn't oblong)
 Level 24 (touch does not work; background not showing up)
 Level 27 (camera needs work)
