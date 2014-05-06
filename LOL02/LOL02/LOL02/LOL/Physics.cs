@@ -49,9 +49,6 @@ namespace LOL
 
         public static void Configure(float defaultXGravity, float defaultYGravity)
         {
-            // Invert gravity (negative is down)
-            //defaultYGravity *= -1;
-
             Level.sCurrent.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity));
             BeginContactDelegate beginContact = delegate(Contact contact)
             {

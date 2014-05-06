@@ -181,8 +181,7 @@ namespace LOL
 
             // configure the camera
             mCamera = new OrthographicCamera(camWidth, camHeight);
-            mCamera.position = new Vector3(camWidth / 2, camHeight / 2, 0);
-
+            
             // create a font
             mFont = Media.getFont(cc.getLevelFont(), cc.getLevelFontSize());
             mFont.Color = new Color(((float)cc.getLevelFontRed()) / 255, ((float)cc.getLevelFontGreen()) / 255,
@@ -320,7 +319,7 @@ namespace LOL
             ChooserConfiguration cc = Lol.sGame.mChooserConfig;
             // get the coordinates of the touch
             mV = new Vector3(x, y, 0);
-            mCamera.unproject(mV);
+            
             // DEBUG: display touch coordinates
             if (Lol.sGame.mConfig.showDebugBoxes()) {
                 Util.log("touch", "(" + mV.X + ", " + mV.Y + ")");

@@ -48,8 +48,7 @@ namespace LOL
             int camWidth = Lol.sGame.mConfig.getScreenWidth();
             int camHeight = Lol.sGame.mConfig.getScreenHeight();
             mHelpCam = new OrthographicCamera(camWidth, camHeight);
-            mHelpCam.position = new Vector3(camWidth / 2, camHeight / 2, 0);
-
+            
             // set up the renderer
             mSb = new SpriteBatch(Lol.sGame.GraphicsDevice);
         }

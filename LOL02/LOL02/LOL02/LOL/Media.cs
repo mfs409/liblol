@@ -125,25 +125,38 @@ namespace LOL
          * @param rows The number of rows that comprise this image file
          */
         static public void registerAnimatableImage(String imgName, int columns, int rows) {
-            // Load the file as a texture
-            Texture2D t = Lol.sGame.Content.Load<Texture2D>(imgName);
-            // carve the image into cells of equal width and height
-            int width = t.Width / columns;
-            int height = t.Height / rows;
+            Texture2D original = Lol.sGame.Content.Load<Texture2D>(imgName);
 
-            // TODO: Figure out how to split textures
-            /*Texture2D[][] trgrid = null; // TextureRegion.split(t, width, height);
-            // put all entries into a 1-D array
-            Texture2D[] trs = new Texture2D[columns * rows];
+            int widthPerPart = original.Width / columns;
+            int heightPerPart = original.Height / rows;
+            int dataPerPart = widthPerPart * heightPerPart;
+
+            Texture2D[] tiles = new Texture2D[widthPerPart * heightPerPart];
+
+            Color[] originalData = new Color[original.Width * original.Height];
+            original.GetData<Color>(originalData);
+
             int index = 0;
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < columns; ++j) {
-                    trs[index] = trgrid[i][j];
-                    index++;
+            for (int y = 0; y < heightPerPart * rows; y += heightPerPart)
+            {
+                for (int x = 0; x < widthPerPart * columns; x += widthPerPart)
+                {
+                    Texture2D part = new Texture2D(Lol.sGame.GraphicsDevice, widthPerPart, heightPerPart);
+                    Color[] partData = new Color[dataPerPart];
+                    for (int py = 0; py < heightPerPart; ++py)
+                    {
+                        for (int px = 0; px < widthPerPart; ++px)
+                        {
+                            int partIndex = px + py * widthPerPart;
+                            partData[partIndex] = originalData[(x + px) + (y + py) * original.Width];
+                        }
+                    }
+                    part.SetData<Color>(partData);
+                    tiles[index++] = part;
                 }
             }
-            sImages[imgName]  = trs;*/
-            sImages[imgName] = new Texture2D[]{t};
+            original.Dispose();
+            sImages.Add(imgName, tiles);
         }
 
         /**

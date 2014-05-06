@@ -37,6 +37,7 @@ namespace LOL
 
         internal override void OnCollide(PhysicsSprite other, Contact contact)
         {
+            
         }
 
         public static Obstacle MakeAsBox(float x, float y, float width, float height, string imgName)

@@ -138,7 +138,7 @@ namespace LOL
                 return;
             }
             // TODO: Add delta for gametime (tls)
-            Texture2D tr = mAnimator.getTr(0);
+            Texture2D tr = mAnimator.getTr();
             SpriteEffects flipH = SpriteEffects.None;
             if (mReverseFace && mBody.LinearVelocity.X < 0)
             {
@@ -158,13 +158,13 @@ namespace LOL
             }
             if (tr != null)
             {
-                Vector2 pos = new Vector2(Level.sCurrent.dx(mBody.Position.X) - Level.sCurrent.dx(mSize.X) / 2, Level.sCurrent.dy(mBody.Position.Y) - Level.sCurrent.dh(mSize.Y) / 2);
+                Vector2 pos = new Vector2(Level.sCurrent.mGameCam.dx(mBody.Position.X) - Level.sCurrent.mGameCam.dx(mSize.X) / 2, Level.sCurrent.mGameCam.dy(mBody.Position.Y) - Level.sCurrent.mGameCam.dh(mSize.Y) / 2);
 
                 // Scale down for size
-                /*float scale = Math.Min(Level.sCurrent.dx(mSize.X) / (float)tr.Width, Level.sCurrent.dy(mSize.Y) / (float)tr.Height);
+                /*float scale = Math.Min(Level.sCurrent.mGameCam.dx(mSize.X) / (float)tr.Width, Level.sCurrent.mGameCam.dy(mSize.Y) / (float)tr.Height);
                 sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);*/
 
-                sb.Draw(tr, new Rectangle(Level.sCurrent.dx(mBody.Position.X), Level.sCurrent.dy(mBody.Position.Y), Level.sCurrent.dx(mSize.X), Level.sCurrent.dh(mSize.Y)), null, Color.White, -mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
+                sb.Draw(tr, new Rectangle(Level.sCurrent.mGameCam.dx(mBody.Position.X), Level.sCurrent.mGameCam.dy(mBody.Position.Y), Level.sCurrent.mGameCam.dx(mSize.X), Level.sCurrent.mGameCam.dh(mSize.Y)), null, Color.White, -mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
             }
         }
 
@@ -421,7 +421,6 @@ namespace LOL
                     mBody.BodyType = BodyType.Dynamic;
                 }
             }
-
             UpdateVelocity(x, y);
             CollisionEffect = true;
         }
@@ -500,7 +499,7 @@ namespace LOL
             {
                 mBody.BodyType = BodyType.Dynamic;
             }
-            Level.TouchAction.TouchDelegate onMove = (x, y) => { mBody.SetTransform(new Vector2(x, y), mBody.Rotation); };
+            Level.TouchAction.TouchDelegate onMove = (x, y) => { mBody.SetTransform(new Vector2(x, Level.sCurrent.mGameCam.iy(y)), mBody.Rotation); };
             mTouchResponder = new Level.TouchAction();
             mTouchResponder.OnMove = onMove;
 
@@ -542,6 +541,8 @@ namespace LOL
                 Level.TouchAction.TouchDelegate sCurrentOnDown = delegate(float xx, float yy)
                 {
                     // Lol.sGame.Vibrate(100);
+                    // Invert Y
+                    yy = Level.sCurrent.mGameCam.iy(yy);
                     mBody.SetTransform(new Vector2(xx, yy), mBody.Rotation);
                     Level.sCurrent.mTouchResponder = null;
                 };
@@ -560,15 +561,18 @@ namespace LOL
             Level.TouchAction.TouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(100);
-                float initialX = mBody.Position.X;
-                float initialY = mBody.Position.Y;
+                float initialX = Level.sCurrent.mGameCam.dx(mBody.Position.X);
+                float initialY = Level.sCurrent.mGameCam.dy(mBody.Position.Y);
 
                 Level.TouchAction.TouchDelegate sLevelOnUp = delegate(float xx, float yy)
                 {
+                    // Invert Y from input to account for inverted Y axis
+                    yy = Level.sCurrent.mGameCam.iy(yy);
+
                     if (mVisible)
                     {
                         mHover = null;
-                        UpdateVelocity((xx - initialX) * damnFactor, (yy - initialY) * damnFactor);
+                        UpdateVelocity(Level.sCurrent.mGameCam.lx(xx - initialX) * damnFactor, Level.sCurrent.mGameCam.ly(yy - initialY) * damnFactor);
                         Level.sCurrent.mTouchResponder = null;
                     }
                 };
@@ -589,6 +593,11 @@ namespace LOL
                 // Lol.sGame.Vibrate(5);
                 Level.TouchAction.TouchDelegate sLevelOnDown = delegate(float xx, float yy)
                 {
+                    // Convert to level coords
+                    xx = Level.sCurrent.mGameCam.lx(xx);
+                    yy = Level.sCurrent.mGameCam.ly(yy);
+                    //System.Diagnostics.Debug.WriteLine("POKE = " + yy);
+
                     Route r = new Route(2).to(XPosition, YPosition).to(xx - mSize.X / 2, yy - mSize.Y / 2);
                     SetAbsoluteVelocity(0, 0, false);
                     SetRoute(r, velocity, false);

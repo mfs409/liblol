@@ -76,7 +76,6 @@ namespace LOL
             int w = Lol.sGame.mConfig.getScreenWidth();
             int h = Lol.sGame.mConfig.getScreenHeight();
             mCamera = new OrthographicCamera(w, h);
-            mCamera.position = new Vector3(w / 2, h / 2, 0);
             // save a reference
             sCurrent = this;
             // call user code to configure the objects
@@ -129,7 +128,7 @@ namespace LOL
             {
                 // translate the touch into camera coordinates
                 mV = new Vector3(Util.touch.X, Util.touch.Y, 0);
-                mCamera.unproject(mV);
+                
                 // DEBUG: print the location of the touch... this is really useful
                 // when trying to figure out the coordinates of the rectangles
                 if (Lol.sGame.mConfig.showDebugBoxes()) {

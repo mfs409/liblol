@@ -68,7 +68,6 @@ namespace LOL
             if (Util.justTouched()) {
                 // check if it's to the 'back to chooser' button
                 mV = new Vector3(Util.touch.X, Util.touch.Y, 0);
-                Level.sCurrent.mHudCam.unproject(mV);
                 if (mBackRectangle != null && mBackRectangle.Contains((int) mV.X, (int) mV.Y)) {
                     Lol.sGame.handleBack();
                     mVisible = false;
@@ -83,9 +82,6 @@ namespace LOL
             }
             // clear screen and draw sprites via HudCam
             Lol.sGame.GraphicsDevice.Clear(Color.Black);
-            Level.sCurrent.mHudCam.update();
-            // NOTE: Uncomment
-            //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();
             foreach (Renderable r in mSprites)
             {

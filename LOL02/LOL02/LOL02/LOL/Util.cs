@@ -83,10 +83,10 @@ namespace LOL
                 float height, String imgName) {
             // set up the image to display
             //
-            x = Level.sCurrent.dx(x);
-            y = Level.sCurrent.dy(y);
-            width = Level.sCurrent.dx(width);
-            height = Level.sCurrent.dh(height);
+            x = Level.sCurrent.mGameCam.dx(x);
+            y = Level.sCurrent.mGameCam.dy(y);
+            width = Level.sCurrent.mGameCam.dx(width);
+            height = Level.sCurrent.mGameCam.dh(height);
 
 
             // NB: this will fail gracefully (no crash) for invalid file names

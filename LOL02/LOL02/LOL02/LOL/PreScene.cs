@@ -87,9 +87,7 @@ namespace LOL
 
             // clear screen and draw sprites... we can use the level's hudCam
             Lol.sGame.GraphicsDevice.Clear(Color.Black);
-            Level.sCurrent.mHudCam.update();
-            // NOTE: UNCOMMENT
-            //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+
             sb.Begin();
             foreach (Renderable r in mSprites)
             {

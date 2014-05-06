@@ -163,9 +163,6 @@ namespace LOL
             // next we clear the color buffer and set the camera matrices
             Lol.sGame.GraphicsDevice.Clear(Color.Black);
 
-            Level.sCurrent.mHudCam.update();
-            // NOTE: UNCOMMENT
-            //sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             sb.Begin();
             foreach (Renderable r in sprites)
             {

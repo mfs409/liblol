@@ -26,6 +26,7 @@ namespace LOL
 
         internal override void OnCollide(PhysicsSprite other, Contact contact)
         {
+            
         }
 
         public static Destination MakeAsBox(float x, float y, float width, float height, string imgName)

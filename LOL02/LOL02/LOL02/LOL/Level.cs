@@ -94,11 +94,6 @@ namespace LOL
         public OrthographicCamera mGameCam;
 
         /**
-         * This camera is for drawing controls that sit above the world
-         */
-        public OrthographicCamera mHudCam;
-
-        /**
          * This camera is for drawing parallax backgrounds that go behind the world
          */
         public ParallaxCamera mBgCam;
@@ -260,24 +255,6 @@ namespace LOL
             public ParallaxCamera(float viewportWidth, float viewportHeight): base(viewportWidth, viewportHeight) {
                 
             }
-
-            /**
-             * This is how we calculate the position of a parallax camera
-             */
-            public Matrix calculateParallaxMatrix(float parallaxX, float parallaxY) {
-                update();
-                tmp = position;
-                tmp.X *= parallaxX;
-                tmp.Y *= parallaxY;
-
-                // TODO: Figure out what the equivalent of OrthographicCamera is in XNA
-                // TODO: setToLookAt does not exist in XNA Matrix class
-                tmp2 = tmp + direction;
-                //parallaxView.setToLookAt(tmp, tmp2, up);
-                parallaxCombined = projection;
-                parallaxCombined *= parallaxView;
-                return parallaxCombined;
-            }
         }
 
         /**
@@ -305,19 +282,15 @@ namespace LOL
             mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
                     / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
                     / Physics.PIXEL_METER_RATIO);
-            mGameCam.position = new Vector3(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
-                    Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
+            //mGameCam = new OrthographicCamera(mCamBoundX, mCamBoundY);
             mGameCam.zoom = 1;
 
             // set up the heads-up display camera
             int camWidth = Lol.sGame.mConfig.getScreenWidth();
             int camHeight = Lol.sGame.mConfig.getScreenHeight();
-            mHudCam = new OrthographicCamera(camWidth, camHeight);
-            mHudCam.position = new Vector3(camWidth / 2, camHeight / 2, 0);
 
             // the background camera is like the hudcam
             mBgCam = new ParallaxCamera(camWidth, camHeight);
-            mBgCam.position = new Vector3(camWidth / 2, camHeight / 2, 0);
             mBgCam.zoom = 1;
 
             // set up the sprite sets
@@ -349,33 +322,7 @@ namespace LOL
                     return true;
                 }
 
-        public int dx(float x)
-        {
-            return (int)((x / mCamBoundX) * Lol.sGame.GraphicsDevice.DisplayMode.Height);
-            //return (int)((x / mCamBoundX) * Lol.sGame.mConfig.getScreenWidth());
-        }
-
-        public int dy(float y)
-        {
-            return (int)(((mCamBoundY-y) / mCamBoundY) * Lol.sGame.GraphicsDevice.DisplayMode.Width);
-            //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
-        }
-
-        public int dh(float y)
-        {
-            return (int)((y / mCamBoundY) * Lol.sGame.GraphicsDevice.DisplayMode.Width);
-            //return (int)((y / mCamBoundY) * Lol.sGame.mConfig.getScreenHeight());
-        }
-
-        public float lx(float x)
-        {
-            return ((x / Lol.sGame.GraphicsDevice.DisplayMode.Height) * mCamBoundX);
-        }
-
-        public float ly(float y)
-        {
-            return (((Lol.sGame.GraphicsDevice.DisplayMode.Width-y) / Lol.sGame.GraphicsDevice.DisplayMode.Width) * mCamBoundY);
-        }
+        
 
         /**
          * If the level has music attached to it, this starts playing it
@@ -475,7 +422,6 @@ namespace LOL
             
             // prepare the main camera... we do it here, so that the parallax code
             // knows where to draw...
-            adjustCamera();
             mGameCam.update();
 
             // draw parallax backgrounds
@@ -500,18 +446,13 @@ namespace LOL
             //    mDebugRender.render(mWorld, mGameCam.combined);
 
             // draw Controls
-            mHudCam.update();
-            // NOTE: UNCOMMENT
-            //mSpriteBatch.setProjectionMatrix(mHudCam.combined);
             mSpriteBatch.Begin();
             foreach (Controls.HudEntity c in mControls)
                 c.render(mSpriteBatch);
             mSpriteBatch.End();
 
             // DEBUG: render Controls' outlines
-            // NOTE: UNCOMMENT
             if (Lol.sGame.mConfig.showDebugBoxes()) {
-                //mShapeRender.setProjectionMatrix(mHudCam.combined);
                 mShapeRender.begin();
                 mShapeRender.Color = Color.Red;
                 foreach (Controls.HudEntity pe in mControls)
@@ -553,39 +494,6 @@ namespace LOL
             stopMusic();
         }
 
-        /**
-         * If the camera is supposed to follow an entity, this code will handle
-         * updating the camera position
-         */
-        private void adjustCamera() {
-            if (mChaseEntity == null)
-                return;
-            // figure out the entity's position
-            float x = mChaseEntity.mBody.WorldCenter.X + mChaseEntity.mCameraOffset.X;
-            float y = mChaseEntity.mBody.WorldCenter.Y + mChaseEntity.mCameraOffset.Y;
-
-            // if x or y is too close to MAX,MAX, stick with max acceptable values
-            if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2)
-                x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2;
-            if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2)
-                y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2;
-
-            // if x or y is too close to 0,0, stick with minimum acceptable values
-            //
-            // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
-            // space at the top instead of the bottom
-            if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-            if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-
-            // update the camera position
-            mGameCam.position = new Vector3(x, y, 0);
-        }
 
         /**
          * Add a renderable entity to the level, putting it into the appropriate z
@@ -655,17 +563,15 @@ namespace LOL
             // check for HUD touch first...
             
             // Convert to level coordinates
-            float fx = Level.sCurrent.lx(x),
-                  fy = Level.sCurrent.ly(y);
+            float fx = Level.sCurrent.mGameCam.lx(x),
+                  fy = Level.sCurrent.mGameCam.ly(y);
 
             mTouchVec = new Vector3(fx,fy,0);
-            mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.mRange.Contains((int) mTouchVec.X, (int) mTouchVec.Y)) {
                     // now convert the touch to world coordinates and pass to the
                     // control (useful for vector throw)
                     mTouchVec = new Vector3(fx,fy,0);
-                    mGameCam.unproject(mTouchVec);
                     pe.OnDownPress(mTouchVec);
                     return;
                 }
@@ -675,8 +581,6 @@ namespace LOL
             // touch, hitSprite will change
             mHitSprite = null;
             mTouchVec = new Vector3(fx,fy,0);
-            mGameCam.unproject(mTouchVec);
-            // NOTE: UNCOMMENT
             Vector2 minTouch = new Vector2(mTouchVec.X, mTouchVec.Y), maxTouch = new Vector2(mTouchVec.X, mTouchVec.Y);
             minTouch.X -= 0.1f;
             minTouch.Y -= 0.1f;
@@ -701,21 +605,18 @@ namespace LOL
         private void touchMove(int x, int y) {
             // check for HUD touch first...
             mTouchVec = new Vector3(x, y, 0);
-            mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.OnHold != null && pe.mRange.Contains((int)mTouchVec.X, (int)mTouchVec.Y))
                 {
                     // now convert the touch to world coordinates and pass to the
                     // control (useful for vector throw)
                     mTouchVec = new Vector3(x, y, 0);
-                    mGameCam.unproject(mTouchVec);
                     pe.OnHold(mTouchVec);
                     return;
                 }
             }
             // check for screen touch, then for dragging an entity
             mTouchVec = new Vector3(x, y, 0);
-            mGameCam.unproject(mTouchVec);
             if (mTouchResponder != null && mTouchResponder.OnMove != null)
                 mTouchResponder.OnMove(mTouchVec.X, mTouchVec.Y);
             else if (mHitSprite != null)
@@ -731,7 +632,6 @@ namespace LOL
         public void touchUp(int x, int y) {
             // check for HUD touch first
             mTouchVec = new Vector3(x, y, 0);
-            mHudCam.unproject(mTouchVec);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.OnUpPress != null && pe.mRange.Contains((int)mTouchVec.X, (int)mTouchVec.Y))
                 {
@@ -742,7 +642,6 @@ namespace LOL
 
             // Up presses are not handled by entities, only by the screen
             mTouchVec = new Vector3(x, y, 0);
-            mGameCam.unproject(mTouchVec);
             if (mTouchResponder != null && mTouchResponder.OnUp != null)
                 mTouchResponder.OnUp(mTouchVec.X, mTouchVec.Y);
         }

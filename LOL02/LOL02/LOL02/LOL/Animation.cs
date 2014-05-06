@@ -68,7 +68,7 @@ namespace LOL
             /**
              * The amout of time for which the current frame has been displayed
              */
-            private float mCurrentAnimationTime;
+            private DateTime mCurrentAnimationTime;
 
             /**
              * Build an AnimationDriver by giving it an imageName. This allows us to
@@ -88,7 +88,7 @@ namespace LOL
             public void setCurrentAnimation(Animation a) {
                 mCurrentAnimation = a;
                 mCurrentAnimationFrame = 0;
-                mCurrentAnimationTime = 0;
+                mCurrentAnimationTime = DateTime.Now;
             }
 
             /**
@@ -125,16 +125,15 @@ namespace LOL
              * @param delta The time since the last render
              * @return The TextureRegion to display
              */
-            public Texture2D getTr(float delta) {
+            public Texture2D getTr() {
                 if (mCurrentAnimation == null) {
                     if (mImages == null || mImageIndex >= mImages.Length)
                         return null;
                     return mImages[mImageIndex];
                 }
-                mCurrentAnimationTime += delta;
-                long millis = (long)(1000 * mCurrentAnimationTime);
+
                 // are we still in this frame?
-                if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame])
+                if (DateTime.Now.Subtract(mCurrentAnimationTime).TotalMilliseconds <= mCurrentAnimation.mDurations[mCurrentAnimationFrame])
                 {
                     return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
                 }
@@ -147,7 +146,7 @@ namespace LOL
                 // else advance, reset, go
                 else {
                     mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
-                    mCurrentAnimationTime = 0;
+                    mCurrentAnimationTime = DateTime.Now;
                     return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
                 }
             }

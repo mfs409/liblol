@@ -1,17 +1,15 @@
 [Low-priority]
 Level 36 (borders don't align)
-Level 40 (SVG DOESN'T WORK)
 Level 58 (not sure how this works)
+Level 40 (SVG DOESN'T WORK)
 
 [High-priority]
-Level 11 (no zooming with camera, controls need work)
-Level 27 (camera needs work)
+Level 80 (Destination does not collide with bounding box -- ignores physics when it shouldn't)
+
+[Parallax Camera levels]
 Level 31 (parallax camera not working)
 Level 42 (parallax camera not working)
-Level 50 (fix animation)
-Level 51 (tilt doesn't work) 
-Level 54 (crash on touch)
-Level 68 (flicking needs work)
-Level 71 (touch needs work)
-Level 77 (touch doesn't hold)
-Level 80 (bounding box doesn't work for destination)
+
+[Camera zooming]
+Level 11 (no zooming with camera)
+Level 27 (camera needs work)

@@ -84,10 +84,9 @@ namespace LOL
          */
         public void renderLayers(SpriteBatch sb) {
             // center camera on mGameCam's camera
-            float x = Level.sCurrent.mGameCam.position.X;
-            float y = Level.sCurrent.mGameCam.position.Y;
+            float x = 0;
+            float y = 0;
             
-            Level.sCurrent.mBgCam.position = new Vector3(x, y, 0);
             Level.sCurrent.mBgCam.update();
 
             // draw the layers

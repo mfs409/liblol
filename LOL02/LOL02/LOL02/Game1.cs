@@ -3083,7 +3083,7 @@ namespace LOL02
                 h.SetMoveByTilting();
                 h.SetJumpImpulses(0, 15);
                 h.SetTouchToJump();
-
+                
                 Destination d = Destination.MakeAsCircle(42, 14, 2, 2, "mustardball");
                 // note: it must not be immune to physics (third parameter true), or
                 // it will pass through the bounding box, but we do want it to move
