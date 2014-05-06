@@ -279,10 +279,10 @@ namespace LOL
                 Util.log("Warning", "Your game height is less than 1/10 of the screen height");
 
             // set up the game camera, with 0,0 in the bottom left
-            mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
+            /*mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
                     / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
-                    / Physics.PIXEL_METER_RATIO);
-            //mGameCam = new OrthographicCamera(mCamBoundX, mCamBoundY);
+                    / Physics.PIXEL_METER_RATIO);*/
+            mGameCam = new OrthographicCamera(mCamBoundX, mCamBoundY);
             mGameCam.zoom = 1;
 
             // set up the heads-up display camera
@@ -428,9 +428,6 @@ namespace LOL
             mBackground.renderLayers(mSpriteBatch);
 
             // Render the entities in order from z=-2 through z=2
-            // TODO: Figure out how to draw projection matrix for SpriteBatch
-            // NOTE: UNCOMMENT
-            //mSpriteBatch.setProjectionMatrix(mGameCam.combined);
             mSpriteBatch.Begin();
             foreach (List<Renderable> a in mSprites)
                 foreach (Renderable r in a)
@@ -536,7 +533,6 @@ namespace LOL
                 // we compare the current state to the prior state, to detect down,
                 // up, or move/hold. Note that we don't distinguish between move and
                 // hold
-                // TODO: Evaluate touch state information for this function
                 
                 float x = tc[i].Position.X,
                       y = tc[i].Position.Y;
@@ -566,12 +562,12 @@ namespace LOL
             float fx = Level.sCurrent.mGameCam.lx(x),
                   fy = Level.sCurrent.mGameCam.ly(y);
 
-            mTouchVec = new Vector3(fx,fy,0);
+            mTouchVec = new Vector3(x,y,0);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.mRange.Contains((int) mTouchVec.X, (int) mTouchVec.Y)) {
                     // now convert the touch to world coordinates and pass to the
                     // control (useful for vector throw)
-                    mTouchVec = new Vector3(fx,fy,0);
+                    mTouchVec = new Vector3(x,y,0);
                     pe.OnDownPress(mTouchVec);
                     return;
                 }
@@ -604,6 +600,10 @@ namespace LOL
          */
         private void touchMove(int x, int y) {
             // check for HUD touch first...
+            // Convert to level coordinates
+            float fx = Level.sCurrent.mGameCam.lx(x),
+                  fy = Level.sCurrent.mGameCam.ly(y);
+
             mTouchVec = new Vector3(x, y, 0);
             foreach (Controls.HudEntity pe in mControls) {
                 if (pe.mIsTouchable && pe.OnHold != null && pe.mRange.Contains((int)mTouchVec.X, (int)mTouchVec.Y))
@@ -616,7 +616,7 @@ namespace LOL
                 }
             }
             // check for screen touch, then for dragging an entity
-            mTouchVec = new Vector3(x, y, 0);
+            mTouchVec = new Vector3(fx, fy, 0);
             if (mTouchResponder != null && mTouchResponder.OnMove != null)
                 mTouchResponder.OnMove(mTouchVec.X, mTouchVec.Y);
             else if (mHitSprite != null)
@@ -630,6 +630,10 @@ namespace LOL
          * @param y The Y location of the press, in screen coordinates
          */
         public void touchUp(int x, int y) {
+            // Convert to level coordinates
+            float fx = Level.sCurrent.mGameCam.lx(x),
+                  fy = Level.sCurrent.mGameCam.ly(y);
+
             // check for HUD touch first
             mTouchVec = new Vector3(x, y, 0);
             foreach (Controls.HudEntity pe in mControls) {
@@ -641,7 +645,7 @@ namespace LOL
             }
 
             // Up presses are not handled by entities, only by the screen
-            mTouchVec = new Vector3(x, y, 0);
+            mTouchVec = new Vector3(fx, fy, 0);
             if (mTouchResponder != null && mTouchResponder.OnUp != null)
                 mTouchResponder.OnUp(mTouchVec.X, mTouchVec.Y);
         }

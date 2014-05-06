@@ -860,6 +860,7 @@ namespace LOL
                         Level.sCurrent.mGameCam.zoom *= 2;
                         Level.sCurrent.mBgCam.zoom *= 2;
                     }
+                    System.Diagnostics.Debug.WriteLine("ZOOM OUT");
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -884,6 +885,7 @@ namespace LOL
                         Level.sCurrent.mGameCam.zoom /= 2;
                         Level.sCurrent.mBgCam.zoom /= 2;
                     }
+                    System.Diagnostics.Debug.WriteLine("ZOOM IN");
                 };
             Level.sCurrent.mControls.Add(he);
         }

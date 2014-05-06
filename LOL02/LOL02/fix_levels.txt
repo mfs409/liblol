@@ -3,9 +3,6 @@ Level 36 (borders don't align)
 Level 58 (not sure how this works)
 Level 40 (SVG DOESN'T WORK)
 
-[High-priority]
-Level 80 (Destination does not collide with bounding box -- ignores physics when it shouldn't)
-
 [Parallax Camera levels]
 Level 31 (parallax camera not working)
 Level 42 (parallax camera not working)
@@ -13,3 +10,6 @@ Level 42 (parallax camera not working)
 [Camera zooming]
 Level 11 (no zooming with camera)
 Level 27 (camera needs work)
+
+-Fix Timer issues
+-Correct Controls.cs TODO's for countdowns

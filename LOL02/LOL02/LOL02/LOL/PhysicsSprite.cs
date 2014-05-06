@@ -137,7 +137,7 @@ namespace LOL
             {
                 return;
             }
-            // TODO: Add delta for gametime (tls)
+            
             Texture2D tr = mAnimator.getTr();
             SpriteEffects flipH = SpriteEffects.None;
             if (mReverseFace && mBody.LinearVelocity.X < 0)
@@ -518,9 +518,6 @@ namespace LOL
 
         public void SetPokeToPlace(long deleteThresholdMillis)
         {
-            // Convert deleteThresholdMillis to seconds, then multiple by frequency of stopwatch to get number of ticks.
-            // TODO: Solve stopwatch runtime missing issue
-            //long deleteThresholdTicks = (long)(deleteThresholdMillis / 1000.0) * System.Diagnostics.Stopwatch.Frequency;
             DateTime thresh = DateTime.Now.AddMilliseconds(deleteThresholdMillis);
 
             // Go go closures

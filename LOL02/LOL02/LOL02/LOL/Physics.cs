@@ -89,7 +89,7 @@ namespace LOL
                 }
                 else
                 {
-                    return false;
+                    return true;
                 }
                 Level.sCurrent.mOneTimeEvents.Add(delegate()
                 {

@@ -64,7 +64,6 @@ namespace LOL02
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             SpriteFont sf = Content.Load<SpriteFont>("Default");
             
             base.Initialize();
@@ -79,8 +78,6 @@ namespace LOL02
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -184,6 +181,7 @@ namespace LOL02
                 //
                 // Level.configure MUST BE THE FIRST LINE WHEN DRAWING A LEVEL!!!
                 Level.configure(48, 32);
+                
                 // there is no default gravitational force
                 Physics.Configure(0, 0);
 
@@ -204,6 +202,9 @@ namespace LOL02
                 // registered in registerMedia()
                 Destination.MakeAsCircle(29, 26, 2, 2, "mustardball");
                 Score.setVictoryDestination(1);
+
+                Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
+                Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             }
 
         /*

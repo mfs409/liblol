@@ -229,9 +229,7 @@ namespace LOL
         public void render() {
             // Check for back press
             handleKeyDown();
-            // Draw the current scene
-            // TODO: Tie method into Update
-            //super.render();
+            
         }
 
         /*
