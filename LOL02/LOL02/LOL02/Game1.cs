@@ -202,9 +202,6 @@ namespace LOL02
                 // registered in registerMedia()
                 Destination.MakeAsCircle(29, 26, 2, 2, "mustardball");
                 Score.setVictoryDestination(1);
-
-                Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
-                Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
             }
 
         /*

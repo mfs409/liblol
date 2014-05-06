@@ -158,13 +158,13 @@ namespace LOL
             }
             if (tr != null)
             {
-                Vector2 pos = new Vector2(Level.sCurrent.mGameCam.dx(mBody.Position.X) - Level.sCurrent.mGameCam.dx(mSize.X) / 2, Level.sCurrent.mGameCam.dy(mBody.Position.Y) - Level.sCurrent.mGameCam.dh(mSize.Y) / 2);
+                Vector2 pos = new Vector2(Level.sCurrent.mGameCam.dx(mBody.Position.X) - Level.sCurrent.mGameCam.dw(mSize.X) / 2, Level.sCurrent.mGameCam.dy(mBody.Position.Y) - Level.sCurrent.mGameCam.dh(mSize.Y) / 2);
 
                 // Scale down for size
                 /*float scale = Math.Min(Level.sCurrent.mGameCam.dx(mSize.X) / (float)tr.Width, Level.sCurrent.mGameCam.dy(mSize.Y) / (float)tr.Height);
                 sb.Draw(tr, pos, null, Color.White, mBody.Rotation, new Vector2(tr.Width/2, tr.Height/2), scale, flipH, 0f);*/
 
-                sb.Draw(tr, new Rectangle(Level.sCurrent.mGameCam.dx(mBody.Position.X), Level.sCurrent.mGameCam.dy(mBody.Position.Y), Level.sCurrent.mGameCam.dx(mSize.X), Level.sCurrent.mGameCam.dh(mSize.Y)), null, Color.White, -mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
+                sb.Draw(tr, new Rectangle(Level.sCurrent.mGameCam.dx(mBody.Position.X), Level.sCurrent.mGameCam.dy(mBody.Position.Y), Level.sCurrent.mGameCam.dw(mSize.X), Level.sCurrent.mGameCam.dh(mSize.Y)), null, Color.White, -mBody.Rotation, new Vector2(tr.Width / 2, tr.Height / 2), flipH, 0f);
             }
         }
 

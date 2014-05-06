@@ -85,7 +85,7 @@ namespace LOL
             //
             x = Level.sCurrent.mGameCam.dx(x);
             y = Level.sCurrent.mGameCam.dy(y);
-            width = Level.sCurrent.mGameCam.dx(width);
+            width = Level.sCurrent.mGameCam.dw(width);
             height = Level.sCurrent.mGameCam.dh(height);
 
 

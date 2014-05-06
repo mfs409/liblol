@@ -8,8 +8,9 @@ Level 31 (parallax camera not working)
 Level 42 (parallax camera not working)
 
 [Camera zooming]
-Level 11 (no zooming with camera)
+Level 11 (zooming with centering characteristics)
 Level 27 (camera needs work)
 
 -Fix Timer issues
 -Correct Controls.cs TODO's for countdowns
+-Add better centering for zoom in Orthocam

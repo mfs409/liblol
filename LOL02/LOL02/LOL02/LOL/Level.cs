@@ -422,6 +422,10 @@ namespace LOL
             
             // prepare the main camera... we do it here, so that the parallax code
             // knows where to draw...
+            if (mChaseEntity != null)
+            {
+                mGameCam.center(mChaseEntity);
+            }
             mGameCam.update();
 
             // draw parallax backgrounds
