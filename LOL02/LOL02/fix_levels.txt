@@ -5,9 +5,9 @@ Level 58 (not sure how this works)
 
 
 [Parallax Camera levels]
-Level 31
 Level 32 (w/ blue entity)
 Level 33 (multiple things move at different speeds)
+	-pressing Hero needs work
 Level 34
 Level 35 (examine height w/ jumps)
 Level 42 (parallax camera not working)
@@ -18,4 +18,3 @@ Level 42 (parallax camera not working)
 
 [TEST LEVELS]
 27
-11 - zooming

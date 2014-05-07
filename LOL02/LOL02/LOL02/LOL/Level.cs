@@ -370,51 +370,7 @@ namespace LOL
          * @param delta The time since the last render
          */
         public override void Draw (GameTime gameTime) {
-            // Make sure the music is playing... Note that we start music before the
-            // PreScene shows
-            //Lol.sGame.GraphicsDevice.Clear(Color.Green);
-            //return;
-            playMusic();
-
-            // Handle pauses due to pre, pause, or post scenes... Note that these
-            // handle their own screen touches... Note that postscene should come
-            // first.
-            if (mPostScene != null && mPostScene.render(mSpriteBatch))
-                return;
-            if (mPreScene != null && mPreScene.render(mSpriteBatch))
-                return;
-            if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
-                return;
-            
-            // check for any scene touches that should generate new events to
-            // process
-            manageTouches();
-
-            // handle accelerometer stuff... note that accelerometer is effectively
-            // disabled during a popup... we could change that by moving this to the
-            // top, but that's probably not going to produce logical behavior
-            Level.sCurrent.mTilt.handleTilt();
-
-            // Advance the physics world by 1/45 of a second.
-            //
-            // NB: in Box2d, This is the recommended rate for phones, though it
-            // seems like we should be using /delta/ instead of 1/45f
-            mWorld.Step(1/45f);
-
-            // now handle any events that occurred on account of the world movement
-            // or screen touches
-            foreach (Action pe in mOneTimeEvents)
-                pe();
-            mOneTimeEvents.Clear();
-
-            // handle repeat events
-            foreach (Action pe in mRepeatEvents)
-                pe();
-
-            // check for end of game
-            if (mEndGameEvent != null)
-                mEndGameEvent();
-
+          
             // The world is now static for this time step... we can display it!
 
             // clear the screen

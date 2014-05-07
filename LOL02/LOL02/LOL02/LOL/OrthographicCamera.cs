@@ -23,8 +23,8 @@ namespace LOL
         public OrthographicCamera(float w, float h)
         {
             Zoom = 1;
-            World = new Vector2(w, h);
-            Viewport = new Vector2(GDX_W, GDX_H);
+            World = new Vector2(w, h);  // LevelCoords
+            Viewport = new Vector2(GDX_W, GDX_H);   // LevelCoords
             Screen = new Vector2(Lol.sGame.GraphicsDevice.DisplayMode.Height, Lol.sGame.GraphicsDevice.DisplayMode.Width);
             Center = new Vector2(World.X / 2, World.Y / 2);
         }
@@ -71,33 +71,44 @@ namespace LOL
         public int touchX(int x)
         {
             // TODO
-            return x;
+            return worldX(vpLeft())+x;
         }
 
         public int touchY(int y)
         {
             // TODO
-            return invertScreenY(y);
+            return invertScreenY(worldY(vpTop())+y);
         }
 
-        public int screenX(float x)
+        // Convert to screen-based world coordinates
+        public int worldX(float x)
         {
             return (int)(x / World.X * Screen.X);
         }
 
-        public int screenY(float y)
+        public int worldY(float y)
         {
             return (int)(y / World.Y * Screen.Y);
         }
 
+        public int screenX(float x)
+        {
+            return (int)(x / Viewport.X * Screen.X);
+        }
+
+        public int screenY(float y)
+        {
+            return (int)(y / Viewport.Y * Screen.Y);
+        }
+
         public float levelX(float x)
         {
-            return x / Screen.X * World.X;
+            return x / Screen.X * Viewport.X;
         }
 
         public float levelY(float y)
         {
-            return y / Screen.Y * World.Y;
+            return y / Screen.Y * Viewport.Y;
         }
 
         public int invertScreenY(float y)
@@ -110,16 +121,31 @@ namespace LOL
             return World.Y-y;
         }
 
+        // Calculate offsets for viewport
+        protected float vpLeft()
+        {
+            return (Center.X - (Viewport.X / ZoomToScale() / 2));
+        }
+
+        protected float vpTop()
+        {
+            return (Center.Y - (Viewport.Y /ZoomToScale() / 2));
+        }
+
         // Viewport + Center affect this
         public int drawX(float x)
         {
-            return (int)(screenX(x)*ZoomToScale());
+            x -= vpLeft();
+            x *= ZoomToScale();
+            return (int)(screenX(x));
         }
 
         // Viewport + Center affect this
         public int drawY(float y)
         {
-            return invertScreenY((int)(screenY(y)*ZoomToScale()));
+            y -= vpTop();
+            y *= ZoomToScale();
+            return invertScreenY(screenY(y));
         }
 
         // Viewport affects this
