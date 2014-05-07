@@ -14,6 +14,9 @@ namespace LOL
         protected int sw;
         protected int sh;
 
+        const int GDX_W = 48;
+        const int GDX_H = 32;
+
         // Chase info
         protected float cxo,cyo;
         protected bool chase = false;
@@ -28,7 +31,7 @@ namespace LOL
 
         public void center(PhysicsSprite o)
         {
-            chase = true;
+            chase = false;
             float center_x = o.mBody.Position.X + (o.mSize.X / 2);
             float center_y = o.mBody.Position.Y + (o.mSize.Y / 2);
             
@@ -54,6 +57,31 @@ namespace LOL
 
         }
 
+        public int screenX(float x)
+        {
+            return (int)(x / width * sw);
+        }
+
+        public int screenY(float y)
+        {
+            return (int)(y / height * sh);
+        }
+
+        public float levelX(float x)
+        {
+            return x / sw * width;
+        }
+
+        public float levelY(float y)
+        {
+            return y / sh * height;
+        }
+
+        public float invertLevelY(float y)
+        {
+            return height-y;
+        }
+
         /** METHODS FOR DRAWING SPRITES ON THE SCREEN */
 
         public int dx(float x)
@@ -72,6 +100,26 @@ namespace LOL
                 return (int)(((height - (y+cyo)) / height) * sh * ZoomToScale());
             }
             return (int)(((height - y) / height) * sh * ZoomToScale());
+        }
+
+        public int tx(float x)
+        {
+            return (int)(x -cxo);
+        }
+
+        public int ty(float y)
+        {
+            return (int)(y - cyo);
+        }
+
+        public float tlx(float x)
+        {
+            return lx(tx(x));
+        }
+
+        public float tly(float y)
+        {
+            return ly(ty(y));
         }
 
         // Invert Y

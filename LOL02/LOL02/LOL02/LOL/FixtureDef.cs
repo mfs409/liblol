@@ -6,7 +6,10 @@ using System.Text;
 // NOTE: PLACEHOLDER
 namespace LOL
 {
-    class FixtureDef
+    public class FixtureDef
     {
+        public float density;
+        public float restitution;
+        public float friction;
     }
 }

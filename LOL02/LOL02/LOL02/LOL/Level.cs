@@ -564,8 +564,8 @@ namespace LOL
             
             // Convert to level coordinates
             //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.lx(x),
-                  fy = Level.sCurrent.mGameCam.ly(y);
+            float fx = Level.sCurrent.mGameCam.tlx(x),
+                  fy = Level.sCurrent.mGameCam.tly(y);
 
             mTouchVec = new Vector3(x,y,0);
             foreach (Controls.HudEntity pe in mControls) {
@@ -607,8 +607,8 @@ namespace LOL
             // check for HUD touch first...
             // Convert to level coordinates
             //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.lx(x),
-                  fy = Level.sCurrent.mGameCam.ly(y);
+            float fx = Level.sCurrent.mGameCam.tlx(x),
+                  fy = Level.sCurrent.mGameCam.tly(y);
 
             mTouchVec = new Vector3(x, y, 0);
             foreach (Controls.HudEntity pe in mControls) {
@@ -638,8 +638,8 @@ namespace LOL
         public void touchUp(int x, int y) {
             // Convert to level coordinates
             //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.lx(x),
-                  fy = Level.sCurrent.mGameCam.ly(y);
+            float fx = Level.sCurrent.mGameCam.tlx(x),
+                  fy = Level.sCurrent.mGameCam.tly(y);
 
             // check for HUD touch first
             mTouchVec = new Vector3(x, y, 0);

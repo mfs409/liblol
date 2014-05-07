@@ -538,8 +538,6 @@ namespace LOL
                 Level.TouchAction.TouchDelegate sCurrentOnDown = delegate(float xx, float yy)
                 {
                     // Lol.sGame.Vibrate(100);
-                    // Invert Y
-                    yy = Level.sCurrent.mGameCam.iy(yy);
                     mBody.SetTransform(new Vector2(xx, yy), mBody.Rotation);
                     Level.sCurrent.mTouchResponder = null;
                 };
@@ -558,18 +556,18 @@ namespace LOL
             Level.TouchAction.TouchDelegate onDown = delegate(float x, float y)
             {
                 // Lol.sGame.Vibrate(100);
-                float initialX = Level.sCurrent.mGameCam.dx(mBody.Position.X);
-                float initialY = Level.sCurrent.mGameCam.dy(mBody.Position.Y);
+                float initialX = mBody.Position.X;
+                float initialY = mBody.Position.Y;
 
                 Level.TouchAction.TouchDelegate sLevelOnUp = delegate(float xx, float yy)
                 {
                     // Invert Y from input to account for inverted Y axis
-                    yy = Level.sCurrent.mGameCam.iy(yy);
+                    yy = Level.sCurrent.mGameCam.invertLevelY(yy);
 
                     if (mVisible)
                     {
                         mHover = null;
-                        UpdateVelocity(Level.sCurrent.mGameCam.lx(xx - initialX) * damnFactor, Level.sCurrent.mGameCam.ly(yy - initialY) * damnFactor);
+                        UpdateVelocity(xx - initialX * damnFactor, yy - initialY * damnFactor);
                         Level.sCurrent.mTouchResponder = null;
                     }
                 };

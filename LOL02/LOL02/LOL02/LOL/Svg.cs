@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using FarseerPhysics.Factories;
+using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Contacts;
+using FarseerPhysics.Collision.Shapes;
+using System.Xml.Linq;
+
 
 namespace LOL
 {
@@ -99,10 +104,9 @@ namespace LOL
             // create the physics fixture in a manner that is visible to the
             // addLine routine of the parser
             mFixture = new FixtureDef();
-            // NOTE: UNCOMMENT
-            /*mFixture.density = density;
+            mFixture.density = density;
             mFixture.restitution = elasticity;
-            mFixture.friction = friction;*/
+            mFixture.friction = friction;
 
             // specify transpose and stretch information
             mUserStretch.X = stretchX / Physics.PIXEL_METER_RATIO;
@@ -260,34 +264,35 @@ namespace LOL
          */
         private void addLine(float x1, float y1, float x2, float y2) {
             // Create a static body for an Edge shape
-            // NOTE: UNCOMMENT
-            /*BodyDef bd = new BodyDef();
-            bd.type = BodyType.StaticBody;
+            
             // compute center and length
             float centerX = (x1 + x2) / 2;
             float centerY = (y1 + y2) / 2;
             float len = (float)Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-            bd.position.set(centerX, centerY);
-            bd.angle = 0;
-            Body b = Level.sCurrent.mWorld.createBody(bd);
+            
+            Body b = BodyFactory.CreateBody(Level.sCurrent.mWorld);
+            b.BodyType = BodyType.Static;
+            b.Position = new Vector2(centerX, centerY);
+            b.Rotation = 0;
+            
             EdgeShape line = new EdgeShape();
 
             // set the line position as an offset from center, rotate it, and
             // connect a fixture
-            line.set(-len / 2, 0, len / 2, 0);
-            mFixture.shape = line;
-            b.createFixture(mFixture);
-            mFixture.shape.dispose(); // i.e., line.dispose()
-            b.setTransform(centerX, centerY, Math.Atan2(y2 - y1, x2 - x1));
+            line.Set(new Vector2(-len / 2, 0), new Vector2(len / 2, 0));
+            b.CreateFixture(line, null).Dispose();
+           
+            //mFixture.shape.dispose(); // i.e., line.dispose()
+            b.SetTransform(new Vector2(centerX, centerY), (float)Math.Atan2(y2 - y1, x2 - x1));
 
             // connect it to an invisible PhysicsSprite, so that collision callbacks
             // will work (i.e., for inAir)
             SVGSprite invis = new SVGSprite("", (float) len, (float) 0.1);
             invis.mBody = b;
-            b.setUserData(invis);
+            b.UserData = invis;
             // NB: we probably don't need to put the invisible sprite on the screen,
             // since we don't overload render()... this is invisible.
-            Level.sCurrent.addSprite(invis, 0);*/
+            Level.sCurrent.addSprite(invis, 0);
         }
 
         /**
@@ -298,26 +303,19 @@ namespace LOL
          * @param svgName The name of the file to parse
          */
         private void parse(String svgName) {
-            // TODO: Figure out equivalent of XmlReader and read SVG
-            /*XmlReader r = new XmlReader();
-            try {
-                Element root = r.parse(Gdx.files.internal(svgName));
-                // get the <g> tags
-                Array<Element> gs = root.getChildrenByName("g");
-                for (Element g : gs) {
-                    // Get the g's transform attribute
-                    String xform = g.getAttribute("transform");
-                    if (xform != null)
-                        processTransform(xform);
-                    // get each g's paths
-                    Array<Element> paths = g.getChildrenByName("path");
-                    for (Element p : paths)
-                        processD(p.getAttribute("d"));
-                }
-            } catch (IOException e) {
-                Gdx.app.log("SVG Error", "error parsing SVG file");
-                e.printStackTrace();
-            }*/
+            XDocument r = XDocument.Load("Content\\"+svgName);
+            // get the <g> tags
+            IEnumerable<XElement> gs = r.Elements("g");
+            foreach (XElement g in gs) {
+                // Get the g's transform attribute
+                String xform = g.Attribute("transform").Value;
+                if (xform != null)
+                    processTransform(xform);
+                // get each g's paths
+                IEnumerable<XElement> paths = g.Elements("path");
+                foreach (XElement p in paths)
+                    processD(p.Attribute("d").Value);
+            }
         }
 
         /*

@@ -2,10 +2,15 @@
 Level 36 (borders don't align)
 Level 58 (not sure how this works)
 Level 40 (SVG DOESN'T WORK)
+-Fix Timer issues (use DateTime to fake it?)
 
 [Parallax Camera levels]
+Level 31
+Level 32 (w/ blue entity)
+Level 33 (multiple things move at different speeds)
+Level 34
+Level 35 (examine height w/ jumps)
 Level 42 (parallax camera not working)
 
--Fix Timer issues
 -Add better centering for zoom in Orthocam
 -Fix flicking (Level 30)
