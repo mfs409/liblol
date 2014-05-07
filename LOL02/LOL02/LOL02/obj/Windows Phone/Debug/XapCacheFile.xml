@@ -1,42 +1,42 @@
-﻿<xapCache source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="5/7/2014 11:53:10 AM">
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\Background.png" archivePath="Background.png" lastWriteTime="4/14/2014 11:34:59 AM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\PhoneGameThumb.png" archivePath="PhoneGameThumb.png" lastWriteTime="4/14/2014 11:34:59 AM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="4/14/2014 12:10:34 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="4/14/2014 12:10:35 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.dll" archivePath="LOL02.dll" lastWriteTime="5/7/2014 11:53:07 AM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\Default.xnb" archivePath="Content\Default.xnb" lastWriteTime="4/14/2014 12:04:52 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\back.xnb" archivePath="Content\back.xnb" lastWriteTime="4/18/2014 7:25:13 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\backarrow.xnb" archivePath="Content\backarrow.xnb" lastWriteTime="4/18/2014 7:25:13 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\blueball.xnb" archivePath="Content\blueball.xnb" lastWriteTime="4/18/2014 7:25:13 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\chooser.xnb" archivePath="Content\chooser.xnb" lastWriteTime="4/18/2014 7:25:13 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\colorstar.xnb" archivePath="Content\colorstar.xnb" lastWriteTime="4/18/2014 7:25:13 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fade.xnb" archivePath="Content\fade.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\flystar.xnb" archivePath="Content\flystar.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\front.xnb" archivePath="Content\front.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greenball.xnb" archivePath="Content\greenball.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greyball.xnb" archivePath="Content\greyball.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\invis.xnb" archivePath="Content\invis.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leftarrow.xnb" archivePath="Content\leftarrow.xnb" lastWriteTime="4/18/2014 7:25:14 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leveltile.xnb" archivePath="Content\leveltile.xnb" lastWriteTime="4/18/2014 7:25:15 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mid.xnb" archivePath="Content\mid.xnb" lastWriteTime="4/18/2014 7:25:15 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg1.xnb" archivePath="Content\msg1.xnb" lastWriteTime="4/18/2014 7:25:15 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg2.xnb" archivePath="Content\msg2.xnb" lastWriteTime="4/18/2014 7:25:15 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mustardball.xnb" archivePath="Content\mustardball.xnb" lastWriteTime="4/18/2014 7:25:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\purpleball.xnb" archivePath="Content\purpleball.xnb" lastWriteTime="4/18/2014 7:25:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\red.xnb" archivePath="Content\red.xnb" lastWriteTime="4/18/2014 7:25:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\redball.xnb" archivePath="Content\redball.xnb" lastWriteTime="4/18/2014 7:25:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\rightarrow.xnb" archivePath="Content\rightarrow.xnb" lastWriteTime="4/18/2014 7:25:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\splash.xnb" archivePath="Content\splash.xnb" lastWriteTime="4/18/2014 7:26:12 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\starburst.xnb" archivePath="Content\starburst.xnb" lastWriteTime="4/18/2014 7:26:12 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\stars.xnb" archivePath="Content\stars.xnb" lastWriteTime="4/18/2014 7:26:12 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fwapfwap.xnb" archivePath="Content\fwapfwap.xnb" lastWriteTime="4/18/2014 7:26:15 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\hipitch.xnb" archivePath="Content\hipitch.xnb" lastWriteTime="4/18/2014 7:26:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\losesound.xnb" archivePath="Content\losesound.xnb" lastWriteTime="4/18/2014 7:26:16 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\lowpitch.xnb" archivePath="Content\lowpitch.xnb" lastWriteTime="4/18/2014 7:26:17 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\slowdown.xnb" archivePath="Content\slowdown.xnb" lastWriteTime="4/18/2014 7:26:17 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.xnb" archivePath="Content\tune.xnb" lastWriteTime="4/18/2014 7:26:21 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\winsound.xnb" archivePath="Content\winsound.xnb" lastWriteTime="4/18/2014 7:26:23 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\woowoowoo.xnb" archivePath="Content\woowoowoo.xnb" lastWriteTime="4/18/2014 7:26:23 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.wma" archivePath="Content\tune.wma" lastWriteTime="4/18/2014 7:26:20 PM" />
-  <file source="C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\shape.svg" archivePath="Content\shape.svg" lastWriteTime="4/18/2014 3:04:56 PM" />
+﻿<xapCache source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="5/7/2014 4:16:26 PM">
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\Background.png" archivePath="Background.png" lastWriteTime="4/14/2014 11:34:59 AM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\PhoneGameThumb.png" archivePath="PhoneGameThumb.png" lastWriteTime="4/14/2014 11:34:59 AM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="4/14/2014 12:10:34 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="4/14/2014 12:10:35 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.dll" archivePath="LOL02.dll" lastWriteTime="5/7/2014 4:16:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\Default.xnb" archivePath="Content\Default.xnb" lastWriteTime="5/7/2014 3:18:19 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\back.xnb" archivePath="Content\back.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\backarrow.xnb" archivePath="Content\backarrow.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\blueball.xnb" archivePath="Content\blueball.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\chooser.xnb" archivePath="Content\chooser.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\colorstar.xnb" archivePath="Content\colorstar.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fade.xnb" archivePath="Content\fade.xnb" lastWriteTime="5/7/2014 3:18:20 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\flystar.xnb" archivePath="Content\flystar.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\front.xnb" archivePath="Content\front.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greenball.xnb" archivePath="Content\greenball.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greyball.xnb" archivePath="Content\greyball.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\invis.xnb" archivePath="Content\invis.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leftarrow.xnb" archivePath="Content\leftarrow.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leveltile.xnb" archivePath="Content\leveltile.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mid.xnb" archivePath="Content\mid.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg1.xnb" archivePath="Content\msg1.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg2.xnb" archivePath="Content\msg2.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mustardball.xnb" archivePath="Content\mustardball.xnb" lastWriteTime="5/7/2014 3:18:21 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\purpleball.xnb" archivePath="Content\purpleball.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\red.xnb" archivePath="Content\red.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\redball.xnb" archivePath="Content\redball.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\rightarrow.xnb" archivePath="Content\rightarrow.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\splash.xnb" archivePath="Content\splash.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\starburst.xnb" archivePath="Content\starburst.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\stars.xnb" archivePath="Content\stars.xnb" lastWriteTime="5/7/2014 3:18:22 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fwapfwap.xnb" archivePath="Content\fwapfwap.xnb" lastWriteTime="5/7/2014 3:18:23 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\hipitch.xnb" archivePath="Content\hipitch.xnb" lastWriteTime="5/7/2014 3:18:23 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\losesound.xnb" archivePath="Content\losesound.xnb" lastWriteTime="5/7/2014 3:18:23 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\lowpitch.xnb" archivePath="Content\lowpitch.xnb" lastWriteTime="5/7/2014 3:18:23 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\slowdown.xnb" archivePath="Content\slowdown.xnb" lastWriteTime="5/7/2014 3:18:23 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.xnb" archivePath="Content\tune.xnb" lastWriteTime="5/7/2014 3:18:25 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\winsound.xnb" archivePath="Content\winsound.xnb" lastWriteTime="5/7/2014 3:18:26 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\woowoowoo.xnb" archivePath="Content\woowoowoo.xnb" lastWriteTime="5/7/2014 3:18:26 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.wma" archivePath="Content\tune.wma" lastWriteTime="5/7/2014 3:18:25 PM" />
+  <file source="C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\shape.svg" archivePath="Content\shape.svg" lastWriteTime="4/18/2014 3:04:56 PM" />
 </xapCache>

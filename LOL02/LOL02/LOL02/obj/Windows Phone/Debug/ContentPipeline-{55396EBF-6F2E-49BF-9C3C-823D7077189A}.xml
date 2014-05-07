@@ -7,7 +7,7 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\Default.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\Default.xnb</Output>
       <Time>2014-04-14T12:00:35.7103513-04:00</Time>
     </Item>
     <Item>
@@ -16,7 +16,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\back.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\back.xnb</Output>
       <Time>2014-04-18T15:04:56.127788-04:00</Time>
     </Item>
     <Item>
@@ -25,7 +25,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\backarrow.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\backarrow.xnb</Output>
       <Time>2014-04-18T15:04:56.1428289-04:00</Time>
     </Item>
     <Item>
@@ -34,7 +34,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\blueball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\blueball.xnb</Output>
       <Time>2014-04-18T15:04:56.1529031-04:00</Time>
     </Item>
     <Item>
@@ -43,7 +43,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\chooser.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\chooser.xnb</Output>
       <Time>2014-04-18T15:04:56.1878357-04:00</Time>
     </Item>
     <Item>
@@ -52,7 +52,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\colorstar.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\colorstar.xnb</Output>
       <Time>2014-04-18T15:04:56.194871-04:00</Time>
     </Item>
     <Item>
@@ -61,7 +61,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fade.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fade.xnb</Output>
       <Time>2014-04-18T15:04:56.204726-04:00</Time>
     </Item>
     <Item>
@@ -70,7 +70,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\flystar.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\flystar.xnb</Output>
       <Time>2014-04-18T15:04:56.3807897-04:00</Time>
     </Item>
     <Item>
@@ -79,7 +79,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\front.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\front.xnb</Output>
       <Time>2014-04-18T15:04:56.7927794-04:00</Time>
     </Item>
     <Item>
@@ -88,7 +88,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greenball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greenball.xnb</Output>
       <Time>2014-04-18T15:04:56.8509803-04:00</Time>
     </Item>
     <Item>
@@ -97,7 +97,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greyball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\greyball.xnb</Output>
       <Time>2014-04-18T15:04:56.8820069-04:00</Time>
     </Item>
     <Item>
@@ -106,7 +106,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\invis.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\invis.xnb</Output>
       <Time>2014-04-18T15:04:56.9718054-04:00</Time>
     </Item>
     <Item>
@@ -115,7 +115,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leftarrow.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leftarrow.xnb</Output>
       <Time>2014-04-18T15:04:57.0228931-04:00</Time>
     </Item>
     <Item>
@@ -124,7 +124,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leveltile.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\leveltile.xnb</Output>
       <Time>2014-04-18T15:04:57.0768045-04:00</Time>
     </Item>
     <Item>
@@ -133,7 +133,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mid.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mid.xnb</Output>
       <Time>2014-04-18T15:04:55.896726-04:00</Time>
     </Item>
     <Item>
@@ -142,7 +142,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg1.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg1.xnb</Output>
       <Time>2014-04-18T15:04:55.9098488-04:00</Time>
     </Item>
     <Item>
@@ -151,7 +151,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg2.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\msg2.xnb</Output>
       <Time>2014-04-18T15:04:55.9188423-04:00</Time>
     </Item>
     <Item>
@@ -160,7 +160,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mustardball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\mustardball.xnb</Output>
       <Time>2014-04-18T15:04:55.9367558-04:00</Time>
     </Item>
     <Item>
@@ -169,7 +169,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\purpleball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\purpleball.xnb</Output>
       <Time>2014-04-18T15:04:55.9577436-04:00</Time>
     </Item>
     <Item>
@@ -178,7 +178,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\red.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\red.xnb</Output>
       <Time>2014-04-18T15:04:55.9671722-04:00</Time>
     </Item>
     <Item>
@@ -187,7 +187,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\redball.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\redball.xnb</Output>
       <Time>2014-04-18T15:04:55.9747345-04:00</Time>
     </Item>
     <Item>
@@ -196,7 +196,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\rightarrow.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\rightarrow.xnb</Output>
       <Time>2014-04-18T15:04:55.9918172-04:00</Time>
     </Item>
     <Item>
@@ -205,7 +205,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\splash.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\splash.xnb</Output>
       <Time>2014-04-18T15:04:56.0431035-04:00</Time>
     </Item>
     <Item>
@@ -214,7 +214,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\starburst.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\starburst.xnb</Output>
       <Time>2014-04-18T15:04:56.0620874-04:00</Time>
     </Item>
     <Item>
@@ -223,7 +223,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\stars.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\stars.xnb</Output>
       <Time>2014-04-18T15:04:56.0758824-04:00</Time>
     </Item>
     <Item>
@@ -232,7 +232,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fwapfwap.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\fwapfwap.xnb</Output>
       <Time>2014-04-18T19:22:20.7244872-04:00</Time>
     </Item>
     <Item>
@@ -241,7 +241,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\hipitch.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\hipitch.xnb</Output>
       <Time>2014-04-18T19:22:20.787387-04:00</Time>
     </Item>
     <Item>
@@ -250,7 +250,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\losesound.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\losesound.xnb</Output>
       <Time>2014-04-18T19:22:20.8564708-04:00</Time>
     </Item>
     <Item>
@@ -259,7 +259,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\lowpitch.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\lowpitch.xnb</Output>
       <Time>2014-04-18T19:22:20.890488-04:00</Time>
     </Item>
     <Item>
@@ -268,7 +268,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\slowdown.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\slowdown.xnb</Output>
       <Time>2014-04-18T19:22:20.9938794-04:00</Time>
     </Item>
     <Item>
@@ -277,8 +277,8 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SongProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.xnb</Output>
-      <Extra>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.wma</Extra>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.xnb</Output>
+      <Extra>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\tune.wma</Extra>
       <Time>2014-04-18T19:22:21.0454832-04:00</Time>
     </Item>
     <Item>
@@ -287,7 +287,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\winsound.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\winsound.xnb</Output>
       <Time>2014-04-18T19:22:21.1174021-04:00</Time>
     </Item>
     <Item>
@@ -296,7 +296,7 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SoundEffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\woowoowoo.xnb</Output>
+      <Output>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\woowoowoo.xnb</Output>
       <Time>2014-04-18T19:22:21.1694535-04:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
@@ -306,10 +306,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02Content\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02Content\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

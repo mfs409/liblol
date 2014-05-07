@@ -83,11 +83,6 @@ namespace LOL
         public static AnonRenderable makePicture(float x, float y, float width,
                 float height, String imgName) {
             // set up the image to display
-            //
-            x = Level.sCurrent.mGameCam.screenX(x);
-            y = Level.sCurrent.mGameCam.invertScreenY(Level.sCurrent.mGameCam.screenY(y));
-            width = Level.sCurrent.mGameCam.screenX(width);
-            height = Level.sCurrent.mGameCam.screenY(height);
             
 
             // NB: this will fail gracefully (no crash) for invalid file names
@@ -209,6 +204,11 @@ namespace LOL
          */
         public static void drawPicture(int x, int y, int width, int height,
                 String imgName, int zIndex) {
+            OrthographicCamera c = Level.sCurrent.mGameCam;
+            x = c.screenX(x);
+            y = c.screenY(y);
+            width = c.screenX(width);
+            height = c.screenY(height);
             Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
         }
 

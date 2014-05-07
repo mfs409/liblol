@@ -36,32 +36,14 @@ namespace LOL
 
         public void chase(PhysicsSprite o)
         {
-            setChase(o.mBody.Position.X+(o.mSize.X/2), o.mBody.Position.Y+(o.mSize.Y/2));
+            setChase(o.mBody.Position.X, o.mBody.Position.Y);
         }
 
         public void setChase(float x, float y)
         {
             Center = new Vector2(x, y);
         }
-        /*{
-            chase = false;
-            float center_x = o.mBody.Position.X + (o.mSize.X / 2);
-            float center_y = o.mBody.Position.Y + (o.mSize.Y / 2);
-            
-            // Note lx and ly use cxo and cyo but since they're zeroed out, it returns a neutral value
-            cxo=0;
-            cyo=0;
-            // Convert screen center to level coordinates
-            float scx = lx((sw / ZoomToScale()) / 2);
-            float scy = ly((sh/ZoomToScale()) / 2);
-
-            // Check if we need to move the camera
-            cxo = (center_x - scx) * -1;
-            cyo = (center_y - scy) * -1;
-        }
-
-        */
-
+        
         public void update()
         {
 
@@ -124,12 +106,12 @@ namespace LOL
         // Calculate offsets for viewport
         protected float vpLeft()
         {
-            return (Center.X - (Viewport.X / ZoomToScale() / 2));
+            return Math.Min(Math.Max(0, Center.X - (Viewport.X / ZoomToScale() / 2)), World.X-(Viewport.X/ZoomToScale()));
         }
 
         protected float vpTop()
         {
-            return (Center.Y - (Viewport.Y /ZoomToScale() / 2));
+            return Math.Min(Math.Max(0, Center.Y - (Viewport.Y /ZoomToScale() / 2)), World.Y-(Viewport.Y/ZoomToScale()));
         }
 
         // Viewport + Center affect this

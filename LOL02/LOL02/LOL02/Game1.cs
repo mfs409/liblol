@@ -32,6 +32,7 @@ namespace LOL02
             Screen = mgr;
 
             graphics = new GraphicsDeviceManager(this);
+            graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft;
             Content.RootDirectory = "Content";
 
             // Frame rate is 30 fps by default for Windows Phone.

@@ -21,7 +21,7 @@ namespace LOL
         /**
          * The current mode of the program
          */
-        private Modes mMode;
+        public Modes mMode;
 
         /**
          * The current level being played
@@ -61,7 +61,7 @@ namespace LOL
          * Modes of the game: we can be showing the main screen, the help screens,
          * the level chooser, or a playable level
          */
-        private enum Modes
+        public enum Modes
         {
             SPLASH, HELP, CHOOSE, PLAY
         };

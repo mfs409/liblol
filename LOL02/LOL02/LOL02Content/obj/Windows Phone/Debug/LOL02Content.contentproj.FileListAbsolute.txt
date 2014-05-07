@@ -1,1 +1,2 @@
 C:\Users\Todd Suess\Documents\Visual Studio 2012\Projects\LOL02\LOL02\LOL02Content\obj\Windows Phone\Debug\LOL02Content.contentprojResolveAssemblyReference.cache
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02Content\obj\Windows Phone\Debug\LOL02Content.contentprojResolveAssemblyReference.cache
