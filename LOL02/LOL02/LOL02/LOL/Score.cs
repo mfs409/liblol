@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using System.IO;
+using System.IO.IsolatedStorage;
 
 namespace LOL
 {
@@ -422,7 +425,43 @@ namespace LOL
          * @param value The value to save
          */
         public static void savePersistent(String key, int value) {
-            // TODO: Save key-value pair to storage
+            IsolatedStorageFile f = IsolatedStorageFile.GetUserStoreForApplication();
+            IsolatedStorageFileStream s = null;
+            
+            if (f.FileExists("gamedata"))
+            {
+                s = f.CreateFile("gamedata");
+                StreamWriter sw = new StreamWriter(s);
+                sw.WriteLine(key + "=" + value);
+                sw.Close();
+                s.Close();
+            }
+            else
+            {
+                s = f.OpenFile("gamedata", System.IO.FileMode.Open);
+                StreamReader sr = new StreamReader(s);
+                Dictionary<String, String> kv = new Dictionary<String, String>();
+                while (!sr.EndOfStream)
+                {
+                    String[] parts = sr.ReadLine().Trim().Split("=".ToCharArray());
+                    kv[parts[0]] = parts[1];
+                }
+                sr.Close();
+                s.Close();
+
+                // All that work just to change one value...
+                kv[key] = value.ToString();
+
+                s = f.OpenFile("gamedata", System.IO.FileMode.Truncate);
+                StreamWriter sw = new StreamWriter(s);
+                foreach (String k in kv.Keys)
+                {
+                    sw.WriteLine(k + "=" + kv[k]);
+                }
+                sw.Close();
+                s.Close();
+            }
+
             /*Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
             prefs.putInteger(key, value);
             prefs.flush();*/
@@ -436,8 +475,35 @@ namespace LOL
          * @returns The current value saved for the give
          */
         public static int readPersistent(String key, int defaultVal) {
-            // TODO: Read key-value pair from storage
-            return -1;
+            IsolatedStorageFile f = IsolatedStorageFile.GetUserStoreForApplication();
+            IsolatedStorageFileStream s = null;
+            if (!f.FileExists("gamedata"))
+            {
+                return defaultVal;
+            }
+            try
+            {
+                s = f.OpenFile("gamedata", System.IO.FileMode.Open);
+                StreamReader sr = new StreamReader(s);
+                Dictionary<String, String> kv = new Dictionary<String, String>();
+                while (!sr.EndOfStream)
+                {
+                    String[] parts = sr.ReadLine().Trim().Split("=".ToCharArray());
+                    kv[parts[0]] = parts[1];
+                }
+                sr.Close();
+                s.Close();
+                String value;
+                if (kv.TryGetValue(key, out value))
+                {
+                    return int.Parse(value);
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            return defaultVal;
             /*Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
             return prefs.getInteger(key, defaultVal);*/
         }

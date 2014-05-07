@@ -57,6 +57,17 @@ namespace LOL
 
         }
 
+        // Converts touch inputs to actual screen coordinates based on viewport offsets
+        public int touchX(int x)
+        {
+            return x;
+        }
+
+        public int touchY(int y)
+        {
+            return y;
+        }
+
         public int screenX(float x)
         {
             return (int)(x / width * sw);
@@ -75,6 +86,11 @@ namespace LOL
         public float levelY(float y)
         {
             return y / sh * height;
+        }
+
+        public int invertScreenY(float y)
+        {
+            return (int)(sh - y);
         }
 
         public float invertLevelY(float y)

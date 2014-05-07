@@ -280,14 +280,14 @@ namespace LOL
             // set the line position as an offset from center, rotate it, and
             // connect a fixture
             line.Set(new Vector2(-len / 2, 0), new Vector2(len / 2, 0));
-            b.CreateFixture(line, null).Dispose();
+            b.CreateFixture(line, null);//.Dispose();
            
             //mFixture.shape.dispose(); // i.e., line.dispose()
             b.SetTransform(new Vector2(centerX, centerY), (float)Math.Atan2(y2 - y1, x2 - x1));
 
             // connect it to an invisible PhysicsSprite, so that collision callbacks
             // will work (i.e., for inAir)
-            SVGSprite invis = new SVGSprite("", (float) len, (float) 0.1);
+            SVGSprite invis = new SVGSprite("red", (float) len, (float) 0.1);
             invis.mBody = b;
             b.UserData = invis;
             // NB: we probably don't need to put the invisible sprite on the screen,
@@ -304,15 +304,16 @@ namespace LOL
          */
         private void parse(String svgName) {
             XDocument r = XDocument.Load("Content\\"+svgName);
+            XNamespace n = @"http://www.w3.org/2000/svg";
             // get the <g> tags
-            IEnumerable<XElement> gs = r.Elements("g");
+            IEnumerable<XElement> gs = r.Root.Descendants(n+"g");
             foreach (XElement g in gs) {
                 // Get the g's transform attribute
                 String xform = g.Attribute("transform").Value;
                 if (xform != null)
                     processTransform(xform);
                 // get each g's paths
-                IEnumerable<XElement> paths = g.Elements("path");
+                IEnumerable<XElement> paths = g.Descendants(n+"path");
                 foreach (XElement p in paths)
                     processD(p.Attribute("d").Value);
             }

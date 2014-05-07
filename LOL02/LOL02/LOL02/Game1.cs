@@ -55,7 +55,7 @@ namespace LOL02
             Lol.GlobalGameTime = gameTime;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
-                this.Exit();
+                handleBack();
             }
             mgr.Update(gameTime);
             base.Update(gameTime);

@@ -171,7 +171,7 @@ namespace LOL
             // if we're looking at main menu, then exit
             if (mMode == Modes.SPLASH) {
                 dispose();
-                Lol.sGame.Exit();
+                Exit();
             }
             // if we're looking at the chooser or help, switch to the splash
             // screen

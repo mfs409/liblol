@@ -563,9 +563,9 @@ namespace LOL
             // check for HUD touch first...
             
             // Convert to level coordinates
-            //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.tlx(x),
-                  fy = Level.sCurrent.mGameCam.tly(y);
+            y = Level.sCurrent.mGameCam.invertScreenY(y);
+            float fx = Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.touchX(x)),
+                  fy = Level.sCurrent.mGameCam.levelY(Level.sCurrent.mGameCam.touchY(y));
 
             mTouchVec = new Vector3(x,y,0);
             foreach (Controls.HudEntity pe in mControls) {
@@ -591,7 +591,10 @@ namespace LOL
             FarseerPhysics.Collision.AABB aabb = new FarseerPhysics.Collision.AABB(minTouch, maxTouch);
             mWorld.QueryAABB(mTouchCallback, ref aabb);
             if (mHitSprite != null)
+            {
+                Util.log("TOUCHES", "SENT SOME GOOD TOUCHES");
                 mHitSprite.HandleTouchDown(fx, fy);
+            }
             // Handle level touches for which we've got a registered handler
             else if (mTouchResponder != null)
                 mTouchResponder.OnDown(mTouchVec.X, mTouchVec.Y);
