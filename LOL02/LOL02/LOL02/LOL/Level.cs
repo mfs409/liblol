@@ -17,7 +17,7 @@ namespace LOL
          */
         private Music mMusic;
 
-        public bool ShowArrows = true;
+        public bool ShowArrows = false;
 
         //internal delegate void AABBDelegate(Fixture f, bool b);
 
@@ -283,7 +283,7 @@ namespace LOL
                     / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
                     / Physics.PIXEL_METER_RATIO);*/
             mGameCam = new OrthographicCamera(mCamBoundX, mCamBoundY);
-            mGameCam.zoom = 1;
+            mGameCam.Zoom = 1;
 
             // set up the heads-up display camera
             int camWidth = Lol.sGame.mConfig.getScreenWidth();
@@ -291,7 +291,7 @@ namespace LOL
 
             // the background camera is like the hudcam
             mBgCam = new ParallaxCamera(camWidth, camHeight);
-            mBgCam.zoom = 1;
+            mBgCam.Zoom = 1;
 
             // set up the sprite sets
             for (int i = 0; i < 5; ++i)
@@ -424,7 +424,7 @@ namespace LOL
             // knows where to draw...
             if (mChaseEntity != null)
             {
-                mGameCam.center(mChaseEntity);
+                mGameCam.chase(mChaseEntity);
             }
             mGameCam.update();
 
@@ -561,9 +561,9 @@ namespace LOL
          */
         private void touchDown(int x, int y) {
             // check for HUD touch first...
+            Util.log("TOUCHDOWN-Y", y.ToString());
             
             // Convert to level coordinates
-            y = Level.sCurrent.mGameCam.invertScreenY(y);
             float fx = Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.touchX(x)),
                   fy = Level.sCurrent.mGameCam.levelY(Level.sCurrent.mGameCam.touchY(y));
 
@@ -582,6 +582,7 @@ namespace LOL
             // touch, hitSprite will change
             mHitSprite = null;
             mTouchVec = new Vector3(fx,fy,0);
+            Util.log("ltouch", fx + "," + fy);
             Vector2 minTouch = new Vector2(mTouchVec.X, mTouchVec.Y), maxTouch = new Vector2(mTouchVec.X, mTouchVec.Y);
             minTouch.X -= 0.1f;
             minTouch.Y -= 0.1f;
@@ -592,7 +593,6 @@ namespace LOL
             mWorld.QueryAABB(mTouchCallback, ref aabb);
             if (mHitSprite != null)
             {
-                Util.log("TOUCHES", "SENT SOME GOOD TOUCHES");
                 mHitSprite.HandleTouchDown(fx, fy);
             }
             // Handle level touches for which we've got a registered handler
@@ -609,9 +609,8 @@ namespace LOL
         private void touchMove(int x, int y) {
             // check for HUD touch first...
             // Convert to level coordinates
-            //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.tlx(x),
-                  fy = Level.sCurrent.mGameCam.tly(y);
+            float fx = Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.touchX(x)),
+                  fy = Level.sCurrent.mGameCam.levelY(Level.sCurrent.mGameCam.touchY(y));
 
             mTouchVec = new Vector3(x, y, 0);
             foreach (Controls.HudEntity pe in mControls) {
@@ -640,9 +639,8 @@ namespace LOL
          */
         public void touchUp(int x, int y) {
             // Convert to level coordinates
-            //y = Level.sCurrent.mGameCam.iy(y);
-            float fx = Level.sCurrent.mGameCam.tlx(x),
-                  fy = Level.sCurrent.mGameCam.tly(y);
+            float fx = Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.touchX(x)),
+                  fy = Level.sCurrent.mGameCam.levelY(Level.sCurrent.mGameCam.touchY(y));
 
             // check for HUD touch first
             mTouchVec = new Vector3(x, y, 0);

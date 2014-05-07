@@ -105,7 +105,7 @@ namespace LOL
                     float screensBefore = 1.5f;
                     // adjust by zoom... for every level of zoom, we need that much
                     // more beforehand
-                    screensBefore += Level.sCurrent.mBgCam.zoom;
+                    screensBefore += Level.sCurrent.mBgCam.Zoom;
                     startX -= (screensBefore * Lol.sGame.mConfig.getScreenWidth());
                     // round down to nearest screen width
                     startX = startX - startX % pl.mImage.Width;  // NOTE: replacing getRegionWidth()
@@ -113,7 +113,7 @@ namespace LOL
                     // draw picture repeatedly until we've drawn enough to cover the
                     // screen. "enough" can be approximated as 2 screens plus twice
                     // the zoom factor
-                    float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
+                    float limit = 2 + 2 * Level.sCurrent.mBgCam.Zoom;
                     while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
                         sb.Draw(pl.mImage, new Vector2(currX, pl.mYOffset), Color.White);
                         currX += pl.mImage.Width;
@@ -124,12 +124,12 @@ namespace LOL
                     // get the camera center, translate, and scale
                     float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                     // subtract enough screens, as above
-                    startY -= (1.5f + Level.sCurrent.mBgCam.zoom) * Lol.sGame.mConfig.getScreenHeight();
+                    startY -= (1.5f + Level.sCurrent.mBgCam.Zoom) * Lol.sGame.mConfig.getScreenHeight();
                     // round
                     startY = startY - startY % pl.mImage.Height;
                     float currY = startY;
                     // draw a bunch of repeated images
-                    float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
+                    float limit = 2 + 2 * Level.sCurrent.mBgCam.Zoom;
                     while (currY < startY + limit * Lol.sGame.mConfig.getScreenHeight()) {
                         sb.Draw(pl.mImage, new Vector2(pl.mXOffset, currY), Color.White);
                         currY += pl.mImage.Height;

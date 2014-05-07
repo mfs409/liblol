@@ -861,10 +861,10 @@ namespace LOL
                 float maxZoom) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 v) {
-                    float curzoom = Level.sCurrent.mGameCam.zoom;
+                    float curzoom = Level.sCurrent.mGameCam.Zoom;
                     if (curzoom < maxZoom) {
-                        Level.sCurrent.mGameCam.zoom *= 2;
-                        Level.sCurrent.mBgCam.zoom *= 2;
+                        Level.sCurrent.mGameCam.Zoom *= 2;
+                        Level.sCurrent.mBgCam.Zoom *= 2;
                     }
                     System.Diagnostics.Debug.WriteLine("ZOOM OUT");
                 };
@@ -886,10 +886,10 @@ namespace LOL
                 float minZoom) {
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 v) {
-                    float curzoom = Level.sCurrent.mGameCam.zoom;
+                    float curzoom = Level.sCurrent.mGameCam.Zoom;
                     if (curzoom > minZoom) {
-                        Level.sCurrent.mGameCam.zoom /= 2;
-                        Level.sCurrent.mBgCam.zoom /= 2;
+                        Level.sCurrent.mGameCam.Zoom /= 2;
+                        Level.sCurrent.mBgCam.Zoom /= 2;
                     }
                     System.Diagnostics.Debug.WriteLine("ZOOM IN");
                 };

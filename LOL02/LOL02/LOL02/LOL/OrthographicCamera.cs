@@ -8,29 +8,42 @@ namespace LOL
 {
     public class OrthographicCamera
     {
-        public float width;
-        public float height;
-        public float zoom = 1;
-        protected int sw;
-        protected int sh;
+        public Vector2 Viewport;
+        public Vector2 World;
+        public Vector2 Center;
+        public Vector2 Screen;
+        public float Zoom;
 
         const int GDX_W = 48;
         const int GDX_H = 32;
 
         // Chase info
         protected float cxo,cyo;
-        protected bool chase = false;
 
         public OrthographicCamera(float w, float h)
         {
-            width = w;
-            height = h;
-            sw = Lol.sGame.GraphicsDevice.DisplayMode.Height;
-            sh = Lol.sGame.GraphicsDevice.DisplayMode.Width;
+            Zoom = 1;
+            World = new Vector2(w, h);
+            Viewport = new Vector2(GDX_W, GDX_H);
+            Screen = new Vector2(Lol.sGame.GraphicsDevice.DisplayMode.Height, Lol.sGame.GraphicsDevice.DisplayMode.Width);
+            Center = new Vector2(World.X / 2, World.Y / 2);
         }
 
-        public void center(PhysicsSprite o)
+        protected float ZoomToScale()
         {
+            return 1 / Zoom;
+        }
+
+        public void chase(PhysicsSprite o)
+        {
+            setChase(o.mBody.Position.X+(o.mSize.X/2), o.mBody.Position.Y+(o.mSize.Y/2));
+        }
+
+        public void setChase(float x, float y)
+        {
+            Center = new Vector2(x, y);
+        }
+        /*{
             chase = false;
             float center_x = o.mBody.Position.X + (o.mSize.X / 2);
             float center_y = o.mBody.Position.Y + (o.mSize.Y / 2);
@@ -47,10 +60,7 @@ namespace LOL
             cyo = (center_y - scy) * -1;
         }
 
-        protected float ZoomToScale()
-        {
-            return 1/zoom;
-        }
+        */
 
         public void update()
         {
@@ -60,47 +70,73 @@ namespace LOL
         // Converts touch inputs to actual screen coordinates based on viewport offsets
         public int touchX(int x)
         {
+            // TODO
             return x;
         }
 
         public int touchY(int y)
         {
-            return y;
+            // TODO
+            return invertScreenY(y);
         }
 
         public int screenX(float x)
         {
-            return (int)(x / width * sw);
+            return (int)(x / World.X * Screen.X);
         }
 
         public int screenY(float y)
         {
-            return (int)(y / height * sh);
+            return (int)(y / World.Y * Screen.Y);
         }
 
         public float levelX(float x)
         {
-            return x / sw * width;
+            return x / Screen.X * World.X;
         }
 
         public float levelY(float y)
         {
-            return y / sh * height;
+            return y / Screen.Y * World.Y;
         }
 
         public int invertScreenY(float y)
         {
-            return (int)(sh - y);
+            return (int)(Screen.Y - y);
         }
 
         public float invertLevelY(float y)
         {
-            return height-y;
+            return World.Y-y;
+        }
+
+        // Viewport + Center affect this
+        public int drawX(float x)
+        {
+            return (int)(screenX(x)*ZoomToScale());
+        }
+
+        // Viewport + Center affect this
+        public int drawY(float y)
+        {
+            return invertScreenY((int)(screenY(y)*ZoomToScale()));
+        }
+
+        // Viewport affects this
+        public int drawWidth(float x)
+        {
+            return (int)(screenX(x) * ZoomToScale());
+        }
+
+        // Viewport affects this
+        public int drawHeight(float y)
+        {
+            return (int)(screenY(y)*ZoomToScale());
         }
 
         /** METHODS FOR DRAWING SPRITES ON THE SCREEN */
 
-        public int dx(float x)
+        /*public int dx(float x)
         {
             if (chase)
             {
@@ -170,6 +206,6 @@ namespace LOL
                 return (((sh - y) / sh) * height)+cyo;
             }
             return (((sh - y) / sh) * height);
-        }
+        }*/
     }
 }

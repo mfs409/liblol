@@ -18,3 +18,4 @@ Level 42 (parallax camera not working)
 
 [TEST LEVELS]
 27
+11 - zooming
