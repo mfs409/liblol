@@ -15,7 +15,8 @@ namespace LOL
     public abstract class Lol: Game
     {
         public static ScreenManager Screen;
-        public static Stopwatch GlobalGameTime = new Stopwatch();
+        public static GameTime GlobalGameTime;
+        public static float FPS = 30;
         
         /**
          * The current mode of the program

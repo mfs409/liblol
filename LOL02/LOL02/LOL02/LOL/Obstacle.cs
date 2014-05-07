@@ -20,7 +20,7 @@ namespace LOL
 
         private long mCollideSoundDelay;
 
-        private long mLastCollideSoundTime;
+        private DateTime mLastCollideSoundTime;
 
         protected Obstacle(float width, float height, string imgName) : base(imgName, width, height)
         {
@@ -29,9 +29,8 @@ namespace LOL
         internal void PlayCollideSound()
         {
             if (mCollideSound == null) { return; }
-            long now = Lol.GlobalGameTime.ElapsedTicks;
-            if (now < mLastCollideSoundTime + mCollideSoundDelay) { return; }
-            mLastCollideSoundTime = now;
+            if (mLastCollideSoundTime != null && DateTime.Now < mLastCollideSoundTime.AddMilliseconds(mCollideSoundDelay)) { return; }
+            mLastCollideSoundTime = DateTime.Now;
             mCollideSound.Play();
         }
 

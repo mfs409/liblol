@@ -220,9 +220,7 @@ namespace LOL
             HudEntity hud = new HudEntity(red, green, blue);
             hud.Render = delegate (SpriteBatch sb) {
                     bf.Color = hud.mColor;
-                    // TODO: Calculate FPS
-                    float fps = 30;
-                    drawTextTransposed(x, y, "fps: " + fps, bf, sb);
+                    drawTextTransposed(x, y, String.Format("fps: {0:F2}", Lol.FPS), bf, sb);
                 };
             Level.sCurrent.mControls.Add(hud);
         }
@@ -261,14 +259,18 @@ namespace LOL
             HudEntity hud = new HudEntity(red, green, blue);
             hud.Render = delegate(SpriteBatch sb) {
                     bf.Color = hud.mColor;
-                    // TODO: Calculate correct time like countdown
-                    Level.sCurrent.mScore.mWinCountRemaining -= 0.01F;
+                    if (hud.LastRender != DateTime.MinValue)
+                    {
+                        TimeSpan ts = DateTime.Now.Subtract(hud.LastRender);
+                        Level.sCurrent.mScore.mWinCountRemaining -= (float)ts.TotalMilliseconds / 1000f;
+                    }
                     if (Level.sCurrent.mScore.mWinCountRemaining > 0)
                         // get elapsed time for this level
                         drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mWinCountRemaining,
                                 bf, sb);
                     else
                         Level.sCurrent.mScore.endLevel(true);
+                    hud.LastRender = DateTime.Now;
                 };
             Level.sCurrent.mControls.Add(hud);
         }
@@ -377,8 +379,12 @@ namespace LOL
             HudEntity he = new HudEntity(red, green, blue);
             he.Render = delegate(SpriteBatch sb) {
                     bf.Color = he.mColor;
-                    // TODO: Again replace that Gdx.graphics.getDeltaTime method
-                    Level.sCurrent.mScore.mStopWatchProgress += 0.01F;
+                    if (he.LastRender != DateTime.MinValue)
+                    {
+                        TimeSpan ts = DateTime.Now.Subtract(he.LastRender);
+                        Level.sCurrent.mScore.mStopWatchProgress += (float)ts.TotalMilliseconds / 1000f;
+                    }
+                    he.LastRender = DateTime.Now;
                     drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mStopWatchProgress, bf, sb);
                 };
             Level.sCurrent.mControls.Add(he);

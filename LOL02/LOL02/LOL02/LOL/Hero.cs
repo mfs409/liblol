@@ -98,7 +98,7 @@ namespace LOL
             }
             // System.Diagnostics.Stopwatch doesn't exist (tls)
             //mStickyDelay = Lol.GlobalGameTime.ElapsedTicks + (long)(0.01 * FarseerPhysics.Common.Stopwatch.Frequency);
-            mStickyDelay = Lol.GlobalGameTime.ElapsedTicks;
+            mStickyDelay = DateTime.Now.AddMilliseconds(Lol.GlobalGameTime.ElapsedGameTime.TotalMilliseconds);
         }
 
         private void StopJump()

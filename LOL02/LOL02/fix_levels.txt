@@ -4,13 +4,8 @@ Level 58 (not sure how this works)
 Level 40 (SVG DOESN'T WORK)
 
 [Parallax Camera levels]
-Level 31 (parallax camera not working)
 Level 42 (parallax camera not working)
 
-[Camera zooming]
-Level 11 (zooming with centering characteristics)
-Level 27 (camera needs work)
-
 -Fix Timer issues
--Correct Controls.cs TODO's for countdowns
 -Add better centering for zoom in Orthocam
+-Fix flicking (Level 30)

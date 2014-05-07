@@ -563,6 +563,7 @@ namespace LOL
             // check for HUD touch first...
             
             // Convert to level coordinates
+            //y = Level.sCurrent.mGameCam.iy(y);
             float fx = Level.sCurrent.mGameCam.lx(x),
                   fy = Level.sCurrent.mGameCam.ly(y);
 
@@ -605,6 +606,7 @@ namespace LOL
         private void touchMove(int x, int y) {
             // check for HUD touch first...
             // Convert to level coordinates
+            //y = Level.sCurrent.mGameCam.iy(y);
             float fx = Level.sCurrent.mGameCam.lx(x),
                   fy = Level.sCurrent.mGameCam.ly(y);
 
@@ -635,6 +637,7 @@ namespace LOL
          */
         public void touchUp(int x, int y) {
             // Convert to level coordinates
+            //y = Level.sCurrent.mGameCam.iy(y);
             float fx = Level.sCurrent.mGameCam.lx(x),
                   fy = Level.sCurrent.mGameCam.ly(y);
 
@@ -758,8 +761,8 @@ namespace LOL
                  * @param y The Y coordinate of the touch
                  */
                 Level.sCurrent.mTouchResponder.OnDown = delegate(float x, float y) {
-                    // check if enough milliseconds have passed
-                    DateTime delayed = mLastTime.AddMilliseconds(interval);
+                    // check if enough milliseconds have passed (less than 250 ms and it throws System.EntryPointNotFoundException's from Farseer - may be thread-unsafe)
+                    DateTime delayed = mLastTime.AddMilliseconds(Math.Max(250,interval));
                     if (DateTime.Now < delayed)
                         return;
                     mLastTime = DateTime.Now;

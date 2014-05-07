@@ -27,6 +27,7 @@ namespace LOL
             return false;
         }
 
+        // Converts coords from LibGDX/Android dimensions to WP8 dimensions
         public static int ax(int x)
         {
             int w = Lol.sGame.lolConfig().getScreenWidth();
@@ -60,7 +61,7 @@ namespace LOL
 
         public static void log(String type, String msg)
         {
-            // TODO: Log some stuff...
+            System.Diagnostics.Debug.WriteLine("[" + type + "]: " + msg);
         }
 
         /**
@@ -84,10 +85,10 @@ namespace LOL
             // set up the image to display
             //
             x = Level.sCurrent.mGameCam.dx(x);
-            y = Level.sCurrent.mGameCam.dy(y);
+            y = Level.sCurrent.mGameCam.iy(Level.sCurrent.mGameCam.dy(y));
             width = Level.sCurrent.mGameCam.dw(width);
             height = Level.sCurrent.mGameCam.dh(height);
-
+            
 
             // NB: this will fail gracefully (no crash) for invalid file names
             Texture2D[] trs = Media.getImage(imgName);

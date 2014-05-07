@@ -47,7 +47,7 @@ namespace LOL
 
         internal WeldJoint mWJoint;
 
-        internal long mStickyDelay;
+        internal DateTime mStickyDelay;
 
         internal SoundEffect mTouchSound;
 
@@ -591,6 +591,7 @@ namespace LOL
                 Level.TouchAction.TouchDelegate sLevelOnDown = delegate(float xx, float yy)
                 {
                     // Convert to level coords
+                    //yy = Level.sCurrent.mGameCam.iy(yy);
                     xx = Level.sCurrent.mGameCam.lx(xx);
                     yy = Level.sCurrent.mGameCam.ly(yy);
                     //System.Diagnostics.Debug.WriteLine("POKE = " + yy);

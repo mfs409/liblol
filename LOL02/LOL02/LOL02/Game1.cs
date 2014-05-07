@@ -21,6 +21,8 @@ namespace LOL02
         protected GraphicsDeviceManager graphics;
         protected SpriteBatch spriteBatch;
         public ScreenManager mgr;
+        public TimeSpan elapsedGameTime = TimeSpan.Zero;
+        public byte frames = 0;
 
         public Game1()
         {
@@ -42,9 +44,19 @@ namespace LOL02
         // WARNING: DO NOT TOUCH THIS METHOD!
         protected override void Update(GameTime gameTime)
         {
+            elapsedGameTime += gameTime.ElapsedGameTime;
+            if (elapsedGameTime > TimeSpan.FromSeconds(1))
+            {
+                Lol.FPS = frames / (float)((float)elapsedGameTime.TotalMilliseconds / 1000f);
+                frames = 0;
+                elapsedGameTime = TimeSpan.Zero;
+            }
             // Allows the game to exit
+            Lol.GlobalGameTime = gameTime;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
                 this.Exit();
+            }
             mgr.Update(gameTime);
             base.Update(gameTime);
         }
@@ -52,6 +64,7 @@ namespace LOL02
         // WARNING: DO NOT TOUCH THIS METHOD!
         protected override void Draw(GameTime gameTime)
         {
+            frames++;
             mgr.Draw(gameTime);
             base.Draw(gameTime);
         }
@@ -1181,7 +1194,7 @@ namespace LOL02
 
                 // turn on 'scribble mode'. Be sure to play with the last two
                 // parameters
-                Level.setScribbleMode("purpleball", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
+                Level.setScribbleMode("purpleball", 3, 1.5f, 1.5f, 0, 0, 0, true, 100);
             }
 
             /*

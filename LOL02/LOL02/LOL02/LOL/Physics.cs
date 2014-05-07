@@ -19,7 +19,7 @@ namespace LOL
         internal static void HandleSticky(PhysicsSprite sticky, PhysicsSprite other, Contact contact)
         {
             if (other.mDJoint != null) { return; }
-            if (Lol.GlobalGameTime.ElapsedTicks < other.mStickyDelay)
+            if (other.mStickyDelay != null && DateTime.Now < other.mStickyDelay)
             {
                 return;
             }
