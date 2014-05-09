@@ -52,14 +52,12 @@ namespace LOL
         // Converts touch inputs to actual screen coordinates based on viewport offsets
         public int touchX(int x)
         {
-            // TODO
-            return worldX(vpLeft())+x;
+            return screenX(vpLeft())+x;
         }
 
         public int touchY(int y)
         {
-            // TODO
-            return invertScreenY(worldY(vpTop())+y);
+            return invertScreenY(screenY(vpTop())+y);
         }
 
         // Convert to screen-based world coordinates
