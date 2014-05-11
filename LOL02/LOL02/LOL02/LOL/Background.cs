@@ -83,24 +83,54 @@ namespace LOL
          * @param sb The SpriteBatch that is being used to do the drawing.
          */
         public void renderLayers(SpriteBatch sb) {
-            // center camera on mGameCam's camera
-            float x = 0;
-            float y = 0;
-            
-            Level.sCurrent.mBgCam.update();
+            int x = Level.sCurrent.mGameCam.drawX(0),
+                y = Level.sCurrent.mGameCam.drawY(0);
+            float zoom = Level.sCurrent.mGameCam.ZoomToScale();
+            int sw = Lol.sGame.mConfig.getScreenWidth();
 
+            // Draw each layer
+            foreach (ParallaxLayer pl in mLayers)
+            {
+                int xOff = Level.sCurrent.mGameCam.screenX(pl.mXOffset), yOff = Level.sCurrent.mGameCam.screenY(pl.mYOffset);
+                float xSpeed = pl.mXSpeed, ySpeed = pl.mYSpeed;
+                Texture2D img = pl.mImage;
+                int width = img.Width,
+                    height = img.Height;
+
+                sb.Begin();
+                // Draw first segment
+                x %= width;
+                sb.Draw(img, new Rectangle(x+xOff, Level.sCurrent.mGameCam.invertScreenY(y-yOff), width, height), Color.White);
+
+                // Draw further segments
+                if (pl.mXRepeat)
+                {
+                    int c = (sw-(width+x));
+                    for (int j = 0; j < c; j++)
+                    {
+                        sb.Draw(img, new Rectangle(x + xOff + (j * width), Level.sCurrent.mGameCam.invertScreenY(y - yOff), width, height), Color.White);
+                    }
+                }
+                if (pl.mYRepeat)
+                {
+
+                }
+                sb.End();
+            }
+            
+            /*// center camera on mGameCam's camera
+            float x = Level.sCurrent.mGameCam.drawX(0);
+            float y = Level.sCurrent.mGameCam.drawY(0);
+            
             // draw the layers
             foreach (ParallaxLayer pl in mLayers) {
                 // each layer has a different projection, based on its speed
-                // NOTE: Uncomment
-                //sb.setProjectionMatrix(Level.sCurrent.mBgCam.calculateParallaxMatrix(pl.mXSpeed
-                //        * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
                 sb.Begin();
                 // Figure out what to draw for layers that repeat in the x dimension
                 if (pl.mXRepeat) {
                     // get the camera center, translate to pixels, and scale by
                     // speed
-                    float startX = x * Physics.PIXEL_METER_RATIO * pl.mXSpeed;
+                    float startX = x * pl.mXSpeed;
                     // subtract one and a half screens worth of repeated pictures
                     float screensBefore = 1.5f;
                     // adjust by zoom... for every level of zoom, we need that much
@@ -113,7 +143,7 @@ namespace LOL
                     // draw picture repeatedly until we've drawn enough to cover the
                     // screen. "enough" can be approximated as 2 screens plus twice
                     // the zoom factor
-                    float limit = 2 + 2 * Level.sCurrent.mBgCam.Zoom;
+                    float limit = 2 + 2 * Level.sCurrent.mBgCam.ZoomToScale();
                     while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
                         sb.Draw(pl.mImage, new Vector2(currX, pl.mYOffset), Color.White);
                         currX += pl.mImage.Width;
@@ -146,7 +176,7 @@ namespace LOL
                     sb.Draw(pl.mImage, new Vector2(pl.mXOffset, -pl.mImage.Height / 2 + pl.mYOffset), Color.White);
                 }
                 sb.End();
-            }
+            }*/
         }
 
         /*

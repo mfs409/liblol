@@ -29,7 +29,7 @@ namespace LOL
             Center = new Vector2(World.X / 2, World.Y / 2);
         }
 
-        protected float ZoomToScale()
+        public float ZoomToScale()
         {
             return 1 / Zoom;
         }
@@ -138,6 +138,16 @@ namespace LOL
         public int drawHeight(float y)
         {
             return (int)(screenY(y)*ZoomToScale());
+        }
+
+        public float viewX(float xStart)
+        {
+            return worldX(vpLeft()) + xStart;
+        }
+
+        public float viewY(float yStart)
+        {
+            return worldX(vpTop()) + yStart;
         }
 
         /** METHODS FOR DRAWING SPRITES ON THE SCREEN */
