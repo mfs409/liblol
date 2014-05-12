@@ -236,7 +236,7 @@ namespace LOL
                 bf.Color = new Color(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
                 // NOTE: Can't scale text
                 //bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-                sb.DrawString(bf.Face, text, new Vector2(x, y + bf.Face.MeasureString(text).Y), bf.Color);
+                sb.DrawString(bf.Face, text, new Vector2(Level.sCurrent.mGameCam.drawX(x), Level.sCurrent.mGameCam.drawY(y) + bf.Face.MeasureString(text).Y), bf.Color);
 
                 //bf.setScale(1);
             });

@@ -83,37 +83,74 @@ namespace LOL
          * @param sb The SpriteBatch that is being used to do the drawing.
          */
         public void renderLayers(SpriteBatch sb) {
-            int x = Level.sCurrent.mGameCam.drawX(0),
-                y = Level.sCurrent.mGameCam.drawY(0);
+            
             float zoom = Level.sCurrent.mGameCam.ZoomToScale();
-            int sw = Lol.sGame.mConfig.getScreenWidth();
+            int sw = Lol.sGame.mConfig.getScreenWidth(),
+                sh = Lol.sGame.mConfig.getScreenHeight();
 
             // Draw each layer
             foreach (ParallaxLayer pl in mLayers)
             {
-                int xOff = Level.sCurrent.mGameCam.screenX(pl.mXOffset), yOff = Level.sCurrent.mGameCam.screenY(pl.mYOffset);
+                int x, y;
+
+                // Draw according to repeating/tiled layers
+                if (pl.mXRepeat || pl.mYRepeat)
+                {
+                    x = Level.sCurrent.mGameCam.drawX(0);
+                    y = Level.sCurrent.mGameCam.drawY(0);
+                }
+                else
+                {
+                    x = 0;
+                    y = 0;
+                }
+
+                // NOTE: May need to check coordinates match (given in levels, convert to pixels)
+                int xOff = (int)pl.mXOffset, yOff = (int)pl.mYOffset;
                 float xSpeed = pl.mXSpeed, ySpeed = pl.mYSpeed;
+
+                x = (int)(x*xSpeed);
+                y = (int)(y*ySpeed);
+
                 Texture2D img = pl.mImage;
-                int width = img.Width,
-                    height = img.Height;
+
+                // Find the biggest area to scale
+                float scale;
+                /*if (sh / (float)img.Height < sw / (float)img.Width)
+                {
+                    scale = sh / (float)img.Height;
+                }
+                else
+                {*/
+                    scale = sw / (float)img.Width;
+                //}
+                int width = (int)(img.Width * zoom * scale),
+                    height = (int)(img.Height * zoom * scale);
+                y = height;
 
                 sb.Begin();
+
                 // Draw first segment
                 x %= width;
-                sb.Draw(img, new Rectangle(x+xOff, Level.sCurrent.mGameCam.invertScreenY(y-yOff), width, height), Color.White);
+
+                sb.Draw(img, new Rectangle(x+xOff, Level.sCurrent.mGameCam.invertScreenY(y+yOff), width, height), Color.White);
 
                 // Draw further segments
                 if (pl.mXRepeat)
                 {
                     int c = (sw-(width+x));
-                    for (int j = 0; j < c; j++)
+                    for (int j = 1; j <= c; j++)
                     {
-                        sb.Draw(img, new Rectangle(x + xOff + (j * width), Level.sCurrent.mGameCam.invertScreenY(y - yOff), width, height), Color.White);
+                        sb.Draw(img, new Rectangle(x + xOff + (j * width), Level.sCurrent.mGameCam.invertScreenY(y + yOff), width, height), Color.White);
                     }
                 }
                 if (pl.mYRepeat)
                 {
-
+                    int c = (sh - (height + y));
+                    for (int j = 1; j <= c; j++)
+                    {
+                        sb.Draw(img, new Rectangle(x + xOff, Level.sCurrent.mGameCam.invertScreenY(y + yOff + (j * height)), width, height), Color.White);
+                    }
                 }
                 sb.End();
             }

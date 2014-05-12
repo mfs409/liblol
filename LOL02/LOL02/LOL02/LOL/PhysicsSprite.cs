@@ -754,11 +754,15 @@ namespace LOL
 
         public void SetHover(int x, int y)
         {
+            //x = (int)Level.sCurrent.mGameCam.levelX(x);
+            //y = (int)Level.sCurrent.mGameCam.invertLevelY(Level.sCurrent.mGameCam.levelY(y));
             mHover = new Vector3();
             Level.Action a = delegate()
             {
                 if (mHover == null) { return; }
-                mHover = new Vector3(x, y, 0);
+                //x = (int)Level.sCurrent.mGameCam.levelX(x);
+                //y = (int)Level.sCurrent.mGameCam.levelY(y);
+                mHover = new Vector3(Level.sCurrent.mGameCam.viewX(x), Level.sCurrent.mGameCam.viewY(y), 0);
                 //Level.sCurrent.mGameCam.Unproject(mHover);
                 mBody.SetTransform(new Vector2(mHover.Value.X, mHover.Value.Y), mBody.Rotation);
             };
