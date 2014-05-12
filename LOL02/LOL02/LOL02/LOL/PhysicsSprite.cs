@@ -762,7 +762,7 @@ namespace LOL
                 if (mHover == null) { return; }
                 //x = (int)Level.sCurrent.mGameCam.levelX(x);
                 //y = (int)Level.sCurrent.mGameCam.levelY(y);
-                mHover = new Vector3(Level.sCurrent.mGameCam.viewX(x), Level.sCurrent.mGameCam.viewY(y), 0);
+                mHover = new Vector3(Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.viewX(x)), Level.sCurrent.mGameCam.invertLevelY(Level.sCurrent.mGameCam.levelY(Level.sCurrent.mGameCam.viewY(y))), 0);
                 //Level.sCurrent.mGameCam.Unproject(mHover);
                 mBody.SetTransform(new Vector2(mHover.Value.X, mHover.Value.Y), mBody.Rotation);
             };

@@ -142,12 +142,12 @@ namespace LOL
 
         public float viewX(float xStart)
         {
-            return worldX(vpLeft()) + xStart;
+            return screenX(vpLeft()) + xStart;
         }
 
         public float viewY(float yStart)
         {
-            return worldX(vpTop()) + yStart;
+            return screenY(vpTop()) + yStart;
         }
 
         /** METHODS FOR DRAWING SPRITES ON THE SCREEN */
