@@ -2746,10 +2746,11 @@ namespace LOL02
                 Score.setVictoryDestination(1);
 
                 // These obstacles chase the hero, but only in one dimension
-                Obstacle e = Obstacle.MakeAsCircle(0, 0, 1, 1, "red");
+                // NOTE: Obstacles must be set away from each other otherwise the Physics engine crashes
+                Obstacle e = Obstacle.MakeAsCircle(0, 30, 1, 1, "red");
                 e.SetChaseSpeed(15, h, false, true);
                 e.CollisionEffect = true;
-                Obstacle e2 = Obstacle.MakeAsCircle(0, 0, 1, 1, "red");
+                Obstacle e2 = Obstacle.MakeAsCircle(46, 0, 1, 1, "red");
                 e2.SetChaseSpeed(15, h, true, false);
                 e2.CollisionEffect = true;
 
