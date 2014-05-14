@@ -1720,7 +1720,7 @@ namespace LOL02
 
                 // set up our projectiles... note that now projectiles each do 2
                 // units of damage
-                ProjectilePool.configure(3, .4f, .1f, "greyball", 0, 10, .2f, -.5f, 2, 0, true);
+                ProjectilePool.configure(3, .4f*10, .1f*10, "greyball", 0, 10, .2f, -.5f, 2, 0, true);
 
                 // draw a few enemies... note that they have different amounts of
                 // damage, so it takes different numbers of projectiles to defeat

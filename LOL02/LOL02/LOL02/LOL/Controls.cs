@@ -781,6 +781,7 @@ namespace LOL
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
                     Level.sCurrent.mProjectilePool.throwFixed(h);
+                    //Util.log("THROW", "THROW ME!");
                 };
             Level.sCurrent.mControls.Add(he);
         }
