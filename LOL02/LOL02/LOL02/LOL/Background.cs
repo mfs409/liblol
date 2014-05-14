@@ -91,67 +91,51 @@ namespace LOL
             // Draw each layer
             foreach (ParallaxLayer pl in mLayers)
             {
+                // NOTE: May need to check coordinates match (given in levels, convert to pixels)
+                int xOff = (int)pl.mXOffset, yOff = (int)Level.sCurrent.mGameCam.levelY(pl.mYOffset);
+                float xSpeed = pl.mXSpeed, ySpeed = pl.mYSpeed;
+
+                Texture2D img = pl.mImage;
                 int x, y;
 
-                // Draw according to repeating/tiled layers
-                if (pl.mXRepeat || pl.mYRepeat)
+                // Find the biggest area to scale
+                float scale = sw / (float)img.Width;
+                int width = (int)(img.Width * zoom * scale),
+                    height = (int)(img.Height * zoom * scale);
+
+                // Draw segments
+                sb.Begin();
+
+                if (pl.mXRepeat)
                 {
-                    x = Level.sCurrent.mGameCam.drawX(0);
-                    y = Level.sCurrent.mGameCam.drawY(0);
+                    int c = (int)Math.Ceiling((float)sw/width)+1;
+                    x = (int)(Level.sCurrent.mGameCam.drawX(xOff) * xSpeed) % width;
+                    y = Level.sCurrent.mGameCam.drawY(yOff);
+                    //Util.log("MID", y+" -- "+height);
+                    for (int j = 0; j < c; j++)
+                    {
+                        sb.Draw(img, new Rectangle(x+(width*j), y-height, width, height), Color.White);
+                    }
+                }
+                else if (pl.mYRepeat)
+                {
+                    //Util.log("DRAWY", sh+" --> "+Level.sCurrent.mGameCam.drawNormalY(0).ToString());
+                    int c = (int)Math.Ceiling((float)sh / height)+1;
+                    x = Level.sCurrent.mGameCam.drawX(xOff);
+                    y = -(int)(Level.sCurrent.mGameCam.drawNormalY(-yOff)*ySpeed) % height;
+                    //y = Level.sCurrent.mGameCam.invertScreenY(y);
+                    for (int j = 0; j < c; j++)
+                    {
+                        sb.Draw(img, new Rectangle(x, y+(height*j), width, height), Color.White);
+                    }
                 }
                 else
                 {
                     x = 0;
                     y = 0;
+                    sb.Draw(img, new Rectangle(x, y, width, height), Color.White);
                 }
 
-                // NOTE: May need to check coordinates match (given in levels, convert to pixels)
-                int xOff = (int)pl.mXOffset, yOff = (int)pl.mYOffset;
-                float xSpeed = pl.mXSpeed, ySpeed = pl.mYSpeed;
-
-                x = (int)(x*xSpeed);
-                y = (int)(y*ySpeed);
-
-                Texture2D img = pl.mImage;
-
-                // Find the biggest area to scale
-                float scale;
-                /*if (sh / (float)img.Height < sw / (float)img.Width)
-                {
-                    scale = sh / (float)img.Height;
-                }
-                else
-                {*/
-                    scale = sw / (float)img.Width;
-                //}
-                int width = (int)(img.Width * zoom * scale),
-                    height = (int)(img.Height * zoom * scale);
-                y = height;
-
-                sb.Begin();
-
-                // Draw first segment
-                x %= width;
-
-                sb.Draw(img, new Rectangle(x+xOff, Level.sCurrent.mGameCam.invertScreenY(y+yOff), width, height), Color.White);
-
-                // Draw further segments
-                if (pl.mXRepeat)
-                {
-                    int c = (sw-(width+x));
-                    for (int j = 1; j <= c; j++)
-                    {
-                        sb.Draw(img, new Rectangle(x + xOff + (j * width), Level.sCurrent.mGameCam.invertScreenY(y + yOff), width, height), Color.White);
-                    }
-                }
-                if (pl.mYRepeat)
-                {
-                    int c = (sh - (height + y));
-                    for (int j = 1; j <= c; j++)
-                    {
-                        sb.Draw(img, new Rectangle(x + xOff, Level.sCurrent.mGameCam.invertScreenY(y + yOff + (j * height)), width, height), Color.White);
-                    }
-                }
                 sb.End();
             }
             

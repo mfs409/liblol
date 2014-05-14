@@ -112,6 +112,11 @@ namespace LOL
             return Math.Min(Math.Max(0, Center.Y - (Viewport.Y /ZoomToScale() / 2)), World.Y-(Viewport.Y/ZoomToScale()));
         }
 
+        protected float vpNormalTop()
+        {
+            return World.Y-vpTop();
+        }
+
         // Viewport + Center affect this
         public int drawX(float x)
         {
@@ -126,6 +131,14 @@ namespace LOL
             y -= vpTop();
             y *= ZoomToScale();
             return invertScreenY(screenY(y));
+        }
+
+        // Viewport + Center affect this
+        public int drawNormalY(float y)
+        {
+            y = vpNormalTop();
+            y *= ZoomToScale();
+            return screenY(y);
         }
 
         // Viewport affects this
