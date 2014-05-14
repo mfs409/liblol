@@ -109,6 +109,7 @@ namespace LOL
         public ProjectilePool(int size, float width, float height, String imgName, float velocityX,
                 float velocityY, float offsetX, float offsetY, int strength, int zIndex,
                 bool isCircle) {
+            
             // set up the pool
             mPool = new Projectile[size];
             // don't draw all projectiles in same place...
@@ -161,10 +162,11 @@ namespace LOL
             b.mRangeFrom.X = h.XPosition + mOffset.X;
             b.mRangeFrom.Y = h.YPosition + mOffset.Y;
             b.mBody.Awake = true;
+            b.mBody.Enabled = true;
             b.mBody.SetTransform(b.mRangeFrom, 0);
 
             // give the projectile velocity, show it, play sound, animate the hero
-            b.UpdateVelocity(mVelocity.X, mVelocity.Y);
+            b.UpdateVelocity(mVelocity.X*10, mVelocity.Y*10);
             b.mVisible = true;
             if (mThrowSound != null)
                 mThrowSound.Play();
@@ -256,6 +258,8 @@ namespace LOL
          *            travel
          */
         public static void setRange(float distance) {
+            // Convert from "meters" to pixels
+            distance *= 10;
             foreach (Projectile p in Level.sCurrent.mProjectilePool.mPool)
                 p.mRange = distance;
         }
@@ -351,7 +355,7 @@ namespace LOL
         public static void configure(int size, float width, float height, String imgName,
                 float velocityX, float velocityY, float offsetX, float offsetY, int strength,
                 int zIndex, bool isCircle) {
-            Level.sCurrent.mProjectilePool = new ProjectilePool(size, width, height, imgName,
+            Level.sCurrent.mProjectilePool = new ProjectilePool(size, width, height*5, imgName,
                     velocityX, velocityY, offsetX, offsetY, strength, zIndex, isCircle);
         }
 
