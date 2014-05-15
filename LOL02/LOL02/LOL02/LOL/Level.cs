@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +37,22 @@ using System.Diagnostics;
 
 namespace LOL
 {
+    /**
+     * A Level is a playable portion of the game. Levels can be infinite, or they
+     * can have an end goal. Level has two components. One is the part that is
+     * visible to the game designer, which involves some limited control over the
+     * camera and music, and the ability to request that custom code run after a
+     * fixed amount of time. These timers can also be attached to a specific enemy,
+     * if desired. Internally, Level is responsible for managing a set of cameras
+     * used to display everything that appears on the screen. It is also responsible
+     * for keeping track of everything on the screen (game entities and Controls).
+     */
     public class Level: GameScreen
     {
         /**
          * The music, if any
          */
         private Music mMusic;
-
-        public bool ShowArrows = false;
-
-        //internal delegate void AABBDelegate(Fixture f, bool b);
 
         /**
          * Whether the music is playing or not
@@ -92,12 +125,7 @@ namespace LOL
          * This camera is for drawing entities that exist in the physics world
          */
         public OrthographicCamera mGameCam;
-
-        /**
-         * This camera is for drawing parallax backgrounds that go behind the world
-         */
-        public ParallaxCamera mBgCam;
-
+        
         /**
          * This is the sprite that the camera chases
          */
@@ -112,12 +140,7 @@ namespace LOL
          * The maximum y value of the camera
          */
         public int mCamBoundY;
-
-        /**
-         * The debug renderer, for printing circles and boxes for each entity
-         */
-        private Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
-
+        
         /**
          * The spritebatch for drawing all texture regions and fonts
          */
@@ -139,11 +162,6 @@ namespace LOL
          * find it
          */
         private PhysicsSprite mHitSprite = null;
-
-        /**
-         * This callback is used to get a touched entity from the physics world
-         */
-        //private AABBDelegate mTouchCallback;
 
         /**
          * Our polling-based multitouch uses this array to track the previous state
@@ -181,6 +199,9 @@ namespace LOL
          */
         public delegate void Action ();
         
+        /**
+         * Touch screen input delegate
+         */
         internal delegate void OnTouch(float x, float y);
 
         /**
@@ -188,6 +209,15 @@ namespace LOL
          */
         public class TouchAction {
             public TouchAction() { }
+
+            /**
+             * Creates a new TouchAction encapsulator with handling for touch pressing, moving, 
+             * and releasing functionality.
+             * 
+             * @param onDown a TouchDelegate for when input is first read as being pressed
+             * @param onMove a TouchDelegate for when input is detected as moving across the screen
+             * @param onUp a TouchDelegate for when input is released from the touch screen
+             */
             public TouchAction(TouchDelegate onDown, TouchDelegate onMove, TouchDelegate onUp)
             {
                 this.OnDown = onDown;
@@ -195,66 +225,25 @@ namespace LOL
                 this.OnUp = onUp;
             }
 
+            /**
+             * Delegate for receiving touch input and X and Y coordinates of the input
+             */
             public delegate void TouchDelegate (float x, float y);
+
             /**
              * Run this when the screen is initially pressed down
-             * 
-             * @param x The X coordinate, in pixels, of the touch
-             * @param y The Y coordinate, in pixels, of the touch
              */
             public TouchDelegate OnDown;
 
             /**
              * Run this when the screen is held down
-             * 
-             * @param x The X coordinate, in pixels, of the touch
-             * @param y The Y coordinate, in pixels, of the touch
              */
             public TouchDelegate OnMove;
 
             /**
              * Run this when the screen is released
-             * 
-             * @param x The X coordinate, in pixels, of the touch
-             * @param y The Y coordinate, in pixels, of the touch
              */
             public TouchDelegate OnUp;
-        }
-
-        /**
-         * Custom camera that can do parallax... taken directly from GDX tests
-         */
-        // NOTE: UNCOMMENT
-        public class ParallaxCamera: OrthographicCamera {
-            /**
-             * This matrix helps us compute the view
-             */
-            private Matrix parallaxView = new Matrix(); // NOTE: Matrix4
-
-            /**
-             * This matrix helps us compute the camera.combined
-             */
-            private Matrix parallaxCombined = new Matrix();
-
-            /**
-             * A temporary vector for doing the calculations
-             */
-            private Vector3 tmp = new Vector3();
-
-            /**
-             * Another temporary vector for doing the calculations
-             */
-            private Vector3 tmp2 = new Vector3();
-
-            /**
-             * The constructor simply forwards to the OrthographicCamera constructor
-             * 
-             * @param viewportWidth Width of the camera
-             * @param viewportHeight Height of the camera
-             */
-            public ParallaxCamera(float viewportWidth, float viewportHeight): base(viewportWidth, viewportHeight) {
-                
-            }
         }
 
         /**
@@ -279,27 +268,17 @@ namespace LOL
                 Util.log("Warning", "Your game height is less than 1/10 of the screen height");
 
             // set up the game camera, with 0,0 in the bottom left
-            /*mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
-                    / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
-                    / Physics.PIXEL_METER_RATIO);*/
             mGameCam = new OrthographicCamera(mCamBoundX, mCamBoundY);
             mGameCam.Zoom = 1;
 
             // set up the heads-up display camera
             int camWidth = Lol.sGame.mConfig.getScreenWidth();
             int camHeight = Lol.sGame.mConfig.getScreenHeight();
-
-            // the background camera is like the hudcam
-            mBgCam = new ParallaxCamera(camWidth, camHeight);
-            mBgCam.Zoom = 1;
-
+            
             // set up the sprite sets
             for (int i = 0; i < 5; ++i)
                 mSprites.Add(new List<Renderable>());
-
-            // set up the callback for finding out who in the physics world was
-            // touched
-            
+                 
             
             // When debug mode is on, print the frames per second
             if (Lol.sGame.mConfig.showDebugBoxes())
@@ -308,6 +287,11 @@ namespace LOL
                         Lol.sGame.mConfig.getDefaultFontBlue(), 12);
         }
 
+        /**
+         * Callback for touch input on a Physics object.
+         * 
+         * @param fixture the Fixture that was touched
+         */
         internal bool mTouchCallback (Fixture fixture) {
                     // if the hit point is inside the fixture of the body we report
                     // it
@@ -363,6 +347,12 @@ namespace LOL
                 mLastTouches[i] = true;
         }
 
+        /**
+         * Override for Update-based actions in the Level where Update may be called
+         * fewer times than Draw.
+         * 
+         * @param gameTime the time since the game was launched
+         */
         public override void Update(GameTime gameTime)
         {
             
@@ -373,13 +363,11 @@ namespace LOL
          * This code is called every 1/45th of a second to update the game state and
          * re-draw the screen
          * 
-         * @param delta The time since the last render
+         * @param gameTime the time since the game was launched
          */
         public override void Draw (GameTime gameTime) {
             // Make sure the music is playing... Note that we start music before the
             // PreScene shows
-            //Lol.sGame.GraphicsDevice.Clear(Color.Green);
-            //return;
             playMusic();
 
             // Handle pauses due to pre, pause, or post scenes... Note that these
@@ -432,8 +420,7 @@ namespace LOL
             {
                 mGameCam.chase(mChaseEntity);
             }
-            mGameCam.update();
-
+            
             // draw parallax backgrounds
             mBackground.renderLayers(mSpriteBatch);
 
@@ -447,11 +434,6 @@ namespace LOL
                 }
             mSpriteBatch.End();
 
-            // DEBUG: draw outlines of physics entities
-            // NOTE: UNCOMMENT
-            //if (Lol.sGame.mConfig.showDebugBoxes())
-            //    mDebugRender.render(mWorld, mGameCam.combined);
-
             // draw Controls
             mSpriteBatch.Begin();
             foreach (Controls.HudEntity c in mControls)
@@ -460,30 +442,10 @@ namespace LOL
 
             // DEBUG: render Controls' outlines
             if (Lol.sGame.mConfig.showDebugBoxes()) {
-                mShapeRender.begin();
                 mShapeRender.Color = Color.Red;
                 foreach (Controls.HudEntity pe in mControls)
                     if (pe.mRange != null)
                         mShapeRender.rect(pe.mRange.X, pe.mRange.Y, pe.mRange.Width, pe.mRange.Height);
-                mShapeRender.end();
-            }
-
-            // Draw arrows
-            if (ShowArrows)
-            {
-                mSpriteBatch.Begin();
-                int w = Lol.sGame.mConfig.getScreenWidth(),
-                    h = Lol.sGame.mConfig.getScreenHeight();
-                Texture2D LeftBtn = Media.getImage("leftarrow")[0],
-                    RightBtn = Media.getImage("rightarrow")[0],
-                    UpBtn = Media.getImage("leftarrow")[0],
-                    DownBtn= Media.getImage("rightarrow")[0];
-                int btnWidth = 64, btnHeight = 64;
-                mSpriteBatch.Draw(LeftBtn, new Rectangle(0, (h-btnHeight)/2, btnWidth, btnHeight), Color.White);
-                mSpriteBatch.Draw(RightBtn, new Rectangle(w - btnWidth, (h - btnHeight) / 2, btnWidth, btnHeight), Color.White);
-                mSpriteBatch.Draw(UpBtn, new Rectangle((w - btnWidth) / 2, 0, btnWidth, btnHeight), Color.White);
-                mSpriteBatch.Draw(DownBtn, new Rectangle((w - btnWidth) / 2, h - btnHeight, btnWidth, btnHeight), Color.White);
-                mSpriteBatch.End();
             }
         }
 
@@ -567,7 +529,6 @@ namespace LOL
          */
         private void touchDown(int x, int y) {
             // check for HUD touch first...
-            Util.log("TOUCHDOWN-Y", y.ToString());
             
             // Convert to level coordinates
             float fx = Level.sCurrent.mGameCam.levelX(Level.sCurrent.mGameCam.touchX(x)),
@@ -588,7 +549,7 @@ namespace LOL
             // touch, hitSprite will change
             mHitSprite = null;
             mTouchVec = new Vector3(fx,fy,0);
-            Util.log("ltouch", fx + "," + fy);
+            
             Vector2 minTouch = new Vector2(mTouchVec.X, mTouchVec.Y), maxTouch = new Vector2(mTouchVec.X, mTouchVec.Y);
             minTouch.X -= 0.1f;
             minTouch.Y -= 0.1f;

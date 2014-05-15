@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +34,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LOL
 {
+    /**
+     * LOL Games have a heads-up display (hud). The hud is a place for displaying
+     * text and drawing touchable buttons, so that as the hero moves through the
+     * level, the buttons and text can remain at the same place on the screen
+     */
     public class Controls
     {
         /**
@@ -14,6 +46,9 @@ namespace LOL
          * pressable or not
          */
         public class HudEntity {
+            /**
+             * Timestamp of last call to HudEntity's Draw
+             */
             public DateTime LastRender = DateTime.MinValue;
 
             /**
@@ -39,12 +74,13 @@ namespace LOL
              */
             public Texture2D mImage;
 
+            /**
+             * Render delegate used for overloading the call to Draw
+             */
             public RenderDelegate Render = null;
 
             /**
              * Run this code when this HUD entity is down-pressed
-             * 
-             * @param vec The coordinates of the touch
              */
             public PressDelegate OnDownPress = null;
 
@@ -83,8 +119,19 @@ namespace LOL
                 mIsTouchable = false;
             }
 
+            /**
+             * Render delegate for passing a delegate to draw
+             */
             public delegate void RenderDelegate(SpriteBatch sb);
+
+            /**
+             * Delegate for pressing down on a HudEntity
+             */
             public delegate void PressDelegate(Vector3 vv);
+
+            /**
+             * Delegate for releasing touch on a HudEntity
+             */
             public delegate void UpPressDelegate();
 
             
@@ -92,8 +139,6 @@ namespace LOL
             /**
              * Run this code when this HUD entity is still being pressed, after a
              * down press has already been observed.
-             * 
-             * @param vec The coordinates of the touch
              */
             public PressDelegate OnHold;
 
@@ -781,7 +826,6 @@ namespace LOL
             HudEntity he = new HudEntity(imgName, x, y, width, height);
             he.OnDownPress = delegate(Vector3 vv) {
                     Level.sCurrent.mProjectilePool.throwFixed(h);
-                    //Util.log("THROW", "THROW ME!");
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -865,9 +909,7 @@ namespace LOL
                     float curzoom = Level.sCurrent.mGameCam.Zoom;
                     if (curzoom < maxZoom) {
                         Level.sCurrent.mGameCam.Zoom *= 2;
-                        Level.sCurrent.mBgCam.Zoom *= 2;
                     }
-                    System.Diagnostics.Debug.WriteLine("ZOOM OUT");
                 };
             Level.sCurrent.mControls.Add(he);
         }
@@ -890,9 +932,7 @@ namespace LOL
                     float curzoom = Level.sCurrent.mGameCam.Zoom;
                     if (curzoom > minZoom) {
                         Level.sCurrent.mGameCam.Zoom /= 2;
-                        Level.sCurrent.mBgCam.Zoom /= 2;
                     }
-                    System.Diagnostics.Debug.WriteLine("ZOOM IN");
                 };
             Level.sCurrent.mControls.Add(he);
         }

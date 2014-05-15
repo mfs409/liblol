@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +35,22 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 namespace LOL
 {
+    /**
+     * The Util class stores a few helper functions that we use inside of LOL, and a
+     * few simple wrappers that we give to the game developer
+     */
     public class Util
     {
+        /**
+         * Last touch position
+         */
         public static Vector2 touch = Vector2.Zero;
 
+        /**
+         * Checks if a touch input was released.
+         * 
+         * @return true if touch input was released, false otherwise
+         */
         public static bool justTouched()
         {
             TouchCollection tc = TouchPanel.GetState();
@@ -27,38 +66,75 @@ namespace LOL
             return false;
         }
 
-        // Converts coords from LibGDX/Android dimensions to WP8 dimensions
+        /**
+         * Converts coords from LibGDX/Android dimensions to WP8 dimensions.
+         * 
+         * @param x the X coordinate in LibGDX dimensions
+         * @return x in WP8 dimensions
+         */
         public static int ax(int x)
         {
             int w = Lol.sGame.lolConfig().getScreenWidth();
             return (int)((float)x / 480 * w);
         }
 
+        /**
+         * Converts height from LibGDX/Android dimensions to WP8 dimensions.
+         * 
+         * @param y the height in LibGDX dimensions
+         * @return height in WP8 dimensions
+         */
         public static int ah(int y)
         {
             return ay(y, false);
         }
 
+        /**
+         * Converts Y from LibGDX/Android dimensions to WP8 dimensions.
+         * 
+         * @param y the Y coordinate in LibGDX dimensions
+         * @return y to WP8 dimensions
+         */
         public static int ay(int y)
         {
             return ay(y, true);
         }
 
+        /**
+         * Converts coords from LibGDX/Android dimensions to WP8 dimensions.
+         * 
+         * @param y the Y coordinate in LibGDX dimensions
+         * @param useHeight invert Y (true)
+         * @return y to WP8 dimensions
+         */
         public static int ay(int y, bool useHeight)
         {
             int h = Lol.sGame.lolConfig().getScreenHeight();
             if (useHeight)
             {
-                return h - (int)((float)y / 320 * h); //210
+                return h - (int)((float)y / 320 * h);
             }
-            return (int)((float)y / 320 * h); //210
+            return (int)((float)y / 320 * h);
         }
 
+        /**
+         * Converts coords from LibGDX/Android dimensions to WP8 dimensions.
+         * 
+         * @param y the Y coordinate in LibGDX dimensions
+         * @param h the height of the object for inversion purposes
+         * @return y inverted and converted to WP8 dimensions
+         */
         public static int ay(int y, int h)
         {
             return ay(y, true) - ah(h);
         }
 
+        /**
+         * Logs a message to the Debug console.
+         * 
+         * @param type the type of message
+         * @param msg the message to log
+         */
         public static void log(String type, String msg)
         {
             System.Diagnostics.Debug.WriteLine("[" + type + "]: " + msg);
@@ -114,7 +190,6 @@ namespace LOL
             AnonRenderable r= new AnonRenderable(delegate(SpriteBatch sb, GameTime elapsed) {
                     bf.Color = new Color(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
                     sb.DrawString(bf.Face, message, new Vector2(x, y), bf.Color);
-                    // NOTE: drawMultiline was here
                 });
             return r;
         }
@@ -237,7 +312,6 @@ namespace LOL
                 // NOTE: Can't scale text
                 //bf.setScale(1 / Physics.PIXEL_METER_RATIO);
                 sb.DrawString(bf.Face, text, new Vector2(Level.sCurrent.mGameCam.drawX(x), Level.sCurrent.mGameCam.drawY(y) + bf.Face.MeasureString(text).Y), bf.Color);
-
                 //bf.setScale(1);
             });
             Level.sCurrent.addSprite(r, zIndex);

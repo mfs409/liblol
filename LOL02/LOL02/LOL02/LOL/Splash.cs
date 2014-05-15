@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +35,11 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 namespace LOL
 {
+    /**
+     * The splash screen is the first thing the user sees when playing the game. It
+     * has buttons for playing, getting help, and quitting. It is configured through
+     * a SplashConfiguration object.
+     */
     public class Splash: GameScreen
     {
         /**
@@ -122,8 +154,6 @@ namespace LOL
             playMusic();
 
             // If there is a new down-touch, figure out if it was to a button
-            //TouchCollection tc = TouchPanel.GetState();
-            //if (tc.Count > 0) {
             if (Util.justTouched())
             {
                 // translate the touch into camera coordinates
@@ -152,9 +182,7 @@ namespace LOL
 
             // now draw the screen...
             Lol.sGame.GraphicsDevice.Clear(Color.Black);
-            mCamera.update();
-            // NOTE: UNCOMMENT
-            //mSpriteBatch.setProjectionMatrix(mCamera.combined);
+            
             // NOTE: BlendState may need to be changed (replaces enableBlending() in LibGDX)
             mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
             if (mImage != null)
@@ -164,16 +192,12 @@ namespace LOL
 
             // DEBUG: show where the buttons' boxes are
             if (Lol.sGame.mConfig.showDebugBoxes()) {
-                //mShapeRender.setProjectionMatrix(mCamera.combined);
-                //mShapeRender.begin(ShapeType.Line);
-                //mShapeRender.setColor(Color.Red);
                 if (mPlay != null)
                     mShapeRender.rect(mPlay.X, mPlay.Y, mPlay.Width, mPlay.Height);
                 if (mHelp != null)
                     mShapeRender.rect(mHelp.X, mHelp.Y, mHelp.Width, mHelp.Height);
                 if (mQuit != null)
                     mShapeRender.rect(mQuit.X, mQuit.Y, mQuit.Width, mQuit.Height);
-               // mShapeRender.end();
             }
         }
 

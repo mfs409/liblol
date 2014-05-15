@@ -91,3 +91,9 @@ C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\
 C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\WMAppManifest.xml
 C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.xap
 C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\XapCacheFile.xml
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\LOL02.xap
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\XapCacheFile.xml
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\bin\Windows Phone\Debug\AppManifest.xaml
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\WMAppManifest.xml.g
+C:\Users\Todd Suess\Documents\GitHub\liblol\LOL02\LOL02\LOL02\obj\Windows Phone\Debug\WMAppManifest.xml
+bin\Windows Phone\Debug\

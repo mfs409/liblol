@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +34,24 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LOL
 {
+    /**
+     * Draws vector shapes in a specific color.
+     */
     public class ShapeRenderer
     {
+        /**
+         * Color of the lines
+         */
         public Color Color = Color.Red;
 
-        public void begin()
-        {
-
-        }
-
+        /**
+         * Draws a rectangle.
+         * 
+         * @param x the X coordinate
+         * @param y the Y coordinate
+         * @param w the width
+         * @param h the height
+         */
         public void rect(int x, int y, int w, int h)
         {
             int bw = 2; // Border width
@@ -29,21 +65,6 @@ namespace LOL
             spriteBatch.Draw(t, new Rectangle(r.Left, r.Top, r.Width, bw), Color); // Top
             spriteBatch.Draw(t, new Rectangle(r.Left, r.Bottom, r.Width, bw), Color); // Bottom
             spriteBatch.End();
-            /*VertexPositionColor[] verts = new VertexPositionColor[5];
-            verts[0] = new VertexPositionColor(new Vector3(x, y, 0), Color);
-            verts[1] = new VertexPositionColor(new Vector3(x+w, y, 0), Color);
-            verts[2] = new VertexPositionColor(new Vector3(x+w, y+h, 0), Color);
-            verts[3] = new VertexPositionColor(new Vector3(x, y+h, 0), Color);
-            verts[4] = new VertexPositionColor(new Vector3(x, y, 0), Color);
-            VertexBuffer buf = new VertexBuffer(Lol.sGame.GraphicsDevice, typeof(VertexPositionColor), 5, BufferUsage.WriteOnly);
-            buf.SetData<VertexPositionColor>(verts);
-            Lol.sGame.GraphicsDevice.SetVertexBuffer(buf);
-            Lol.sGame.GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 1);*/
-        }
-
-        public void end()
-        {
-
         }
     }
 }

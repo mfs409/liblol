@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +34,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LOL
 {
+    /**
+     * The Background class provides a way to declare images that go in the
+     * background of the game, and which automatically pan and repeat
+     */
     public class Background
     {
         /**
@@ -91,8 +122,7 @@ namespace LOL
             // Draw each layer
             foreach (ParallaxLayer pl in mLayers)
             {
-                // NOTE: May need to check coordinates match (given in levels, convert to pixels)
-                int xOff = (int)pl.mXOffset, yOff = (int)Level.sCurrent.mGameCam.levelY(pl.mYOffset);
+                int xOff = (int)Level.sCurrent.mGameCam.levelX(pl.mXOffset), yOff = (int)Level.sCurrent.mGameCam.levelY(pl.mYOffset);
                 float xSpeed = pl.mXSpeed, ySpeed = pl.mYSpeed;
 
                 Texture2D img = pl.mImage;
@@ -111,7 +141,7 @@ namespace LOL
                     int c = (int)Math.Ceiling((float)sw/width)+1;
                     x = (int)(Level.sCurrent.mGameCam.drawX(xOff) * xSpeed) % width;
                     y = Level.sCurrent.mGameCam.drawY(yOff);
-                    //Util.log("MID", y+" -- "+height);
+                    
                     for (int j = 0; j < c; j++)
                     {
                         sb.Draw(img, new Rectangle(x+(width*j), y-height, width, height), Color.White);
@@ -119,11 +149,10 @@ namespace LOL
                 }
                 else if (pl.mYRepeat)
                 {
-                    //Util.log("DRAWY", sh+" --> "+Level.sCurrent.mGameCam.drawNormalY(0).ToString());
                     int c = (int)Math.Ceiling((float)sh / height)+1;
                     x = Level.sCurrent.mGameCam.drawX(xOff);
                     y = -(int)(Level.sCurrent.mGameCam.drawNormalY(-yOff)*ySpeed) % height;
-                    //y = Level.sCurrent.mGameCam.invertScreenY(y);
+                    
                     for (int j = 0; j < c; j++)
                     {
                         sb.Draw(img, new Rectangle(x, y+(height*j), width, height), Color.White);
@@ -138,66 +167,6 @@ namespace LOL
 
                 sb.End();
             }
-            
-            /*// center camera on mGameCam's camera
-            float x = Level.sCurrent.mGameCam.drawX(0);
-            float y = Level.sCurrent.mGameCam.drawY(0);
-            
-            // draw the layers
-            foreach (ParallaxLayer pl in mLayers) {
-                // each layer has a different projection, based on its speed
-                sb.Begin();
-                // Figure out what to draw for layers that repeat in the x dimension
-                if (pl.mXRepeat) {
-                    // get the camera center, translate to pixels, and scale by
-                    // speed
-                    float startX = x * pl.mXSpeed;
-                    // subtract one and a half screens worth of repeated pictures
-                    float screensBefore = 1.5f;
-                    // adjust by zoom... for every level of zoom, we need that much
-                    // more beforehand
-                    screensBefore += Level.sCurrent.mBgCam.Zoom;
-                    startX -= (screensBefore * Lol.sGame.mConfig.getScreenWidth());
-                    // round down to nearest screen width
-                    startX = startX - startX % pl.mImage.Width;  // NOTE: replacing getRegionWidth()
-                    float currX = startX;
-                    // draw picture repeatedly until we've drawn enough to cover the
-                    // screen. "enough" can be approximated as 2 screens plus twice
-                    // the zoom factor
-                    float limit = 2 + 2 * Level.sCurrent.mBgCam.ZoomToScale();
-                    while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
-                        sb.Draw(pl.mImage, new Vector2(currX, pl.mYOffset), Color.White);
-                        currX += pl.mImage.Width;
-                    }
-                }
-                // Figure out what to draw for layers that repeat in the y dimension
-                else if (pl.mYRepeat) {
-                    // get the camera center, translate, and scale
-                    float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
-                    // subtract enough screens, as above
-                    startY -= (1.5f + Level.sCurrent.mBgCam.Zoom) * Lol.sGame.mConfig.getScreenHeight();
-                    // round
-                    startY = startY - startY % pl.mImage.Height;
-                    float currY = startY;
-                    // draw a bunch of repeated images
-                    float limit = 2 + 2 * Level.sCurrent.mBgCam.Zoom;
-                    while (currY < startY + limit * Lol.sGame.mConfig.getScreenHeight()) {
-                        sb.Draw(pl.mImage, new Vector2(pl.mXOffset, currY), Color.White);
-                        currY += pl.mImage.Height;
-                    }
-                }
-                // draw a layer that never changes based on the camera's X
-                // coordinate
-                else if (pl.mXSpeed == 0) {
-                    sb.Draw(pl.mImage, new Vector2(-pl.mImage.Width / 2 + pl.mXOffset, pl.mYOffset), Color.White);
-                }
-                // draw a layer that never changes based on the camera's Y
-                // coordinate
-                else if (pl.mYSpeed == 0) {
-                    sb.Draw(pl.mImage, new Vector2(pl.mXOffset, -pl.mImage.Height / 2 + pl.mYOffset), Color.White);
-                }
-                sb.End();
-            }*/
         }
 
         /*

@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +34,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace LOL
 {
+    /**
+     * Animation is a way of describing a set of images that can be used to animate
+     * an entity. Animations consist of regions of an image, the indices that should
+     * be played, and the time each should be shown. For example, suppose there is
+     * an image "glowball.png" with 5 frames. The "cells" will consist of the 5
+     * frames (numbered 0 to 4) that can be shown. We can then set an animation such
+     * as (0,300)->(2,100)->(0,600)->(4,100) to indicate that the animation should
+     * show the 0th frame for 300 milliseconds, then the 2nd frame for 100
+     * milliseconds, then the 0th frame for 600 milliseconds, then the 4th frame for
+     * 100 milliseconds.
+     */
     public class Animation
     {
         /**

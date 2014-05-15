@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +39,14 @@ using System.Xml.Linq;
 
 namespace LOL
 {
+    /**
+     * SVG allows the game designer to load SVG line drawings into a game. SVG line
+     * drawings can be made in Inkscape. In LOL, we do not use line drawings to the
+     * full extend. We only use them to define a set of invisible lines for a
+     * simple, stationary obstacle. You should draw a picture on top of your line
+     * drawing, so that the player knows that there is a physics entity on the
+     * screen.
+     */
     public class Svg
     {
         /**
@@ -280,7 +315,7 @@ namespace LOL
             // set the line position as an offset from center, rotate it, and
             // connect a fixture
             line.Set(new Vector2(-len / 2, 0), new Vector2(len / 2, 0));
-            b.CreateFixture(line, null);//.Dispose();
+            b.CreateFixture(line, null);
            
             //mFixture.shape.dispose(); // i.e., line.dispose()
             b.SetTransform(new Vector2(centerX, centerY), (float)Math.Atan2(y2 - y1, x2 - x1));
@@ -327,7 +362,7 @@ namespace LOL
          * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
          * as an immobile obstacle. Note that not all Inkscape drawings will work as
          * expected... if you need more power than this provides, you'll have to
-         * modify SVG.java
+         * modify Svg.cs
          * 
          * @param svgName Name of the svg file to load. It should be in the assets
          *            folder

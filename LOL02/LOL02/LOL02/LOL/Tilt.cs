@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +34,16 @@ using Microsoft.Devices.Sensors;
 
 namespace LOL
 {
+    /**
+     * Tilt provides a mechanism for moving entities on the screen. To use tilt, you
+     * must enable() it for a level, and also indicate that some entities move via
+     * tilting. Tilt has two flavors: tilt can cause gravitational effects, where a
+     * sustained tilt causes acceleration (this is the default), or it can cause
+     * sprites to move with a fixed velocity. Be careful when using tilt. Different
+     * phones' accelerometers vary in terms of sensitivity. It is possible to set
+     * multipliers and/or caps on the effect of Tilt, but these may not suffice to
+     * make your game playable and enjoyable.
+     */
     public class Tilt
     {
         /**
@@ -30,16 +67,30 @@ namespace LOL
          */
         public List<PhysicsSprite> mAccelEntities = new List<PhysicsSprite>();
 
-        // Accelerometer readings
+        /**
+         * Accelerometer input
+         */
         protected Accelerometer accel;
+
+        /**
+         * Accelerometer readings
+         */
         float ax = 0, ay = 0, az = 0;
         
+        /**
+         * Constructor
+         */
         public Tilt ()
         {
             accel = new Accelerometer();
             accel.CurrentValueChanged += new EventHandler<SensorReadingEventArgs<AccelerometerReading>>(AccelUpdate);
         }
 
+        /**
+         * Called when the Accelerometer values change
+         * @param o the sending object
+         * @param e the accelerometer readings
+         */
         protected void AccelUpdate (Object o, SensorReadingEventArgs<AccelerometerReading> e)
         {
             ax = (float) e.SensorReading.Acceleration.X;
@@ -64,16 +115,16 @@ namespace LOL
                 
                 if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Default) {
                     xGravity = -ax;
-                    yGravity = -ay/**-1*/;
+                    yGravity = -ay;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeRight) {
                     xGravity = ay;
-                    yGravity = -ax/* * -1*/;
+                    yGravity = -ax;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.Portrait) {
                     xGravity = ax;
-                    yGravity = ay /** -1*/;
+                    yGravity = ay;
                 } else if (Lol.sGame.Window.CurrentOrientation == DisplayOrientation.LandscapeLeft) {
                     xGravity = -ay;
-                    yGravity = ax /** -1*/;
+                    yGravity = ax;
                 }
             //}
 

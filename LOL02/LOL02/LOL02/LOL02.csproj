@@ -189,7 +189,6 @@
     <Compile Include="LolConfig.cs" />
     <Compile Include="LOL\Animation.cs" />
     <Compile Include="LOL\Background.cs" />
-    <Compile Include="LOL\Box2DDebugRenderer.cs" />
     <Compile Include="LOL\Chooser.cs" />
     <Compile Include="LOL\ChooserConfiguration.cs" />
     <Compile Include="LOL\Controls.cs">
@@ -219,7 +218,6 @@
     <Compile Include="LOL\PreScene.cs" />
     <Compile Include="LOL\Projectile.cs" />
     <Compile Include="LOL\ProjectilePool.cs" />
-    <Compile Include="LOL\QueryCallback.cs" />
     <Compile Include="LOL\Renderable.cs" />
     <Compile Include="LOL\Route.cs" />
     <Compile Include="LOL\RouteDriver.cs" />

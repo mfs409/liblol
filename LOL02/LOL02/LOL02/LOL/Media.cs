@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +36,21 @@ using Microsoft.Xna.Framework.Media;
 
 namespace LOL
 {
+    /**
+     * The MediaFactory provides a mechanism for registering all of our images,
+     * sounds, and fonts Strictly speaking, we can re-create fonts on the fly
+     * whenever we need to. Caching them here is an optimization.
+     */
     public class Media
     {
+        /**
+         * Get the font described by the file name and font size
+         * 
+         * @param fontFileName The filename for the font. This should be in the
+         *            android project's assets, and should end in .ttf
+         * @param fontSize The size to display
+         * @return A font object that can be used to render text
+         */
         public static Font getFont(String name, int size)
         {
             // TODO: Incorporate size into font-name for SpriteFont assets
@@ -171,8 +211,6 @@ namespace LOL
          *            repeat when it reaches the end
          */
         static public void registerMusic(String musicName, bool loop) {
-            //Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
-            //m.setLooping(loop);
             Song s = Lol.sGame.Content.Load<Song>(musicName);
             Music m = new Music(s, loop);
             sTunes[musicName] = m;
@@ -188,7 +226,6 @@ namespace LOL
          *            should be of type "ogg".
          */
         static public void registerSound(String soundName) {
-            //Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
             sSounds[soundName] = Lol.sGame.Content.Load<SoundEffect>(soundName);
         }
 
