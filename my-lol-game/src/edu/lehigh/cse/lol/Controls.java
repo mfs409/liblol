@@ -1021,4 +1021,85 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(he);
     }
+    
+    /**
+     * Display text corresponding to a fact saved for the current level
+     * 
+     * @param key The key to look up in the Fact store
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
+     * @param prefix Text to put before the fact
+     * @param suffix Text to put after the fact
+     */
+    static public void addLevelFact(final String key, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        Control he = new Control(red, green, blue) {
+            @Override
+            void render(SpriteBatch sb) {
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + " " + suffix, bf, sb);
+            }
+        };
+        Level.sCurrent.mControls.add(he);
+    }
+
+    /**
+     * Display text corresponding to a fact saved for the current game session
+     * 
+     * @param key The key to look up in the Fact store
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
+     * @param prefix Text to put before the fact
+     * @param suffix Text to put after the fact
+     */
+    static public void addSessionFact(final String key, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        Control he = new Control(red, green, blue) {
+            @Override
+            void render(SpriteBatch sb) {
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + " " + suffix, bf, sb);
+            }
+        };
+        Level.sCurrent.mControls.add(he);
+    }
+
+    /**
+     * Display text corresponding to a fact saved for the game
+     * 
+     * @param key The key to look up in the Fact store
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname The name of the font file to use
+     * @param red The red portion of text color (0-255)
+     * @param green The green portion of text color (0-255)
+     * @param blue The blue portion of text color (0-255)
+     * @param size The font size to use (20 is usually a good value)
+     * @param prefix Text to put before the fact
+     * @param suffix Text to put after the fact
+     */
+    static public void addGameFact(final String key, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        Control he = new Control(red, green, blue) {
+            @Override
+            void render(SpriteBatch sb) {
+                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + " " + suffix, bf, sb);
+            }
+        };
+        Level.sCurrent.mControls.add(he);
+    }
 }

@@ -218,6 +218,10 @@ public abstract class Lol extends Game {
     @Override
     public void create() {
         sGame = this;
+        
+        // reset session facts
+        Facts.resetSessionFacts();
+        
         // get configuration
         mConfig = lolConfig();
         mChooserConfig = chooserConfig();

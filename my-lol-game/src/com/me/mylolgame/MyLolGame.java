@@ -33,6 +33,7 @@ import edu.lehigh.cse.lol.ChooserConfiguration;
 import edu.lehigh.cse.lol.Controls;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Enemy;
+import edu.lehigh.cse.lol.Facts;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.HelpLevel;
 import edu.lehigh.cse.lol.Hero;
@@ -2925,7 +2926,8 @@ public class MyLolGame extends Lol {
          * This level fleshes out some more poke-to-move stuff. Now we'll say
          * that once a hero starts moving, the player must re-poke the hero
          * before it can be given a new destination. Also, the hero will keep
-         * moving after the screen is released.
+         * moving after the screen is released.  We will also show the Fact 
+         * interface.
          */
         else if (whichLevel == 79) {
             Level.configure(48, 32);
@@ -2946,6 +2948,15 @@ public class MyLolGame extends Lol {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressTrigger().
             Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
+           
+            Controls.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
+            Controls.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
+            Controls.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");            
+
+            Controls.addTriggerControl(40, 90, 40, 40, "red.png", 748);
+            Controls.addTriggerControl(40, 140, 40, 40, "red.png", 749);
+            Controls.addTriggerControl(40, 190, 40, 40, "red.png", 750);
+
         }
 
         /*
@@ -3418,6 +3429,15 @@ public class MyLolGame extends Lol {
                 PauseScene.addText("Current score " + Score.getGoodiesCollected1(), 255, 255, 255,
                         "arial.ttf", 20);
                 PauseScene.show();
+            }
+            else if (id == 748) {
+            	Facts.putLevelFact("level test", 1+Facts.getLevelFact("level test"));            	
+            }
+            else if (id == 749) {
+            	Facts.putSessionFact("session test", 1+Facts.getSessionFact("session test"));
+            }
+            else if (id == 750) {
+            	Facts.putGameFact("game test", 1+Facts.getGameFact("game test"));
             }
         }
     }

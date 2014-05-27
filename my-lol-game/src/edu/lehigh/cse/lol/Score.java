@@ -227,8 +227,8 @@ public class Score {
                 Lol.sGame.levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
 
                 // if we won, unlock the next level
-                if (win && readUnlocked() == Lol.sGame.mCurrLevelNum)
-                    saveUnlocked(Lol.sGame.mCurrLevelNum + 1);
+                if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
+                    Facts.putGameFact("unlocked", Lol.sGame.mCurrLevelNum + 1);
 
                 // drop everything from the hud
                 Level.sCurrent.mControls.clear();
@@ -237,31 +237,10 @@ public class Score {
                 Timer.instance().clear();
 
                 // display the PostScene, which provides a pause before we
-                // retry/start
-                // the next level
+                // retry/start the next level
                 Level.sCurrent.mPostScene.setWin(win);
             }
         };
-    }
-
-    /**
-     * save the value of 'unlocked' so that the next time we play, we don't have
-     * to start at level 0
-     * 
-     * @param value The value to save as the most recently unlocked level
-     */
-    static void saveUnlocked(int value) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
-        prefs.putInteger("unlock", value);
-        prefs.flush();
-    }
-
-    /**
-     * read the current value of 'unlocked' to know how many levels to unlock
-     */
-    static int readUnlocked() {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
-        return prefs.getInteger("unlock", 1);
     }
 
     /*

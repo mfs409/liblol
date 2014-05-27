@@ -325,6 +325,10 @@ public class Level extends ScreenAdapter {
     Level(int width, int height) {
         // clear any timers
         Timer.instance().clear();
+        
+        // reset the per-level object store
+        Facts.resetLevelFacts();
+        
         // save the singleton and camera bounds
         sCurrent = this;
         mCamBoundX = width;
