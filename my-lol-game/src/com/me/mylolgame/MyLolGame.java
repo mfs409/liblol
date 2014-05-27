@@ -2951,7 +2951,7 @@ public class MyLolGame extends Lol {
            
             Controls.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Controls.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
-            Controls.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");            
+            Controls.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
 
             Controls.addTriggerControl(40, 90, 40, 40, "red.png", 748);
             Controls.addTriggerControl(40, 140, 40, 40, "red.png", 749);

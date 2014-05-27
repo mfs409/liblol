@@ -509,7 +509,8 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.setProjectionMatrix(mHudCam.combined);
         mSpriteBatch.begin();
         for (Control c : mControls)
-            c.render(mSpriteBatch);
+        	if (c.mIsActive)
+        		c.render(mSpriteBatch);
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
@@ -639,7 +640,7 @@ public class Level extends ScreenAdapter {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control pe : mControls) {
-            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+            if (pe.mIsTouchable && pe.mIsActive && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
