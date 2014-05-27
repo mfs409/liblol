@@ -350,8 +350,8 @@ public class Svg {
             Array<Element> gs = root.getChildrenByName("g");
             for (Element g : gs) {
                 // Get the g's transform attribute
-                String xform = g.getAttribute("transform");
-                if (xform != null)
+                String xform = g.getAttribute("transform", "");
+                if (!xform.equals(""))
                     processTransform(xform);
                 // get each g's paths
                 Array<Element> paths = g.getChildrenByName("path");
