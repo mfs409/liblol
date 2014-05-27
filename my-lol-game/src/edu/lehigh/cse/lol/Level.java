@@ -46,7 +46,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Controls.HudEntity;
+import edu.lehigh.cse.lol.Controls.Control;
 
 import java.util.ArrayList;
 
@@ -115,7 +115,7 @@ public class Level extends ScreenAdapter {
     /**
      * The controls / heads-up-display
      */
-    ArrayList<HudEntity> mControls = new ArrayList<HudEntity>();
+    ArrayList<Control> mControls = new ArrayList<Control>();
 
     /**
      * Events that get processed on the next render, then discarded
@@ -504,7 +504,7 @@ public class Level extends ScreenAdapter {
         mHudCam.update();
         mSpriteBatch.setProjectionMatrix(mHudCam.combined);
         mSpriteBatch.begin();
-        for (HudEntity c : mControls)
+        for (Control c : mControls)
             c.render(mSpriteBatch);
         mSpriteBatch.end();
 
@@ -513,7 +513,7 @@ public class Level extends ScreenAdapter {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            for (HudEntity pe : mControls)
+            for (Control pe : mControls)
                 if (pe.mRange != null)
                     mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
             mShapeRender.end();
@@ -634,7 +634,7 @@ public class Level extends ScreenAdapter {
     private void touchDown(int x, int y) {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (HudEntity pe : mControls) {
+        for (Control pe : mControls) {
             if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
@@ -666,7 +666,7 @@ public class Level extends ScreenAdapter {
     private void touchMove(int x, int y) {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (HudEntity pe : mControls) {
+        for (Control pe : mControls) {
             if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
@@ -692,7 +692,7 @@ public class Level extends ScreenAdapter {
     void touchUp(int x, int y) {
         // check for HUD touch first
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (HudEntity pe : mControls) {
+        for (Control pe : mControls) {
             if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 pe.onUpPress();
                 return;

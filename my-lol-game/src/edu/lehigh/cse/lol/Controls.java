@@ -46,7 +46,7 @@ public class Controls {
      * This is for handling everything that gets drawn on the HUD, whether it is
      * pressable or not
      */
-    static class HudEntity {
+    public static class Control {
         /**
          * Should we run code when this HudEntity is touched?
          */
@@ -80,7 +80,7 @@ public class Controls {
          * @param width The width of the Hud Entity
          * @param height The height of the Hud Entity
          */
-        HudEntity(String imgName, int x, int y, int width, int height) {
+        Control(String imgName, int x, int y, int width, int height) {
             // set up the image to display
             //
             // NB: this will fail gracefully (no crash) for invalid file names
@@ -100,7 +100,7 @@ public class Controls {
          * @param green The green portion of text color (0-255)
          * @param blue The blue portion of text color (0-255)
          */
-        HudEntity(int red, int green, int blue) {
+        Control(int red, int green, int blue) {
             mColor.r = ((float)red) / 256;
             mColor.g = ((float)green) / 256;
             mColor.b = ((float)blue) / 256;
@@ -203,7 +203,7 @@ public class Controls {
             final int y, String fontName, final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -234,7 +234,7 @@ public class Controls {
             final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
-        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -274,7 +274,7 @@ public class Controls {
             String fontName, final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
-        Level.sCurrent.mControls.add(new HudEntity(red, green, blue) {
+        Level.sCurrent.mControls.add(new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -310,7 +310,7 @@ public class Controls {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -356,7 +356,7 @@ public class Controls {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -394,7 +394,7 @@ public class Controls {
     static public void addStopwatch(final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -437,7 +437,7 @@ public class Controls {
     static public void addStrengthMeter(final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -463,7 +463,7 @@ public class Controls {
     static public void addDistanceMeter(final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -489,7 +489,7 @@ public class Controls {
     public static void addProjectileCount(final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        HudEntity he = new HudEntity(red, green, blue) {
+        Control he = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -513,7 +513,7 @@ public class Controls {
      *            button
      */
     public static void addPauseButton(int x, int y, int width, int height, String imgName) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 PauseScene.show();
@@ -537,7 +537,7 @@ public class Controls {
      */
     public static void addMoveButton(int x, int y, int width, int height, String imgName,
             final PhysicsSprite entity, final float dx, final float dy) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Vector2 v = entity.mBody.getLinearVelocity();
@@ -658,7 +658,7 @@ public class Controls {
     public static void addTurboButton(int x, int y, int width, int height, String imgName,
             final int rateDownX, final int rateDownY, final int rateUpX, final int rateUpY,
             final PhysicsSprite entity) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Vector2 v = entity.mBody.getLinearVelocity();
@@ -701,7 +701,7 @@ public class Controls {
      */
     public static void addDampenedMotionButton(int x, int y, int width, int height, String imgName,
             final float rateX, final float rateY, final float dampening, final PhysicsSprite entity) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Vector2 v = entity.mBody.getLinearVelocity();
@@ -733,7 +733,7 @@ public class Controls {
      */
     public static void addCrawlButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.crawlOn();
@@ -760,7 +760,7 @@ public class Controls {
      */
     public static void addJumpButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.jump();
@@ -784,7 +784,7 @@ public class Controls {
      */
     public static void addThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h, final int milliDelay) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             long mLastThrow;
 
             @Override
@@ -819,7 +819,7 @@ public class Controls {
      */
     public static void addSingleThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Level.sCurrent.mProjectilePool.throwFixed(h);
@@ -851,7 +851,7 @@ public class Controls {
      */
     public static void addVectorThrowButton(int x, int y, int width, int height, String imgName,
             final Hero h, final long milliDelay) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             long mLastThrow;
 
             @Override
@@ -889,7 +889,7 @@ public class Controls {
      */
     public static void addVectorSingleThrowButton(int x, int y, int width, int height,
             String imgName, final Hero h) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
@@ -917,7 +917,7 @@ public class Controls {
      */
     public static void addZoomOutButton(int x, int y, int width, int height, String imgName,
             final float maxZoom) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
@@ -943,7 +943,7 @@ public class Controls {
      */
     public static void addZoomInButton(int x, int y, int width, int height, String imgName,
             final float minZoom) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
@@ -969,7 +969,7 @@ public class Controls {
      */
     public static void addRotateButton(int x, int y, int width, int height, String imgName,
             final float rate, final Hero h) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 h.increaseRotation(rate);
@@ -994,7 +994,7 @@ public class Controls {
      *            button
      */
     public static void addImage(int x, int y, int width, int height, String imgName) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height);
+        Control he = new Control(imgName, x, y, width, height);
         he.mIsTouchable = false;
         Level.sCurrent.mControls.add(he);
     }
@@ -1013,7 +1013,7 @@ public class Controls {
      */
     public static void addTriggerControl(int x, int y, int width, int height, String imgName,
             final int id) {
-        HudEntity he = new HudEntity(imgName, x, y, width, height) {
+        Control he = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
                 Lol.sGame.onControlPressTrigger(id, Lol.sGame.mCurrLevelNum);
