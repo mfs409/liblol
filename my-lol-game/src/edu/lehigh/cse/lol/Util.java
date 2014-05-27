@@ -151,7 +151,7 @@ public class Util {
      * @param elasticity Elasticity of the rectangle. When in doubt, use 0
      * @param friction Friction of the rectangle. When in doubt, use 1
      */
-    static public void drawBoundingBox(int x0, int y0, int x1, int y1, String imgName,
+    static public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName,
             float density, float elasticity, float friction) {
         // draw four rectangles and we're good
         Obstacle bottom = Obstacle.makeAsBox(x0 - 1, y0 - 1, Math.abs(x0 - x1) + 2, 1, imgName);
@@ -180,7 +180,7 @@ public class Util {
      * @param zIndex The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *            and 2. By default, everything goes to plane 0
      */
-    public static void drawPicture(final int x, final int y, final int width, final int height,
+    public static void drawPicture(final float x, final float y, final float width, final float height,
             final String imgName, int zIndex) {
         Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
     }
