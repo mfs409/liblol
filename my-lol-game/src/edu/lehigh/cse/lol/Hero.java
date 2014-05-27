@@ -132,7 +132,7 @@ public class Hero extends PhysicsSprite {
      * @param imgName The name of the file that has the default image for this
      *            hero
      */
-    private Hero(float width, float height, String imgName) {
+    protected Hero(float width, float height, String imgName) {
         super(imgName, width, height);
         Level.sCurrent.mScore.mHeroesCreated++;
     }

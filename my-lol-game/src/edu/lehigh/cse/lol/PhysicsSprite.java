@@ -51,6 +51,9 @@ import edu.lehigh.cse.lol.Animation.AnimationDriver;
 import edu.lehigh.cse.lol.Level.Action;
 import edu.lehigh.cse.lol.Level.TouchAction;
 
+/**
+ * PhysicsSprite is the base class upon which every game entity is built
+ */
 public abstract class PhysicsSprite implements Renderable {
     /**
      * Physics body for this PhysicsSprite

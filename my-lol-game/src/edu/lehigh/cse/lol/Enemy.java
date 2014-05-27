@@ -93,7 +93,7 @@ public class Enemy extends PhysicsSprite {
      * @param isCircle true if this should use a circle underneath for its
      *            collision detection, and false if a box should be used
      */
-    private Enemy(float width, float height, String imgName) {
+    protected Enemy(float width, float height, String imgName) {
         super(imgName, width, height);
         Level.sCurrent.mScore.mEnemiesCreated++;
     }

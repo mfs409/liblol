@@ -65,7 +65,7 @@ public class Goodie extends PhysicsSprite {
      * @param height height of this Obstacle
      * @param tr image to use for this Obstacle
      */
-    private Goodie(float width, float height, String imgName) {
+    protected Goodie(float width, float height, String imgName) {
         super(imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;
