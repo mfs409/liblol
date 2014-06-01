@@ -9,6 +9,7 @@
     <get src="${domain}/sources/gdx-sources.jar" dest="${root}/libs/"/>
     <get src="${domain}/gdx.jar" dest="${root}/libs/"/>
     <get src="${domain}/extensions/gdx-freetype/gdx-freetype.jar" dest="${root}/libs/"/>
+    <get src="${domain}/extensions/gdx-box2d/gdx-box2d.jar" dest="${root}/libs/"/>
   </target>
 
   <target name="desktop">
@@ -20,6 +21,8 @@
     <get src="${domain}/gdx-natives.jar" dest="${root}-desktop/libs/"/>
     <get src="${domain}/extensions/gdx-freetype/gdx-freetype.jar" dest="${root}-desktop/libs/"/>
     <get src="${domain}/extensions/gdx-freetype/gdx-freetype-natives.jar" dest="${root}-desktop/libs/"/>
+    <get src="${domain}/extensions/gdx-box2d/gdx-box2d.jar" dest="${root}/libs/"/>
+    <get src="${domain}/extensions/gdx-box2d/gdx-box2d-natives.jar" dest="${root}/libs/"/>
   </target>
 
   <target name="android">
@@ -38,6 +41,10 @@
     <get src="${domain}/extensions/gdx-freetype/armeabi/libgdx-freetype.so" dest="${root}-android/libs/armeabi"/>
     <get src="${domain}/extensions/gdx-freetype/armeabi-v7a/libgdx-freetype.so" dest="${root}-android/libs/armeabi-v7a"/>
     <get src="${domain}/extensions/gdx-freetype/x86/libgdx-freetype.so" dest="${root}-android/libs/x86"/>
+
+    <get src="${domain}/extensions/gdx-box2d/armeabi/libgdx-box2d.so" dest="${root}-android/libs/armeabi"/>
+    <get src="${domain}/extensions/gdx-box2d/armeabi-v7a/libgdx-box2d.so" dest="${root}-android/libs/armeabi-v7a"/>
+    <get src="${domain}/extensions/gdx-box2d/x86/libgdx-box2d.so" dest="${root}-android/libs/x86"/>
   </target>
   
   <target name="all" depends="basic,desktop,android"/>

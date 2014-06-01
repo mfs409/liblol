@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="libs/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="/my-lol-game/libs/gdx-freetype.jar"/>
 	<classpathentry kind="lib" path="libs/gdx-freetype-natives.jar"/>
+	<classpathentry kind="lib" path="/my-lol-game/libs/gdx-box2d-natives.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

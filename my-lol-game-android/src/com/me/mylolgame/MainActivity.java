@@ -11,7 +11,6 @@ public class MainActivity extends AndroidApplication {
         super.onCreate(savedInstanceState);
 
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
-        cfg.useGL20 = true;
         cfg.useAccelerometer = true;
 
         initialize(new MyLolGame(), cfg);

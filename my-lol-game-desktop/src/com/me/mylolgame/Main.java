@@ -10,7 +10,6 @@ public class Main {
         cfg.title = c.getGameTitle();
         cfg.width = c.getScreenWidth();
         cfg.height = c.getScreenHeight();
-        cfg.useGL20 = true;
         new LwjglApplication(new MyLolGame(), cfg);
     }
 }
