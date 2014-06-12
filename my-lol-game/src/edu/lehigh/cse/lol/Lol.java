@@ -35,8 +35,6 @@ package edu.lehigh.cse.lol;
 // invincibility runs out while jumping), and we don't have invincible+X or jump+crawl
 // animation
 
-// TODO: the unlock mechanism is untested
-
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 
 // TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
@@ -45,10 +43,25 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.input.GestureDetector.GestureListener;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
-public abstract class Lol extends Game {
-    /**
+public abstract class Lol extends Game implements GestureListener {
+	/**
+	 * This interface is used to store items that can be rendered
+	 */
+	interface Renderable {
+	    /**
+	     * Render something to the screen
+	     * 
+	     * @param sb The SpriteBatch to use for rendering
+	     * @param elapsed The time since the last render
+	     */
+	    void render(SpriteBatch sb, float elapsed);
+	}
+
+	/**
      * The current mode of the program
      */
     private Modes mMode;
@@ -267,6 +280,91 @@ public abstract class Lol extends Game {
     }
 
     /*
+     * Handlers for touch events
+     */
+    
+    /**
+     * This is an internal method for handling screen presses. User code should
+     * never call this.
+     */
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling screen taps. User code should
+     * never call this.
+     */
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling long screen presses. User code should
+     * never call this.
+     */
+    @Override
+    public boolean longPress(float x, float y) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling screen flings. User code should
+     * never call this.
+     */
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling pan events. User code should
+     * never call this.
+     */
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling the end of a pan event. User code should
+     * never call this.
+     */
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * This is an internal method for handling zooming. User code should
+     * never call this.
+     */
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        // TODO
+    	return false;
+    }
+
+    /**
+     * This is an internal method for handling screen pinches. User code should
+     * never call this.
+     */
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /*
      * PUBLIC INTERFACE
      */
 
@@ -403,17 +501,4 @@ public abstract class Lol extends Game {
      * @param h The hero whose strength just changed
      */
     abstract public void onStrengthChangeTrigger(int whichLevel, Hero h);
-}
-
-/**
- * This interface is used to store items that can be rendered
- */
-interface Renderable {
-    /**
-     * Render something to the screen
-     * 
-     * @param sb The SpriteBatch to use for rendering
-     * @param elapsed The time since the last render
-     */
-    void render(SpriteBatch sb, float elapsed);
 }

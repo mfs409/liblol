@@ -54,14 +54,14 @@ public class Util {
      * @param imgName The file name for the image, or ""
      * @return A Renderable of the image
      */
-    static Renderable makePicture(final float x, final float y, final float width,
+    static Lol.Renderable makePicture(final float x, final float y, final float width,
             final float height, String imgName) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
         TextureRegion[] trs = Media.getImage(imgName);
         final TextureRegion tr = (trs != null) ? trs[0] : null;
-        return new Renderable() {
+        return new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 if (tr != null)
@@ -84,10 +84,10 @@ public class Util {
      * @param size The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final int x, final int y, final String message, final int red,
+    static Lol.Renderable makeText(final int x, final int y, final String message, final int red,
             final int green, final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        return new Renderable() {
+        return new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
@@ -109,14 +109,14 @@ public class Util {
      * @param size The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final String message, final int red, final int green,
+    static Lol.Renderable makeText(final String message, final int red, final int green,
             final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = Lol.sGame.mConfig.getScreenWidth() / 2
                 - bf.getMultiLineBounds(message).width / 2;
         final float y = Lol.sGame.mConfig.getScreenHeight() / 2
                 + bf.getMultiLineBounds(message).height / 2;
-        return new Renderable() {
+        return new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
@@ -204,7 +204,7 @@ public class Util {
     public static void drawText(final int x, final int y, final String text, final int red,
             final int green, final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        Renderable r = new Renderable() {
+        Lol.Renderable r = new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);

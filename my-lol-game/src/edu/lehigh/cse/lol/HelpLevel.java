@@ -49,7 +49,7 @@ public class HelpLevel extends ScreenAdapter {
     /**
      * All the sprites that need to be drawn
      */
-    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
+    private final ArrayList<Lol.Renderable> mSprites = new ArrayList<Lol.Renderable>();
 
     /**
      * The camera to use when drawing
@@ -111,7 +111,7 @@ public class HelpLevel extends ScreenAdapter {
         mHelpCam.update();
         mSb.setProjectionMatrix(mHelpCam.combined);
         mSb.begin();
-        for (Renderable c : mSprites)
+        for (Lol.Renderable c : mSprites)
             c.render(mSb, 0);
         mSb.end();
     }

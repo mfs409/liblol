@@ -109,7 +109,7 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<Renderable>> mSprites = new ArrayList<ArrayList<Renderable>>(
+    private final ArrayList<ArrayList<Lol.Renderable>> mSprites = new ArrayList<ArrayList<Lol.Renderable>>(
             5);
 
     /**
@@ -361,7 +361,7 @@ public class Level extends ScreenAdapter {
 
         // set up the sprite sets
         for (int i = 0; i < 5; ++i)
-            mSprites.add(new ArrayList<Renderable>());
+            mSprites.add(new ArrayList<Lol.Renderable>());
 
         // set up the callback for finding out who in the physics world was
         // touched
@@ -495,8 +495,8 @@ public class Level extends ScreenAdapter {
         // Render the entities in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);
         mSpriteBatch.begin();
-        for (ArrayList<Renderable> a : mSprites)
-            for (Renderable r : a)
+        for (ArrayList<Lol.Renderable> a : mSprites)
+            for (Lol.Renderable r : a)
                 r.render(mSpriteBatch, delta);
         mSpriteBatch.end();
 
@@ -583,7 +583,7 @@ public class Level extends ScreenAdapter {
      * @param zIndex The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addSprite(Renderable r, int zIndex) {
+    void addSprite(Lol.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).add(r);
@@ -595,7 +595,7 @@ public class Level extends ScreenAdapter {
      * @param r The entity to remove
      * @param zIndex The z plane where it is expected to be
      */
-    void removeSprite(Renderable r, int zIndex) {
+    void removeSprite(Lol.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).remove(r);
