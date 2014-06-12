@@ -3036,6 +3036,34 @@ public class MyLolGame extends Lol {
             Enemy e = Enemy.makeAsCircle(15, 0, 5, 5, "redball.png");
             e.setDefeatByJump();
         }
+        
+        /*
+         * Demonstrate the ability to set up paddles that rotate back and forth
+         */
+        else if (whichLevel == 83) {
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.addText("Avoid revolving obstacles", 255, 255, 255, "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            
+            Hero h = Hero.makeAsCircle(5, 0, 2, 6, "greenball.png");
+            h.setMoveByTilting();
+            
+            // Note: you must give density to the revolving part...
+            Obstacle revolving = Obstacle.makeAsBox(20, 10, 2, 8, "red.png");
+            revolving.setPhysics(1, 0, 0);
+            Obstacle anchor = Obstacle.makeAsBox(20,  19,  2, 2, "blueball.png");
+            
+            // TODO: play with timers to change direction of velocity?
+            revolving.setRevoluteJoint(anchor, 0, 0, 0, 6);
+            revolving.setRevoluteJointLimits(1.7f, -1.7f);
+            revolving.setRevoluteJointMotor(4, Float.POSITIVE_INFINITY);
+            
+            Destination.makeAsCircle(40, 30, 2, 2, "mustardball.png");
+            
+            Score.setVictoryDestination(1);
+        }
     }
 
     /**
@@ -3431,13 +3459,13 @@ public class MyLolGame extends Lol {
                 PauseScene.show();
             }
             else if (id == 748) {
-            	Facts.putLevelFact("level test", 1+Facts.getLevelFact("level test"));            	
+                Facts.putLevelFact("level test", 1+Facts.getLevelFact("level test"));                
             }
             else if (id == 749) {
-            	Facts.putSessionFact("session test", 1+Facts.getSessionFact("session test"));
+                Facts.putSessionFact("session test", 1+Facts.getSessionFact("session test"));
             }
             else if (id == 750) {
-            	Facts.putGameFact("game test", 1+Facts.getGameFact("game test"));
+                Facts.putGameFact("game test", 1+Facts.getGameFact("game test"));
             }
         }
     }

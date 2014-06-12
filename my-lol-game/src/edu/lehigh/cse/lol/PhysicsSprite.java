@@ -41,8 +41,10 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -215,6 +217,16 @@ public abstract class PhysicsSprite implements Renderable {
      */
     Vector2 tmpVert = new Vector2();
 
+    /**
+     * A definition for when we attach a revolute joint to this entity
+     */
+    RevoluteJointDef mRevJointDef;
+    
+    /**
+     * A joint that allows this entity to revolve around another 
+     */
+    Joint mRevJoint;
+    
     /**
      * When a PhysicsSprite collides with another PhysicsSprite, and that
      * collision is intended to cause some custom code to run, we use this
@@ -1294,5 +1306,58 @@ public abstract class PhysicsSprite implements Renderable {
         Level.sCurrent.removeSprite(this, mZIndex);
         mZIndex = zIndex;
         Level.sCurrent.addSprite(this, mZIndex);
+    }
+    
+    /**
+     * Create a revolute joint between this entity and some other entity
+     * 		
+     * @param anchor The entity around which this entity will rotate
+     * @param anchorX The X coordinate (relative to the center of the entity) where the joint fuses to the anchor
+     * @param anchorY The Y coordinate (relative to the center of the entity) where the joint fuses to the anchor
+     * @param localAnchorX The X coordinate (relative to the center of the entity) where the joint fuses to this entity
+     * @param localAnchorY The Y coordinate (relative to the center of the entity) where the joint fuses to this entity
+     */
+    public void setRevoluteJoint(PhysicsSprite anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
+    	// make the body dynamic
+    	setCanFall();
+    	// create joint, connect anchors
+        mRevJointDef = new RevoluteJointDef();
+        mRevJointDef.bodyA = anchor.mBody;
+        mRevJointDef.bodyB = mBody;
+        mRevJointDef.localAnchorA.set(anchorX, anchorY);
+        mRevJointDef.localAnchorB.set(localAnchorX, localAnchorY);
+        // rotator and anchor don't collide
+        mRevJointDef.collideConnected = false;
+        mRevJointDef.referenceAngle = 0;
+        mRevJointDef.enableLimit = false;
+        mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+    }
+    
+    /**
+     * Attach a motor to make a joint turn
+     * @param motorSpeed Speed in radians per second
+     * @param motorTorque torque of the motor... when in doubt, go with Float.POSITIVE_INFINITY
+     */
+    public void setRevoluteJointMotor(float motorSpeed, float motorTorque) {
+    	// destroy the previously created joint, change the definition, re-create the joint
+    	Level.sCurrent.mWorld.destroyJoint(mRevJoint);
+        mRevJointDef.enableMotor = true;
+        mRevJointDef.motorSpeed = motorSpeed;
+        mRevJointDef.maxMotorTorque = motorTorque;
+        mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+    }
+    
+    /**
+     * Set upper and lower bounds on the rotation of the joint
+     * @param upper The upper bound in radians
+     * @param lower The lower bound in radians
+     */
+    public void setRevoluteJointLimits(float upper, float lower) {
+    	// destroy the previously created joint, change the definition, re-create the joint
+    	Level.sCurrent.mWorld.destroyJoint(mRevJoint);
+    	mRevJointDef.upperAngle = upper;
+    	mRevJointDef.lowerAngle = lower;
+    	mRevJointDef.enableLimit = true;
+    	mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
     }
 }
