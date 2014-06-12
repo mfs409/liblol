@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.Hashtable;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -34,8 +36,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-
-import java.util.Hashtable;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 /**
  * The MediaFactory provides a mechanism for registering all of our images,
@@ -100,7 +101,11 @@ public class Media {
         // message
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
                 Gdx.files.internal(fontFileName));
-        f = generator.generateFont(fontSize, FreeTypeFontGenerator.DEFAULT_CHARS, false);
+        FreeTypeFontParameter fp = new FreeTypeFontParameter();
+        fp.size = fontSize;
+        fp.characters = FreeTypeFontGenerator.DEFAULT_CHARS;
+        fp.flip = false;
+        f = generator.generateFont(fp);
         generator.dispose();
         sFonts.put(key, f);
         return f;
