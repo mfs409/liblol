@@ -3489,7 +3489,6 @@ public class MyLolGame extends Lol {
             // the range 0..7, depending on strength
             h.setImage("colorstar.png", s - 1);
         }
-
     }
 
     /**
