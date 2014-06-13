@@ -235,6 +235,29 @@ public abstract class Lol implements ApplicationListener {
     }
 
     /**
+     * Sets the current screen by showing it and resizing it. Hides any previous
+     * screen.
+     * 
+     * User code should never call this method.
+     * 
+     * @param screen
+     *            The new screen. May be null
+     */
+    void setScreen(Screen screen) {
+        if (mScreen != null)
+            mScreen.hide();
+        mScreen = screen;
+        if (mScreen != null) {
+            mScreen.show();
+            mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+    }
+
+    /*
+     * APPLICATIONLISTENER OVERRIDES
+     */
+
+    /**
      * This is an internal method for initializing a game. User code should
      * never call this.
      */
@@ -258,10 +281,6 @@ public abstract class Lol implements ApplicationListener {
         // show the splash screen
         doSplash();
     }
-
-    /*
-     * APPLICATIONLISTENER SUPPORT
-     */
 
     /**
      * This is an internal method for quitting a game. User code should never
@@ -323,25 +342,6 @@ public abstract class Lol implements ApplicationListener {
     public void resize(int width, int height) {
         if (mScreen != null)
             mScreen.resize(width, height);
-    }
-
-    /**
-     * Sets the current screen by showing it and resizing it. Hides any previous
-     * screen.
-     * 
-     * User code should never call this method.
-     * 
-     * @param screen
-     *            The new screen. May be null
-     */
-    public void setScreen(Screen screen) {
-        if (mScreen != null)
-            mScreen.hide();
-        mScreen = screen;
-        if (mScreen != null) {
-            mScreen.show();
-            mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }
     }
 
     /*
