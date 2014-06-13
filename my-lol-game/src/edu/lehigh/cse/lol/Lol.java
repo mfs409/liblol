@@ -39,14 +39,13 @@ package edu.lehigh.cse.lol;
 
 // TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
 
-import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 
-public abstract class Lol implements ApplicationListener {
+public abstract class Lol extends Game {
     /**
      * This interface is used to store items that can be rendered
      */
@@ -61,11 +60,6 @@ public abstract class Lol implements ApplicationListener {
          */
         void render(SpriteBatch sb, float elapsed);
     }
-
-    /**
-     * The screen currently being shown.
-     */
-    private Screen mScreen;
 
     /**
      * The current mode of the program
@@ -175,7 +169,7 @@ public abstract class Lol implements ApplicationListener {
      * Use this to quit the app
      */
     void doQuit() {
-        mScreen.dispose();
+        getScreen().dispose();
         Gdx.app.exit();
     }
 
@@ -234,27 +228,8 @@ public abstract class Lol implements ApplicationListener {
         }
     }
 
-    /**
-     * Sets the current screen by showing it and resizing it. Hides any previous
-     * screen.
-     * 
-     * User code should never call this method.
-     * 
-     * @param screen
-     *            The new screen. May be null
-     */
-    void setScreen(Screen screen) {
-        if (mScreen != null)
-            mScreen.hide();
-        mScreen = screen;
-        if (mScreen != null) {
-            mScreen.show();
-            mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }
-    }
-
     /*
-     * APPLICATIONLISTENER OVERRIDES
+     * APPLICATIONLISTENER (GAME) OVERRIDES
      */
 
     /**
@@ -288,8 +263,7 @@ public abstract class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mScreen != null)
-            mScreen.hide();
+        super.dispose();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -310,38 +284,7 @@ public abstract class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        if (mScreen != null)
-            mScreen.render(Gdx.graphics.getDeltaTime());
-    }
-
-    /**
-     * Invoked when the game pauses (due to OS event). User code should never
-     * call this method.
-     */
-    @Override
-    public void pause() {
-        if (mScreen != null)
-            mScreen.pause();
-    }
-
-    /**
-     * Invoked when the game resumes. User code should never call this method.
-     */
-    @Override
-    public void resume() {
-        if (mScreen != null)
-            mScreen.resume();
-    }
-
-    /**
-     * Invoked when the screen resizes.
-     * 
-     * User code should never call this method.
-     */
-    @Override
-    public void resize(int width, int height) {
-        if (mScreen != null)
-            mScreen.resize(width, height);
+        super.render();
     }
 
     /*
