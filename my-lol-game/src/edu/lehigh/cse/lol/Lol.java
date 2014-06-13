@@ -49,66 +49,34 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public abstract class Lol implements ApplicationListener, GestureListener {
-	/**
-	 * This interface is used to store items that can be rendered
-	 */
-	interface Renderable {
-	    /**
-	     * Render something to the screen
-	     * 
-	     * @param sb The SpriteBatch to use for rendering
-	     * @param elapsed The time since the last render
-	     */
-	    void render(SpriteBatch sb, float elapsed);
-	}
+    /**
+     * This interface is used to store items that can be rendered
+     */
+    interface Renderable {
+        /**
+         * Render something to the screen
+         * 
+         * @param sb
+         *            The SpriteBatch to use for rendering
+         * @param elapsed
+         *            The time since the last render
+         */
+        void render(SpriteBatch sb, float elapsed);
+    }
 
-	/**
-	 * The LolScreen provides a way for us to forward gesture events to the
-	 * current screen, so that they can be handled in a per-Screen way.
-	 */
-	interface LolScreen extends Screen {
-	    /**
-	     * TODO
-	     */
-	    boolean touchDown(float x, float y, int pointer, int button);
+    /**
+     * The GestureScreen is both a Screen and a GestureListener, so that we can
+     * forward gesture events as appropriate
+     */
+    interface GestureScreen extends Screen, GestureListener {
+    }
 
-	    /**
-	     * TODO
-	     */
-	    public boolean tap(float x, float y, int count, int button);
+    /**
+     * The screen currently being shown.
+     */
+    private GestureScreen mScreen;
 
-	    /**
-	     * TODO
-	     */
-	    public boolean longPress(float x, float y);
-
-	    /**
-	     * TODO
-	     */
-	    public boolean fling(float velocityX, float velocityY, int button);
-
-	    /**
-	     * TODO
-	     */
-	    public boolean pan(float x, float y, float deltaX, float deltaY);
-
-	    /**
-	     * TODO
-	     */
-	    public boolean panStop(float x, float y, int pointer, int button);
-
-	    /**
-	     * TODO
-	     */
-	    public boolean zoom(float initialDistance, float distance);
-	}
-	
-	/**
-	 * The screen currently being shown.
-	 */
-	private LolScreen mScreen;
-
-	/**
+    /**
      * The current mode of the program
      */
     private Modes mMode;
@@ -187,7 +155,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     /**
      * Use this to load a playable level.
      * 
-     * @param which The index of the level to load
+     * @param which
+     *            The index of the level to load
      */
     void doPlayLevel(int which) {
         mCurrLevelNum = which;
@@ -200,7 +169,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     /**
      * Use this to load a help level.
      * 
-     * @param which The index of the help level to load
+     * @param which
+     *            The index of the help level to load
      */
     void doHelpLevel(int which) {
         mCurrHelpNum = which;
@@ -223,7 +193,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * vibrates the phone if the configuration says that vibration should be
      * permitted.
      * 
-     * @param millis The amount of time to vibrate
+     * @param millis
+     *            The amount of time to vibrate
      */
     void vibrate(int millis) {
         if (mConfig.getVibration())
@@ -236,7 +207,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     private void handleKeyDown() {
         // if neither BACK nor ESCAPE is being pressed, do nothing, but
         // recognize future presses
-        if (!Gdx.input.isKeyPressed(Keys.BACK) && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+        if (!Gdx.input.isKeyPressed(Keys.BACK)
+                && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             mKeyDown = false;
             return;
         }
@@ -278,10 +250,10 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     @Override
     public void create() {
         sGame = this;
-        
+
         // reset session facts
         Facts.resetSessionFacts();
-        
+
         // get configuration
         mConfig = lolConfig();
         mChooserConfig = chooserConfig();
@@ -299,15 +271,15 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     /*
      * APPLICATIONLISTENER SUPPORT
      */
-    
+
     /**
      * This is an internal method for quitting a game. User code should never
      * call this.
      */
     @Override
     public void dispose() {
-    	if (mScreen != null) 
-    		mScreen.hide();
+        if (mScreen != null)
+            mScreen.hide();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -328,60 +300,63 @@ public abstract class Lol implements ApplicationListener, GestureListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-		if (mScreen != null) 
-			mScreen.render(Gdx.graphics.getDeltaTime());
+        if (mScreen != null)
+            mScreen.render(Gdx.graphics.getDeltaTime());
     }
 
-	/**
-	 * Invoked when the game pauses (due to OS event).  User code should never call this method.
-	 */
-	@Override
-	public void pause () {
-		if (mScreen != null) 
-			mScreen.pause();
-	}
+    /**
+     * Invoked when the game pauses (due to OS event). User code should never
+     * call this method.
+     */
+    @Override
+    public void pause() {
+        if (mScreen != null)
+            mScreen.pause();
+    }
 
-	/**
-	 * Invoked when the game resumes.  User code should never call this method.
-	 */
-	@Override
-	public void resume () {
-		if (mScreen != null) 
-			mScreen.resume();
-	}
+    /**
+     * Invoked when the game resumes. User code should never call this method.
+     */
+    @Override
+    public void resume() {
+        if (mScreen != null)
+            mScreen.resume();
+    }
 
-	/**
-	 * Invoked when the screen resizes.
-	 *   	 
-	 * User code should never call this method.
-	 */
-	@Override
-	public void resize (int width, int height) {
-		if (mScreen != null) 
-			mScreen.resize(width, height);
-	}
+    /**
+     * Invoked when the screen resizes.
+     * 
+     * User code should never call this method.
+     */
+    @Override
+    public void resize(int width, int height) {
+        if (mScreen != null)
+            mScreen.resize(width, height);
+    }
 
-	/** 
-	 * Sets the current screen by showing it and resizing it.  Hides any previous screen.
-	 * 
-	 * User code should never call this method.
-	 * 
-	 * @param screen The new screen.  May be null 
-	 */
-	public void setScreen (LolScreen screen) {
-		if (mScreen != null) 
-			mScreen.hide();
-		mScreen = screen;
-		if (mScreen != null) {
-			mScreen.show();
-			mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		}
-	}
+    /**
+     * Sets the current screen by showing it and resizing it. Hides any previous
+     * screen.
+     * 
+     * User code should never call this method.
+     * 
+     * @param screen
+     *            The new screen. May be null
+     */
+    public void setScreen(GestureScreen screen) {
+        if (mScreen != null)
+            mScreen.hide();
+        mScreen = screen;
+        if (mScreen != null) {
+            mScreen.show();
+            mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+    }
 
-	/*
+    /*
      * GESTURELISTENER SUPPORT
      */
-    
+
     /**
      * This is an internal method for handling screen presses. User code should
      * never call this.
@@ -403,8 +378,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     }
 
     /**
-     * This is an internal method for handling long screen presses. User code should
-     * never call this.
+     * This is an internal method for handling long screen presses. User code
+     * should never call this.
      */
     @Override
     public boolean longPress(float x, float y) {
@@ -433,8 +408,8 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     }
 
     /**
-     * This is an internal method for handling the end of a pan event. User code should
-     * never call this.
+     * This is an internal method for handling the end of a pan event. User code
+     * should never call this.
      */
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
@@ -443,13 +418,13 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     }
 
     /**
-     * This is an internal method for handling zooming. User code should
-     * never call this.
+     * This is an internal method for handling zooming. User code should never
+     * call this.
      */
     @Override
     public boolean zoom(float initialDistance, float distance) {
         // TODO
-    	return false;
+        return false;
     }
 
     /**
@@ -487,14 +462,16 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     /**
      * Describe how to draw the levels of the game
      * 
-     * @param whichLevel The number of the level being drawn
+     * @param whichLevel
+     *            The number of the level being drawn
      */
     abstract public void configureLevel(int whichLevel);
 
     /**
      * Describe how to draw the help scenes
      * 
-     * @param whichScene The number of the help scene being drawn
+     * @param whichScene
+     *            The number of the help scene being drawn
      */
     abstract public void configureHelpScene(int whichScene);
 
@@ -507,20 +484,28 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When a Hero collides with an Obstacle for which a HeroCollideTrigger has
      * been set, this code will run
      * 
-     * @param id The number assigned to the Obstacle's HeroCollideTrigger
-     * @param whichLevel The current level
-     * @param o The obstacle involved in the collision
-     * @param h The hero involved in the collision
+     * @param id
+     *            The number assigned to the Obstacle's HeroCollideTrigger
+     * @param whichLevel
+     *            The current level
+     * @param o
+     *            The obstacle involved in the collision
+     * @param h
+     *            The hero involved in the collision
      */
-    abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
+    abstract public void onHeroCollideTrigger(int id, int whichLevel,
+            Obstacle o, Hero h);
 
     /**
      * When the player touches an entity that has a TouchTrigger attached to it,
      * this code will run
      * 
-     * @param id The number assigned to the entity's TouchTrigger
-     * @param whichLevel The current level
-     * @param o The entity involved in the collision
+     * @param id
+     *            The number assigned to the entity's TouchTrigger
+     * @param whichLevel
+     *            The current level
+     * @param o
+     *            The entity involved in the collision
      */
     abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
 
@@ -528,8 +513,10 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When the player requests a TimerTrigger, and the required time passes,
      * this code will run
      * 
-     * @param id The number assigned to the TimerTrigger
-     * @param whichLevel The current level
+     * @param id
+     *            The number assigned to the TimerTrigger
+     * @param whichLevel
+     *            The current level
      */
     abstract public void onTimerTrigger(int id, int whichLevel);
 
@@ -537,9 +524,12 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When a player requests an EnemyTimerTrigger, and the required time
      * passes, and the enemy is still visible, this code will run
      * 
-     * @param id The number assigned to the EnemyTimerTrigger
-     * @param whichLevel The current level
-     * @param e The enemy to which the timer was attached
+     * @param id
+     *            The number assigned to the EnemyTimerTrigger
+     * @param whichLevel
+     *            The current level
+     * @param e
+     *            The enemy to which the timer was attached
      */
     abstract public void onEnemyTimerTrigger(int id, int whichLevel, Enemy e);
 
@@ -547,9 +537,12 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When an enemy is defeated, this code will run if the enemy has an
      * EnemyDefeatTrigger
      * 
-     * @param id The number assigned to this trigger
-     * @param whichLevel The current level
-     * @param e The enemy who was defeated
+     * @param id
+     *            The number assigned to this trigger
+     * @param whichLevel
+     *            The current level
+     * @param e
+     *            The enemy who was defeated
      */
     abstract public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
 
@@ -557,29 +550,41 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When an obstacle collides with an enemy, if the obstacle has an
      * EnemyCollideTrigger, then this code will run.
      * 
-     * @param id The number assigned to this trigger
-     * @param whichLevel The current level
-     * @param o The obstacle involved in the collision
-     * @param e The enemy involved in the collision
+     * @param id
+     *            The number assigned to this trigger
+     * @param whichLevel
+     *            The current level
+     * @param o
+     *            The obstacle involved in the collision
+     * @param e
+     *            The enemy involved in the collision
      */
-    abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
+    abstract public void onEnemyCollideTrigger(int id, int whichLevel,
+            Obstacle o, Enemy e);
 
     /**
      * When a projectile collides with an obstacle, if the obstacle has a
      * ProjectileCollideTrigger, then this code will run
      * 
-     * @param id The number assigned to this trigger
-     * @param whichLevel The current level
-     * @param o The obstacle involved in the collision
-     * @param p The projectile involved in the collision
+     * @param id
+     *            The number assigned to this trigger
+     * @param whichLevel
+     *            The current level
+     * @param o
+     *            The obstacle involved in the collision
+     * @param p
+     *            The projectile involved in the collision
      */
-    abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
+    abstract public void onProjectileCollideTrigger(int id, int whichLevel,
+            Obstacle o, Projectile p);
 
     /**
      * When a level finishes, this code will run
      * 
-     * @param whichLevel The current level
-     * @param win True if the level was won, false otherwise
+     * @param whichLevel
+     *            The current level
+     * @param win
+     *            True if the level was won, false otherwise
      */
     abstract public void levelCompleteTrigger(int whichLevel, boolean win);
 
@@ -587,8 +592,10 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When a Control is pressed, for which there is a ControlTrigger, this code
      * will run.
      * 
-     * @param id The number assigned to this trigger
-     * @param whichLevel The current level
+     * @param id
+     *            The number assigned to this trigger
+     * @param whichLevel
+     *            The current level
      */
     abstract public void onControlPressTrigger(int id, int whichLevel);
 
@@ -596,8 +603,10 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * When a hero collides with a goodie or enemy, and it leads to the hero's
      * strength changing, we can opt to run this code.
      * 
-     * @param whichLevel The current level
-     * @param h The hero whose strength just changed
+     * @param whichLevel
+     *            The current level
+     * @param h
+     *            The hero whose strength just changed
      */
     abstract public void onStrengthChangeTrigger(int whichLevel, Hero h);
 }

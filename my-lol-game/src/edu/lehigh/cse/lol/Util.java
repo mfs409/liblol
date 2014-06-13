@@ -47,15 +47,20 @@ public class Util {
     /**
      * Create a Renderable that consists of an image
      * 
-     * @param x The X coordinate of the bottom left corner, in pixels
-     * @param y The Y coordinate of the bottom left corner, in pixels
-     * @param width The image width, in pixels
-     * @param height The image height, in pixels
-     * @param imgName The file name for the image, or ""
+     * @param x
+     *            The X coordinate of the bottom left corner, in pixels
+     * @param y
+     *            The Y coordinate of the bottom left corner, in pixels
+     * @param width
+     *            The image width, in pixels
+     * @param height
+     *            The image height, in pixels
+     * @param imgName
+     *            The file name for the image, or ""
      * @return A Renderable of the image
      */
-    static Lol.Renderable makePicture(final float x, final float y, final float width,
-            final float height, String imgName) {
+    static Lol.Renderable makePicture(final float x, final float y,
+            final float width, final float height, String imgName) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
@@ -73,25 +78,35 @@ public class Util {
     /**
      * Create a Renderable that consists of some text to draw
      * 
-     * @param x The X coordinate of the bottom left corner, in pixels
-     * @param y The Y coordinate of the bottom left corner, in pixels
-     * @param message The text to display... note that it can't change on the
-     *            fly
-     * @param red The red component of the font color (0-255)
-     * @param green The green component of the font color (0-255)
-     * @param blue The blue component of the font color (0-255)
-     * @param fontName The font to use
-     * @param size The font size
+     * @param x
+     *            The X coordinate of the bottom left corner, in pixels
+     * @param y
+     *            The Y coordinate of the bottom left corner, in pixels
+     * @param message
+     *            The text to display... note that it can't change on the fly
+     * @param red
+     *            The red component of the font color (0-255)
+     * @param green
+     *            The green component of the font color (0-255)
+     * @param blue
+     *            The blue component of the font color (0-255)
+     * @param fontName
+     *            The font to use
+     * @param size
+     *            The font size
      * @return A Renderable of the text
      */
-    static Lol.Renderable makeText(final int x, final int y, final String message, final int red,
-            final int green, final int blue, String fontName, int size) {
+    static Lol.Renderable makeText(final int x, final int y,
+            final String message, final int red, final int green,
+            final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         return new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
-                bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
+                bf.setColor(((float) red) / 256, ((float) green) / 256,
+                        ((float) blue) / 256, 1);
+                bf.drawMultiLine(sb, message, x,
+                        y + bf.getMultiLineBounds(message).height);
             }
         };
     }
@@ -100,17 +115,22 @@ public class Util {
      * Create a Renderable that consists of some text to draw. The text will be
      * centered vertically and horizontally
      * 
-     * @param message The text to display... note that it can't change on the
-     *            fly
-     * @param red The red component of the font color (0-255)
-     * @param green The green component of the font color (0-255)
-     * @param blue The blue component of the font color (0-255)
-     * @param fontName The font to use
-     * @param size The font size
+     * @param message
+     *            The text to display... note that it can't change on the fly
+     * @param red
+     *            The red component of the font color (0-255)
+     * @param green
+     *            The green component of the font color (0-255)
+     * @param blue
+     *            The blue component of the font color (0-255)
+     * @param fontName
+     *            The font to use
+     * @param size
+     *            The font size
      * @return A Renderable of the text
      */
-    static Lol.Renderable makeText(final String message, final int red, final int green,
-            final int blue, String fontName, int size) {
+    static Lol.Renderable makeText(final String message, final int red,
+            final int green, final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = Lol.sGame.mConfig.getScreenWidth() / 2
                 - bf.getMultiLineBounds(message).width / 2;
@@ -119,7 +139,8 @@ public class Util {
         return new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
+                bf.setColor(((float) red) / 256, ((float) green) / 256,
+                        ((float) blue) / 256, 1);
                 bf.drawMultiLine(sb, message, x, y);
             }
         };
@@ -132,7 +153,8 @@ public class Util {
     /**
      * Generate a random number x such that 0 <= x < max
      * 
-     * @param max The largest number returned will be one less than max
+     * @param max
+     *            The largest number returned will be one less than max
      * @return a random integer
      */
     public static int getRandom(int max) {
@@ -142,28 +164,40 @@ public class Util {
     /**
      * Draw a box on the scene Note: the box is actually four narrow rectangles
      * 
-     * @param x0 X coordinate of top left corner
-     * @param y0 Y coordinate of top left corner
-     * @param x1 X coordinate of bottom right corner
-     * @param y1 Y coordinate of bottom right corner
-     * @param imgName name of the image file to use when drawing the rectangles
-     * @param density Density of the rectangle. When in doubt, use 1
-     * @param elasticity Elasticity of the rectangle. When in doubt, use 0
-     * @param friction Friction of the rectangle. When in doubt, use 1
+     * @param x0
+     *            X coordinate of top left corner
+     * @param y0
+     *            Y coordinate of top left corner
+     * @param x1
+     *            X coordinate of bottom right corner
+     * @param y1
+     *            Y coordinate of bottom right corner
+     * @param imgName
+     *            name of the image file to use when drawing the rectangles
+     * @param density
+     *            Density of the rectangle. When in doubt, use 1
+     * @param elasticity
+     *            Elasticity of the rectangle. When in doubt, use 0
+     * @param friction
+     *            Friction of the rectangle. When in doubt, use 1
      */
-    static public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName,
-            float density, float elasticity, float friction) {
+    static public void drawBoundingBox(float x0, float y0, float x1, float y1,
+            String imgName, float density, float elasticity, float friction) {
         // draw four rectangles and we're good
-        Obstacle bottom = Obstacle.makeAsBox(x0 - 1, y0 - 1, Math.abs(x0 - x1) + 2, 1, imgName);
+        Obstacle bottom = Obstacle.makeAsBox(x0 - 1, y0 - 1,
+                Math.abs(x0 - x1) + 2, 1, imgName);
         bottom.setPhysics(density, elasticity, friction);
 
-        Obstacle top = Obstacle.makeAsBox(x0 - 1, y1, Math.abs(x0 - x1) + 2, 1, imgName);
+        Obstacle top = Obstacle.makeAsBox(x0 - 1, y1, Math.abs(x0 - x1) + 2, 1,
+                imgName);
         top.setPhysics(density, elasticity, friction);
 
-        Obstacle left = Obstacle.makeAsBox(x0 - 1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
+        Obstacle left = Obstacle.makeAsBox(x0 - 1, y0 - 1, 1,
+                Math.abs(y0 - y1) + 2, imgName);
         left.setPhysics(density, elasticity, friction);
 
-        Obstacle right = Obstacle.makeAsBox(x1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
+        Obstacle right = Obstacle.makeAsBox(x1, y0 - 1, 1,
+                Math.abs(y0 - y1) + 2, imgName);
         right.setPhysics(density, elasticity, friction);
     }
 
@@ -172,17 +206,25 @@ public class Util {
      * called relative to other entities will determine whether they go under or
      * over this picture.
      * 
-     * @param x X coordinate of bottom left corner
-     * @param y Y coordinate of bottom left corner
-     * @param width Width of the picture
-     * @param height Height of this picture
-     * @param imgName Name of the picture to display
-     * @param zIndex The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     * @param x
+     *            X coordinate of bottom left corner
+     * @param y
+     *            Y coordinate of bottom left corner
+     * @param width
+     *            Width of the picture
+     * @param height
+     *            Height of this picture
+     * @param imgName
+     *            Name of the picture to display
+     * @param zIndex
+     *            The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *            and 2. By default, everything goes to plane 0
      */
-    public static void drawPicture(final float x, final float y, final float width, final float height,
-            final String imgName, int zIndex) {
-        Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
+    public static void drawPicture(final float x, final float y,
+            final float width, final float height, final String imgName,
+            int zIndex) {
+        Level.sCurrent.addSprite(
+                Util.makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
@@ -190,26 +232,38 @@ public class Util {
      * called relative to other entities will determine whether they go under or
      * over this text.
      * 
-     * @param x X coordinate of bottom left corner of the text
-     * @param y Y coordinate of bottom left corner of the text
-     * @param text The text to display
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font file to use
-     * @param size The font size to use
-     * @param zIndex The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     * @param x
+     *            X coordinate of bottom left corner of the text
+     * @param y
+     *            Y coordinate of bottom left corner of the text
+     * @param text
+     *            The text to display
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font file to use
+     * @param size
+     *            The font size to use
+     * @param zIndex
+     *            The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *            and 2. By default, everything goes to plane 0
      */
-    public static void drawText(final int x, final int y, final String text, final int red,
-            final int green, final int blue, String fontName, int size, int zIndex) {
+    public static void drawText(final int x, final int y, final String text,
+            final int red, final int green, final int blue, String fontName,
+            int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Lol.Renderable r = new Lol.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float)red) / 256, ((float)green) / 256, ((float)blue) / 256, 1);
+                bf.setColor(((float) red) / 256, ((float) green) / 256,
+                        ((float) blue) / 256, 1);
                 bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-                bf.drawMultiLine(sb, text, x, y + bf.getMultiLineBounds(text).height);
+                bf.drawMultiLine(sb, text, x, y
+                        + bf.getMultiLineBounds(text).height);
                 bf.setScale(1);
             }
         };

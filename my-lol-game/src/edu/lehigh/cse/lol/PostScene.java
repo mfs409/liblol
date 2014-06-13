@@ -116,7 +116,8 @@ public class PostScene {
     /**
      * Indicate that the level is over, and has either been won or lost
      * 
-     * @param win Use 'true' to indicate that the level was won, 'false'
+     * @param win
+     *            Use 'true' to indicate that the level was won, 'false'
      *            otherwise
      */
     void setWin(boolean win) {
@@ -136,15 +137,13 @@ public class PostScene {
         if (win) {
             if (mWinSound != null)
                 mWinSound.play();
-            mWinSprites
-            .add(Util.makeText(mWinText, 255, 255, 255,
+            mWinSprites.add(Util.makeText(mWinText, 255, 255, 255,
                     Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play();
-            mLoseSprites
-            .add(Util.makeText(mLoseText, 255, 255, 255,
+            mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255,
                     Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));
         }
@@ -177,7 +176,8 @@ public class PostScene {
     /**
      * Draw the current PostScene, but only if it is visible
      * 
-     * @param sb The SpriteBatch to use to draw this PostScene
+     * @param sb
+     *            The SpriteBatch to use to draw this PostScene
      * @return true if the PostScene was drawn, false otherwise
      */
     boolean render(SpriteBatch sb) {
@@ -209,7 +209,8 @@ public class PostScene {
     /**
      * Set the sound to play when the level is won
      * 
-     * @param soundName Name of the sound file to play
+     * @param soundName
+     *            Name of the sound file to play
      */
     public static void setWinSound(String soundName) {
         getCurrPostScene().mWinSound = Media.getSound(soundName);
@@ -218,7 +219,8 @@ public class PostScene {
     /**
      * Set the sound to play when the level is lost
      * 
-     * @param soundName Name of the sound file to play
+     * @param soundName
+     *            Name of the sound file to play
      */
     public static void setLoseSound(String soundName) {
         getCurrPostScene().mLoseSound = Media.getSound(soundName);
@@ -227,7 +229,8 @@ public class PostScene {
     /**
      * Set the text that should be drawn, centered, when the level is won
      * 
-     * @param text The text to display. Use "" to disable
+     * @param text
+     *            The text to display. Use "" to disable
      */
     public static void setDefaultWinText(String text) {
         getCurrPostScene().mWinText = text;
@@ -236,7 +239,8 @@ public class PostScene {
     /**
      * Set the text that should be drawn, centered, when the level is lost
      * 
-     * @param text The text to display. Use "" to disable
+     * @param text
+     *            The text to display. Use "" to disable
      */
     public static void setDefaultLoseText(String text) {
         getCurrPostScene().mLoseText = text;
@@ -245,83 +249,121 @@ public class PostScene {
     /**
      * Draw text on the PostScene that shows when the level is won
      * 
-     * @param text The text to display
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue,
-            String fontName, int size) {
+    public static void addExtraWinText(String text, int x, int y, int red,
+            int green, int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mWinSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        tmp.mWinSprites.add(Util.makeText(x, y, text, red, green, blue,
+                fontName, size));
     }
 
     /**
      * Draw text on the PostScene that shows when the level is lost
      * 
-     * @param text The text to display
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue,
-            String fontName, int size) {
+    public static void addExtraLoseText(String text, int x, int y, int red,
+            int green, int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mLoseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        tmp.mLoseSprites.add(Util.makeText(x, y, text, red, green, blue,
+                fontName, size));
     }
 
     /**
      * Draw text on the PostScene that shows when the level is won, and center
      * the text
      * 
-     * @param text The text to display
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addExtraWinText(String text, int red, int green, int blue, String fontName,
-            int size) {
+    public static void addExtraWinText(String text, int red, int green,
+            int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+        tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName,
+                size));
     }
 
     /**
      * Draw text on the PostScene that shows when the level is lost, and center
      * the text
      * 
-     * @param text The text to display
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addExtraLoseText(String text, int red, int green, int blue, String fontName,
-            int size) {
+    public static void addExtraLoseText(String text, int red, int green,
+            int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+        tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName,
+                size));
     }
 
     /**
      * Draw a picture on the PostScene that shows when the level is won
      * 
-     * @param imgName The name of the image file that should be displayed
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param width The width of the image
-     * @param height The height of the image
+     * @param imgName
+     *            The name of the image file that should be displayed
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
      */
-    public static void addWinImage(String imgName, int x, int y, int width, int height) {
+    public static void addWinImage(String imgName, int x, int y, int width,
+            int height) {
         PostScene tmp = getCurrPostScene();
         tmp.mWinSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
@@ -329,13 +371,19 @@ public class PostScene {
     /**
      * Draw a picture on the PostScene that shows when the level is lost
      * 
-     * @param imgName The name of the image file that should be displayed
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param width The width of the image
-     * @param height The height of the image
+     * @param imgName
+     *            The name of the image file that should be displayed
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
      */
-    public static void addLoseImage(String imgName, int x, int y, int width, int height) {
+    public static void addLoseImage(String imgName, int x, int y, int width,
+            int height) {
         PostScene tmp = getCurrPostScene();
         tmp.mLoseSprites.add(Util.makePicture(x, y, width, height, imgName));
     }

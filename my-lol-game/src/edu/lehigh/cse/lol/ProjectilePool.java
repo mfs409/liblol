@@ -115,33 +115,43 @@ public class ProjectilePool {
      * that this is private... the LOL paradigm is that the programmer calls
      * ProjectilePool.configure, which forwards to this.
      * 
-     * @param size number of projectiles that can be thrown at once
-     * @param width width of a projectile
-     * @param height height of a projectile
-     * @param imgName image to use for projectiles
-     * @param velocityX x velocity of projectiles
-     * @param velocityY y velocity of projectiles
-     * @param offsetX specifies the x distance between the bottom left of the
+     * @param size
+     *            number of projectiles that can be thrown at once
+     * @param width
+     *            width of a projectile
+     * @param height
+     *            height of a projectile
+     * @param imgName
+     *            image to use for projectiles
+     * @param velocityX
+     *            x velocity of projectiles
+     * @param velocityY
+     *            y velocity of projectiles
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
      *            projectile and the bottom left of the hero throwing the
      *            projectile
-     * @param offsetY specifies the y distance between the bottom left of the
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
      *            projectile and the bottom left of the hero throwing the
      *            projectile
-     * @param strength specifies the amount of damage that a projectile does to
-     *            an enemy
-     * @param zIndex The z plane on which the projectiles should be drawn
-     * @param isCircle Should projectiles have an underlying circle or box
-     *            shape?
+     * @param strength
+     *            specifies the amount of damage that a projectile does to an
+     *            enemy
+     * @param zIndex
+     *            The z plane on which the projectiles should be drawn
+     * @param isCircle
+     *            Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(int size, float width, float height, String imgName, float velocityX,
-            float velocityY, float offsetX, float offsetY, int strength, int zIndex,
-            boolean isCircle) {
+    ProjectilePool(int size, float width, float height, String imgName,
+            float velocityX, float velocityY, float offsetX, float offsetY,
+            int strength, int zIndex, boolean isCircle) {
         // set up the pool
         mPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            mPool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height,
-                    zIndex, isCircle);
+            mPool[i] = new Projectile(width, height, imgName, -100 - i * width,
+                    -100 - i * height, zIndex, isCircle);
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
@@ -162,7 +172,8 @@ public class ProjectilePool {
      * Throw a projectile. This is for throwing in a single, predetermined
      * direction
      * 
-     * @param h The hero who is performing the throw
+     * @param h
+     *            The hero who is performing the throw
      */
     void throwFixed(Hero h) {
         // have we reached our limit?
@@ -202,11 +213,16 @@ public class ProjectilePool {
      * Throw a projectile. This is for throwing in an arbitrary direction, based
      * on the location of a touch
      * 
-     * @param heroX x coordinate of the bottom left corner of the thrower
-     * @param heroY y coordinate of the bottom left corner of the thrower
-     * @param toX x coordinate of the point at which to throw
-     * @param toY y coordinate of the point at which to throw
-     * @param h The hero who is performing the throw
+     * @param heroX
+     *            x coordinate of the bottom left corner of the thrower
+     * @param heroY
+     *            y coordinate of the bottom left corner of the thrower
+     * @param toX
+     *            x coordinate of the point at which to throw
+     * @param toY
+     *            y coordinate of the point at which to throw
+     * @param h
+     *            The hero who is performing the throw
      */
     void throwAt(float heroX, float heroY, float toX, float toY, Hero h) {
         // have we reached our limit?
@@ -238,7 +254,7 @@ public class ProjectilePool {
             // compute a unit vector
             float dX = toX - heroX - mOffset.x;
             float dY = toY - heroY - mOffset.y;
-            float hypotenuse = (float)Math.sqrt(dX * dX + dY * dY);
+            float hypotenuse = (float) Math.sqrt(dX * dX + dY * dY);
             float tmpX = dX / hypotenuse;
             float tmpY = dY / hypotenuse;
             // multiply by fixed velocity
@@ -256,9 +272,10 @@ public class ProjectilePool {
 
         // rotate the projectile
         if (mRotateVectorThrow) {
-            double angle = Math.atan2(toY - heroY - mOffset.y, toX - heroX - mOffset.x)
+            double angle = Math.atan2(toY - heroY - mOffset.y, toX - heroX
+                    - mOffset.x)
                     - Math.atan2(-1, 0);
-            b.mBody.setTransform(b.mBody.getPosition(), (float)angle);
+            b.mBody.setTransform(b.mBody.getPosition(), (float) angle);
         }
 
         // show the projectile, play sound, and animate the hero
@@ -277,8 +294,8 @@ public class ProjectilePool {
      * Specify a limit on how far away from the Hero a projectile can go.
      * Without this, projectiles could keep on traveling forever.
      * 
-     * @param distance Maximum distance from the hero that a projectile can
-     *            travel
+     * @param distance
+     *            Maximum distance from the hero that a projectile can travel
      */
     public static void setRange(float distance) {
         for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
@@ -297,7 +314,8 @@ public class ProjectilePool {
     /**
      * Specify the image file from which to randomly choose projectile images
      * 
-     * @param range This number indicates the number of cells
+     * @param range
+     *            This number indicates the number of cells
      */
     public static void setImageSource(String imgName) {
         for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
@@ -309,7 +327,8 @@ public class ProjectilePool {
      * The "vector projectile" mechanism might lead to the projectiles moving
      * too fast. This will cause the speed to be multiplied by a factor
      * 
-     * @param factor The value to multiply against the projectile speed.
+     * @param factor
+     *            The value to multiply against the projectile speed.
      */
     public static void setProjectileVectorDampeningFactor(float factor) {
         Level.sCurrent.mProjectilePool.mVectorDamp = factor;
@@ -327,7 +346,8 @@ public class ProjectilePool {
      * Indicate that projectiles thrown with the "vector" mechanism should have
      * a fixed velocity
      * 
-     * @param velocity The magnitude of the velocity for projectiles
+     * @param velocity
+     *            The magnitude of the velocity for projectiles
      */
     public static void setFixedVectorThrowVelocity(float velocity) {
         Level.sCurrent.mProjectilePool.mEnableFixedVectorVelocity = true;
@@ -355,35 +375,47 @@ public class ProjectilePool {
      * Describe the behavior of projectiles in a scene. You must call this if
      * you intend to use projectiles in your scene.
      * 
-     * @param size number of projectiles that can be thrown at once
-     * @param width width of a projectile
-     * @param height height of a projectile
-     * @param imgName image to use for projectiles
-     * @param velocityX x velocity of projectiles
-     * @param velocityY y velocity of projectiles
-     * @param offsetX specifies the x distance between the bottom left of the
+     * @param size
+     *            number of projectiles that can be thrown at once
+     * @param width
+     *            width of a projectile
+     * @param height
+     *            height of a projectile
+     * @param imgName
+     *            image to use for projectiles
+     * @param velocityX
+     *            x velocity of projectiles
+     * @param velocityY
+     *            y velocity of projectiles
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
      *            projectile and the bottom left of the hero throwing the
      *            projectile
-     * @param offsetY specifies the y distance between the bottom left of the
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
      *            projectile and the bottom left of the hero throwing the
      *            projectile
-     * @param strength specifies the amount of damage that a projectile does to
-     *            an enemy
-     * @param zIndex The z plane on which the projectiles should be drawn
-     * @param isCircle Should projectiles have an underlying circle or box
-     *            shape?
+     * @param strength
+     *            specifies the amount of damage that a projectile does to an
+     *            enemy
+     * @param zIndex
+     *            The z plane on which the projectiles should be drawn
+     * @param isCircle
+     *            Should projectiles have an underlying circle or box shape?
      */
-    public static void configure(int size, float width, float height, String imgName,
-            float velocityX, float velocityY, float offsetX, float offsetY, int strength,
-            int zIndex, boolean isCircle) {
-        Level.sCurrent.mProjectilePool = new ProjectilePool(size, width, height, imgName,
-                velocityX, velocityY, offsetX, offsetY, strength, zIndex, isCircle);
+    public static void configure(int size, float width, float height,
+            String imgName, float velocityX, float velocityY, float offsetX,
+            float offsetY, int strength, int zIndex, boolean isCircle) {
+        Level.sCurrent.mProjectilePool = new ProjectilePool(size, width,
+                height, imgName, velocityX, velocityY, offsetX, offsetY,
+                strength, zIndex, isCircle);
     }
 
     /**
      * Set a limit on the total number of projectiles that can be thrown
      * 
-     * @param number How many projectiles are available
+     * @param number
+     *            How many projectiles are available
      */
     public static void setNumberOfProjectiles(int number) {
         Level.sCurrent.mProjectilePool.mProjectilesRemaining = number;
@@ -392,7 +424,8 @@ public class ProjectilePool {
     /**
      * Specify a sound to play when the projectile is thrown
      * 
-     * @param soundName Name of the sound file to play
+     * @param soundName
+     *            Name of the sound file to play
      */
     public static void setThrowSound(String soundName) {
         Level.sCurrent.mProjectilePool.mThrowSound = Media.getSound(soundName);
@@ -401,18 +434,22 @@ public class ProjectilePool {
     /**
      * Specify the sound to play when a projectile disappears
      * 
-     * @param soundName the name of the sound file to play
+     * @param soundName
+     *            the name of the sound file to play
      */
     public static void setProjectileDisappearSound(String soundName) {
-        Level.sCurrent.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
+        Level.sCurrent.mProjectilePool.mProjectileDisappearSound = Media
+                .getSound(soundName);
     }
 
     /**
      * Specify how projectiles should be animated
      * 
-     * @param frames a listing of the order in which frames of the underlying
-     *            image should be displayed
-     * @param durations time to display each frame
+     * @param frames
+     *            a listing of the order in which frames of the underlying image
+     *            should be displayed
+     * @param durations
+     *            time to display each frame
      */
     public static void setAnimation(Animation a) {
         for (Projectile p : Level.sCurrent.mProjectilePool.mPool)

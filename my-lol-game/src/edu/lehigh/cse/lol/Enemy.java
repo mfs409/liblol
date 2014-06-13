@@ -84,14 +84,21 @@ public class Enemy extends PhysicsSprite {
     /**
      * Create an Enemy This should never be called directly.
      * 
-     * @param x X coordinate of bottom left corner of this enemy
-     * @param y X coordinate of bottom left corner of this enemy
-     * @param width Width of this enemy
-     * @param height Height of this enemy
-     * @param ttr Image to display
-     * @param isStatic Can this enemy move, or is it at a fixed location
-     * @param isCircle true if this should use a circle underneath for its
-     *            collision detection, and false if a box should be used
+     * @param x
+     *            X coordinate of bottom left corner of this enemy
+     * @param y
+     *            X coordinate of bottom left corner of this enemy
+     * @param width
+     *            Width of this enemy
+     * @param height
+     *            Height of this enemy
+     * @param ttr
+     *            Image to display
+     * @param isStatic
+     *            Can this enemy move, or is it at a fixed location
+     * @param isCircle
+     *            true if this should use a circle underneath for its collision
+     *            detection, and false if a box should be used
      */
     protected Enemy(float width, float height, String imgName) {
         super(imgName, width, height);
@@ -104,22 +111,24 @@ public class Enemy extends PhysicsSprite {
      * enemy, we remove the enemy and hide the projectile, and to handle
      * collisions with SubClass obstacles
      * 
-     * @param other The other entity involved in the collision
+     * @param other
+     *            The other entity involved in the collision
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // collision with obstacles
         if (other instanceof Obstacle)
-            onCollideWithObstacle((Obstacle)other, contact);
+            onCollideWithObstacle((Obstacle) other, contact);
         // collision with projectiles
         if (other instanceof Projectile)
-            onCollideWithProjectile((Projectile)other);
+            onCollideWithProjectile((Projectile) other);
     }
 
     /**
      * Dispatch method for handling Enemy collisions with Obstacles
      * 
-     * @param o The obstacle with which this Enemy collided
+     * @param o
+     *            The obstacle with which this Enemy collided
      */
     private void onCollideWithObstacle(final Obstacle o, Contact c) {
         // handle any callbacks the obstacle has
@@ -130,7 +139,8 @@ public class Enemy extends PhysicsSprite {
     /**
      * Dispatch method for handling Enemy collisions with projectiles
      * 
-     * @param p The projectile with which this hero collided
+     * @param p
+     *            The projectile with which this hero collided
      */
     private void onCollideWithProjectile(Projectile p) {
         // only work with active projectiles
@@ -153,8 +163,10 @@ public class Enemy extends PhysicsSprite {
     /**
      * Whenever an Enemy is touched, this code runs automatically.
      * 
-     * @param x X position of the touch
-     * @param y Y position of the touch
+     * @param x
+     *            X position of the touch
+     * @param y
+     *            Y position of the touch
      */
     @Override
     void handleTouchDown(float x, float y) {
@@ -173,14 +185,20 @@ public class Enemy extends PhysicsSprite {
     /**
      * Make an enemy that has an underlying rectangular shape.
      * 
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom right corner
-     * @param width The width of the enemy
-     * @param height The height of the enemy
-     * @param imgName The name of the image to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom right corner
+     * @param width
+     *            The width of the enemy
+     * @param height
+     *            The height of the enemy
+     * @param imgName
+     *            The name of the image to display
      * @return The enemy, so that it can be modified further
      */
-    public static Enemy makeAsBox(float x, float y, float width, float height, String imgName) {
+    public static Enemy makeAsBox(float x, float y, float width, float height,
+            String imgName) {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         Level.sCurrent.addSprite(e, 0);
@@ -190,17 +208,24 @@ public class Enemy extends PhysicsSprite {
     /**
      * Make an enemy that has an underlying circular shape.
      * 
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom right corner
-     * @param width The width of the enemy
-     * @param height The height of the enemy
-     * @param imgName The name of the image to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom right corner
+     * @param width
+     *            The width of the enemy
+     * @param height
+     *            The height of the enemy
+     * @param imgName
+     *            The name of the image to display
      * @return The enemy, so that it can be modified further
      */
-    public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName) {
+    public static Enemy makeAsCircle(float x, float y, float width,
+            float height, String imgName) {
         float radius = Math.max(width, height);
         Enemy e = new Enemy(radius, radius, imgName);
-        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
+        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
+                radius / 2);
         Level.sCurrent.addSprite(e, 0);
         return e;
     }
@@ -208,7 +233,8 @@ public class Enemy extends PhysicsSprite {
     /**
      * Set the amount of damage that this enemy does to a hero
      * 
-     * @param amount Amount of damage. Default is 2, since heroes have a default
+     * @param amount
+     *            Amount of damage. Default is 2, since heroes have a default
      *            strength of 1, so that the enemy defeats the hero but does not
      *            disappear.
      */
@@ -220,7 +246,8 @@ public class Enemy extends PhysicsSprite {
      * If this enemy defeats the last hero of the board, this is the message
      * that will be displayed
      * 
-     * @param message The message to display
+     * @param message
+     *            The message to display
      */
     public void setDefeatHeroText(String message) {
         mOnDefeatHeroText = message;
@@ -230,8 +257,9 @@ public class Enemy extends PhysicsSprite {
      * When an enemy is defeated, this is the code sequence we run to figure out
      * how gameplay should change.
      * 
-     * @param increaseScore Indicate if we should increase the score when this
-     *            enemy is defeated
+     * @param increaseScore
+     *            Indicate if we should increase the score when this enemy is
+     *            defeated
      */
     public void defeat(boolean increaseScore) {
         // remove the enemy from the screen
@@ -282,14 +310,16 @@ public class Enemy extends PhysicsSprite {
      * Make the enemy a "defeat trigger" enemy, so that custom code will run
      * when this enemy is defeated
      * 
-     * @param id The id of this enemy, so that we can disambiguate enemy
+     * @param id
+     *            The id of this enemy, so that we can disambiguate enemy
      *            collisions in the onEnemyTrigger code
      */
     public void setDefeatTrigger(final int id) {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum, Enemy.this);
+                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum,
+                        Enemy.this);
             }
         };
     }

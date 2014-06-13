@@ -38,15 +38,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import edu.lehigh.cse.lol.Lol.LolScreen;
+import edu.lehigh.cse.lol.Lol.GestureScreen;
 
 /**
  * The Chooser is a screen that gives the player a choice of levels of the game
  * to play.
  */
-public class Chooser implements LolScreen {
+public class Chooser implements GestureScreen {
 
     /**
      * The "Previous Chooser Screen" button
@@ -130,12 +131,18 @@ public class Chooser implements LolScreen {
         /**
          * Construct by defining the rectangle, level, and image
          * 
-         * @param x The X coordinate of the bottom left corner
-         * @param y The Y coordinate of the bottom left corner
-         * @param w The width of the button
-         * @param h The height of the button
-         * @param level The level to play when this is pressed
-         * @param imgName The image to display behind the text for this button
+         * @param x
+         *            The X coordinate of the bottom left corner
+         * @param y
+         *            The Y coordinate of the bottom left corner
+         * @param w
+         *            The width of the button
+         * @param h
+         *            The height of the button
+         * @param level
+         *            The level to play when this is pressed
+         * @param imgName
+         *            The image to display behind the text for this button
          */
         Button(int x, int y, int w, int h, int level, String imgName) {
             mRect = new Rectangle(x, y, w, h);
@@ -161,20 +168,23 @@ public class Chooser implements LolScreen {
             mMusic = Media.getMusic(cc.getMusicName());
 
         // always make the back button
-        mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(), cc.getBackButtonWidth(),
-                cc.getBackButtonHeight(), 0, cc.getBackButtonName());
+        mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(),
+                cc.getBackButtonWidth(), cc.getBackButtonHeight(), 0,
+                cc.getBackButtonName());
 
         // make the previous button if we aren't drawing the first set of
         // choices
         if (Lol.sGame.mCurrLevelNum > levelsPerChooser) {
-            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
-                    cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
+            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(),
+                    cc.getPrevButtonWidth(), cc.getPrevButtonHeight(), 0,
+                    cc.getPrevButtonName());
         }
 
         // make the next button if we aren't drawing the last set of choices
         if (Lol.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
-            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
-                    cc.getNextButtonHeight(), 0, cc.getNextButtonName());
+            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(),
+                    cc.getNextButtonWidth(), cc.getNextButtonHeight(), 0,
+                    cc.getNextButtonName());
         }
 
         // figure out the first level to draw on this chooser. Note that '0' is
@@ -212,7 +222,8 @@ public class Chooser implements LolScreen {
                 mytop = mytop - bHeight - vGutter;
                 myleft = left;
             }
-            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
+            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i,
+                    cc.getLevelButtonName());
             myleft = myleft + bWidth + hGutter;
             index++;
         }
@@ -223,8 +234,9 @@ public class Chooser implements LolScreen {
 
         // create a font
         mFont = Media.getFont(cc.getLevelFont(), cc.getLevelFontSize());
-        mFont.setColor(((float)cc.getLevelFontRed()) / 255, ((float)cc.getLevelFontGreen()) / 255,
-                ((float)cc.getLevelFontBlue()) / 255, 1);
+        mFont.setColor(((float) cc.getLevelFontRed()) / 255,
+                ((float) cc.getLevelFontGreen()) / 255,
+                ((float) cc.getLevelFontBlue()) / 255, 1);
         // and create our renderers
         mSpriteBatch = new SpriteBatch();
         mShapeRender = new ShapeRenderer();
@@ -263,7 +275,8 @@ public class Chooser implements LolScreen {
     /**
      * Render the chooser
      * 
-     * @param delta The time since the last call to render
+     * @param delta
+     *            The time since the last call to render
      */
     @Override
     public void render(float delta) {
@@ -284,33 +297,34 @@ public class Chooser implements LolScreen {
         mSpriteBatch.begin();
         // draw the background image
         if (mImage != null)
-            mSpriteBatch.draw(mImage[0], 0, 0, Lol.sGame.mConfig.getScreenWidth(),
+            mSpriteBatch.draw(mImage[0], 0, 0,
+                    Lol.sGame.mConfig.getScreenWidth(),
                     Lol.sGame.mConfig.getScreenHeight());
         // draw back/prev/next
-        mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
-                mBack.mRect.height);
+        mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y,
+                mBack.mRect.width, mBack.mRect.height);
         if (mPrev != null && mPrev.mTr != null)
-            mSpriteBatch.draw(mPrev.mTr[0], mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width,
-                    mPrev.mRect.height);
+            mSpriteBatch.draw(mPrev.mTr[0], mPrev.mRect.x, mPrev.mRect.y,
+                    mPrev.mRect.width, mPrev.mRect.height);
         if (mNext != null && mNext.mTr != null)
-            mSpriteBatch.draw(mNext.mTr[0], mNext.mRect.x, mNext.mRect.y, mNext.mRect.width,
-                    mNext.mRect.height);
+            mSpriteBatch.draw(mNext.mTr[0], mNext.mRect.x, mNext.mRect.y,
+                    mNext.mRect.width, mNext.mRect.height);
 
         // draw the level buttons
         int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
         for (Button ls : levels) {
             if (ls != null) {
                 // draw picture
-                mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y, ls.mRect.width,
-                        ls.mRect.height);
+                mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y,
+                        ls.mRect.width, ls.mRect.height);
                 // draw overlay text
                 String txt = ls.mLevel + "";
                 if (ls.mLevel > unlocked && !Lol.sGame.mConfig.getUnlockMode())
                     txt = Lol.sGame.mChooserConfig.getLevelLockText();
                 float x = mFont.getBounds(txt).width;
                 float y = mFont.getBounds(txt).height;
-                mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2 - x / 2, ls.mRect.y
-                        + ls.mRect.height / 2 + y / 2);
+                mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2
+                        - x / 2, ls.mRect.y + ls.mRect.height / 2 + y / 2);
             }
         }
         mSpriteBatch.end();
@@ -322,17 +336,19 @@ public class Chooser implements LolScreen {
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.GRAY);
 
-            mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width, mBack.mRect.height);
+            mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
+                    mBack.mRect.height);
             if (mPrev != null)
-                mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width,
-                        mPrev.mRect.height);
+                mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y,
+                        mPrev.mRect.width, mPrev.mRect.height);
             if (mNext != null)
-                mShapeRender.rect(mNext.mRect.x, mNext.mRect.y, mNext.mRect.width,
-                        mNext.mRect.height);
+                mShapeRender.rect(mNext.mRect.x, mNext.mRect.y,
+                        mNext.mRect.width, mNext.mRect.height);
 
             for (Button ls : levels) {
                 if (ls != null) {
-                    mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
+                    mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width,
+                            ls.mRect.height);
                 }
             }
             mShapeRender.end();
@@ -359,8 +375,10 @@ public class Chooser implements LolScreen {
      * Handle a screen touch by figuring out what button was pressed, and then
      * taking action
      * 
-     * @param x The X coordinate of the touch
-     * @param y The Y coordinate of the touch
+     * @param x
+     *            The X coordinate of the touch
+     * @param y
+     *            The Y coordinate of the touch
      */
     private void touchDown(int x, int y) {
         ChooserConfiguration cc = Lol.sGame.mChooserConfig;
@@ -394,76 +412,85 @@ public class Chooser implements LolScreen {
         // check for press to an unlocked level
         int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
         for (Button ls : levels) {
-            if (ls != null && (ls.mLevel <= unlocked || Lol.sGame.mConfig.getUnlockMode())) {
+            if (ls != null
+                    && (ls.mLevel <= unlocked || Lol.sGame.mConfig
+                            .getUnlockMode())) {
                 if (ls.mRect.contains(mV.x, mV.y))
                     Lol.sGame.doPlayLevel(ls.mLevel);
             }
         }
     }
 
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void resize(int width, int height) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void show() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean longPress(float x, float y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean longPress(float x, float y) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

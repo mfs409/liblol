@@ -106,7 +106,8 @@ public class Animation {
          * Build an AnimationDriver by giving it an imageName. This allows us to
          * use AnimationDriver for displaying non-animated images
          * 
-         * @param imgName The name of the image file to use
+         * @param imgName
+         *            The name of the image file to use
          */
         AnimationDriver(String imgName) {
             updateImage(imgName);
@@ -115,7 +116,8 @@ public class Animation {
         /**
          * Set the current animation, and reset internal fields
          * 
-         * @param a The animation to start using
+         * @param a
+         *            The animation to start using
          */
         void setCurrentAnimation(Animation a) {
             mCurrentAnimation = a;
@@ -126,7 +128,8 @@ public class Animation {
         /**
          * Change the source for the default image to display
          * 
-         * @param imgName The name of the image file to use
+         * @param imgName
+         *            The name of the image file to use
          */
         void updateImage(String imgName) {
             mImages = Media.getImage(imgName);
@@ -136,7 +139,8 @@ public class Animation {
         /**
          * Change the index of the default image to display
          * 
-         * @param i The index to use
+         * @param i
+         *            The index to use
          */
         void setIndex(int i) {
             mImageIndex = i;
@@ -154,7 +158,8 @@ public class Animation {
          * When a PhysicsSprite renders, we use this method to figure out which
          * textureRegion to display
          * 
-         * @param delta The time since the last render
+         * @param delta
+         *            The time since the last render
          * @return The TextureRegion to display
          */
         TextureRegion getTr(float delta) {
@@ -164,7 +169,7 @@ public class Animation {
                 return mImages[mImageIndex];
             }
             mCurrentAnimationTime += delta;
-            long millis = (long)(1000 * mCurrentAnimationTime);
+            long millis = (long) (1000 * mCurrentAnimationTime);
             // are we still in this frame?
             if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
                 return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
@@ -177,7 +182,8 @@ public class Animation {
             }
             // else advance, reset, go
             else {
-                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
+                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1)
+                        % mCurrentAnimation.mNextCell;
                 mCurrentAnimationTime = 0;
                 return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
             }
@@ -193,9 +199,12 @@ public class Animation {
      * but none will be initialized yet. You will need to use the "to" method to
      * initialize the steps.
      * 
-     * @param imgName The animate-able image that should be used
-     * @param sequenceCount The number of frames in the animation
-     * @param repeat Either true or false, depending on whether the animation
+     * @param imgName
+     *            The animate-able image that should be used
+     * @param sequenceCount
+     *            The number of frames in the animation
+     * @param repeat
+     *            Either true or false, depending on whether the animation
      *            should repeat
      */
     public Animation(String imgName, int sequenceCount, boolean repeat) {
@@ -210,15 +219,19 @@ public class Animation {
      * Create an animation where all of the frames are displayed for the same
      * amount of time
      * 
-     * @param imgName The animate-able image that should be used
-     * @param timePerFrame The time in milliseconds that each frame should be
-     *            shown
-     * @param repeat true or false, depending on whether the animation should
+     * @param imgName
+     *            The animate-able image that should be used
+     * @param timePerFrame
+     *            The time in milliseconds that each frame should be shown
+     * @param repeat
+     *            true or false, depending on whether the animation should
      *            repeat
-     * @param frameIndices The indices of the image that should each be shown
-     *            for timePerFrame milliseconds
+     * @param frameIndices
+     *            The indices of the image that should each be shown for
+     *            timePerFrame milliseconds
      */
-    public Animation(String imgName, int timePerFrame, boolean repeat, int... frameIndices) {
+    public Animation(String imgName, int timePerFrame, boolean repeat,
+            int... frameIndices) {
         mCells = Media.getImage(imgName);
         mFrames = new int[frameIndices.length];
         mDurations = new long[frameIndices.length];
@@ -233,8 +246,10 @@ public class Animation {
     /**
      * Add another step to the animation
      * 
-     * @param frame The index within the image that should be displayed next
-     * @param duration The time in milliseconds that this frame should be shown
+     * @param frame
+     *            The index within the image that should be displayed next
+     * @param duration
+     *            The time in milliseconds that this frame should be shown
      * @return the Animation, so that we can chain calls to "to()"
      */
     public Animation to(int frame, long duration) {

@@ -38,6 +38,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -48,7 +49,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Controls.Control;
-import edu.lehigh.cse.lol.Lol.LolScreen;
+import edu.lehigh.cse.lol.Lol.GestureScreen;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they
@@ -60,7 +61,7 @@ import edu.lehigh.cse.lol.Lol.LolScreen;
  * used to display everything that appears on the screen. It is also responsible
  * for keeping track of everything on the screen (game entities and Controls).
  */
-public class Level implements LolScreen {
+public class Level implements GestureScreen {
     /**
      * The music, if any
      */
@@ -240,8 +241,10 @@ public class Level implements LolScreen {
         /**
          * Run this when the screen is initially pressed down
          * 
-         * @param x The X coordinate, in pixels, of the touch
-         * @param y The Y coordinate, in pixels, of the touch
+         * @param x
+         *            The X coordinate, in pixels, of the touch
+         * @param y
+         *            The Y coordinate, in pixels, of the touch
          */
         void onDown(float x, float y) {
         }
@@ -249,8 +252,10 @@ public class Level implements LolScreen {
         /**
          * Run this when the screen is held down
          * 
-         * @param x The X coordinate, in pixels, of the touch
-         * @param y The Y coordinate, in pixels, of the touch
+         * @param x
+         *            The X coordinate, in pixels, of the touch
+         * @param y
+         *            The Y coordinate, in pixels, of the touch
          */
         void onMove(float x, float y) {
         }
@@ -258,8 +263,10 @@ public class Level implements LolScreen {
         /**
          * Run this when the screen is released
          * 
-         * @param x The X coordinate, in pixels, of the touch
-         * @param y The Y coordinate, in pixels, of the touch
+         * @param x
+         *            The X coordinate, in pixels, of the touch
+         * @param y
+         *            The Y coordinate, in pixels, of the touch
          */
         void onUp(float x, float y) {
         }
@@ -292,8 +299,10 @@ public class Level implements LolScreen {
         /**
          * The constructor simply forwards to the OrthographicCamera constructor
          * 
-         * @param viewportWidth Width of the camera
-         * @param viewportHeight Height of the camera
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
          */
         ParallaxCamera(float viewportWidth, float viewportHeight) {
             super(viewportWidth, viewportHeight);
@@ -319,33 +328,41 @@ public class Level implements LolScreen {
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
      * 
-     * @param width The width of the level, in meters
-     * @param height The height of the level, in meters
+     * @param width
+     *            The width of the level, in meters
+     * @param height
+     *            The height of the level, in meters
      */
     Level(int width, int height) {
         // clear any timers
         Timer.instance().clear();
-        
+
         // reset the per-level object store
         Facts.resetLevelFacts();
-        
+
         // save the singleton and camera bounds
         sCurrent = this;
         mCamBoundX = width;
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
-            Gdx.app.log("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
-            Gdx.app.log("Warning", "Your game height is less than 1/10 of the screen height");
+        if (width < Lol.sGame.mConfig.getScreenWidth()
+                / Physics.PIXEL_METER_RATIO)
+            Gdx.app.log("Warning",
+                    "Your game width is less than 1/10 of the screen width");
+        if (height < Lol.sGame.mConfig.getScreenHeight()
+                / Physics.PIXEL_METER_RATIO)
+            Gdx.app.log("Warning",
+                    "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
         mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO, Lol.sGame.mConfig.getScreenHeight()
-                / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
-                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
+                / Physics.PIXEL_METER_RATIO,
+                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth()
+                / Physics.PIXEL_METER_RATIO / 2,
+                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO
+                        / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
@@ -371,7 +388,8 @@ public class Level implements LolScreen {
                 // if the hit point is inside the fixture of the body we report
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    PhysicsSprite hs = (PhysicsSprite)fixture.getBody().getUserData();
+                    PhysicsSprite hs = (PhysicsSprite) fixture.getBody()
+                            .getUserData();
                     if (hs.mVisible) {
                         mHitSprite = hs;
                         return false;
@@ -384,7 +402,8 @@ public class Level implements LolScreen {
         // When debug mode is on, print the frames per second
         if (Lol.sGame.mConfig.showDebugBoxes())
             Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(),
-                    Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                    Lol.sGame.mConfig.getDefaultFontRed(),
+                    Lol.sGame.mConfig.getDefaultFontGreen(),
                     Lol.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 
@@ -431,7 +450,8 @@ public class Level implements LolScreen {
      * This code is called every 1/45th of a second to update the game state and
      * re-draw the screen
      * 
-     * @param delta The time since the last render
+     * @param delta
+     *            The time since the last render
      */
     @Override
     public void render(float delta) {
@@ -481,7 +501,8 @@ public class Level implements LolScreen {
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g, mBackground.mColor.b, 1);
+        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g,
+                mBackground.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // prepare the main camera... we do it here, so that the parallax code
@@ -509,8 +530,8 @@ public class Level implements LolScreen {
         mSpriteBatch.setProjectionMatrix(mHudCam.combined);
         mSpriteBatch.begin();
         for (Control c : mControls)
-        	if (c.mIsActive)
-        		c.render(mSpriteBatch);
+            if (c.mIsActive)
+                c.render(mSpriteBatch);
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
@@ -520,7 +541,8 @@ public class Level implements LolScreen {
             mShapeRender.setColor(Color.RED);
             for (Control pe : mControls)
                 if (pe.mRange != null)
-                    mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
+                    mShapeRender.rect(pe.mRange.x, pe.mRange.y,
+                            pe.mRange.width, pe.mRange.height);
             mShapeRender.end();
         }
     }
@@ -549,27 +571,33 @@ public class Level implements LolScreen {
         if (mChaseEntity == null)
             return;
         // figure out the entity's position
-        float x = mChaseEntity.mBody.getWorldCenter().x + mChaseEntity.mCameraOffset.x;
-        float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
+        float x = mChaseEntity.mBody.getWorldCenter().x
+                + mChaseEntity.mCameraOffset.x;
+        float y = mChaseEntity.mBody.getWorldCenter().y
+                + mChaseEntity.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
         if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
                 / Physics.PIXEL_METER_RATIO / 2)
             x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-            / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-            / Physics.PIXEL_METER_RATIO / 2;
+                    / Physics.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight()
+                * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight()
+                    * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
+                / Physics.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
+                    / Physics.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
+                / Physics.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
+                    / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -579,8 +607,10 @@ public class Level implements LolScreen {
      * Add a renderable entity to the level, putting it into the appropriate z
      * plane
      * 
-     * @param r The renderable entity
-     * @param zIndex The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
+     * @param r
+     *            The renderable entity
+     * @param zIndex
+     *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
     void addSprite(Lol.Renderable r, int zIndex) {
@@ -592,8 +622,10 @@ public class Level implements LolScreen {
     /**
      * Remove a renderable entity from its z plane
      * 
-     * @param r The entity to remove
-     * @param zIndex The z plane where it is expected to be
+     * @param r
+     *            The entity to remove
+     * @param zIndex
+     *            The z plane where it is expected to be
      */
     void removeSprite(Lol.Renderable r, int zIndex) {
         assert zIndex >= -2;
@@ -620,12 +652,12 @@ public class Level implements LolScreen {
             float y = Gdx.input.getY(i);
             // if there is a touch, call the appropriate method
             if (touchStates[i] && mLastTouches[i] && mTouchActive)
-                touchMove((int)x, (int)y);
+                touchMove((int) x, (int) y);
             else if (touchStates[i] && !mLastTouches[i]) {
                 mTouchActive = true;
-                touchDown((int)x, (int)y);
+                touchDown((int) x, (int) y);
             } else if (!touchStates[i] && mLastTouches[i] && mTouchActive)
-                touchUp((int)x, (int)y);
+                touchUp((int) x, (int) y);
             mLastTouches[i] = touchStates[i];
         }
     }
@@ -633,14 +665,17 @@ public class Level implements LolScreen {
     /**
      * When there is a down press, this code handles it
      * 
-     * @param x The X location of the press, in screen coordinates
-     * @param y The Y location of the press, in screen coordinates
+     * @param x
+     *            The X location of the press, in screen coordinates
+     * @param y
+     *            The Y location of the press, in screen coordinates
      */
     private void touchDown(int x, int y) {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control pe : mControls) {
-            if (pe.mIsTouchable && pe.mIsActive && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+            if (pe.mIsTouchable && pe.mIsActive
+                    && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
@@ -653,8 +688,8 @@ public class Level implements LolScreen {
         // touch, hitSprite will change
         mHitSprite = null;
         mGameCam.unproject(mTouchVec.set(x, y, 0));
-        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f,
-                mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
+                mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
         if (mHitSprite != null)
             mHitSprite.handleTouchDown(x, y);
         // Handle level touches for which we've got a registered handler
@@ -665,8 +700,10 @@ public class Level implements LolScreen {
     /**
      * When a finger moves on the screen, this code handles it
      * 
-     * @param x The X location of the press, in screen coordinates
-     * @param y The Y location of the press, in screen coordinates
+     * @param x
+     *            The X location of the press, in screen coordinates
+     * @param y
+     *            The Y location of the press, in screen coordinates
      */
     private void touchMove(int x, int y) {
         // check for HUD touch first...
@@ -691,8 +728,10 @@ public class Level implements LolScreen {
     /**
      * When a finger is removed from the screen, this code handles it
      * 
-     * @param x The X location of the press, in screen coordinates
-     * @param y The Y location of the press, in screen coordinates
+     * @param x
+     *            The X location of the press, in screen coordinates
+     * @param y
+     *            The Y location of the press, in screen coordinates
      */
     void touchUp(int x, int y) {
         // check for HUD touch first
@@ -717,8 +756,10 @@ public class Level implements LolScreen {
     /**
      * Create a new empty level, and configure its camera
      * 
-     * @param width width of the camera
-     * @param height height of the camera
+     * @param width
+     *            width of the camera
+     * @param height
+     *            height of the camera
      */
     public static void configure(int width, int height) {
         sCurrent = new Level(width, height);
@@ -728,7 +769,8 @@ public class Level implements LolScreen {
      * Identify the entity that the camera should try to keep on screen at all
      * times
      * 
-     * @param ps The entity the camera should chase
+     * @param ps
+     *            The entity the camera should chase
      */
     public static void setCameraChase(PhysicsSprite ps) {
         sCurrent.mChaseEntity = ps;
@@ -737,7 +779,8 @@ public class Level implements LolScreen {
     /**
      * Set the background music for this level
      * 
-     * @param musicName Name of the Music file to play
+     * @param musicName
+     *            Name of the Music file to play
      */
     public static void setMusic(String musicName) {
         Music m = Media.getMusic(musicName);
@@ -748,8 +791,10 @@ public class Level implements LolScreen {
      * Specify that you want some code to run after a fixed amount of time
      * passes.
      * 
-     * @param timerId A (possibly) unique identifier for this timer
-     * @param howLong How long to wait before the timer code runs
+     * @param timerId
+     *            A (possibly) unique identifier for this timer
+     * @param howLong
+     *            How long to wait before the timer code runs
      */
     public static void setTimerTrigger(final int timerId, float howLong) {
         Timer.schedule(new Task() {
@@ -766,16 +811,21 @@ public class Level implements LolScreen {
      * passes, and that it should return a specific enemy to the programmer's
      * code
      * 
-     * @param timerId A (possibly) unique identifier for this timer
-     * @param howLong How long to wait before the timer code runs
-     * @param enemy The enemy that should be passed along
+     * @param timerId
+     *            A (possibly) unique identifier for this timer
+     * @param howLong
+     *            How long to wait before the timer code runs
+     * @param enemy
+     *            The enemy that should be passed along
      */
-    public static void setEnemyTimerTrigger(final int timerId, float howLong, final Enemy enemy) {
+    public static void setEnemyTimerTrigger(final int timerId, float howLong,
+            final Enemy enemy) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onEnemyTimerTrigger(timerId, Lol.sGame.mCurrLevelNum, enemy);
+                    Lol.sGame.onEnemyTimerTrigger(timerId,
+                            Lol.sGame.mCurrLevelNum, enemy);
             }
         }, howLong);
     }
@@ -786,22 +836,32 @@ public class Level implements LolScreen {
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
      * 
-     * @param imgName The name of the image to use for scribbling
-     * @param duration How long the scribble stays on screen before disappearing
-     * @param width Width of the individual components of the scribble
-     * @param height Height of the individual components of the scribble
-     * @param density Density of each scribble component
-     * @param elasticity Elasticity of the scribble
-     * @param friction Friction of the scribble
-     * @param moveable Can the individual items that are drawn move on account
-     *            of collisions?
-     * @param interval Time (in milliseconds) that must transpire between
-     *            scribble events... use this to avoid outrageously high rates
-     *            of scribbling
+     * @param imgName
+     *            The name of the image to use for scribbling
+     * @param duration
+     *            How long the scribble stays on screen before disappearing
+     * @param width
+     *            Width of the individual components of the scribble
+     * @param height
+     *            Height of the individual components of the scribble
+     * @param density
+     *            Density of each scribble component
+     * @param elasticity
+     *            Elasticity of the scribble
+     * @param friction
+     *            Friction of the scribble
+     * @param moveable
+     *            Can the individual items that are drawn move on account of
+     *            collisions?
+     * @param interval
+     *            Time (in milliseconds) that must transpire between scribble
+     *            events... use this to avoid outrageously high rates of
+     *            scribbling
      */
-    public static void setScribbleMode(final String imgName, final float duration,
-            final float width, final float height, final float density, final float elasticity,
-            final float friction, final boolean moveable, final int interval) {
+    public static void setScribbleMode(final String imgName,
+            final float duration, final float width, final float height,
+            final float density, final float elasticity, final float friction,
+            final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
         Level.sCurrent.mTouchResponder = new TouchAction() {
@@ -815,8 +875,10 @@ public class Level implements LolScreen {
              * On a down press, draw a new obstacle if enough time has
              * transpired
              * 
-             * @param x The X coordinate of the touch
-             * @param y The Y coordinate of the touch
+             * @param x
+             *            The X coordinate of the touch
+             * @param y
+             *            The Y coordinate of the touch
              */
             @Override
             public void onDown(float x, float y) {
@@ -827,8 +889,8 @@ public class Level implements LolScreen {
                 mLastTime = now;
 
                 // make a circular obstacle
-                final Obstacle o = Obstacle.makeAsCircle(x - width / 2, y - height / 2, width,
-                        height, imgName);
+                final Obstacle o = Obstacle.makeAsCircle(x - width / 2, y
+                        - height / 2, width, height, imgName);
                 o.setPhysics(density, elasticity, friction);
                 if (moveable)
                     o.mBody.setType(BodyType.DynamicBody);
@@ -847,8 +909,10 @@ public class Level implements LolScreen {
             /**
              * On a move, do exactly the same as on down
              * 
-             * @param x The X coordinate of the touch
-             * @param y The Y coordinate of the touch
+             * @param x
+             *            The X coordinate of the touch
+             * @param y
+             *            The Y coordinate of the touch
              */
             @Override
             public void onMove(float x, float y) {
@@ -857,69 +921,76 @@ public class Level implements LolScreen {
         };
     }
 
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void resize(int width, int height) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void show() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean longPress(float x, float y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean longPress(float x, float y) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

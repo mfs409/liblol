@@ -87,7 +87,8 @@ public class PauseScene {
     /**
      * Internal method to draw a PauseScene
      * 
-     * @param sb The SpriteBatch used to draw the text and pictures
+     * @param sb
+     *            The SpriteBatch used to draw the text and pictures
      * @return true if the PauseScene was drawn, false otherwise
      */
     boolean render(SpriteBatch sb) {
@@ -97,7 +98,8 @@ public class PauseScene {
         // handle touches
         if (Gdx.input.justTouched()) {
             // check if it's to the 'back to chooser' button
-            Level.sCurrent.mHudCam.unproject(mV.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            Level.sCurrent.mHudCam.unproject(mV.set(Gdx.input.getX(),
+                    Gdx.input.getY(), 0));
             if (mBackRectangle != null && mBackRectangle.contains(mV.x, mV.y)) {
                 Lol.sGame.handleBack();
                 mVisible = false;
@@ -130,47 +132,70 @@ public class PauseScene {
     /**
      * Draw text on the PauseScene
      * 
-     * @param text The text to display
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addText(String text, int x, int y, int red, int green, int blue,
-            String fontName, int size) {
-        getCurrPauseScene().mSprites.add(Util
-                .makeText(x, y, text, red, green, blue, fontName, size));
+    public static void addText(String text, int x, int y, int red, int green,
+            int blue, String fontName, int size) {
+        getCurrPauseScene().mSprites.add(Util.makeText(x, y, text, red, green,
+                blue, fontName, size));
     }
 
     /**
      * Draw text on the PauseScene, and center the text vertically and
      * horizontally
      * 
-     * @param text The text to display
-     * @param red The red component of the color (0-255)
-     * @param green The green component of the color (0-255)
-     * @param blue The blue component of the color (0-255)
-     * @param fontName The name of the font to use
-     * @param size The font size to use
+     * @param text
+     *            The text to display
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font to use
+     * @param size
+     *            The font size to use
      */
-    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
-        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+    public static void addText(String text, int red, int green, int blue,
+            String fontName, int size) {
+        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue,
+                fontName, size));
     }
 
     /**
      * Draw a picture on the PauseScene
      * 
-     * @param imgName The name of the image file that should be displayed
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param width The width of the image
-     * @param height The height of the image
+     * @param imgName
+     *            The name of the image file that should be displayed
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
      */
-    public static void addImage(String imgName, int x, int y, int width, int height) {
-        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
+    public static void addImage(String imgName, int x, int y, int width,
+            int height) {
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height,
+                imgName));
     }
 
     /**
@@ -178,15 +203,22 @@ public class PauseScene {
      * will cause the level to stop playing, and control to return to the
      * chooser.
      * 
-     * @param imgName The name of the image file that should be displayed
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param width The width of the image
-     * @param height The height of the image
+     * @param imgName
+     *            The name of the image file that should be displayed
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
      */
-    public static void addBackButton(String imgName, int x, int y, int width, int height) {
+    public static void addBackButton(String imgName, int x, int y, int width,
+            int height) {
         getCurrPauseScene().mBackRectangle = new Rectangle(x, y, width, height);
-        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height,
+                imgName));
     }
 
     /**

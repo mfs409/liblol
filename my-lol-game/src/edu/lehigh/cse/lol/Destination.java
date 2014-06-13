@@ -61,9 +61,12 @@ public class Destination extends PhysicsSprite {
      * Create a destination. This is an internal method, the game designer
      * should not use this.
      * 
-     * @param width Width of this destination
-     * @param height Height of this destination
-     * @param imgName Name of the image to display
+     * @param width
+     *            Width of this destination
+     * @param height
+     *            Height of this destination
+     * @param imgName
+     *            Name of the image to display
      */
     protected Destination(float width, float height, String imgName) {
         super(imgName, width, height);
@@ -75,9 +78,11 @@ public class Destination extends PhysicsSprite {
      * Destinations are the last collision detection entity, so their collision
      * detection code does nothing.
      * 
-     * @param other Other object involved in this collision
-     * @param contact A description of the collision between this destination
-     *            and the other entity
+     * @param other
+     *            Other object involved in this collision
+     * @param contact
+     *            A description of the collision between this destination and
+     *            the other entity
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
@@ -90,14 +95,20 @@ public class Destination extends PhysicsSprite {
     /**
      * Make a destination that has an underlying rectangular shape.
      * 
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom right corner
-     * @param width The width of the destination
-     * @param height The height of the destination
-     * @param imgName The name of the image to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom right corner
+     * @param width
+     *            The width of the destination
+     * @param height
+     *            The height of the destination
+     * @param imgName
+     *            The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public static Destination makeAsBox(float x, float y, float width, float height, String imgName) {
+    public static Destination makeAsBox(float x, float y, float width,
+            float height, String imgName) {
         Destination d = new Destination(width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         d.setCollisionEffect(false);
@@ -108,18 +119,24 @@ public class Destination extends PhysicsSprite {
     /**
      * Make a destination that has an underlying circular shape.
      * 
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom right corner
-     * @param width The width of the destination
-     * @param height The height of the destination
-     * @param imgName The name of the image to display
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom right corner
+     * @param width
+     *            The width of the destination
+     * @param height
+     *            The height of the destination
+     * @param imgName
+     *            The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public static Destination makeAsCircle(float x, float y, float width, float height,
-            String imgName) {
+    public static Destination makeAsCircle(float x, float y, float width,
+            float height, String imgName) {
         float radius = Math.max(width, height);
         Destination d = new Destination(radius, radius, imgName);
-        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
+        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
+                radius / 2);
         d.setCollisionEffect(false);
         Level.sCurrent.addSprite(d, 0);
         return d;
@@ -129,12 +146,17 @@ public class Destination extends PhysicsSprite {
      * Change the number of goodies that must be collected before the
      * destination accepts any heroes (the default is 0,0,0,0)
      * 
-     * @param score1 The number of type-1 goodies that must be collected.
-     * @param score2 The number of type-2 goodies that must be collected.
-     * @param score3 The number of type-3 goodies that must be collected.
-     * @param score4 The number of type-4 goodies that must be collected.
+     * @param score1
+     *            The number of type-1 goodies that must be collected.
+     * @param score2
+     *            The number of type-2 goodies that must be collected.
+     * @param score3
+     *            The number of type-3 goodies that must be collected.
+     * @param score4
+     *            The number of type-4 goodies that must be collected.
      */
-    public void setActivationScore(int score1, int score2, int score3, int score4) {
+    public void setActivationScore(int score1, int score2, int score3,
+            int score4) {
         mActivation[0] = score1;
         mActivation[1] = score2;
         mActivation[2] = score3;
@@ -145,7 +167,8 @@ public class Destination extends PhysicsSprite {
      * Change the number of heroes that can be accepted by this destination (the
      * default is 1)
      * 
-     * @param heroes The number of heroes that can be accepted
+     * @param heroes
+     *            The number of heroes that can be accepted
      */
     public void setHeroCount(int heroes) {
         mCapacity = heroes;
@@ -154,7 +177,8 @@ public class Destination extends PhysicsSprite {
     /**
      * Specify the sound to play when a hero arrives at this destination
      * 
-     * @param soundName The name of the sound file that should play
+     * @param soundName
+     *            The name of the sound file that should play
      */
     public void setArrivalSound(String soundName) {
         mArrivalSound = Media.getSound(soundName);

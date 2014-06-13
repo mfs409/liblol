@@ -127,10 +127,12 @@ public class Hero extends PhysicsSprite {
      * of heroes created. This code should never be called directly by the game
      * designer.
      * 
-     * @param width The width of the hero
-     * @param height The height of the hero
-     * @param imgName The name of the file that has the default image for this
-     *            hero
+     * @param width
+     *            The width of the hero
+     * @param height
+     *            The height of the hero
+     * @param imgName
+     *            The name of the file that has the default image for this hero
      */
     protected Hero(float width, float height, String imgName) {
         super(imgName, width, height);
@@ -141,8 +143,10 @@ public class Hero extends PhysicsSprite {
      * We can't just use the basic PhysicsSprite renderer, because we might need
      * to adjust a one-off animation (invincibility or throw) first
      * 
-     * @param sb The SpriteBatch to use for drawing this hero
-     * @param delta The time since the last render
+     * @param sb
+     *            The SpriteBatch to use for drawing this hero
+     * @param delta
+     *            The time since the last render
      */
     @Override
     public void render(SpriteBatch sb, float delta) {
@@ -257,7 +261,8 @@ public class Hero extends PhysicsSprite {
     /**
      * Change the rotation of the hero
      * 
-     * @param delta How much to add to the current rotation
+     * @param delta
+     *            How much to add to the current rotation
      */
     void increaseRotation(float delta) {
         if (mInAir) {
@@ -271,28 +276,31 @@ public class Hero extends PhysicsSprite {
      * The Hero is the dominant participant in all collisions. Whenever the hero
      * collides with something, we need to figure out what to do
      * 
-     * @param other Other object involved in this collision
-     * @param contact A description of the contact that caused this collision
+     * @param other
+     *            Other object involved in this collision
+     * @param contact
+     *            A description of the contact that caused this collision
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // NB: we currently ignore SpriteId.PROJECTILE
         if (other instanceof Enemy)
-            onCollideWithEnemy((Enemy)other);
+            onCollideWithEnemy((Enemy) other);
         else if (other instanceof Destination)
-            onCollideWithDestination((Destination)other);
+            onCollideWithDestination((Destination) other);
         else if (other instanceof Obstacle)
-            onCollideWithObstacle((Obstacle)other, contact);
+            onCollideWithObstacle((Obstacle) other, contact);
         else if (other instanceof Svg.SVGSprite)
             onCollideWithSVG(other);
         else if (other instanceof Goodie)
-            onCollideWithGoodie((Goodie)other);
+            onCollideWithGoodie((Goodie) other);
     }
 
     /**
      * Dispatch method for handling Hero collisions with Destinations
      * 
-     * @param d The destination with which this hero collided
+     * @param d
+     *            The destination with which this hero collided
      */
     private void onCollideWithDestination(Destination d) {
         // only do something if the hero has enough goodies of each type and
@@ -300,20 +308,21 @@ public class Hero extends PhysicsSprite {
         boolean match = true;
         for (int i = 0; i < 4; ++i)
             match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
-            if (match && (d.mHolding < d.mCapacity) && mVisible) {
-                // hide the hero quietly, since the destination might make a sound
-                remove(true);
-                d.mHolding++;
-                if (d.mArrivalSound != null)
-                    d.mArrivalSound.play();
-                Level.sCurrent.mScore.onDestinationArrive();
-            }
+        if (match && (d.mHolding < d.mCapacity) && mVisible) {
+            // hide the hero quietly, since the destination might make a sound
+            remove(true);
+            d.mHolding++;
+            if (d.mArrivalSound != null)
+                d.mArrivalSound.play();
+            Level.sCurrent.mScore.onDestinationArrive();
+        }
     }
 
     /**
      * Dispatch method for handling Hero collisions with Enemies
      * 
-     * @param e The enemy with which this hero collided
+     * @param e
+     *            The enemy with which this hero collided
      */
     private void onCollideWithEnemy(Enemy e) {
         // if the enemy always defeats the hero, no matter what, then defeat the
@@ -334,8 +343,10 @@ public class Hero extends PhysicsSprite {
         else if (mCrawling && e.mDefeatByCrawl) {
             e.defeat(true);
         }
-        // defeat by jumping only if the hero's bottom is above the enemy's mid-section
-        else if (mInAir && e.mDefeatByJump && getYPosition() > e.getYPosition() + e.mSize.y/2) {
+        // defeat by jumping only if the hero's bottom is above the enemy's
+        // mid-section
+        else if (mInAir && e.mDefeatByJump
+                && getYPosition() > e.getYPosition() + e.mSize.y / 2) {
             e.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
@@ -354,7 +365,8 @@ public class Hero extends PhysicsSprite {
      * Update the hero's strength, and then run any strength change callback
      * that has been registered
      * 
-     * @param amount The amount to add (use a negative value to subtract)
+     * @param amount
+     *            The amount to add (use a negative value to subtract)
      */
     private void addStrength(int amount) {
         mStrength += amount;
@@ -364,14 +376,16 @@ public class Hero extends PhysicsSprite {
     /**
      * Dispatch method for handling Hero collisions with Obstacles
      * 
-     * @param o The obstacle with which this hero collided
+     * @param o
+     *            The obstacle with which this hero collided
      */
     private void onCollideWithObstacle(Obstacle o, Contact contact) {
         // do we need to play a sound?
         o.playCollideSound();
 
         // reset rotation of hero if this obstacle is not a sensor
-        if ((mCurrentRotation != 0) && !o.mBody.getFixtureList().get(0).isSensor())
+        if ((mCurrentRotation != 0)
+                && !o.mBody.getFixtureList().get(0).isSensor())
             increaseRotation(-mCurrentRotation);
 
         // if there is code attached to the obstacle for modifying the hero's
@@ -382,7 +396,8 @@ public class Hero extends PhysicsSprite {
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enable
         // jumps for the hero.
-        if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor()
+        if ((mInAir || mAllowMultiJump)
+                && !o.mBody.getFixtureList().get(0).isSensor()
                 && !o.mNoJumpReenable)
             stopJump();
     }
@@ -390,7 +405,8 @@ public class Hero extends PhysicsSprite {
     /**
      * Dispatch method for handling Hero collisions with SVG lines
      * 
-     * @param s The svg line with which this hero collided
+     * @param s
+     *            The svg line with which this hero collided
      */
     private void onCollideWithSVG(PhysicsSprite s) {
         // all we do is record that the hero is not in the air anymore, and is
@@ -401,7 +417,8 @@ public class Hero extends PhysicsSprite {
     /**
      * Dispatch method for handling Hero collisions with Goodies
      * 
-     * @param g The goodie with which this hero collided
+     * @param g
+     *            The goodie with which this hero collided
      */
     private void onCollideWithGoodie(Goodie g) {
         // hide the goodie
@@ -430,14 +447,20 @@ public class Hero extends PhysicsSprite {
     /**
      * Make a Hero with an underlying rectangular shape
      * 
-     * @param x X coordinate of the hero
-     * @param y Y coordinate of the hero
-     * @param width width of the hero
-     * @param height height of the hero
-     * @param imgName File name of the default image to display
+     * @param x
+     *            X coordinate of the hero
+     * @param y
+     *            Y coordinate of the hero
+     * @param width
+     *            width of the hero
+     * @param height
+     *            height of the hero
+     * @param imgName
+     *            File name of the default image to display
      * @return The hero that was created
      */
-    public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
+    public static Hero makeAsBox(float x, float y, float width, float height,
+            String imgName) {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
         Level.sCurrent.addSprite(h, 0);
@@ -447,17 +470,24 @@ public class Hero extends PhysicsSprite {
     /**
      * Make a Hero with an underlying circular shape
      * 
-     * @param x X coordinate of the hero
-     * @param y Y coordinate of the hero
-     * @param width width of the hero
-     * @param height height of the hero
-     * @param imgName File name of the default image to display
+     * @param x
+     *            X coordinate of the hero
+     * @param y
+     *            Y coordinate of the hero
+     * @param width
+     *            width of the hero
+     * @param height
+     *            height of the hero
+     * @param imgName
+     *            File name of the default image to display
      * @return The hero that was created
      */
-    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
+    public static Hero makeAsCircle(float x, float y, float width,
+            float height, String imgName) {
         float radius = Math.max(width, height);
         Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
+        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y,
+                radius / 2);
         Level.sCurrent.addSprite(h, 0);
         return h;
     }
@@ -468,7 +498,8 @@ public class Hero extends PhysicsSprite {
      * change callbacks... they only run in conjunction with collisions with
      * goodies or enemies.
      * 
-     * @param amount The new strength of the hero
+     * @param amount
+     *            The new strength of the hero
      */
     public void setStrength(int amount) {
         mStrength = amount;
@@ -487,8 +518,10 @@ public class Hero extends PhysicsSprite {
      * Indicate that upon a touch, this hero should begin moving with a specific
      * velocity
      * 
-     * @param x Velocity in X dimension
-     * @param y Velocity in Y dimension
+     * @param x
+     *            Velocity in X dimension
+     * @param y
+     *            Velocity in Y dimension
      */
     public void setTouchAndGo(float x, float y) {
         mTouchAndGo = new Vector2(x, y);
@@ -498,8 +531,10 @@ public class Hero extends PhysicsSprite {
      * Specify the X and Y velocity to give to the hero whenever it is
      * instructed to jump
      * 
-     * @param x Velocity in X direction
-     * @param y Velocity in Y direction
+     * @param x
+     *            Velocity in X direction
+     * @param y
+     *            Velocity in Y direction
      */
     public void setJumpImpulses(float x, float y) {
         mJumpImpulses = new Vector2(x, y);
@@ -524,7 +559,8 @@ public class Hero extends PhysicsSprite {
      * Register an animation sequence, so that this hero can have a custom
      * animation while jumping
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setJumpAnimation(Animation a) {
         mJumpAnimation = a;
@@ -533,7 +569,8 @@ public class Hero extends PhysicsSprite {
     /**
      * Set the sound to play when a jump occurs
      * 
-     * @param soundName The name of the sound file to use
+     * @param soundName
+     *            The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
         mJumpSound = Media.getSound(soundName);
@@ -543,7 +580,8 @@ public class Hero extends PhysicsSprite {
      * Register an animation sequence, so that this hero can have a custom
      * animation while throwing
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setThrowAnimation(Animation a) {
         mThrowAnimation = a;
@@ -559,7 +597,8 @@ public class Hero extends PhysicsSprite {
      * Register an animation sequence, so that this hero can have a custom
      * animation while crawling
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setCrawlAnimation(Animation a) {
         mCrawlAnimation = a;
@@ -569,7 +608,8 @@ public class Hero extends PhysicsSprite {
      * Register an animation sequence, so that this hero can have a custom
      * animation while invincible
      * 
-     * @param a The animation to display
+     * @param a
+     *            The animation to display
      */
     public void setInvincibleAnimation(Animation a) {
         mInvincibleAnimation = a;

@@ -59,11 +59,16 @@ public class Goodie extends PhysicsSprite {
      * Build a Goodie This should never be invoked directly. Instead, LOL game
      * designers should use the makeAsXYZ methods
      * 
-     * @param x X position of bottom left corner
-     * @param y Y position of bottom left corner
-     * @param width width of this Obstacle
-     * @param height height of this Obstacle
-     * @param tr image to use for this Obstacle
+     * @param x
+     *            X position of bottom left corner
+     * @param y
+     *            Y position of bottom left corner
+     * @param width
+     *            width of this Obstacle
+     * @param height
+     *            height of this Obstacle
+     * @param tr
+     *            image to use for this Obstacle
      */
     protected Goodie(float width, float height, String imgName) {
         super(imgName, width, height);
@@ -77,8 +82,10 @@ public class Goodie extends PhysicsSprite {
      * Internal method: Goodie collision is always handled by the other entity
      * involved in the collision, so we leave this method blank
      * 
-     * @param other Other object involved in this collision
-     * @param contact A description of the contact that caused this collision
+     * @param other
+     *            Other object involved in this collision
+     * @param contact
+     *            A description of the contact that caused this collision
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
@@ -92,14 +99,20 @@ public class Goodie extends PhysicsSprite {
      * Draw a goodie with an underlying box shape, and a default score of
      * [1,0,0,0]
      * 
-     * @param x X coordinate of bottom left corner
-     * @param y Y coordinate of bottom left corner
-     * @param width Width of the image
-     * @param height Height of the image
-     * @param imgName Name of image file to use
+     * @param x
+     *            X coordinate of bottom left corner
+     * @param y
+     *            Y coordinate of bottom left corner
+     * @param width
+     *            Width of the image
+     * @param height
+     *            Height of the image
+     * @param imgName
+     *            Name of image file to use
      * @return The goodie, so that it can be further modified
      */
-    public static Goodie makeAsBox(float x, float y, float width, float height, String imgName) {
+    public static Goodie makeAsBox(float x, float y, float width, float height,
+            String imgName) {
         Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         g.setCollisionEffect(false);
@@ -111,17 +124,24 @@ public class Goodie extends PhysicsSprite {
      * Draw a goodie with an underlying circle shape, and a default score of
      * [1,0,0,0]
      * 
-     * @param x X coordinate of bottom left corner
-     * @param y Y coordinate of bottom left corner
-     * @param width Width of the image
-     * @param height Height of the image
-     * @param imgName Name of image file to use
+     * @param x
+     *            X coordinate of bottom left corner
+     * @param y
+     *            Y coordinate of bottom left corner
+     * @param width
+     *            Width of the image
+     * @param height
+     *            Height of the image
+     * @param imgName
+     *            Name of image file to use
      * @return The goodie, so that it can be further modified
      */
-    public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName) {
+    public static Goodie makeAsCircle(float x, float y, float width,
+            float height, String imgName) {
         float radius = Math.max(width, height);
         Goodie g = new Goodie(width, height, imgName);
-        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
+        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
+                radius / 2);
         g.setCollisionEffect(false);
         Level.sCurrent.addSprite(g, 0);
         return g;
@@ -131,13 +151,17 @@ public class Goodie extends PhysicsSprite {
      * Set the score of this goodie. This indicates how many points the goodie
      * is worth... each value can be positive or negative
      * 
-     * @param v1 The number of points that are added to the first score when the
-     *            goodie is collected
-     * @param v2 The number of points that are added to the second score when
+     * @param v1
+     *            The number of points that are added to the first score when
      *            the goodie is collected
-     * @param v3 The number of points that are added to the third score when the
-     *            goodie is collected
-     * @param v4 The number of points that are added to the fourth score when
+     * @param v2
+     *            The number of points that are added to the second score when
+     *            the goodie is collected
+     * @param v3
+     *            The number of points that are added to the third score when
+     *            the goodie is collected
+     * @param v4
+     *            The number of points that are added to the fourth score when
      *            the goodie is collected
      */
     public void setScore(int v1, int v2, int v3, int v4) {
@@ -150,7 +174,8 @@ public class Goodie extends PhysicsSprite {
     /**
      * Indicate how much strength the hero gains by collecting this goodie
      * 
-     * @param boost Amount of strength to add (can be negative)
+     * @param boost
+     *            Amount of strength to add (can be negative)
      */
     public void setStrengthBoost(int boost) {
         mStrengthBoost = boost;
@@ -160,8 +185,9 @@ public class Goodie extends PhysicsSprite {
      * Indicate how long the hero will be invincible after collecting this
      * goodie
      * 
-     * @param duration Amount of time the hero will be invincible. Note that for
-     *            a hero who is currently invincible, this value will be /added/
+     * @param duration
+     *            Amount of time the hero will be invincible. Note that for a
+     *            hero who is currently invincible, this value will be /added/
      *            to the hero's remaining invincibility time
      */
     public void setInvincibilityDuration(float duration) {

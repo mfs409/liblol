@@ -62,7 +62,8 @@ public class Route {
      * that all points in the path will be uninitialized until the "to" method
      * is called on this Route.
      * 
-     * @param numberOfPoints number of points in the path
+     * @param numberOfPoints
+     *            number of points in the path
      */
     public Route(int numberOfPoints) {
         // NB: it doesn't make sense to have a route with only one point!
@@ -76,8 +77,10 @@ public class Route {
      * Add a new point to a path by giving (x,y) coordinates for where the
      * center of the object ought to move
      * 
-     * @param x X value of the new coordinate
-     * @param y Y value of the new coordinate
+     * @param x
+     *            X value of the new coordinate
+     * @param y
+     *            Y value of the new coordinate
      */
     public Route to(float x, float y) {
         mXIndices[mPoints] = x;

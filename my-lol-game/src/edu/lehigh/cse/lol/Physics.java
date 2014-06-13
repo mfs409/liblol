@@ -60,12 +60,15 @@ public class Physics {
      * When a hero collides with a "sticky" obstacle, this is the code we run to
      * figure out what to do
      * 
-     * @param sticky The sticky entity... it should always be an obstacle for
-     *            now
-     * @param other The other entity... it should always be a hero for now
-     * @param contact A description of the contact event
+     * @param sticky
+     *            The sticky entity... it should always be an obstacle for now
+     * @param other
+     *            The other entity... it should always be a hero for now
+     * @param contact
+     *            A description of the contact event
      */
-    static void handleSticky(final PhysicsSprite sticky, final PhysicsSprite other, Contact contact) {
+    static void handleSticky(final PhysicsSprite sticky,
+            final PhysicsSprite other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -74,13 +77,14 @@ public class Physics {
             return;
         // handle sticky obstacles... only do something if we're hitting the
         // obstacle from the right direction
-        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
+        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky
+                .getYPosition() + sticky.mSize.y)
                 || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky
-                .getXPosition())
-                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition()
-                + sticky.mSize.x)
+                        .getXPosition())
+                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky
+                        .getXPosition() + sticky.mSize.x)
                 || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky
-                .getYPosition())) {
+                        .getYPosition())) {
             // create distance and weld joints... somehow, the combination is
             // needed to get this to work. Note that this function runs during
             // the box2d step, so we need to make the joint in a callback that
@@ -93,11 +97,13 @@ public class Physics {
                     DistanceJointDef d = new DistanceJointDef();
                     d.initialize(sticky.mBody, other.mBody, v, v);
                     d.collideConnected = true;
-                    other.mDJoint = (DistanceJoint)Level.sCurrent.mWorld.createJoint(d);
+                    other.mDJoint = (DistanceJoint) Level.sCurrent.mWorld
+                            .createJoint(d);
                     WeldJointDef w = new WeldJointDef();
                     w.initialize(sticky.mBody, other.mBody, v);
                     w.collideConnected = true;
-                    other.mWJoint = (WeldJoint)Level.sCurrent.mWorld.createJoint(w);
+                    other.mWJoint = (WeldJoint) Level.sCurrent.mWorld
+                            .createJoint(w);
                 }
             });
         }
@@ -106,14 +112,17 @@ public class Physics {
     /**
      * Configure physics for the current level
      * 
-     * @param defaultXGravity The default force moving entities to the left
-     *            (negative) or right (positive)... Usually zero
-     * @param defaultYGravity The default force pushing the hero down (negative)
-     *            or up (positive)... Usually zero or -10
+     * @param defaultXGravity
+     *            The default force moving entities to the left (negative) or
+     *            right (positive)... Usually zero
+     * @param defaultYGravity
+     *            The default force pushing the hero down (negative) or up
+     *            (positive)... Usually zero or -10
      */
     public static void configure(float defaultXGravity, float defaultYGravity) {
         // create a world with gravity
-        Level.sCurrent.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        Level.sCurrent.mWorld = new World(new Vector2(defaultXGravity,
+                defaultYGravity), true);
 
         // set up the collision handlers
         Level.sCurrent.mWorld.setContactListener(new ContactListener() {
@@ -126,7 +135,8 @@ public class Physics {
                 // Get the bodies, make sure both are PhysicsSprites
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
+                if (!(a instanceof PhysicsSprite)
+                        || !(b instanceof PhysicsSprite))
                     return;
 
                 // the order is Hero, Enemy, Goodie, Projectile, Obstacle, SVG,
@@ -137,23 +147,23 @@ public class Physics {
                 final PhysicsSprite c0;
                 final PhysicsSprite c1;
                 if (a instanceof Hero) {
-                    c0 = (PhysicsSprite)a;
-                    c1 = (PhysicsSprite)b;
+                    c0 = (PhysicsSprite) a;
+                    c1 = (PhysicsSprite) b;
                 } else if (b instanceof Hero) {
-                    c0 = (PhysicsSprite)b;
-                    c1 = (PhysicsSprite)a;
+                    c0 = (PhysicsSprite) b;
+                    c1 = (PhysicsSprite) a;
                 } else if (a instanceof Enemy) {
-                    c0 = (PhysicsSprite)a;
-                    c1 = (PhysicsSprite)b;
+                    c0 = (PhysicsSprite) a;
+                    c1 = (PhysicsSprite) b;
                 } else if (b instanceof Enemy) {
-                    c0 = (PhysicsSprite)b;
-                    c1 = (PhysicsSprite)a;
+                    c0 = (PhysicsSprite) b;
+                    c1 = (PhysicsSprite) a;
                 } else if (a instanceof Projectile) {
-                    c0 = (PhysicsSprite)a;
-                    c1 = (PhysicsSprite)b;
+                    c0 = (PhysicsSprite) a;
+                    c1 = (PhysicsSprite) b;
                 } else if (b instanceof Projectile) {
-                    c0 = (PhysicsSprite)b;
-                    c1 = (PhysicsSprite)a;
+                    c0 = (PhysicsSprite) b;
+                    c1 = (PhysicsSprite) a;
                 } else {
                     return;
                 }
@@ -189,10 +199,11 @@ public class Physics {
                 // get the bodies, make sure both are PhysicsSprites
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
+                if (!(a instanceof PhysicsSprite)
+                        || !(b instanceof PhysicsSprite))
                     return;
-                PhysicsSprite gfoA = (PhysicsSprite)a;
-                PhysicsSprite gfoB = (PhysicsSprite)b;
+                PhysicsSprite gfoA = (PhysicsSprite) a;
+                PhysicsSprite gfoB = (PhysicsSprite) b;
 
                 // handle sticky obstacles... only do something if at least one
                 // entity is a sticky entity
@@ -200,15 +211,16 @@ public class Physics {
                         || gfoA.mIsSticky[3]) {
                     handleSticky(gfoA, gfoB, contact);
                     return;
-                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2]
-                        || gfoB.mIsSticky[3]) {
+                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1]
+                        || gfoB.mIsSticky[2] || gfoB.mIsSticky[3]) {
                     handleSticky(gfoB, gfoA, contact);
                     return;
                 }
 
                 // if the PhysicsSprites have the same passthrough ID, and it's
                 // not zero, then disable the contact
-                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
+                if (gfoA.mPassThroughId != 0
+                        && gfoA.mPassThroughId == gfoB.mPassThroughId) {
                     contact.setEnabled(false);
                     return;
                 }
@@ -231,8 +243,9 @@ public class Physics {
                 WorldManifold worldManiFold = contact.getWorldManifold();
                 int numPoints = worldManiFold.getNumberOfContactPoints();
                 for (int i = 0; i < numPoints; i++) {
-                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold
-                            .getPoints()[i]);
+                    Vector2 vector2 = other.mBody
+                            .getLinearVelocityFromWorldPoint(worldManiFold
+                                    .getPoints()[i]);
                     // disable based on the value of isOneSided and the vector
                     // between the entities
                     if (onesided.mIsOneSided == 0 && vector2.y < 0)

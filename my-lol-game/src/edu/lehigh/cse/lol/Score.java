@@ -58,9 +58,7 @@ public class Score {
     /**
      * Count of the goodies that have been collected in this level
      */
-    int[] mGoodiesCollected = new int[] {
-            0, 0, 0, 0
-    };
+    int[] mGoodiesCollected = new int[] { 0, 0, 0, 0 };
 
     /**
      * Number of heroes who have arrived at any destination yet
@@ -142,7 +140,8 @@ public class Score {
     /**
      * Use this to inform the level that a hero has been defeated
      * 
-     * @param e The enemy who defeated the hero
+     * @param e
+     *            The enemy who defeated the hero
      */
     void defeatHero(Enemy e) {
         mHeroesDefeated++;
@@ -156,7 +155,8 @@ public class Score {
     /**
      * Use this to inform the level that a goodie has been collected by a hero
      * 
-     * @param g The goodie that was collected
+     * @param g
+     *            The goodie that was collected
      */
     void onGoodieCollected(Goodie g) {
         // Update goodie counts
@@ -177,7 +177,8 @@ public class Score {
     /**
      * Use this to inform the level that a hero has reached a destination
      * 
-     * @param d The destination that the hero reached
+     * @param d
+     *            The destination that the hero reached
      */
     void onDestinationArrive() {
         // check if the level is complete
@@ -211,36 +212,40 @@ public class Score {
      * When a level ends, we run this code to shut it down, print a message, and
      * then let the user resume play
      * 
-     * @param win /true/ if the level was won, /false/ otherwise
+     * @param win
+     *            /true/ if the level was won, /false/ otherwise
      */
     void endLevel(final boolean win) {
         if (Level.sCurrent.mEndGameEvent == null)
             Level.sCurrent.mEndGameEvent = new Action() {
-            @Override
-            public void go() {
-                // Safeguard: only call this method once per level
-                if (mGameOver)
-                    return;
-                mGameOver = true;
+                @Override
+                public void go() {
+                    // Safeguard: only call this method once per level
+                    if (mGameOver)
+                        return;
+                    mGameOver = true;
 
-                // Run the level-complete trigger
-                Lol.sGame.levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
+                    // Run the level-complete trigger
+                    Lol.sGame
+                            .levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
 
-                // if we won, unlock the next level
-                if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
-                    Facts.putGameFact("unlocked", Lol.sGame.mCurrLevelNum + 1);
+                    // if we won, unlock the next level
+                    if (win
+                            && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
+                        Facts.putGameFact("unlocked",
+                                Lol.sGame.mCurrLevelNum + 1);
 
-                // drop everything from the hud
-                Level.sCurrent.mControls.clear();
+                    // drop everything from the hud
+                    Level.sCurrent.mControls.clear();
 
-                // clear any pending timers
-                Timer.instance().clear();
+                    // clear any pending timers
+                    Timer.instance().clear();
 
-                // display the PostScene, which provides a pause before we
-                // retry/start the next level
-                Level.sCurrent.mPostScene.setWin(win);
-            }
-        };
+                    // display the PostScene, which provides a pause before we
+                    // retry/start the next level
+                    Level.sCurrent.mPostScene.setWin(win);
+                }
+            };
     }
 
     /*
@@ -250,7 +255,8 @@ public class Score {
     /**
      * Manually set the number of goodies of type 1 that have been collected.
      * 
-     * @param value The new value
+     * @param value
+     *            The new value
      */
     public static void setGoodiesCollected1(int value) {
         Level.sCurrent.mScore.mGoodiesCollected[0] = value;
@@ -259,7 +265,8 @@ public class Score {
     /**
      * Manually set the number of goodies of type 2 that have been collected.
      * 
-     * @param value The new value
+     * @param value
+     *            The new value
      */
     public static void setGoodiesCollected2(int value) {
         Level.sCurrent.mScore.mGoodiesCollected[1] = value;
@@ -268,7 +275,8 @@ public class Score {
     /**
      * Manually set the number of goodies of type 3 that have been collected.
      * 
-     * @param value The new value
+     * @param value
+     *            The new value
      */
     public static void setGoodiesCollected3(int value) {
         Level.sCurrent.mScore.mGoodiesCollected[2] = value;
@@ -277,7 +285,8 @@ public class Score {
     /**
      * Manually set the number of goodies of type 4 that have been collected.
      * 
-     * @param value The new value
+     * @param value
+     *            The new value
      */
     public static void setGoodiesCollected4(int value) {
         Level.sCurrent.mScore.mGoodiesCollected[3] = value;
@@ -364,8 +373,8 @@ public class Score {
     /**
      * Indicate that the level is won by defeating a certain number of enemies
      * 
-     * @param howMany The number of enemies that must be defeated to win the
-     *            level
+     * @param howMany
+     *            The number of enemies that must be defeated to win the level
      */
     static public void setVictoryEnemyCount(int howMany) {
         Level.sCurrent.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
@@ -375,13 +384,17 @@ public class Score {
     /**
      * Indicate that the level is won by collecting enough goodies
      * 
-     * @param v1 Number of type-1 goodies that must be collected to win the
+     * @param v1
+     *            Number of type-1 goodies that must be collected to win the
      *            level
-     * @param v2 Number of type-2 goodies that must be collected to win the
+     * @param v2
+     *            Number of type-2 goodies that must be collected to win the
      *            level
-     * @param v3 Number of type-3 goodies that must be collected to win the
+     * @param v3
+     *            Number of type-3 goodies that must be collected to win the
      *            level
-     * @param v4 Number of type-4 goodies that must be collected to win the
+     * @param v4
+     *            Number of type-4 goodies that must be collected to win the
      *            level
      */
     static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
@@ -396,7 +409,8 @@ public class Score {
      * Indicate that the level is won by having a certain number of heroes reach
      * destinations
      * 
-     * @param howMany Number of heroes that must reach destinations
+     * @param howMany
+     *            Number of heroes that must reach destinations
      */
     static public void setVictoryDestination(int howMany) {
         Level.sCurrent.mScore.mVictoryType = VictoryType.DESTINATION;
@@ -406,7 +420,8 @@ public class Score {
     /**
      * Change the amount of time left in a countdown timer
      * 
-     * @param delta The amount of time to add before the timer expires
+     * @param delta
+     *            The amount of time to add before the timer expires
      */
     public static void updateTimerExpiration(float delta) {
         Level.sCurrent.mScore.mCountDownRemaining += delta;
@@ -423,7 +438,7 @@ public class Score {
      * Report the stopwatch value
      */
     public static int getStopwatch() {
-        return (int)Level.sCurrent.mScore.mStopWatchProgress;
+        return (int) Level.sCurrent.mScore.mStopWatchProgress;
     }
 
     /**
@@ -437,11 +452,14 @@ public class Score {
      * Access the persistent storage to set a key/value pair, so that the
      * information will be available forever
      * 
-     * @param key The key to use to remember this value
-     * @param value The value to save
+     * @param key
+     *            The key to use to remember this value
+     * @param value
+     *            The value to save
      */
     public static void savePersistent(String key, int value) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
+                .getStorageKey());
         prefs.putInteger(key, value);
         prefs.flush();
     }
@@ -449,12 +467,15 @@ public class Score {
     /**
      * Access the persistent storage to read the value associated with a key
      * 
-     * @param key The key to use to get the value
-     * @param defaultVal The default value to return if the key is not found
+     * @param key
+     *            The key to use to get the value
+     * @param defaultVal
+     *            The default value to return if the key is not found
      * @returns The current value saved for the give
      */
     public static int readPersistent(String key, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
+                .getStorageKey());
         return prefs.getInteger(key, defaultVal);
     }
 

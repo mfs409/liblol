@@ -127,18 +127,25 @@ public class Svg {
      * Configure a parser that we can use to load an SVG file and draw each of
      * its lines as a Box2d line
      * 
-     * @param density density of each line
-     * @param elasticity elasticity of each line
-     * @param friction friction of each line
-     * @param stretchX Stretch the drawing in the X dimension by this percentage
-     * @param stretchY Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX Shift the drawing in the X dimension. Note that shifting
+     * @param density
+     *            density of each line
+     * @param elasticity
+     *            elasticity of each line
+     * @param friction
+     *            friction of each line
+     * @param stretchX
+     *            Stretch the drawing in the X dimension by this percentage
+     * @param stretchY
+     *            Stretch the drawing in the Y dimension by this percentage
+     * @param xposeX
+     *            Shift the drawing in the X dimension. Note that shifting
      *            occurs after stretching
-     * @param xposeY Shift the drawing in the Y dimension. Note that shifting
+     * @param xposeY
+     *            Shift the drawing in the Y dimension. Note that shifting
      *            occurs after stretching
      */
-    private Svg(float density, float elasticity, float friction, float stretchX, float stretchY,
-            float xposeX, float xposeY) {
+    private Svg(float density, float elasticity, float friction,
+            float stretchX, float stretchY, float xposeX, float xposeY) {
         // create the physics fixture in a manner that is visible to the
         // addLine routine of the parser
         mFixture = new FixtureDef();
@@ -157,7 +164,8 @@ public class Svg {
      * When we encounter a "transform" attribute, we use this code to parse it,
      * in case there is a "translate" directive that we should handle
      * 
-     * @param attribute The attribute being processed... we hope it's a valid
+     * @param attribute
+     *            The attribute being processed... we hope it's a valid
      *            translate directive
      */
     private void processTransform(String attribute) {
@@ -182,7 +190,8 @@ public class Svg {
      * stores the points and information about how to connect them. The "d" is a
      * single string, which we parse in this file
      * 
-     * @param d The string that describes the path
+     * @param d
+     *            The string that describes the path
      */
     private void processD(String d) {
         // split the string into characters and floating point values
@@ -270,10 +279,14 @@ public class Svg {
                             else
                                 mCurr.y = mLast.y - val;
                             // draw the line
-                            addLine((mUserStretch.x * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
-                                    (mUserStretch.y * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
-                                    (mUserStretch.x * (mCurr.x + mSvgTranslate.x) + mUserTransform.x),
-                                    (mUserStretch.y * (mCurr.y + mSvgTranslate.y) + mUserTransform.y));
+                            addLine((mUserStretch.x
+                                    * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
+                                    (mUserStretch.y
+                                            * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
+                                    (mUserStretch.x
+                                            * (mCurr.x + mSvgTranslate.x) + mUserTransform.x),
+                                    (mUserStretch.y
+                                            * (mCurr.y + mSvgTranslate.y) + mUserTransform.y));
                             mLast.x = mCurr.x;
                             mLast.y = mCurr.y;
                             // if we are in curve mode, reinitialize the
@@ -299,10 +312,14 @@ public class Svg {
      * collision detection works correctly. There are no images being displayed,
      * and this is not a proper "Obstacle"
      * 
-     * @param x1 X coordinate of first endpoint
-     * @param y1 Y coordinate of first endpoint
-     * @param x2 X coordinate of second endpoint
-     * @param y2 Y coordinate of second endpoint
+     * @param x1
+     *            X coordinate of first endpoint
+     * @param y1
+     *            Y coordinate of first endpoint
+     * @param x2
+     *            X coordinate of second endpoint
+     * @param y2
+     *            Y coordinate of second endpoint
      */
     private void addLine(float x1, float y1, float x2, float y2) {
         // Create a static body for an Edge shape
@@ -311,7 +328,8 @@ public class Svg {
         // compute center and length
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
-        float len = (float)Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
+                * (y1 - y2));
         bd.position.set(centerX, centerY);
         bd.angle = 0;
         Body b = Level.sCurrent.mWorld.createBody(bd);
@@ -340,7 +358,8 @@ public class Svg {
      * then iterate over it, finding the <path>s within the <g>, and processing
      * their "d" attributes
      * 
-     * @param svgName The name of the file to parse
+     * @param svgName
+     *            The name of the file to parse
      */
     private void parse(String svgName) {
         XmlReader r = new XmlReader();
@@ -374,23 +393,33 @@ public class Svg {
      * expected... if you need more power than this provides, you'll have to
      * modify SVG.java
      * 
-     * @param svgName Name of the svg file to load. It should be in the assets
+     * @param svgName
+     *            Name of the svg file to load. It should be in the assets
      *            folder
-     * @param density density of each line
-     * @param elasticity elasticity of each line
-     * @param friction friction of each line
-     * @param stretchX Stretch the drawing in the X dimension by this percentage
-     * @param stretchY Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX Shift the drawing in the X dimension. Note that shifting
+     * @param density
+     *            density of each line
+     * @param elasticity
+     *            elasticity of each line
+     * @param friction
+     *            friction of each line
+     * @param stretchX
+     *            Stretch the drawing in the X dimension by this percentage
+     * @param stretchY
+     *            Stretch the drawing in the Y dimension by this percentage
+     * @param xposeX
+     *            Shift the drawing in the X dimension. Note that shifting
      *            occurs after stretching
-     * @param xposeY Shift the drawing in the Y dimension. Note that shifting
+     * @param xposeY
+     *            Shift the drawing in the Y dimension. Note that shifting
      *            occurs after stretching
      */
-    public static void importLineDrawing(String svgName, float density, float elasticity,
-            float friction, float stretchX, float stretchY, float xposeX, float xposeY) {
+    public static void importLineDrawing(String svgName, float density,
+            float elasticity, float friction, float stretchX, float stretchY,
+            float xposeX, float xposeY) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
-        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY, xposeX, xposeY);
+        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY,
+                xposeX, xposeY);
         s.parse(svgName);
     }
 }

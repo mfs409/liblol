@@ -81,7 +81,8 @@ public class Tilt {
         // if we're on a phone, read from the accelerometer device, taking into
         // account the rotation of the device
         ApplicationType appType = Gdx.app.getType();
-        if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
+        if (appType == ApplicationType.Android
+                || appType == ApplicationType.iOS) {
             float rot = Gdx.input.getRotation();
             if (rot == 0) {
                 xGravity = -Gdx.input.getAccelerometerX();
@@ -137,14 +138,16 @@ public class Tilt {
             if (mGravityMax.x == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
-                        gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
+                        gfo.updateVelocity(gfo.mBody.getLinearVelocity().x,
+                                yGravity);
             }
             // if Y is clipped to zero, set each entitiy's X velocity, leave Y
             // unchanged
             else if (mGravityMax.y == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
-                        gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
+                        gfo.updateVelocity(xGravity,
+                                gfo.mBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {
@@ -170,8 +173,10 @@ public class Tilt {
      * Turn on accelerometer support so that tilt can control entities in this
      * level
      * 
-     * @param xGravityMax Max X force that the accelerometer can produce
-     * @param yGravityMax Max Y force that the accelerometer can produce
+     * @param xGravityMax
+     *            Max X force that the accelerometer can produce
+     * @param yGravityMax
+     *            Max Y force that the accelerometer can produce
      */
     public static void enable(float xGravityMax, float yGravityMax) {
         Level.sCurrent.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
@@ -182,7 +187,8 @@ public class Tilt {
      * applying a force, we directly set the velocity of objects using the
      * accelerometer data.
      * 
-     * @param toggle This should usually be false. Setting it to true means that
+     * @param toggle
+     *            This should usually be false. Setting it to true means that
      *            tilt does not cause forces upon objects, but instead the tilt
      *            of the phone directly sets velocities
      */
@@ -194,9 +200,10 @@ public class Tilt {
      * Use this to make the accelerometer more or less responsive, by
      * multiplying accelerometer values by a constant.
      * 
-     * @param multiplier The constant that should be multiplied by the
-     *            accelerometer data. This can be a fraction, like 0.5f, to make
-     *            the accelerometer less sensitive
+     * @param multiplier
+     *            The constant that should be multiplied by the accelerometer
+     *            data. This can be a fraction, like 0.5f, to make the
+     *            accelerometer less sensitive
      */
     public static void setGravityMultiplier(float multiplier) {
         Level.sCurrent.mTilt.mMultiplier = multiplier;

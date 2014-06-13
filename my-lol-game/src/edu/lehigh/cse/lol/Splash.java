@@ -37,6 +37,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -44,7 +45,7 @@ import com.badlogic.gdx.math.Vector3;
  * has buttons for playing, getting help, and quitting. It is configured through
  * a SplashConfiguration object.
  */
-public class Splash implements Lol.LolScreen {
+public class Splash implements Lol.GestureScreen {
 
     /**
      * A static reference to the current splash screen, so that we can use a
@@ -152,7 +153,8 @@ public class Splash implements Lol.LolScreen {
     /**
      * Draw the splash screen
      * 
-     * @param delta time since the screen was last displayed
+     * @param delta
+     *            time since the screen was last displayed
      */
     @Override
     public void render(float delta) {
@@ -193,7 +195,8 @@ public class Splash implements Lol.LolScreen {
         mSpriteBatch.begin();
         mSpriteBatch.enableBlending();
         if (mImage != null)
-            mSpriteBatch.draw(mImage[0], 0, 0, Lol.sGame.mConfig.getScreenWidth(),
+            mSpriteBatch.draw(mImage[0], 0, 0,
+                    Lol.sGame.mConfig.getScreenWidth(),
                     Lol.sGame.mConfig.getScreenHeight());
         mSpriteBatch.end();
 
@@ -237,12 +240,16 @@ public class Splash implements Lol.LolScreen {
      * correct region of the splash screen will cause the chooser to be drawn or
      * the only level of the game to start playing
      * 
-     * @param x The X coordinate of the bottom left corner of the button, in
+     * @param x
+     *            The X coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param y The Y coordinate of the bottom left corner of the button, in
+     * @param y
+     *            The Y coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param width The width of the button, in pixels
-     * @param height The height of the button, in pixels
+     * @param width
+     *            The width of the button, in pixels
+     * @param height
+     *            The height of the button, in pixels
      */
     public static void drawPlayButton(int x, int y, int width, int height) {
         sCurrent.mPlay = new Rectangle(x, y, width, height);
@@ -253,12 +260,16 @@ public class Splash implements Lol.LolScreen {
      * correct region of the splash screen will cause the first help scene to be
      * drawn
      * 
-     * @param x The X coordinate of the bottom left corner of the button, in
+     * @param x
+     *            The X coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param y The Y coordinate of the bottom left corner of the button, in
+     * @param y
+     *            The Y coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param width The width of the button, in pixels
-     * @param height The height of the button, in pixels
+     * @param width
+     *            The width of the button, in pixels
+     * @param height
+     *            The height of the button, in pixels
      */
     public static void drawHelpButton(int x, int y, int width, int height) {
         sCurrent.mHelp = new Rectangle(x, y, width, height);
@@ -268,12 +279,16 @@ public class Splash implements Lol.LolScreen {
      * Describe the coordinates of the Quit button, so that clicks to the
      * correct region of the splash screen will cause the app to terminate
      * 
-     * @param x The X coordinate of the bottom left corner of the button, in
+     * @param x
+     *            The X coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param y The Y coordinate of the bottom left corner of the button, in
+     * @param y
+     *            The Y coordinate of the bottom left corner of the button, in
      *            pixels
-     * @param width The width of the button, in pixels
-     * @param height The height of the button, in pixels
+     * @param width
+     *            The width of the button, in pixels
+     * @param height
+     *            The height of the button, in pixels
      */
     public static void drawQuitButton(int x, int y, int width, int height) {
         sCurrent.mQuit = new Rectangle(x, y, width, height);
@@ -282,7 +297,8 @@ public class Splash implements Lol.LolScreen {
     /**
      * Configure the music to play when the splash screen is showing
      * 
-     * @param soundName The music file name. Be sure that it is registered!
+     * @param soundName
+     *            The music file name. Be sure that it is registered!
      */
     public static void setMusic(String soundName) {
         sCurrent.mMusic = Media.getMusic(soundName);
@@ -293,75 +309,83 @@ public class Splash implements Lol.LolScreen {
      * should include your game name and text regions for Play and Quit, as well
      * as optional Help.
      * 
-     * @param imgName The image file name. Be sure that it is registered!
+     * @param imgName
+     *            The image file name. Be sure that it is registered!
      */
     public static void setBackground(String imgName) {
         sCurrent.mImage = Media.getImage(imgName);
     }
 
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void resize(int width, int height) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void show() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean longPress(float x, float y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean longPress(float x, float y) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

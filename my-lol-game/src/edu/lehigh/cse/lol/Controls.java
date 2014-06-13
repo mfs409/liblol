@@ -78,12 +78,17 @@ public class Controls {
         /**
          * Use this constructor for controls that provide pressable images
          * 
-         * @param imgName The name of the image to display. If "" is given as
-         *            the name, it will not crash.
-         * @param x The X coordinate (in pixels) of the bottom left corner.
-         * @param y The Y coordinate (in pixels) of the bottom left corner.
-         * @param width The width of the Hud Entity
-         * @param height The height of the Hud Entity
+         * @param imgName
+         *            The name of the image to display. If "" is given as the
+         *            name, it will not crash.
+         * @param x
+         *            The X coordinate (in pixels) of the bottom left corner.
+         * @param y
+         *            The Y coordinate (in pixels) of the bottom left corner.
+         * @param width
+         *            The width of the Hud Entity
+         * @param height
+         *            The height of the Hud Entity
          */
         Control(String imgName, int x, int y, int width, int height) {
             // set up the image to display
@@ -101,21 +106,25 @@ public class Controls {
         /**
          * Use this constructor for controls that are simply for displaying text
          * 
-         * @param red The red portion of text color (0-255)
-         * @param green The green portion of text color (0-255)
-         * @param blue The blue portion of text color (0-255)
+         * @param red
+         *            The red portion of text color (0-255)
+         * @param green
+         *            The green portion of text color (0-255)
+         * @param blue
+         *            The blue portion of text color (0-255)
          */
         Control(int red, int green, int blue) {
-            mColor.r = ((float)red) / 256;
-            mColor.g = ((float)green) / 256;
-            mColor.b = ((float)blue) / 256;
+            mColor.r = ((float) red) / 256;
+            mColor.g = ((float) green) / 256;
+            mColor.b = ((float) blue) / 256;
             mIsTouchable = false;
         }
 
         /**
          * Run this code when this HUD entity is down-pressed
          * 
-         * @param vec The coordinates of the touch
+         * @param vec
+         *            The coordinates of the touch
          */
         void onDownPress(Vector3 vec) {
         }
@@ -124,7 +133,8 @@ public class Controls {
          * Run this code when this HUD entity is still being pressed, after a
          * down press has already been observed.
          * 
-         * @param vec The coordinates of the touch
+         * @param vec
+         *            The coordinates of the touch
          */
         void onHold(Vector3 vec) {
         }
@@ -141,11 +151,13 @@ public class Controls {
          * updating the text to display on every render, so it makes sense to
          * overload the render() call for those HUD entities
          * 
-         * @param sb The SpriteBatch to use to draw the image
+         * @param sb
+         *            The SpriteBatch to use to draw the image
          */
         void render(SpriteBatch sb) {
             if (mIsActive && mImage != null)
-                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
+                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width,
+                        mRange.height, 1, 1, 0);
         }
 
         /**
@@ -189,14 +201,21 @@ public class Controls {
      * the bottom left corner, except text, which takes the top left corner.
      * This function handles the conversion, so that we can use bottom-left.
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param message The text to display
-     * @param bf The BitmapFont object to use for the text's font
-     * @param sb The SpriteBatch used to render the text
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param message
+     *            The text to display
+     * @param bf
+     *            The BitmapFont object to use for the text's font
+     * @param sb
+     *            The SpriteBatch used to render the text
      */
-    static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
-        bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
+    static void drawTextTransposed(int x, int y, String message, BitmapFont bf,
+            SpriteBatch sb) {
+        bf.drawMultiLine(sb, message, x, y
+                + bf.getMultiLineBounds(message).height);
     }
 
     /*
@@ -207,42 +226,61 @@ public class Controls {
      * Add a countdown timer to the screen. When time is up, the level ends in
      * defeat
      * 
-     * @param timeout Starting value of the timer
-     * @param text The text to display when the timer expires
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param timeout
+     *            Starting value of the timer
+     * @param text
+     *            The text to display when the timer expires
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addCountdown(float timeout, String text, int x, int y) {
-        return addCountdown(timeout, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addCountdown(timeout, text, x, y,
+                Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
      * Add a countdown timer to the screen, with extra features for describing
      * the appearance of the font. When time is up, the level ends in defeat.
      * 
-     * @param timeout Starting value of the timer
-     * @param text The text to display when the timer expires
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param timeout
+     *            Starting value of the timer
+     * @param text
+     *            The text to display when the timer expires
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addCountdown(final float timeout, final String text, final int x,
-            final int y, String fontName, final int red, final int green, final int blue, int size) {
+    public static Control addCountdown(final float timeout, final String text,
+            final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size) {
         Level.sCurrent.mScore.mCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
+                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics
+                        .getDeltaTime();
                 if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mCountDownRemaining,
+                    drawTextTransposed(x, y, ""
+                            + (int) Level.sCurrent.mScore.mCountDownRemaining,
                             bf, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
@@ -257,23 +295,31 @@ public class Controls {
     /**
      * Print the frames per second
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addFPS(final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size) {
+    public static Control addFPS(final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
+                drawTextTransposed(x, y,
+                        "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -284,41 +330,58 @@ public class Controls {
      * Add a countdown timer to the screen. When time is up, the level ends in
      * victory
      * 
-     * @param timeout Starting value of the timer
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param timeout
+     *            Starting value of the timer
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addWinCountdown(timeout, x, y,
+                Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
      * Add a countdown timer to the screen, with extra features for describing
      * the appearance of the font. When time is up, the level ends in victory
      * 
-     * @param timeout Starting value of the timer
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param timeout
+     *            Starting value of the timer
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addWinCountdown(final float timeout, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
+    public static Control addWinCountdown(final float timeout, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size) {
         Level.sCurrent.mScore.mWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics
+                        .getDeltaTime();
                 if (Level.sCurrent.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mWinCountRemaining,
+                    drawTextTransposed(x, y, ""
+                            + (int) Level.sCurrent.mScore.mWinCountRemaining,
                             bf, sb);
                 else
                     Level.sCurrent.mScore.endLevel(true);
@@ -332,20 +395,31 @@ public class Controls {
      * Add a count of the current number of goodies of the specified type, with
      * extra features for describing the appearance of the font
      * 
-     * @param type The type of goodie to show (1-4)
-     * @param max If this is > 0, then the message wil be of the form XX/max
+     * @param type
+     *            The type of goodie to show (1-4)
+     * @param max
+     *            If this is > 0, then the message wil be of the form XX/max
      *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param text
+     *            The text to display after the number of goodies
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addGoodieCount(final int type, int max, final String text, final int x,
-            final int y, String fontName, final int red, final int green, final int blue, int size) {
+    public static Control addGoodieCount(final int type, int max,
+            final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
@@ -353,7 +427,8 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1]
+                drawTextTransposed(x, y, ""
+                        + Level.sCurrent.mScore.mGoodiesCollected[type - 1]
                         + suffix, bf, sb);
             }
         };
@@ -364,35 +439,52 @@ public class Controls {
     /**
      * Add a count of the number of enemies who have been defeated
      * 
-     * @param max If this is > 0, then the message will be of the form XX/max
+     * @param max
+     *            If this is > 0, then the message will be of the form XX/max
      *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param text
+     *            The text to display after the number of goodies
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addDefeatedCount(max, text, x, y,
+                Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
      * Add a count of the number of enemies who have been defeated, with extra
      * features for describing the appearance of the font
      * 
-     * @param max If this is > 0, then the message wil be of the form XX/max
+     * @param max
+     *            If this is > 0, then the message wil be of the form XX/max
      *            instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param text
+     *            The text to display after the number of goodies
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addDefeatedCount(int max, final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
+    public static Control addDefeatedCount(int max, final String text,
+            final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
@@ -400,7 +492,8 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf,
+                drawTextTransposed(x, y, ""
+                        + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf,
                         sb);
             }
         };
@@ -411,36 +504,51 @@ public class Controls {
     /**
      * Add a stopwatch for tracking how long a level takes
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
      */
     static public Control addStopwatch(int x, int y) {
         return addStopwatch(x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+                Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
      * Add a stopwatch for tracking how long a level takes, with extra features
      * for describing the appearance of the font
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    static public Control addStopwatch(final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size) {
+    static public Control addStopwatch(final int x, final int y,
+            String fontName, final int red, final int green, final int blue,
+            int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int)Level.sCurrent.mScore.mStopWatchProgress, bf, sb);
+                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics
+                        .getDeltaTime();
+                drawTextTransposed(x, y, ""
+                        + (int) Level.sCurrent.mScore.mStopWatchProgress, bf,
+                        sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -450,40 +558,58 @@ public class Controls {
     /**
      * Display a strength meter for a specific hero
      * 
-     * @param text The text to display after the remaining strength value
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param h The Hero whose strength should be displayed
+     * @param text
+     *            The text to display after the remaining strength value
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param h
+     *            The Hero whose strength should be displayed
      */
     static public Control addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize(), h);
+        return addStrengthMeter(text, x, y,
+                Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontSize(), h);
     }
 
     /**
      * Display a strength meter for a specific hero, with extra features for
      * describing the appearance of the font
      * 
-     * @param text The text to display after the remaining strength value
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
-     * @param h The Hero whose strength should be displayed
+     * @param text
+     *            The text to display after the remaining strength value
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
+     * @param h
+     *            The Hero whose strength should be displayed
      */
-    static public Control addStrengthMeter(final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size, final Hero h) {
+    static public Control addStrengthMeter(final String text, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf,
+                        sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -493,25 +619,36 @@ public class Controls {
     /**
      * Display a meter showing how far a hero has traveled
      * 
-     * @param text The text to display after the remaining strength value
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
-     * @param h The Hero whose distance should be displayed
+     * @param text
+     *            The text to display after the remaining strength value
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
+     * @param h
+     *            The Hero whose distance should be displayed
      */
-    static public Control addDistanceMeter(final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size, final Hero h) {
+    static public Control addDistanceMeter(final String text, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mDistance = (int)h.getXPosition();
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, bf, sb);
+                Level.sCurrent.mScore.mDistance = (int) h.getXPosition();
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance
+                        + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -521,23 +658,33 @@ public class Controls {
     /**
      * Display the number of remaining projectiles
      * 
-     * @param text The text to display after the number of goodies
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
+     * @param text
+     *            The text to display after the number of goodies
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
      */
-    public static Control addProjectileCount(final String text, final int x, final int y,
-            String fontName, final int red, final int green, final int blue, int size) {
+    public static Control addProjectileCount(final String text, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining
+                drawTextTransposed(x, y, ""
+                        + Level.sCurrent.mProjectilePool.mProjectilesRemaining
                         + " " + text, bf, sb);
             }
         };
@@ -550,14 +697,20 @@ public class Controls {
      * displayed. Note that you must configure a PauseScene, or pressing this
      * button will cause your game to crash.
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
      */
-    public static Control addPauseButton(int x, int y, int width, int height, String imgName) {
+    public static Control addPauseButton(int x, int y, int width, int height,
+            String imgName) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -571,18 +724,27 @@ public class Controls {
     /**
      * Add a button that moves an entity
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param entity The entity to move downward
-     * @param dx The new X velocity
-     * @param dy The new Y velocity
+     * @param entity
+     *            The entity to move downward
+     * @param dx
+     *            The new X velocity
+     * @param dy
+     *            The new Y velocity
      */
-    public static Control addMoveButton(int x, int y, int width, int height, String imgName,
-            final PhysicsSprite entity, final float dx, final float dy) {
+    public static Control addMoveButton(int x, int y, int width, int height,
+            String imgName, final PhysicsSprite entity, final float dx,
+            final float dy) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -616,69 +778,96 @@ public class Controls {
     /**
      * Add a button that moves an entity downward
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rate Rate at which the entity moves
-     * @param entity The entity to move downward
+     * @param rate
+     *            Rate at which the entity moves
+     * @param entity
+     *            The entity to move downward
      */
-    public static Control addDownButton(int x, int y, int width, int height, String imgName,
-            float rate, PhysicsSprite entity) {
+    public static Control addDownButton(int x, int y, int width, int height,
+            String imgName, float rate, PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, -rate);
     }
 
     /**
      * Add a button that moves an entity upward
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rate Rate at which the entity moves
-     * @param entity The entity to move upward
+     * @param rate
+     *            Rate at which the entity moves
+     * @param entity
+     *            The entity to move upward
      */
-    public static Control addUpButton(int x, int y, int width, int height, String imgName, float rate,
-            PhysicsSprite entity) {
+    public static Control addUpButton(int x, int y, int width, int height,
+            String imgName, float rate, PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, rate);
     }
 
     /**
      * Add a button that moves the given entity left
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rate Rate at which the entity moves
-     * @param entity The entity that should move left when the button is pressed
+     * @param rate
+     *            Rate at which the entity moves
+     * @param entity
+     *            The entity that should move left when the button is pressed
      */
-    public static Control addLeftButton(int x, int y, int width, int height, String imgName,
-            float rate, PhysicsSprite entity) {
+    public static Control addLeftButton(int x, int y, int width, int height,
+            String imgName, float rate, PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, -rate, 0);
     }
 
     /**
      * Add a button that moves the given entity to the right
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rate Rate at which the entity moves
-     * @param entity The entity that should move right when the button is
-     *            pressed
+     * @param rate
+     *            Rate at which the entity moves
+     * @param entity
+     *            The entity that should move right when the button is pressed
      */
-    public static Control addRightButton(int x, int y, int width, int height, String imgName,
-            float rate, PhysicsSprite entity) {
+    public static Control addRightButton(int x, int y, int width, int height,
+            String imgName, float rate, PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, rate, 0);
     }
 
@@ -686,25 +875,33 @@ public class Controls {
      * Add a button that moves the given entity at one speed when it is
      * depressed, and at another otherwise
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rateDownX Rate (X) at which the entity moves when the button is
+     * @param rateDownX
+     *            Rate (X) at which the entity moves when the button is pressed
+     * @param rateDownY
+     *            Rate (Y) at which the entity moves when the button is pressed
+     * @param rateUpX
+     *            Rate (X) at which the entity moves when the button is not
      *            pressed
-     * @param rateDownY Rate (Y) at which the entity moves when the button is
+     * @param rateUpY
+     *            Rate (Y) at which the entity moves when the button is not
      *            pressed
-     * @param rateUpX Rate (X) at which the entity moves when the button is not
-     *            pressed
-     * @param rateUpY Rate (Y) at which the entity moves when the button is not
-     *            pressed
-     * @param entity The entity that the button controls
+     * @param entity
+     *            The entity that the button controls
      */
-    public static Control addTurboButton(int x, int y, int width, int height, String imgName,
-            final int rateDownX, final int rateDownY, final int rateUpX, final int rateUpY,
-            final PhysicsSprite entity) {
+    public static Control addTurboButton(int x, int y, int width, int height,
+            String imgName, final int rateDownX, final int rateDownY,
+            final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -735,20 +932,27 @@ public class Controls {
      * Add a button that moves the given entity at one speed, but doesn't stop
      * the entity when the button is released
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rateX Rate (X) at which the entity moves when the button is
-     *            pressed
-     * @param rateY Rate (Y) at which the entity moves when the button is
-     *            pressed
-     * @param entity The entity that the button controls
+     * @param rateX
+     *            Rate (X) at which the entity moves when the button is pressed
+     * @param rateY
+     *            Rate (Y) at which the entity moves when the button is pressed
+     * @param entity
+     *            The entity that the button controls
      */
-    public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
-            final float rateX, final float rateY, final float dampening, final PhysicsSprite entity) {
+    public static Control addDampenedMotionButton(int x, int y, int width,
+            int height, String imgName, final float rateX, final float rateY,
+            final float dampening, final PhysicsSprite entity) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -772,16 +976,22 @@ public class Controls {
      * Add a button that puts the hero into crawl mode when depressed, and
      * regular mode when released
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero to control
+     * @param h
+     *            The hero to control
      */
-    public static Control addCrawlButton(int x, int y, int width, int height, String imgName,
-            final Hero h) {
+    public static Control addCrawlButton(int x, int y, int width, int height,
+            String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -800,16 +1010,22 @@ public class Controls {
     /**
      * Add a button to make the hero jump
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero to control
+     * @param h
+     *            The hero to control
      */
-    public static Control addJumpButton(int x, int y, int width, int height, String imgName,
-            final Hero h) {
+    public static Control addJumpButton(int x, int y, int width, int height,
+            String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -823,18 +1039,25 @@ public class Controls {
     /**
      * Add a button to make the hero throw a projectile
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero who should throw the projectile
-     * @param milliDelay A delay between throws, so that holding doesn't lead to
-     *            too many throws at once
+     * @param h
+     *            The hero who should throw the projectile
+     * @param milliDelay
+     *            A delay between throws, so that holding doesn't lead to too
+     *            many throws at once
      */
-    public static Control addThrowButton(int x, int y, int width, int height, String imgName,
-            final Hero h, final int milliDelay) {
+    public static Control addThrowButton(int x, int y, int width, int height,
+            String imgName, final Hero h, final int milliDelay) {
         Control c = new Control(imgName, x, y, width, height) {
             long mLastThrow;
 
@@ -861,16 +1084,22 @@ public class Controls {
      * Add a button to make the hero throw a projectile, but holding doesn't
      * make it throw more often
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero who should throw the projectile
+     * @param h
+     *            The hero who should throw the projectile
      */
-    public static Control addSingleThrowButton(int x, int y, int width, int height, String imgName,
-            final Hero h) {
+    public static Control addSingleThrowButton(int x, int y, int width,
+            int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -892,18 +1121,25 @@ public class Controls {
      * Note: you probably want to use an invisible button that covers the
      * screen...
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero who should throw the projectile
-     * @param milliDelay A delay between throws, so that holding doesn't lead to
-     *            too many throws at once
+     * @param h
+     *            The hero who should throw the projectile
+     * @param milliDelay
+     *            A delay between throws, so that holding doesn't lead to too
+     *            many throws at once
      */
-    public static Control addVectorThrowButton(int x, int y, int width, int height, String imgName,
-            final Hero h, final long milliDelay) {
+    public static Control addVectorThrowButton(int x, int y, int width,
+            int height, String imgName, final Hero h, final long milliDelay) {
         Control c = new Control(imgName, x, y, width, height) {
             long mLastThrow;
 
@@ -919,8 +1155,9 @@ public class Controls {
                 long now = System.nanoTime();
                 if (mLastThrow + milliDelay * 1000000 < now) {
                     mLastThrow = now;
-                    Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
-                            h.mBody.getPosition().y, vv.x, vv.y, h);
+                    Level.sCurrent.mProjectilePool.throwAt(
+                            h.mBody.getPosition().x, h.mBody.getPosition().y,
+                            vv.x, vv.y, h);
                 }
             }
 
@@ -933,16 +1170,22 @@ public class Controls {
      * This is almost exactly like addVectorThrowButton. The only difference is
      * that holding won't cause the hero to throw more projectiles
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param h The hero who should throw the projectile
+     * @param h
+     *            The hero who should throw the projectile
      */
-    public static Control addVectorSingleThrowButton(int x, int y, int width, int height,
-            String imgName, final Hero h) {
+    public static Control addVectorSingleThrowButton(int x, int y, int width,
+            int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -962,16 +1205,22 @@ public class Controls {
      * Display a zoom out button. Note that zooming in and out does not work
      * well with elements that hover on the screen. Use with care.
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param maxZoom Maximum zoom. 8 is usually a good default
+     * @param maxZoom
+     *            Maximum zoom. 8 is usually a good default
      */
-    public static Control addZoomOutButton(int x, int y, int width, int height, String imgName,
-            final float maxZoom) {
+    public static Control addZoomOutButton(int x, int y, int width, int height,
+            String imgName, final float maxZoom) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
@@ -989,16 +1238,22 @@ public class Controls {
     /**
      * Display a zoom in button
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param minZoom Minimum zoom. 0.25f is usually a good default
+     * @param minZoom
+     *            Minimum zoom. 0.25f is usually a good default
      */
-    public static Control addZoomInButton(int x, int y, int width, int height, String imgName,
-            final float minZoom) {
+    public static Control addZoomInButton(int x, int y, int width, int height,
+            String imgName, final float minZoom) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 v) {
@@ -1016,16 +1271,22 @@ public class Controls {
     /**
      * Add a button that rotates the hero
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param rate Amount of rotation to apply to the hero on each press
+     * @param rate
+     *            Amount of rotation to apply to the hero on each press
      */
-    public static Control addRotateButton(int x, int y, int width, int height, String imgName,
-            final float rate, final Hero h) {
+    public static Control addRotateButton(int x, int y, int width, int height,
+            String imgName, final float rate, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -1044,14 +1305,20 @@ public class Controls {
     /**
      * Add an image to the heads-up display. Touching the image has no effect
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
      */
-    public static Control addImage(int x, int y, int width, int height, String imgName) {
+    public static Control addImage(int x, int y, int width, int height,
+            String imgName) {
         Control c = new Control(imgName, x, y, width, height);
         c.mIsTouchable = false;
         Level.sCurrent.mControls.add(c);
@@ -1062,16 +1329,22 @@ public class Controls {
      * Add a button to the heads-up display that runs custom code via an
      * onControlPress trigger
      * 
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param id An id to use for the trigger event
+     * @param id
+     *            An id to use for the trigger event
      */
-    public static Control addTriggerControl(int x, int y, int width, int height, String imgName,
-            final int id) {
+    public static Control addTriggerControl(int x, int y, int width,
+            int height, String imgName, final int id) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
             void onDownPress(Vector3 vv) {
@@ -1085,25 +1358,37 @@ public class Controls {
     /**
      * Display text corresponding to a fact saved for the current level
      * 
-     * @param key The key to look up in the Fact store
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
-     * @param prefix Text to put before the fact
-     * @param suffix Text to put after the fact
+     * @param key
+     *            The key to look up in the Fact store
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
+     * @param prefix
+     *            Text to put before the fact
+     * @param suffix
+     *            Text to put after the fact
      */
-    static public Control addLevelFact(final String key, final int x, final int y, String fontName,
-            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+    static public Control addLevelFact(final String key, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + " " + suffix, bf, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key)
+                        + " " + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1113,25 +1398,38 @@ public class Controls {
     /**
      * Display text corresponding to a fact saved for the current game session
      * 
-     * @param key The key to look up in the Fact store
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
-     * @param prefix Text to put before the fact
-     * @param suffix Text to put after the fact
+     * @param key
+     *            The key to look up in the Fact store
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
+     * @param prefix
+     *            Text to put before the fact
+     * @param suffix
+     *            Text to put after the fact
      */
-    static public Control addSessionFact(final String key, final int x, final int y, String fontName,
-            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+    static public Control addSessionFact(final String key, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + " " + suffix, bf, sb);
+                drawTextTransposed(x, y,
+                        prefix + "" + Facts.getSessionFact(key) + " " + suffix,
+                        bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1141,25 +1439,37 @@ public class Controls {
     /**
      * Display text corresponding to a fact saved for the game
      * 
-     * @param key The key to look up in the Fact store
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     * @param fontname The name of the font file to use
-     * @param red The red portion of text color (0-255)
-     * @param green The green portion of text color (0-255)
-     * @param blue The blue portion of text color (0-255)
-     * @param size The font size to use (20 is usually a good value)
-     * @param prefix Text to put before the fact
-     * @param suffix Text to put after the fact
+     * @param key
+     *            The key to look up in the Fact store
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param fontname
+     *            The name of the font file to use
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param size
+     *            The font size to use (20 is usually a good value)
+     * @param prefix
+     *            Text to put before the fact
+     * @param suffix
+     *            Text to put after the fact
      */
-    static public Control addGameFact(final String key, final int x, final int y, String fontName,
-            final int red, final int green, final int blue, int size, final String prefix, final String suffix) {
+    static public Control addGameFact(final String key, final int x,
+            final int y, String fontName, final int red, final int green,
+            final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + " " + suffix, bf, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key)
+                        + " " + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);

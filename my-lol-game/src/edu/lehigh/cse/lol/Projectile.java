@@ -65,20 +65,28 @@ public class Projectile extends PhysicsSprite {
      * Internal method to create a projectile. Projectiles have an underlying
      * circle as their physics body
      * 
-     * @param width width of the projectile
-     * @param height height of the projectile
-     * @param imgName Name of the image file to use for this projectile
-     * @param x initial x position of the projectile
-     * @param y initial y position of the projectile
-     * @param zIndex The z plane of the projectile
-     * @param isCircle True if it is a circle, false if it is a box
+     * @param width
+     *            width of the projectile
+     * @param height
+     *            height of the projectile
+     * @param imgName
+     *            Name of the image file to use for this projectile
+     * @param x
+     *            initial x position of the projectile
+     * @param y
+     *            initial y position of the projectile
+     * @param zIndex
+     *            The z plane of the projectile
+     * @param isCircle
+     *            True if it is a circle, false if it is a box
      */
-    Projectile(float width, float height, String imgName, float x, float y, int zIndex,
-            boolean isCircle) {
+    Projectile(float width, float height, String imgName, float x, float y,
+            int zIndex, boolean isCircle) {
         super(imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
-            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
+            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y,
+                    radius / 2);
         } else {
             setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
         }
@@ -94,15 +102,17 @@ public class Projectile extends PhysicsSprite {
      * projectile, which is a bit funny because one of the two projectiles will
      * live.
      * 
-     * @param other The other entity involved in the collision
-     * @param contact A description of the contact
+     * @param other
+     *            The other entity involved in the collision
+     * @param contact
+     *            A description of the contact
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
         // if this is an obstacle, check if it is a projectile trigger, and if
         // so, do the callback
         if (other instanceof Obstacle) {
-            Obstacle o = (Obstacle)other;
+            Obstacle o = (Obstacle) other;
             if (o.mProjectileCollision != null) {
                 o.mProjectileCollision.go(this, contact);
                 // return... don't remove the projectile

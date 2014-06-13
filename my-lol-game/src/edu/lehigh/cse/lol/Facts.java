@@ -34,123 +34,125 @@ import com.badlogic.gdx.Preferences;
 
 /**
  * The Fact interface provides a way for the programmer to store per-level,
- * per-session, and per-game (persistent) information about the game. As an example, in a
- * game of golf, one could use per-level to track the current number of strokes,
- * use per-session to track the score across all 18 holes, and per-game to
- * track the player's high score.
+ * per-session, and per-game (persistent) information about the game. As an
+ * example, in a game of golf, one could use per-level to track the current
+ * number of strokes, use per-session to track the score across all 18 holes,
+ * and per-game to track the player's high score.
  */
 public class Facts {
 
-	/**
-	 * Store string/integer pairs that get reset at the end of every level
-	 */
-	private static final Hashtable<String, Integer> mLevelFacts = new Hashtable<String, Integer>();
+    /**
+     * Store string/integer pairs that get reset at the end of every level
+     */
+    private static final Hashtable<String, Integer> mLevelFacts = new Hashtable<String, Integer>();
 
-	/**
-	 * Store string/integer pairs that get reset whenever we restart the program
-	 */
-	private static final Hashtable<String, Integer> mSessionFacts = new Hashtable<String, Integer>();
+    /**
+     * Store string/integer pairs that get reset whenever we restart the program
+     */
+    private static final Hashtable<String, Integer> mSessionFacts = new Hashtable<String, Integer>();
 
-	/**
-	 * Reset all per-level facts
-	 */
-	static void resetLevelFacts() {
-		mLevelFacts.clear();
-	}
+    /**
+     * Reset all per-level facts
+     */
+    static void resetLevelFacts() {
+        mLevelFacts.clear();
+    }
 
-	/**
-	 * Reset all per-session facts
-	 */
-	static void resetSessionFacts() {
-		mSessionFacts.clear();
-	}
+    /**
+     * Reset all per-session facts
+     */
+    static void resetSessionFacts() {
+        mSessionFacts.clear();
+    }
 
-	/**
-	 * Look up a fact that was stored for the current level. If no such fact
-	 * exists, -1 will be returned.
-	 * 
-	 * @param factName
-	 *            The name used to store the fact
-	 * @return The integer value corresponding to the last value stored
-	 */
-	public static int getLevelFact(String factName) {
-		Integer i = mLevelFacts.get(factName);
-		if (i == null) {
-			Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
-					+ "'");
-			return -1;
-		}
-		return i;
-	}
+    /**
+     * Look up a fact that was stored for the current level. If no such fact
+     * exists, -1 will be returned.
+     * 
+     * @param factName
+     *            The name used to store the fact
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getLevelFact(String factName) {
+        Integer i = mLevelFacts.get(factName);
+        if (i == null) {
+            Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
+                    + "'");
+            return -1;
+        }
+        return i;
+    }
 
-	/**
-	 * Save a fact about the current level. If the factName has already been
-	 * used for this level, the new value will overwrite the old.
-	 * 
-	 * @param factName
-	 *            The name for the fact being saved
-	 * @param factValue
-	 *            The integer value that is the fact being saved
-	 */
-	public static void putLevelFact(String factName, int factValue) {
-		mLevelFacts.put(factName, factValue);
-	}
+    /**
+     * Save a fact about the current level. If the factName has already been
+     * used for this level, the new value will overwrite the old.
+     * 
+     * @param factName
+     *            The name for the fact being saved
+     * @param factValue
+     *            The integer value that is the fact being saved
+     */
+    public static void putLevelFact(String factName, int factValue) {
+        mLevelFacts.put(factName, factValue);
+    }
 
-	/**
-	 * Look up a fact that was stored for the current game session. If no such
-	 * fact exists, -1 will be returned.
-	 * 
-	 * @param factName
-	 *            The name used to store the fact
-	 * @return The integer value corresponding to the last value stored
-	 */
-	public static int getSessionFact(String factName) {
-		Integer i = mSessionFacts.get(factName);
-		if (i == null) {
-			Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
-					+ "'");
-			return -1;
-		}
-		return i;
-	}
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, -1 will be returned.
+     * 
+     * @param factName
+     *            The name used to store the fact
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getSessionFact(String factName) {
+        Integer i = mSessionFacts.get(factName);
+        if (i == null) {
+            Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
+                    + "'");
+            return -1;
+        }
+        return i;
+    }
 
-	/**
-	 * Save a fact about the current game session. If the factName has already
-	 * been used for this game session, the new value will overwrite the old.
-	 * 
-	 * @param factName
-	 *            The name for the fact being saved
-	 * @param factValue
-	 *            The integer value that is the fact being saved
-	 */
-	public static void putSessionFact(String factName, int factValue) {
-		mSessionFacts.put(factName, factValue);
-	}
-	
-	/**
-	 * Look up a fact that was stored for the current game session. If no such
-	 * fact exists, -1 will be returned.
-	 * 
-	 * @param factName
-	 *            The name used to store the fact
-	 * @return The integer value corresponding to the last value stored
-	 */
-	public static int getGameFact(String factName) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     * 
+     * @param factName
+     *            The name for the fact being saved
+     * @param factValue
+     *            The integer value that is the fact being saved
+     */
+    public static void putSessionFact(String factName, int factValue) {
+        mSessionFacts.put(factName, factValue);
+    }
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, -1 will be returned.
+     * 
+     * @param factName
+     *            The name used to store the fact
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getGameFact(String factName) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
+                .getStorageKey());
         return prefs.getInteger(factName, -1);
     }
 
-	/**
-	 * Save a fact about the current game session. If the factName has already
-	 * been used for this game session, the new value will overwrite the old.
-	 * 
-	 * @param factName
-	 *            The name for the fact being saved
-	 * @param factValue
-	 *            The integer value that is the fact being saved
-	 */
-	public static void putGameFact(String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     * 
+     * @param factName
+     *            The name for the fact being saved
+     * @param factValue
+     *            The integer value that is the fact being saved
+     */
+    public static void putGameFact(String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
+                .getStorageKey());
         prefs.putInteger(factName, factValue);
         prefs.flush();
     }

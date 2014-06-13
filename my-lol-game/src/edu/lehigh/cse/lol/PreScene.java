@@ -99,7 +99,8 @@ public class PreScene {
     /**
      * Render this PreScene
      * 
-     * @param sb The SpriteBatch to use when rendering
+     * @param sb
+     *            The SpriteBatch to use when rendering
      * @return true if we drew something, false otherwise
      */
     boolean render(SpriteBatch sb) {
@@ -135,45 +136,69 @@ public class PreScene {
     /**
      * Add some text to the PreScene
      * 
-     * @param text The text to display
-     * @param x X coordinate of the text
-     * @param y Y coordinate of the text
-     * @param red Redness of the text color
-     * @param green Greenness of the text color
-     * @param blue Blueness of the text color
-     * @param fontName The font file to use
-     * @param size The size of the text
+     * @param text
+     *            The text to display
+     * @param x
+     *            X coordinate of the text
+     * @param y
+     *            Y coordinate of the text
+     * @param red
+     *            Redness of the text color
+     * @param green
+     *            Greenness of the text color
+     * @param blue
+     *            Blueness of the text color
+     * @param fontName
+     *            The font file to use
+     * @param size
+     *            The size of the text
      */
-    public static void addText(String text, int x, int y, int red, int green, int blue,
-            String fontName, int size) {
-        getCurrPreScene().mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+    public static void addText(String text, int x, int y, int red, int green,
+            int blue, String fontName, int size) {
+        getCurrPreScene().mSprites.add(Util.makeText(x, y, text, red, green,
+                blue, fontName, size));
     }
 
     /**
      * Add some text to the PreScene, and center it vertically and horizontally
      * 
-     * @param text The text to display
-     * @param red Redness of the text color
-     * @param green Greenness of the text color
-     * @param blue Blueness of the text color
-     * @param fontName The font file to use
-     * @param size The size of the text
+     * @param text
+     *            The text to display
+     * @param red
+     *            Redness of the text color
+     * @param green
+     *            Greenness of the text color
+     * @param blue
+     *            Blueness of the text color
+     * @param fontName
+     *            The font file to use
+     * @param size
+     *            The size of the text
      */
-    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
-        getCurrPreScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+    public static void addText(String text, int red, int green, int blue,
+            String fontName, int size) {
+        getCurrPreScene().mSprites.add(Util.makeText(text, red, green, blue,
+                fontName, size));
     }
 
     /**
      * Add an image to the PreScene
      * 
-     * @param imgName The file name for the image to display
-     * @param x X coordinate of the bottom left corner
-     * @param y Y coordinate of the bottom left corner
-     * @param width Width of the image
-     * @param height Height of the image
+     * @param imgName
+     *            The file name for the image to display
+     * @param x
+     *            X coordinate of the bottom left corner
+     * @param y
+     *            Y coordinate of the bottom left corner
+     * @param width
+     *            Width of the image
+     * @param height
+     *            Height of the image
      */
-    public static void addImage(String imgName, int x, int y, int width, int height) {
-        getCurrPreScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
+    public static void addImage(String imgName, int x, int y, int width,
+            int height) {
+        getCurrPreScene().mSprites.add(Util.makePicture(x, y, width, height,
+                imgName));
     }
 
     /**
@@ -181,8 +206,8 @@ public class PreScene {
      * dismiss it. To have the PreScene disappear after a fixed time instead,
      * use this.
      * 
-     * @param duration The time, in seconds, before the PreScene should
-     *            disappear.
+     * @param duration
+     *            The time, in seconds, before the PreScene should disappear.
      */
     public static void setExpire(float duration) {
         if (duration > 0) {
