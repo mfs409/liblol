@@ -28,7 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,15 +38,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
  * The Chooser is a screen that gives the player a choice of levels of the game
  * to play.
  */
-public class Chooser implements Screen {
-
+public class Chooser extends ScreenAdapter implements GestureListener {
     /**
      * The "Previous Chooser Screen" button
      */
@@ -160,6 +162,9 @@ public class Chooser implements Screen {
         int levelsPerChooser = cc.getColumns() * cc.getRows();
         int totalLevels = Lol.sGame.mConfig.getNumLevels();
 
+        // Subscribe to touch gestures
+        Gdx.input.setInputProcessor(new GestureDetector(this));
+
         // set up the background image and music
         mImage = Media.getImage(cc.getBackgroundName());
         if (cc.getMusicName() != null)
@@ -270,6 +275,10 @@ public class Chooser implements Screen {
         }
     }
 
+    /*
+     * SCREENADAPTER (SCREEN) OVERRIDES
+     */
+
     /**
      * Render the chooser
      * 
@@ -280,8 +289,6 @@ public class Chooser implements Screen {
     public void render(float delta) {
         // make sure music is playing, and check for touches
         playMusic();
-        if (Gdx.input.justTouched())
-            touchDown(Gdx.input.getX(0), Gdx.input.getY(0));
 
         // update the camera
         mCamera.update();
@@ -369,34 +376,47 @@ public class Chooser implements Screen {
         pauseMusic();
     }
 
+    /*
+     * GESTURELISTENER OVERRIDES
+     */
+
     /**
-     * Handle a screen touch by figuring out what button was pressed, and then
+     * Handle a screen tap by figuring out what button was pressed, and then
      * taking action
      * 
      * @param x
-     *            The X coordinate of the touch
+     *            X coordinate of the tap
      * @param y
-     *            The Y coordinate of the touch
+     *            Y coordinate of the tap
+     * @param count
+     *            1 for single-tap, 2 for double-tap
+     * @param button
+     *            Left/Right button when a mouse is used
      */
-    private void touchDown(int x, int y) {
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // get the chooser configuration and coords of the touch
         ChooserConfiguration cc = Lol.sGame.mChooserConfig;
-        // get the coordinates of the touch
         mCamera.unproject(mV.set(x, y, 0));
+
         // DEBUG: display touch coordinates
         if (Lol.sGame.mConfig.showDebugBoxes()) {
             Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
         }
+        
         // handle 'back' presses
         if (mBack.mRect.contains(mV.x, mV.y)) {
             Lol.sGame.handleBack();
-            return;
+            return true;
         }
+       
         // handle 'previous screen' requests
         if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
             Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
             Lol.sGame.doChooser();
-            return;
+            return true;
         }
+        
         // handle 'next screen' requests
         if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
             // special case for when we came straight from the Splash screen
@@ -404,7 +424,7 @@ public class Chooser implements Screen {
                 Lol.sGame.mCurrLevelNum = 1;
             Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
             Lol.sGame.doChooser();
-            return;
+            return true;
         }
 
         // check for press to an unlocked level
@@ -413,32 +433,69 @@ public class Chooser implements Screen {
             if (ls != null
                     && (ls.mLevel <= unlocked || Lol.sGame.mConfig
                             .getUnlockMode())) {
-                if (ls.mRect.contains(mV.x, mV.y))
+                if (ls.mRect.contains(mV.x, mV.y)) {
                     Lol.sGame.doPlayLevel(ls.mLevel);
+                    return true;
+                }
             }
         }
+        return false;
     }
 
+    /**
+     * Not used by Chooser
+     */
     @Override
-    public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
     }
 
+    /**
+     * Not used by Chooser
+     */
     @Override
-    public void show() {
-        // TODO Auto-generated method stub
-
+    public boolean longPress(float x, float y) {
+        return false;
     }
 
+    /**
+     * Not used by Chooser
+     */
     @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
     }
 
+    /**
+     * Not used by Chooser
+     */
     @Override
-    public void resume() {
-        // TODO Auto-generated method stub
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        return false;
+    }
+
+    /**
+     * Not used by Chooser
+     */
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    /**
+     * Not used by Chooser
+     */
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    /**
+     * Not used by Chooser
+     */
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        return false;
     }
 }
