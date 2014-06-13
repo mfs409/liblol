@@ -28,6 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,16 +39,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
-import edu.lehigh.cse.lol.Lol.GestureScreen;
 
 /**
  * The Chooser is a screen that gives the player a choice of levels of the game
  * to play.
  */
-public class Chooser implements GestureScreen {
+public class Chooser implements Screen {
 
     /**
      * The "Previous Chooser Screen" button
@@ -442,55 +440,5 @@ public class Chooser implements GestureScreen {
     @Override
     public void resume() {
         // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

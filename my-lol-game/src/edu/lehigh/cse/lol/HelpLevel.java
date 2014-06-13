@@ -30,18 +30,16 @@ package edu.lehigh.cse.lol;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-
-import edu.lehigh.cse.lol.Lol.GestureScreen;
 
 /**
  * HelpLevel provides an interface for drawing to the help screens of a game
  */
-public class HelpLevel implements GestureScreen {
+public class HelpLevel implements Screen {
 
     /**
      * The background color of the help level
@@ -245,54 +243,5 @@ public class HelpLevel implements GestureScreen {
     public void dispose() {
         // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

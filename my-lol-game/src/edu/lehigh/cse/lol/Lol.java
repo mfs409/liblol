@@ -41,14 +41,12 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
-public abstract class Lol implements ApplicationListener, GestureListener {
+public abstract class Lol implements ApplicationListener {
     /**
      * This interface is used to store items that can be rendered
      */
@@ -65,16 +63,9 @@ public abstract class Lol implements ApplicationListener, GestureListener {
     }
 
     /**
-     * The GestureScreen is both a Screen and a GestureListener, so that we can
-     * forward gesture events as appropriate
-     */
-    interface GestureScreen extends Screen, GestureListener {
-    }
-
-    /**
      * The screen currently being shown.
      */
-    private GestureScreen mScreen;
+    private Screen mScreen;
 
     /**
      * The current mode of the program
@@ -343,7 +334,7 @@ public abstract class Lol implements ApplicationListener, GestureListener {
      * @param screen
      *            The new screen. May be null
      */
-    public void setScreen(GestureScreen screen) {
+    public void setScreen(Screen screen) {
         if (mScreen != null)
             mScreen.hide();
         mScreen = screen;
@@ -351,91 +342,6 @@ public abstract class Lol implements ApplicationListener, GestureListener {
             mScreen.show();
             mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
-    }
-
-    /*
-     * GESTURELISTENER SUPPORT
-     */
-
-    /**
-     * This is an internal method for handling screen presses. User code should
-     * never call this.
-     */
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling screen taps. User code should
-     * never call this.
-     */
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling long screen presses. User code
-     * should never call this.
-     */
-    @Override
-    public boolean longPress(float x, float y) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling screen flings. User code should
-     * never call this.
-     */
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling pan events. User code should
-     * never call this.
-     */
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling the end of a pan event. User code
-     * should never call this.
-     */
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling zooming. User code should never
-     * call this.
-     */
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        // TODO
-        return false;
-    }
-
-    /**
-     * This is an internal method for handling screen pinches. User code should
-     * never call this.
-     */
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     /*

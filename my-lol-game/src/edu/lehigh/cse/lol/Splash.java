@@ -28,6 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -36,6 +37,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -45,7 +48,7 @@ import com.badlogic.gdx.math.Vector3;
  * has buttons for playing, getting help, and quitting. It is configured through
  * a SplashConfiguration object.
  */
-public class Splash implements Lol.GestureScreen {
+public class Splash extends ScreenAdapter implements GestureListener {
 
     /**
      * A static reference to the current splash screen, so that we can use a
@@ -118,6 +121,8 @@ public class Splash implements Lol.GestureScreen {
         sCurrent = this;
         // call user code to configure the objects
         Lol.sGame.configureSplash();
+        // Subscribe to touch gestures
+        Gdx.input.setInputProcessor(new GestureDetector(this));
     }
 
     /**
@@ -150,6 +155,10 @@ public class Splash implements Lol.GestureScreen {
         }
     }
 
+    /*
+     * SCREEN OVERRIDES
+     */
+    
     /**
      * Draw the splash screen
      * 
@@ -161,30 +170,8 @@ public class Splash implements Lol.GestureScreen {
         // make sure the music is playing
         playMusic();
 
-        // If there is a new down-touch, figure out if it was to a button
-        if (Gdx.input.justTouched()) {
-            // translate the touch into camera coordinates
-            mCamera.unproject(mV.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            // DEBUG: print the location of the touch... this is really useful
-            // when trying to figure out the coordinates of the rectangles
-            if (Lol.sGame.mConfig.showDebugBoxes()) {
-                Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
-            }
-            // check if the touch was inside one of our buttons, and act
-            // accordingly
-            if (mQuit != null && mQuit.contains(mV.x, mV.y)) {
-                stopMusic();
-                Lol.sGame.doQuit();
-            }
-            if (mPlay != null && mPlay.contains(mV.x, mV.y)) {
-                stopMusic();
-                Lol.sGame.doChooser();
-            }
-            if (mHelp != null && mHelp.contains(mV.x, mV.y)) {
-                stopMusic();
-                Lol.sGame.doHelpLevel(1);
-            }
-        }
+        // NB: we no longer poll for screen events... the TAP gesture does
+        // everything we need.
 
         // now draw the screen...
         GL20 gl = Gdx.gl;
@@ -231,6 +218,106 @@ public class Splash implements Lol.GestureScreen {
         pauseMusic();
     }
 
+    /*
+     * GESTURE OVERRIDES
+     */
+    
+    /**
+     * Process a TAP event. A TAP is a down-then-up gesture.
+     * 
+     * @param x
+     *            The x coordinate on the screen for where the touch happened
+     * @param y
+     *            The y coordinate on the screen for where the touch happened
+     * @param count
+     *            normally 1, but a double click leads to a 2
+     * @param button
+     *            Corresponds to left and right mouse buttons
+     */
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        // translate the touch into camera coordinates
+        mCamera.unproject(mV.set(x, y, 0));
+        // DEBUG: print the location of the touch... this is really useful
+        // when trying to figure out the coordinates of the rectangles
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
+            Gdx.app.log("tap", "(" + mV.x + ", " + mV.y + ")");
+        }
+        // check if the touch was inside one of our buttons, and act
+        // accordingly
+        if (mQuit != null && mQuit.contains(mV.x, mV.y)) {
+            stopMusic();
+            Lol.sGame.doQuit();
+        }
+        if (mPlay != null && mPlay.contains(mV.x, mV.y)) {
+            stopMusic();
+            Lol.sGame.doChooser();
+        }
+        if (mHelp != null && mHelp.contains(mV.x, mV.y)) {
+            stopMusic();
+            Lol.sGame.doHelpLevel(1);
+        }
+        // We handled the tap, so return true...
+        return true;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean longPress(float x, float y) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    /**
+     * Not used by Splash Screen 
+     */
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+            Vector2 pointer1, Vector2 pointer2) {
+        return false;
+    }
+    
     /*
      * PUBLIC INTERFACE
      */
@@ -314,78 +401,5 @@ public class Splash implements Lol.GestureScreen {
      */
     public static void setBackground(String imgName) {
         sCurrent.mImage = Media.getImage(imgName);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void show() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void resume() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

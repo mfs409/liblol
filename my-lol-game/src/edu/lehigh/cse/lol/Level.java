@@ -30,6 +30,7 @@ package edu.lehigh.cse.lol;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,7 +39,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -49,7 +49,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Controls.Control;
-import edu.lehigh.cse.lol.Lol.GestureScreen;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they
@@ -61,7 +60,7 @@ import edu.lehigh.cse.lol.Lol.GestureScreen;
  * used to display everything that appears on the screen. It is also responsible
  * for keeping track of everything on the screen (game entities and Controls).
  */
-public class Level implements GestureScreen {
+public class Level implements Screen {
     /**
      * The music, if any
      */
@@ -943,54 +942,5 @@ public class Level implements GestureScreen {
     public void resume() {
         // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }
