@@ -162,7 +162,8 @@ public class Chooser extends ScreenAdapter {
         int totalLevels = Lol.sGame.mConfig.getNumLevels();
 
         // Subscribe to touch gestures
-        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter(){    /**
+        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter(){    
+            /**
              * Handle a screen tap by figuring out what button was pressed, and then
              * taking action
              * 

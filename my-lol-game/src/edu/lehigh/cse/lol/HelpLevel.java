@@ -88,6 +88,19 @@ public class HelpLevel extends ScreenAdapter {
 
         // Subscribe to tap gestures
         Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter() {
+            /**
+             * Handle a screen tap by figuring out what button was pressed, and
+             * then taking action
+             * 
+             * @param x
+             *            X coordinate of the tap
+             * @param y
+             *            Y coordinate of the tap
+             * @param count
+             *            1 for single-tap, 2 for double-tap
+             * @param button
+             *            Left/Right button when a mouse is used
+             */
             @Override
             public boolean tap(float x, float y, int count, int button) {
                 // On tap, either advance to the next help scene, or

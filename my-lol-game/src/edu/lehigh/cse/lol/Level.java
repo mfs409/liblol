@@ -30,7 +30,7 @@ package edu.lehigh.cse.lol;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -60,7 +60,7 @@ import edu.lehigh.cse.lol.Controls.Control;
  * used to display everything that appears on the screen. It is also responsible
  * for keeping track of everything on the screen (game entities and Controls).
  */
-public class Level implements Screen {
+public class Level extends ScreenAdapter {
     /**
      * The music, if any
      */
@@ -336,6 +336,11 @@ public class Level implements Screen {
         // clear any timers
         Timer.instance().clear();
 
+        // clear the GestureListener
+        //
+        // TODO: set up a gesture listener instead...
+        Gdx.input.setInputProcessor(null);
+        
         // reset the per-level object store
         Facts.resetLevelFacts();
 
@@ -443,123 +448,6 @@ public class Level implements Screen {
         mTouchActive = false;
         for (int i = 0; i < 4; ++i)
             mLastTouches[i] = true;
-    }
-
-    /**
-     * This code is called every 1/45th of a second to update the game state and
-     * re-draw the screen
-     * 
-     * @param delta
-     *            The time since the last render
-     */
-    @Override
-    public void render(float delta) {
-        // Make sure the music is playing... Note that we start music before the
-        // PreScene shows
-        playMusic();
-
-        // Handle pauses due to pre, pause, or post scenes... Note that these
-        // handle their own screen touches... Note that postscene should come
-        // first.
-        if (mPostScene != null && mPostScene.render(mSpriteBatch))
-            return;
-        if (mPreScene != null && mPreScene.render(mSpriteBatch))
-            return;
-        if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
-            return;
-
-        // check for any scene touches that should generate new events to
-        // process
-        manageTouches();
-
-        // handle accelerometer stuff... note that accelerometer is effectively
-        // disabled during a popup... we could change that by moving this to the
-        // top, but that's probably not going to produce logical behavior
-        Level.sCurrent.mTilt.handleTilt();
-
-        // Advance the physics world by 1/45 of a second.
-        //
-        // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/ instead of 1/45f
-        mWorld.step(1 / 45f, 8, 3);
-
-        // now handle any events that occurred on account of the world movement
-        // or screen touches
-        for (Action pe : mOneTimeEvents)
-            pe.go();
-        mOneTimeEvents.clear();
-
-        // handle repeat events
-        for (Action pe : mRepeatEvents)
-            pe.go();
-
-        // check for end of game
-        if (mEndGameEvent != null)
-            mEndGameEvent.go();
-
-        // The world is now static for this time step... we can display it!
-
-        // clear the screen
-        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g,
-                mBackground.mColor.b, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // prepare the main camera... we do it here, so that the parallax code
-        // knows where to draw...
-        adjustCamera();
-        mGameCam.update();
-
-        // draw parallax backgrounds
-        mBackground.renderLayers(mSpriteBatch);
-
-        // Render the entities in order from z=-2 through z=2
-        mSpriteBatch.setProjectionMatrix(mGameCam.combined);
-        mSpriteBatch.begin();
-        for (ArrayList<Lol.Renderable> a : mSprites)
-            for (Lol.Renderable r : a)
-                r.render(mSpriteBatch, delta);
-        mSpriteBatch.end();
-
-        // DEBUG: draw outlines of physics entities
-        if (Lol.sGame.mConfig.showDebugBoxes())
-            mDebugRender.render(mWorld, mGameCam.combined);
-
-        // draw Controls
-        mHudCam.update();
-        mSpriteBatch.setProjectionMatrix(mHudCam.combined);
-        mSpriteBatch.begin();
-        for (Control c : mControls)
-            if (c.mIsActive)
-                c.render(mSpriteBatch);
-        mSpriteBatch.end();
-
-        // DEBUG: render Controls' outlines
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
-            mShapeRender.setProjectionMatrix(mHudCam.combined);
-            mShapeRender.begin(ShapeType.Line);
-            mShapeRender.setColor(Color.RED);
-            for (Control pe : mControls)
-                if (pe.mRange != null)
-                    mShapeRender.rect(pe.mRange.x, pe.mRange.y,
-                            pe.mRange.width, pe.mRange.height);
-            mShapeRender.end();
-        }
-    }
-
-    /**
-     * Whenever we hide the level, be sure to turn off the music
-     */
-    @Override
-    public void hide() {
-        pauseMusic();
-    }
-
-    /**
-     * Whenever we dispose of the level, be sure to turn off the music
-     */
-    @Override
-    public void dispose() {
-        stopMusic();
     }
 
     /**
@@ -749,6 +637,127 @@ public class Level implements Screen {
     }
 
     /*
+     * SCREEN (SCREENADAPTER) OVERRIDES
+     */
+
+    /**
+     * This code is called every 1/45th of a second to update the game state and
+     * re-draw the screen
+     * 
+     * @param delta
+     *            The time since the last render
+     */
+    @Override
+    public void render(float delta) {
+        // Make sure the music is playing... Note that we start music before the
+        // PreScene shows
+        playMusic();
+
+        // Handle pauses due to pre, pause, or post scenes... Note that these
+        // handle their own screen touches... Note that postscene should come
+        // first.
+        if (mPostScene != null && mPostScene.render(mSpriteBatch))
+            return;
+        if (mPreScene != null && mPreScene.render(mSpriteBatch))
+            return;
+        if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
+            return;
+
+        // check for any scene touches that should generate new events to
+        // process
+        manageTouches();
+
+        // handle accelerometer stuff... note that accelerometer is effectively
+        // disabled during a popup... we could change that by moving this to the
+        // top, but that's probably not going to produce logical behavior
+        Level.sCurrent.mTilt.handleTilt();
+
+        // Advance the physics world by 1/45 of a second.
+        //
+        // NB: in Box2d, This is the recommended rate for phones, though it
+        // seems like we should be using /delta/ instead of 1/45f
+        mWorld.step(1 / 45f, 8, 3);
+
+        // now handle any events that occurred on account of the world movement
+        // or screen touches
+        for (Action pe : mOneTimeEvents)
+            pe.go();
+        mOneTimeEvents.clear();
+
+        // handle repeat events
+        for (Action pe : mRepeatEvents)
+            pe.go();
+
+        // check for end of game
+        if (mEndGameEvent != null)
+            mEndGameEvent.go();
+
+        // The world is now static for this time step... we can display it!
+
+        // clear the screen
+        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g,
+                mBackground.mColor.b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // prepare the main camera... we do it here, so that the parallax code
+        // knows where to draw...
+        adjustCamera();
+        mGameCam.update();
+
+        // draw parallax backgrounds
+        mBackground.renderLayers(mSpriteBatch);
+
+        // Render the entities in order from z=-2 through z=2
+        mSpriteBatch.setProjectionMatrix(mGameCam.combined);
+        mSpriteBatch.begin();
+        for (ArrayList<Lol.Renderable> a : mSprites)
+            for (Lol.Renderable r : a)
+                r.render(mSpriteBatch, delta);
+        mSpriteBatch.end();
+
+        // DEBUG: draw outlines of physics entities
+        if (Lol.sGame.mConfig.showDebugBoxes())
+            mDebugRender.render(mWorld, mGameCam.combined);
+
+        // draw Controls
+        mHudCam.update();
+        mSpriteBatch.setProjectionMatrix(mHudCam.combined);
+        mSpriteBatch.begin();
+        for (Control c : mControls)
+            if (c.mIsActive)
+                c.render(mSpriteBatch);
+        mSpriteBatch.end();
+
+        // DEBUG: render Controls' outlines
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
+            mShapeRender.setProjectionMatrix(mHudCam.combined);
+            mShapeRender.begin(ShapeType.Line);
+            mShapeRender.setColor(Color.RED);
+            for (Control pe : mControls)
+                if (pe.mRange != null)
+                    mShapeRender.rect(pe.mRange.x, pe.mRange.y,
+                            pe.mRange.width, pe.mRange.height);
+            mShapeRender.end();
+        }
+    }
+
+    /**
+     * Whenever we hide the level, be sure to turn off the music
+     */
+    @Override
+    public void hide() {
+        pauseMusic();
+    }
+
+    /**
+     * Whenever we dispose of the level, be sure to turn off the music
+     */
+    @Override
+    public void dispose() {
+        stopMusic();
+    }
+
+    /*
      * PUBLIC INTERFACE
      */
 
@@ -918,29 +927,5 @@ public class Level implements Screen {
                 onDown(x, y);
             }
         };
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void show() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void resume() {
-        // TODO Auto-generated method stub
-
     }
 }
