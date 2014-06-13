@@ -45,6 +45,16 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 
+/**
+ * A Lol object is the outermost container for all of the functionality of the
+ * game. It implements ApplicationListener (through Game), which provides hooks
+ * for GDX to render the game, stop it, resume it, etc.
+ * 
+ * Lol is not responsible for doing anything significant. It keeps track of
+ * which screen is currently in use, and forwards (through Game) to that screen.
+ * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
+ * that they can do the real work.
+ */
 public abstract class Lol extends Game {
     /**
      * This interface is used to store items that can be rendered
