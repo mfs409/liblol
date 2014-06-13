@@ -39,16 +39,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
+import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
  * The Chooser is a screen that gives the player a choice of levels of the game
  * to play.
  */
-public class Chooser extends ScreenAdapter implements GestureListener {
+public class Chooser extends ScreenAdapter {
     /**
      * The "Previous Chooser Screen" button
      */
@@ -158,12 +157,72 @@ public class Chooser extends ScreenAdapter implements GestureListener {
     public Chooser() {
         // start by getting the pieces of configuration that we use over and
         // over again
-        ChooserConfiguration cc = Lol.sGame.mChooserConfig;
+        final ChooserConfiguration cc = Lol.sGame.mChooserConfig;
         int levelsPerChooser = cc.getColumns() * cc.getRows();
         int totalLevels = Lol.sGame.mConfig.getNumLevels();
 
         // Subscribe to touch gestures
-        Gdx.input.setInputProcessor(new GestureDetector(this));
+        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter(){    /**
+             * Handle a screen tap by figuring out what button was pressed, and then
+             * taking action
+             * 
+             * @param x
+             *            X coordinate of the tap
+             * @param y
+             *            Y coordinate of the tap
+             * @param count
+             *            1 for single-tap, 2 for double-tap
+             * @param button
+             *            Left/Right button when a mouse is used
+             */
+            @Override
+            public boolean tap(float x, float y, int count, int button) {
+                // get the chooser configuration and coords of the touch
+                mCamera.unproject(mV.set(x, y, 0));
+
+                // DEBUG: display touch coordinates
+                if (Lol.sGame.mConfig.showDebugBoxes()) {
+                    Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
+                }
+                
+                // handle 'back' presses
+                if (mBack.mRect.contains(mV.x, mV.y)) {
+                    Lol.sGame.handleBack();
+                    return true;
+                }
+               
+                // handle 'previous screen' requests
+                if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
+                    Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
+                    Lol.sGame.doChooser();
+                    return true;
+                }
+                
+                // handle 'next screen' requests
+                if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
+                    // special case for when we came straight from the Splash screen
+                    if (Lol.sGame.mCurrLevelNum == 0)
+                        Lol.sGame.mCurrLevelNum = 1;
+                    Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
+                    Lol.sGame.doChooser();
+                    return true;
+                }
+
+                // check for press to an unlocked level
+                int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
+                for (Button ls : levels) {
+                    if (ls != null
+                            && (ls.mLevel <= unlocked || Lol.sGame.mConfig
+                                    .getUnlockMode())) {
+                        if (ls.mRect.contains(mV.x, mV.y)) {
+                            Lol.sGame.doPlayLevel(ls.mLevel);
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+}));
 
         // set up the background image and music
         mImage = Media.getImage(cc.getBackgroundName());
@@ -374,128 +433,5 @@ public class Chooser extends ScreenAdapter implements GestureListener {
     @Override
     public void hide() {
         pauseMusic();
-    }
-
-    /*
-     * GESTURELISTENER OVERRIDES
-     */
-
-    /**
-     * Handle a screen tap by figuring out what button was pressed, and then
-     * taking action
-     * 
-     * @param x
-     *            X coordinate of the tap
-     * @param y
-     *            Y coordinate of the tap
-     * @param count
-     *            1 for single-tap, 2 for double-tap
-     * @param button
-     *            Left/Right button when a mouse is used
-     */
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // get the chooser configuration and coords of the touch
-        ChooserConfiguration cc = Lol.sGame.mChooserConfig;
-        mCamera.unproject(mV.set(x, y, 0));
-
-        // DEBUG: display touch coordinates
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
-            Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
-        }
-        
-        // handle 'back' presses
-        if (mBack.mRect.contains(mV.x, mV.y)) {
-            Lol.sGame.handleBack();
-            return true;
-        }
-       
-        // handle 'previous screen' requests
-        if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
-            Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
-            Lol.sGame.doChooser();
-            return true;
-        }
-        
-        // handle 'next screen' requests
-        if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
-            // special case for when we came straight from the Splash screen
-            if (Lol.sGame.mCurrLevelNum == 0)
-                Lol.sGame.mCurrLevelNum = 1;
-            Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
-            Lol.sGame.doChooser();
-            return true;
-        }
-
-        // check for press to an unlocked level
-        int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
-        for (Button ls : levels) {
-            if (ls != null
-                    && (ls.mLevel <= unlocked || Lol.sGame.mConfig
-                            .getUnlockMode())) {
-                if (ls.mRect.contains(mV.x, mV.y)) {
-                    Lol.sGame.doPlayLevel(ls.mLevel);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean longPress(float x, float y) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        return false;
-    }
-
-    /**
-     * Not used by Chooser
-     */
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        return false;
     }
 }

@@ -38,9 +38,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
+import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -48,7 +47,7 @@ import com.badlogic.gdx.math.Vector3;
  * has buttons for playing, getting help, and quitting. It is configured through
  * a SplashConfiguration object.
  */
-public class Splash extends ScreenAdapter implements GestureListener {
+public class Splash extends ScreenAdapter {
 
     /**
      * A static reference to the current splash screen, so that we can use a
@@ -122,7 +121,49 @@ public class Splash extends ScreenAdapter implements GestureListener {
         // call user code to configure the objects
         Lol.sGame.configureSplash();
         // Subscribe to touch gestures
-        Gdx.input.setInputProcessor(new GestureDetector(this));
+        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter() {
+            /**
+             * Process a TAP event. A TAP is a down-then-up gesture.
+             * 
+             * @param x
+             *            The x coordinate on the screen for where the touch
+             *            happened
+             * @param y
+             *            The y coordinate on the screen for where the touch
+             *            happened
+             * @param count
+             *            normally 1, but a double click leads to a 2
+             * @param button
+             *            Corresponds to left and right mouse buttons
+             */
+            @Override
+            public boolean tap(float x, float y, int count, int button) {
+                // translate the touch into camera coordinates
+                mCamera.unproject(mV.set(x, y, 0));
+                // DEBUG: print the location of the touch... this is really
+                // useful
+                // when trying to figure out the coordinates of the rectangles
+                if (Lol.sGame.mConfig.showDebugBoxes()) {
+                    Gdx.app.log("tap", "(" + mV.x + ", " + mV.y + ")");
+                }
+                // check if the touch was inside one of our buttons, and act
+                // accordingly
+                if (mQuit != null && mQuit.contains(mV.x, mV.y)) {
+                    stopMusic();
+                    Lol.sGame.doQuit();
+                }
+                if (mPlay != null && mPlay.contains(mV.x, mV.y)) {
+                    stopMusic();
+                    Lol.sGame.doChooser();
+                }
+                if (mHelp != null && mHelp.contains(mV.x, mV.y)) {
+                    stopMusic();
+                    Lol.sGame.doHelpLevel(1);
+                }
+                // We handled the tap, so return true...
+                return true;
+            }
+        }));
     }
 
     /**
@@ -158,7 +199,7 @@ public class Splash extends ScreenAdapter implements GestureListener {
     /*
      * SCREEN OVERRIDES
      */
-    
+
     /**
      * Draw the splash screen
      * 
@@ -218,106 +259,6 @@ public class Splash extends ScreenAdapter implements GestureListener {
         pauseMusic();
     }
 
-    /*
-     * GESTURE OVERRIDES
-     */
-    
-    /**
-     * Process a TAP event. A TAP is a down-then-up gesture.
-     * 
-     * @param x
-     *            The x coordinate on the screen for where the touch happened
-     * @param y
-     *            The y coordinate on the screen for where the touch happened
-     * @param count
-     *            normally 1, but a double click leads to a 2
-     * @param button
-     *            Corresponds to left and right mouse buttons
-     */
-    @Override
-    public boolean tap(float x, float y, int count, int button) {
-        // translate the touch into camera coordinates
-        mCamera.unproject(mV.set(x, y, 0));
-        // DEBUG: print the location of the touch... this is really useful
-        // when trying to figure out the coordinates of the rectangles
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
-            Gdx.app.log("tap", "(" + mV.x + ", " + mV.y + ")");
-        }
-        // check if the touch was inside one of our buttons, and act
-        // accordingly
-        if (mQuit != null && mQuit.contains(mV.x, mV.y)) {
-            stopMusic();
-            Lol.sGame.doQuit();
-        }
-        if (mPlay != null && mPlay.contains(mV.x, mV.y)) {
-            stopMusic();
-            Lol.sGame.doChooser();
-        }
-        if (mHelp != null && mHelp.contains(mV.x, mV.y)) {
-            stopMusic();
-            Lol.sGame.doHelpLevel(1);
-        }
-        // We handled the tap, so return true...
-        return true;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean longPress(float x, float y) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        return false;
-    }
-
-    /**
-     * Not used by Splash Screen 
-     */
-    @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-            Vector2 pointer1, Vector2 pointer2) {
-        return false;
-    }
-    
     /*
      * PUBLIC INTERFACE
      */

@@ -30,16 +30,18 @@ package edu.lehigh.cse.lol;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 
 /**
  * HelpLevel provides an interface for drawing to the help screens of a game
  */
-public class HelpLevel implements Screen {
+public class HelpLevel extends ScreenAdapter {
 
     /**
      * The background color of the help level
@@ -83,7 +85,28 @@ public class HelpLevel implements Screen {
 
         // set up the renderer
         mSb = new SpriteBatch();
+
+        // Subscribe to tap gestures
+        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter() {
+            @Override
+            public boolean tap(float x, float y, int count, int button) {
+                // On tap, either advance to the next help scene, or
+                // return to the splash screen
+                if (Lol.sGame.mCurrHelpNum < Lol.sGame.mConfig
+                        .getNumHelpScenes()) {
+                    Lol.sGame.mCurrHelpNum++;
+                    Lol.sGame.doHelpLevel(Lol.sGame.mCurrHelpNum);
+                    return true;
+                }
+                Lol.sGame.doSplash();
+                return true;
+            }
+        }));
     }
+
+    /*
+     * SCREENADAPTER OVERRIDES
+     */
 
     /**
      * The main render loop for Help Levels. There's nothing fancy here
@@ -93,19 +116,6 @@ public class HelpLevel implements Screen {
      */
     @Override
     public void render(float delta) {
-        // Poll for a new touch (down-press)
-        // On down-press, either advance to the next help scene, or return to
-        // the splash screen
-        if (Gdx.input.justTouched()) {
-            if (Lol.sGame.mCurrHelpNum < Lol.sGame.mConfig.getNumHelpScenes()) {
-                Lol.sGame.mCurrHelpNum++;
-                Lol.sGame.doHelpLevel(Lol.sGame.mCurrHelpNum);
-                return;
-            }
-            Lol.sGame.doSplash();
-            return;
-        }
-
         // render all sprites
         Gdx.gl.glClearColor(mColor.r, mColor.g, mColor.b, mColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -207,41 +217,5 @@ public class HelpLevel implements Screen {
             int size) {
         sCurrentLevel.mSprites.add(Util.makeText(x, y, message, red, green,
                 blue, fontName, size));
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void show() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void hide() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void resume() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void dispose() {
-        // TODO Auto-generated method stub
-
     }
 }
