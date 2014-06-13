@@ -39,15 +39,16 @@ package edu.lehigh.cse.lol;
 
 // TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
 
-import com.badlogic.gdx.Game;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
-public abstract class Lol extends Game implements GestureListener {
+public abstract class Lol implements ApplicationListener, GestureListener {
 	/**
 	 * This interface is used to store items that can be rendered
 	 */
@@ -60,6 +61,52 @@ public abstract class Lol extends Game implements GestureListener {
 	     */
 	    void render(SpriteBatch sb, float elapsed);
 	}
+
+	/**
+	 * The LolScreen provides a way for us to forward gesture events to the
+	 * current screen, so that they can be handled in a per-Screen way.
+	 */
+	interface LolScreen extends Screen {
+	    /**
+	     * TODO
+	     */
+	    boolean touchDown(float x, float y, int pointer, int button);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean tap(float x, float y, int count, int button);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean longPress(float x, float y);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean fling(float velocityX, float velocityY, int button);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean pan(float x, float y, float deltaX, float deltaY);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean panStop(float x, float y, int pointer, int button);
+
+	    /**
+	     * TODO
+	     */
+	    public boolean zoom(float initialDistance, float distance);
+	}
+	
+	/**
+	 * The screen currently being shown.
+	 */
+	private LolScreen mScreen;
 
 	/**
      * The current mode of the program
@@ -167,7 +214,7 @@ public abstract class Lol extends Game implements GestureListener {
      * Use this to quit the app
      */
     void doQuit() {
-        getScreen().dispose();
+        mScreen.dispose();
         Gdx.app.exit();
     }
 
@@ -249,13 +296,18 @@ public abstract class Lol extends Game implements GestureListener {
         doSplash();
     }
 
+    /*
+     * APPLICATIONLISTENER SUPPORT
+     */
+    
     /**
      * This is an internal method for quitting a game. User code should never
      * call this.
      */
     @Override
     public void dispose() {
-        super.dispose();
+    	if (mScreen != null) 
+    		mScreen.hide();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -276,11 +328,58 @@ public abstract class Lol extends Game implements GestureListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        super.render();
+		if (mScreen != null) 
+			mScreen.render(Gdx.graphics.getDeltaTime());
     }
 
-    /*
-     * Handlers for touch events
+	/**
+	 * Invoked when the game pauses (due to OS event).  User code should never call this method.
+	 */
+	@Override
+	public void pause () {
+		if (mScreen != null) 
+			mScreen.pause();
+	}
+
+	/**
+	 * Invoked when the game resumes.  User code should never call this method.
+	 */
+	@Override
+	public void resume () {
+		if (mScreen != null) 
+			mScreen.resume();
+	}
+
+	/**
+	 * Invoked when the screen resizes.
+	 *   	 
+	 * User code should never call this method.
+	 */
+	@Override
+	public void resize (int width, int height) {
+		if (mScreen != null) 
+			mScreen.resize(width, height);
+	}
+
+	/** 
+	 * Sets the current screen by showing it and resizing it.  Hides any previous screen.
+	 * 
+	 * User code should never call this method.
+	 * 
+	 * @param screen The new screen.  May be null 
+	 */
+	public void setScreen (LolScreen screen) {
+		if (mScreen != null) 
+			mScreen.hide();
+		mScreen = screen;
+		if (mScreen != null) {
+			mScreen.show();
+			mScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		}
+	}
+
+	/*
+     * GESTURELISTENER SUPPORT
      */
     
     /**
