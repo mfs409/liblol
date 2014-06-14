@@ -95,6 +95,7 @@ public class PauseScene {
             mVisible = false;
             Lol.sGame.handleBack();
         }
+        Level.sCurrent.liftAllButtons(mV);
         // otherwise, just clear the pauseScene (be sure to resume timers)
         mVisible = false;
         long showTime = System.nanoTime() - showingAt;

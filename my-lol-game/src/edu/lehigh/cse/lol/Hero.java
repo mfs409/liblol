@@ -111,11 +111,6 @@ public class Hero extends PhysicsSprite {
     private Sound mJumpSound;
 
     /**
-     * Does the hero only start moving when we touch it?
-     */
-    private Vector2 mTouchAndGo;
-
-    /**
      * For tracking the current amount of rotation of the hero
      */
     private float mCurrentRotation;
@@ -198,27 +193,6 @@ public class Hero extends PhysicsSprite {
             mInAir = false;
             mAnimator.setCurrentAnimation(mDefaultAnimation);
         }
-    }
-
-    /**
-     * When the hero is touched, we might need to take action. If so, we use
-     * this to determine what to do.
-     */
-    @Deprecated
-    @Override
-    void handleTouchDown(float x, float y) {
-        // if the hero is touch and go, make the hero start moving
-        if (mTouchAndGo != null) {
-            mHover = null;
-            // if it was hovering, its body type won't be Dynamic
-            if (mBody.getType() != BodyType.DynamicBody)
-                mBody.setType(BodyType.DynamicBody);
-            setAbsoluteVelocity(mTouchAndGo.x, mTouchAndGo.y, false);
-            // turn off isTouchAndGo, so we can't double-touch
-            mTouchAndGo = null;
-            return;
-        }
-        super.handleTouchDown(x, y);
     }
 
     /**
@@ -517,8 +491,20 @@ public class Hero extends PhysicsSprite {
      * @param y
      *            Velocity in Y dimension
      */
-    public void setTouchAndGo(float x, float y) {
-        mTouchAndGo = new Vector2(x, y);
+    public void setTouchAndGo(final float x, final float y) {
+        mGestureResponder = new GestureAction() {
+            @Override
+            boolean onTap(Vector3 touchVec) {
+                mHover = null;
+                // if it was hovering, its body type won't be Dynamic
+                if (mBody.getType() != BodyType.DynamicBody)
+                    mBody.setType(BodyType.DynamicBody);
+                setAbsoluteVelocity(x, y, false);
+                // turn off isTouchAndGo, so we can't double-touch
+                mGestureResponder = null;
+                return true;
+            }
+        };
     }
 
     /**

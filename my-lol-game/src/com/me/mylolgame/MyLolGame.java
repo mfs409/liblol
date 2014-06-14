@@ -1524,7 +1524,6 @@ public class MyLolGame extends Lol {
             // place a permanent +3 speedup obstacle... the -1 means "forever"
             Obstacle o3 = Obstacle.makeAsCircle(240, 1, 4, 4, "purpleball.png");
             o3.setSpeedBoost(20, 0, -1);
-
         }
 
         /*
@@ -2142,7 +2141,7 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * 57 this level shows an odd way of moving the hero. There's friction
+         * this level shows an odd way of moving the hero. There's friction
          * on the floor, so it can only move by tilting while the hero is in the
          * air
          */
@@ -2197,7 +2196,7 @@ public class MyLolGame extends Lol {
             o.setTouchToThrow(h);
 
             // set up our projectiles
-            ProjectilePool.configure(3, 1, 1, "colorstar.png", 0, 15, 0, 0, 2, 0, true);
+            ProjectilePool.configure(3, 1, 1, "colorstar.png", 0, 15, 1.5f, 1.5f, 2, 0, true);
             ProjectilePool.setNumberOfProjectiles(20);
             // there are only 20... throw them carefully
 
@@ -2244,7 +2243,7 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            // warning: this hero is just out of the hero's reach when the hero
+            // warning: this destination is just out of the hero's reach when the hero
             // jumps... you'll have to hit the side wall and jump again to reach
             // it!
             Destination.makeAsCircle(46, 8, 2.5f, 2.5f, "mustardball.png");
@@ -2514,7 +2513,7 @@ public class MyLolGame extends Lol {
             // onHeroCollideTrigger for details
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 2);
+            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 1);
         }
 
         /*
@@ -2654,6 +2653,9 @@ public class MyLolGame extends Lol {
          * movement to the destination, instead of an immediate jump.
          */
         else if (whichLevel == 71) {
+            
+            // TODO: this level not done
+            
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -2838,6 +2840,9 @@ public class MyLolGame extends Lol {
          * and decreases it upon release
          */
         else if (whichLevel == 76) {
+            
+            // TODO: this level doesn't work yet
+            
             Level.configure(3 * 48, 32);
             Physics.configure(0, 10);
             PreScene.addText("Press anywhere to speed up", 255, 255, 255, "arial.ttf", 32);
@@ -2870,6 +2875,9 @@ public class MyLolGame extends Lol {
          * get that effect.
          */
         else if (whichLevel == 77) {
+            
+            // TODO: this level doesn't work yet
+
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             PreScene.addText("Press anywhere to start moving", 255, 255, 255, "arial.ttf", 32);
@@ -2933,6 +2941,9 @@ public class MyLolGame extends Lol {
          * interface.
          */
         else if (whichLevel == 79) {
+            
+            // TODO: this level doesn't work yet
+            
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -3274,6 +3285,7 @@ public class MyLolGame extends Lol {
             // after third trigger, draw an enemy, a goodie, and a destination,
             // all with fixed velocities
             else if (id == 2) {
+                PauseScene.reset();
                 PauseScene.addText("Now you can see the rest of the level", 255, 255, 0,
                         "arial.ttf", 12);
                 PauseScene.show();

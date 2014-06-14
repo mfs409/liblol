@@ -126,6 +126,11 @@ public class Level extends ScreenAdapter {
     ArrayList<Controls.Control> mTapControls = new ArrayList<Controls.Control>();
 
     /**
+     * Controls that have a pan event
+     */
+    ArrayList<Controls.Control> mPanControls = new ArrayList<Controls.Control>();
+
+    /**
      * Toggle Controls
      */
     ArrayList<Controls.Control> mToggleControls = new ArrayList<Controls.Control>();
@@ -463,6 +468,17 @@ public class Level extends ScreenAdapter {
 
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
+            // check if we panned a control
+            mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Controls.Control c : mPanControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(x, y, 0));
+                    c.onPan(mTouchVec);
+                    return true;
+                }
+            }
+
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
                 return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
@@ -503,7 +519,7 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(false);
+                    c.toggle(false, mTouchVec);
                     return true;
                 }
             }
@@ -537,7 +553,7 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(true);
+                    c.toggle(true, mTouchVec);
                     return true;
                 }
             }
@@ -878,6 +894,14 @@ public class Level extends ScreenAdapter {
             mTouchResponder.onUp(mTouchVec.x, mTouchVec.y);
     }
 
+    void liftAllButtons(Vector3 touchVec) {
+        for (Controls.Control c : mToggleControls) {
+            if (c.mIsActive && c.mIsTouchable) {
+                c.toggle(true, touchVec);
+            }
+        }
+    }
+    
     /*
      * SCREEN (SCREENADAPTER) OVERRIDES
      */

@@ -124,7 +124,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      */
     @Deprecated
     TouchAction mTouchResponder;
-
     GestureAction mGestureResponder;
 
     /**
@@ -793,9 +792,9 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         final int[] touchTriggerActivation = new int[] { activationGoodies1,
                 activationGoodies2, activationGoodies3, activationGoodies4 };
         // set the code to run on touch
-        mTouchResponder = new TouchAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            public void onDown(float x, float y) {
+            public boolean onTap(Vector3 touchVec) {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
@@ -807,6 +806,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     Lol.sGame.onTouchTrigger(id, Lol.sGame.mCurrLevelNum,
                             PhysicsSprite.this);
                 }
+                return true;
             }
         };
     }
@@ -960,6 +960,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             @Override
             public boolean onFling(Vector3 touchVec) {
                 if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
+                    mHover = null;
                     updateVelocity((touchVec.x) * dampFactor,
                             (touchVec.y) * dampFactor);                    
                 }
@@ -1300,10 +1301,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The hero who should throw a projectile when this is touched
      */
     public void setTouchToThrow(final Hero h) {
-        mTouchResponder = new TouchAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            public void onDown(float x, float y) {
+            public boolean onTap(Vector3 touchVec) {
                 Level.sCurrent.mProjectilePool.throwFixed(h);
+                return true;
             }
         };
     }

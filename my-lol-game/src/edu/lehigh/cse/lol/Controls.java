@@ -120,6 +120,8 @@ public class Controls {
             mIsTouchable = false;
         }
 
+        // TODO: replace these methods with a GestureAction
+        
         /**
          * Code to run when the control is tapped
          * 
@@ -133,12 +135,24 @@ public class Controls {
         }
 
         /**
+         * Code to run when the control is tapped
+         * 
+         * @param x
+         *            X Coordinate of the tap
+         * @param y
+         *            Y Coordinate of the tap
+         */
+        boolean onPan(Vector3 worldTouchCoord) {
+            return false;
+        }
+
+        /**
          * Run this when a control is down-pressed or up-pressed
          * 
          * @param isUp
          *            True if it is an up-press
          */
-        boolean toggle(boolean isUp) {
+        boolean toggle(boolean isUp, Vector3 touchVec) {
             return false;
         }
 
@@ -786,8 +800,10 @@ public class Controls {
              * @param isUp
              *            True if it is an up-press
              */
+            // TODO: might want to have some ability to detect when we slide off
+            // of a toggle button... see level 72 for explanation of why
             @Override
-            boolean toggle(boolean isUp) {
+            boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
                     Vector2 v = entity.mBody.getLinearVelocity();
                     if (dx != 0)
@@ -1043,7 +1059,7 @@ public class Controls {
             String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            boolean toggle(boolean upPress) {
+            boolean toggle(boolean upPress, Vector3 touchVec) {
                 if (upPress)
                     h.crawlOff();
                 else 
@@ -1111,23 +1127,31 @@ public class Controls {
             String imgName, final Hero h, final int milliDelay) {
         Control c = new Control(imgName, x, y, width, height) {
             long mLastThrow;
+            boolean throwing = false;
 
             @Override
-            void onDownPress(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwFixed(h);
-                mLastThrow = System.nanoTime();
+            boolean toggle(boolean isUp, Vector3 touchVec) {
+                throwing = !isUp;
+                mLastThrow = 0;
+                return true;
             }
 
+            /**
+             * Action to perform when the toggle occurs
+             */
             @Override
-            void onHold(Vector3 vv) {
-                long now = System.nanoTime();
-                if (mLastThrow + milliDelay * 1000000 < now) {
-                    mLastThrow = now;
-                    Level.sCurrent.mProjectilePool.throwFixed(h);
+            void toggleAction() {
+                if (throwing) {
+                    long now = System.nanoTime();
+                    if (mLastThrow + milliDelay * 1000000 < now) {
+                        mLastThrow = now;
+                        Level.sCurrent.mProjectilePool.throwFixed(h);
+                    }
                 }
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 
@@ -1153,15 +1177,13 @@ public class Controls {
             int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
+            boolean onTap(Vector3 vv) {
                 Level.sCurrent.mProjectilePool.throwFixed(h);
-            }
-
-            @Override
-            void onUpPress() {
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
@@ -1193,27 +1215,49 @@ public class Controls {
             int height, String imgName, final Hero h, final long milliDelay) {
         Control c = new Control(imgName, x, y, width, height) {
             long mLastThrow;
-
+            Vector3 v = new Vector3();
+            boolean active = false;
+            
             @Override
-            void onDownPress(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, vv.x, vv.y, h);
-                mLastThrow = System.nanoTime();
+            boolean toggle(boolean isUp, Vector3 touchVec) {
+                if (isUp) {
+                    active = false;
+                }
+                else {
+                    active = true;
+                    mLastThrow = 0;
+                    v.x = touchVec.x;
+                    v.y = touchVec.y;
+                    v.z = touchVec.z;
+                }
+                return true;
             }
-
+            
             @Override
-            void onHold(Vector3 vv) {
-                long now = System.nanoTime();
-                if (mLastThrow + milliDelay * 1000000 < now) {
-                    mLastThrow = now;
-                    Level.sCurrent.mProjectilePool.throwAt(
-                            h.mBody.getPosition().x, h.mBody.getPosition().y,
-                            vv.x, vv.y, h);
+            void toggleAction() {
+                if (active) {
+                    long now = System.nanoTime();
+                    if (mLastThrow + milliDelay * 1000000 < now) {
+                        mLastThrow = now;
+                        Level.sCurrent.mProjectilePool.throwAt(
+                                h.mBody.getPosition().x, h.mBody.getPosition().y,
+                                v.x, v.y, h);
+                    }
                 }
             }
-
+            
+            @Override
+            boolean onPan(Vector3 touchVec) {
+                v.x = touchVec.x;
+                v.y = touchVec.y;
+                v.z = touchVec.z;
+                return true;
+            }
         };
         Level.sCurrent.mControls.add(c);
+        // on toggle, we start or stop throwing; on pan, we change throw direction
+        Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mPanControls.add(c);
         return c;
     }
 
@@ -1239,16 +1283,14 @@ public class Controls {
             int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
+            boolean onTap(Vector3 touchVec) {
                 Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, vv.x, vv.y, h);
-            }
-
-            @Override
-            void onUpPress() {
+                        h.mBody.getPosition().y, touchVec.x, touchVec.y, h);
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
@@ -1343,17 +1385,20 @@ public class Controls {
     public static Control addRotateButton(int x, int y, int width, int height,
             String imgName, final float rate, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
+            boolean active = false;
             @Override
-            void onDownPress(Vector3 vv) {
-                h.increaseRotation(rate);
+            boolean toggle(boolean isUp, Vector3 touchVec) {
+                active = !isUp;
+                return true;
             }
-
             @Override
-            void onHold(Vector3 vv) {
-                h.increaseRotation(rate);
+            void toggleAction() {
+                if (active)
+                    h.increaseRotation(rate);
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 

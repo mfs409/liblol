@@ -27,8 +27,11 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
+
+import edu.lehigh.cse.lol.Level.GestureAction;
 
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be
@@ -70,11 +73,6 @@ public class Enemy extends PhysicsSprite {
      * Does the enemy do damage even to an invincible hero?
      */
     boolean mAlwaysDoesDamage;
-
-    /**
-     * Indicates that touching this enemy will remove it from the level
-     */
-    private boolean mDisappearOnTouch;
 
     /**
      * A callback to run when the enemy is defeated
@@ -158,25 +156,6 @@ public class Enemy extends PhysicsSprite {
             // hide the projectile
             p.remove(false);
         }
-    }
-
-    /**
-     * Whenever an Enemy is touched, this code runs automatically.
-     * 
-     * @param x
-     *            X position of the touch
-     * @param y
-     *            Y position of the touch
-     */
-    @Deprecated
-    @Override
-    void handleTouchDown(float x, float y) {
-        if (mDisappearOnTouch) {
-            Lol.sGame.vibrate(100);
-            defeat(true);
-            return;
-        }
-        super.handleTouchDown(x, y);
     }
 
     /*
@@ -304,7 +283,15 @@ public class Enemy extends PhysicsSprite {
      * from the game
      */
     public void setDisappearOnTouch() {
-        mDisappearOnTouch = true;
+        mGestureResponder = new GestureAction(){
+            @Override
+            boolean onTap(Vector3 touchVec) {
+                Lol.sGame.vibrate(100);
+                defeat(true);
+                mGestureResponder = null;
+                return true;
+            }
+        };
     }
 
     /**
