@@ -121,11 +121,21 @@ public class Controls {
         }
 
         /**
+         * Code to run when the control is tapped
+         * @param x X Coordinate of the tap
+         * @param y Y Coordinate of the tap
+         */
+        boolean onTap(Vector3 worldTouchCoord) {
+            return false;
+        }
+        
+        /**
          * Run this code when this HUD entity is down-pressed
          * 
          * @param vec
          *            The coordinates of the touch
          */
+        @Deprecated
         void onDownPress(Vector3 vec) {
         }
 
@@ -136,12 +146,14 @@ public class Controls {
          * @param vec
          *            The coordinates of the touch
          */
+        @Deprecated
         void onHold(Vector3 vec) {
         }
 
         /**
          * Run this code when this HUD entity is released
          */
+        @Deprecated
         void onUpPress() {
         }
 
@@ -1223,15 +1235,17 @@ public class Controls {
             String imgName, final float maxZoom) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 v) {
+            boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     Level.sCurrent.mGameCam.zoom *= 2;
                     Level.sCurrent.mBgCam.zoom *= 2;
                 }
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
@@ -1256,15 +1270,17 @@ public class Controls {
             String imgName, final float minZoom) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 v) {
+            boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
                 if (curzoom > minZoom) {
                     Level.sCurrent.mGameCam.zoom /= 2;
                     Level.sCurrent.mBgCam.zoom /= 2;
                 }
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 

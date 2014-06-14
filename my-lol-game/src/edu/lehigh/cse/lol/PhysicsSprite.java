@@ -121,6 +121,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Some PhysicsSprites run custom code when they are touched. This is a
      * reference to the code to run.
      */
+    @Deprecated
     TouchAction mTouchResponder;
 
     /**
@@ -307,6 +308,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param y
      *            The Y coordinate that was touched
      */
+    @Deprecated
     void handleTouchDown(float x, float y) {
         if (mTouchSound != null)
             mTouchSound.play();
@@ -322,6 +324,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param y
      *            The Y coordinate that was touched
      */
+    @Deprecated
     boolean handleTouchDrag(float x, float y) {
         if (mTouchResponder != null) {
             mTouchResponder.onMove(x, y);
@@ -965,6 +968,10 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         };
     }
 
+    /*
+     * TODO: split this to setPokePath and setChaseTouch, where the latter is for updateOnMove
+     */
+    
     /**
      * Configure an entity so that touching an arbitrary point on the screen
      * makes the entity move toward that point. The behavior is similar to

@@ -44,7 +44,7 @@ public class PostScene {
     /**
      * Track if the PostScene is visible. Initially it is not.
      */
-    private boolean mVisible;
+    boolean mVisible;
 
     /**
      * The default is to show a simple PostScene after every level. If we don't
@@ -174,6 +174,17 @@ public class PostScene {
     }
 
     /**
+     * Handler to run when the screen is tapped while the PostScene is being
+     * displayed
+     */
+    void onTap() {
+        if (mVisible) {
+            mVisible = false;
+            finish();
+        }
+    }
+
+    /**
      * Draw the current PostScene, but only if it is visible
      * 
      * @param sb
@@ -183,11 +194,6 @@ public class PostScene {
     boolean render(SpriteBatch sb) {
         if (!mVisible)
             return false;
-        if (Gdx.input.justTouched()) {
-            mVisible = false;
-            finish();
-            return true;
-        }
         ArrayList<Lol.Renderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
 
         // next we clear the color buffer and set the camera matrices

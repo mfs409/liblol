@@ -168,6 +168,7 @@ public class Enemy extends PhysicsSprite {
      * @param y
      *            Y position of the touch
      */
+    @Deprecated
     @Override
     void handleTouchDown(float x, float y) {
         if (mDisappearOnTouch) {

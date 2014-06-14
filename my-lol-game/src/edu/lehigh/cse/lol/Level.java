@@ -30,6 +30,8 @@ package edu.lehigh.cse.lol;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -38,7 +40,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -47,8 +52,6 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-
-import edu.lehigh.cse.lol.Controls.Control;
 
 /**
  * A Level is a playable portion of the game. Levels can be infinite, or they
@@ -115,7 +118,12 @@ public class Level extends ScreenAdapter {
     /**
      * The controls / heads-up-display
      */
-    ArrayList<Control> mControls = new ArrayList<Control>();
+    ArrayList<Controls.Control> mControls = new ArrayList<Controls.Control>();
+
+    /**
+     * Controls that have a tap event
+     */
+    ArrayList<Controls.Control> mTapControls = new ArrayList<Controls.Control>();
 
     /**
      * Events that get processed on the next render, then discarded
@@ -233,9 +241,16 @@ public class Level extends ScreenAdapter {
         void go();
     }
 
+    /*
+     * The new plan for handling events is that the Level's gestureDetector will
+     * determine the type of event, and will then either (a) forward it to a
+     * control that is in the appropriate list, or (b) forward it to an entity
+     */
+
     /**
      * Wrapper for handling code that needs to run in response to a screen touch
      */
+    @Deprecated
     static class TouchAction {
         /**
          * Run this when the screen is initially pressed down
@@ -323,6 +338,106 @@ public class Level extends ScreenAdapter {
         }
     }
 
+    class LolGestureManager extends GestureAdapter {
+        /**
+         * When the screen is tapped, this code forwards the tap to the
+         * appropriate place
+         * 
+         * @param x
+         *            X coordinate of the tap
+         * @param y
+         *            Y coordinate of the tap
+         * @param count
+         *            1 for single click, 2 for double-click
+         * @param button
+         *            The mouse button that was pressed
+         */
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+            // if any pop-up scene is showing, forward the tap to the scene and
+            // return true, so that the event doesn't get passed to the Scene
+            if (mPostScene != null && mPostScene.mVisible == true) {
+                mPostScene.onTap();
+                return true;
+            } else if (mPreScene != null && mPreScene.mVisible == true) {
+                mPreScene.onTap();
+                return true;
+            } else if (mPauseScene != null && mPauseScene.mVisible == true) {
+                mPauseScene.onTap(x, y);
+                return true;
+            }
+            
+            // check if we tapped a control
+            mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Controls.Control c : mTapControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(x, y, 0));
+                    c.onTap(mTouchVec);
+                    return true;
+                }
+            }
+
+            Gdx.app.log("event", "tap");
+            return false;
+        }
+
+        @Override
+        public boolean longPress(float x, float y) {
+            Gdx.app.log("event", "longpress");
+            return false;
+        }
+
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            Gdx.app.log("event", "fling");
+            return false;
+        }
+
+        @Override
+        public boolean pan(float x, float y, float deltaX, float deltaY) {
+            Gdx.app.log("event", "pan");
+            return false;
+        }
+
+        @Override
+        public boolean panStop(float x, float y, int pointer, int button) {
+            Gdx.app.log("event", "panStop");
+            return false;
+        }
+
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            Gdx.app.log("event", "zoom");
+            return false;
+        }
+
+        @Override
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+                Vector2 pointer1, Vector2 pointer2) {
+            Gdx.app.log("event", "pinch");
+            return false;
+        }
+    }
+
+    class LolInputManager extends InputAdapter {
+        public boolean touchDown(int screenX, int screenY, int pointer,
+                int button) {
+            Gdx.app.log("event", "touchDown IM");
+            return false;
+        }
+
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            Gdx.app.log("event", "touchUp IM");
+            return false;
+        }
+
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            Gdx.app.log("event", "touchDrag IM");
+            return false;
+        }
+    }
+
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
@@ -336,11 +451,14 @@ public class Level extends ScreenAdapter {
         // clear any timers
         Timer.instance().clear();
 
-        // clear the GestureListener
-        //
-        // TODO: set up a gesture listener instead...
-        Gdx.input.setInputProcessor(null);
-        
+        // Set up listeners for touch events. Gestures are processed before
+        // non-gesture touches, and non-gesture touches are only processed when
+        // a gesture is not detected.
+        InputMultiplexer mux = new InputMultiplexer();
+        mux.addProcessor(new GestureDetector(new LolGestureManager()));
+        mux.addProcessor(new LolInputManager());
+        Gdx.input.setInputProcessor(mux);
+
         // reset the per-level object store
         Facts.resetLevelFacts();
 
@@ -560,7 +678,7 @@ public class Level extends ScreenAdapter {
     private void touchDown(int x, int y) {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Control pe : mControls) {
+        for (Controls.Control pe : mControls) {
             if (pe.mIsTouchable && pe.mIsActive
                     && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
@@ -595,7 +713,7 @@ public class Level extends ScreenAdapter {
     private void touchMove(int x, int y) {
         // check for HUD touch first...
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Control pe : mControls) {
+        for (Controls.Control pe : mControls) {
             if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 // now convert the touch to world coordinates and pass to the
                 // control (useful for vector throw)
@@ -623,7 +741,7 @@ public class Level extends ScreenAdapter {
     void touchUp(int x, int y) {
         // check for HUD touch first
         mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Control pe : mControls) {
+        for (Controls.Control pe : mControls) {
             if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 pe.onUpPress();
                 return;
@@ -723,7 +841,7 @@ public class Level extends ScreenAdapter {
         mHudCam.update();
         mSpriteBatch.setProjectionMatrix(mHudCam.combined);
         mSpriteBatch.begin();
-        for (Control c : mControls)
+        for (Controls.Control c : mControls)
             if (c.mIsActive)
                 c.render(mSpriteBatch);
         mSpriteBatch.end();
@@ -733,7 +851,7 @@ public class Level extends ScreenAdapter {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            for (Control pe : mControls)
+            for (Controls.Control pe : mControls)
                 if (pe.mRange != null)
                     mShapeRender.rect(pe.mRange.x, pe.mRange.y,
                             pe.mRange.width, pe.mRange.height);

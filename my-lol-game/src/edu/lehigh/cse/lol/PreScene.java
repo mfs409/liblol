@@ -53,7 +53,7 @@ public class PreScene {
     /**
      * True when the scene is being displayed
      */
-    private boolean mVisible = true;
+    boolean mVisible = true;
 
     /**
      * Time that the PauseScene started being shown, so we can update timers
@@ -97,6 +97,17 @@ public class PreScene {
     }
 
     /**
+     * Handler to run when the screen is tapped while the PreScene is being
+     * displayed
+     */
+    void onTap() {
+        // hide the scene only if it's click-to-clear
+        if (mVisible && mClickToClear) {
+            hide();
+        }
+    }
+    
+    /**
      * Render this PreScene
      * 
      * @param sb
@@ -107,15 +118,6 @@ public class PreScene {
         // if the scene is not visible, do nothing
         if (!mVisible)
             return false;
-        // if we're supposed to be listening for clicks, and we get one, then
-        // disable the scene
-        if (mClickToClear) {
-            if (Gdx.input.justTouched()) {
-                hide();
-                return false;
-            }
-        }
-        // OK, we should render the scene...
 
         // clear screen and draw sprites... we can use the level's hudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);

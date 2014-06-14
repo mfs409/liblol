@@ -49,7 +49,7 @@ public class PauseScene {
     /**
      * Track if the PauseScene is visible. Initially it is not.
      */
-    private boolean mVisible;
+    boolean mVisible;
 
     /**
      * A PauseScene can have a back button, which we represent with this
@@ -85,6 +85,25 @@ public class PauseScene {
     }
 
     /**
+     * Handler to run when the screen is tapped while the PauseScene is being
+     * displayed
+     */
+    void onTap(float x, float y) {
+        // check if it's to the 'back to chooser' button
+        Level.sCurrent.mHudCam.unproject(mV.set(x, y, 0));
+        if (mBackRectangle != null && mBackRectangle.contains(mV.x, mV.y)) {
+            mVisible = false;
+            Lol.sGame.handleBack();
+        }
+        // otherwise, just clear the pauseScene (be sure to resume timers)
+        mVisible = false;
+        long showTime = System.nanoTime() - showingAt;
+        showTime /= 1000000;
+        Timer.instance().delay(showTime);
+        Timer.instance().start();
+    }
+
+    /**
      * Internal method to draw a PauseScene
      * 
      * @param sb
@@ -95,24 +114,7 @@ public class PauseScene {
         // if the pop-up scene is not visible, do nothing
         if (!mVisible)
             return false;
-        // handle touches
-        if (Gdx.input.justTouched()) {
-            // check if it's to the 'back to chooser' button
-            Level.sCurrent.mHudCam.unproject(mV.set(Gdx.input.getX(),
-                    Gdx.input.getY(), 0));
-            if (mBackRectangle != null && mBackRectangle.contains(mV.x, mV.y)) {
-                Lol.sGame.handleBack();
-                mVisible = false;
-                return false;
-            }
-            // otherwise, just clear the pauseScene (be sure to resume timers)
-            mVisible = false;
-            long showTime = System.nanoTime() - showingAt;
-            showTime /= 1000000;
-            Timer.instance().delay(showTime);
-            Timer.instance().start();
-            return false;
-        }
+
         // clear screen and draw sprites via HudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
