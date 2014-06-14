@@ -948,10 +948,13 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // draw an obstacle that we can drag
+            // draw obstacles that we can drag
             Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
             o.setCanDrag(true);
+            Obstacle o2 = Obstacle.makeAsBox(7, 0, 3.5f, 3.5f, "purpleball.png");
+            o2.setPhysics(0, 100, 0);
+            o2.setCanDrag(true);
 
             // draw an obstacle that is oblong (due to its width and height) and
             // that is rotated. Note that this should be a box, or it will not
