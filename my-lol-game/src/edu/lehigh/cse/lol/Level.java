@@ -126,6 +126,11 @@ public class Level extends ScreenAdapter {
     ArrayList<Controls.Control> mTapControls = new ArrayList<Controls.Control>();
 
     /**
+     * Toggle Controls
+     */
+    ArrayList<Controls.Control> mToggleControls = new ArrayList<Controls.Control>();
+
+    /**
      * Events that get processed on the next render, then discarded
      */
     ArrayList<Action> mOneTimeEvents = new ArrayList<Action>();
@@ -196,7 +201,7 @@ public class Level extends ScreenAdapter {
      * When there is a touch of an entity in the physics world, this is how we
      * find it
      */
-    private PhysicsSprite mHitSprite = null;
+    PhysicsSprite mHitSprite = null;
 
     /**
      * This callback is used to get a touched entity from the physics world
@@ -207,6 +212,7 @@ public class Level extends ScreenAdapter {
      * Our polling-based multitouch uses this array to track the previous state
      * of 4 fingers
      */
+    @Deprecated
     private final boolean[] mLastTouches = new boolean[4];
 
     /**
@@ -214,6 +220,7 @@ public class Level extends ScreenAdapter {
      * that a down press on the pre-scene doesn't show up as a move event on the
      * game... we achieve it via this
      */
+    @Deprecated
     private boolean mTouchActive = true;
 
     /**
@@ -226,7 +233,10 @@ public class Level extends ScreenAdapter {
      * Entities may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
+    @Deprecated
     TouchAction mTouchResponder;
+
+    GestureAction mGestureResponder;
 
     /**
      * In levels with a projectile pool, the pool is accessed from here
@@ -246,6 +256,40 @@ public class Level extends ScreenAdapter {
      * determine the type of event, and will then either (a) forward it to a
      * control that is in the appropriate list, or (b) forward it to an entity
      */
+
+    static class GestureAction {
+        /**
+         * Run this when the screen is held down
+         * 
+         * @param x
+         *            The X coordinate, in pixels, of the touch
+         * @param y
+         *            The Y coordinate, in pixels, of the touch
+         */
+        boolean onDrag(Vector3 touchCoord) {
+            return false;
+        }
+
+        public boolean onDown(Vector3 touchLoc) {
+            return false;
+        }
+
+        public boolean onUp(Vector3 touchLoc) {
+            return false;
+        }
+
+        boolean onTap(Vector3 touchCoord) {
+            return false;
+        }
+
+        boolean onPan(Vector3 touchCoord) {
+            return false;
+        }
+
+        boolean onFling(Vector3 touchCoord) {
+            return false;
+        }
+    }
 
     /**
      * Wrapper for handling code that needs to run in response to a screen touch
@@ -361,12 +405,16 @@ public class Level extends ScreenAdapter {
                 return true;
             } else if (mPreScene != null && mPreScene.mVisible == true) {
                 mPreScene.onTap();
-                return true;
+                // TODO: on level 38, if this is true, weird stuff happens. Many
+                // of our events are wrong right now... TRUE means EVENT HANDLED
+                return false;
+                // TODO: the Input handling stuff has gotten out of hand...
+                // refactor to a new file, and replace 'is-a' with 'has-a'
             } else if (mPauseScene != null && mPauseScene.mVisible == true) {
                 mPauseScene.onTap(x, y);
                 return true;
             }
-            
+
             // check if we tapped a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
             for (Controls.Control c : mTapControls) {
@@ -377,6 +425,20 @@ public class Level extends ScreenAdapter {
                     return true;
                 }
             }
+
+            // check if we tapped an entity
+            mHitSprite = null;
+            mGameCam.unproject(mTouchVec.set(x, y, 0));
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
+                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+            if (mHitSprite != null)
+                if (mHitSprite.onTap(mTouchVec))
+                    return true;
+
+            // is this a raw screen tap?
+            if (mGestureResponder != null)
+                if (mGestureResponder.onTap(mTouchVec))
+                    return true;
 
             Gdx.app.log("event", "tap");
             return false;
@@ -390,12 +452,21 @@ public class Level extends ScreenAdapter {
 
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
-            Gdx.app.log("event", "fling");
+            Gdx.app.log("event", "fling: " + velocityX + ", " + velocityY);
+            if (Level.sCurrent.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
+                return Level.sCurrent.mGestureResponder.onFling(mTouchVec);
+            }
+
             return false;
         }
 
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
+            if (Level.sCurrent.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(x, y, 0));
+                return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
+            }
             Gdx.app.log("event", "pan");
             return false;
         }
@@ -421,18 +492,71 @@ public class Level extends ScreenAdapter {
     }
 
     class LolInputManager extends InputAdapter {
+        // if we made it to here, then we are either dealing with a down touch
+        // for a press-and-hold control, or we are dealing with dragging
         public boolean touchDown(int screenX, int screenY, int pointer,
                 int button) {
+
+            // check if we down-pressed a control
+            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Controls.Control c : mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                    c.toggle(false);
+                    return true;
+                }
+            }
+
+            // check for sprite touch, by looking at gameCam coordinates... on
+            // touch, hitSprite will change
+            mHitSprite = null;
+            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
+                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+
+            // TODO: this is insufficient... we need to deal with whether or not
+            // this is actually touchable...
+            if (mHitSprite != null)
+                return true;
+            // if (mHitSprite != null)
+            // mHitSprite.handleTouchDown(x, y);
+
+            if (mGestureResponder != null)
+                if (mGestureResponder.onDown(mTouchVec))
+                    return true;
+
             Gdx.app.log("event", "touchDown IM");
             return false;
         }
 
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            // check if we down-pressed a control
+            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Controls.Control c : mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                    c.toggle(true);
+                    return true;
+                }
+            }
+
             Gdx.app.log("event", "touchUp IM");
             return false;
         }
 
         public boolean touchDragged(int screenX, int screenY, int pointer) {
+            if (mHitSprite != null && mHitSprite.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                return mHitSprite.mGestureResponder.onDrag(mTouchVec);
+            }
+
+            if (mGestureResponder != null)
+                if (mGestureResponder.onDrag(mTouchVec)) {
+                    return true;
+                }
+
             Gdx.app.log("event", "touchDrag IM");
             return false;
         }
@@ -727,7 +851,7 @@ public class Level extends ScreenAdapter {
         if (mTouchResponder != null)
             mTouchResponder.onMove(mTouchVec.x, mTouchVec.y);
         else if (mHitSprite != null)
-            mHitSprite.handleTouchDrag(mTouchVec.x, mTouchVec.y);
+            mHitSprite.legacyHandleTouchDrag(mTouchVec.x, mTouchVec.y);
     }
 
     /**
@@ -783,7 +907,7 @@ public class Level extends ScreenAdapter {
 
         // check for any scene touches that should generate new events to
         // process
-        manageTouches();
+        // manageTouches();
 
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
@@ -805,6 +929,11 @@ public class Level extends ScreenAdapter {
         // handle repeat events
         for (Action pe : mRepeatEvents)
             pe.go();
+
+        // handle toggle events
+        for (Controls.Control c : mToggleControls) {
+            c.toggleAction();
+        }
 
         // check for end of game
         if (mEndGameEvent != null)
@@ -990,7 +1119,7 @@ public class Level extends ScreenAdapter {
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Level.sCurrent.mTouchResponder = new TouchAction() {
+        Level.sCurrent.mGestureResponder = new GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -1007,16 +1136,18 @@ public class Level extends ScreenAdapter {
              *            The Y coordinate of the touch
              */
             @Override
-            public void onDown(float x, float y) {
+            public boolean onPan(final Vector3 touchLoc) {
                 // check if enough milliseconds have passed
                 long now = System.nanoTime();
-                if (now < mLastTime + interval * 1000000)
-                    return;
+                if (now < mLastTime + interval * 1000000) {
+                    return true;
+                }
                 mLastTime = now;
 
                 // make a circular obstacle
-                final Obstacle o = Obstacle.makeAsCircle(x - width / 2, y
-                        - height / 2, width, height, imgName);
+                final Obstacle o = Obstacle.makeAsCircle(
+                        touchLoc.x - width / 2, touchLoc.y - height / 2, width,
+                        height, imgName);
                 o.setPhysics(density, elasticity, friction);
                 if (moveable)
                     o.mBody.setType(BodyType.DynamicBody);
@@ -1030,19 +1161,7 @@ public class Level extends ScreenAdapter {
                         }
                     }, duration);
                 }
-            }
-
-            /**
-             * On a move, do exactly the same as on down
-             * 
-             * @param x
-             *            The X coordinate of the touch
-             * @param y
-             *            The Y coordinate of the touch
-             */
-            @Override
-            public void onMove(float x, float y) {
-                onDown(x, y);
+                return true;
             }
         };
     }

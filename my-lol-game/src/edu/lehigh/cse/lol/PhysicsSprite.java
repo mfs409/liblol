@@ -51,6 +51,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 import edu.lehigh.cse.lol.Animation.AnimationDriver;
 import edu.lehigh.cse.lol.Level.Action;
+import edu.lehigh.cse.lol.Level.GestureAction;
 import edu.lehigh.cse.lol.Level.TouchAction;
 
 /**
@@ -123,6 +124,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      */
     @Deprecated
     TouchAction mTouchResponder;
+
+    GestureAction mGestureResponder;
 
     /**
      * When the camera follows the entity without centering on it, this gives us
@@ -316,6 +319,16 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             mTouchResponder.onDown(x, y);
     }
 
+    boolean onTap(Vector3 touchVec) {
+        if (mTouchSound != null)
+            mTouchSound.play();
+        if (mGestureResponder != null) {
+            mGestureResponder.onTap(touchVec);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * When this PhysicsSprite is touched (move/drag press), we run this code
      * 
@@ -325,7 +338,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The Y coordinate that was touched
      */
     @Deprecated
-    boolean handleTouchDrag(float x, float y) {
+    boolean legacyHandleTouchDrag(float x, float y) {
         if (mTouchResponder != null) {
             mTouchResponder.onMove(x, y);
             return false;
@@ -859,10 +872,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             mBody.setType(BodyType.KinematicBody);
         else
             mBody.setType(BodyType.DynamicBody);
-        mTouchResponder = new TouchAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            public void onMove(float x, float y) {
-                mBody.setTransform(x, y, mBody.getAngle());
+            public boolean onDrag(Vector3 touchVec) {
+                mBody.setTransform(touchVec.x, touchVec.y, mBody.getAngle());
+                return true;
             }
         };
     }
@@ -892,11 +906,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         // convert threshold to nanoseconds
         final long deleteThreshold = deleteThresholdMillis * 1000000;
         // set the code to run on touch
-        mTouchResponder = new TouchAction() {
+        mGestureResponder = new GestureAction() {
             long mLastPokeTime;
 
             @Override
-            public void onDown(float x, float y) {
+            public boolean onTap(Vector3 tapLocation) {
                 Lol.sGame.vibrate(100);
                 long time = System.nanoTime();
                 // double touch
@@ -904,25 +918,27 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     // hide sprite, disable physics
                     mBody.setActive(false);
                     mVisible = false;
-                    Level.sCurrent.mTouchResponder = null;
-                    return;
+                    Level.sCurrent.mGestureResponder = null;
+                    return true;
                 }
                 // repeat single-touch
                 else {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the entity
-                Level.sCurrent.mTouchResponder = new TouchAction() {
+                Level.sCurrent.mGestureResponder = new GestureAction() {
                     @Override
-                    public void onDown(float x, float y) {
+                    public boolean onTap(Vector3 tapLocation) {
                         Lol.sGame.vibrate(100);
                         // move the object
-                        mBody.setTransform(x, y, mBody.getAngle());
+                        mBody.setTransform(tapLocation.x, tapLocation.y,
+                                mBody.getAngle());
                         // clear the Level responder
-                        Level.sCurrent.mTouchResponder = null;
+                        Level.sCurrent.mGestureResponder = null;
+                        return true;
                     }
-
                 };
+                return true;
             }
         };
     }
@@ -939,39 +955,24 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         // sense to flick it otherwise
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        // register a handler so that when this entity is touched, we'll start
-        // processing a flick
-        mTouchResponder = new TouchAction() {
+
+        Level.sCurrent.mGestureResponder = new GestureAction() {
             @Override
-            public void onDown(float x, float y) {
-                Lol.sGame.vibrate(100);
-                // remember the current position of the entity
-                final float initialX = mBody.getPosition().x;
-                final float initialY = mBody.getPosition().y;
-                // set a handler to run when the screen is touched
-                Level.sCurrent.mTouchResponder = new TouchAction() {
-                    @Override
-                    public void onUp(float x, float y) {
-                        // If the entity isn't visible we're done
-                        if (mVisible) {
-                            // if the entity was hovering, stop hovering
-                            mHover = null;
-                            // compute velocity for the flick and apply velocity
-                            updateVelocity((x - initialX) * dampFactor,
-                                    (y - initialY) * dampFactor);
-                            // Unregister this handler... the flick is done
-                            Level.sCurrent.mTouchResponder = null;
-                        }
-                    }
-                };
+            public boolean onFling(Vector3 touchVec) {
+                if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
+                    updateVelocity((touchVec.x) * dampFactor,
+                            (touchVec.y) * dampFactor);                    
+                }
+                return true;
             }
         };
     }
 
     /*
-     * TODO: split this to setPokePath and setChaseTouch, where the latter is for updateOnMove
+     * TODO: split this to setPokePath and setChaseTouch, where the latter is
+     * for updateOnMove
      */
-    
+
     /**
      * Configure an entity so that touching an arbitrary point on the screen
      * makes the entity move toward that point. The behavior is similar to

@@ -30,8 +30,11 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
+
+import edu.lehigh.cse.lol.Level.GestureAction;
 
 public class Hero extends PhysicsSprite {
 
@@ -96,11 +99,6 @@ public class Hero extends PhysicsSprite {
      * Indicate that the hero can jump while in the air
      */
     private boolean mAllowMultiJump;
-
-    /**
-     * Does the hero jump when we touch it?
-     */
-    private boolean mIsTouchJump;
 
     /**
      * Animation support: cells involved in animation for jumping
@@ -209,11 +207,6 @@ public class Hero extends PhysicsSprite {
     @Deprecated
     @Override
     void handleTouchDown(float x, float y) {
-        // if the hero is touch-to-jump, then try to jump
-        if (mIsTouchJump) {
-            jump();
-            return;
-        }
         // if the hero is touch and go, make the hero start moving
         if (mTouchAndGo != null) {
             mHover = null;
@@ -553,7 +546,13 @@ public class Hero extends PhysicsSprite {
      */
 
     public void setTouchToJump() {
-        mIsTouchJump = true;
+        mGestureResponder = new GestureAction(){
+            @Override
+            boolean onTap(Vector3 touchVec) {
+                jump();
+                return true;
+            }
+        };
     }
 
     /**

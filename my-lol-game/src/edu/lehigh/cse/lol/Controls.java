@@ -51,7 +51,7 @@ public class Controls {
          * Should we run code when this HudEntity is touched?
          */
         boolean mIsTouchable;
-
+        
         /**
          * For touchable HudEntities, this is the rectangle on the screen that
          * is touchable
@@ -122,13 +122,32 @@ public class Controls {
 
         /**
          * Code to run when the control is tapped
-         * @param x X Coordinate of the tap
-         * @param y Y Coordinate of the tap
+         * 
+         * @param x
+         *            X Coordinate of the tap
+         * @param y
+         *            Y Coordinate of the tap
          */
         boolean onTap(Vector3 worldTouchCoord) {
             return false;
         }
-        
+
+        /**
+         * Run this when a control is down-pressed or up-pressed
+         * 
+         * @param isUp
+         *            True if it is an up-press
+         */
+        boolean toggle(boolean isUp) {
+            return false;
+        }
+
+        /**
+         * Action to perform when the toggle occurs
+         */
+        void toggleAction() {
+        }
+
         /**
          * Run this code when this HUD entity is down-pressed
          * 
@@ -725,11 +744,13 @@ public class Controls {
             String imgName) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
+            boolean onTap(Vector3 vv) {
                 PauseScene.show();
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
@@ -758,32 +779,48 @@ public class Controls {
             String imgName, final PhysicsSprite entity, final float dx,
             final float dy) {
         Control c = new Control(imgName, x, y, width, height) {
+            boolean active = false;
+            /**
+             * Run this when a control is down-pressed or up-pressed
+             * 
+             * @param isUp
+             *            True if it is an up-press
+             */
             @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity.mBody.getLinearVelocity();
-                if (dx != 0)
-                    v.x = dx;
-                if (dy != 0)
-                    v.y = dy;
-                entity.updateVelocity(v.x, v.y);
+            boolean toggle(boolean isUp) {
+                if (isUp) {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    if (dx != 0)
+                        v.x = 0;
+                    if (dy != 0)
+                        v.y = 0;
+                    entity.updateVelocity(v.x, v.y);
+                    active = false;
+                }
+                else {
+                    active = true;
+                }
+                return true;
             }
 
+            /**
+             * Action to perform when the toggle occurs
+             */
             @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
+            void toggleAction() {
+                if (active) {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    if (dx != 0)
+                        v.x = dx;
+                    if (dy != 0)
+                        v.y = dy;
+                    entity.updateVelocity(v.x, v.y);
 
-            @Override
-            void onUpPress() {
-                Vector2 v = entity.mBody.getLinearVelocity();
-                if (dx != 0)
-                    v.x = 0;
-                if (dy != 0)
-                    v.y = 0;
-                entity.updateVelocity(v.x, v.y);
+                }
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 
@@ -1006,16 +1043,16 @@ public class Controls {
             String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
-                h.crawlOn();
-            }
-
-            @Override
-            void onUpPress() {
-                h.crawlOff();
+            boolean toggle(boolean upPress) {
+                if (upPress)
+                    h.crawlOff();
+                else 
+                    h.crawlOn();
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 
@@ -1040,11 +1077,13 @@ public class Controls {
             String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
+            boolean onTap(Vector3 vv) {
                 h.jump();
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
