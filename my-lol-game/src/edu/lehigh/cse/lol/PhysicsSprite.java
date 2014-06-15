@@ -52,7 +52,6 @@ import com.badlogic.gdx.utils.Timer.Task;
 import edu.lehigh.cse.lol.Animation.AnimationDriver;
 import edu.lehigh.cse.lol.Level.Action;
 import edu.lehigh.cse.lol.Level.GestureAction;
-import edu.lehigh.cse.lol.Level.TouchAction;
 
 /**
  * PhysicsSprite is the base class upon which every game entity is built
@@ -122,8 +121,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Some PhysicsSprites run custom code when they are touched. This is a
      * reference to the code to run.
      */
-    @Deprecated
-    TouchAction mTouchResponder;
     GestureAction mGestureResponder;
 
     /**
@@ -302,22 +299,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         mBody.setLinearVelocity(x, y);
     }
 
-    /**
-     * When this PhysicsSprite is touched (down press), we run this code
-     * 
-     * @param x
-     *            The X coordinate that was touched
-     * @param y
-     *            The Y coordinate that was touched
-     */
-    @Deprecated
-    void handleTouchDown(float x, float y) {
-        if (mTouchSound != null)
-            mTouchSound.play();
-        if (mTouchResponder != null)
-            mTouchResponder.onDown(x, y);
-    }
-
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
             mTouchSound.play();
@@ -326,23 +307,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             return true;
         }
         return false;
-    }
-
-    /**
-     * When this PhysicsSprite is touched (move/drag press), we run this code
-     * 
-     * @param x
-     *            The X coordinate that was touched
-     * @param y
-     *            The Y coordinate that was touched
-     */
-    @Deprecated
-    boolean legacyHandleTouchDrag(float x, float y) {
-        if (mTouchResponder != null) {
-            mTouchResponder.onMove(x, y);
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -961,73 +925,106 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             public boolean onFling(Vector3 touchVec) {
                 if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
                     mHover = null;
-                    updateVelocity((touchVec.x) * dampFactor,
-                            (touchVec.y) * dampFactor);                    
+                    updateVelocity((touchVec.x) * dampFactor, (touchVec.y)
+                            * dampFactor);
                 }
                 return true;
             }
         };
     }
 
-    /*
-     * TODO: split this to setPokePath and setChaseTouch, where the latter is
-     * for updateOnMove
-     */
-
     /**
      * Configure an entity so that touching an arbitrary point on the screen
      * makes the entity move toward that point. The behavior is similar to
      * pokeToPlace, in that one touches the entity, then where she wants the
-     * entity to go. However, this is much more configurable. Note that while
-     * there are three boolean parameters, all 8 combinations don't necessarily
-     * work in interesting ways.
+     * entity to go. However, this involves moving with velocity, instead of
+     * teleporting
      * 
      * @param velocity
      *            The constant velocity for poke movement
      * @param oncePerTouch
      *            After starting a path, does the player need to re-select
      *            (re-touch) the entity before giving it a new destinaion point?
-     * @param updateOnMove
-     *            Should drags cause the destination point to change?
-     * @param stopOnUp
-     *            When the touch is released, should the entity stop moving, or
-     *            continue until it reaches the release point?
      */
-    public void setPokePath(final float velocity, final boolean oncePerTouch,
-            final boolean updateOnMove, final boolean stopOnUp) {
+    public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mTouchResponder = new TouchAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            public void onDown(float x, float y) {
+            public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mTouchResponder = new TouchAction() {
+                Level.sCurrent.mGestureResponder = new GestureAction() {
                     @Override
-                    public void onDown(float x, float y) {
+                    public boolean onTap(Vector3 touchVec) {
                         Route r = new Route(2).to(getXPosition(),
-                                getYPosition()).to(x - mSize.x / 2,
-                                y - mSize.y / 2);
+                                getYPosition()).to(touchVec.x - mSize.x / 2,
+                                touchVec.y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
-                        // clear the pokePathEntity, so a future touch starts
-                        // the process over
                         if (oncePerTouch)
-                            Level.sCurrent.mTouchResponder = null;
-                    }
-
-                    @Override
-                    public void onMove(float x, float y) {
-                        if (updateOnMove)
-                            onDown(x, y);
-                    }
-
-                    @Override
-                    public void onUp(float x, float y) {
-                        if (stopOnUp && mRoute != null) {
-                            mRoute.haltRoute();
-                        }
+                            Level.sCurrent.mGestureResponder = null;
+                        return true;
                     }
                 };
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Configure an entity so that touching an arbitrary point on the screen
+     * makes the entity move toward that point. The behavior is similar to
+     * pokePath, except that as the finger moves, the entity keeps changing its
+     * destination accordingly.
+     * 
+     * @param velocity
+     *            The constant velocity for poke movement
+     * @param oncePerTouch
+     *            After starting a path, does the player need to re-select
+     *            (re-touch) the entity before giving it a new destinaion point?
+     * @param stopOnUp
+     *            When the touch is released, should the entity stop moving, or
+     *            continue in the same direction?
+     */
+    public void setFingerChase(final float velocity,
+            final boolean oncePerTouch, final boolean stopOnUp) {
+        if (mBody.getType() == BodyType.StaticBody)
+            mBody.setType(BodyType.KinematicBody);
+        mGestureResponder = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 touchVec) {
+                Lol.sGame.vibrate(5);
+                Level.sCurrent.mGestureResponder = new GestureAction() {
+                    @Override
+                    public boolean onDown(Vector3 touchVec) {
+                        Route r = new Route(2).to(getXPosition(),
+                                getYPosition()).to(touchVec.x - mSize.x / 2,
+                                touchVec.y - mSize.y / 2);
+                        setAbsoluteVelocity(0, 0, false);
+                        setRoute(r, velocity, false);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onUp(Vector3 touchVec) {
+                        if (stopOnUp && mRoute != null)
+                            mRoute.haltRoute();
+                        if (oncePerTouch)
+                            Level.sCurrent.mGestureResponder = null;
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPan(Vector3 touchVec) {
+                        return onDown(touchVec);
+                    }
+
+                    @Override
+                    public boolean onPanStop(Vector3 touchVec) {
+                        return onUp(touchVec);
+                    }
+                };
+                return true;
             }
         };
     }

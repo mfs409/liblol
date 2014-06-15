@@ -25,6 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+// TODO: wrap all gdx.app.log events in an "if debugmode" 
 package edu.lehigh.cse.lol;
 
 import java.util.ArrayList;
@@ -64,6 +65,309 @@ import com.badlogic.gdx.utils.Timer.Task;
  * for keeping track of everything on the screen (game entities and Controls).
  */
 public class Level extends ScreenAdapter {
+    /**
+     * Wrapper for actions that we generate and then want handled during the
+     * render loop
+     */
+    interface Action {
+        void go();
+    }
+
+    /*
+     * The new plan for handling events is that the Level's gestureDetector will
+     * determine the type of event, and will then either (a) forward it to a
+     * control that is in the appropriate list, or (b) forward it to an entity
+     */
+
+    // TODO: comments
+    static class GestureAction {
+        /**
+         * Run this when the screen is held down
+         * 
+         * @param x
+         *            The X coordinate, in pixels, of the touch
+         * @param y
+         *            The Y coordinate, in pixels, of the touch
+         */
+        boolean onDrag(Vector3 touchCoord) {
+            return false;
+        }
+
+        public boolean onDown(Vector3 touchLoc) {
+            return false;
+        }
+
+        public boolean onUp(Vector3 touchLoc) {
+            return false;
+        }
+
+        boolean onTap(Vector3 touchCoord) {
+            return false;
+        }
+
+        boolean onPan(Vector3 touchCoord) {
+            return false;
+        }
+
+        boolean onPanStop(Vector3 touchCoord) {
+            return false;
+        }
+
+        boolean onFling(Vector3 touchCoord) {
+            return false;
+        }
+    }
+
+    /**
+     * Custom camera that can do parallax... taken directly from GDX tests
+     */
+    class ParallaxCamera extends OrthographicCamera {
+        /**
+         * This matrix helps us compute the view
+         */
+        private final Matrix4 parallaxView = new Matrix4();
+
+        /**
+         * This matrix helps us compute the camera.combined
+         */
+        private final Matrix4 parallaxCombined = new Matrix4();
+
+        /**
+         * A temporary vector for doing the calculations
+         */
+        private final Vector3 tmp = new Vector3();
+
+        /**
+         * Another temporary vector for doing the calculations
+         */
+        private final Vector3 tmp2 = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         * 
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
+         */
+        ParallaxCamera(float viewportWidth, float viewportHeight) {
+            super(viewportWidth, viewportHeight);
+        }
+
+        /**
+         * This is how we calculate the position of a parallax camera
+         */
+        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
+        }
+    }
+
+    // TODO: comments
+    class LolGestureManager extends GestureAdapter {
+        /**
+         * When the screen is tapped, this code forwards the tap to the
+         * appropriate place
+         * 
+         * @param x
+         *            X coordinate of the tap
+         * @param y
+         *            Y coordinate of the tap
+         * @param count
+         *            1 for single click, 2 for double-click
+         * @param button
+         *            The mouse button that was pressed
+         */
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+            // if any pop-up scene is showing, forward the tap to the scene and
+            // return true, so that the event doesn't get passed to the Scene
+            if (mPostScene != null && mPostScene.mVisible == true) {
+                mPostScene.onTap();
+                return true;
+            } else if (mPreScene != null && mPreScene.mVisible == true) {
+                mPreScene.onTap();
+                // TODO: on level 38, if this is true, weird stuff happens. Many
+                // of our events are wrong right now... TRUE means EVENT HANDLED
+                return false;
+                // TODO: the Input handling stuff has gotten out of hand...
+                // refactor to a new file, and replace 'is-a' with 'has-a'
+            } else if (mPauseScene != null && mPauseScene.mVisible == true) {
+                mPauseScene.onTap(x, y);
+                return true;
+            }
+
+            // check if we tapped a control
+            mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Controls.Control c : mTapControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(x, y, 0));
+                    c.onTap(mTouchVec);
+                    return true;
+                }
+            }
+
+            // check if we tapped an entity
+            mHitSprite = null;
+            mGameCam.unproject(mTouchVec.set(x, y, 0));
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
+                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+            if (mHitSprite != null)
+                if (mHitSprite.onTap(mTouchVec))
+                    return true;
+
+            // is this a raw screen tap?
+            if (mGestureResponder != null)
+                if (mGestureResponder.onTap(mTouchVec))
+                    return true;
+
+            Gdx.app.log("event", "tap");
+            return false;
+        }
+
+        // TODO: delete?
+        @Override
+        public boolean longPress(float x, float y) {
+            Gdx.app.log("event", "longpress");
+            return false;
+        }
+
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            Gdx.app.log("event", "fling: " + velocityX + ", " + velocityY);
+            if (Level.sCurrent.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
+                return Level.sCurrent.mGestureResponder.onFling(mTouchVec);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean pan(float x, float y, float deltaX, float deltaY) {
+            // check if we panned a control
+            mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Controls.Control c : mPanControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(x, y, 0));
+                    c.onPan(mTouchVec);
+                    return true;
+                }
+            }
+
+            if (Level.sCurrent.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(x, y, 0));
+                return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
+            }
+            Gdx.app.log("event", "pan");
+            return false;
+        }
+
+        @Override
+        public boolean panStop(float x, float y, int pointer, int button) {
+            if (Level.sCurrent.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(x, y, 0));
+                return Level.sCurrent.mGestureResponder.onPanStop(mTouchVec);
+            }
+            Gdx.app.log("event", "panStop");
+            return false;
+        }
+
+        // TODO: delete?
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            Gdx.app.log("event", "zoom");
+            return false;
+        }
+
+        // TODO: delete?
+        @Override
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+                Vector2 pointer1, Vector2 pointer2) {
+            Gdx.app.log("event", "pinch");
+            return false;
+        }
+    }
+
+    // TODO: comments
+    class LolInputManager extends InputAdapter {
+        // if we made it to here, then we are either dealing with a down touch
+        // for a press-and-hold control, or we are dealing with dragging
+        public boolean touchDown(int screenX, int screenY, int pointer,
+                int button) {
+
+            // check if we down-pressed a control
+            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Controls.Control c : mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                    c.toggle(false, mTouchVec);
+                    return true;
+                }
+            }
+
+            // check for sprite touch, by looking at gameCam coordinates... on
+            // touch, hitSprite will change
+            mHitSprite = null;
+            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
+                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+
+            // TODO: this is insufficient... we need to deal with whether or not
+            // this is actually touchable...
+            if (mHitSprite != null)
+                return true;
+            // if (mHitSprite != null)
+            // mHitSprite.handleTouchDown(x, y);
+
+            if (mGestureResponder != null)
+                if (mGestureResponder.onDown(mTouchVec))
+                    return true;
+
+            Gdx.app.log("event", "touchDown IM");
+            return false;
+        }
+
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            // check if we down-pressed a control
+            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Controls.Control c : mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                    c.toggle(true, mTouchVec);
+                    return true;
+                }
+            }
+
+            Gdx.app.log("event", "touchUp IM");
+            return false;
+        }
+
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            if (mHitSprite != null && mHitSprite.mGestureResponder != null) {
+                mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                return mHitSprite.mGestureResponder.onDrag(mTouchVec);
+            }
+
+            if (mGestureResponder != null)
+                if (mGestureResponder.onDrag(mTouchVec)) 
+                    return true;
+
+            Gdx.app.log("event", "touchDrag IM");
+            return false;
+        }
+    }
+
     /**
      * The music, if any
      */
@@ -214,21 +518,6 @@ public class Level extends ScreenAdapter {
     private QueryCallback mTouchCallback;
 
     /**
-     * Our polling-based multitouch uses this array to track the previous state
-     * of 4 fingers
-     */
-    @Deprecated
-    private final boolean[] mLastTouches = new boolean[4];
-
-    /**
-     * When transitioning between a pre-scene and the game, we need to be sure
-     * that a down press on the pre-scene doesn't show up as a move event on the
-     * game... we achieve it via this
-     */
-    @Deprecated
-    private boolean mTouchActive = true;
-
-    /**
      * The LOL interface requires that game designers don't have to construct
      * Level manually. To make it work, we store the current Level here
      */
@@ -238,345 +527,12 @@ public class Level extends ScreenAdapter {
      * Entities may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
-    @Deprecated
-    TouchAction mTouchResponder;
-
     GestureAction mGestureResponder;
 
     /**
      * In levels with a projectile pool, the pool is accessed from here
      */
     ProjectilePool mProjectilePool;
-
-    /**
-     * Wrapper for actions that we generate and then want handled during the
-     * render loop
-     */
-    interface Action {
-        void go();
-    }
-
-    /*
-     * The new plan for handling events is that the Level's gestureDetector will
-     * determine the type of event, and will then either (a) forward it to a
-     * control that is in the appropriate list, or (b) forward it to an entity
-     */
-
-    static class GestureAction {
-        /**
-         * Run this when the screen is held down
-         * 
-         * @param x
-         *            The X coordinate, in pixels, of the touch
-         * @param y
-         *            The Y coordinate, in pixels, of the touch
-         */
-        boolean onDrag(Vector3 touchCoord) {
-            return false;
-        }
-
-        public boolean onDown(Vector3 touchLoc) {
-            return false;
-        }
-
-        public boolean onUp(Vector3 touchLoc) {
-            return false;
-        }
-
-        boolean onTap(Vector3 touchCoord) {
-            return false;
-        }
-
-        boolean onPan(Vector3 touchCoord) {
-            return false;
-        }
-
-        boolean onFling(Vector3 touchCoord) {
-            return false;
-        }
-    }
-
-    /**
-     * Wrapper for handling code that needs to run in response to a screen touch
-     */
-    @Deprecated
-    static class TouchAction {
-        /**
-         * Run this when the screen is initially pressed down
-         * 
-         * @param x
-         *            The X coordinate, in pixels, of the touch
-         * @param y
-         *            The Y coordinate, in pixels, of the touch
-         */
-        void onDown(float x, float y) {
-        }
-
-        /**
-         * Run this when the screen is held down
-         * 
-         * @param x
-         *            The X coordinate, in pixels, of the touch
-         * @param y
-         *            The Y coordinate, in pixels, of the touch
-         */
-        void onMove(float x, float y) {
-        }
-
-        /**
-         * Run this when the screen is released
-         * 
-         * @param x
-         *            The X coordinate, in pixels, of the touch
-         * @param y
-         *            The Y coordinate, in pixels, of the touch
-         */
-        void onUp(float x, float y) {
-        }
-    }
-
-    /**
-     * Custom camera that can do parallax... taken directly from GDX tests
-     */
-    class ParallaxCamera extends OrthographicCamera {
-        /**
-         * This matrix helps us compute the view
-         */
-        private final Matrix4 parallaxView = new Matrix4();
-
-        /**
-         * This matrix helps us compute the camera.combined
-         */
-        private final Matrix4 parallaxCombined = new Matrix4();
-
-        /**
-         * A temporary vector for doing the calculations
-         */
-        private final Vector3 tmp = new Vector3();
-
-        /**
-         * Another temporary vector for doing the calculations
-         */
-        private final Vector3 tmp2 = new Vector3();
-
-        /**
-         * The constructor simply forwards to the OrthographicCamera constructor
-         * 
-         * @param viewportWidth
-         *            Width of the camera
-         * @param viewportHeight
-         *            Height of the camera
-         */
-        ParallaxCamera(float viewportWidth, float viewportHeight) {
-            super(viewportWidth, viewportHeight);
-        }
-
-        /**
-         * This is how we calculate the position of a parallax camera
-         */
-        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
-            update();
-            tmp.set(position);
-            tmp.x *= parallaxX;
-            tmp.y *= parallaxY;
-
-            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
-            parallaxCombined.set(projection);
-            Matrix4.mul(parallaxCombined.val, parallaxView.val);
-            return parallaxCombined;
-        }
-    }
-
-    class LolGestureManager extends GestureAdapter {
-        /**
-         * When the screen is tapped, this code forwards the tap to the
-         * appropriate place
-         * 
-         * @param x
-         *            X coordinate of the tap
-         * @param y
-         *            Y coordinate of the tap
-         * @param count
-         *            1 for single click, 2 for double-click
-         * @param button
-         *            The mouse button that was pressed
-         */
-        @Override
-        public boolean tap(float x, float y, int count, int button) {
-            // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't get passed to the Scene
-            if (mPostScene != null && mPostScene.mVisible == true) {
-                mPostScene.onTap();
-                return true;
-            } else if (mPreScene != null && mPreScene.mVisible == true) {
-                mPreScene.onTap();
-                // TODO: on level 38, if this is true, weird stuff happens. Many
-                // of our events are wrong right now... TRUE means EVENT HANDLED
-                return false;
-                // TODO: the Input handling stuff has gotten out of hand...
-                // refactor to a new file, and replace 'is-a' with 'has-a'
-            } else if (mPauseScene != null && mPauseScene.mVisible == true) {
-                mPauseScene.onTap(x, y);
-                return true;
-            }
-
-            // check if we tapped a control
-            mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Controls.Control c : mTapControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.onTap(mTouchVec);
-                    return true;
-                }
-            }
-
-            // check if we tapped an entity
-            mHitSprite = null;
-            mGameCam.unproject(mTouchVec.set(x, y, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
-                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
-            if (mHitSprite != null)
-                if (mHitSprite.onTap(mTouchVec))
-                    return true;
-
-            // is this a raw screen tap?
-            if (mGestureResponder != null)
-                if (mGestureResponder.onTap(mTouchVec))
-                    return true;
-
-            Gdx.app.log("event", "tap");
-            return false;
-        }
-
-        @Override
-        public boolean longPress(float x, float y) {
-            Gdx.app.log("event", "longpress");
-            return false;
-        }
-
-        @Override
-        public boolean fling(float velocityX, float velocityY, int button) {
-            Gdx.app.log("event", "fling: " + velocityX + ", " + velocityY);
-            if (Level.sCurrent.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-                return Level.sCurrent.mGestureResponder.onFling(mTouchVec);
-            }
-
-            return false;
-        }
-
-        @Override
-        public boolean pan(float x, float y, float deltaX, float deltaY) {
-            // check if we panned a control
-            mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Controls.Control c : mPanControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.onPan(mTouchVec);
-                    return true;
-                }
-            }
-
-            if (Level.sCurrent.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
-            }
-            Gdx.app.log("event", "pan");
-            return false;
-        }
-
-        @Override
-        public boolean panStop(float x, float y, int pointer, int button) {
-            Gdx.app.log("event", "panStop");
-            return false;
-        }
-
-        @Override
-        public boolean zoom(float initialDistance, float distance) {
-            Gdx.app.log("event", "zoom");
-            return false;
-        }
-
-        @Override
-        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-                Vector2 pointer1, Vector2 pointer2) {
-            Gdx.app.log("event", "pinch");
-            return false;
-        }
-    }
-
-    class LolInputManager extends InputAdapter {
-        // if we made it to here, then we are either dealing with a down touch
-        // for a press-and-hold control, or we are dealing with dragging
-        public boolean touchDown(int screenX, int screenY, int pointer,
-                int button) {
-
-            // check if we down-pressed a control
-            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Controls.Control c : mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(false, mTouchVec);
-                    return true;
-                }
-            }
-
-            // check for sprite touch, by looking at gameCam coordinates... on
-            // touch, hitSprite will change
-            mHitSprite = null;
-            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
-                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
-
-            // TODO: this is insufficient... we need to deal with whether or not
-            // this is actually touchable...
-            if (mHitSprite != null)
-                return true;
-            // if (mHitSprite != null)
-            // mHitSprite.handleTouchDown(x, y);
-
-            if (mGestureResponder != null)
-                if (mGestureResponder.onDown(mTouchVec))
-                    return true;
-
-            Gdx.app.log("event", "touchDown IM");
-            return false;
-        }
-
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            // check if we down-pressed a control
-            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Controls.Control c : mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(true, mTouchVec);
-                    return true;
-                }
-            }
-
-            Gdx.app.log("event", "touchUp IM");
-            return false;
-        }
-
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            if (mHitSprite != null && mHitSprite.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                return mHitSprite.mGestureResponder.onDrag(mTouchVec);
-            }
-
-            if (mGestureResponder != null)
-                if (mGestureResponder.onDrag(mTouchVec)) {
-                    return true;
-                }
-
-            Gdx.app.log("event", "touchDrag IM");
-            return false;
-        }
-    }
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
@@ -700,15 +656,6 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * When a pre or pause scene is showing, this un-registers all touches
-     */
-    void suspendTouch() {
-        mTouchActive = false;
-        for (int i = 0; i < 4; ++i)
-            mLastTouches[i] = true;
-    }
-
-    /**
      * If the camera is supposed to follow an entity, this code will handle
      * updating the camera position
      */
@@ -779,129 +726,24 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * LOL uses polling to detect multitouch, touchdown, touchup, and
-     * touchhold/touchdrag. This method, called from render, will track up to 4
-     * simultaneous touches and forward them for proper processing. Note that
-     * our choice of 4 points is totally arbitrary... we could do up to 10 quite
-     * easily
-     */
-    private void manageTouches() {
-        // poll for touches... we assume no more than 4 simultaneous touches
-        boolean[] touchStates = new boolean[4];
-        for (int i = 0; i < 4; ++i) {
-            // we compare the current state to the prior state, to detect down,
-            // up, or move/hold. Note that we don't distinguish between move and
-            // hold
-            touchStates[i] = Gdx.input.isTouched(i);
-            float x = Gdx.input.getX(i);
-            float y = Gdx.input.getY(i);
-            // if there is a touch, call the appropriate method
-            if (touchStates[i] && mLastTouches[i] && mTouchActive)
-                touchMove((int) x, (int) y);
-            else if (touchStates[i] && !mLastTouches[i]) {
-                mTouchActive = true;
-                touchDown((int) x, (int) y);
-            } else if (!touchStates[i] && mLastTouches[i] && mTouchActive)
-                touchUp((int) x, (int) y);
-            mLastTouches[i] = touchStates[i];
-        }
-    }
-
-    /**
-     * When there is a down press, this code handles it
+     * A hack for stopping events when a pause screen is opened
      * 
-     * @param x
-     *            The X location of the press, in screen coordinates
-     * @param y
-     *            The Y location of the press, in screen coordinates
+     * @param touchVec
+     *            The location of the touch that interacted with the pause
+     *            screen.
      */
-    private void touchDown(int x, int y) {
-        // check for HUD touch first...
-        mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Controls.Control pe : mControls) {
-            if (pe.mIsTouchable && pe.mIsActive
-                    && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                // now convert the touch to world coordinates and pass to the
-                // control (useful for vector throw)
-                mGameCam.unproject(mTouchVec.set(x, y, 0));
-                pe.onDownPress(mTouchVec);
-                return;
-            }
-        }
-
-        // check for sprite touch, by looking at gameCam coordinates... on
-        // touch, hitSprite will change
-        mHitSprite = null;
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
-        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
-                mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
-        if (mHitSprite != null)
-            mHitSprite.handleTouchDown(x, y);
-        // Handle level touches for which we've got a registered handler
-        else if (mTouchResponder != null)
-            mTouchResponder.onDown(mTouchVec.x, mTouchVec.y);
-    }
-
-    /**
-     * When a finger moves on the screen, this code handles it
-     * 
-     * @param x
-     *            The X location of the press, in screen coordinates
-     * @param y
-     *            The Y location of the press, in screen coordinates
-     */
-    private void touchMove(int x, int y) {
-        // check for HUD touch first...
-        mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Controls.Control pe : mControls) {
-            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                // now convert the touch to world coordinates and pass to the
-                // control (useful for vector throw)
-                mGameCam.unproject(mTouchVec.set(x, y, 0));
-                pe.onHold(mTouchVec);
-                return;
-            }
-        }
-        // check for screen touch, then for dragging an entity
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
-        if (mTouchResponder != null)
-            mTouchResponder.onMove(mTouchVec.x, mTouchVec.y);
-        else if (mHitSprite != null)
-            mHitSprite.legacyHandleTouchDrag(mTouchVec.x, mTouchVec.y);
-    }
-
-    /**
-     * When a finger is removed from the screen, this code handles it
-     * 
-     * @param x
-     *            The X location of the press, in screen coordinates
-     * @param y
-     *            The Y location of the press, in screen coordinates
-     */
-    void touchUp(int x, int y) {
-        // check for HUD touch first
-        mHudCam.unproject(mTouchVec.set(x, y, 0));
-        for (Controls.Control pe : mControls) {
-            if (pe.mIsTouchable && pe.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                pe.onUpPress();
-                return;
-            }
-        }
-
-        // Up presses are not handled by entities, only by the screen
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
-        if (mTouchResponder != null)
-            mTouchResponder.onUp(mTouchVec.x, mTouchVec.y);
-    }
-
     void liftAllButtons(Vector3 touchVec) {
         for (Controls.Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
                 c.toggle(true, touchVec);
             }
         }
+        if (mGestureResponder != null) {
+            mGestureResponder.onPanStop(mTouchVec);
+            mGestureResponder.onUp(mTouchVec);
+        }
     }
-    
+
     /*
      * SCREEN (SCREENADAPTER) OVERRIDES
      */
@@ -929,10 +771,6 @@ public class Level extends ScreenAdapter {
         if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
             return;
 
-        // check for any scene touches that should generate new events to
-        // process
-        // manageTouches();
-
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
@@ -955,9 +793,8 @@ public class Level extends ScreenAdapter {
             pe.go();
 
         // handle toggle events
-        for (Controls.Control c : mToggleControls) {
+        for (Controls.Control c : mToggleControls) 
             c.toggleAction();
-        }
 
         // check for end of game
         if (mEndGameEvent != null)

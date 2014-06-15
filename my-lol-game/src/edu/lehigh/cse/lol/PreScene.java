@@ -73,7 +73,6 @@ public class PreScene {
         if (ps != null)
             return ps;
         ps = new PreScene();
-        Level.sCurrent.suspendTouch();
         Level.sCurrent.mPreScene = ps;
         // pause the timer
         Timer.instance().stop();

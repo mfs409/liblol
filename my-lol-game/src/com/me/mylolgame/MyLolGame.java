@@ -2653,9 +2653,6 @@ public class MyLolGame extends Lol {
          * movement to the destination, instead of an immediate jump.
          */
         else if (whichLevel == 71) {
-            
-            // TODO: this level not done
-            
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -2671,7 +2668,7 @@ public class MyLolGame extends Lol {
             // will stop immediately when we release our finger.
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
             h.setCanFaceBackwards();
-            h.setPokePath(4, false, true, true);
+            h.setPokePath(4, false);
 
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2840,9 +2837,6 @@ public class MyLolGame extends Lol {
          * and decreases it upon release
          */
         else if (whichLevel == 76) {
-            
-            // TODO: this level doesn't work yet
-            
             Level.configure(3 * 48, 32);
             Physics.configure(0, 10);
             PreScene.addText("Press anywhere to speed up", 255, 255, 255, "arial.ttf", 32);
@@ -2875,9 +2869,6 @@ public class MyLolGame extends Lol {
          * get that effect.
          */
         else if (whichLevel == 77) {
-            
-            // TODO: this level doesn't work yet
-
             Level.configure(3 * 48, 32);
             Physics.configure(0, -10);
             PreScene.addText("Press anywhere to start moving", 255, 255, 255, "arial.ttf", 32);
@@ -2941,9 +2932,6 @@ public class MyLolGame extends Lol {
          * interface.
          */
         else if (whichLevel == 79) {
-            
-            // TODO: this level doesn't work yet
-            
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
@@ -2953,7 +2941,7 @@ public class MyLolGame extends Lol {
 
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            h.setPokePath(4, true, false, false);
+            h.setFingerChase(4, false, true);
 
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);

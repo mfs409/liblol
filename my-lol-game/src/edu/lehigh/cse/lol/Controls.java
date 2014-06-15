@@ -42,6 +42,8 @@ import com.badlogic.gdx.math.Vector3;
  * level, the buttons and text can remain at the same place on the screen
  */
 public class Controls {
+    // TODO: switch from is-a to has-a for gesture stuff
+
     /**
      * This is for handling everything that gets drawn on the HUD, whether it is
      * pressable or not
@@ -120,7 +122,7 @@ public class Controls {
             mIsTouchable = false;
         }
 
-        // TODO: replace these methods with a GestureAction
+        // TODO: fix comments
         
         /**
          * Code to run when the control is tapped
@@ -160,34 +162,6 @@ public class Controls {
          * Action to perform when the toggle occurs
          */
         void toggleAction() {
-        }
-
-        /**
-         * Run this code when this HUD entity is down-pressed
-         * 
-         * @param vec
-         *            The coordinates of the touch
-         */
-        @Deprecated
-        void onDownPress(Vector3 vec) {
-        }
-
-        /**
-         * Run this code when this HUD entity is still being pressed, after a
-         * down press has already been observed.
-         * 
-         * @param vec
-         *            The coordinates of the touch
-         */
-        @Deprecated
-        void onHold(Vector3 vec) {
-        }
-
-        /**
-         * Run this code when this HUD entity is released
-         */
-        @Deprecated
-        void onUpPress() {
         }
 
         /**
@@ -968,28 +942,32 @@ public class Controls {
             String imgName, final int rateDownX, final int rateDownY,
             final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
         Control c = new Control(imgName, x, y, width, height) {
+            boolean isActive = false;
             @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity.mBody.getLinearVelocity();
-                v.x = rateDownX;
-                v.y = rateDownY;
-                entity.updateVelocity(v.x, v.y);
+            boolean toggle(boolean isUp, Vector3 touchVec) {
+                isActive = !isUp;
+                Gdx.app.log("toggleAction", ""+isUp);
+                return true;
             }
 
             @Override
-            void onHold(Vector3 vv) {
-                onDownPress(vv);
-            }
-
-            @Override
-            void onUpPress() {
-                Vector2 v = entity.mBody.getLinearVelocity();
-                v.x = rateUpX;
-                v.y = rateUpY;
-                entity.updateVelocity(v.x, v.y);
+            void toggleAction() {
+                if (isActive) {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    v.x = rateDownX;
+                    v.y = rateDownY;
+                    entity.updateVelocity(v.x, v.y);
+                }
+                else {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    v.x = rateUpX;
+                    v.y = rateUpY;
+                    entity.updateVelocity(v.x, v.y);                    
+                }
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 
@@ -1019,21 +997,29 @@ public class Controls {
             int height, String imgName, final float rateX, final float rateY,
             final float dampening, final PhysicsSprite entity) {
         Control c = new Control(imgName, x, y, width, height) {
+            boolean isActive = false;
             @Override
-            void onDownPress(Vector3 vv) {
-                Vector2 v = entity.mBody.getLinearVelocity();
-                v.x = rateX;
-                v.y = rateY;
-                entity.mBody.setLinearDamping(0);
-                entity.updateVelocity(v.x, v.y);
+            boolean toggle(boolean isUp, Vector3 vv) {
+                isActive = !isUp;
+                return true;
             }
-
+            
             @Override
-            void onUpPress() {
-                entity.mBody.setLinearDamping(dampening);
+            void toggleAction() {
+                if (isActive) {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    v.x = rateX;
+                    v.y = rateY;
+                    entity.mBody.setLinearDamping(0);
+                    entity.updateVelocity(v.x, v.y);
+                }
+                else {
+                    entity.mBody.setLinearDamping(dampening);    
+                }
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
         return c;
     }
 
@@ -1447,11 +1433,13 @@ public class Controls {
             int height, String imgName, final int id) {
         Control c = new Control(imgName, x, y, width, height) {
             @Override
-            void onDownPress(Vector3 vv) {
+            boolean onTap(Vector3 vv) {
                 Lol.sGame.onControlPressTrigger(id, Lol.sGame.mCurrLevelNum);
+                return true;
             }
         };
         Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 
