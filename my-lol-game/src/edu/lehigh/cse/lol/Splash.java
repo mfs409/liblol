@@ -140,12 +140,9 @@ public class Splash extends ScreenAdapter {
             public boolean tap(float x, float y, int count, int button) {
                 // translate the touch into camera coordinates
                 mCamera.unproject(mV.set(x, y, 0));
-                // DEBUG: print the location of the touch... this is really
-                // useful
-                // when trying to figure out the coordinates of the rectangles
-                if (Lol.sGame.mConfig.showDebugBoxes()) {
-                    Gdx.app.log("tap", "(" + mV.x + ", " + mV.y + ")");
-                }
+                // print the location of the touch... this is really useful when
+                // trying to figure out the coordinates of the rectangles
+                Util.message("tap", "(" + mV.x + ", " + mV.y + ")");
                 // check if the touch was inside one of our buttons, and act
                 // accordingly
                 if (mQuit != null && mQuit.contains(mV.x, mV.y)) {

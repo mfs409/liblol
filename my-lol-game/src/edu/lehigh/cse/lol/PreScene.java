@@ -30,6 +30,7 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -54,6 +55,11 @@ public class PreScene {
      * True when the scene is being displayed
      */
     boolean mVisible = true;
+
+    /**
+     * For handling touches
+     */
+    private final Vector3 mV = new Vector3();
 
     /**
      * Time that the PauseScene started being shown, so we can update timers
@@ -99,10 +105,12 @@ public class PreScene {
      * Handler to run when the screen is tapped while the PreScene is being
      * displayed
      */
-    void onTap() {
+    void onTap(float x, float y) {
+        Level.sCurrent.mHudCam.unproject(mV.set(x, y, 0));
         // hide the scene only if it's click-to-clear
         if (mVisible && mClickToClear) {
             hide();
+            Level.sCurrent.liftAllButtons(mV);
         }
     }
     

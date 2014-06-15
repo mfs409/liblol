@@ -25,7 +25,6 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-// TODO: wrap all gdx.app.log events in an "if debugmode" 
 package edu.lehigh.cse.lol;
 
 import java.util.ArrayList;
@@ -73,47 +72,96 @@ public class Level extends ScreenAdapter {
         void go();
     }
 
-    /*
-     * The new plan for handling events is that the Level's gestureDetector will
-     * determine the type of event, and will then either (a) forward it to a
-     * control that is in the appropriate list, or (b) forward it to an entity
+    /**
+     * When there is a gesture on the screen, we will convert the event's
+     * coordinates to world coordinates, then use this to handle it. This object
+     * can be attached to PhysicsSprites, Controls, or to the Level itself, to
+     * specify a handler for certain events.
      */
-
-    // TODO: comments
     static class GestureAction {
         /**
-         * Run this when the screen is held down
-         * 
-         * @param x
-         *            The X coordinate, in pixels, of the touch
-         * @param y
-         *            The Y coordinate, in pixels, of the touch
+         * We offer a HOLD/RELEASE gesture. This flag tells us if we're in a
+         * hold event.
          */
-        boolean onDrag(Vector3 touchCoord) {
+        boolean mHolding;
+
+        /**
+         * Handle a drag event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onDrag(Vector3 touchVec) {
             return false;
         }
 
-        public boolean onDown(Vector3 touchLoc) {
+        /**
+         * Handle a down press (hopefully to turn it into a hold/release)
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        public boolean onDown(Vector3 touchVec) {
             return false;
         }
 
-        public boolean onUp(Vector3 touchLoc) {
+        /**
+         * Handle an up press (hopefully to turn it into a release)
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        public boolean onUp(Vector3 touchVec) {
             return false;
         }
 
-        boolean onTap(Vector3 touchCoord) {
+        /**
+         * Handle a tap event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onTap(Vector3 touchVec) {
             return false;
         }
 
-        boolean onPan(Vector3 touchCoord) {
+        /**
+         * Handle a pan event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onPan(Vector3 touchVec) {
             return false;
         }
 
-        boolean onPanStop(Vector3 touchCoord) {
+        /**
+         * Handle a pan stop event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onPanStop(Vector3 touchVec) {
             return false;
         }
 
-        boolean onFling(Vector3 touchCoord) {
+        /**
+         * Handle a fling event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onFling(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a toggle event. This is usually built from a down and an up.
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean toggle(boolean isUp, Vector3 touchVec) {
             return false;
         }
     }
@@ -170,11 +218,14 @@ public class Level extends ScreenAdapter {
         }
     }
 
-    // TODO: comments
+    /**
+     * To properly handle gestures, we need to provide the code to run on each
+     * type of gesture we care about.
+     */
     class LolGestureManager extends GestureAdapter {
         /**
          * When the screen is tapped, this code forwards the tap to the
-         * appropriate place
+         * appropriate GestureAction
          * 
          * @param x
          *            X coordinate of the tap
@@ -193,12 +244,8 @@ public class Level extends ScreenAdapter {
                 mPostScene.onTap();
                 return true;
             } else if (mPreScene != null && mPreScene.mVisible == true) {
-                mPreScene.onTap();
-                // TODO: on level 38, if this is true, weird stuff happens. Many
-                // of our events are wrong right now... TRUE means EVENT HANDLED
-                return false;
-                // TODO: the Input handling stuff has gotten out of hand...
-                // refactor to a new file, and replace 'is-a' with 'has-a'
+                mPreScene.onTap(x, y);
+                return true;
             } else if (mPauseScene != null && mPauseScene.mVisible == true) {
                 mPauseScene.onTap(x, y);
                 return true;
@@ -210,7 +257,7 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.onTap(mTouchVec);
+                    c.mGestureAction.onTap(mTouchVec);
                     return true;
                 }
             }
@@ -220,29 +267,28 @@ public class Level extends ScreenAdapter {
             mGameCam.unproject(mTouchVec.set(x, y, 0));
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
                     mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
-            if (mHitSprite != null)
-                if (mHitSprite.onTap(mTouchVec))
-                    return true;
+            if (mHitSprite != null && mHitSprite.onTap(mTouchVec))
+                return true;
 
             // is this a raw screen tap?
-            if (mGestureResponder != null)
-                if (mGestureResponder.onTap(mTouchVec))
-                    return true;
-
-            Gdx.app.log("event", "tap");
+            if (mGestureResponder != null && mGestureResponder.onTap(mTouchVec))
+                return true;
             return false;
         }
 
-        // TODO: delete?
-        @Override
-        public boolean longPress(float x, float y) {
-            Gdx.app.log("event", "longpress");
-            return false;
-        }
-
+        /**
+         * Handle fling events
+         * 
+         * @param velocityX
+         *            X velocity of the fling
+         * @param velocityY
+         *            Y velocity of the fling
+         * @param button
+         *            The mouse button that caused the fling
+         */
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
-            Gdx.app.log("event", "fling: " + velocityX + ", " + velocityY);
+            // we only fling at the whole-level layer
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
                 return Level.sCurrent.mGestureResponder.onFling(mTouchVec);
@@ -250,6 +296,18 @@ public class Level extends ScreenAdapter {
             return false;
         }
 
+        /**
+         * Handle pan events
+         * 
+         * @param x
+         *            X coordinate of current touch
+         * @param y
+         *            Y coordinate of current touch
+         * @param deltaX
+         *            change in X
+         * @param deltaY
+         *            change in Y
+         */
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
@@ -258,49 +316,72 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.onPan(mTouchVec);
+                    c.mGestureAction.onPan(mTouchVec);
                     return true;
                 }
             }
 
+            // did we pan the level?
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
                 return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
             }
-            Gdx.app.log("event", "pan");
             return false;
         }
 
+        /**
+         * Handle end-of-pan event
+         * 
+         * @param x
+         *            X coordinate of the tap
+         * @param y
+         *            Y coordinate of the tap
+         * @param pointer
+         *            The finger that was used?
+         * @param button
+         *            The mouse button that was pressed
+         */
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
+            // we only worry about stopping pan on the level
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
                 return Level.sCurrent.mGestureResponder.onPanStop(mTouchVec);
             }
-            Gdx.app.log("event", "panStop");
             return false;
         }
 
-        // TODO: delete?
+        // Not used yet, but hopefully soon...
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            Gdx.app.log("event", "zoom");
             return false;
         }
 
-        // TODO: delete?
+        // Not used yet, but hopefully soon...
         @Override
         public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
                 Vector2 pointer1, Vector2 pointer2) {
-            Gdx.app.log("event", "pinch");
             return false;
         }
     }
 
-    // TODO: comments
+    /**
+     * Gestures can't cover everything we care about (specifically 'hold this
+     * button' sorts of things), so we need a low-level input adapter, too.
+     */
     class LolInputManager extends InputAdapter {
-        // if we made it to here, then we are either dealing with a down touch
-        // for a press-and-hold control, or we are dealing with dragging
+        /**
+         * Handle when a downward touch happens
+         * 
+         * @param screenX
+         *            X coordinate of the tap
+         * @param screenY
+         *            Y coordinate of the tap
+         * @param pointer
+         *            The finger that was used?
+         * @param button
+         *            The mouse button that was pressed
+         */
         public boolean touchDown(int screenX, int screenY, int pointer,
                 int button) {
 
@@ -310,7 +391,7 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(false, mTouchVec);
+                    c.mGestureAction.toggle(false, mTouchVec);
                     return true;
                 }
             }
@@ -322,21 +403,31 @@ public class Level extends ScreenAdapter {
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
                     mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
 
-            // TODO: this is insufficient... we need to deal with whether or not
-            // this is actually touchable...
+            // PhysicsSprites don't respond to DOWN... if it's a down on a
+            // physicssprite, we are supposed to remember the most recently
+            // touched physicssprite, and that's it
             if (mHitSprite != null)
                 return true;
-            // if (mHitSprite != null)
-            // mHitSprite.handleTouchDown(x, y);
-
+            
+            // forward to the level's handler
             if (mGestureResponder != null)
                 if (mGestureResponder.onDown(mTouchVec))
                     return true;
-
-            Gdx.app.log("event", "touchDown IM");
             return false;
         }
 
+        /**
+         * Handle when a touch is released
+         * 
+         * @param screenX
+         *            X coordinate of the tap
+         * @param screenY
+         *            Y coordinate of the tap
+         * @param pointer
+         *            The finger that was used?
+         * @param button
+         *            The mouse button that was pressed
+         */
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
@@ -344,26 +435,31 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.toggle(true, mTouchVec);
+                    c.mGestureAction.toggle(true, mTouchVec);
                     return true;
                 }
             }
-
-            Gdx.app.log("event", "touchUp IM");
             return false;
         }
 
+        /**
+         * Handle dragging
+         * 
+         * @param screenX
+         *            X coordinate of the drag
+         * @param screenY
+         *            Y coordinate of the drag
+         * @param pointer
+         *            The finger that was used
+         */
         public boolean touchDragged(int screenX, int screenY, int pointer) {
             if (mHitSprite != null && mHitSprite.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                 return mHitSprite.mGestureResponder.onDrag(mTouchVec);
             }
-
             if (mGestureResponder != null)
-                if (mGestureResponder.onDrag(mTouchVec)) 
+                if (mGestureResponder.onDrag(mTouchVec))
                     return true;
-
-            Gdx.app.log("event", "touchDrag IM");
             return false;
         }
     }
@@ -566,11 +662,11 @@ public class Level extends ScreenAdapter {
         // warn on strange dimensions
         if (width < Lol.sGame.mConfig.getScreenWidth()
                 / Physics.PIXEL_METER_RATIO)
-            Gdx.app.log("Warning",
+            Util.message("Warning",
                     "Your game width is less than 1/10 of the screen width");
         if (height < Lol.sGame.mConfig.getScreenHeight()
                 / Physics.PIXEL_METER_RATIO)
-            Gdx.app.log("Warning",
+            Util.message("Warning",
                     "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
@@ -735,7 +831,7 @@ public class Level extends ScreenAdapter {
     void liftAllButtons(Vector3 touchVec) {
         for (Controls.Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
-                c.toggle(true, touchVec);
+                c.mGestureAction.toggle(true, touchVec);
             }
         }
         if (mGestureResponder != null) {
@@ -791,10 +887,6 @@ public class Level extends ScreenAdapter {
         // handle repeat events
         for (Action pe : mRepeatEvents)
             pe.go();
-
-        // handle toggle events
-        for (Controls.Control c : mToggleControls) 
-            c.toggleAction();
 
         // check for end of game
         if (mEndGameEvent != null)

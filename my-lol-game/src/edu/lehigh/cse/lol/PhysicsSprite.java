@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -57,6 +56,25 @@ import edu.lehigh.cse.lol.Level.GestureAction;
  * PhysicsSprite is the base class upon which every game entity is built
  */
 public abstract class PhysicsSprite implements Lol.Renderable {
+    /**
+     * When a PhysicsSprite collides with another PhysicsSprite, and that
+     * collision is intended to cause some custom code to run, we use this
+     * interface
+     */
+    interface CollisionCallback {
+        /**
+         * Respond to a collision with a PhysicsSprite. Note that one of the
+         * collision entities is not named; it should be clear from the context
+         * in which this was constructed.
+         * 
+         * @param ps
+         *            The PhysicsSprite involved in the collision
+         * @param c
+         *            A description of the contact, in case it is useful
+         */
+        void go(final PhysicsSprite ps, Contact c);
+    }
+
     /**
      * Physics body for this PhysicsSprite
      */
@@ -228,25 +246,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     Joint mRevJoint;
 
     /**
-     * When a PhysicsSprite collides with another PhysicsSprite, and that
-     * collision is intended to cause some custom code to run, we use this
-     * interface
-     */
-    interface CollisionCallback {
-        /**
-         * Respond to a collision with a PhysicsSprite. Note that one of the
-         * collision entities is not named; it should be clear from the context
-         * in which this was constructed.
-         * 
-         * @param ps
-         *            The PhysicsSprite involved in the collision
-         * @param c
-         *            A description of the contact, in case it is useful
-         */
-        void go(final PhysicsSprite ps, Contact c);
-    }
-
-    /**
      * Create a new PhysicsSprite that does not yet have physics, but that has a
      * renderable picture
      * 
@@ -299,6 +298,14 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         mBody.setLinearVelocity(x, y);
     }
 
+    /**
+     * Whenever any class derived from this is touched, we want to play the
+     * touchsound before we run the gesture responder.
+     * 
+     * @param touchVec
+     *            The x/y/z coordinates of the touch
+     * @return True if the event was handled, false otherwise
+     */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
             mTouchSound.play();
@@ -307,42 +314,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Every time the world advances by a timestep, we call this code. It
-     * updates the PhysicsSprite and draws it.
-     */
-    @Override
-    public void render(SpriteBatch sb, float delta) {
-        // skip all rendering and updates if not visible
-        if (mVisible) {
-            // possibly run a route update
-            if (mRoute != null && mVisible)
-                mRoute.drive();
-
-            // choose the default TextureRegion to show... this is how we
-            // animate
-            TextureRegion tr = mAnimator.getTr(delta);
-
-            // now draw this sprite, flipping it if necessary
-            Vector2 pos = mBody.getPosition();
-            if (mReverseFace && mBody.getLinearVelocity().x < 0) {
-                if (!mIsFlipped) {
-                    tr.flip(true, false);
-                    mIsFlipped = true;
-                }
-            } else if (mReverseFace && mBody.getLinearVelocity().x > 0) {
-                if (mIsFlipped) {
-                    tr.flip(true, false);
-                    mIsFlipped = false;
-                }
-            }
-            if (tr != null)
-                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2,
-                        mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
-                        MathUtils.radiansToDegrees * mBody.getAngle());
-        }
     }
 
     /**
@@ -426,7 +397,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
         }
         for (int i = 0; i < verts.length; ++i)
-            Gdx.app.log("vert", "at " + verts[i].x + "," + verts[i].y);
+            Util.message("vert", "at " + verts[i].x + "," + verts[i].y);
         boxPoly.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
@@ -507,6 +478,46 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /*
+     * OVERRIDES FROM LOL.RENDERABLE
+     */
+
+    /**
+     * Every time the world advances by a timestep, we call this code. It
+     * updates the PhysicsSprite and draws it. User code should never call this.
+     */
+    @Override
+    public void render(SpriteBatch sb, float delta) {
+        // skip all rendering and updates if not visible
+        if (mVisible) {
+            // possibly run a route update
+            if (mRoute != null && mVisible)
+                mRoute.drive();
+
+            // choose the default TextureRegion to show... this is how we
+            // animate
+            TextureRegion tr = mAnimator.getTr(delta);
+
+            // now draw this sprite, flipping it if necessary
+            Vector2 pos = mBody.getPosition();
+            if (mReverseFace && mBody.getLinearVelocity().x < 0) {
+                if (!mIsFlipped) {
+                    tr.flip(true, false);
+                    mIsFlipped = true;
+                }
+            } else if (mReverseFace && mBody.getLinearVelocity().x > 0) {
+                if (mIsFlipped) {
+                    tr.flip(true, false);
+                    mIsFlipped = false;
+                }
+            }
+            if (tr != null)
+                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2,
+                        mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
+                        MathUtils.radiansToDegrees * mBody.getAngle());
+        }
+    }
+
+    /*
      * PUBLIC INTERFACE
      */
 
@@ -552,7 +563,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            will not.
      */
     public void setCollisionEffect(boolean state) {
-        // In LibLOL, we maintain the invariant that all fixtures have the same
+        // The default is for all fixtures of a PhysicsSprite have the same
         // sensor state
         for (Fixture f : mBody.getFixtureList())
             f.setSensor(!state);

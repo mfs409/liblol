@@ -36,32 +36,38 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import edu.lehigh.cse.lol.Level.Action;
+import edu.lehigh.cse.lol.Level.GestureAction;
+
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying
  * text and drawing touchable buttons, so that as the hero moves through the
  * level, the buttons and text can remain at the same place on the screen
  */
 public class Controls {
-    // TODO: switch from is-a to has-a for gesture stuff
-
     /**
      * This is for handling everything that gets drawn on the HUD, whether it is
      * pressable or not
      */
     public static class Control {
         /**
-         * Should we run code when this HudEntity is touched?
+         * Should we run code when this Control is touched?
          */
         boolean mIsTouchable;
-        
+
         /**
-         * For touchable HudEntities, this is the rectangle on the screen that
+         * Code to run when this Control is touched
+         */
+        GestureAction mGestureAction;
+
+        /**
+         * For touchable Controls, this is the rectangle on the screen that
          * is touchable
          */
         Rectangle mRange;
 
         /**
-         * What color should we use to draw text, if this HudEntity is a text
+         * What color should we use to draw text, if this Control is a text
          * entity?
          */
         Color mColor = new Color(0, 0, 0, 1);
@@ -72,7 +78,7 @@ public class Controls {
         boolean mIsActive = true;
 
         /**
-         * What image should we display, if this HudEntity has an image
+         * What image should we display, if this Control has an image
          * associated with it?
          */
         TextureRegion mImage;
@@ -88,9 +94,9 @@ public class Controls {
          * @param y
          *            The Y coordinate (in pixels) of the bottom left corner.
          * @param width
-         *            The width of the Hud Entity
+         *            The width of the Control
          * @param height
-         *            The height of the Hud Entity
+         *            The height of the Control
          */
         Control(String imgName, int x, int y, int width, int height) {
             // set up the image to display
@@ -122,53 +128,11 @@ public class Controls {
             mIsTouchable = false;
         }
 
-        // TODO: fix comments
-        
-        /**
-         * Code to run when the control is tapped
-         * 
-         * @param x
-         *            X Coordinate of the tap
-         * @param y
-         *            Y Coordinate of the tap
-         */
-        boolean onTap(Vector3 worldTouchCoord) {
-            return false;
-        }
-
-        /**
-         * Code to run when the control is tapped
-         * 
-         * @param x
-         *            X Coordinate of the tap
-         * @param y
-         *            Y Coordinate of the tap
-         */
-        boolean onPan(Vector3 worldTouchCoord) {
-            return false;
-        }
-
-        /**
-         * Run this when a control is down-pressed or up-pressed
-         * 
-         * @param isUp
-         *            True if it is an up-press
-         */
-        boolean toggle(boolean isUp, Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Action to perform when the toggle occurs
-         */
-        void toggleAction() {
-        }
-
         /**
          * This is the render method when we've got a valid TR. When we don't,
          * we're displaying text, which probably means we're also dynamically
          * updating the text to display on every render, so it makes sense to
-         * overload the render() call for those HUD entities
+         * overload the render() call for those Controls
          * 
          * @param sb
          *            The SpriteBatch to use to draw the image
@@ -334,6 +298,8 @@ public class Controls {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         Control c = new Control(red, green, blue) {
+            // TODO: we could have render() take a 'if text' route, and then
+            // just override a "maketext" method
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
@@ -730,7 +696,8 @@ public class Controls {
      */
     public static Control addPauseButton(int x, int y, int width, int height,
             String imgName) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
                 PauseScene.show();
@@ -766,8 +733,9 @@ public class Controls {
     public static Control addMoveButton(int x, int y, int width, int height,
             String imgName, final PhysicsSprite entity, final float dx,
             final float dy) {
-        Control c = new Control(imgName, x, y, width, height) {
-            boolean active = false;
+        final Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+
             /**
              * Run this when a control is down-pressed or up-pressed
              * 
@@ -785,32 +753,28 @@ public class Controls {
                     if (dy != 0)
                         v.y = 0;
                     entity.updateVelocity(v.x, v.y);
-                    active = false;
-                }
-                else {
-                    active = true;
+                    mHolding = false;
+                } else {
+                    mHolding = true;
                 }
                 return true;
             }
-
-            /**
-             * Action to perform when the toggle occurs
-             */
+        };
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
-            void toggleAction() {
-                if (active) {
+            public void go() {
+                if (c.mGestureAction.mHolding) {
                     Vector2 v = entity.mBody.getLinearVelocity();
                     if (dx != 0)
                         v.x = dx;
                     if (dy != 0)
                         v.y = dy;
                     entity.updateVelocity(v.x, v.y);
-
                 }
             }
-        };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
+        });
         return c;
     }
 
@@ -941,33 +905,32 @@ public class Controls {
     public static Control addTurboButton(int x, int y, int width, int height,
             String imgName, final int rateDownX, final int rateDownY,
             final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
-        Control c = new Control(imgName, x, y, width, height) {
-            boolean isActive = false;
+        final Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
-                isActive = !isUp;
-                Gdx.app.log("toggleAction", ""+isUp);
+                mHolding = !isUp;
                 return true;
-            }
-
-            @Override
-            void toggleAction() {
-                if (isActive) {
-                    Vector2 v = entity.mBody.getLinearVelocity();
-                    v.x = rateDownX;
-                    v.y = rateDownY;
-                    entity.updateVelocity(v.x, v.y);
-                }
-                else {
-                    Vector2 v = entity.mBody.getLinearVelocity();
-                    v.x = rateUpX;
-                    v.y = rateUpY;
-                    entity.updateVelocity(v.x, v.y);                    
-                }
             }
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action() {
+            @Override
+            public void go() {
+                if (c.mGestureAction.mHolding) {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    v.x = rateDownX;
+                    v.y = rateDownY;
+                    entity.updateVelocity(v.x, v.y);
+                } else {
+                    Vector2 v = entity.mBody.getLinearVelocity();
+                    v.x = rateUpX;
+                    v.y = rateUpY;
+                    entity.updateVelocity(v.x, v.y);
+                }
+            }
+        });
         return c;
     }
 
@@ -996,30 +959,30 @@ public class Controls {
     public static Control addDampenedMotionButton(int x, int y, int width,
             int height, String imgName, final float rateX, final float rateY,
             final float dampening, final PhysicsSprite entity) {
-        Control c = new Control(imgName, x, y, width, height) {
-            boolean isActive = false;
+        final Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean toggle(boolean isUp, Vector3 vv) {
-                isActive = !isUp;
+                mHolding = !isUp;
                 return true;
             }
-            
+        };
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
-            void toggleAction() {
-                if (isActive) {
+            public void go() {
+                if (c.mGestureAction.mHolding) {
                     Vector2 v = entity.mBody.getLinearVelocity();
                     v.x = rateX;
                     v.y = rateY;
                     entity.mBody.setLinearDamping(0);
                     entity.updateVelocity(v.x, v.y);
-                }
-                else {
-                    entity.mBody.setLinearDamping(dampening);    
+                } else {
+                    entity.mBody.setLinearDamping(dampening);
                 }
             }
-        };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
+        });
         return c;
     }
 
@@ -1043,12 +1006,13 @@ public class Controls {
      */
     public static Control addCrawlButton(int x, int y, int width, int height,
             String imgName, final Hero h) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean toggle(boolean upPress, Vector3 touchVec) {
                 if (upPress)
                     h.crawlOff();
-                else 
+                else
                     h.crawlOn();
                 return true;
             }
@@ -1077,7 +1041,8 @@ public class Controls {
      */
     public static Control addJumpButton(int x, int y, int width, int height,
             String imgName, final Hero h) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
                 h.jump();
@@ -1111,23 +1076,22 @@ public class Controls {
      */
     public static Control addThrowButton(int x, int y, int width, int height,
             String imgName, final Hero h, final int milliDelay) {
-        Control c = new Control(imgName, x, y, width, height) {
-            long mLastThrow;
-            boolean throwing = false;
-
+        final Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
-                throwing = !isUp;
-                mLastThrow = 0;
+                mHolding = !isUp;
                 return true;
             }
+        };
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action() {
+            long mLastThrow;
 
-            /**
-             * Action to perform when the toggle occurs
-             */
             @Override
-            void toggleAction() {
-                if (throwing) {
+            public void go() {
+                if (c.mGestureAction.mHolding) {
                     long now = System.nanoTime();
                     if (mLastThrow + milliDelay * 1000000 < now) {
                         mLastThrow = now;
@@ -1135,9 +1099,7 @@ public class Controls {
                     }
                 }
             }
-        };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
+        });
         return c;
     }
 
@@ -1161,7 +1123,8 @@ public class Controls {
      */
     public static Control addSingleThrowButton(int x, int y, int width,
             int height, String imgName, final Hero h) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
                 Level.sCurrent.mProjectilePool.throwFixed(h);
@@ -1199,39 +1162,23 @@ public class Controls {
      */
     public static Control addVectorThrowButton(int x, int y, int width,
             int height, String imgName, final Hero h, final long milliDelay) {
-        Control c = new Control(imgName, x, y, width, height) {
-            long mLastThrow;
-            Vector3 v = new Vector3();
-            boolean active = false;
-            
+        final Control c = new Control(imgName, x, y, width, height);
+        final Vector3 v = new Vector3();
+        c.mGestureAction = new GestureAction() {
+
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
-                    active = false;
-                }
-                else {
-                    active = true;
-                    mLastThrow = 0;
+                    mHolding = false;
+                } else {
+                    mHolding = true;
                     v.x = touchVec.x;
                     v.y = touchVec.y;
                     v.z = touchVec.z;
                 }
                 return true;
             }
-            
-            @Override
-            void toggleAction() {
-                if (active) {
-                    long now = System.nanoTime();
-                    if (mLastThrow + milliDelay * 1000000 < now) {
-                        mLastThrow = now;
-                        Level.sCurrent.mProjectilePool.throwAt(
-                                h.mBody.getPosition().x, h.mBody.getPosition().y,
-                                v.x, v.y, h);
-                    }
-                }
-            }
-            
+
             @Override
             boolean onPan(Vector3 touchVec) {
                 v.x = touchVec.x;
@@ -1241,9 +1188,25 @@ public class Controls {
             }
         };
         Level.sCurrent.mControls.add(c);
-        // on toggle, we start or stop throwing; on pan, we change throw direction
+        // on toggle, we start or stop throwing; on pan, we change throw
+        // direction
         Level.sCurrent.mToggleControls.add(c);
         Level.sCurrent.mPanControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action() {
+            long mLastThrow;
+            @Override
+            public void go() {
+                if (c.mGestureAction.mHolding) {
+                    long now = System.nanoTime();
+                    if (mLastThrow + milliDelay * 1000000 < now) {
+                        mLastThrow = now;
+                        Level.sCurrent.mProjectilePool.throwAt(
+                                h.mBody.getPosition().x,
+                                h.mBody.getPosition().y, v.x, v.y, h);
+                    }
+                }
+            }
+        });
         return c;
     }
 
@@ -1267,7 +1230,8 @@ public class Controls {
      */
     public static Control addVectorSingleThrowButton(int x, int y, int width,
             int height, String imgName, final Hero h) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
@@ -1300,7 +1264,8 @@ public class Controls {
      */
     public static Control addZoomOutButton(int x, int y, int width, int height,
             String imgName, final float maxZoom) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
@@ -1335,7 +1300,8 @@ public class Controls {
      */
     public static Control addZoomInButton(int x, int y, int width, int height,
             String imgName, final float minZoom) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Level.sCurrent.mGameCam.zoom;
@@ -1370,21 +1336,22 @@ public class Controls {
      */
     public static Control addRotateButton(int x, int y, int width, int height,
             String imgName, final float rate, final Hero h) {
-        Control c = new Control(imgName, x, y, width, height) {
-            boolean active = false;
+        final Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
-                active = !isUp;
+                mHolding = !isUp;
                 return true;
-            }
-            @Override
-            void toggleAction() {
-                if (active)
-                    h.increaseRotation(rate);
             }
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
+        Level.sCurrent.mRepeatEvents.add(new Action(){
+            @Override
+            public void go() {
+                if (c.mGestureAction.mHolding)
+                    h.increaseRotation(rate);
+            }});
         return c;
     }
 
@@ -1431,7 +1398,8 @@ public class Controls {
      */
     public static Control addTriggerControl(int x, int y, int width,
             int height, String imgName, final int id) {
-        Control c = new Control(imgName, x, y, width, height) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
                 Lol.sGame.onControlPressTrigger(id, Lol.sGame.mCurrLevelNum);

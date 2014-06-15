@@ -182,9 +182,7 @@ public class Chooser extends ScreenAdapter {
                 mCamera.unproject(mV.set(x, y, 0));
 
                 // DEBUG: display touch coordinates
-                if (Lol.sGame.mConfig.showDebugBoxes()) {
-                    Gdx.app.log("touch", "(" + mV.x + ", " + mV.y + ")");
-                }
+                Util.message("touch", "(" + mV.x + ", " + mV.y + ")");
                 
                 // handle 'back' presses
                 if (mBack.mRect.contains(mV.x, mV.y)) {

@@ -123,7 +123,7 @@ public class Media {
     static Sound getSound(String soundName) {
         Sound ret = sSounds.get(soundName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving sound '" + soundName + "'");
+            Util.message("ERROR", "Error retreiving sound '" + soundName + "'");
         return ret;
     }
 
@@ -137,7 +137,7 @@ public class Media {
     static Music getMusic(String musicName) {
         Music ret = sTunes.get(musicName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving music '" + musicName + "'");
+            Util.message("ERROR", "Error retreiving music '" + musicName + "'");
         return ret;
     }
 
@@ -152,7 +152,7 @@ public class Media {
     static TextureRegion[] getImage(String imgName) {
         TextureRegion[] ret = sImages.get(imgName);
         if (ret == null)
-            Gdx.app.log("ERROR", "Error retreiving image '" + imgName + "'");
+            Util.message("ERROR", "Error retreiving image '" + imgName + "'");
         return ret;
     }
 

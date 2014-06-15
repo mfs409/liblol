@@ -27,6 +27,7 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -144,6 +145,19 @@ public class Util {
                 bf.drawMultiLine(sb, message, x, y);
             }
         };
+    }
+
+    /**
+     * Instead of using Gdx.app.log directly, and potentially writing a lot of
+     * debug info in a production setting, we use this to only dump to the log
+     * when debug mode is on
+     * 
+     * @param tag The message tag
+     * @param text The message text
+     */
+    static void message(String tag, String text) {
+        if (Lol.sGame.mConfig.showDebugBoxes())
+            Gdx.app.log(tag, text);
     }
 
     /*

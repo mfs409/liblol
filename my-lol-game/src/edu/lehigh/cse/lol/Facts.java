@@ -76,7 +76,7 @@ public class Facts {
     public static int getLevelFact(String factName) {
         Integer i = mLevelFacts.get(factName);
         if (i == null) {
-            Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
+            Util.message("ERROR", "Error retreiving level fact '" + factName
                     + "'");
             return -1;
         }
@@ -107,7 +107,7 @@ public class Facts {
     public static int getSessionFact(String factName) {
         Integer i = mSessionFacts.get(factName);
         if (i == null) {
-            Gdx.app.log("ERROR", "Error retreiving level fact '" + factName
+            Util.message("ERROR", "Error retreiving level fact '" + factName
                     + "'");
             return -1;
         }

@@ -297,7 +297,7 @@ public class Svg {
                     }
                     // ignore errors...
                     catch (NumberFormatException nfs) {
-                        Gdx.app.log("SVG Error", "error parsing SVG file");
+                        Util.message("SVG Error", "error parsing SVG file");
                         nfs.printStackTrace();
                     }
                 }
@@ -378,7 +378,7 @@ public class Svg {
                     processD(p.getAttribute("d"));
             }
         } catch (IOException e) {
-            Gdx.app.log("SVG Error", "error parsing SVG file");
+            Util.message("SVG Error", "error parsing SVG file");
             e.printStackTrace();
         }
     }
