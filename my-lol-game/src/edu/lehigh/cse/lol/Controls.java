@@ -61,8 +61,8 @@ public class Controls {
         GestureAction mGestureAction;
 
         /**
-         * For touchable Controls, this is the rectangle on the screen that
-         * is touchable
+         * For touchable Controls, this is the rectangle on the screen that is
+         * touchable
          */
         Rectangle mRange;
 
@@ -78,8 +78,8 @@ public class Controls {
         boolean mIsActive = true;
 
         /**
-         * What image should we display, if this Control has an image
-         * associated with it?
+         * What image should we display, if this Control has an image associated
+         * with it?
          */
         TextureRegion mImage;
 
@@ -1180,7 +1180,7 @@ public class Controls {
             }
 
             @Override
-            boolean onPan(Vector3 touchVec) {
+            boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
                 v.x = touchVec.x;
                 v.y = touchVec.y;
                 v.z = touchVec.z;
@@ -1194,6 +1194,7 @@ public class Controls {
         Level.sCurrent.mPanControls.add(c);
         Level.sCurrent.mRepeatEvents.add(new Action() {
             long mLastThrow;
+
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -1346,12 +1347,13 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action(){
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding)
                     h.increaseRotation(rate);
-            }});
+            }
+        });
         return c;
     }
 
@@ -1529,6 +1531,111 @@ public class Controls {
             }
         };
         Level.sCurrent.mControls.add(c);
+        return c;
+    }
+
+    /**
+     * Allow panning to view more of the screen than is currently visible
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     */
+    static public Control addPanControl(int x, int y, int width, int height,
+            String imgName) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            /**
+             * Use this to restore the chase entity when the Pan stops
+             */
+            PhysicsSprite oldChaseEntity;
+
+            /**
+             * Handle a pan stop event by restoring the chase entity, if there
+             * was one
+             * 
+             * @param touchVec
+             *            The x/y/z coordinates of the touch
+             */
+            @Override
+            boolean onPanStop(Vector3 touchVec) {
+                Level.setCameraChase(oldChaseEntity);
+                oldChaseEntity = null;
+                return true;
+            }
+
+            /**
+             * run this when the screen is panned
+             * 
+             * TODO: use a smooth scroll to restore to the chaseEntity position after panstop
+             * 
+             * @param touchVec The x/y/z world coordinates of the touch
+             * 
+             * @param deltaX the change in X, in screen coordinates
+             * 
+             * @param deltaY the change in Y, in screen coordinates
+             */
+            @Override
+            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+                if (Level.sCurrent.mChaseEntity != null) {
+                    oldChaseEntity = Level.sCurrent.mChaseEntity;
+                    Level.sCurrent.mChaseEntity = null;
+                }
+                float x = Level.sCurrent.mGameCam.position.x - deltaX * .1f
+                        * Level.sCurrent.mGameCam.zoom;
+                float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f
+                        * Level.sCurrent.mGameCam.zoom;
+                // if x or y is too close to MAX,MAX, stick with max acceptable
+                // values
+                if (x > Level.sCurrent.mCamBoundX
+                        - Lol.sGame.mConfig.getScreenWidth()
+                        * Level.sCurrent.mGameCam.zoom
+                        / Physics.PIXEL_METER_RATIO / 2)
+                    x = Level.sCurrent.mCamBoundX
+                            - Lol.sGame.mConfig.getScreenWidth()
+                            * Level.sCurrent.mGameCam.zoom
+                            / Physics.PIXEL_METER_RATIO / 2;
+                if (y > Level.sCurrent.mCamBoundY
+                        - Lol.sGame.mConfig.getScreenHeight()
+                        * Level.sCurrent.mGameCam.zoom
+                        / Physics.PIXEL_METER_RATIO / 2)
+                    y = Level.sCurrent.mCamBoundY
+                            - Lol.sGame.mConfig.getScreenHeight()
+                            * Level.sCurrent.mGameCam.zoom
+                            / Physics.PIXEL_METER_RATIO / 2;
+
+                // if x or y is too close to 0,0, stick with minimum acceptable
+                // values
+                //
+                // NB: we do MAX before MIN, so that if we're zoomed out, we
+                // show extra space at the top instead of the bottom
+                if (x < Lol.sGame.mConfig.getScreenWidth()
+                        * Level.sCurrent.mGameCam.zoom
+                        / Physics.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mConfig.getScreenWidth()
+                            * Level.sCurrent.mGameCam.zoom
+                            / Physics.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mConfig.getScreenHeight()
+                        * Level.sCurrent.mGameCam.zoom
+                        / Physics.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mConfig.getScreenHeight()
+                            * Level.sCurrent.mGameCam.zoom
+                            / Physics.PIXEL_METER_RATIO / 2;
+
+                // update the camera position
+                Level.sCurrent.mGameCam.position.set(x, y, 0);
+                return true;
+            }
+        };
+        Level.sCurrent.mPanControls.add(c);
         return c;
     }
 }

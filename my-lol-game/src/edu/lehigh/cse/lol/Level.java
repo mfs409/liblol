@@ -129,9 +129,13 @@ public class Level extends ScreenAdapter {
          * Handle a pan event
          * 
          * @param touchVec
-         *            The x/y/z coordinates of the touch
+         *            The x/y/z world coordinates of the touch
+         * @param deltaX
+         *            the change in X scale, in screen coordinates
+         * @param deltaY
+         *            the change in Y scale, in screen coordinates
          */
-        boolean onPan(Vector3 touchVec) {
+        boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
             return false;
         }
 
@@ -316,7 +320,7 @@ public class Level extends ScreenAdapter {
                 if (c.mIsTouchable && c.mIsActive
                         && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPan(mTouchVec);
+                    c.mGestureAction.onPan(mTouchVec, deltaX, deltaY);
                     return true;
                 }
             }
@@ -324,7 +328,7 @@ public class Level extends ScreenAdapter {
             // did we pan the level?
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPan(mTouchVec);
+                return Level.sCurrent.mGestureResponder.onPan(mTouchVec, deltaX, deltaY);
             }
             return false;
         }
@@ -343,7 +347,18 @@ public class Level extends ScreenAdapter {
          */
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
-            // we only worry about stopping pan on the level
+            // check if we panStopped a control
+            mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Controls.Control c : mPanControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(x, y, 0));
+                    c.mGestureAction.onPanStop(mTouchVec);
+                    return true;
+                }
+            }
+
+            // handle panstop on level
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
                 return Level.sCurrent.mGestureResponder.onPanStop(mTouchVec);
@@ -408,7 +423,7 @@ public class Level extends ScreenAdapter {
             // touched physicssprite, and that's it
             if (mHitSprite != null)
                 return true;
-            
+
             // forward to the level's handler
             if (mGestureResponder != null)
                 if (mGestureResponder.onDown(mTouchVec))
@@ -569,7 +584,7 @@ public class Level extends ScreenAdapter {
     /**
      * This is the sprite that the camera chases
      */
-    private PhysicsSprite mChaseEntity;
+    PhysicsSprite mChaseEntity;
 
     /**
      * The maximum x value of the camera
@@ -1089,7 +1104,7 @@ public class Level extends ScreenAdapter {
              *            The Y coordinate of the touch
              */
             @Override
-            public boolean onPan(final Vector3 touchLoc) {
+            public boolean onPan(final Vector3 touchLoc, float deltaX, float deltaY) {
                 // check if enough milliseconds have passed
                 long now = System.nanoTime();
                 if (now < mLastTime + interval * 1000000) {

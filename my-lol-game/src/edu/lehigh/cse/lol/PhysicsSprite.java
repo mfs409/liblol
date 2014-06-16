@@ -1026,7 +1026,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     }
 
                     @Override
-                    public boolean onPan(Vector3 touchVec) {
+                    public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
                         return onDown(touchVec);
                     }
 
