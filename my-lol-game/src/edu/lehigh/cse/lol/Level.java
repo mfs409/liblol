@@ -43,7 +43,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -379,7 +378,6 @@ public class Level extends ScreenAdapter {
             return false;
         }
 
-        // Not used yet, but hopefully soon...
         @Override
         public boolean zoom(float initialDistance, float distance) {
             for (Controls.Control c : mZoomControls) {
@@ -388,13 +386,6 @@ public class Level extends ScreenAdapter {
                     return true;
                 }
             }
-            return false;
-        }
-
-        // Not used yet, but hopefully soon...
-        @Override
-        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-                Vector2 pointer1, Vector2 pointer2) {
             return false;
         }
     }
@@ -430,6 +421,16 @@ public class Level extends ScreenAdapter {
                 }
             }
 
+            // pass to pinch-zoom?
+            for (Controls.Control c : mZoomControls) {
+                if (c.mIsTouchable && c.mIsActive
+                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                    c.mGestureAction.onDown(mTouchVec);
+                    return true;
+                }
+            }
+            
             // check for sprite touch, by looking at gameCam coordinates... on
             // touch, hitSprite will change
             mHitSprite = null;

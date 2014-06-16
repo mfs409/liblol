@@ -1646,9 +1646,6 @@ public class Controls {
      * TODO: this isn't quite right, because we are treating zoom like a
      * touchable control, but it's really a whole-screen affair...
      * 
-     * TODO: re-zoom isn't quite right yet... it always resets to 1... do we
-     * need a touchDown event handler? :(
-     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1672,6 +1669,17 @@ public class Controls {
             float lastZoom = 1;
 
             /**
+             * Handle a down press (hopefully to turn it into a hold/release)
+             * 
+             * @param touchVec
+             *            The x/y/z coordinates of the touch
+             */
+            public boolean onDown(Vector3 touchVec) {
+                lastZoom = Level.sCurrent.mGameCam.zoom;
+                return true;
+            }
+            
+            /**
              * Handle a zoom-via-pinch event
              * 
              * @param initialDistance
@@ -1683,10 +1691,8 @@ public class Controls {
             public boolean zoom(float initialDistance, float distance) {
                 float ratio = initialDistance / distance;
                 float newZoom = lastZoom * ratio;
-                if (newZoom > minZoom && newZoom < maxZoom) {
+                if (newZoom > minZoom && newZoom < maxZoom) 
                     Level.sCurrent.mGameCam.zoom = newZoom;
-                    lastZoom = newZoom;
-                }
                 return false;
             }
         };
