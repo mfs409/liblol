@@ -39,6 +39,8 @@ package edu.lehigh.cse.lol;
 
 // TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
 
+// TODO: make panning return to the chasesprite more nicely
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

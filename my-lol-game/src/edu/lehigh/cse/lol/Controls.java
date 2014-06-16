@@ -1573,9 +1573,7 @@ public class Controls {
             }
 
             /**
-             * run this when the screen is panned
-             * 
-             * TODO: use a smooth scroll to restore to the chaseEntity position after panstop
+             * Run this when the screen is panned
              * 
              * @param touchVec The x/y/z world coordinates of the touch
              * 
