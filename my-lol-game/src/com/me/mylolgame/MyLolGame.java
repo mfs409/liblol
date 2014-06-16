@@ -3064,6 +3064,10 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(40, 30, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }
+        
+        /*
+         * Demonstrate panning to view more of the level
+         */
         else if (whichLevel == 84) {
             // set up a big screen
             Level.configure(4 * 48, 2 * 32);
@@ -3088,6 +3092,31 @@ public class MyLolGame extends Lol {
 
             // turn on panning
             Controls.addPanControl(0, 0, 480, 320, "");
+        }
+        
+        /*
+         * Demonstrate pinch-to-zoom
+         */
+        else if (whichLevel == 85) {
+            // set up a big screen
+            Level.configure(4 * 48, 2 * 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            PreScene.addText("The star rotates in\nthe direction of movement", 255, 255, 255,
+                    "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(29, 60, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // set up a hero who rotates in the direction of movement
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setRotationByDirection();
+            h.setMoveByTilting();
+            Level.setCameraChase(h);
+
+            // turn on pinch zoomg
+            Controls.addPinchZoomControl(0, 0, 480, 320, "", 8, .25f);
         }
     }
 

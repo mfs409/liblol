@@ -1575,11 +1575,14 @@ public class Controls {
             /**
              * Run this when the screen is panned
              * 
-             * @param touchVec The x/y/z world coordinates of the touch
+             * @param touchVec
+             *            The x/y/z world coordinates of the touch
              * 
-             * @param deltaX the change in X, in screen coordinates
+             * @param deltaX
+             *            the change in X, in screen coordinates
              * 
-             * @param deltaY the change in Y, in screen coordinates
+             * @param deltaY
+             *            the change in Y, in screen coordinates
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
@@ -1634,6 +1637,60 @@ public class Controls {
             }
         };
         Level.sCurrent.mPanControls.add(c);
+        return c;
+    }
+
+    /**
+     * Allow pinch-to-zoom
+     * 
+     * TODO: this isn't quite right, because we are treating zoom like a
+     * touchable control, but it's really a whole-screen affair...
+     * 
+     * TODO: re-zoom isn't quite right yet... it always resets to 1... do we
+     * need a touchDown event handler? :(
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     * @param maxZoom
+     *            The maximum zoom (out) factor. 8 is usually a good choice.
+     * @param minZoom
+     *            The minimum zoom (int) factor. .25f is usually a good choice.
+     */
+    static public Control addPinchZoomControl(int x, int y, int width,
+            int height, String imgName, final float maxZoom, final float minZoom) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            float lastZoom = 1;
+
+            /**
+             * Handle a zoom-via-pinch event
+             * 
+             * @param initialDistance
+             *            The distance between fingers when the pinch started
+             * @param distance
+             *            The current distance between fingers
+             */
+            @Override
+            public boolean zoom(float initialDistance, float distance) {
+                float ratio = initialDistance / distance;
+                float newZoom = lastZoom * ratio;
+                if (newZoom > minZoom && newZoom < maxZoom) {
+                    Level.sCurrent.mGameCam.zoom = newZoom;
+                    lastZoom = newZoom;
+                }
+                return false;
+            }
+        };
+        Level.sCurrent.mZoomControls.add(c);
         return c;
     }
 }

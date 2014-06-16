@@ -168,6 +168,18 @@ public class Level extends ScreenAdapter {
         boolean toggle(boolean isUp, Vector3 touchVec) {
             return false;
         }
+
+        /**
+         * Handle a zoom event
+         * 
+         * @param initialDistance
+         *            The distance between fingers when the pinch started
+         * @param distance
+         *            The current distance between fingers
+         */
+        boolean zoom(float initialDistance, float distance) {
+            return false;
+        }
     }
 
     /**
@@ -328,7 +340,8 @@ public class Level extends ScreenAdapter {
             // did we pan the level?
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPan(mTouchVec, deltaX, deltaY);
+                return Level.sCurrent.mGestureResponder.onPan(mTouchVec,
+                        deltaX, deltaY);
             }
             return false;
         }
@@ -369,6 +382,12 @@ public class Level extends ScreenAdapter {
         // Not used yet, but hopefully soon...
         @Override
         public boolean zoom(float initialDistance, float distance) {
+            for (Controls.Control c : mZoomControls) {
+                if (c.mIsTouchable && c.mIsActive) {
+                    c.mGestureAction.zoom(initialDistance, distance);
+                    return true;
+                }
+            }
             return false;
         }
 
@@ -544,6 +563,11 @@ public class Level extends ScreenAdapter {
      * Controls that have a pan event
      */
     ArrayList<Controls.Control> mPanControls = new ArrayList<Controls.Control>();
+
+    /**
+     * Controls that have a pinch zoom event
+     */
+    ArrayList<Controls.Control> mZoomControls = new ArrayList<Controls.Control>();
 
     /**
      * Toggle Controls
@@ -1104,7 +1128,8 @@ public class Level extends ScreenAdapter {
              *            The Y coordinate of the touch
              */
             @Override
-            public boolean onPan(final Vector3 touchLoc, float deltaX, float deltaY) {
+            public boolean onPan(final Vector3 touchLoc, float deltaX,
+                    float deltaY) {
                 // check if enough milliseconds have passed
                 long now = System.nanoTime();
                 if (now < mLastTime + interval * 1000000) {
