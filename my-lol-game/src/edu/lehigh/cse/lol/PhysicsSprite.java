@@ -741,6 +741,17 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /**
+     * Set a dampening factor to cause a moving body to slow down without
+     * colliding with anything
+     * 
+     * @param amount
+     *            The amount of daming to apply
+     */
+    public void setDamping(float amount) {
+        mBody.setLinearDamping(amount);
+    }
+
+    /**
      * Indicate that touching this object will cause some special code to run
      * 
      * @param id
@@ -1026,7 +1037,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     }
 
                     @Override
-                    public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+                    public boolean onPan(Vector3 touchVec, float deltaX,
+                            float deltaY) {
                         return onDown(touchVec);
                     }
 

@@ -51,6 +51,11 @@ public class Controls {
      */
     public static class Control {
         /**
+         * A custom value that the control can store
+         */
+        float mVal;
+
+        /**
          * Should we run code when this Control is touched?
          */
         boolean mIsTouchable;
@@ -1445,9 +1450,8 @@ public class Controls {
                 TextureRegion[] trs = Media.getImage(inactiveImgName);
                 if (trs != null) {
                     c.mImage = trs[0];
-                    Util.message("issue", c.mImage+"");
-                }
-                else {
+                    Util.message("issue", c.mImage + "");
+                } else {
                     c.mImage = null;
                     Util.message("issue", "null image");
                 }
@@ -1743,6 +1747,190 @@ public class Controls {
             }
         };
         Level.sCurrent.mZoomControls.add(c);
+        return c;
+    }
+
+    /**
+     * Add an image to the heads-up display that changes its clipping rate to
+     * seem to grow vertically, without stretching. Touching the image causes
+     * its scale (0-100) to be sent to a ControlPressEntity event
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     * @param id
+     *            The id to use when this generates an onControlPressTrigger
+     *            event
+     * @param entity
+     *            An entity that can be passed to the onControlPressTrigger
+     *            event
+     */
+    public static Control addVerticalBar(final int x, final int y,
+            final int width, final int height, String imgName, final int id,
+            final PhysicsSprite entity) {
+        final Control c = new Control(imgName, x, y, width, height) {
+            /**
+             * Track if the bar is growing (true) or shrinking (false)
+             */
+            boolean mGrow = true;
+
+            /**
+             * The raw width of the image
+             */
+            int mTrueWidth;
+
+            /**
+             * The raw height of the image
+             */
+            int mTrueHeight;
+
+            /**
+             * The x position of the image's bottom left corner
+             */
+            int mTrueX;
+
+            /**
+             * This control requires run-time configuration... we track if it's
+             * been done via this flag
+             */
+            boolean mConfigured = false;
+
+            /**
+             * This is the render method when we've got a valid TR. We're going
+             * to play with how we draw, so that we can clip and stretch the
+             * image
+             * 
+             * @param sb
+             *            The SpriteBatch to use to draw the image
+             */
+            @Override
+            void render(SpriteBatch sb) {
+                // one-time configuration
+                if (!mConfigured) {
+                    mTrueHeight = mImage.getRegionHeight();
+                    mTrueWidth = mImage.getRegionWidth();
+                    mTrueX = mImage.getRegionX();
+                    mConfigured = true;
+                }
+
+                if (!mIsActive)
+                    return;
+
+                // draw it
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2,
+                        width, (height * (int) mVal) / 100, 1, 1, 0, mTrueX, 0,
+                        mTrueWidth, (mTrueHeight * (int) mVal) / 100, false,
+                        true);
+
+                // don't keep showing anything if we've already received a
+                // touch...
+                if (!mIsTouchable)
+                    return;
+
+                // update size
+                if (mVal == 100)
+                    mGrow = false;
+                if (mVal == 0)
+                    mGrow = true;
+                mVal = mVal + (mGrow ? 1 : -1);
+            }
+        };
+        c.mGestureAction = new GestureAction() {
+            /**
+             * This is a touchable control...
+             */
+            @Override
+            boolean onTap(Vector3 v) {
+                if (!c.mIsActive || !c.mIsTouchable)
+                    return false;
+                Lol.sGame.onControlPressEntityTrigger(id, (int) c.mVal, entity,
+                        Lol.sGame.mCurrLevelNum);
+                return true;
+            }
+        };
+        // add to hud
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Add a rotating button that generates a ControlPressEntity event and
+     * passes the rotation to the handler.
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     * @param delta
+     *            Amount of rotation to add during each fraction of a second
+     * @param id
+     *            The id to use when this generates an onControlPressTrigger
+     *            event
+     * @param entity
+     *            An entity that can be passed to the onControlPressTrigger
+     *            event
+     */
+    public static Control addRotator(final int x, final int y, final int width,
+            final int height, String imgName, final float delta, final int id,
+            final PhysicsSprite entity) {
+        final Control c = new Control(imgName, x, y, width, height) {
+            /**
+             * This is the render method when we've got a valid TR. We're going
+             * to play with how we draw, so that we can clip and stretch the
+             * image
+             * 
+             * @param sb
+             *            The SpriteBatch to use to draw the image
+             */
+            @Override
+            void render(SpriteBatch sb) {
+                if (!mIsActive)
+                    return;
+                // draw it
+                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0,
+                        mRange.width, mRange.height, 1, 1, mVal);
+
+                // don't keep rotating if we've got a touch...
+                if (!mIsTouchable)
+                    return;
+
+                // update rotation
+                mVal += delta;
+                if (mVal == 360)
+                    mVal = 0;
+            }
+        };
+        c.mGestureAction = new GestureAction() {
+            /**
+             * This is a touchable control...
+             */
+            @Override
+            boolean onTap(Vector3 v) {
+                if (!c.mIsActive)
+                    return false;
+                Lol.sGame.onControlPressEntityTrigger(id, c.mVal, entity,
+                        Lol.sGame.mCurrLevelNum);
+                return true;
+            }
+        };
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
         return c;
     }
 }

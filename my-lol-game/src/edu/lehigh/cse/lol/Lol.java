@@ -461,6 +461,22 @@ public abstract class Lol extends Game {
     abstract public void onControlPressTrigger(int id, int whichLevel);
 
     /**
+     * When a Control is pressed, for which there is a ControlTrigger that takes
+     * an entity and value, this code will run.
+     * 
+     * @param id
+     *            The number assigned to this trigger
+     * @param val
+     *            The value that was sent by the control
+     * @param entity
+     *            The entity to modify via this control press
+     * @param whichLevel
+     *            The current level
+     */
+    abstract public void onControlPressEntityTrigger(int id, float val,
+            PhysicsSprite entity, int whichLevel);
+
+    /**
      * When a hero collides with a goodie or enemy, and it leads to the hero's
      * strength changing, we can opt to run this code.
      * 

@@ -27,6 +27,8 @@
 
 package com.me.mylolgame;
 
+import com.badlogic.gdx.math.Vector2;
+
 import edu.lehigh.cse.lol.Animation;
 import edu.lehigh.cse.lol.Background;
 import edu.lehigh.cse.lol.ChooserConfiguration;
@@ -3230,9 +3232,31 @@ public class MyLolGame extends Lol {
 
             // turn on pinch zoomg
             Controls.addPinchZoomControl(0, 0, 480, 320, "", 8, .25f);
-            
+
             // add a one-time trigger control
-            Controls.addOneTimeTriggerControl(40, 40, 40, 40, "blueball.png", "greenball.png", 992);
+            Controls.addOneTimeTriggerControl(40, 40, 40, 40, "blueball.png",
+                    "greenball.png", 992);
+        }
+
+        /*
+         * Demonstrate some advanced controls
+         */
+        else if (whichLevel == 86) {
+            // set up a screen
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(29, 30, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // set up a hero who rotates in the direction of movement
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            Level.setCameraChase(h);
+
+            // add some new controls
+            Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
+            Controls.addRotator(215, 135, 50, 50, "stars.png", 2, 72, h);
         }
     }
 
@@ -3682,11 +3706,43 @@ public class MyLolGame extends Lol {
                 Facts.putGameFact("game test",
                         1 + Facts.getGameFact("game test"));
             }
-        }
-        else if (whichLevel == 85) {
+        } else if (whichLevel == 85) {
             if (id == 992) {
-                PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
+                PauseScene.addText("you can only pause once...", 255, 255, 255,
+                        "arial.ttf", 20);
                 PauseScene.show();
+            }
+        }
+    }
+
+    /**
+     * If you use EntityTriggerControls, you must override this to define what
+     * happens when the control is pressed
+     * 
+     * @param id
+     *            The id that was assigned to the Control
+     * @param whichLevel
+     *            The current level
+     */
+    @Override
+    public void onControlPressEntityTrigger(int id, float val,
+            PhysicsSprite entity, int whichLevel) {
+        // for lack of anything better to do, we'll just pause the game
+        if (whichLevel == 86) {
+            if (id == 71) {
+                // vertical bar... make the entity move
+                int rotation = Facts.getLevelFact("rotation") / 100;
+                // create a unit vector
+                Vector2 v = new Vector2(1, 0);
+                v.scl(val);
+                v.rotate(rotation+90);
+                entity.setDamping(2f);
+                entity.setAbsoluteVelocity(v.x, v.y, false);
+            } else if (id == 72) {
+                // rotator... save the rotation and rotate the hero
+                entity.setRotation(val * (float)Math.PI / 180);
+                // multiply float val by 100 to preserve some decimal places
+                Facts.putLevelFact("rotation", (int)(100*val));
             }
         }
     }

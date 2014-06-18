@@ -155,7 +155,7 @@ public class Util {
      * @param tag The message tag
      * @param text The message text
      */
-    static void message(String tag, String text) {
+    public static void message(String tag, String text) {
         if (Lol.sGame.mConfig.showDebugBoxes())
             Gdx.app.log(tag, text);
     }
