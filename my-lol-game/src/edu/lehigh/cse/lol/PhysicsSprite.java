@@ -798,6 +798,25 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /**
+     * Indicate that when this entity stops, we should run custom code
+     * 
+     * @param triggerId
+     *            An id to attach to this event
+     */
+    public void setStopTrigger(final int triggerId) {
+        Level.sCurrent.mRepeatEvents.add(new Action(){
+            boolean moving = false;
+            @Override
+            public void go() {
+                Vector2 speed = mBody.getLinearVelocity();
+                if (!moving && (speed.x > 0 || speed.y > 0))
+                    moving = true;
+                else if (moving && speed.x == 0 && speed.y == 0)
+                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+            }});
+    }
+
+    /**
      * Returns the X velocity of of this entity
      * 
      * @return float Velocity in X dimension

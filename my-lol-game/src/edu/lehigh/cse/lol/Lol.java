@@ -371,6 +371,19 @@ public abstract class Lol extends Game {
     abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
 
     /**
+     * When an entity stops, if it has a StopTrigger attached to it, this code
+     * will run
+     * 
+     * @param id
+     *            The number assigned to the entity's TouchTrigger
+     * @param whichLevel
+     *            The current level
+     * @param o
+     *            The entity involved in the collision
+     */
+    abstract public void onStopTrigger(int id, int whichLevel, PhysicsSprite o);
+
+    /**
      * When the player requests a TimerTrigger, and the required time passes,
      * this code will run
      * 

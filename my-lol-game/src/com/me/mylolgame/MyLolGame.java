@@ -3253,10 +3253,13 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
+            // when the hero stops, we'll run code that turns the hero red
+            h.setStopTrigger(99);
 
-            // add some new controls
-            Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
+            // add some new controls for setting the rotation of the hero and
+            // making the hero move based on a speed
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, 72, h);
+            Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
         }
     }
 
@@ -3735,14 +3738,14 @@ public class MyLolGame extends Lol {
                 // create a unit vector
                 Vector2 v = new Vector2(1, 0);
                 v.scl(val);
-                v.rotate(rotation+90);
+                v.rotate(rotation + 90);
                 entity.setDamping(2f);
                 entity.setAbsoluteVelocity(v.x, v.y, false);
             } else if (id == 72) {
                 // rotator... save the rotation and rotate the hero
-                entity.setRotation(val * (float)Math.PI / 180);
+                entity.setRotation(val * (float) Math.PI / 180);
                 // multiply float val by 100 to preserve some decimal places
-                Facts.putLevelFact("rotation", (int)(100*val));
+                Facts.putLevelFact("rotation", (int) (100 * val));
             }
         }
     }
@@ -3767,6 +3770,18 @@ public class MyLolGame extends Lol {
             // set the hero's image index to (s-1), i.e., one of the indices in
             // the range 0..7, depending on strength
             h.setImage("colorstar.png", s - 1);
+        }
+    }
+
+    /**
+     * When an entity stops moving, this code runs
+     */
+    @Override
+    public void onStopTrigger(int id, int whichLevel, PhysicsSprite o) {
+        if (whichLevel == 86) {
+            if (id == 99) {
+                o.setImage("red.png", 0);
+            }
         }
     }
 
