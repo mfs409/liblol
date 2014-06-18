@@ -1414,6 +1414,52 @@ public class Controls {
     }
 
     /**
+     * Add a button to the heads-up display that runs custom code via an
+     * onControlPress trigger, but the button only works once
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param activeImgName
+     *            The name of the image to display before the button is pressed.
+     *            Use "" for an invisible button
+     * @params inactiveImgName The name of the image to display after the button
+     *         is pressed.
+     * @param id
+     *            An id to use for the trigger event
+     */
+    public static Control addOneTimeTriggerControl(int x, int y, int width,
+            int height, String activeImgName, final String inactiveImgName,
+            final int id) {
+        final Control c = new Control(activeImgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            boolean onTap(Vector3 vv) {
+                Lol.sGame.onControlPressTrigger(id, Lol.sGame.mCurrLevelNum);
+                c.mIsTouchable = false;
+                TextureRegion[] trs = Media.getImage(inactiveImgName);
+                if (trs != null) {
+                    c.mImage = trs[0];
+                    Util.message("issue", c.mImage+"");
+                }
+                else {
+                    c.mImage = null;
+                    Util.message("issue", "null image");
+                }
+                return true;
+            }
+        };
+        Level.sCurrent.mControls.add(c);
+        Level.sCurrent.mTapControls.add(c);
+        return c;
+    }
+
+    /**
      * Display text corresponding to a fact saved for the current level
      * 
      * @param key
@@ -1678,7 +1724,7 @@ public class Controls {
                 lastZoom = Level.sCurrent.mGameCam.zoom;
                 return true;
             }
-            
+
             /**
              * Handle a zoom-via-pinch event
              * 
@@ -1691,7 +1737,7 @@ public class Controls {
             public boolean zoom(float initialDistance, float distance) {
                 float ratio = initialDistance / distance;
                 float newZoom = lastZoom * ratio;
-                if (newZoom > minZoom && newZoom < maxZoom) 
+                if (newZoom > minZoom && newZoom < maxZoom)
                     Level.sCurrent.mGameCam.zoom = newZoom;
                 return false;
             }
