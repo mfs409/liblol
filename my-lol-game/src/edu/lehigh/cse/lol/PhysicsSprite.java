@@ -662,6 +662,14 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /**
+     * Use this to find the current rotation of an entity
+     * @return The rotation, in radians
+     */
+    public float getRotation() {
+        return mBody.getAngle() % (2 * (float)Math.PI);
+    }
+
+    /**
      * Make an entity disappear
      * 
      * @param quiet

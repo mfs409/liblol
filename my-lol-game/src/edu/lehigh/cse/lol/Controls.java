@@ -1496,7 +1496,7 @@ public class Controls {
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key)
-                        + " " + suffix, bf, sb);
+                        + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
