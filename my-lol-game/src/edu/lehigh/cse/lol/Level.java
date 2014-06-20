@@ -893,6 +893,17 @@ public class Level extends ScreenAdapter {
      */
     @Override
     public void render(float delta) {
+        // in debug mode, any click will report the coordinates of the click...
+        // this is very useful when trying to adjust screen coordinates
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
+            if (Gdx.input.justTouched()) {
+                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Util.message("Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Util.message("World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+
+            }
+        }
         // Make sure the music is playing... Note that we start music before the
         // PreScene shows
         playMusic();
