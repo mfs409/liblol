@@ -753,12 +753,20 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * colliding with anything
      * 
      * @param amount
-     *            The amount of daming to apply
+     *            The amount of damping to apply
      */
     public void setDamping(float amount) {
         mBody.setLinearDamping(amount);
     }
 
+    /**
+     * Set a dampening factor to cause a spinning body to decrease its rate of spin
+     * @param amount The amount of damping to apply
+     */
+    public void setAngularDamping(float amount) {
+    	mBody.setAngularDamping(amount);
+    }
+    
     /**
      * Indicate that touching this object will cause some special code to run
      * 
@@ -816,11 +824,13 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             boolean moving = false;
             @Override
             public void go() {
-                Vector2 speed = mBody.getLinearVelocity();
-                if (!moving && (speed.x > 0 || speed.y > 0))
+            	Vector2 speed = mBody.getLinearVelocity();
+                if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
-                else if (moving && speed.x == 0 && speed.y == 0)
+                else if (moving && speed.x == 0 && speed.y == 0) {
                     Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    moving = false;
+                }
             }});
     }
 
