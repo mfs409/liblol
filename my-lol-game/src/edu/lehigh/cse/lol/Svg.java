@@ -43,12 +43,12 @@ import com.badlogic.gdx.utils.XmlReader.Element;
 import java.io.IOException;
 
 /**
- * SVG allows the game designer to load SVG line drawings into a game. SVG line
- * drawings can be made in Inkscape. In LOL, we do not use line drawings to the
- * full extend. We only use them to define a set of invisible lines for a
- * simple, stationary obstacle. You should draw a picture on top of your line
- * drawing, so that the player knows that there is a physics entity on the
- * screen.
+ * The Svg infrastructure allows the game designer to load SVG line drawings
+ * into a game. SVG line drawings can be made in Inkscape. In LOL, we do not use
+ * line drawings to the full extend. We only use them to define a set of
+ * invisible lines for a simple, stationary obstacle. You should draw a picture
+ * on top of your line drawing, so that the player knows that there is a physics
+ * entity on the screen.
  */
 public class Svg {
     /**
@@ -83,7 +83,7 @@ public class Svg {
     private final Vector2 mFirst = new Vector2(0, 0);
 
     /**
-     * X coordinate of the current point being drawn
+     * Coordinate of the current point being drawn
      */
     private final Vector2 mCurr = new Vector2(0, 0);
 
@@ -108,6 +108,12 @@ public class Svg {
      */
     private int mMode = 0;
 
+    /**
+	 * This is used for defining the lines that we draw. Making it a member
+	 * keeps us from creating as much garbage.
+	 */
+    private BodyDef mBodyDef = new BodyDef();
+    
     /**
      * When we draw a line, we must make it a PhysicsSprite or else hero
      * collisions with the SVG won't enable it to re-jump. This class is a very
@@ -154,10 +160,13 @@ public class Svg {
         mFixture.friction = friction;
 
         // specify transpose and stretch information
-        mUserStretch.x = stretchX / Physics.PIXEL_METER_RATIO;
-        mUserStretch.y = stretchY / Physics.PIXEL_METER_RATIO;
+        mUserStretch.x = stretchX;
+        mUserStretch.y = stretchY;
         mUserTransform.x = xposeX;
         mUserTransform.y = xposeY;
+    
+        // we will draw static bodies, not dynamic ones
+        mBodyDef.type = BodyType.StaticBody;
     }
 
     /**
@@ -222,10 +231,7 @@ public class Svg {
             // end of path, relative mode
             else if (s.equals("z")) {
                 // draw a connecting line to complete the shape
-                addLine((mUserStretch.x * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
-                        (mUserStretch.y * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
-                        (mUserStretch.x * (mFirst.x + mSvgTranslate.x) + mUserTransform.x),
-                        (mUserStretch.y * (mFirst.y + mSvgTranslate.y) + mUserTransform.y));
+            	addLine(mLast, mFirst);
             }
             // beginning of a (set of) line definitions, relative mode
             else if (s.equals("l")) {
@@ -277,16 +283,9 @@ public class Svg {
                             if (absolute)
                                 mCurr.y = val;
                             else
-                                mCurr.y = mLast.y - val;
+                                mCurr.y = mLast.y + val;
                             // draw the line
-                            addLine((mUserStretch.x
-                                    * (mLast.x + mSvgTranslate.x) + mUserTransform.x),
-                                    (mUserStretch.y
-                                            * (mLast.y + mSvgTranslate.y) + mUserTransform.y),
-                                    (mUserStretch.x
-                                            * (mCurr.x + mSvgTranslate.x) + mUserTransform.x),
-                                    (mUserStretch.y
-                                            * (mCurr.y + mSvgTranslate.y) + mUserTransform.y));
+                        	addLine(mLast, mCurr);
                             mLast.x = mCurr.x;
                             mLast.y = mCurr.y;
                             // if we are in curve mode, reinitialize the
@@ -306,6 +305,54 @@ public class Svg {
     }
 
     /**
+	 * This is a convenience method to separate the transformation and stretch
+	 * logic from the logic for actually drawing lines
+	 * 
+	 * There are two challenges. The first is that an SVG deals with pixels,
+	 * whereas we like to draw physics sprites in meters. This matters because
+	 * user translations will be in meters, but SVG points and SVG translations
+	 * will be in pixels.
+	 * 
+	 * The second challenge is that SVGs appear to have a "down is plus" Y axis,
+	 * whereas our system has a "down is minus" Y axis. To get around this, we
+	 * reflect every Y coordinate over the horizontal line that intersects with
+	 * the first point drawn.
+	 * 
+	 * @param start
+	 *            The point from which the line originates
+	 * @param stop
+	 *            The point to which the line extends
+	 */
+    private void addLine(Vector2 start, Vector2 stop) {
+    	// Get the pixel coordinates of the SVG line
+    	float x1 = start.x, x2 = stop.x, y1 = start.y, y2= stop.y;
+    	// apply svg translation, since it is in pixels
+    	x1 += mSvgTranslate.x;
+    	x2 += mSvgTranslate.x;
+    	y1 += mSvgTranslate.y;
+    	y2 += mSvgTranslate.y;
+    	// reflect through mFirst.y
+    	y1 = mFirst.y - y1;
+    	y2 = mFirst.y - y2;
+    	// convert the coords to meters
+    	x1 /= Physics.PIXEL_METER_RATIO;
+    	y1 /= Physics.PIXEL_METER_RATIO;
+    	x2 /= Physics.PIXEL_METER_RATIO;
+    	y2 /= Physics.PIXEL_METER_RATIO;
+    	// multiply the coords by the stretch
+    	x1 *= mUserStretch.x;
+    	y1 *= mUserStretch.y;
+    	x2 *= mUserStretch.x;
+    	y2 *= mUserStretch.y;
+    	// add in the user transform in meters
+    	x1 += mUserTransform.x;
+    	y1 += mUserTransform.y;
+    	x2 += mUserTransform.x;
+    	y2 += mUserTransform.y;
+    	drawLine(x1, y1, x2, y2);
+    }
+    
+    /**
      * Internal method used by the SVG parser to draw a line. This is a bit of a
      * hack, in that we create a simple Box2d Edge, and then we make an
      * invisible PhysicsSprite that we connect to the Edge, so that LOL
@@ -321,18 +368,15 @@ public class Svg {
      * @param y2
      *            Y coordinate of second endpoint
      */
-    private void addLine(float x1, float y1, float x2, float y2) {
-        // Create a static body for an Edge shape
-        BodyDef bd = new BodyDef();
-        bd.type = BodyType.StaticBody;
+    private void drawLine(float x1, float y1, float x2, float y2) {
         // compute center and length
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
         float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
                 * (y1 - y2));
-        bd.position.set(centerX, centerY);
-        bd.angle = 0;
-        Body b = Level.sCurrent.mWorld.createBody(bd);
+        mBodyDef.position.set(centerX, centerY);
+        mBodyDef.angle = 0;
+        Body b = Level.sCurrent.mWorld.createBody(mBodyDef);
         EdgeShape line = new EdgeShape();
 
         // set the line position as an offset from center, rotate it, and
