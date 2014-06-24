@@ -52,7 +52,7 @@ public class ChooserConfig implements ChooserConfiguration {
     /**
      * This is the space, in pixels, between the top of the screen and the first
      * row of buttons
-     * 
+     *
      * @return
      */
     @Override
@@ -297,7 +297,7 @@ public class ChooserConfig implements ChooserConfiguration {
     public int getNextButtonHeight() {
         return 40;
     }
-    
+
     /**
      * Return true if pressing 'play' should result in the level-chooser screen
      * showing; return false if pressing 'play' should immediately start level
@@ -305,6 +305,6 @@ public class ChooserConfig implements ChooserConfiguration {
      */
     @Override
     public boolean showChooser() {
-        return false;
+        return true;
     }
 }
