@@ -132,13 +132,14 @@ public abstract class Lol extends Game {
     }
 
     /**
-     * Use this to load the level-chooser screen. Note that when a game has only
-     * one level, we'll never draw the level-picker screen, thereby mimicing the
-     * behavior of "infinite" games.
+     * Use this to load the level-chooser screen. Note that when the chooser is
+     * disabled, we jump straight to level 1.
      */
     void doChooser() {
-        if (mConfig.getNumLevels() == 1) {
-            if (mCurrLevelNum == 1)
+        // if chooser disabled, then we either called this from splash, or from
+        // a game level
+        if (!mChooserConfig.showChooser()) {
+            if (mMode == Modes.PLAY)
                 doSplash();
             else
                 doPlayLevel(1);

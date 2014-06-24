@@ -297,4 +297,14 @@ public class ChooserConfig implements ChooserConfiguration {
     public int getNextButtonHeight() {
         return 40;
     }
+    
+    /**
+     * Return true if pressing 'play' should result in the level-chooser screen
+     * showing; return false if pressing 'play' should immediately start level
+     * one.
+     */
+    @Override
+    public boolean showChooser() {
+        return false;
+    }
 }

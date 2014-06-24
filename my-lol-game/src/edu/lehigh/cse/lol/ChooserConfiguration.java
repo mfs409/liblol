@@ -205,4 +205,11 @@ public interface ChooserConfiguration {
      * The height of the "next chooser screen" button
      */
     int getNextButtonHeight();
+    
+    /**
+     * Return true if pressing 'play' should result in the level-chooser screen
+     * showing; return false if pressing 'play' should immediately start level
+     * one.
+     */
+    boolean showChooser();
 }
