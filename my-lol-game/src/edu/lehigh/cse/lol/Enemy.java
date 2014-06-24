@@ -283,7 +283,7 @@ public class Enemy extends PhysicsSprite {
      * from the game
      */
     public void setDisappearOnTouch() {
-        mGestureResponder = new GestureAction(){
+        mGestureResponder = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(100);

@@ -1536,8 +1536,8 @@ public class Controls {
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y,
-                        prefix + "" + Facts.getSessionFact(key) + " " + suffix,
-                        bf, sb);
+                        prefix + "" + Facts.getSessionFact(key) + suffix, bf,
+                        sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1577,7 +1577,7 @@ public class Controls {
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key)
-                        + " " + suffix, bf, sb);
+                        + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);

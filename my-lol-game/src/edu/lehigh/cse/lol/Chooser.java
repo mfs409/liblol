@@ -162,10 +162,10 @@ public class Chooser extends ScreenAdapter {
         int totalLevels = Lol.sGame.mConfig.getNumLevels();
 
         // Subscribe to touch gestures
-        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter(){    
+        Gdx.input.setInputProcessor(new GestureDetector(new GestureAdapter() {
             /**
-             * Handle a screen tap by figuring out what button was pressed, and then
-             * taking action
+             * Handle a screen tap by figuring out what button was pressed, and
+             * then taking action
              * 
              * @param x
              *            X coordinate of the tap
@@ -183,23 +183,24 @@ public class Chooser extends ScreenAdapter {
 
                 // DEBUG: display touch coordinates
                 Util.message("touch", "(" + mV.x + ", " + mV.y + ")");
-                
+
                 // handle 'back' presses
                 if (mBack.mRect.contains(mV.x, mV.y)) {
                     Lol.sGame.handleBack();
                     return true;
                 }
-               
+
                 // handle 'previous screen' requests
                 if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
                     Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
                     Lol.sGame.doChooser();
                     return true;
                 }
-                
+
                 // handle 'next screen' requests
                 if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
-                    // special case for when we came straight from the Splash screen
+                    // special case for when we came straight from the Splash
+                    // screen
                     if (Lol.sGame.mCurrLevelNum == 0)
                         Lol.sGame.mCurrLevelNum = 1;
                     Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
@@ -221,7 +222,7 @@ public class Chooser extends ScreenAdapter {
                 }
                 return false;
             }
-}));
+        }));
 
         // set up the background image and music
         mImage = Media.getImage(cc.getBackgroundName());

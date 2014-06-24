@@ -109,11 +109,11 @@ public class Svg {
     private int mMode = 0;
 
     /**
-	 * This is used for defining the lines that we draw. Making it a member
-	 * keeps us from creating as much garbage.
-	 */
+     * This is used for defining the lines that we draw. Making it a member
+     * keeps us from creating as much garbage.
+     */
     private BodyDef mBodyDef = new BodyDef();
-    
+
     /**
      * When we draw a line, we must make it a PhysicsSprite or else hero
      * collisions with the SVG won't enable it to re-jump. This class is a very
@@ -164,7 +164,7 @@ public class Svg {
         mUserStretch.y = stretchY;
         mUserTransform.x = xposeX;
         mUserTransform.y = xposeY;
-    
+
         // we will draw static bodies, not dynamic ones
         mBodyDef.type = BodyType.StaticBody;
     }
@@ -231,7 +231,7 @@ public class Svg {
             // end of path, relative mode
             else if (s.equals("z")) {
                 // draw a connecting line to complete the shape
-            	addLine(mLast, mFirst);
+                addLine(mLast, mFirst);
             }
             // beginning of a (set of) line definitions, relative mode
             else if (s.equals("l")) {
@@ -285,7 +285,7 @@ public class Svg {
                             else
                                 mCurr.y = mLast.y + val;
                             // draw the line
-                        	addLine(mLast, mCurr);
+                            addLine(mLast, mCurr);
                             mLast.x = mCurr.x;
                             mLast.y = mCurr.y;
                             // if we are in curve mode, reinitialize the
@@ -305,53 +305,53 @@ public class Svg {
     }
 
     /**
-	 * This is a convenience method to separate the transformation and stretch
-	 * logic from the logic for actually drawing lines
-	 * 
-	 * There are two challenges. The first is that an SVG deals with pixels,
-	 * whereas we like to draw physics sprites in meters. This matters because
-	 * user translations will be in meters, but SVG points and SVG translations
-	 * will be in pixels.
-	 * 
-	 * The second challenge is that SVGs appear to have a "down is plus" Y axis,
-	 * whereas our system has a "down is minus" Y axis. To get around this, we
-	 * reflect every Y coordinate over the horizontal line that intersects with
-	 * the first point drawn.
-	 * 
-	 * @param start
-	 *            The point from which the line originates
-	 * @param stop
-	 *            The point to which the line extends
-	 */
+     * This is a convenience method to separate the transformation and stretch
+     * logic from the logic for actually drawing lines
+     * 
+     * There are two challenges. The first is that an SVG deals with pixels,
+     * whereas we like to draw physics sprites in meters. This matters because
+     * user translations will be in meters, but SVG points and SVG translations
+     * will be in pixels.
+     * 
+     * The second challenge is that SVGs appear to have a "down is plus" Y axis,
+     * whereas our system has a "down is minus" Y axis. To get around this, we
+     * reflect every Y coordinate over the horizontal line that intersects with
+     * the first point drawn.
+     * 
+     * @param start
+     *            The point from which the line originates
+     * @param stop
+     *            The point to which the line extends
+     */
     private void addLine(Vector2 start, Vector2 stop) {
-    	// Get the pixel coordinates of the SVG line
-    	float x1 = start.x, x2 = stop.x, y1 = start.y, y2= stop.y;
-    	// apply svg translation, since it is in pixels
-    	x1 += mSvgTranslate.x;
-    	x2 += mSvgTranslate.x;
-    	y1 += mSvgTranslate.y;
-    	y2 += mSvgTranslate.y;
-    	// reflect through mFirst.y
-    	y1 = mFirst.y - y1;
-    	y2 = mFirst.y - y2;
-    	// convert the coords to meters
-    	x1 /= Physics.PIXEL_METER_RATIO;
-    	y1 /= Physics.PIXEL_METER_RATIO;
-    	x2 /= Physics.PIXEL_METER_RATIO;
-    	y2 /= Physics.PIXEL_METER_RATIO;
-    	// multiply the coords by the stretch
-    	x1 *= mUserStretch.x;
-    	y1 *= mUserStretch.y;
-    	x2 *= mUserStretch.x;
-    	y2 *= mUserStretch.y;
-    	// add in the user transform in meters
-    	x1 += mUserTransform.x;
-    	y1 += mUserTransform.y;
-    	x2 += mUserTransform.x;
-    	y2 += mUserTransform.y;
-    	drawLine(x1, y1, x2, y2);
+        // Get the pixel coordinates of the SVG line
+        float x1 = start.x, x2 = stop.x, y1 = start.y, y2 = stop.y;
+        // apply svg translation, since it is in pixels
+        x1 += mSvgTranslate.x;
+        x2 += mSvgTranslate.x;
+        y1 += mSvgTranslate.y;
+        y2 += mSvgTranslate.y;
+        // reflect through mFirst.y
+        y1 = mFirst.y - y1;
+        y2 = mFirst.y - y2;
+        // convert the coords to meters
+        x1 /= Physics.PIXEL_METER_RATIO;
+        y1 /= Physics.PIXEL_METER_RATIO;
+        x2 /= Physics.PIXEL_METER_RATIO;
+        y2 /= Physics.PIXEL_METER_RATIO;
+        // multiply the coords by the stretch
+        x1 *= mUserStretch.x;
+        y1 *= mUserStretch.y;
+        x2 *= mUserStretch.x;
+        y2 *= mUserStretch.y;
+        // add in the user transform in meters
+        x1 += mUserTransform.x;
+        y1 += mUserTransform.y;
+        x2 += mUserTransform.x;
+        y2 += mUserTransform.y;
+        drawLine(x1, y1, x2, y2);
     }
-    
+
     /**
      * Internal method used by the SVG parser to draw a line. This is a bit of a
      * hack, in that we create a simple Box2d Edge, and then we make an

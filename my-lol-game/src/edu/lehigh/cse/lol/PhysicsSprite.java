@@ -45,6 +45,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -162,6 +163,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * joints in a common parent class)
      */
     WeldJoint mWJoint;
+
+    /**
+     * We allow the programmer to manually weld objects together. For it to
+     * work, we need a local WeldJoint
+     */
+    WeldJoint mExplicitWeldJoint;
 
     /**
      * When we have PhysicsSprites stuck together, we might want to set a brief
@@ -663,10 +670,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Use this to find the current rotation of an entity
+     * 
      * @return The rotation, in radians
      */
     public float getRotation() {
-        return mBody.getAngle() % (2 * (float)Math.PI);
+        return mBody.getAngle() % (2 * (float) Math.PI);
     }
 
     /**
@@ -760,13 +768,16 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /**
-     * Set a dampening factor to cause a spinning body to decrease its rate of spin
-     * @param amount The amount of damping to apply
+     * Set a dampening factor to cause a spinning body to decrease its rate of
+     * spin
+     * 
+     * @param amount
+     *            The amount of damping to apply
      */
     public void setAngularDamping(float amount) {
-    	mBody.setAngularDamping(amount);
+        mBody.setAngularDamping(amount);
     }
-    
+
     /**
      * Indicate that touching this object will cause some special code to run
      * 
@@ -820,18 +831,21 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            An id to attach to this event
      */
     public void setStopTrigger(final int triggerId) {
-        Level.sCurrent.mRepeatEvents.add(new Action(){
+        Level.sCurrent.mRepeatEvents.add(new Action() {
             boolean moving = false;
+
             @Override
             public void go() {
-            	Vector2 speed = mBody.getLinearVelocity();
+                Vector2 speed = mBody.getLinearVelocity();
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum,
+                            PhysicsSprite.this);
                     moving = false;
                 }
-            }});
+            }
+        });
     }
 
     /**
@@ -1551,5 +1565,38 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         mRevJointDef.lowerAngle = lower;
         mRevJointDef.enableLimit = true;
         mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+    }
+
+    /**
+     * Create a weld joint between this entity and some other entity, to force
+     * the entities to stick together.
+     * 
+     * @param other
+     *            The entity that will be fused to this entity
+     * @param otherX
+     *            The X coordinate (relative to the center of the entity) where
+     *            the joint fuses to the other entity
+     * @param otherY
+     *            The Y coordinate (relative to the center of the entity) where
+     *            the joint fuses to the other entity
+     * @param localX
+     *            The X coordinate (relative to the center of the entity) where
+     *            the joint fuses to this entity
+     * @param localY
+     *            The Y coordinate (relative to the center of the entity) where
+     *            the joint fuses to this entity
+     * @param angle
+     *            The angle between the entities
+     */
+    public void setWeldJoint(PhysicsSprite other, float otherX, float otherY,
+            float localX, float localY, float angle) {
+        WeldJointDef w = new WeldJointDef();
+        w.bodyA = mBody;
+        w.bodyB = other.mBody;
+        w.localAnchorA.set(localX, localY);
+        w.localAnchorB.set(otherX, otherY);
+        w.referenceAngle = angle;
+        w.collideConnected = false;
+        mExplicitWeldJoint = (WeldJoint) Level.sCurrent.mWorld.createJoint(w);
     }
 }

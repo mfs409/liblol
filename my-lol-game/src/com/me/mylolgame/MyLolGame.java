@@ -3261,6 +3261,27 @@ public class MyLolGame extends Lol {
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, 72, h);
             Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
         }
+        
+        /*
+         * Weld joints
+         */
+        else if (whichLevel == 87) {
+            // set up a screen
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Tilt.enable(10, 10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            Destination.makeAsCircle(29, 30, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // set up a hero and fuse an obstacle to it
+            Hero h = Hero.makeAsCircle(4, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Obstacle o = Obstacle.makeAsCircle(1, 1, 1, 1, "blueball.png");
+            o.setCanFall();
+            h.setWeldJoint(o, 3, 0, 0, 0, 45);
+        }
     }
 
     /**
