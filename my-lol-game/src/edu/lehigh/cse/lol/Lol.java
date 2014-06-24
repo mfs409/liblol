@@ -139,10 +139,12 @@ public abstract class Lol extends Game {
         // if chooser disabled, then we either called this from splash, or from
         // a game level
         if (!mChooserConfig.showChooser()) {
-            if (mMode == Modes.PLAY)
+            if (mMode == Modes.PLAY) {
                 doSplash();
-            else
-                doPlayLevel(1);
+            }
+            else {
+                doPlayLevel(mCurrLevelNum == 0 ? 1 : mCurrLevelNum);
+            }
             return;
         }
         mCurrHelpNum = 0;
@@ -304,6 +306,13 @@ public abstract class Lol extends Game {
      * PUBLIC INTERFACE
      */
 
+    /**
+     * 
+     */
+    public void setNextLevel(int nextLevel) {
+        mCurrLevelNum = nextLevel;
+    }
+    
     /**
      * The programmer configures the game by implementing this method, and
      * returning a LolConfiguration object
