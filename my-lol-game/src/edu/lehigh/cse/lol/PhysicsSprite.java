@@ -1599,4 +1599,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         w.collideConnected = false;
         mExplicitWeldJoint = (WeldJoint) Level.sCurrent.mWorld.createJoint(w);
     }
+
+    /**
+     * In some cases, we need to force an entity to have a kinematic body type
+     */
+    public void setKinematic() {
+        if (mBody.getType() == BodyType.StaticBody)
+            mBody.setType(BodyType.KinematicBody);
+    }
 }
