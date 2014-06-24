@@ -1604,7 +1604,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * In some cases, we need to force an entity to have a kinematic body type
      */
     public void setKinematic() {
-        if (mBody.getType() == BodyType.StaticBody)
+        if (mBody.getType() != BodyType.KinematicBody)
             mBody.setType(BodyType.KinematicBody);
     }
 }
