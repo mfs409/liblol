@@ -315,7 +315,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
-            mTouchSound.play();
+            mTouchSound.play(Facts.getGameFact("volume"));
         if (mGestureResponder != null) {
             mGestureResponder.onTap(touchVec);
             return true;
@@ -691,7 +691,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
         // play a sound when we remove this thing?
         if (mDisappearSound != null && !quiet)
-            mDisappearSound.play();
+            mDisappearSound.play(Facts.getGameFact("volume"));
 
         // This is a bit slimy... we draw an obstacle here, so that we have a
         // clean hook into the animation system, but we disable its physics

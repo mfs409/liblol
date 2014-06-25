@@ -106,7 +106,7 @@ public class Obstacle extends PhysicsSprite {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play();
+        mCollideSound.play(Facts.getGameFact("volume"));
     }
 
     /**

@@ -80,6 +80,8 @@ public class MyLolGame extends Lol {
         Media.registerImage("fade.png");
         Media.registerImage("greyball.png");
         Media.registerImage("leveltile.png");
+        Media.registerImage("audio_on.png");
+        Media.registerImage("audio_off.png");
 
         // load the image we show on the main screen
         Media.registerImage("splash.png");
@@ -118,12 +120,13 @@ public class MyLolGame extends Lol {
     @Override
     public void configureSplash() {
         // Describe the regions of the screen that correspond to the play, help,
-        // and quit buttons. If you are having trouble figuring these out, note
-        // that clicking on the splash screen will display xy coordinates in the
-        // Console to help
+        // quit, and mute buttons. If you are having trouble figuring these out,
+        // note that clicking on the splash screen will display xy coordinates
+        // in the Console to help
         Splash.drawPlayButton(192, 91, 93, 52);
         Splash.drawHelpButton(48, 93, 80, 40);
         Splash.drawQuitButton(363, 93, 69, 39);
+        Splash.drawMuteButton(455, 0, 25, 26, "audio_on.png", "audio_off.png");
 
         // Provide a name for the background image
         Splash.setBackground("splash.png");
@@ -3261,7 +3264,7 @@ public class MyLolGame extends Lol {
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, 72, h);
             Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
         }
-        
+
         /*
          * Weld joints
          */

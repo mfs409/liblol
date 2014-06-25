@@ -270,6 +270,10 @@ public abstract class Lol extends Game {
 
         // show the splash screen
         doSplash();
+        
+        // configure the volume
+        if (Facts.getGameFact("volume") == -1)
+            Facts.putGameFact("volume", 1);
     }
 
     /**

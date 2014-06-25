@@ -136,13 +136,13 @@ public class PostScene {
         // don't compute it until right here... also, play music
         if (win) {
             if (mWinSound != null)
-                mWinSound.play();
+                mWinSound.play(Facts.getGameFact("volume"));
             mWinSprites.add(Util.makeText(mWinText, 255, 255, 255,
                     Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
-                mLoseSound.play();
+                mLoseSound.play(Facts.getGameFact("volume"));
             mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255,
                     Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));

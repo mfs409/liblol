@@ -77,6 +77,11 @@ public class Splash extends ScreenAdapter {
     private Rectangle mQuit;
 
     /**
+     * A rectangle for tracking the mute button
+     */
+    private Rectangle mMute;
+
+    /**
      * For handling touches
      */
     private final Vector3 mV = new Vector3();
@@ -92,9 +97,24 @@ public class Splash extends ScreenAdapter {
     private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
     /**
-     * The image to display
+     * The background image to display
      */
     private TextureRegion[] mImage;
+
+    /**
+     * The image for muting
+     */
+    private TextureRegion[] mMuteImg;
+
+    /**
+     * The image for un-muting
+     */
+    private TextureRegion[] mUnMuteImg;
+
+    /**
+     * The current mute image
+     */
+    private TextureRegion mCurrMuteImg;
 
     /**
      * The music to play
@@ -157,6 +177,9 @@ public class Splash extends ScreenAdapter {
                     stopMusic();
                     Lol.sGame.doHelpLevel(1);
                 }
+                if (mMute != null && mMute.contains(mV.x, mV.y)) {
+                    toggleMute();
+                }
                 // We handled the tap, so return true...
                 return true;
             }
@@ -193,6 +216,24 @@ public class Splash extends ScreenAdapter {
         }
     }
 
+    /**
+     * Switch between muting and not muting
+     */
+    void toggleMute() {
+        // volume is either 1 or 0
+        if (Facts.getGameFact("volume") == 1) {
+            // set volume to 0, set image to 'unmute'
+            Facts.putGameFact("volume", 0);
+            mCurrMuteImg = mUnMuteImg != null ? mUnMuteImg[0] : null;
+        } else {
+            // set volume to 1, set image to 'mute'
+            Facts.putGameFact("volume", 1);
+            mCurrMuteImg = mMuteImg != null ? mMuteImg[0] : null;
+        }
+        // update all music
+        Media.resetMusicVolume();
+    }
+
     /*
      * SCREEN OVERRIDES
      */
@@ -223,6 +264,10 @@ public class Splash extends ScreenAdapter {
             mSpriteBatch.draw(mImage[0], 0, 0,
                     Lol.sGame.mConfig.getScreenWidth(),
                     Lol.sGame.mConfig.getScreenHeight());
+        // draw the mute button?
+        if (mCurrMuteImg != null)
+            mSpriteBatch.draw(mCurrMuteImg, mMute.x, mMute.y, mMute.width,
+                    mMute.height);
         mSpriteBatch.end();
 
         // DEBUG: show where the buttons' boxes are
@@ -236,6 +281,8 @@ public class Splash extends ScreenAdapter {
                 mShapeRender.rect(mHelp.x, mHelp.y, mHelp.width, mHelp.height);
             if (mQuit != null)
                 mShapeRender.rect(mQuit.x, mQuit.y, mQuit.width, mQuit.height);
+            if (mMute != null)
+                mShapeRender.rect(mMute.x, mMute.y, mMute.width, mMute.height);
             mShapeRender.end();
         }
     }
@@ -339,5 +386,31 @@ public class Splash extends ScreenAdapter {
      */
     public static void setBackground(String imgName) {
         sCurrent.mImage = Media.getImage(imgName);
+    }
+
+    /**
+     * Draw a mute button on the screen, for controlling whether sounds play or
+     * not
+     * 
+     * @param x
+     *            X coordinate of bottom left corner
+     * @param y
+     *            Y coordinate of bottom left corner
+     * @param width
+     *            Width of the button
+     * @param height
+     *            Height of the button
+     * @param onImg
+     *            Image to display when the music is on
+     * @param offImg
+     *            Image to display when the music is off
+     */
+    public static void drawMuteButton(int x, int y, int width, int height,
+            String onImg, String offImg) {
+        sCurrent.mMute = new Rectangle(x, y, width, height);
+        sCurrent.mMuteImg = Media.getImage(offImg);
+        sCurrent.mUnMuteImg = Media.getImage(onImg);
+        sCurrent.toggleMute();
+        sCurrent.toggleMute();
     }
 }

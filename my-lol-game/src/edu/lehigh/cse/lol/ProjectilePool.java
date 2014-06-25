@@ -204,7 +204,7 @@ public class ProjectilePool {
         b.updateVelocity(mVelocity.x, mVelocity.y);
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play();
+            mThrowSound.play(Facts.getGameFact("volume"));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }
@@ -281,7 +281,7 @@ public class ProjectilePool {
         // show the projectile, play sound, and animate the hero
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play();
+            mThrowSound.play(Facts.getGameFact("volume"));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }

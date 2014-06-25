@@ -156,6 +156,16 @@ public class Media {
         return ret;
     }
 
+    /**
+     * On a volume change event, this will change the volume of all music
+     * objects
+     */
+    static void resetMusicVolume() {
+        for (Music m : sTunes.values()) {
+            m.setVolume(Facts.getGameFact("volume"));
+        }
+    }
+    
     /*
      * PUBLIC INTERFACE
      */
@@ -231,6 +241,7 @@ public class Media {
     static public void registerMusic(String musicName, boolean loop) {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
+        m.setVolume(Facts.getGameFact("volume"));
         sTunes.put(musicName, m);
     }
 

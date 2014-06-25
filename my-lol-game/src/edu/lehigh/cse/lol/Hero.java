@@ -180,7 +180,7 @@ public class Hero extends PhysicsSprite {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play();
+            mJumpSound.play(Facts.getGameFact("volume"));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.nanoTime() + 10000000;
     }
@@ -281,7 +281,7 @@ public class Hero extends PhysicsSprite {
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play();
+                d.mArrivalSound.play(Facts.getGameFact("volume"));
             Level.sCurrent.mScore.onDestinationArrive();
         }
     }
