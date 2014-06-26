@@ -430,7 +430,7 @@ public class Level extends ScreenAdapter {
                     return true;
                 }
             }
-            
+
             // check for sprite touch, by looking at gameCam coordinates... on
             // touch, hitSprite will change
             mHitSprite = null;
@@ -897,10 +897,14 @@ public class Level extends ScreenAdapter {
         // this is very useful when trying to adjust screen coordinates
         if (Lol.sGame.mConfig.showDebugBoxes()) {
             if (Gdx.input.justTouched()) {
-                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Util.message("Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
-                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Util.message("World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(),
+                        Gdx.input.getY(), 0));
+                Util.message("Screen Coordinates", mTouchVec.x + ", "
+                        + mTouchVec.y);
+                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(),
+                        Gdx.input.getY(), 0));
+                Util.message("World Coordinates", mTouchVec.x + ", "
+                        + mTouchVec.y);
 
             }
         }
@@ -1169,5 +1173,16 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
+    }
+
+    /**
+     * Manually set the zoom level of the game
+     * 
+     * @param zoom
+     *            The amount of zoom (1 is no zoom, >1 zooms out)
+     */
+    public static void setZoom(float zoom) {
+        Level.sCurrent.mGameCam.zoom = zoom;
+        Level.sCurrent.mBgCam.zoom = zoom;
     }
 }
