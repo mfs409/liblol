@@ -1071,24 +1071,24 @@ public class Level extends ScreenAdapter {
 
     /**
      * Specify that you want some code to run after a fixed amount of time
-     * passes, and that it should return a specific enemy to the programmer's
-     * code
+     * passes, and that it should return a specific PhysicsSprite to the
+     * programmer's code
      * 
      * @param timerId
      *            A (possibly) unique identifier for this timer
      * @param howLong
      *            How long to wait before the timer code runs
-     * @param enemy
-     *            The enemy that should be passed along
+     * @param ps
+     *            The entity that should be passed along
      */
-    public static void setEnemyTimerTrigger(final int timerId, float howLong,
-            final Enemy enemy) {
+    public static void setTimerTrigger(final int timerId, float howLong,
+            final PhysicsSprite ps) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onEnemyTimerTrigger(timerId,
-                            Lol.sGame.mCurrLevelNum, enemy);
+                    Lol.sGame.onTimerTrigger(timerId,
+                            Lol.sGame.mCurrLevelNum, ps);
             }
         }, howLong);
     }

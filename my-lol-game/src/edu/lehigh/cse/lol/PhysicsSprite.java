@@ -1370,12 +1370,24 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * 
      * @param h
      *            The hero who should throw a projectile when this is touched
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param velocityX
+     *            The X velocity of the projectile when it is thrown
+     * @param velocityY
+     *            The Y velocity of the projectile when it is thrown
      */
-    public void setTouchToThrow(final Hero h) {
+    public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Level.sCurrent.mProjectilePool.throwFixed(h);
+                Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };

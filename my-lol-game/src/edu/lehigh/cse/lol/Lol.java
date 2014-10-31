@@ -409,17 +409,18 @@ public abstract class Lol extends Game {
     abstract public void onTimerTrigger(int id, int whichLevel);
 
     /**
-     * When a player requests an EnemyTimerTrigger, and the required time
-     * passes, and the enemy is still visible, this code will run
+     * When a player requests an TimerTrigger that has an attached
+     * PhysicsSprite, and the required time passes, and the PhysicsSprite is
+     * still visible, this code will run
      * 
      * @param id
-     *            The number assigned to the EnemyTimerTrigger
+     *            The number assigned to the TimerTrigger
      * @param whichLevel
      *            The current level
-     * @param e
-     *            The enemy to which the timer was attached
+     * @param ps
+     *            The PhysicsSprite to which the timer was attached
      */
-    abstract public void onEnemyTimerTrigger(int id, int whichLevel, Enemy e);
+    abstract public void onTimerTrigger(int id, int whichLevel, PhysicsSprite ps);
 
     /**
      * When an enemy is defeated, this code will run if the enemy has an

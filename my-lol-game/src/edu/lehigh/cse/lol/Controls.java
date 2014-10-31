@@ -1078,9 +1078,22 @@ public class Controls {
      * @param milliDelay
      *            A delay between throws, so that holding doesn't lead to too
      *            many throws at once
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param velocityX
+     *            The X velocity of the projectile when it is thrown
+     * @param velocityY
+     *            The Y velocity of the projectile when it is thrown
      */
     public static Control addThrowButton(int x, int y, int width, int height,
-            String imgName, final Hero h, final int milliDelay) {
+            String imgName, final Hero h, final int milliDelay, final float offsetX,
+            final float offsetY, final float velocityX, final float velocityY) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1100,7 +1113,7 @@ public class Controls {
                     long now = System.nanoTime();
                     if (mLastThrow + milliDelay * 1000000 < now) {
                         mLastThrow = now;
-                        Level.sCurrent.mProjectilePool.throwFixed(h);
+                        Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                     }
                 }
             }
@@ -1125,14 +1138,28 @@ public class Controls {
      *            button
      * @param h
      *            The hero who should throw the projectile
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param velocityX
+     *            The X velocity of the projectile when it is thrown
+     * @param velocityY
+     *            The Y velocity of the projectile when it is thrown
+
      */
     public static Control addSingleThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h) {
+            int height, String imgName, final Hero h, final float offsetX, 
+            final float offsetY, final float velocityX, final float velocityY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwFixed(h);
+                Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
@@ -1164,9 +1191,18 @@ public class Controls {
      * @param milliDelay
      *            A delay between throws, so that holding doesn't lead to too
      *            many throws at once
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
      */
     public static Control addVectorThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h, final long milliDelay) {
+            int height, String imgName, final Hero h, final long milliDelay,
+            final float offsetX, final float offsetY) {
         final Control c = new Control(imgName, x, y, width, height);
         final Vector3 v = new Vector3();
         c.mGestureAction = new GestureAction() {
@@ -1208,7 +1244,8 @@ public class Controls {
                         mLastThrow = now;
                         Level.sCurrent.mProjectilePool.throwAt(
                                 h.mBody.getPosition().x,
-                                h.mBody.getPosition().y, v.x, v.y, h);
+                                h.mBody.getPosition().y, v.x, v.y, h,
+                                offsetX, offsetY);
                     }
                 }
             }
@@ -1233,15 +1270,25 @@ public class Controls {
      *            button
      * @param h
      *            The hero who should throw the projectile
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
      */
     public static Control addVectorSingleThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h) {
+            int height, String imgName, final Hero h,
+            final float offsetX, final float offsetY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, touchVec.x, touchVec.y, h);
+                        h.mBody.getPosition().y, touchVec.x, touchVec.y, h, 
+                        offsetX, offsetY);
                 return true;
             }
         };

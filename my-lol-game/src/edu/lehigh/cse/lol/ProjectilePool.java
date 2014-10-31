@@ -28,7 +28,6 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.math.Vector2;
 
 /**
  * The ProjectilePool is the public interface to Projectiles. The programmer
@@ -36,18 +35,6 @@ import com.badlogic.gdx.math.Vector2;
  * that can then be thrown by a hero.
  */
 public class ProjectilePool {
-    /**
-     * The velocity of a projectile when it is thrown. When we use the "vector"
-     * throw mechanism, this is ignored.
-     */
-    private final Vector2 mVelocity = new Vector2();
-
-    /**
-     * When throwing, we start from the bottom left corner of the thrower, and
-     * then add this to determine the initial x and y position of the projectile
-     */
-    private final Vector2 mOffset = new Vector2();
-
     /**
      * A dampening factor to apply to projectiles thrown via "vector" mechanism
      */
@@ -123,18 +110,6 @@ public class ProjectilePool {
      *            height of a projectile
      * @param imgName
      *            image to use for projectiles
-     * @param velocityX
-     *            x velocity of projectiles
-     * @param velocityY
-     *            y velocity of projectiles
-     * @param offsetX
-     *            specifies the x distance between the bottom left of the
-     *            projectile and the bottom left of the hero throwing the
-     *            projectile
-     * @param offsetY
-     *            specifies the y distance between the bottom left of the
-     *            projectile and the bottom left of the hero throwing the
-     *            projectile
      * @param strength
      *            specifies the amount of damage that a projectile does to an
      *            enemy
@@ -144,7 +119,6 @@ public class ProjectilePool {
      *            Should projectiles have an underlying circle or box shape?
      */
     ProjectilePool(int size, float width, float height, String imgName,
-            float velocityX, float velocityY, float offsetX, float offsetY,
             int strength, int zIndex, boolean isCircle) {
         // set up the pool
         mPool = new Projectile[size];
@@ -160,8 +134,6 @@ public class ProjectilePool {
         mNextIndex = 0;
         mPoolSize = size;
         // record vars that describe how the projectile behaves
-        mVelocity.set(velocityX, velocityY);
-        mOffset.set(offsetX, offsetY);
         mThrowSound = null;
         mProjectileDisappearSound = null;
         mProjectilesRemaining = -1;
@@ -174,8 +146,20 @@ public class ProjectilePool {
      * 
      * @param h
      *            The hero who is performing the throw
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param velocityX
+     *            The X velocity of the projectile when it is thrown
+     * @param velocityY
+     *            The Y velocity of the projectile when it is thrown
      */
-    void throwFixed(Hero h) {
+    void throwFixed(Hero h, float offsetX, float offsetY, float velocityX, float velocityY) {
         // have we reached our limit?
         if (mProjectilesRemaining == 0)
             return;
@@ -195,13 +179,13 @@ public class ProjectilePool {
 
         // calculate offset for starting position of projectile, put it on
         // screen
-        b.mRangeFrom.x = h.getXPosition() + mOffset.x;
-        b.mRangeFrom.y = h.getYPosition() + mOffset.y;
+        b.mRangeFrom.x = h.getXPosition() + offsetX;
+        b.mRangeFrom.y = h.getYPosition() + offsetY;
         b.mBody.setActive(true);
         b.mBody.setTransform(b.mRangeFrom, 0);
 
         // give the projectile velocity, show it, play sound, animate the hero
-        b.updateVelocity(mVelocity.x, mVelocity.y);
+        b.updateVelocity(velocityX, velocityY);
         b.mVisible = true;
         if (mThrowSound != null)
             mThrowSound.play(Facts.getGameFact("volume"));
@@ -223,8 +207,16 @@ public class ProjectilePool {
      *            y coordinate of the point at which to throw
      * @param h
      *            The hero who is performing the throw
+     * @param offsetX
+     *            specifies the x distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
+     * @param offsetY
+     *            specifies the y distance between the bottom left of the
+     *            projectile and the bottom left of the hero throwing the
+     *            projectile
      */
-    void throwAt(float heroX, float heroY, float toX, float toY, Hero h) {
+    void throwAt(float heroX, float heroY, float toX, float toY, Hero h, float offsetX, float offsetY) {
         // have we reached our limit?
         if (mProjectilesRemaining == 0)
             return;
@@ -244,16 +236,16 @@ public class ProjectilePool {
 
         // calculate offset for starting position of projectile, put it on
         // screen
-        b.mRangeFrom.x = heroX + mOffset.x;
-        b.mRangeFrom.y = heroY + mOffset.y;
+        b.mRangeFrom.x = heroX + offsetX;
+        b.mRangeFrom.y = heroY + offsetY;
         b.mBody.setActive(true);
         b.mBody.setTransform(b.mRangeFrom, 0);
 
         // give the projectile velocity
         if (mEnableFixedVectorVelocity) {
             // compute a unit vector
-            float dX = toX - heroX - mOffset.x;
-            float dY = toY - heroY - mOffset.y;
+            float dX = toX - heroX - offsetX;
+            float dY = toY - heroY - offsetY;
             float hypotenuse = (float) Math.sqrt(dX * dX + dY * dY);
             float tmpX = dX / hypotenuse;
             float tmpY = dY / hypotenuse;
@@ -262,8 +254,8 @@ public class ProjectilePool {
             tmpY *= mFixedVectorVelocity;
             b.updateVelocity(tmpX, tmpY);
         } else {
-            float dX = toX - heroX - mOffset.x;
-            float dY = toY - heroY - mOffset.y;
+            float dX = toX - heroX - offsetX;
+            float dY = toY - heroY - offsetY;
             // compute absolute vector, multiply by dampening factor
             float tmpX = dX * mVectorDamp;
             float tmpY = dY * mVectorDamp;
@@ -272,8 +264,8 @@ public class ProjectilePool {
 
         // rotate the projectile
         if (mRotateVectorThrow) {
-            double angle = Math.atan2(toY - heroY - mOffset.y, toX - heroX
-                    - mOffset.x)
+            double angle = Math.atan2(toY - heroY - offsetY, toX - heroX
+                    - offsetX)
                     - Math.atan2(-1, 0);
             b.mBody.setTransform(b.mBody.getPosition(), (float) angle);
         }
@@ -383,18 +375,6 @@ public class ProjectilePool {
      *            height of a projectile
      * @param imgName
      *            image to use for projectiles
-     * @param velocityX
-     *            x velocity of projectiles
-     * @param velocityY
-     *            y velocity of projectiles
-     * @param offsetX
-     *            specifies the x distance between the bottom left of the
-     *            projectile and the bottom left of the hero throwing the
-     *            projectile
-     * @param offsetY
-     *            specifies the y distance between the bottom left of the
-     *            projectile and the bottom left of the hero throwing the
-     *            projectile
      * @param strength
      *            specifies the amount of damage that a projectile does to an
      *            enemy
@@ -404,11 +384,9 @@ public class ProjectilePool {
      *            Should projectiles have an underlying circle or box shape?
      */
     public static void configure(int size, float width, float height,
-            String imgName, float velocityX, float velocityY, float offsetX,
-            float offsetY, int strength, int zIndex, boolean isCircle) {
+            String imgName, int strength, int zIndex, boolean isCircle) {
         Level.sCurrent.mProjectilePool = new ProjectilePool(size, width,
-                height, imgName, velocityX, velocityY, offsetX, offsetY,
-                strength, zIndex, isCircle);
+                height, imgName, strength, zIndex, isCircle);
     }
 
     /**

@@ -1623,14 +1623,14 @@ public class MyLolGame extends Lol {
             // projectiles
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
-            h.setTouchToThrow(h);
+            // when the hero is touched, a projectile will
+            // fly straight up, out of the top of the hero.
+            h.setTouchToThrow(h, 1.5f, 3, 0, 10);
             h.setMoveByTilting();
 
             // configure a pool of projectiles. We say that there can be no more
-            // than 3 projectiles in flight at any time, that the projectiles
-            // fly straight up, and that they fly out of the top of the hero.
-            ProjectilePool.configure(3, 1, 1, "greyball.png", 0, 10, 1.5f, 3,
-                    1, 0, true);
+            // than 3 projectiles in flight at any time.
+            ProjectilePool.configure(3, 1, 1, "greyball.png", 1, 0, true);
         }
 
         /*
@@ -1657,14 +1657,13 @@ public class MyLolGame extends Lol {
 
             // set up a pool of projectiles, but now once the projectiles travel
             // more than 25 meters, they disappear
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 3, 1.5f,
-                    1, 0, true);
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
             ProjectilePool.setRange(25);
 
             // add a button for throwing projectiles. Notice that this butotn
             // keeps throwing as long as it is held, but we've capped it to
             // throw no more than once per 100 milliseconds
-            Controls.addThrowButton(0, 0, 480, 320, "", h, 100);
+            Controls.addThrowButton(0, 0, 480, 320, "", h, 100, 3, 1.5f, 30, 0);
             Level.setCameraChase(h);
         }
 
@@ -1686,8 +1685,7 @@ public class MyLolGame extends Lol {
 
             // set up our projectiles... note that now projectiles each do 2
             // units of damage
-            ProjectilePool.configure(3, .4f, .1f, "greyball.png", 0, 10, .2f,
-                    -.5f, 2, 0, true);
+            ProjectilePool.configure(3, .4f, .1f, "greyball.png", 2, 0, true);
 
             // draw a few enemies... note that they have different amounts of
             // damage, so it takes different numbers of projectiles to defeat
@@ -1705,7 +1703,8 @@ public class MyLolGame extends Lol {
             Score.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
-            Controls.addSingleThrowButton(0, 0, 480, 320, "", h);
+            Controls.addSingleThrowButton(0, 0, 480, 320, "", h, .2f,
+                    -.5f, 0, 10);
         }
 
         /*
@@ -1730,12 +1729,12 @@ public class MyLolGame extends Lol {
 
             // draw a button for throwing projectiles in many directions...
             // again, note that if we hold the button, it keeps throwing
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 0, 0, 0);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
             // goes, so we multiply the velocity by .8 to slow it down a bit
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 0, 0, 1,
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 1,
                     0, true);
             ProjectilePool.setProjectileVectorDampeningFactor(.8f);
             ProjectilePool.setRange(30);
@@ -1765,7 +1764,7 @@ public class MyLolGame extends Lol {
 
             // we use a "single throw" button so that holding doesn't throw more
             // projectiles.
-            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h);
+            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h, 1.5f, 1.5f);
 
             // we turn on projectile gravity, and then we enable collisions for
             // projectiles. This means that when a projectile collides with
@@ -1773,8 +1772,7 @@ public class MyLolGame extends Lol {
             // thing is moveable. This is a step toward our goal of being able
             // to bounce a basketball off of a backboard, but it's not quite
             // enough...
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 1.5f,
-                    1.5f, 1, 0, true);
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
             ProjectilePool.setProjectileVectorDampeningFactor(.8f);
             ProjectilePool.setRange(40);
             ProjectilePool.setProjectileGravityOn();
@@ -1830,13 +1828,12 @@ public class MyLolGame extends Lol {
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
-            h.setTouchToThrow(h);
+            h.setTouchToThrow(h, 2, -.5f, 0, 10);
             h.setMoveByTilting();
 
             // configure a pool of projectiles... now we have a sound that plays
             // when a projectile is thrown, and another for when it disappears
-            ProjectilePool.configure(100, .5f, .5f, "greyball.png", 0, 10, 2,
-                    -.5f, 1, 0, true);
+            ProjectilePool.configure(100, .5f, .5f, "greyball.png", 1, 0, true);
             ProjectilePool.setThrowSound("fwapfwap.ogg");
             ProjectilePool.setProjectileDisappearSound("slowdown.ogg");
 
@@ -1845,9 +1842,10 @@ public class MyLolGame extends Lol {
             e.setDisappearSound("lowpitch.ogg");
 
             // request that in 2 seconds, if the enemy is still visible,
-            // onEnemyTimerTrigger() will run, with id == 2. Be sure to look at
-            // the onEnemyTimerTrigger code (below) for more information.
-            Level.setEnemyTimerTrigger(2, 2, e);
+            // onTimerTrigger() will run, with id == 2. Be sure to look at
+            // the onTimerTrigger code (below) for more information. Note that
+            // there are two versions of the function, and this uses the second!
+            Level.setTimerTrigger(2, 2, e);
 
             // win by defeating enemies
             Score.setVictoryEnemyCount();
@@ -1884,7 +1882,7 @@ public class MyLolGame extends Lol {
             // to lots of enemies eventually, and there's no way to defeat them
             // in this level! Again, be sure to look at onEnemyTimerTrigger()
             // below.
-            Level.setEnemyTimerTrigger(6, 2, e);
+            Level.setTimerTrigger(6, 2, e);
         }
 
         /*
@@ -1981,7 +1979,7 @@ public class MyLolGame extends Lol {
             // set up our hero
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "colorstar.png");
             h.setPhysics(1, 0, 0.6f);
-            h.setTouchToThrow(h);
+            h.setTouchToThrow(h, 0, -.5f, 0, 10);
             h.setMoveByTilting();
 
             // set up an animation when the hero throws:
@@ -1990,8 +1988,7 @@ public class MyLolGame extends Lol {
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
-            ProjectilePool.configure(100, 1, 1, "flystar.png", 0, 10, 0, -.5f,
-                    1, 0, true);
+            ProjectilePool.configure(100, 1, 1, "flystar.png", 1, 0, true);
             ProjectilePool.setAnimation(new Animation("flystar.png", 100, true,
                     0, 1));
         }
@@ -2267,11 +2264,10 @@ public class MyLolGame extends Lol {
             // touched
             Obstacle o = Obstacle.makeAsCircle(43, 27, 5, 5, "purpleball.png");
             o.setCollisionEffect(false);
-            o.setTouchToThrow(h);
+            o.setTouchToThrow(h, 1.5f, 1.5f, 0, 15);
 
             // set up our projectiles
-            ProjectilePool.configure(3, 1, 1, "colorstar.png", 0, 15, 1.5f,
-                    1.5f, 2, 0, true);
+            ProjectilePool.configure(3, 1, 1, "colorstar.png", 2, 0, true);
             ProjectilePool.setNumberOfProjectiles(20);
             // there are only 20... throw them carefully
 
@@ -2538,9 +2534,8 @@ public class MyLolGame extends Lol {
 
             // enable throwing projectiles, so that we can test enemy triggers
             // again
-            h.setTouchToThrow(h);
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 4, 2, 1,
-                    0, true);
+            h.setTouchToThrow(h, 4, 2, 30, 0);
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
 
             // add an obstacle that has an enemy collision trigger, so it can
             // defeat enemies
@@ -2626,12 +2621,11 @@ public class MyLolGame extends Lol {
             // game, with a hero covering the bottom of the screen, so that
             // anything that falls to the bottom counts against the player
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100);
+            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100, 0, 1);
 
             // set up our pool of projectiles, then set them to have a fixed
             // velocity when using the vector throw mechanism
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 30, 0, 0, 1, 1,
-                    0, true);
+            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
             ProjectilePool.setRange(50);
             ProjectilePool.setFixedVectorThrowVelocity(5);
 
@@ -2841,12 +2835,11 @@ public class MyLolGame extends Lol {
             // draw a button for throwing projectiles in many directions. It
             // only covers half the screen, to show how such an effect would
             // behave
-            Controls.addVectorThrowButton(0, 0, 240, 320, "", h, 100);
+            Controls.addVectorThrowButton(0, 0, 240, 320, "", h, 100, 0, 0);
 
             // set up a pool of projectiles with fixed velocity, and with
             // rotation
-            ProjectilePool.configure(100, .1f, 3, "red.png", 30, 0, 0, 0, 1, 0,
-                    false);
+            ProjectilePool.configure(100, .1f, 3, "red.png", 1, 0, false);
             ProjectilePool.setFixedVectorThrowVelocity(10);
             ProjectilePool.setRotateVectorThrow();
 
@@ -3529,18 +3522,18 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have enemy timertriggers, then you must override this to
-     * define what happens when the timer expires
+     * If you want to have timertriggers with attached entityes, then you must
+     * override this to define what happens when the timer expires
      * 
      * @param id
      *            The id that was assigned to the timer that exired
      * @param whichLevel
      *            The current level
-     * @param enemy
-     *            The enemy that was connected to the timer
+     * @param ps
+     *            The PhysicsSprite that was connected to the timer
      */
     @Override
-    public void onEnemyTimerTrigger(int id, int whichLevel, Enemy enemy) {
+    public void onTimerTrigger(int id, int whichLevel, PhysicsSprite ps) {
         // Code for level 48's EnemyTimerTrigger
         if (whichLevel == 48) {
             // we're simulating cancer cells that can reproduce a fixed number
@@ -3549,38 +3542,38 @@ public class MyLolGame extends Lol {
             // reproduce forever (note that we could, if we wanted to...)
 
             // make an enemy just like "e", but to the left
-            Enemy left = Enemy.makeAsCircle(enemy.getXPosition() - 2 * id,
-                    enemy.getYPosition() + 2 * id, enemy.getWidth(),
-                    enemy.getHeight(), "redball.png");
+            Enemy left = Enemy.makeAsCircle(ps.getXPosition() - 2 * id,
+                    ps.getYPosition() + 2 * id, ps.getWidth(),
+                    ps.getHeight(), "redball.png");
             left.setDisappearSound("lowpitch.ogg");
 
             // make an enemy just like "e", but to the right
-            Enemy right = Enemy.makeAsCircle(enemy.getXPosition() + 2 * id,
-                    enemy.getYPosition() + 2 * id, enemy.getWidth(),
-                    enemy.getHeight(), "redball.png");
+            Enemy right = Enemy.makeAsCircle(ps.getXPosition() + 2 * id,
+                    ps.getYPosition() + 2 * id, ps.getWidth(),
+                    ps.getHeight(), "redball.png");
             right.setDisappearSound("lowpitch.ogg");
 
             // if there are reproductions left, then have e and its two new
             // children all reproduce in 2 seconds
             if (id > 0) {
-                Level.setEnemyTimerTrigger(id - 1, 2, left);
-                Level.setEnemyTimerTrigger(id - 1, 2, enemy);
-                Level.setEnemyTimerTrigger(id - 1, 2, right);
+                Level.setTimerTrigger(id - 1, 2, left);
+                Level.setTimerTrigger(id - 1, 2, ps);
+                Level.setTimerTrigger(id - 1, 2, right);
             }
         }
         // Code for level 49's EnemyTimerTrigger
         else if (whichLevel == 49) {
             // in this case, every enemy will produce one offspring on each
             // timer
-            Enemy e2 = Enemy.makeAsCircle(enemy.getXPosition(),
-                    enemy.getYPosition(), enemy.getWidth(), enemy.getHeight(),
+            Enemy e2 = Enemy.makeAsCircle(ps.getXPosition(),
+                    ps.getYPosition(), ps.getWidth(), ps.getHeight(),
                     "redball.png");
             e2.setPhysics(1.0f, 0.3f, 0.6f);
             e2.setMoveByTilting();
             // make more enemies?
             if (id > 0) {
-                Level.setEnemyTimerTrigger(id - 1, 2, enemy);
-                Level.setEnemyTimerTrigger(id - 1, 2, e2);
+                Level.setTimerTrigger(id - 1, 2, ps);
+                Level.setTimerTrigger(id - 1, 2, e2);
             }
         }
     }
