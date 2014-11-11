@@ -28,8 +28,11 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -66,6 +69,11 @@ public class PauseScene {
      * Time that the PauseScene started being shown, so we can update timers
      */
     private long showingAt;
+
+    /**
+     * For debug rendering
+     */
+    private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
     /**
      * Get the PauseScene that is configured for the current level, or create a
@@ -125,6 +133,17 @@ public class PauseScene {
         for (Lol.Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
+     
+        // DEBUG: show where the buttons' boxes are
+        if (Lol.sGame.mConfig.showDebugBoxes()) {
+            mShapeRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+            mShapeRender.begin(ShapeType.Line);
+            mShapeRender.setColor(Color.RED);
+            if (mBackRectangle != null)
+                mShapeRender.rect(mBackRectangle.x, mBackRectangle.y, mBackRectangle.width, mBackRectangle.height);
+            mShapeRender.end();
+        }
+
         return true;
     }
 
