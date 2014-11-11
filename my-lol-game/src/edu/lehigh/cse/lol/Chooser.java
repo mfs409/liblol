@@ -239,7 +239,10 @@ public class Chooser extends ScreenAdapter {
         }
 
         // make the next button if we aren't drawing the last set of choices
-        if (Lol.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
+        int start = Lol.sGame.mCurrLevelNum;
+        if (start == 0)
+            start = 1;
+        if (start + levelsPerChooser - 1 < totalLevels) {
             mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
                     cc.getNextButtonHeight(), 0, cc.getNextButtonName());
         }
