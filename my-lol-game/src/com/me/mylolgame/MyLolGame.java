@@ -137,7 +137,7 @@ public class MyLolGame extends Lol {
 
     /**
      * Describe how to draw the initial state of each level of our game
-     *
+     * 
      * @param whichLevel
      *            The level to be drawn
      */
@@ -2299,15 +2299,15 @@ public class MyLolGame extends Lol {
          * This level demonstrates the use of timer callbacks. We can use timers
          * to make more of the level appear over time. In this case, we'll chain
          * the timer callbacks together, so that we can get more and more things
-         * to develop. Be sure to look at the onTimerCallback code to see how the
-         * rest of this level works.
-         *
+         * to develop. Be sure to look at the onTimerCallback code to see how
+         * the rest of this level works.
+         * 
          * @demonstrates: destinations and goodies with fixed velocities
-         *
+         * 
          * @demonstrates: enemy who disappears when it is touched
-         *
+         * 
          * @demonstrates: enemy who can be dragged around
-         *
+         * 
          * @demonstrates: timer callbacks
          */
         else if (whichLevel == 62) {
@@ -2361,7 +2361,8 @@ public class MyLolGame extends Lol {
             // play a sound if we want...
             Obstacle o = Obstacle.makeAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            // the callback id is 0, there is no delay, and no goodies are needed
+            // the callback id is 0, there is no delay, and no goodies are
+            // needed
             // before it works
             o.setHeroCollisionCallback(0, 0, 0, 0, 0, 0);
             o.setDisappearSound("hipitch.ogg");
@@ -2931,7 +2932,6 @@ public class MyLolGame extends Lol {
             Controls.addCallbackControl(40, 90, 40, 40, "red.png", 748);
             Controls.addCallbackControl(40, 140, 40, 40, "red.png", 749);
             Controls.addCallbackControl(40, 190, 40, 40, "red.png", 750);
-
         }
 
         /*
@@ -3153,12 +3153,12 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // Demonstrate the ability to chase while keeping existing velocity in one direction
+            // Demonstrate the ability to chase while keeping existing velocity
+            // in one direction
             Obstacle o = Obstacle.makeAsCircle(15, 15, 2, 2, "purpleball.png");
             o.setAbsoluteVelocity(5, 1, false);
             o.setChaseFixedMagnitude(h, 3, 0, false, true);
-            
-            
+
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
@@ -3194,13 +3194,37 @@ public class MyLolGame extends Lol {
 
             Enemy e1 = Enemy.makeAsCircle(29, 29, 1, 1, "redball.png");
             e1.setAbsoluteVelocity(0, -1, true);
-            
+
             // notice that now we will make two destinations, each of which
             // defaults to only holding ONE hero, but we still need to get two
             // heroes to destinations in order to complete the level
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
         }
 
+        /*
+         * Demonstrate that we can save entities so that we can access them from
+         * a callback
+         */
+        else if (whichLevel == 90) {
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 5);
+            PreScene.addText("Keep pressing until\na hero makes it to\nthe destination", 255, 255, 255, "arial.ttf", 32);
+
+            for (int i = 0; i < 10; ++i) {
+                Hero h = Hero.makeAsBox(4*i + 2, 0.1f, 2, 2, "greenball.png");
+                h.setPhysics(1, 1, 5);
+                Facts.putLevelEntity(""+i, h);
+            }
+
+            Destination.makeAsCircle(29, 16, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+
+            // A callback control is a way to run arbitrary code whenever the
+            // control is pressed. This is something of a catch-all for any sort
+            // of behavior we might want. See onControlPressCallback().
+            Controls.addCallbackControl(0, 0, 480, 320, "", 0);
+        }
     }
 
     /**
@@ -3208,7 +3232,7 @@ public class MyLolGame extends Lol {
      * this method to describe how each help scene should appear. Note that you
      * *must* specify the maximum number of help scenes for your game in the
      * Config.java file. If you specify "0", then you can leave this code blank.
-     *
+     * 
      * @param whichScene
      *            The help scene being drawn. The game engine will set this
      *            value to indicate which scene needs to be drawn.
@@ -3259,7 +3283,7 @@ public class MyLolGame extends Lol {
      * draw the entire scene, so instead one can place an invisible, full-length
      * CallbackObstacle at some point in the scene, and then when that obstacle
      * is hit, this code will run.
-     *
+     * 
      * @param id
      *            The ID of the obstacle that was hit by the hero
      * @param whichLevel
@@ -3346,7 +3370,7 @@ public class MyLolGame extends Lol {
      * behind this mechanism is that it allows the creation of more interactive
      * games, since there can be items to unlock, treasure chests to open, and
      * other such behaviors.
-     *
+     * 
      * @param id
      *            The ID of the obstacle that was hit by the hero
      * @param whichLevel
@@ -3371,9 +3395,9 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If a game uses timer callbacks, it must provide this to specify what to do
-     * when a timer expires.
-     *
+     * If a game uses timer callbacks, it must provide this to specify what to
+     * do when a timer expires.
+     * 
      * @param id
      *            The ID of the timer
      * @param whichLevel
@@ -3434,7 +3458,7 @@ public class MyLolGame extends Lol {
     /**
      * If you want to have timercallbacks with attached entityes, then you must
      * override this to define what happens when the timer expires
-     *
+     * 
      * @param id
      *            The id that was assigned to the timer that exired
      * @param whichLevel
@@ -3488,7 +3512,7 @@ public class MyLolGame extends Lol {
     /**
      * If a game has Enemies that have 'defeatCallback' set, then when any of
      * those enemies are defeated, this code will run
-     *
+     * 
      * @param id
      *            The ID of the enemy that was defeated by the hero
      * @param whichLevel
@@ -3514,9 +3538,9 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have EnemyCollide callbacks, then you must override this to
-     * define what happens when an enemy hits the obstacle
-     *
+     * If you want to have EnemyCollide callbacks, then you must override this
+     * to define what happens when an enemy hits the obstacle
+     * 
      * @param id
      *            The ID of the callback
      * @param whichLevel
@@ -3556,7 +3580,7 @@ public class MyLolGame extends Lol {
     /**
      * If you want to have Obstacle/Projectile callbacks, then you must override
      * this to define what happens when a projectile hits the obstacle
-     *
+     * 
      * @param id
      *            The ID of the callback
      * @param whichLevel
@@ -3583,7 +3607,7 @@ public class MyLolGame extends Lol {
     /**
      * If you want to do something when the level ends (like record a high
      * score), you will need to override this method
-     *
+     * 
      * @param whichLevel
      *            The current level
      * @param win
@@ -3602,9 +3626,9 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you use CallbackControls, you must override this to define what happens
-     * when the control is pressed
-     *
+     * If you use CallbackControls, you must override this to define what
+     * happens when the control is pressed
+     * 
      * @param id
      *            The id that was assigned to the Control
      * @param whichLevel
@@ -3630,12 +3654,19 @@ public class MyLolGame extends Lol {
                 PauseScene.show();
             }
         }
+        else if (whichLevel == 90) {
+            for (int i = 0; i < 10; ++i) {
+                PhysicsSprite p = Facts.getLevelEntity(""+i);
+                p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
+            }
+            
+        }
     }
 
     /**
      * If you use EntityCallbackControls, you must override this to define what
      * happens when the control is pressed
-     *
+     * 
      * @param id
      *            The id that was assigned to the Control
      * @param whichLevel
@@ -3667,7 +3698,7 @@ public class MyLolGame extends Lol {
      * Whenever a hero's strength changes due to a collision with a goodie or
      * enemy, this is called. The most common use is to change the hero's
      * appearance.
-     *
+     * 
      * @param whichLevel
      *            The current level
      * @param h
@@ -3700,15 +3731,14 @@ public class MyLolGame extends Lol {
 
     /**
      * When a PauseScene button is pressed, this code will run.
-     *
+     * 
      * @param whichLevel
      *            The current level
      * @param id
      *            The number assigned to this PauseScene button
      */
     @Override
-    public void onPauseSceneCallback(int whichLevel, int id)
-    {
+    public void onPauseSceneCallback(int whichLevel, int id) {
         if (whichLevel == 88) {
             if (id == 1) {
                 Score.winLevel();

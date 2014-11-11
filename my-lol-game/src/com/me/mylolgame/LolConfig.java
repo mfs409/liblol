@@ -41,8 +41,8 @@ import edu.lehigh.cse.lol.LolConfiguration;
  * first one is made in the LWJGL Main.java file, in order to configure the
  * window a little bit more nicely, and the second will be made during the
  * creation of your game. If you do stateful things in this file, you're likely
- * to have get into a situation where the game plays differently on a phone than
- * on the desktop.
+ * to get into a situation where the game plays differently on a phone than on
+ * the desktop.
  */
 public class LolConfig implements LolConfiguration {
     /**
@@ -68,7 +68,7 @@ public class LolConfig implements LolConfiguration {
      */
     @Override
     public int getNumLevels() {
-        return 89;
+        return 90;
     }
 
     /**

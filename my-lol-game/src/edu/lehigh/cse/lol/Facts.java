@@ -52,10 +52,16 @@ public class Facts {
     private static final Hashtable<String, Integer> mSessionFacts = new Hashtable<String, Integer>();
 
     /**
+     * Store PhysicsSprites, so that we can get to them in callbacks
+     */
+    private static final Hashtable<String, PhysicsSprite> mLevelEntities = new Hashtable<String, PhysicsSprite>();
+
+    /**
      * Reset all per-level facts
      */
     static void resetLevelFacts() {
         mLevelFacts.clear();
+        mLevelEntities.clear();
     }
 
     /**
@@ -151,5 +157,35 @@ public class Facts {
         Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         prefs.putInteger(factName, factValue);
         prefs.flush();
+    }
+
+    /**
+     * Look up a PhysicsSprite that was stored for the current level. If no such
+     * PhysicsSprite exists, null will be returned.
+     * 
+     * @param entityName
+     *            The name used to store the PhysicsSprite
+     * @return The last PhysicsSprite stored with this name
+     */
+    public static PhysicsSprite getLevelEntity(String entityName) {
+        PhysicsSprite ps = mLevelEntities.get(entityName);
+        if (ps == null) {
+            Util.message("ERROR", "Error retreiving level fact '" + entityName + "'");
+            return null;
+        }
+        return ps;
+    }
+
+    /**
+     * Save a PhysicsSprite from the current level.  If the entityName has already been
+     * used for this level, the new value will overwrite the old.
+     * 
+     * @param entityName
+     *            The name for the PhysicsSprite being saved
+     * @param entity
+     *            The PhysicsSprite that is the fact being saved
+     */
+    public static void putLevelEntity(String entityName, PhysicsSprite entity) {
+        mLevelEntities.put(entityName, entity);
     }
 }
