@@ -588,7 +588,7 @@ public class MyLolGame extends Lol {
             // let's put a display on the screen to see how many type-1 goodies
             // we've collected. Since the second parameter is "2", we'll display
             // the count as "X/2 Goodies" instead of "X Goodies"
-            Controls.addGoodieCount(1, 2, "Goodies", 220, 280, "arial.ttf", 255, 255, 255, 20);
+            Controls.addGoodieCount(1, 2, "Goodies", 220, 280, "arial.ttf", 255, 0, 255, 20);
         }
 
         /*
@@ -2180,7 +2180,7 @@ public class MyLolGame extends Lol {
             ProjectilePool.setImageSource("colorstar.png");
 
             // show how many shots are left
-            Controls.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 255, 255, 12);
+            Controls.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
 
             // draw a bunch of enemies to defeat
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -3153,6 +3153,12 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
+            // Demonstrate the ability to chase while keeping existing velocity in one direction
+            Obstacle o = Obstacle.makeAsCircle(15, 15, 2, 2, "purpleball.png");
+            o.setAbsoluteVelocity(5, 1, false);
+            o.setChaseFixedMagnitude(h, 3, 0, false, true);
+            
+            
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
@@ -3162,6 +3168,39 @@ public class MyLolGame extends Lol {
             PauseScene.suppressClearClick();
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
         }
+
+        /*
+         * Use multiple heroes to combine positive and negative results
+         */
+        else if (whichLevel == 89) {
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+
+            // now let's draw two heroes who can both move by tilting, and
+            // who both have density and friction. Note that we lower the
+            // density, so they move faster
+            Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            h1.setPhysics(.1f, 0, 0.6f);
+            h1.setMoveByTilting();
+            h1.setJumpImpulses(0, 10);
+            h1.setTouchToJump();
+            h1.setMustSurvive();
+            Hero h2 = Hero.makeAsBox(0, 0, 48, .1f, "");
+            h2.setMustSurvive();
+            h1.setPassThrough(1);
+            h2.setPassThrough(1);
+
+            Enemy e1 = Enemy.makeAsCircle(29, 29, 1, 1, "redball.png");
+            e1.setAbsoluteVelocity(0, -1, true);
+            
+            // notice that now we will make two destinations, each of which
+            // defaults to only holding ONE hero, but we still need to get two
+            // heroes to destinations in order to complete the level
+            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+        }
+
     }
 
     /**

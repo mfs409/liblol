@@ -116,6 +116,11 @@ public class Hero extends PhysicsSprite {
     private float mCurrentRotation;
 
     /**
+     * For tracking if the game should end immediately when this hero is defeated
+     */
+    private boolean mMustSurvive;
+    
+    /**
      * Construct a Hero by creating a PhysicsSprite and incrementing the number
      * of heroes created. This code should never be called directly by the game
      * designer.
@@ -298,6 +303,8 @@ public class Hero extends PhysicsSprite {
         if (e.mAlwaysDoesDamage) {
             remove(false);
             Level.sCurrent.mScore.defeatHero(e);
+            if (mMustSurvive)
+                Level.sCurrent.mScore.endLevel(false);
             return;
         }
         // handle hero invincibility
@@ -320,6 +327,8 @@ public class Hero extends PhysicsSprite {
         else if (e.mDamage >= mStrength) {
             remove(false);
             Level.sCurrent.mScore.defeatHero(e);
+            if (mMustSurvive)
+                Level.sCurrent.mScore.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -592,5 +601,12 @@ public class Hero extends PhysicsSprite {
      */
     public void setInvincibleAnimation(Animation a) {
         mInvincibleAnimation = a;
+    }
+    
+    /**
+     * Indicate that the level should end immediately if this hero is defeated
+     */
+    public void setMustSurvive() {
+        mMustSurvive = true;
     }
 }
