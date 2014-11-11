@@ -81,7 +81,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Create an Enemy This should never be called directly.
-     * 
+     *
      * @param x
      *            X coordinate of bottom left corner of this enemy
      * @param y
@@ -108,7 +108,7 @@ public class Enemy extends PhysicsSprite {
      * scheme, the only concerns are to ensure that when a projectile hits this
      * enemy, we remove the enemy and hide the projectile, and to handle
      * collisions with SubClass obstacles
-     * 
+     *
      * @param other
      *            The other entity involved in the collision
      */
@@ -124,7 +124,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Enemy collisions with Obstacles
-     * 
+     *
      * @param o
      *            The obstacle with which this Enemy collided
      */
@@ -136,7 +136,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Enemy collisions with projectiles
-     * 
+     *
      * @param p
      *            The projectile with which this hero collided
      */
@@ -164,7 +164,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Make an enemy that has an underlying rectangular shape.
-     * 
+     *
      * @param x
      *            The X coordinate of the bottom left corner
      * @param y
@@ -186,7 +186,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Make an enemy that has an underlying circular shape.
-     * 
+     *
      * @param x
      *            The X coordinate of the bottom left corner
      * @param y
@@ -209,7 +209,7 @@ public class Enemy extends PhysicsSprite {
 
     /**
      * Set the amount of damage that this enemy does to a hero
-     * 
+     *
      * @param amount
      *            Amount of damage. Default is 2, since heroes have a default
      *            strength of 1, so that the enemy defeats the hero but does not
@@ -222,7 +222,7 @@ public class Enemy extends PhysicsSprite {
     /**
      * If this enemy defeats the last hero of the board, this is the message
      * that will be displayed
-     * 
+     *
      * @param message
      *            The message to display
      */
@@ -233,7 +233,7 @@ public class Enemy extends PhysicsSprite {
     /**
      * When an enemy is defeated, this is the code sequence we run to figure out
      * how gameplay should change.
-     * 
+     *
      * @param increaseScore
      *            Indicate if we should increase the score when this enemy is
      *            defeated
@@ -246,7 +246,7 @@ public class Enemy extends PhysicsSprite {
         if (increaseScore)
             Level.sCurrent.mScore.onDefeatEnemy();
 
-        // handle defeat triggers
+        // handle defeat callbacks
         if (mDefeatCallback != null)
             mDefeatCallback.go(this, null);
     }
@@ -292,26 +292,26 @@ public class Enemy extends PhysicsSprite {
     }
 
     /**
-     * Make the enemy a "defeat trigger" enemy, so that custom code will run
+     * Make the enemy a "defeat callback" enemy, so that custom code will run
      * when this enemy is defeated
-     * 
+     *
      * @param id
      *            The id of this enemy, so that we can disambiguate enemy
-     *            collisions in the onEnemyTrigger code
+     *            collisions in the onEnemyCallback code
      */
-    public void setDefeatTrigger(final int id) {
+    public void setDefeatCallback(final int id) {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum, Enemy.this);
+                Lol.sGame.onEnemyDefeatCallback(id, Lol.sGame.mCurrLevelNum, Enemy.this);
             }
         };
     }
 
     /**
-     * Mark this enemy as no longer being a defeat trigger enemy
+     * Mark this enemy as no longer being a defeat callback enemy
      */
-    public void clearDefeatTrigger() {
+    public void clearDefeatCallback() {
         mDefeatCallback = null;
     }
 

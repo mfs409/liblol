@@ -354,11 +354,11 @@ public abstract class Lol extends Game {
     abstract public void configureSplash();
 
     /**
-     * When a Hero collides with an Obstacle for which a HeroCollideTrigger has
+     * When a Hero collides with an Obstacle for which a HeroCollideCallback has
      * been set, this code will run
      * 
      * @param id
-     *            The number assigned to the Obstacle's HeroCollideTrigger
+     *            The number assigned to the Obstacle's HeroCollideCallback
      * @param whichLevel
      *            The current level
      * @param o
@@ -366,78 +366,78 @@ public abstract class Lol extends Game {
      * @param h
      *            The hero involved in the collision
      */
-    abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
+    abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
 
     /**
-     * When the player touches an entity that has a TouchTrigger attached to it,
+     * When the player touches an entity that has a TouchCallback attached to it,
      * this code will run
      * 
      * @param id
-     *            The number assigned to the entity's TouchTrigger
+     *            The number assigned to the entity's TouchCallback
      * @param whichLevel
      *            The current level
      * @param o
      *            The entity involved in the collision
      */
-    abstract public void onTouchTrigger(int id, int whichLevel, PhysicsSprite o);
+    abstract public void onTouchCallback(int id, int whichLevel, PhysicsSprite o);
 
     /**
-     * When an entity stops, if it has a StopTrigger attached to it, this code
+     * When an entity stops, if it has a StopCallback attached to it, this code
      * will run
      * 
      * @param id
-     *            The number assigned to the entity's TouchTrigger
+     *            The number assigned to the entity's TouchCallback
      * @param whichLevel
      *            The current level
      * @param o
-     *            The entity involved in the collision
+     *            The entity that stopped
      */
-    abstract public void onStopTrigger(int id, int whichLevel, PhysicsSprite o);
+    abstract public void onStopCallback(int id, int whichLevel, PhysicsSprite o);
 
     /**
-     * When the player requests a TimerTrigger, and the required time passes,
+     * When the player requests a TimerCallback, and the required time passes,
      * this code will run
      * 
      * @param id
-     *            The number assigned to the TimerTrigger
+     *            The number assigned to the TimerCallback
      * @param whichLevel
      *            The current level
      */
-    abstract public void onTimerTrigger(int id, int whichLevel);
+    abstract public void onTimerCallback(int id, int whichLevel);
 
     /**
-     * When a player requests an TimerTrigger that has an attached
+     * When a player requests an TimerCallback that has an attached
      * PhysicsSprite, and the required time passes, and the PhysicsSprite is
      * still visible, this code will run
      * 
      * @param id
-     *            The number assigned to the TimerTrigger
+     *            The number assigned to the TimerCallback
      * @param whichLevel
      *            The current level
      * @param ps
      *            The PhysicsSprite to which the timer was attached
      */
-    abstract public void onTimerTrigger(int id, int whichLevel, PhysicsSprite ps);
+    abstract public void onTimerCallback(int id, int whichLevel, PhysicsSprite ps);
 
     /**
      * When an enemy is defeated, this code will run if the enemy has an
-     * EnemyDefeatTrigger
+     * EnemyDefeatCallback
      * 
      * @param id
-     *            The number assigned to this trigger
+     *            The number assigned to this callback
      * @param whichLevel
      *            The current level
      * @param e
      *            The enemy who was defeated
      */
-    abstract public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy e);
+    abstract public void onEnemyDefeatCallback(int id, int whichLevel, Enemy e);
 
     /**
      * When an obstacle collides with an enemy, if the obstacle has an
-     * EnemyCollideTrigger, then this code will run.
+     * EnemyCollideCallback, then this code will run.
      * 
      * @param id
-     *            The number assigned to this trigger
+     *            The number assigned to this callback
      * @param whichLevel
      *            The current level
      * @param o
@@ -445,14 +445,14 @@ public abstract class Lol extends Game {
      * @param e
      *            The enemy involved in the collision
      */
-    abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
+    abstract public void onEnemyCollideCallback(int id, int whichLevel, Obstacle o, Enemy e);
 
     /**
      * When a projectile collides with an obstacle, if the obstacle has a
-     * ProjectileCollideTrigger, then this code will run
+     * ProjectileCollideCallback, then this code will run
      * 
      * @param id
-     *            The number assigned to this trigger
+     *            The number assigned to this callback
      * @param whichLevel
      *            The current level
      * @param o
@@ -460,7 +460,7 @@ public abstract class Lol extends Game {
      * @param p
      *            The projectile involved in the collision
      */
-    abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
+    abstract public void onProjectileCollideCallback(int id, int whichLevel, Obstacle o, Projectile p);
 
     /**
      * When a level finishes, this code will run
@@ -470,25 +470,25 @@ public abstract class Lol extends Game {
      * @param win
      *            True if the level was won, false otherwise
      */
-    abstract public void levelCompleteTrigger(int whichLevel, boolean win);
+    abstract public void levelCompleteCallback(int whichLevel, boolean win);
 
     /**
-     * When a Control is pressed, for which there is a ControlTrigger, this code
+     * When a Control is pressed, for which there is a ControlCallback, this code
      * will run.
      * 
      * @param id
-     *            The number assigned to this trigger
+     *            The number assigned to this callback
      * @param whichLevel
      *            The current level
      */
-    abstract public void onControlPressTrigger(int id, int whichLevel);
+    abstract public void onControlPressCallback(int id, int whichLevel);
 
     /**
-     * When a Control is pressed, for which there is a ControlTrigger that takes
+     * When a Control is pressed, for which there is a ControlCallback that takes
      * an entity and value, this code will run.
      * 
      * @param id
-     *            The number assigned to this trigger
+     *            The number assigned to this callback
      * @param val
      *            The value that was sent by the control
      * @param entity
@@ -496,7 +496,7 @@ public abstract class Lol extends Game {
      * @param whichLevel
      *            The current level
      */
-    abstract public void onControlPressEntityTrigger(int id, float val, PhysicsSprite entity, int whichLevel);
+    abstract public void onControlPressEntityCallback(int id, float val, PhysicsSprite entity, int whichLevel);
 
     /**
      * When a hero collides with a goodie or enemy, and it leads to the hero's
@@ -507,7 +507,7 @@ public abstract class Lol extends Game {
      * @param h
      *            The hero whose strength just changed
      */
-    abstract public void onStrengthChangeTrigger(int whichLevel, Hero h);
+    abstract public void onStrengthChangeCallback(int whichLevel, Hero h);
 
     /**
      * When a PauseScene button is pressed, this code will run.

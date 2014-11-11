@@ -81,7 +81,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Internal constructor to build an Obstacle. This should never be invoked
      * directly. Instead, use the 'addXXX' methods of the Object class.
-     * 
+     *
      * @param width
      *            width of this Obstacle
      * @param height
@@ -113,7 +113,7 @@ public class Obstacle extends PhysicsSprite {
      * Called when this Obstacle is the dominant obstacle in a collision Note:
      * This Obstacle is /never/ the dominant obstacle in a collision, since it
      * is #6 or #7
-     * 
+     *
      * @param other
      *            The other entity involved in this collision
      * @param contact
@@ -129,7 +129,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying box shape
-     * 
+     *
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -151,7 +151,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying polygon shape
-     * 
+     *
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -176,7 +176,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying circle shape
-     * 
+     *
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -202,7 +202,7 @@ public class Obstacle extends PhysicsSprite {
      * over damp Obstacles. Damp factors can be negative to cause a reverse
      * direction, less than 1 to cause a slowdown (friction pads), or greater
      * than 1 to serve as zoom pads.
-     * 
+     *
      * @param factor
      *            Value to multiply the hero's velocity when it collides with
      *            this Obstacle
@@ -224,7 +224,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Call this on an event to make it behave like a "damp" obstacle, except
      * with a constant additive (or subtractive) effect on the hero's speed.
-     * 
+     *
      * @param boostAmountX
      *            The amount to add to the hero's X velocity
      * @param boostAmountY
@@ -265,7 +265,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Control whether the hero can jump if it collides with this obstacle while
      * in the air
-     * 
+     *
      * @param enable
      *            true if the hero can jump again, false otherwise
      */
@@ -274,28 +274,28 @@ public class Obstacle extends PhysicsSprite {
     }
 
     /**
-     * Make the object a trigger object, so that custom code will run when a
+     * Make the object a callback object, so that custom code will run when a
      * hero collides with it
-     * 
+     *
      * @param id
-     *            identifier for the trigger
+     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies2
      *            Number of type-2 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies3
      *            Number of type-3 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies4
      *            Number of type-4 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param delay
      *            The time between when the collision happens, and when the
-     *            trigger code runs. Use 0 for immediately
+     *            callback code runs. Use 0 for immediately
      */
-    public void setHeroCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+    public void setHeroCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4, final float delay) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
@@ -308,20 +308,20 @@ public class Obstacle extends PhysicsSprite {
                 // Make sure the contact is active (it's not if this is a
                 // pass-through event)
                 if (c.isEnabled()) {
-                    // check if trigger is activated, if so run Trigger code
+                    // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
                         match &= counts[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
+                            Lol.sGame.onHeroCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
                             return;
                         }
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
+                                Lol.sGame.onHeroCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
                             }
                         }, delay);
                     }
@@ -331,33 +331,33 @@ public class Obstacle extends PhysicsSprite {
     }
 
     /**
-     * Make the object a trigger object, so that custom code will run when an
+     * Make the object a callback object, so that custom code will run when an
      * enemy collides with it
-     * 
+     *
      * @param id
-     *            identifier for the trigger
+     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies2
      *            Number of type-2 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies3
      *            Number of type-3 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies4
      *            Number of type-4 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param delay
      *            The time between when the collision happens, and when the
-     *            trigger code runs. Use 0 for immediately
+     *            callback code runs. Use 0 for immediately
      */
-    public void setEnemyCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+    public void setEnemyCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4, final float delay) {
         /**
-         * Enemy triggers can require certain Goodie counts in order to run
+         * Enemy callbacks can require certain Goodie counts in order to run
          */
-        final int[] enemyTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+        final int[] enemyCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
 
         mEnemyCollision = new CollisionCallback() {
@@ -365,17 +365,17 @@ public class Obstacle extends PhysicsSprite {
             public void go(final PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= enemyTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= enemyCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
+                        Lol.sGame.onEnemyCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
                         return;
                     }
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
-                            Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
+                            Lol.sGame.onEnemyCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
                         }
                     }, delay);
                 }
@@ -384,27 +384,27 @@ public class Obstacle extends PhysicsSprite {
     }
 
     /**
-     * Make the object a trigger object, so that custom code will run when a
+     * Make the object a callback object, so that custom code will run when a
      * projectile collides with it.
-     * 
+     *
      * @param id
-     *            identifier for the trigger
+     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies2
      *            Number of type-2 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies3
      *            Number of type-3 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      * @param activationGoodies4
      *            Number of type-4 goodies that must be collected before this
-     *            trigger works
+     *            callback works
      */
-    public void setProjectileCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+    public void setProjectileCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4) {
-        final int[] projectileTriggerActivation = new int[] { activationGoodies1, activationGoodies2,
+        final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
         mProjectileCollision = new CollisionCallback() {
@@ -412,9 +412,9 @@ public class Obstacle extends PhysicsSprite {
             public void go(PhysicsSprite ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= projectileCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
-                    Lol.sGame.onProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Projectile) ps);
+                    Lol.sGame.onProjectileCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Projectile) ps);
             }
         };
     }
@@ -422,7 +422,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Indicate that when the hero collides with this obstacle, we should make a
      * sound
-     * 
+     *
      * @param sound
      *            The name of the sound file to play
      * @param delay

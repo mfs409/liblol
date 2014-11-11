@@ -119,7 +119,7 @@ public class Hero extends PhysicsSprite {
      * Construct a Hero by creating a PhysicsSprite and incrementing the number
      * of heroes created. This code should never be called directly by the game
      * designer.
-     * 
+     *
      * @param width
      *            The width of the hero
      * @param height
@@ -135,7 +135,7 @@ public class Hero extends PhysicsSprite {
     /**
      * We can't just use the basic PhysicsSprite renderer, because we might need
      * to adjust a one-off animation (invincibility or throw) first
-     * 
+     *
      * @param sb
      *            The SpriteBatch to use for drawing this hero
      * @param delta
@@ -228,7 +228,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Change the rotation of the hero
-     * 
+     *
      * @param delta
      *            How much to add to the current rotation
      */
@@ -243,7 +243,7 @@ public class Hero extends PhysicsSprite {
     /**
      * The Hero is the dominant participant in all collisions. Whenever the hero
      * collides with something, we need to figure out what to do
-     * 
+     *
      * @param other
      *            Other object involved in this collision
      * @param contact
@@ -266,7 +266,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Hero collisions with Destinations
-     * 
+     *
      * @param d
      *            The destination with which this hero collided
      */
@@ -288,7 +288,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Hero collisions with Enemies
-     * 
+     *
      * @param e
      *            The enemy with which this hero collided
      */
@@ -331,18 +331,18 @@ public class Hero extends PhysicsSprite {
     /**
      * Update the hero's strength, and then run any strength change callback
      * that has been registered
-     * 
+     *
      * @param amount
      *            The amount to add (use a negative value to subtract)
      */
     private void addStrength(int amount) {
         mStrength += amount;
-        Lol.sGame.onStrengthChangeTrigger(Lol.sGame.mCurrLevelNum, this);
+        Lol.sGame.onStrengthChangeCallback(Lol.sGame.mCurrLevelNum, this);
     }
 
     /**
      * Dispatch method for handling Hero collisions with Obstacles
-     * 
+     *
      * @param o
      *            The obstacle with which this hero collided
      */
@@ -368,7 +368,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Hero collisions with SVG lines
-     * 
+     *
      * @param s
      *            The svg line with which this hero collided
      */
@@ -380,7 +380,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Dispatch method for handling Hero collisions with Goodies
-     * 
+     *
      * @param g
      *            The goodie with which this hero collided
      */
@@ -410,7 +410,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Make a Hero with an underlying rectangular shape
-     * 
+     *
      * @param x
      *            X coordinate of the hero
      * @param y
@@ -432,7 +432,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Make a Hero with an underlying circular shape
-     * 
+     *
      * @param x
      *            X coordinate of the hero
      * @param y
@@ -458,7 +458,7 @@ public class Hero extends PhysicsSprite {
      * collisions with enemies. Note that calling this will not run any strength
      * change callbacks... they only run in conjunction with collisions with
      * goodies or enemies.
-     * 
+     *
      * @param amount
      *            The new strength of the hero
      */
@@ -467,8 +467,8 @@ public class Hero extends PhysicsSprite {
     }
 
     /**
-     * Return the hero's strength, in case it is useful to trigger code
-     * 
+     * Return the hero's strength, in case it is useful to callback code
+     *
      * @return The strength of the hero
      */
     public int getStrength() {
@@ -478,7 +478,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Indicate that upon a touch, this hero should begin moving with a specific
      * velocity
-     * 
+     *
      * @param x
      *            Velocity in X dimension
      * @param y
@@ -503,7 +503,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Specify the X and Y velocity to give to the hero whenever it is
      * instructed to jump
-     * 
+     *
      * @param x
      *            Velocity in X direction
      * @param y
@@ -537,7 +537,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Register an animation sequence, so that this hero can have a custom
      * animation while jumping
-     * 
+     *
      * @param a
      *            The animation to display
      */
@@ -547,7 +547,7 @@ public class Hero extends PhysicsSprite {
 
     /**
      * Set the sound to play when a jump occurs
-     * 
+     *
      * @param soundName
      *            The name of the sound file to use
      */
@@ -558,7 +558,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Register an animation sequence, so that this hero can have a custom
      * animation while throwing
-     * 
+     *
      * @param a
      *            The animation to display
      */
@@ -575,7 +575,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Register an animation sequence, so that this hero can have a custom
      * animation while crawling
-     * 
+     *
      * @param a
      *            The animation to display
      */
@@ -586,7 +586,7 @@ public class Hero extends PhysicsSprite {
     /**
      * Register an animation sequence, so that this hero can have a custom
      * animation while invincible
-     * 
+     *
      * @param a
      *            The animation to display
      */

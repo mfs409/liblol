@@ -64,7 +64,7 @@ public class Projectile extends PhysicsSprite {
     /**
      * Internal method to create a projectile. Projectiles have an underlying
      * circle as their physics body
-     * 
+     *
      * @param width
      *            width of the projectile
      * @param height
@@ -95,11 +95,11 @@ public class Projectile extends PhysicsSprite {
     }
 
     /**
-     * Standard collision detection routine. This only triggers on hitting an
+     * Standard collision detection routine. This only callbacks on hitting an
      * obstacle, which makes the projectile disappear, or on hitting a
      * projectile, which is a bit funny because one of the two projectiles will
      * live.
-     * 
+     *
      * @param other
      *            The other entity involved in the collision
      * @param contact
@@ -107,7 +107,7 @@ public class Projectile extends PhysicsSprite {
      */
     @Override
     void onCollide(PhysicsSprite other, Contact contact) {
-        // if this is an obstacle, check if it is a projectile trigger, and if
+        // if this is an obstacle, check if it is a projectile callback, and if
         // so, do the callback
         if (other instanceof Obstacle) {
             Obstacle o = (Obstacle) other;

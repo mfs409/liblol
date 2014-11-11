@@ -67,7 +67,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
          * Respond to a collision with a PhysicsSprite. Note that one of the
          * collision entities is not named; it should be clear from the context
          * in which this was constructed.
-         * 
+         *
          * @param ps
          *            The PhysicsSprite involved in the collision
          * @param c
@@ -255,7 +255,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Create a new PhysicsSprite that does not yet have physics, but that has a
      * renderable picture
-     * 
+     *
      * @param imgName
      *            The image to display
      * @param id
@@ -274,7 +274,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Each descendant defines this to address any custom logic that we need to
      * deal with on a collision
-     * 
+     *
      * @param other
      *            The other entity involved in the collision
      */
@@ -283,7 +283,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Internal method for updating an entity's velocity, so that we can handle
      * its direction correctly
-     * 
+     *
      * @param x
      *            The new x velocity
      * @param y
@@ -308,7 +308,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Whenever any class derived from this is touched, we want to play the
      * touchsound before we run the gesture responder.
-     * 
+     *
      * @param touchVec
      *            The x/y/z coordinates of the touch
      * @return True if the event was handled, false otherwise
@@ -325,7 +325,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Specify that this entity should have a rectangular physics shape
-     * 
+     *
      * @param density
      *            Density of the entity
      * @param elasticity
@@ -376,7 +376,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Specify that this entity should have a polygon physics shape. You must
      * take extreme care when using this method. Polygon vertices must be given
      * in counter-clockwise order, and they must describe a convex shape.
-     * 
+     *
      * @param density
      *            Density of the entity
      * @param elasticity
@@ -434,7 +434,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Specify that this entity should have a circular physics shape
-     * 
+     *
      * @param density
      *            Density of the entity
      * @param elasticity
@@ -528,7 +528,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Set any additional information for this sprite
-     * 
+     *
      * @param text
      *            Text coming in from the programmer
      */
@@ -538,7 +538,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Retrieve any additional information for this sprite
-     * 
+     *
      * @return The string that the programmer provided
      */
     public String getInfoText() {
@@ -548,7 +548,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Make the camera follow the entity, but without centering the entity on
      * the screen
-     * 
+     *
      * @param x
      *            Amount of x distance between entity and center
      * @param y
@@ -561,7 +561,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Change whether this entity engages in physics collisions or not
-     * 
+     *
      * @param state
      *            either true or false. true indicates that the object will
      *            participate in physics collisions. false indicates that it
@@ -577,7 +577,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Allow the user to adjust the default physics settings (density,
      * elasticity, friction) for this entity
-     * 
+     *
      * @param density
      *            New density of the entity
      * @param elasticity
@@ -603,7 +603,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Returns the X coordinate of this entity
-     * 
+     *
      * @return x coordinate of bottom left corner
      */
     public float getXPosition() {
@@ -612,7 +612,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Returns the Y coordinate of this entity
-     * 
+     *
      * @return y coordinate of bottom left corner
      */
     public float getYPosition() {
@@ -621,7 +621,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Returns the width of this entity
-     * 
+     *
      * @return the entity's width
      */
     public float getWidth() {
@@ -630,7 +630,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Return the height of this entity
-     * 
+     *
      * @return the entity's height
      */
     public float getHeight() {
@@ -656,7 +656,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Call this on an Entity to rotate it. Note that this works best on boxes.
-     * 
+     *
      * @param rotation
      *            amount to rotate the Entity (in degrees)
      */
@@ -668,7 +668,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Use this to find the current rotation of an entity
-     * 
+     *
      * @return The rotation, in radians
      */
     public float getRotation() {
@@ -677,7 +677,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Make an entity disappear
-     * 
+     *
      * @param quiet
      *            True if the disappear sound should not be played
      */
@@ -704,7 +704,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Add velocity to this entity
-     * 
+     *
      * @param x
      *            Velocity in X dimension
      * @param y
@@ -733,7 +733,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Set the absolute velocity of this Entity
-     * 
+     *
      * @param x
      *            Velocity in X dimension
      * @param y
@@ -756,7 +756,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Set a dampening factor to cause a moving body to slow down without
      * colliding with anything
-     * 
+     *
      * @param amount
      *            The amount of damping to apply
      */
@@ -767,7 +767,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Set a dampening factor to cause a spinning body to decrease its rate of
      * spin
-     * 
+     *
      * @param amount
      *            The amount of damping to apply
      */
@@ -777,9 +777,9 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that touching this object will cause some special code to run
-     * 
+     *
      * @param id
-     *            identifier for the trigger.
+     *            identifier for the callback.
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before it
      *            works
@@ -793,12 +793,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            Number of type-4 goodies that must be collected before it
      *            works
      * @param disapper
-     *            True if the entity should disappear after the trigger
+     *            True if the entity should disappear after the callback
      *            completes
      */
-    public void setTouchTrigger(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
+    public void setTouchCallback(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
             int activationGoodies4, final boolean disappear) {
-        final int[] touchTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+        final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
         // set the code to run on touch
         mGestureResponder = new GestureAction() {
@@ -807,12 +807,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= touchTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
-                // if so, run the trigger
+                    match &= touchCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                // if so, run the callback
                 if (match) {
                     if (disappear)
                         remove(false);
-                    Lol.sGame.onTouchTrigger(id, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    Lol.sGame.onTouchCallback(id, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
                 }
                 return true;
             }
@@ -821,11 +821,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that when this entity stops, we should run custom code
-     * 
-     * @param triggerId
+     *
+     * @param callbackId
      *            An id to attach to this event
      */
-    public void setStopTrigger(final int triggerId) {
+    public void setStopCallback(final int callbackId) {
         Level.sCurrent.mRepeatEvents.add(new Action() {
             boolean moving = false;
 
@@ -835,7 +835,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    Lol.sGame.onStopCallback(callbackId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
                     moving = false;
                 }
             }
@@ -844,7 +844,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Returns the X velocity of of this entity
-     * 
+     *
      * @return float Velocity in X dimension
      */
     public float getXVelocity() {
@@ -853,7 +853,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Returns the Y velocity of of this entity
-     * 
+     *
      * @return float Velocity in Y dimension
      */
     public float getYVelocity() {
@@ -863,7 +863,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Make this entity move according to a route. The entity can loop back to
      * the beginning of the route.
-     * 
+     *
      * @param route
      *            The route to follow.
      * @param velocity
@@ -884,7 +884,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Make the entity continuously rotate. This is usually only useful for
      * fixed objects.
-     * 
+     *
      * @param duration
      *            Time it takes to complete one rotation
      */
@@ -915,7 +915,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Indicate that when the player touches this obstacle, we should play a
      * sound
-     * 
+     *
      * @param sound
      *            The name of the sound file to play
      */
@@ -927,7 +927,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Call this on an Entity to make it pokeable. Poke the entity, then poke
      * the screen, and the entity will move to the location that was pressed.
      * Poke the entity twice in rapid succession to delete it.
-     * 
+     *
      * @param deleteThresholdMillis
      *            If two touches happen within this many milliseconds, the
      *            entity will be deleted. Use 0 to disable this
@@ -975,7 +975,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that this entity can be flicked on the screen
-     * 
+     *
      * @param dampFactor
      *            A value that is multiplied by the vector for the flick, to
      *            affect speed
@@ -1004,7 +1004,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * pokeToPlace, in that one touches the entity, then where she wants the
      * entity to go. However, this involves moving with velocity, instead of
      * teleporting
-     * 
+     *
      * @param velocity
      *            The constant velocity for poke movement
      * @param oncePerTouch
@@ -1040,7 +1040,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * makes the entity move toward that point. The behavior is similar to
      * pokePath, except that as the finger moves, the entity keeps changing its
      * destination accordingly.
-     * 
+     *
      * @param velocity
      *            The constant velocity for poke movement
      * @param oncePerTouch
@@ -1093,7 +1093,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Save the animation sequence and start it right away
-     * 
+     *
      * @param a
      *            The animation do display
      */
@@ -1106,7 +1106,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Save an animation sequence for showing when we get rid of a sprite
-     * 
+     *
      * @param a
      *            The animation to display
      * @param offsetX
@@ -1139,7 +1139,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that something should not appear quite yet...
-     * 
+     *
      * @param delay
      *            How long to wait before displaying the thing
      */
@@ -1157,7 +1157,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that something should disappear after a little while
-     * 
+     *
      * @param delay
      *            How long to wait before hiding the thing
      * @param quiet
@@ -1175,7 +1175,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Change the image being used by the entity
-     * 
+     *
      * @param imgName
      *            The name of the new image file to use
      * @param index
@@ -1189,7 +1189,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Change the size of an entity, and/or change its position
-     * 
+     *
      * @param x
      *            The new X coordinate of its bottom left corner
      * @param y
@@ -1243,7 +1243,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that this entity should shrink over time
-     * 
+     *
      * @param shrinkX
      *            The number of meters by which the X dimension should shrink
      *            each second
@@ -1291,7 +1291,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * hovering entity. Also, be careful about using hover with zoom... hover is
      * relative to screen coordinates (pixels), not world coordinates, so it's
      * going to look funny to use this with zoom
-     * 
+     *
      * @param x
      *            the X coordinate (in pixels) where the entity should appear
      * @param y
@@ -1322,7 +1322,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Make this obstacle sticky, so that a hero will stick to it
-     * 
+     *
      * @param top
      *            Is the top sticky?
      * @param right
@@ -1338,7 +1338,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Set the sound to play when this entity disappears
-     * 
+     *
      * @param soundName
      *            Name of the sound file
      */
@@ -1348,7 +1348,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that touching this entity should make a hero throw a projectile
-     * 
+     *
      * @param h
      *            The hero who should throw a projectile when this is touched
      * @param offsetX
@@ -1377,7 +1377,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Indicate that this obstacle only registers collisions on one side.
-     * 
+     *
      * @param side
      *            The side that registers collisions. 0 is top, 1 is right, 2 is
      *            bottom, 3 is left, -1 means "none"
@@ -1389,7 +1389,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Indicate that this entity should not have collisions with any other
      * entity that has the same ID
-     * 
+     *
      * @param id
      *            The number for this class of non-interacting entities
      */
@@ -1409,7 +1409,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Specify that this entity is supposed to chase another entity
-     * 
+     *
      * @param speed
      *            The speed with which it chases the other entity
      * @param target
@@ -1477,7 +1477,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Set the z plane for this entity
-     * 
+     *
      * @param zIndex
      *            The z plane. Values range from -2 to 2. The default is 0.
      */
@@ -1491,7 +1491,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Create a revolute joint between this entity and some other entity
-     * 
+     *
      * @param anchor
      *            The entity around which this entity will rotate
      * @param anchorX
@@ -1526,7 +1526,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Attach a motor to make a joint turn
-     * 
+     *
      * @param motorSpeed
      *            Speed in radians per second
      * @param motorTorque
@@ -1545,7 +1545,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
     /**
      * Set upper and lower bounds on the rotation of the joint
-     * 
+     *
      * @param upper
      *            The upper bound in radians
      * @param lower
@@ -1564,7 +1564,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Create a weld joint between this entity and some other entity, to force
      * the entities to stick together.
-     * 
+     *
      * @param other
      *            The entity that will be fused to this entity
      * @param otherX

@@ -86,7 +86,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a drag event
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -96,7 +96,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a down press (hopefully to turn it into a hold/release)
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -106,7 +106,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle an up press (hopefully to turn it into a release)
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -116,7 +116,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a tap event
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -126,7 +126,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a pan event
-         * 
+         *
          * @param touchVec
          *            The x/y/z world coordinates of the touch
          * @param deltaX
@@ -140,7 +140,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a pan stop event
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -150,7 +150,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a fling event
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -160,7 +160,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a toggle event. This is usually built from a down and an up.
-         * 
+         *
          * @param touchVec
          *            The x/y/z coordinates of the touch
          */
@@ -170,7 +170,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle a zoom event
-         * 
+         *
          * @param initialDistance
          *            The distance between fingers when the pinch started
          * @param distance
@@ -207,7 +207,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * The constructor simply forwards to the OrthographicCamera constructor
-         * 
+         *
          * @param viewportWidth
          *            Width of the camera
          * @param viewportHeight
@@ -241,7 +241,7 @@ public class Level extends ScreenAdapter {
         /**
          * When the screen is tapped, this code forwards the tap to the
          * appropriate GestureAction
-         * 
+         *
          * @param x
          *            X coordinate of the tap
          * @param y
@@ -292,7 +292,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle fling events
-         * 
+         *
          * @param velocityX
          *            X velocity of the fling
          * @param velocityY
@@ -312,7 +312,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle pan events
-         * 
+         *
          * @param x
          *            X coordinate of current touch
          * @param y
@@ -344,7 +344,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle end-of-pan event
-         * 
+         *
          * @param x
          *            X coordinate of the tap
          * @param y
@@ -393,7 +393,7 @@ public class Level extends ScreenAdapter {
     class LolInputManager extends InputAdapter {
         /**
          * Handle when a downward touch happens
-         * 
+         *
          * @param screenX
          *            X coordinate of the tap
          * @param screenY
@@ -446,7 +446,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle when a touch is released
-         * 
+         *
          * @param screenX
          *            X coordinate of the tap
          * @param screenY
@@ -471,7 +471,7 @@ public class Level extends ScreenAdapter {
 
         /**
          * Handle dragging
-         * 
+         *
          * @param screenX
          *            X coordinate of the drag
          * @param screenY
@@ -664,7 +664,7 @@ public class Level extends ScreenAdapter {
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
-     * 
+     *
      * @param width
      *            The width of the level, in meters
      * @param height
@@ -805,7 +805,7 @@ public class Level extends ScreenAdapter {
     /**
      * Add a renderable entity to the level, putting it into the appropriate z
      * plane
-     * 
+     *
      * @param r
      *            The renderable entity
      * @param zIndex
@@ -820,7 +820,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Remove a renderable entity from its z plane
-     * 
+     *
      * @param r
      *            The entity to remove
      * @param zIndex
@@ -834,7 +834,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * A hack for stopping events when a pause screen is opened
-     * 
+     *
      * @param touchVec
      *            The location of the touch that interacted with the pause
      *            screen.
@@ -858,7 +858,7 @@ public class Level extends ScreenAdapter {
     /**
      * This code is called every 1/45th of a second to update the game state and
      * re-draw the screen
-     * 
+     *
      * @param delta
      *            The time since the last render
      */
@@ -983,7 +983,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Create a new empty level, and configure its camera
-     * 
+     *
      * @param width
      *            width of the camera
      * @param height
@@ -996,7 +996,7 @@ public class Level extends ScreenAdapter {
     /**
      * Identify the entity that the camera should try to keep on screen at all
      * times
-     * 
+     *
      * @param ps
      *            The entity the camera should chase
      */
@@ -1006,7 +1006,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Set the background music for this level
-     * 
+     *
      * @param musicName
      *            Name of the Music file to play
      */
@@ -1018,18 +1018,18 @@ public class Level extends ScreenAdapter {
     /**
      * Specify that you want some code to run after a fixed amount of time
      * passes.
-     * 
+     *
      * @param timerId
      *            A (possibly) unique identifier for this timer
      * @param howLong
      *            How long to wait before the timer code runs
      */
-    public static void setTimerTrigger(final int timerId, float howLong) {
+    public static void setTimerCallback(final int timerId, float howLong) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onTimerTrigger(timerId, Lol.sGame.mCurrLevelNum);
+                    Lol.sGame.onTimerCallback(timerId, Lol.sGame.mCurrLevelNum);
             }
         }, howLong);
     }
@@ -1038,7 +1038,7 @@ public class Level extends ScreenAdapter {
      * Specify that you want some code to run after a fixed amount of time
      * passes, and that it should return a specific PhysicsSprite to the
      * programmer's code
-     * 
+     *
      * @param timerId
      *            A (possibly) unique identifier for this timer
      * @param howLong
@@ -1046,12 +1046,12 @@ public class Level extends ScreenAdapter {
      * @param ps
      *            The entity that should be passed along
      */
-    public static void setTimerTrigger(final int timerId, float howLong, final PhysicsSprite ps) {
+    public static void setTimerCallback(final int timerId, float howLong, final PhysicsSprite ps) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onTimerTrigger(timerId, Lol.sGame.mCurrLevelNum, ps);
+                    Lol.sGame.onTimerCallback(timerId, Lol.sGame.mCurrLevelNum, ps);
             }
         }, howLong);
     }
@@ -1061,7 +1061,7 @@ public class Level extends ScreenAdapter {
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
-     * 
+     *
      * @param imgName
      *            The name of the image to use for scribbling
      * @param duration
@@ -1099,7 +1099,7 @@ public class Level extends ScreenAdapter {
             /**
              * On a down press, draw a new obstacle if enough time has
              * transpired
-             * 
+             *
              * @param x
              *            The X coordinate of the touch
              * @param y
@@ -1137,7 +1137,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Manually set the zoom level of the game
-     * 
+     *
      * @param zoom
      *            The amount of zoom (1 is no zoom, >1 zooms out)
      */

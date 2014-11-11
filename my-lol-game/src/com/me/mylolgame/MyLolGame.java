@@ -137,7 +137,7 @@ public class MyLolGame extends Lol {
 
     /**
      * Describe how to draw the initial state of each level of our game
-     * 
+     *
      * @param whichLevel
      *            The level to be drawn
      */
@@ -1201,7 +1201,7 @@ public class MyLolGame extends Lol {
             Controls.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 255, 255, 16, h);
 
             // Add some text about the previous best score. If you look in the
-            // onLevelCompleteTrigger() code (far below in this file), you'll
+            // onLevelCompleteCallback() code (far below in this file), you'll
             // see that when this level ends, we save the best score. Once the
             // score is saved, it is saved permanently on the phone, though
             // every re-execution on the desktop resets the best score.
@@ -1719,18 +1719,18 @@ public class MyLolGame extends Lol {
             // obstacle is when you provide custom code to run on a
             // projectile/obstacle collision... in that case, you are
             // responsible for removing the projectile (or for not removing it).
-            // That being the case, we can set a "trigger" to run custom code
+            // That being the case, we can set a "callback" to run custom code
             // when the projectile and obstacle collide, and then just have the
             // custom code do nothing.
 
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
-            // "onProjectileCollideTrigger()" method that appears later in this
-            // file. When onProjectileCollideTrigger() runs, it will have an id
+            // "onProjectileCollideCallback()" method that appears later in this
+            // file. When onProjectileCollideCallback() runs, it will have an id
             // of 7, because we arbitrarily picked 7 as the id... for this
             // simple example, our use of an id isn't important, but for more
             // complex games, having different ids can be really useful.
-            o.setProjectileCollisionTrigger(7, 0, 0, 0, 0);
+            o.setProjectileCollisionCallback(7, 0, 0, 0, 0);
         }
 
         /*
@@ -1766,10 +1766,10 @@ public class MyLolGame extends Lol {
             e.setDisappearSound("lowpitch.ogg");
 
             // request that in 2 seconds, if the enemy is still visible,
-            // onTimerTrigger() will run, with id == 2. Be sure to look at
-            // the onTimerTrigger code (below) for more information. Note that
+            // onTimerCallback() will run, with id == 2. Be sure to look at
+            // the onTimerCallback code (below) for more information. Note that
             // there are two versions of the function, and this uses the second!
-            Level.setTimerTrigger(2, 2, e);
+            Level.setTimerCallback(2, 2, e);
 
             // win by defeating enemies
             Score.setVictoryEnemyCount();
@@ -1801,11 +1801,11 @@ public class MyLolGame extends Lol {
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setMoveByTilting();
 
-            // set a timer trigger on the enemy. warning: "6" is going to lead
+            // set a timer callback on the enemy. warning: "6" is going to lead
             // to lots of enemies eventually, and there's no way to defeat them
-            // in this level! Again, be sure to look at onEnemyTimerTrigger()
+            // in this level! Again, be sure to look at onEnemyTimerCallback()
             // below.
-            Level.setTimerTrigger(6, 2, e);
+            Level.setTimerCallback(6, 2, e);
         }
 
         /*
@@ -2047,7 +2047,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            // Be sure to look at onStrengthChangeTrigger. As the hero's
+            // Be sure to look at onStrengthChangeCallback. As the hero's
             // strength moves up and down, its image will change.
         }
 
@@ -2079,17 +2079,17 @@ public class MyLolGame extends Lol {
             o.setMoveByTilting();
             // this says that we don't need to collect any goodies before this
             // obstacle defeats enemies (0,0,0,0), and that when this obstacle
-            // collides with any enemy, the onEnemyCollideTrigger() code will
+            // collides with any enemy, the onEnemyCollideCallback() code will
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
-            o.setEnemyCollisionTrigger(14, 0, 0, 0, 0, .5f);
+            o.setEnemyCollisionCallback(14, 0, 0, 0, 0, .5f);
 
             // make a small obstacle that can also defeat enemies, but doesn't
             // disappear
             Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionTrigger(1, 0, 0, 0, 0, 0);
+            o2.setEnemyCollisionCallback(1, 0, 0, 0, 0, 0);
 
             // make four enemies
             Enemy e = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
@@ -2111,7 +2111,7 @@ public class MyLolGame extends Lol {
             // win by defeating enemies
             Score.setVictoryEnemyCount(2);
 
-            // be sure to look at onEnemyCollideTrigger to see how this level
+            // be sure to look at onEnemyCollideCallback to see how this level
             // will play out.
         }
 
@@ -2296,19 +2296,19 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * This level demonstrates the use of timer triggers. We can use timers
+         * This level demonstrates the use of timer callbacks. We can use timers
          * to make more of the level appear over time. In this case, we'll chain
-         * the timer triggers together, so that we can get more and more things
-         * to develop. Be sure to look at the onTimerTrigger code to see how the
+         * the timer callbacks together, so that we can get more and more things
+         * to develop. Be sure to look at the onTimerCallback code to see how the
          * rest of this level works.
-         * 
+         *
          * @demonstrates: destinations and goodies with fixed velocities
-         * 
+         *
          * @demonstrates: enemy who disappears when it is touched
-         * 
+         *
          * @demonstrates: enemy who can be dragged around
-         * 
-         * @demonstrates: timer triggers
+         *
+         * @demonstrates: timer callbacks
          */
         else if (whichLevel == 62) {
             Level.configure(48, 32);
@@ -2326,19 +2326,19 @@ public class MyLolGame extends Lol {
             // run...
             Score.setVictoryDestination(1);
 
-            // now set a timer trigger. after three seconds, the
-            // onTimerTrigger() method will run, with level=62 and id=0
-            Level.setTimerTrigger(0, 3);
+            // now set a timer callback. after three seconds, the
+            // onTimerCallback() method will run, with level=62 and id=0
+            Level.setTimerCallback(0, 3);
         }
 
         /*
-         * This level shows triggers that run on a collision between hero and
+         * This level shows callbacks that run on a collision between hero and
          * obstacle. In this case, it lets us draw out the next part of the
          * level later, instead of drawing the whole thing right now. In a real
-         * level, we'd draw a few screens at a time, and not put the trigger
+         * level, we'd draw a few screens at a time, and not put the callback
          * obstacle at the end of a screen, so that we'd never see the drawing
          * of stuff taking place, but for this demo, that's actually a nice
-         * effect. Be sure to look at onCollideTrigger for more details.
+         * effect. Be sure to look at onCollideCallback for more details.
          */
         else if (whichLevel == 63) {
             Level.configure(3 * 48, 32);
@@ -2355,21 +2355,21 @@ public class MyLolGame extends Lol {
             Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
             Score.setVictoryDestination(1);
 
-            // this obstacle is a collision trigger... when the hero hits it,
-            // the next part of the level appears, via onHeroCollideTrigger().
+            // this obstacle is a collision callback... when the hero hits it,
+            // the next part of the level appears, via onHeroCollideCallback().
             // Note, too, that it disappears when the hero hits it, so we can
             // play a sound if we want...
             Obstacle o = Obstacle.makeAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            // the trigger id is 0, there is no delay, and no goodies are needed
+            // the callback id is 0, there is no delay, and no goodies are needed
             // before it works
-            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 0);
+            o.setHeroCollisionCallback(0, 0, 0, 0, 0, 0);
             o.setDisappearSound("hipitch.ogg");
         }
 
         /*
-         * this level demonstrates triggers that happen when we touch an
-         * obstacle. Be sure to look at the onTouchTrigger() method for more
+         * this level demonstrates callbacks that happen when we touch an
+         * obstacle. Be sure to look at the onTouchCallback() method for more
          * details
          */
         else if (whichLevel == 64) {
@@ -2389,12 +2389,12 @@ public class MyLolGame extends Lol {
             d.setActivationScore(3, 0, 0, 0);
             Score.setVictoryDestination(1);
 
-            // draw an obstacle, make it a touch trigger, and then draw the
+            // draw an obstacle, make it a touch callback, and then draw the
             // goodie we need to get in order to activate the obstacle
             Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
-            // we'll give this trigger the id "39", just for fun
-            o.setTouchTrigger(39, 1, 0, 0, 0, true);
+            // we'll give this callback the id "39", just for fun
+            o.setTouchCallback(39, 1, 0, 0, 0, true);
             o.setDisappearSound("hipitch.ogg");
 
             Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
@@ -2402,11 +2402,11 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * this level shows how to use enemy defeat triggers. There are four
+         * this level shows how to use enemy defeat callbacks. There are four
          * ways to defeat an enemy, so we enable all mechanisms in this level,
-         * to see if they all work to cause enemy triggers to run the
-         * onEnemyTrigger code. Another important point here is that the IDs
-         * don't need to be unique for *any* triggers. We can use the same ID
+         * to see if they all work to cause enemy callbacks to run the
+         * onEnemyCallback code. Another important point here is that the IDs
+         * don't need to be unique for *any* callbacks. We can use the same ID
          * every time...
          */
         else if (whichLevel == 65) {
@@ -2416,7 +2416,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
             // give the hero strength, so that we can use him to defeat an enemy
-            // as a test of enemy triggers
+            // as a test of enemy callbacks
             Hero h = Hero.makeAsCircle(12, 12, 4, 4, "greenball.png");
             h.setStrength(3);
             h.setMoveByTilting();
@@ -2427,36 +2427,36 @@ public class MyLolGame extends Lol {
             Goodie g1 = Goodie.makeAsCircle(20, 29, 2, 3, "purpleball.png");
             g1.setInvincibilityDuration(15);
 
-            // enable throwing projectiles, so that we can test enemy triggers
+            // enable throwing projectiles, so that we can test enemy callbacks
             // again
             h.setTouchToThrow(h, 4, 2, 30, 0);
             ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
 
-            // add an obstacle that has an enemy collision trigger, so it can
+            // add an obstacle that has an enemy collision callback, so it can
             // defeat enemies
             Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionTrigger(0, 0, 0, 0, 0, 0);
+            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, 0);
 
             // now draw our enemies... we need enough to be able to test that
             // all four defeat mechanisms work.
             Enemy e1 = Enemy.makeAsCircle(5, 5, 1, 1, "redball.png");
-            e1.setDefeatTrigger(0);
+            e1.setDefeatCallback(0);
 
             Enemy e2 = Enemy.makeAsCircle(5, 5, 2, 2, "redball.png");
-            e2.setDefeatTrigger(0);
+            e2.setDefeatCallback(0);
             e2.setInfoText("weak");
 
             Enemy e3 = Enemy.makeAsCircle(40, 3, 1, 1, "redball.png");
-            e3.setDefeatTrigger(0);
+            e3.setDefeatCallback(0);
 
             Enemy e4 = Enemy.makeAsCircle(25, 25, 1, 1, "redball.png");
-            e4.setDefeatTrigger(0);
+            e4.setDefeatCallback(0);
             e4.setDisappearOnTouch();
 
             Enemy e5 = Enemy.makeAsCircle(25, 29, 1, 1, "redball.png");
-            e5.setDefeatTrigger(0);
+            e5.setDefeatCallback(0);
 
             // win by defeating enemies
             Score.setVictoryEnemyCount();
@@ -2464,8 +2464,8 @@ public class MyLolGame extends Lol {
 
         /*
          * This level shows that we can resize a hero on the fly, and change its
-         * image. We use a collision trigger to cause the effect. Furthermore,
-         * we can increment scores inside of the trigger code, which lets us
+         * image. We use a collision callback to cause the effect. Furthermore,
+         * we can increment scores inside of the callback code, which lets us
          * activate the destination on an obstacle collision
          */
         else if (whichLevel == 66) {
@@ -2487,10 +2487,10 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             // Colliding with this star will make the hero into a star... see
-            // onHeroCollideTrigger for details
+            // onHeroCollideCallback for details
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionTrigger(0, 0, 0, 0, 0, 1);
+            o.setHeroCollisionCallback(0, 0, 0, 0, 0, 1);
         }
 
         /*
@@ -2773,9 +2773,9 @@ public class MyLolGame extends Lol {
             }
 
             // When the hero collides with this obstacle, we'll increase the
-            // time remaining. See onHeroCollideTrigger()
+            // time remaining. See onHeroCollideCallback()
             Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
-            o.setHeroCollisionTrigger(0, 1, 1, 1, 0, 0);
+            o.setHeroCollisionCallback(0, 1, 1, 1, 0, 0);
         }
 
         /*
@@ -2864,7 +2864,7 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * One-sided obstacles can be trigger obstacles. This allows, among
+         * One-sided obstacles can be callback obstacles. This allows, among
          * other things, games like doodle jump. This level shows how it all
          * interacts.
          */
@@ -2872,7 +2872,7 @@ public class MyLolGame extends Lol {
             Level.configure(48, 32);
             Physics.configure(0, -10);
             Tilt.enable(10, 0);
-            PreScene.addText("One-sided + Triggers", 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("One-sided + Callbacks", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
@@ -2888,9 +2888,9 @@ public class MyLolGame extends Lol {
             // create a platform that we can jump through from above
             Obstacle platform = Obstacle.makeAsBox(10, 5, 10, .2f, "red.png");
             platform.setOneSided(2);
-            // Set a trigger, then re-enable the platform's collision effect.
-            // Be sure to check onHeroCollideTrigger
-            platform.setHeroCollisionTrigger(0, 0, 0, 0, 0, 0);
+            // Set a callback, then re-enable the platform's collision effect.
+            // Be sure to check onHeroCollideCallback
+            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, 0);
             platform.setCollisionEffect(true);
 
             // make the z index of the platform -1, so that the hero (index 0)
@@ -2919,18 +2919,18 @@ public class MyLolGame extends Lol {
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // A trigger control is a way to run arbitrary code whenever the
+            // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
-            // of behavior we might want. See onControlPressTrigger().
-            Controls.addTriggerControl(40, 40, 40, 40, "red.png", 747);
+            // of behavior we might want. See onControlPressCallback().
+            Controls.addCallbackControl(40, 40, 40, 40, "red.png", 747);
 
             Controls.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Controls.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Controls.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
 
-            Controls.addTriggerControl(40, 90, 40, 40, "red.png", 748);
-            Controls.addTriggerControl(40, 140, 40, 40, "red.png", 749);
-            Controls.addTriggerControl(40, 190, 40, 40, "red.png", 750);
+            Controls.addCallbackControl(40, 90, 40, 40, "red.png", 748);
+            Controls.addCallbackControl(40, 140, 40, 40, "red.png", 749);
+            Controls.addCallbackControl(40, 190, 40, 40, "red.png", 750);
 
         }
 
@@ -3066,7 +3066,7 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * Demonstrate pinch-to-zoom, and also demonstrate one-time trigger
+         * Demonstrate pinch-to-zoom, and also demonstrate one-time callback
          * controls
          */
         else if (whichLevel == 85) {
@@ -3089,8 +3089,8 @@ public class MyLolGame extends Lol {
             // turn on pinch zoomg
             Controls.addPinchZoomControl(0, 0, 480, 320, "", 8, .25f);
 
-            // add a one-time trigger control
-            Controls.addOneTimeTriggerControl(40, 40, 40, 40, "blueball.png", "greenball.png", 992);
+            // add a one-time callback control
+            Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", 992);
         }
 
         /*
@@ -3109,7 +3109,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
             // when the hero stops, we'll run code that turns the hero red
-            h.setStopTrigger(99);
+            h.setStopCallback(99);
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
@@ -3137,7 +3137,7 @@ public class MyLolGame extends Lol {
             o.setCanFall();
             h.setWeldJoint(o, 3, 0, 0, 0, 45);
         }
-        
+
         /*
          * Demonstrate that we can have callback buttons on PauseScenes
          */
@@ -3169,7 +3169,7 @@ public class MyLolGame extends Lol {
      * this method to describe how each help scene should appear. Note that you
      * *must* specify the maximum number of help scenes for your game in the
      * Config.java file. If you specify "0", then you can leave this code blank.
-     * 
+     *
      * @param whichScene
      *            The help scene being drawn. The game engine will set this
      *            value to indicate which scene needs to be drawn.
@@ -3212,15 +3212,15 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If a game uses Obstacles that are triggers, it must provide this to
+     * If a game uses Obstacles that are callbacks, it must provide this to
      * specify what to do when such an obstacle is hit by a hero. The idea
      * behind this mechanism is that it allows the creation of more things in
      * the game, but only after the game has reached a particular state. The
      * most obvious example is 'infinite' levels. There, it is impossible to
      * draw the entire scene, so instead one can place an invisible, full-length
-     * TriggerObstacle at some point in the scene, and then when that obstacle
+     * CallbackObstacle at some point in the scene, and then when that obstacle
      * is hit, this code will run.
-     * 
+     *
      * @param id
      *            The ID of the obstacle that was hit by the hero
      * @param whichLevel
@@ -3231,38 +3231,38 @@ public class MyLolGame extends Lol {
      *            The hero who collided with the obstacle
      */
     @Override
-    public void onHeroCollideTrigger(int id, int whichLevel, Obstacle obstacle, Hero hero) {
+    public void onHeroCollideCallback(int id, int whichLevel, Obstacle obstacle, Hero hero) {
         // Code to run on level 63 for hero/obstacle collisions:
         if (whichLevel == 63) {
-            // the first trigger just causes us to make a new obstacle a little
+            // the first callback just causes us to make a new obstacle a little
             // farther out
             if (id == 0) {
                 // get rid of the obstacle we just collided with
                 obstacle.remove(false);
                 // make a goodie
                 Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
-                // make an obstacle that is a trigger, but that doesn't work
+                // make an obstacle that is a callback, but that doesn't work
                 // until the goodie count is 1
                 Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionTrigger(1, 1, 0, 0, 0, 0);
+                oo.setHeroCollisionCallback(1, 1, 0, 0, 0, 0);
             }
-            // The second trigger works the same way
+            // The second callback works the same way
             else if (id == 1) {
                 obstacle.remove(false);
                 Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
 
                 Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionTrigger(2, 2, 0, 0, 0, 0);
+                oo.setHeroCollisionCallback(2, 2, 0, 0, 0, 0);
             }
-            // same for the third trigger
+            // same for the third callback
             else if (id == 2) {
                 obstacle.remove(false);
                 Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
 
                 Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionTrigger(3, 3, 0, 0, 0, 0);
+                oo.setHeroCollisionCallback(3, 3, 0, 0, 0, 0);
             }
-            // The fourth trigger draws the destination
+            // The fourth callback draws the destination
             else if (id == 3) {
                 obstacle.remove(false);
                 // print a message and pause the game, via PauseScene
@@ -3302,12 +3302,12 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If a game uses entities that are touch triggers, it must provide this to
+     * If a game uses entities that are touch callbacks, it must provide this to
      * specify what to do when such an entity is touched by the user. The idea
      * behind this mechanism is that it allows the creation of more interactive
      * games, since there can be items to unlock, treasure chests to open, and
      * other such behaviors.
-     * 
+     *
      * @param id
      *            The ID of the obstacle that was hit by the hero
      * @param whichLevel
@@ -3316,7 +3316,7 @@ public class MyLolGame extends Lol {
      *            The entity that was touched
      */
     @Override
-    public void onTouchTrigger(int id, int whichLevel, PhysicsSprite entity) {
+    public void onTouchCallback(int id, int whichLevel, PhysicsSprite entity) {
         // In level 64, we draw a bunch of goodies when the obstacle is touched.
         // This is supposed to be like having a treasure chest open up.
         if (whichLevel == 64) {
@@ -3332,19 +3332,19 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If a game uses timer triggers, it must provide this to specify what to do
+     * If a game uses timer callbacks, it must provide this to specify what to do
      * when a timer expires.
-     * 
+     *
      * @param id
      *            The ID of the timer
      * @param whichLevel
      *            The current level
      */
     @Override
-    public void onTimerTrigger(int id, int whichLevel) {
+    public void onTimerCallback(int id, int whichLevel) {
         // here's the code for level 62
         if (whichLevel == 62) {
-            // after first trigger, print a message, draw an enemy, register a
+            // after first callback, print a message, draw an enemy, register a
             // new timer
             if (id == 0) {
                 // put up a pause scene to interrupt gameplay
@@ -3357,9 +3357,9 @@ public class MyLolGame extends Lol {
                 e3.setCanDrag(true);
 
                 // set up a new timer, with id == 1
-                Level.setTimerTrigger(1, 3);
+                Level.setTimerCallback(1, 3);
             }
-            // after second trigger, draw an enemy who disappears on touch,
+            // after second callback, draw an enemy who disappears on touch,
             // and register a new timer
             else if (id == 1) {
                 // clear the pause scene, then put new text on it
@@ -3371,9 +3371,9 @@ public class MyLolGame extends Lol {
                 e4.setPhysics(1.0f, 0.3f, 0.6f);
                 e4.setDisappearOnTouch();
                 // set another timer with id == 2
-                Level.setTimerTrigger(2, 3);
+                Level.setTimerCallback(2, 3);
             }
-            // after third trigger, draw an enemy, a goodie, and a destination,
+            // after third callback, draw an enemy, a goodie, and a destination,
             // all with fixed velocities
             else if (id == 2) {
                 PauseScene.reset();
@@ -3393,9 +3393,9 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have timertriggers with attached entityes, then you must
+     * If you want to have timercallbacks with attached entityes, then you must
      * override this to define what happens when the timer expires
-     * 
+     *
      * @param id
      *            The id that was assigned to the timer that exired
      * @param whichLevel
@@ -3404,8 +3404,8 @@ public class MyLolGame extends Lol {
      *            The PhysicsSprite that was connected to the timer
      */
     @Override
-    public void onTimerTrigger(int id, int whichLevel, PhysicsSprite ps) {
-        // Code for level 48's EnemyTimerTrigger
+    public void onTimerCallback(int id, int whichLevel, PhysicsSprite ps) {
+        // Code for level 48's EnemyTimerCallback
         if (whichLevel == 48) {
             // we're simulating cancer cells that can reproduce a fixed number
             // of times. The ID here represents the number of remaining
@@ -3425,12 +3425,12 @@ public class MyLolGame extends Lol {
             // if there are reproductions left, then have e and its two new
             // children all reproduce in 2 seconds
             if (id > 0) {
-                Level.setTimerTrigger(id - 1, 2, left);
-                Level.setTimerTrigger(id - 1, 2, ps);
-                Level.setTimerTrigger(id - 1, 2, right);
+                Level.setTimerCallback(id - 1, 2, left);
+                Level.setTimerCallback(id - 1, 2, ps);
+                Level.setTimerCallback(id - 1, 2, right);
             }
         }
-        // Code for level 49's EnemyTimerTrigger
+        // Code for level 49's EnemyTimerCallback
         else if (whichLevel == 49) {
             // in this case, every enemy will produce one offspring on each
             // timer
@@ -3440,16 +3440,16 @@ public class MyLolGame extends Lol {
             e2.setMoveByTilting();
             // make more enemies?
             if (id > 0) {
-                Level.setTimerTrigger(id - 1, 2, ps);
-                Level.setTimerTrigger(id - 1, 2, e2);
+                Level.setTimerCallback(id - 1, 2, ps);
+                Level.setTimerCallback(id - 1, 2, e2);
             }
         }
     }
 
     /**
-     * If a game has Enemies that have 'defeatTrigger' set, then when any of
+     * If a game has Enemies that have 'defeatCallback' set, then when any of
      * those enemies are defeated, this code will run
-     * 
+     *
      * @param id
      *            The ID of the enemy that was defeated by the hero
      * @param whichLevel
@@ -3458,7 +3458,7 @@ public class MyLolGame extends Lol {
      *            The enemy that was defeated
      */
     @Override
-    public void onEnemyDefeatTrigger(int id, int whichLevel, Enemy enemy) {
+    public void onEnemyDefeatCallback(int id, int whichLevel, Enemy enemy) {
         // in level 65, whenever we defeat an enemy, we pause the game, print a
         // message, and then put a goodie at a random location
         if (whichLevel == 65) {
@@ -3475,11 +3475,11 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have EnemyCollide triggers, then you must override this to
+     * If you want to have EnemyCollide callbacks, then you must override this to
      * define what happens when an enemy hits the obstacle
-     * 
+     *
      * @param id
-     *            The ID of the trigger
+     *            The ID of the callback
      * @param whichLevel
      *            The current level
      * @param obstacle
@@ -3488,7 +3488,7 @@ public class MyLolGame extends Lol {
      *            The enemy involved in the collision
      */
     @Override
-    public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle obstacle, Enemy enemy) {
+    public void onEnemyCollideCallback(int id, int whichLevel, Obstacle obstacle, Enemy enemy) {
         // this is the code for level 56, to handle collisions between obstacles
         // and enemies
         if (whichLevel == 56) {
@@ -3515,11 +3515,11 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have Obstacle/Projectile triggers, then you must override
+     * If you want to have Obstacle/Projectile callbacks, then you must override
      * this to define what happens when a projectile hits the obstacle
-     * 
+     *
      * @param id
-     *            The ID of the trigger
+     *            The ID of the callback
      * @param whichLevel
      *            The current level
      * @param obstacle
@@ -3528,7 +3528,7 @@ public class MyLolGame extends Lol {
      *            The projectile involved in the collision
      */
     @Override
-    public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle obstacle, Projectile projectile) {
+    public void onProjectileCollideCallback(int id, int whichLevel, Obstacle obstacle, Projectile projectile) {
         if (whichLevel == 47) {
             if (id == 7) {
                 // don't do anything... we want the projectile to stay on the
@@ -3544,14 +3544,14 @@ public class MyLolGame extends Lol {
     /**
      * If you want to do something when the level ends (like record a high
      * score), you will need to override this method
-     * 
+     *
      * @param whichLevel
      *            The current level
      * @param win
      *            true if the level was won, false otherwise
      */
     @Override
-    public void levelCompleteTrigger(int whichLevel, boolean win) {
+    public void levelCompleteCallback(int whichLevel, boolean win) {
         // if we are on level 32, see if this is the farthest the hero has ever
         // traveled, and if so, update the persistent score
         if (whichLevel == 32) {
@@ -3563,16 +3563,16 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you use TriggerControls, you must override this to define what happens
+     * If you use CallbackControls, you must override this to define what happens
      * when the control is pressed
-     * 
+     *
      * @param id
      *            The id that was assigned to the Control
      * @param whichLevel
      *            The current level
      */
     @Override
-    public void onControlPressTrigger(int id, int whichLevel) {
+    public void onControlPressCallback(int id, int whichLevel) {
         // for lack of anything better to do, we'll just pause the game
         if (whichLevel == 79) {
             if (id == 747) {
@@ -3594,16 +3594,16 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you use EntityTriggerControls, you must override this to define what
+     * If you use EntityCallbackControls, you must override this to define what
      * happens when the control is pressed
-     * 
+     *
      * @param id
      *            The id that was assigned to the Control
      * @param whichLevel
      *            The current level
      */
     @Override
-    public void onControlPressEntityTrigger(int id, float val, PhysicsSprite entity, int whichLevel) {
+    public void onControlPressEntityCallback(int id, float val, PhysicsSprite entity, int whichLevel) {
         // for lack of anything better to do, we'll just pause the game
         if (whichLevel == 86) {
             if (id == 71) {
@@ -3628,14 +3628,14 @@ public class MyLolGame extends Lol {
      * Whenever a hero's strength changes due to a collision with a goodie or
      * enemy, this is called. The most common use is to change the hero's
      * appearance.
-     * 
+     *
      * @param whichLevel
      *            The current level
      * @param h
      *            The hero involved in the collision
      */
     @Override
-    public void onStrengthChangeTrigger(int whichLevel, Hero h) {
+    public void onStrengthChangeCallback(int whichLevel, Hero h) {
         if (whichLevel == 55) {
             // get the hero's strength. Since the hero isn't dead, the strength
             // is at least 1. Since there are 7 strength booster goodies, the
@@ -3651,7 +3651,7 @@ public class MyLolGame extends Lol {
      * When an entity stops moving, this code runs
      */
     @Override
-    public void onStopTrigger(int id, int whichLevel, PhysicsSprite o) {
+    public void onStopCallback(int id, int whichLevel, PhysicsSprite o) {
         if (whichLevel == 86) {
             if (id == 99) {
                 o.setImage("red.png", 0);
@@ -3661,7 +3661,7 @@ public class MyLolGame extends Lol {
 
     /**
      * When a PauseScene button is pressed, this code will run.
-     * 
+     *
      * @param whichLevel
      *            The current level
      * @param id
@@ -3675,7 +3675,7 @@ public class MyLolGame extends Lol {
                 Score.winLevel();
             }
             if (id == 2) {
-                Score.loseLevel();                
+                Score.loseLevel();
             }
         }
     }
