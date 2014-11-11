@@ -313,8 +313,7 @@ public class Hero extends PhysicsSprite {
         }
         // defeat by jumping only if the hero's bottom is above the enemy's
         // mid-section
-        else if (mInAir && e.mDefeatByJump
-                && getYPosition() > e.getYPosition() + e.mSize.y / 2) {
+        else if (mInAir && e.mDefeatByJump && getYPosition() > e.getYPosition() + e.mSize.y / 2) {
             e.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
@@ -352,8 +351,7 @@ public class Hero extends PhysicsSprite {
         o.playCollideSound();
 
         // reset rotation of hero if this obstacle is not a sensor
-        if ((mCurrentRotation != 0)
-                && !o.mBody.getFixtureList().get(0).isSensor())
+        if ((mCurrentRotation != 0) && !o.mBody.getFixtureList().get(0).isSensor())
             increaseRotation(-mCurrentRotation);
 
         // if there is code attached to the obstacle for modifying the hero's
@@ -364,9 +362,7 @@ public class Hero extends PhysicsSprite {
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enable
         // jumps for the hero.
-        if ((mInAir || mAllowMultiJump)
-                && !o.mBody.getFixtureList().get(0).isSensor()
-                && !o.mNoJumpReenable)
+        if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor() && !o.mNoJumpReenable)
             stopJump();
     }
 
@@ -427,8 +423,7 @@ public class Hero extends PhysicsSprite {
      *            File name of the default image to display
      * @return The hero that was created
      */
-    public static Hero makeAsBox(float x, float y, float width, float height,
-            String imgName) {
+    public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
         Level.sCurrent.addSprite(h, 0);
@@ -450,12 +445,10 @@ public class Hero extends PhysicsSprite {
      *            File name of the default image to display
      * @return The hero that was created
      */
-    public static Hero makeAsCircle(float x, float y, float width,
-            float height, String imgName) {
+    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y,
-                radius / 2);
+        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(h, 0);
         return h;
     }
@@ -532,7 +525,7 @@ public class Hero extends PhysicsSprite {
      */
 
     public void setTouchToJump() {
-        mGestureResponder = new GestureAction(){
+        mGestureResponder = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 jump();

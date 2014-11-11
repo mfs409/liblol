@@ -141,8 +141,7 @@ public abstract class Lol extends Game {
         if (!mChooserConfig.showChooser()) {
             if (mMode == Modes.PLAY) {
                 doSplash();
-            }
-            else {
+            } else {
                 doPlayLevel(mCurrLevelNum == 0 ? 1 : mCurrLevelNum);
             }
             return;
@@ -207,8 +206,7 @@ public abstract class Lol extends Game {
     private void handleKeyDown() {
         // if neither BACK nor ESCAPE is being pressed, do nothing, but
         // recognize future presses
-        if (!Gdx.input.isKeyPressed(Keys.BACK)
-                && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+        if (!Gdx.input.isKeyPressed(Keys.BACK) && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             mKeyDown = false;
             return;
         }
@@ -270,7 +268,7 @@ public abstract class Lol extends Game {
 
         // show the splash screen
         doSplash();
-        
+
         // configure the volume
         if (Facts.getGameFact("volume") == -1)
             Facts.putGameFact("volume", 1);
@@ -316,7 +314,7 @@ public abstract class Lol extends Game {
     public void setNextLevel(int nextLevel) {
         mCurrLevelNum = nextLevel;
     }
-    
+
     /**
      * The programmer configures the game by implementing this method, and
      * returning a LolConfiguration object
@@ -368,8 +366,7 @@ public abstract class Lol extends Game {
      * @param h
      *            The hero involved in the collision
      */
-    abstract public void onHeroCollideTrigger(int id, int whichLevel,
-            Obstacle o, Hero h);
+    abstract public void onHeroCollideTrigger(int id, int whichLevel, Obstacle o, Hero h);
 
     /**
      * When the player touches an entity that has a TouchTrigger attached to it,
@@ -448,8 +445,7 @@ public abstract class Lol extends Game {
      * @param e
      *            The enemy involved in the collision
      */
-    abstract public void onEnemyCollideTrigger(int id, int whichLevel,
-            Obstacle o, Enemy e);
+    abstract public void onEnemyCollideTrigger(int id, int whichLevel, Obstacle o, Enemy e);
 
     /**
      * When a projectile collides with an obstacle, if the obstacle has a
@@ -464,8 +460,7 @@ public abstract class Lol extends Game {
      * @param p
      *            The projectile involved in the collision
      */
-    abstract public void onProjectileCollideTrigger(int id, int whichLevel,
-            Obstacle o, Projectile p);
+    abstract public void onProjectileCollideTrigger(int id, int whichLevel, Obstacle o, Projectile p);
 
     /**
      * When a level finishes, this code will run
@@ -501,8 +496,7 @@ public abstract class Lol extends Game {
      * @param whichLevel
      *            The current level
      */
-    abstract public void onControlPressEntityTrigger(int id, float val,
-            PhysicsSprite entity, int whichLevel);
+    abstract public void onControlPressEntityTrigger(int id, float val, PhysicsSprite entity, int whichLevel);
 
     /**
      * When a hero collides with a goodie or enemy, and it leads to the hero's
@@ -514,4 +508,14 @@ public abstract class Lol extends Game {
      *            The hero whose strength just changed
      */
     abstract public void onStrengthChangeTrigger(int whichLevel, Hero h);
+
+    /**
+     * When a PauseScene button is pressed, this code will run.
+     * 
+     * @param whichLevel
+     *            The current level
+     * @param id
+     *            The number assigned to this PauseScene button
+     */
+    abstract public void onPauseSceneCallback(int whichLevel, int id);
 }

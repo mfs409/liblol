@@ -101,8 +101,7 @@ public class Background {
          * @param yOffset
          *            Y offset
          */
-        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr,
-                float xOffset, float yOffset) {
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset) {
             mXSpeed = xSpeed;
             mYSpeed = ySpeed;
             mImage = tr;
@@ -128,10 +127,8 @@ public class Background {
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
-            sb.setProjectionMatrix(Level.sCurrent.mBgCam
-                    .calculateParallaxMatrix(pl.mXSpeed
-                            * Physics.PIXEL_METER_RATIO, pl.mYSpeed
-                            * Physics.PIXEL_METER_RATIO));
+            sb.setProjectionMatrix(Level.sCurrent.mBgCam.calculateParallaxMatrix(
+                    pl.mXSpeed * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
             if (pl.mXRepeat) {
@@ -151,8 +148,7 @@ public class Background {
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currX < startX + limit
-                        * Lol.sGame.mConfig.getScreenWidth()) {
+                while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
                     sb.draw(pl.mImage, currX, pl.mYOffset);
                     currX += pl.mImage.getRegionWidth();
                 }
@@ -162,15 +158,13 @@ public class Background {
                 // get the camera center, translate, and scale
                 float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + Level.sCurrent.mBgCam.zoom)
-                        * Lol.sGame.mConfig.getScreenHeight();
+                startY -= (1.5f + Level.sCurrent.mBgCam.zoom) * Lol.sGame.mConfig.getScreenHeight();
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currY < startY + limit
-                        * Lol.sGame.mConfig.getScreenHeight()) {
+                while (currY < startY + limit * Lol.sGame.mConfig.getScreenHeight()) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
                 }
@@ -178,14 +172,12 @@ public class Background {
             // draw a layer that never changes based on the camera's X
             // coordinate
             else if (pl.mXSpeed == 0) {
-                sb.draw(pl.mImage, -pl.mImage.getRegionWidth() / 2
-                        + pl.mXOffset, pl.mYOffset);
+                sb.draw(pl.mImage, -pl.mImage.getRegionWidth() / 2 + pl.mXOffset, pl.mYOffset);
             }
             // draw a layer that never changes based on the camera's Y
             // coordinate
             else if (pl.mYSpeed == 0) {
-                sb.draw(pl.mImage, pl.mXOffset, -pl.mImage.getRegionHeight()
-                        / 2 + pl.mYOffset);
+                sb.draw(pl.mImage, pl.mXOffset, -pl.mImage.getRegionHeight() / 2 + pl.mYOffset);
             }
             sb.end();
         }
@@ -228,11 +220,9 @@ public class Background {
      *            The default is to draw the image at y=0. This field allows the
      *            picture to be moved up or down.
      */
-    static public void addHorizontalLayer(float xSpeed, float ySpeed,
-            String imgName, float yOffset) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName)[0], 0, yOffset
-                        * Physics.PIXEL_METER_RATIO);
+    static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
+                * Physics.PIXEL_METER_RATIO);
         pl.mXRepeat = xSpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);
     }
@@ -254,11 +244,9 @@ public class Background {
      *            The default is to draw the image at x=0. This field allows the
      *            picture to be moved left or right.
      */
-    static public void addVerticalLayer(float xSpeed, float ySpeed,
-            String imgName, float xOffset) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName)[0],
-                xOffset * Physics.PIXEL_METER_RATIO, 0);
+    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
+                * Physics.PIXEL_METER_RATIO, 0);
         pl.mYRepeat = ySpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);
     }

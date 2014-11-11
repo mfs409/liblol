@@ -142,8 +142,7 @@ public class Obstacle extends PhysicsSprite {
      *            Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
-    public static Obstacle makeAsBox(float x, float y, float width,
-            float height, String imgName) {
+    public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         Level.sCurrent.addSprite(o, 0);
@@ -168,8 +167,7 @@ public class Obstacle extends PhysicsSprite {
      *            polygon, listed as x0,y0,x1,y1,x2,y2,...
      * @return The obstacle, so that it can be further modified
      */
-    public static Obstacle makeAsPolygon(float x, float y, float width,
-            float height, String imgName, float... verts) {
+    public static Obstacle makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
         Level.sCurrent.addSprite(o, 0);
@@ -191,12 +189,10 @@ public class Obstacle extends PhysicsSprite {
      *            Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
-    public static Obstacle makeAsCircle(float x, float y, float width,
-            float height, String imgName) {
+    public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(width, height, imgName);
-        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
-                radius / 2);
+        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(o, 0);
         return o;
     }
@@ -237,8 +233,7 @@ public class Obstacle extends PhysicsSprite {
      *            How long should the speed boost last (use -1 to indicate
      *            "forever")
      */
-    public void setSpeedBoost(final float boostAmountX,
-            final float boostAmountY, final float boostDuration) {
+    public void setSpeedBoost(final float boostAmountX, final float boostAmountY, final float boostDuration) {
         // disable collisions on this obstacle
         setCollisionEffect(false);
         // register a callback to change the hero's speed
@@ -300,12 +295,10 @@ public class Obstacle extends PhysicsSprite {
      *            The time between when the collision happens, and when the
      *            trigger code runs. Use 0 for immediately
      */
-    public void setHeroCollisionTrigger(final int id, int activationGoodies1,
-            int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay) {
+    public void setHeroCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+            int activationGoodies3, int activationGoodies4, final float delay) {
         // save the required goodie counts, turn off collisions
-        final int[] counts = new int[] { activationGoodies1,
-                activationGoodies2, activationGoodies3, activationGoodies4 };
+        final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
         setCollisionEffect(false);
 
         // register a callback
@@ -322,17 +315,13 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            Lol.sGame.onHeroCollideTrigger(id,
-                                    Lol.sGame.mCurrLevelNum, Obstacle.this,
-                                    (Hero) ps);
+                            Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
                             return;
                         }
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                Lol.sGame.onHeroCollideTrigger(id,
-                                        Lol.sGame.mCurrLevelNum, Obstacle.this,
-                                        (Hero) ps);
+                                Lol.sGame.onHeroCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
                             }
                         }, delay);
                     }
@@ -363,14 +352,13 @@ public class Obstacle extends PhysicsSprite {
      *            The time between when the collision happens, and when the
      *            trigger code runs. Use 0 for immediately
      */
-    public void setEnemyCollisionTrigger(final int id, int activationGoodies1,
-            int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay) {
+    public void setEnemyCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
+            int activationGoodies3, int activationGoodies4, final float delay) {
         /**
          * Enemy triggers can require certain Goodie counts in order to run
          */
-        final int[] enemyTriggerActivation = new int[] { activationGoodies1,
-                activationGoodies2, activationGoodies3, activationGoodies4 };
+        final int[] enemyTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+                activationGoodies4 };
 
         mEnemyCollision = new CollisionCallback() {
             @Override
@@ -381,17 +369,13 @@ public class Obstacle extends PhysicsSprite {
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        Lol.sGame.onEnemyCollideTrigger(id,
-                                Lol.sGame.mCurrLevelNum, Obstacle.this,
-                                (Enemy) ps);
+                        Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
                         return;
                     }
                     Timer.schedule(new Task() {
                         @Override
                         public void run() {
-                            Lol.sGame.onEnemyCollideTrigger(id,
-                                    Lol.sGame.mCurrLevelNum, Obstacle.this,
-                                    (Enemy) ps);
+                            Lol.sGame.onEnemyCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
                         }
                     }, delay);
                 }
@@ -418,12 +402,10 @@ public class Obstacle extends PhysicsSprite {
      *            Number of type-4 goodies that must be collected before this
      *            trigger works
      */
-    public void setProjectileCollisionTrigger(final int id,
-            int activationGoodies1, int activationGoodies2,
+    public void setProjectileCollisionTrigger(final int id, int activationGoodies1, int activationGoodies2,
             int activationGoodies3, int activationGoodies4) {
-        final int[] projectileTriggerActivation = new int[] {
-                activationGoodies1, activationGoodies2, activationGoodies3,
-                activationGoodies4 };
+        final int[] projectileTriggerActivation = new int[] { activationGoodies1, activationGoodies2,
+                activationGoodies3, activationGoodies4 };
 
         mProjectileCollision = new CollisionCallback() {
             @Override
@@ -432,9 +414,7 @@ public class Obstacle extends PhysicsSprite {
                 for (int i = 0; i < 4; ++i)
                     match &= projectileTriggerActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match)
-                    Lol.sGame.onProjectileCollideTrigger(id,
-                            Lol.sGame.mCurrLevelNum, Obstacle.this,
-                            (Projectile) ps);
+                    Lol.sGame.onProjectileCollideTrigger(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Projectile) ps);
             }
         };
     }

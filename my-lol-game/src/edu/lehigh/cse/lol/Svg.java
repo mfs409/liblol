@@ -150,8 +150,8 @@ public class Svg {
      *            Shift the drawing in the Y dimension. Note that shifting
      *            occurs after stretching
      */
-    private Svg(float density, float elasticity, float friction,
-            float stretchX, float stretchY, float xposeX, float xposeY) {
+    private Svg(float density, float elasticity, float friction, float stretchX, float stretchY, float xposeX,
+            float xposeY) {
         // create the physics fixture in a manner that is visible to the
         // addLine routine of the parser
         mFixture = new FixtureDef();
@@ -372,8 +372,7 @@ public class Svg {
         // compute center and length
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
-        float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
-                * (y1 - y2));
+        float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         mBodyDef.position.set(centerX, centerY);
         mBodyDef.angle = 0;
         Body b = Level.sCurrent.mWorld.createBody(mBodyDef);
@@ -457,13 +456,11 @@ public class Svg {
      *            Shift the drawing in the Y dimension. Note that shifting
      *            occurs after stretching
      */
-    public static void importLineDrawing(String svgName, float density,
-            float elasticity, float friction, float stretchX, float stretchY,
-            float xposeX, float xposeY) {
+    public static void importLineDrawing(String svgName, float density, float elasticity, float friction,
+            float stretchX, float stretchY, float xposeX, float xposeY) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
-        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY,
-                xposeX, xposeY);
+        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY, xposeX, xposeY);
         s.parse(svgName);
     }
 }

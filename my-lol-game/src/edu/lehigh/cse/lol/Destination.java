@@ -107,8 +107,7 @@ public class Destination extends PhysicsSprite {
      *            The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public static Destination makeAsBox(float x, float y, float width,
-            float height, String imgName) {
+    public static Destination makeAsBox(float x, float y, float width, float height, String imgName) {
         Destination d = new Destination(width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         d.setCollisionEffect(false);
@@ -131,12 +130,10 @@ public class Destination extends PhysicsSprite {
      *            The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public static Destination makeAsCircle(float x, float y, float width,
-            float height, String imgName) {
+    public static Destination makeAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Destination d = new Destination(radius, radius, imgName);
-        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
-                radius / 2);
+        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionEffect(false);
         Level.sCurrent.addSprite(d, 0);
         return d;
@@ -155,8 +152,7 @@ public class Destination extends PhysicsSprite {
      * @param score4
      *            The number of type-4 goodies that must be collected.
      */
-    public void setActivationScore(int score1, int score2, int score3,
-            int score4) {
+    public void setActivationScore(int score1, int score2, int score3, int score4) {
         mActivation[0] = score1;
         mActivation[1] = score2;
         mActivation[2] = score3;

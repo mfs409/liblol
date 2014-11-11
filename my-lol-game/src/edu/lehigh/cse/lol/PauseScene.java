@@ -44,6 +44,23 @@ import java.util.ArrayList;
  * to the player. A PauseScene can include arbitrary text and pictures.
  */
 public class PauseScene {
+
+    /**
+     * When we draw clickable buttons on the screen, this is how we know where
+     * the buttons are and what to do when they are clicked
+     */
+    private static class Button {
+        /**
+         * The region that can be clicked
+         */
+        Rectangle mRect;
+
+        /**
+         * The ID associated with this region, for calling back to the main code
+         */
+        int mId;
+    }
+
     /**
      * All text and images that go on the PauseScreen are stored here
      */
@@ -76,6 +93,16 @@ public class PauseScene {
     private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
     /**
+     * For suppressing clear clicks
+     */
+    private boolean mSuppressClearClick;
+    
+    /**
+     * All buttons on the PauseScene are stored here
+     */
+    private final ArrayList<Button> mButtons = new ArrayList<Button>();
+
+    /**
      * Get the PauseScene that is configured for the current level, or create a
      * blank one if none exists. We use this as a convenience since the LOL
      * paradigm is that the game designer calls static methods on PauseScene to
@@ -103,7 +130,28 @@ public class PauseScene {
             mVisible = false;
             Lol.sGame.handleBack();
         }
+        
+        // check for taps to the buttons
+        for (Button b : mButtons) {
+            if (b.mRect.contains(mV.x, mV.y)) {
+                dismiss();
+                Lol.sGame.onPauseSceneCallback(Lol.sGame.mCurrLevelNum, b.mId);
+                return;
+            }
+        }
+        
+        // swallow any clicks
         Level.sCurrent.liftAllButtons(mV);
+
+        // only clear the screen if click supress is off
+        if (!mSuppressClearClick)
+            dismiss();
+    }
+
+    /**
+     * Stop showing this PauseScene
+     */
+    void dismiss() {
         // otherwise, just clear the pauseScene (be sure to resume timers)
         mVisible = false;
         long showTime = System.nanoTime() - showingAt;
@@ -111,7 +159,7 @@ public class PauseScene {
         Timer.instance().delay(showTime);
         Timer.instance().start();
     }
-
+    
     /**
      * Internal method to draw a PauseScene
      * 
@@ -133,7 +181,7 @@ public class PauseScene {
         for (Lol.Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
-     
+
         // DEBUG: show where the buttons' boxes are
         if (Lol.sGame.mConfig.showDebugBoxes()) {
             mShapeRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
@@ -141,6 +189,8 @@ public class PauseScene {
             mShapeRender.setColor(Color.RED);
             if (mBackRectangle != null)
                 mShapeRender.rect(mBackRectangle.x, mBackRectangle.y, mBackRectangle.width, mBackRectangle.height);
+            for (Button b : mButtons)
+                mShapeRender.rect(b.mRect.x, b.mRect.y, b.mRect.width, b.mRect.height);
             mShapeRender.end();
         }
 
@@ -171,10 +221,8 @@ public class PauseScene {
      * @param size
      *            The font size to use
      */
-    public static void addText(String text, int x, int y, int red, int green,
-            int blue, String fontName, int size) {
-        getCurrPauseScene().mSprites.add(Util.makeText(x, y, text, red, green,
-                blue, fontName, size));
+    public static void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
+        getCurrPauseScene().mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -194,10 +242,8 @@ public class PauseScene {
      * @param size
      *            The font size to use
      */
-    public static void addText(String text, int red, int green, int blue,
-            String fontName, int size) {
-        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue,
-                fontName, size));
+    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
+        getCurrPauseScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -214,10 +260,8 @@ public class PauseScene {
      * @param height
      *            The height of the image
      */
-    public static void addImage(String imgName, int x, int y, int width,
-            int height) {
-        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height,
-                imgName));
+    public static void addImage(String imgName, int x, int y, int width, int height) {
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -236,11 +280,9 @@ public class PauseScene {
      * @param height
      *            The height of the image
      */
-    public static void addBackButton(String imgName, int x, int y, int width,
-            int height) {
+    public static void addBackButton(String imgName, int x, int y, int width, int height) {
         getCurrPauseScene().mBackRectangle = new Rectangle(x, y, width, height);
-        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height,
-                imgName));
+        getCurrPauseScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -258,5 +300,36 @@ public class PauseScene {
     public static void reset() {
         getCurrPauseScene().mSprites.clear();
         getCurrPauseScene().mBackRectangle = null;
+    }
+
+    /**
+     * Place a new touchable button on the PauseScene. When the button is
+     * pressed, the pause scene will be closed, and an onPauseSceneCallback
+     * function will be called in your game, passing in the value of callbackId.
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner
+     * @param y
+     *            The Y coordinate of the bottom left corner
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param callbackId
+     *            The value to pass back to the main game
+     */
+    public static void addCallbackButton(int x, int y, int width, int height, int callbackId) {
+        Button b = new Button();
+        b.mRect = new Rectangle(x, y, width, height);
+        b.mId = callbackId;
+        getCurrPauseScene().mButtons.add(b);
+    }
+
+    /**
+     * Indicate that tapping the non-button parts of the PauseScene shouldn't
+     * return immediately to the game.
+     */
+    public static void suppressClearClick() {
+        getCurrPauseScene().mSuppressClearClick = true;
     }
 }

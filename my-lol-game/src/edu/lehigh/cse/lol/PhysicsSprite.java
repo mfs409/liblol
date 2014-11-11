@@ -341,8 +341,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param y
      *            The Y coordinate of the bottom left corner
      */
-    void setBoxPhysics(float density, float elasticity, float friction,
-            BodyType type, boolean isProjectile, float x, float y) {
+    void setBoxPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile, float x,
+            float y) {
         PolygonShape boxPoly = new PolygonShape();
         boxPoly.setAsBox(mSize.x / 2, mSize.y / 2);
         BodyDef boxBodyDef = new BodyDef();
@@ -395,9 +395,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            Up to 16 coordinates representing the vertexes of this
      *            polygon, listed as x0,y0,x1,y1,x2,y2,...
      */
-    void setPolygonPhysics(float density, float elasticity, float friction,
-            BodyType type, boolean isProjectile, float x, float y,
-            float... vertices) {
+    void setPolygonPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile,
+            float x, float y, float... vertices) {
         PolygonShape boxPoly = new PolygonShape();
         Vector2[] verts = new Vector2[vertices.length / 2];
         for (int i = 0; i < vertices.length; i += 2) {
@@ -453,8 +452,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param radius
      *            The radius of the underlying circle
      */
-    void setCirclePhysics(float density, float elasticity, float friction,
-            BodyType type, boolean isProjectile, float x, float y, float radius) {
+    void setCirclePhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile,
+            float x, float y, float radius) {
         CircleShape c = new CircleShape();
         c.setRadius(radius);
         BodyDef boxBodyDef = new BodyDef();
@@ -518,8 +517,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 }
             }
             if (tr != null)
-                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2,
-                        mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
+                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
                         MathUtils.radiansToDegrees * mBody.getAngle());
         }
     }
@@ -698,8 +696,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
-            Obstacle o = Obstacle.makeAsBox(x, y, mDisappearAnimateSize.x,
-                    mDisappearAnimateSize.y, "");
+            Obstacle o = Obstacle.makeAsBox(x, y, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
             o.mBody.setActive(false);
             o.setDefaultAnimation(mDisappearAnimation);
         }
@@ -799,11 +796,10 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            True if the entity should disappear after the trigger
      *            completes
      */
-    public void setTouchTrigger(final int id, int activationGoodies1,
-            int activationGoodies2, int activationGoodies3,
+    public void setTouchTrigger(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
             int activationGoodies4, final boolean disappear) {
-        final int[] touchTriggerActivation = new int[] { activationGoodies1,
-                activationGoodies2, activationGoodies3, activationGoodies4 };
+        final int[] touchTriggerActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
+                activationGoodies4 };
         // set the code to run on touch
         mGestureResponder = new GestureAction() {
             @Override
@@ -816,8 +812,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    Lol.sGame.onTouchTrigger(id, Lol.sGame.mCurrLevelNum,
-                            PhysicsSprite.this);
+                    Lol.sGame.onTouchTrigger(id, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
                 }
                 return true;
             }
@@ -840,8 +835,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum,
-                            PhysicsSprite.this);
+                    Lol.sGame.onStopTrigger(triggerId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
                     moving = false;
                 }
             }
@@ -968,8 +962,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     public boolean onTap(Vector3 tapLocation) {
                         Lol.sGame.vibrate(100);
                         // move the object
-                        mBody.setTransform(tapLocation.x, tapLocation.y,
-                                mBody.getAngle());
+                        mBody.setTransform(tapLocation.x, tapLocation.y, mBody.getAngle());
                         // clear the Level responder
                         Level.sCurrent.mGestureResponder = null;
                         return true;
@@ -998,8 +991,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             public boolean onFling(Vector3 touchVec) {
                 if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
                     mHover = null;
-                    updateVelocity((touchVec.x) * dampFactor, (touchVec.y)
-                            * dampFactor);
+                    updateVelocity((touchVec.x) * dampFactor, (touchVec.y) * dampFactor);
                 }
                 return true;
             }
@@ -1029,8 +1021,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 Level.sCurrent.mGestureResponder = new GestureAction() {
                     @Override
                     public boolean onTap(Vector3 touchVec) {
-                        Route r = new Route(2).to(getXPosition(),
-                                getYPosition()).to(touchVec.x - mSize.x / 2,
+                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
                                 touchVec.y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
@@ -1059,8 +1050,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            When the touch is released, should the entity stop moving, or
      *            continue in the same direction?
      */
-    public void setFingerChase(final float velocity,
-            final boolean oncePerTouch, final boolean stopOnUp) {
+    public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
         mGestureResponder = new GestureAction() {
@@ -1070,8 +1060,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 Level.sCurrent.mGestureResponder = new GestureAction() {
                     @Override
                     public boolean onDown(Vector3 touchVec) {
-                        Route r = new Route(2).to(getXPosition(),
-                                getYPosition()).to(touchVec.x - mSize.x / 2,
+                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
                                 touchVec.y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
@@ -1088,8 +1077,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     }
 
                     @Override
-                    public boolean onPan(Vector3 touchVec, float deltaX,
-                            float deltaY) {
+                    public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
                         return onDown(touchVec);
                     }
 
@@ -1132,8 +1120,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param height
      *            The height of the frames of this animation
      */
-    public void setDisappearAnimation(Animation a, float offsetX,
-            float offsetY, float width, float height) {
+    public void setDisappearAnimation(Animation a, float offsetX, float offsetY, float width, float height) {
         mDisappearAnimation = a;
         mDisappearAnimateOffset.x = offsetX;
         mDisappearAnimateOffset.y = offsetY;
@@ -1225,14 +1212,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         // make a new body
         if (mIsCircleBody) {
             Fixture oldFix = oldBody.getFixtureList().get(0);
-            setCirclePhysics(oldFix.getDensity(), oldFix.getRestitution(),
-                    oldFix.getFriction(), oldBody.getType(),
-                    oldBody.isBullet(), x, y, (width > height) ? width / 2
-                            : height / 2);
+            setCirclePhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(), oldBody.getType(),
+                    oldBody.isBullet(), x, y, (width > height) ? width / 2 : height / 2);
         } else if (mIsBoxBody) {
             Fixture oldFix = oldBody.getFixtureList().get(0);
-            setBoxPhysics(oldFix.getDensity(), oldFix.getRestitution(),
-                    oldFix.getFriction(), oldBody.getType(),
+            setBoxPhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(), oldBody.getType(),
                     oldBody.isBullet(), x, y);
         } else if (mIsPolygonBody) {
             Fixture oldFix = oldBody.getFixtureList().get(0);
@@ -1244,8 +1228,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 verts[2 * i] = tmpVert.x * xscale;
                 verts[2 * i + 1] = tmpVert.y * yscale;
             }
-            setPolygonPhysics(oldFix.getDensity(), oldFix.getRestitution(),
-                    oldFix.getFriction(), oldBody.getType(),
+            setPolygonPhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(), oldBody.getType(),
                     oldBody.isBullet(), x, y, verts);
         }
         // clone forces
@@ -1272,8 +1255,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            (true), or should its bottom left corner stay in the same
      *            position (false)
      */
-    public void setShrinkOverTime(final float shrinkX, final float shrinkY,
-            final boolean keepCentered) {
+    public void setShrinkOverTime(final float shrinkX, final float shrinkY, final boolean keepCentered) {
         final Task t = new Task() {
             @Override
             public void run() {
@@ -1350,8 +1332,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param left
      *            Is the left side sticky?
      */
-    public void setSticky(boolean top, boolean right, boolean bottom,
-            boolean left) {
+    public void setSticky(boolean top, boolean right, boolean bottom, boolean left) {
         mIsSticky = new boolean[] { top, right, bottom, left };
     }
 
@@ -1383,7 +1364,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param velocityY
      *            The Y velocity of the projectile when it is thrown
      */
-    public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
+    public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
+            final float velocityY) {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
@@ -1437,8 +1419,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param chaseInY
      *            Should the entity change its y velocity?
      */
-    public void setChaseSpeed(final float speed, final PhysicsSprite target,
-            final boolean chaseInX, final boolean chaseInY) {
+    public void setChaseSpeed(final float speed, final PhysicsSprite target, final boolean chaseInX,
+            final boolean chaseInY) {
         mBody.setType(BodyType.DynamicBody);
         Level.sCurrent.mRepeatEvents.add(new Action() {
             @Override
@@ -1525,8 +1507,8 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The Y coordinate (relative to the center of the entity) where
      *            the joint fuses to this entity
      */
-    public void setRevoluteJoint(PhysicsSprite anchor, float anchorX,
-            float anchorY, float localAnchorX, float localAnchorY) {
+    public void setRevoluteJoint(PhysicsSprite anchor, float anchorX, float anchorY, float localAnchorX,
+            float localAnchorY) {
         // make the body dynamic
         setCanFall();
         // create joint, connect anchors
@@ -1600,8 +1582,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param angle
      *            The angle between the entities
      */
-    public void setWeldJoint(PhysicsSprite other, float otherX, float otherY,
-            float localX, float localY, float angle) {
+    public void setWeldJoint(PhysicsSprite other, float otherX, float otherY, float localX, float localY, float angle) {
         WeldJointDef w = new WeldJointDef();
         w.bodyA = mBody;
         w.bodyB = other.mBody;

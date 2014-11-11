@@ -52,7 +52,7 @@ public class ChooserConfig implements ChooserConfiguration {
     /**
      * This is the space, in pixels, between the top of the screen and the first
      * row of buttons
-     *
+     * 
      * @return
      */
     @Override

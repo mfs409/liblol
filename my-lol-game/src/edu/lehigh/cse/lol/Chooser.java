@@ -211,9 +211,7 @@ public class Chooser extends ScreenAdapter {
                 // check for press to an unlocked level
                 int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
                 for (Button ls : levels) {
-                    if (ls != null
-                            && (ls.mLevel <= unlocked || Lol.sGame.mConfig
-                                    .getUnlockMode())) {
+                    if (ls != null && (ls.mLevel <= unlocked || Lol.sGame.mConfig.getUnlockMode())) {
                         if (ls.mRect.contains(mV.x, mV.y)) {
                             Lol.sGame.doPlayLevel(ls.mLevel);
                             return true;
@@ -230,23 +228,20 @@ public class Chooser extends ScreenAdapter {
             mMusic = Media.getMusic(cc.getMusicName());
 
         // always make the back button
-        mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(),
-                cc.getBackButtonWidth(), cc.getBackButtonHeight(), 0,
-                cc.getBackButtonName());
+        mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(), cc.getBackButtonWidth(), cc.getBackButtonHeight(),
+                0, cc.getBackButtonName());
 
         // make the previous button if we aren't drawing the first set of
         // choices
         if (Lol.sGame.mCurrLevelNum > levelsPerChooser) {
-            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(),
-                    cc.getPrevButtonWidth(), cc.getPrevButtonHeight(), 0,
-                    cc.getPrevButtonName());
+            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
+                    cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
         }
 
         // make the next button if we aren't drawing the last set of choices
         if (Lol.sGame.mCurrLevelNum + levelsPerChooser - 1 < totalLevels) {
-            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(),
-                    cc.getNextButtonWidth(), cc.getNextButtonHeight(), 0,
-                    cc.getNextButtonName());
+            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
+                    cc.getNextButtonHeight(), 0, cc.getNextButtonName());
         }
 
         // figure out the first level to draw on this chooser. Note that '0' is
@@ -284,8 +279,7 @@ public class Chooser extends ScreenAdapter {
                 mytop = mytop - bHeight - vGutter;
                 myleft = left;
             }
-            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i,
-                    cc.getLevelButtonName());
+            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
             myleft = myleft + bWidth + hGutter;
             index++;
         }
@@ -296,8 +290,7 @@ public class Chooser extends ScreenAdapter {
 
         // create a font
         mFont = Media.getFont(cc.getLevelFont(), cc.getLevelFontSize());
-        mFont.setColor(((float) cc.getLevelFontRed()) / 255,
-                ((float) cc.getLevelFontGreen()) / 255,
+        mFont.setColor(((float) cc.getLevelFontRed()) / 255, ((float) cc.getLevelFontGreen()) / 255,
                 ((float) cc.getLevelFontBlue()) / 255, 1);
         // and create our renderers
         mSpriteBatch = new SpriteBatch();
@@ -361,34 +354,28 @@ public class Chooser extends ScreenAdapter {
         mSpriteBatch.begin();
         // draw the background image
         if (mImage != null)
-            mSpriteBatch.draw(mImage[0], 0, 0,
-                    Lol.sGame.mConfig.getScreenWidth(),
-                    Lol.sGame.mConfig.getScreenHeight());
+            mSpriteBatch.draw(mImage[0], 0, 0, Lol.sGame.mConfig.getScreenWidth(), Lol.sGame.mConfig.getScreenHeight());
         // draw back/prev/next
-        mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y,
-                mBack.mRect.width, mBack.mRect.height);
+        mSpriteBatch.draw(mBack.mTr[0], mBack.mRect.x, mBack.mRect.y, mBack.mRect.width, mBack.mRect.height);
         if (mPrev != null && mPrev.mTr != null)
-            mSpriteBatch.draw(mPrev.mTr[0], mPrev.mRect.x, mPrev.mRect.y,
-                    mPrev.mRect.width, mPrev.mRect.height);
+            mSpriteBatch.draw(mPrev.mTr[0], mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width, mPrev.mRect.height);
         if (mNext != null && mNext.mTr != null)
-            mSpriteBatch.draw(mNext.mTr[0], mNext.mRect.x, mNext.mRect.y,
-                    mNext.mRect.width, mNext.mRect.height);
+            mSpriteBatch.draw(mNext.mTr[0], mNext.mRect.x, mNext.mRect.y, mNext.mRect.width, mNext.mRect.height);
 
         // draw the level buttons
         int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
         for (Button ls : levels) {
             if (ls != null) {
                 // draw picture
-                mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y,
-                        ls.mRect.width, ls.mRect.height);
+                mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
                 // draw overlay text
                 String txt = ls.mLevel + "";
                 if (ls.mLevel > unlocked && !Lol.sGame.mConfig.getUnlockMode())
                     txt = Lol.sGame.mChooserConfig.getLevelLockText();
                 float x = mFont.getBounds(txt).width;
                 float y = mFont.getBounds(txt).height;
-                mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2
-                        - x / 2, ls.mRect.y + ls.mRect.height / 2 + y / 2);
+                mFont.draw(mSpriteBatch, txt, ls.mRect.x + ls.mRect.width / 2 - x / 2, ls.mRect.y + ls.mRect.height / 2
+                        + y / 2);
             }
         }
         mSpriteBatch.end();
@@ -400,19 +387,15 @@ public class Chooser extends ScreenAdapter {
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.GRAY);
 
-            mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width,
-                    mBack.mRect.height);
+            mShapeRender.rect(mBack.mRect.x, mBack.mRect.y, mBack.mRect.width, mBack.mRect.height);
             if (mPrev != null)
-                mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y,
-                        mPrev.mRect.width, mPrev.mRect.height);
+                mShapeRender.rect(mPrev.mRect.x, mPrev.mRect.y, mPrev.mRect.width, mPrev.mRect.height);
             if (mNext != null)
-                mShapeRender.rect(mNext.mRect.x, mNext.mRect.y,
-                        mNext.mRect.width, mNext.mRect.height);
+                mShapeRender.rect(mNext.mRect.x, mNext.mRect.y, mNext.mRect.width, mNext.mRect.height);
 
             for (Button ls : levels) {
                 if (ls != null) {
-                    mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width,
-                            ls.mRect.height);
+                    mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
                 }
             }
             mShapeRender.end();

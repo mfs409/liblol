@@ -137,14 +137,12 @@ public class PostScene {
         if (win) {
             if (mWinSound != null)
                 mWinSound.play(Facts.getGameFact("volume"));
-            mWinSprites.add(Util.makeText(mWinText, 255, 255, 255,
-                    Lol.sGame.mConfig.getDefaultFontFace(),
+            mWinSprites.add(Util.makeText(mWinText, 255, 255, 255, Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play(Facts.getGameFact("volume"));
-            mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255,
-                    Lol.sGame.mConfig.getDefaultFontFace(),
+            mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255, Lol.sGame.mConfig.getDefaultFontFace(),
                     Lol.sGame.mConfig.getDefaultFontSize()));
         }
     }
@@ -272,11 +270,10 @@ public class PostScene {
      * @param size
      *            The font size to use
      */
-    public static void addExtraWinText(String text, int x, int y, int red,
-            int green, int blue, String fontName, int size) {
+    public static void addExtraWinText(String text, int x, int y, int red, int green, int blue, String fontName,
+            int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mWinSprites.add(Util.makeText(x, y, text, red, green, blue,
-                fontName, size));
+        tmp.mWinSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -299,11 +296,10 @@ public class PostScene {
      * @param size
      *            The font size to use
      */
-    public static void addExtraLoseText(String text, int x, int y, int red,
-            int green, int blue, String fontName, int size) {
+    public static void addExtraLoseText(String text, int x, int y, int red, int green, int blue, String fontName,
+            int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mLoseSprites.add(Util.makeText(x, y, text, red, green, blue,
-                fontName, size));
+        tmp.mLoseSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -323,11 +319,9 @@ public class PostScene {
      * @param size
      *            The font size to use
      */
-    public static void addExtraWinText(String text, int red, int green,
-            int blue, String fontName, int size) {
+    public static void addExtraWinText(String text, int red, int green, int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName,
-                size));
+        tmp.mWinSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -347,11 +341,9 @@ public class PostScene {
      * @param size
      *            The font size to use
      */
-    public static void addExtraLoseText(String text, int red, int green,
-            int blue, String fontName, int size) {
+    public static void addExtraLoseText(String text, int red, int green, int blue, String fontName, int size) {
         PostScene tmp = getCurrPostScene();
-        tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName,
-                size));
+        tmp.mLoseSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -368,8 +360,7 @@ public class PostScene {
      * @param height
      *            The height of the image
      */
-    public static void addWinImage(String imgName, int x, int y, int width,
-            int height) {
+    public static void addWinImage(String imgName, int x, int y, int width, int height) {
         PostScene tmp = getCurrPostScene();
         tmp.mWinSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
@@ -388,8 +379,7 @@ public class PostScene {
      * @param height
      *            The height of the image
      */
-    public static void addLoseImage(String imgName, int x, int y, int width,
-            int height) {
+    public static void addLoseImage(String imgName, int x, int y, int width, int height) {
         PostScene tmp = getCurrPostScene();
         tmp.mLoseSprites.add(Util.makePicture(x, y, width, height, imgName));
     }

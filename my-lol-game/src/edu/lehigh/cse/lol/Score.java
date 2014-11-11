@@ -183,8 +183,7 @@ public class Score {
     void onDestinationArrive() {
         // check if the level is complete
         mDestinationArrivals++;
-        if ((mVictoryType == VictoryType.DESTINATION)
-                && (mDestinationArrivals >= mVictoryHeroCount))
+        if ((mVictoryType == VictoryType.DESTINATION) && (mDestinationArrivals >= mVictoryHeroCount))
             endLevel(true);
     }
 
@@ -226,14 +225,11 @@ public class Score {
                     mGameOver = true;
 
                     // Run the level-complete trigger
-                    Lol.sGame
-                            .levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
+                    Lol.sGame.levelCompleteTrigger(Lol.sGame.mCurrLevelNum, win);
 
                     // if we won, unlock the next level
-                    if (win
-                            && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
-                        Facts.putGameFact("unlocked",
-                                Lol.sGame.mCurrLevelNum + 1);
+                    if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
+                        Facts.putGameFact("unlocked", Lol.sGame.mCurrLevelNum + 1);
 
                     // drop everything from the hud
                     Level.sCurrent.mControls.clear();
@@ -458,8 +454,7 @@ public class Score {
      *            The value to save
      */
     public static void savePersistent(String key, int value) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
-                .getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         prefs.putInteger(key, value);
         prefs.flush();
     }
@@ -474,8 +469,7 @@ public class Score {
      * @returns The current value saved for the give
      */
     public static int readPersistent(String key, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
-                .getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         return prefs.getInteger(key, defaultVal);
     }
 

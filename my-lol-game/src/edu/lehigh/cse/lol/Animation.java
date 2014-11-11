@@ -176,14 +176,12 @@ public class Animation {
             }
             // are we on the last frame, with no loop? If so, stay where we
             // are...
-            else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1
-                    && !mCurrentAnimation.mLoop) {
+            else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
                 return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
             }
             // else advance, reset, go
             else {
-                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1)
-                        % mCurrentAnimation.mNextCell;
+                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
                 mCurrentAnimationTime = 0;
                 return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
             }
@@ -230,8 +228,7 @@ public class Animation {
      *            The indices of the image that should each be shown for
      *            timePerFrame milliseconds
      */
-    public Animation(String imgName, int timePerFrame, boolean repeat,
-            int... frameIndices) {
+    public Animation(String imgName, int timePerFrame, boolean repeat, int... frameIndices) {
         mCells = Media.getImage(imgName);
         mFrames = new int[frameIndices.length];
         mDurations = new long[frameIndices.length];

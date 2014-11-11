@@ -111,8 +111,7 @@ public class Goodie extends PhysicsSprite {
      *            Name of image file to use
      * @return The goodie, so that it can be further modified
      */
-    public static Goodie makeAsBox(float x, float y, float width, float height,
-            String imgName) {
+    public static Goodie makeAsBox(float x, float y, float width, float height, String imgName) {
         Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         g.setCollisionEffect(false);
@@ -136,12 +135,10 @@ public class Goodie extends PhysicsSprite {
      *            Name of image file to use
      * @return The goodie, so that it can be further modified
      */
-    public static Goodie makeAsCircle(float x, float y, float width,
-            float height, String imgName) {
+    public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Goodie g = new Goodie(width, height, imgName);
-        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
-                radius / 2);
+        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         g.setCollisionEffect(false);
         Level.sCurrent.addSprite(g, 0);
         return g;

@@ -144,8 +144,7 @@ public class Controls {
          */
         void render(SpriteBatch sb) {
             if (mIsActive && mImage != null)
-                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width,
-                        mRange.height, 1, 1, 0);
+                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
         }
 
         /**
@@ -200,10 +199,8 @@ public class Controls {
      * @param sb
      *            The SpriteBatch used to render the text
      */
-    static void drawTextTransposed(int x, int y, String message, BitmapFont bf,
-            SpriteBatch sb) {
-        bf.drawMultiLine(sb, message, x, y
-                + bf.getMultiLineBounds(message).height);
+    static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+        bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
     }
 
     /*
@@ -224,12 +221,9 @@ public class Controls {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addCountdown(float timeout, String text, int x, int y) {
-        return addCountdown(timeout, text, x, y,
-                Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontSize());
+        return addCountdown(timeout, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -255,21 +249,17 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addCountdown(final float timeout, final String text,
-            final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size) {
+    public static Control addCountdown(final float timeout, final String text, final int x, final int y,
+            String fontName, final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mCountDownRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics
-                        .getDeltaTime();
+                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, ""
-                            + (int) Level.sCurrent.mScore.mCountDownRemaining,
-                            bf, sb);
+                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mCountDownRemaining, bf, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
                     Level.sCurrent.mScore.endLevel(false);
@@ -298,8 +288,8 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addFPS(final int x, final int y, String fontName,
-            final int red, final int green, final int blue, int size) {
+    public static Control addFPS(final int x, final int y, String fontName, final int red, final int green,
+            final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         Control c = new Control(red, green, blue) {
@@ -308,8 +298,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y,
-                        "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
+                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -328,12 +317,9 @@ public class Controls {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y,
-                Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontSize());
+        return addWinCountdown(timeout, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -357,22 +343,18 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addWinCountdown(final float timeout, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size) {
+    public static Control addWinCountdown(final float timeout, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mWinCountRemaining = timeout;
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics
-                        .getDeltaTime();
+                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (Level.sCurrent.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, ""
-                            + (int) Level.sCurrent.mScore.mWinCountRemaining,
-                            bf, sb);
+                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mWinCountRemaining, bf, sb);
                 else
                     Level.sCurrent.mScore.endLevel(true);
             }
@@ -407,9 +389,8 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addGoodieCount(final int type, int max,
-            final String text, final int x, final int y, String fontName,
-            final int red, final int green, final int blue, int size) {
+    public static Control addGoodieCount(final int type, int max, final String text, final int x, final int y,
+            String fontName, final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
@@ -417,9 +398,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, ""
-                        + Level.sCurrent.mScore.mGoodiesCollected[type - 1]
-                        + suffix, bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1] + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -440,12 +419,9 @@ public class Controls {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Control addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y,
-                Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontSize());
+        return addDefeatedCount(max, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
     }
 
     /**
@@ -472,9 +448,8 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addDefeatedCount(int max, final String text,
-            final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size) {
+    public static Control addDefeatedCount(int max, final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
         final BitmapFont bf = Media.getFont(fontName, size);
@@ -482,9 +457,7 @@ public class Controls {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, ""
-                        + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf,
-                        sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -500,10 +473,8 @@ public class Controls {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     static public Control addStopwatch(int x, int y) {
-        return addStopwatch(x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
+        return addStopwatch(x, y, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(),
                 Lol.sGame.mConfig.getDefaultFontSize());
     }
 
@@ -526,19 +497,15 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    static public Control addStopwatch(final int x, final int y,
-            String fontName, final int red, final int green, final int blue,
-            int size) {
+    static public Control addStopwatch(final int x, final int y, String fontName, final int red, final int green,
+            final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics
-                        .getDeltaTime();
-                drawTextTransposed(x, y, ""
-                        + (int) Level.sCurrent.mScore.mStopWatchProgress, bf,
-                        sb);
+                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+                drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mStopWatchProgress, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -559,12 +526,9 @@ public class Controls {
      */
     static public Control addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y,
-                Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontSize(), h);
+        return addStrengthMeter(text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
+                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
+                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize(), h);
     }
 
     /**
@@ -590,16 +554,14 @@ public class Controls {
      * @param h
      *            The Hero whose strength should be displayed
      */
-    static public Control addStrengthMeter(final String text, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size, final Hero h) {
+    static public Control addStrengthMeter(final String text, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf,
-                        sb);
+                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -628,17 +590,15 @@ public class Controls {
      * @param h
      *            The Hero whose distance should be displayed
      */
-    static public Control addDistanceMeter(final String text, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size, final Hero h) {
+    static public Control addDistanceMeter(final String text, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final Hero h) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Level.sCurrent.mScore.mDistance = (int) h.getXPosition();
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance
-                        + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -665,17 +625,14 @@ public class Controls {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    public static Control addProjectileCount(final String text, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size) {
+    public static Control addProjectileCount(final String text, final int x, final int y, String fontName,
+            final int red, final int green, final int blue, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, ""
-                        + Level.sCurrent.mProjectilePool.mProjectilesRemaining
-                        + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + " " + text, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -699,8 +656,7 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      */
-    public static Control addPauseButton(int x, int y, int width, int height,
-            String imgName) {
+    public static Control addPauseButton(int x, int y, int width, int height, String imgName) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -735,9 +691,8 @@ public class Controls {
      * @param dy
      *            The new Y velocity
      */
-    public static Control addMoveButton(int x, int y, int width, int height,
-            String imgName, final PhysicsSprite entity, final float dx,
-            final float dy) {
+    public static Control addMoveButton(int x, int y, int width, int height, String imgName,
+            final PhysicsSprite entity, final float dx, final float dy) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
 
@@ -802,8 +757,8 @@ public class Controls {
      * @param entity
      *            The entity to move downward
      */
-    public static Control addDownButton(int x, int y, int width, int height,
-            String imgName, float rate, PhysicsSprite entity) {
+    public static Control addDownButton(int x, int y, int width, int height, String imgName, float rate,
+            PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, -rate);
     }
 
@@ -826,8 +781,8 @@ public class Controls {
      * @param entity
      *            The entity to move upward
      */
-    public static Control addUpButton(int x, int y, int width, int height,
-            String imgName, float rate, PhysicsSprite entity) {
+    public static Control addUpButton(int x, int y, int width, int height, String imgName, float rate,
+            PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, rate);
     }
 
@@ -850,8 +805,8 @@ public class Controls {
      * @param entity
      *            The entity that should move left when the button is pressed
      */
-    public static Control addLeftButton(int x, int y, int width, int height,
-            String imgName, float rate, PhysicsSprite entity) {
+    public static Control addLeftButton(int x, int y, int width, int height, String imgName, float rate,
+            PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, -rate, 0);
     }
 
@@ -874,8 +829,8 @@ public class Controls {
      * @param entity
      *            The entity that should move right when the button is pressed
      */
-    public static Control addRightButton(int x, int y, int width, int height,
-            String imgName, float rate, PhysicsSprite entity) {
+    public static Control addRightButton(int x, int y, int width, int height, String imgName, float rate,
+            PhysicsSprite entity) {
         return addMoveButton(x, y, width, height, imgName, entity, rate, 0);
     }
 
@@ -907,9 +862,8 @@ public class Controls {
      * @param entity
      *            The entity that the button controls
      */
-    public static Control addTurboButton(int x, int y, int width, int height,
-            String imgName, final int rateDownX, final int rateDownY,
-            final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
+    public static Control addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
+            final int rateDownY, final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -961,9 +915,8 @@ public class Controls {
      * @param entity
      *            The entity that the button controls
      */
-    public static Control addDampenedMotionButton(int x, int y, int width,
-            int height, String imgName, final float rateX, final float rateY,
-            final float dampening, final PhysicsSprite entity) {
+    public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
+            final float rateX, final float rateY, final float dampening, final PhysicsSprite entity) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1009,8 +962,7 @@ public class Controls {
      * @param h
      *            The hero to control
      */
-    public static Control addCrawlButton(int x, int y, int width, int height,
-            String imgName, final Hero h) {
+    public static Control addCrawlButton(int x, int y, int width, int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1044,8 +996,7 @@ public class Controls {
      * @param h
      *            The hero to control
      */
-    public static Control addJumpButton(int x, int y, int width, int height,
-            String imgName, final Hero h) {
+    public static Control addJumpButton(int x, int y, int width, int height, String imgName, final Hero h) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1091,9 +1042,8 @@ public class Controls {
      * @param velocityY
      *            The Y velocity of the projectile when it is thrown
      */
-    public static Control addThrowButton(int x, int y, int width, int height,
-            String imgName, final Hero h, final int milliDelay, final float offsetX,
-            final float offsetY, final float velocityX, final float velocityY) {
+    public static Control addThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+            final int milliDelay, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1150,11 +1100,9 @@ public class Controls {
      *            The X velocity of the projectile when it is thrown
      * @param velocityY
      *            The Y velocity of the projectile when it is thrown
-
      */
-    public static Control addSingleThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h, final float offsetX, 
-            final float offsetY, final float velocityX, final float velocityY) {
+    public static Control addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+            final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1200,9 +1148,8 @@ public class Controls {
      *            projectile and the bottom left of the hero throwing the
      *            projectile
      */
-    public static Control addVectorThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h, final long milliDelay,
-            final float offsetX, final float offsetY) {
+    public static Control addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+            final long milliDelay, final float offsetX, final float offsetY) {
         final Control c = new Control(imgName, x, y, width, height);
         final Vector3 v = new Vector3();
         c.mGestureAction = new GestureAction() {
@@ -1242,10 +1189,8 @@ public class Controls {
                     long now = System.nanoTime();
                     if (mLastThrow + milliDelay * 1000000 < now) {
                         mLastThrow = now;
-                        Level.sCurrent.mProjectilePool.throwAt(
-                                h.mBody.getPosition().x,
-                                h.mBody.getPosition().y, v.x, v.y, h,
-                                offsetX, offsetY);
+                        Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, v.x,
+                                v.y, h, offsetX, offsetY);
                     }
                 }
             }
@@ -1279,16 +1224,14 @@ public class Controls {
      *            projectile and the bottom left of the hero throwing the
      *            projectile
      */
-    public static Control addVectorSingleThrowButton(int x, int y, int width,
-            int height, String imgName, final Hero h,
+    public static Control addVectorSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
             final float offsetX, final float offsetY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
-                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x,
-                        h.mBody.getPosition().y, touchVec.x, touchVec.y, h, 
-                        offsetX, offsetY);
+                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, touchVec.x,
+                        touchVec.y, h, offsetX, offsetY);
                 return true;
             }
         };
@@ -1315,8 +1258,7 @@ public class Controls {
      * @param maxZoom
      *            Maximum zoom. 8 is usually a good default
      */
-    public static Control addZoomOutButton(int x, int y, int width, int height,
-            String imgName, final float maxZoom) {
+    public static Control addZoomOutButton(int x, int y, int width, int height, String imgName, final float maxZoom) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1351,8 +1293,7 @@ public class Controls {
      * @param minZoom
      *            Minimum zoom. 0.25f is usually a good default
      */
-    public static Control addZoomInButton(int x, int y, int width, int height,
-            String imgName, final float minZoom) {
+    public static Control addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1387,8 +1328,8 @@ public class Controls {
      * @param rate
      *            Amount of rotation to apply to the hero on each press
      */
-    public static Control addRotateButton(int x, int y, int width, int height,
-            String imgName, final float rate, final Hero h) {
+    public static Control addRotateButton(int x, int y, int width, int height, String imgName, final float rate,
+            final Hero h) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1424,8 +1365,7 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      */
-    public static Control addImage(int x, int y, int width, int height,
-            String imgName) {
+    public static Control addImage(int x, int y, int width, int height, String imgName) {
         Control c = new Control(imgName, x, y, width, height);
         c.mIsTouchable = false;
         Level.sCurrent.mControls.add(c);
@@ -1450,8 +1390,7 @@ public class Controls {
      * @param id
      *            An id to use for the trigger event
      */
-    public static Control addTriggerControl(int x, int y, int width,
-            int height, String imgName, final int id) {
+    public static Control addTriggerControl(int x, int y, int width, int height, String imgName, final int id) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1485,9 +1424,8 @@ public class Controls {
      * @param id
      *            An id to use for the trigger event
      */
-    public static Control addOneTimeTriggerControl(int x, int y, int width,
-            int height, String activeImgName, final String inactiveImgName,
-            final int id) {
+    public static Control addOneTimeTriggerControl(int x, int y, int width, int height, String activeImgName,
+            final String inactiveImgName, final int id) {
         final Control c = new Control(activeImgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1534,16 +1472,14 @@ public class Controls {
      * @param suffix
      *            Text to put after the fact
      */
-    static public Control addLevelFact(final String key, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size, final String prefix, final String suffix) {
+    static public Control addLevelFact(final String key, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key)
-                        + suffix, bf, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1574,17 +1510,14 @@ public class Controls {
      * @param suffix
      *            Text to put after the fact
      */
-    static public Control addSessionFact(final String key, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size, final String prefix, final String suffix) {
+    static public Control addSessionFact(final String key, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y,
-                        prefix + "" + Facts.getSessionFact(key) + suffix, bf,
-                        sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1615,16 +1548,14 @@ public class Controls {
      * @param suffix
      *            Text to put after the fact
      */
-    static public Control addGameFact(final String key, final int x,
-            final int y, String fontName, final int red, final int green,
-            final int blue, int size, final String prefix, final String suffix) {
+    static public Control addGameFact(final String key, final int x, final int y, String fontName, final int red,
+            final int green, final int blue, int size, final String prefix, final String suffix) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Control c = new Control(red, green, blue) {
             @Override
             void render(SpriteBatch sb) {
                 bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key)
-                        + suffix, bf, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + suffix, bf, sb);
             }
         };
         Level.sCurrent.mControls.add(c);
@@ -1646,8 +1577,7 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      */
-    static public Control addPanControl(int x, int y, int width, int height,
-            String imgName) {
+    static public Control addPanControl(int x, int y, int width, int height, String imgName) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             /**
@@ -1687,27 +1617,17 @@ public class Controls {
                     oldChaseEntity = Level.sCurrent.mChaseEntity;
                     Level.sCurrent.mChaseEntity = null;
                 }
-                float x = Level.sCurrent.mGameCam.position.x - deltaX * .1f
-                        * Level.sCurrent.mGameCam.zoom;
-                float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f
-                        * Level.sCurrent.mGameCam.zoom;
+                float x = Level.sCurrent.mGameCam.position.x - deltaX * .1f * Level.sCurrent.mGameCam.zoom;
+                float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f * Level.sCurrent.mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > Level.sCurrent.mCamBoundX
-                        - Lol.sGame.mConfig.getScreenWidth()
-                        * Level.sCurrent.mGameCam.zoom
+                if (x > Level.sCurrent.mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    x = Level.sCurrent.mCamBoundX
-                            - Lol.sGame.mConfig.getScreenWidth()
-                            * Level.sCurrent.mGameCam.zoom
+                    x = Level.sCurrent.mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
-                if (y > Level.sCurrent.mCamBoundY
-                        - Lol.sGame.mConfig.getScreenHeight()
-                        * Level.sCurrent.mGameCam.zoom
+                if (y > Level.sCurrent.mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    y = Level.sCurrent.mCamBoundY
-                            - Lol.sGame.mConfig.getScreenHeight()
-                            * Level.sCurrent.mGameCam.zoom
+                    y = Level.sCurrent.mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1715,18 +1635,14 @@ public class Controls {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mConfig.getScreenWidth()
-                        * Level.sCurrent.mGameCam.zoom
-                        / Physics.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mConfig.getScreenWidth()
-                            * Level.sCurrent.mGameCam.zoom
-                            / Physics.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mConfig.getScreenHeight()
-                        * Level.sCurrent.mGameCam.zoom
-                        / Physics.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mConfig.getScreenHeight()
-                            * Level.sCurrent.mGameCam.zoom
-                            / Physics.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                        / 2)
+                    x = Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                            / 2;
+                if (y < Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                        / 2)
+                    y = Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                            / 2;
 
                 // update the camera position
                 Level.sCurrent.mGameCam.position.set(x, y, 0);
@@ -1759,8 +1675,8 @@ public class Controls {
      * @param minZoom
      *            The minimum zoom (int) factor. .25f is usually a good choice.
      */
-    static public Control addPinchZoomControl(int x, int y, int width,
-            int height, String imgName, final float maxZoom, final float minZoom) {
+    static public Control addPinchZoomControl(int x, int y, int width, int height, String imgName, final float maxZoom,
+            final float minZoom) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             float lastZoom = 1;
@@ -1820,9 +1736,8 @@ public class Controls {
      *            An entity that can be passed to the onControlPressTrigger
      *            event
      */
-    public static Control addVerticalBar(final int x, final int y,
-            final int width, final int height, String imgName, final int id,
-            final PhysicsSprite entity) {
+    public static Control addVerticalBar(final int x, final int y, final int width, final int height, String imgName,
+            final int id, final PhysicsSprite entity) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * Track if the bar is growing (true) or shrinking (false)
@@ -1872,10 +1787,8 @@ public class Controls {
                     return;
 
                 // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2,
-                        width, (height * (int) mVal) / 100, 1, 1, 0, mTrueX, 0,
-                        mTrueWidth, (mTrueHeight * (int) mVal) / 100, false,
-                        true);
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) mVal) / 100, 1, 1, 0,
+                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) mVal) / 100, false, true);
 
                 // don't keep showing anything if we've already received a
                 // touch...
@@ -1898,8 +1811,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
-                Lol.sGame.onControlPressEntityTrigger(id, (int) c.mVal, entity,
-                        Lol.sGame.mCurrLevelNum);
+                Lol.sGame.onControlPressEntityTrigger(id, (int) c.mVal, entity, Lol.sGame.mCurrLevelNum);
                 return true;
             }
         };
@@ -1933,9 +1845,8 @@ public class Controls {
      *            An entity that can be passed to the onControlPressTrigger
      *            event
      */
-    public static Control addRotator(final int x, final int y, final int width,
-            final int height, String imgName, final float delta, final int id,
-            final PhysicsSprite entity) {
+    public static Control addRotator(final int x, final int y, final int width, final int height, String imgName,
+            final float delta, final int id, final PhysicsSprite entity) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * This is the render method when we've got a valid TR. We're going
@@ -1950,8 +1861,7 @@ public class Controls {
                 if (!mIsActive)
                     return;
                 // draw it
-                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0,
-                        mRange.width, mRange.height, 1, 1, mVal);
+                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, mVal);
 
                 // don't keep rotating if we've got a touch...
                 if (!mIsTouchable)
@@ -1971,8 +1881,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive)
                     return false;
-                Lol.sGame.onControlPressEntityTrigger(id, c.mVal, entity,
-                        Lol.sGame.mCurrLevelNum);
+                Lol.sGame.onControlPressEntityTrigger(id, c.mVal, entity, Lol.sGame.mCurrLevelNum);
                 return true;
             }
         };

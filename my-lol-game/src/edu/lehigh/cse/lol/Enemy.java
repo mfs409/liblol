@@ -177,8 +177,7 @@ public class Enemy extends PhysicsSprite {
      *            The name of the image to display
      * @return The enemy, so that it can be modified further
      */
-    public static Enemy makeAsBox(float x, float y, float width, float height,
-            String imgName) {
+    public static Enemy makeAsBox(float x, float y, float width, float height, String imgName) {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         Level.sCurrent.addSprite(e, 0);
@@ -200,12 +199,10 @@ public class Enemy extends PhysicsSprite {
      *            The name of the image to display
      * @return The enemy, so that it can be modified further
      */
-    public static Enemy makeAsCircle(float x, float y, float width,
-            float height, String imgName) {
+    public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Enemy e = new Enemy(radius, radius, imgName);
-        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y,
-                radius / 2);
+        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         Level.sCurrent.addSprite(e, 0);
         return e;
     }
@@ -306,8 +303,7 @@ public class Enemy extends PhysicsSprite {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum,
-                        Enemy.this);
+                Lol.sGame.onEnemyDefeatTrigger(id, Lol.sGame.mCurrLevelNum, Enemy.this);
             }
         };
     }

@@ -105,8 +105,7 @@ public class HelpLevel extends ScreenAdapter {
             public boolean tap(float x, float y, int count, int button) {
                 // On tap, either advance to the next help scene, or
                 // return to the splash screen
-                if (Lol.sGame.mCurrHelpNum < Lol.sGame.mConfig
-                        .getNumHelpScenes()) {
+                if (Lol.sGame.mCurrHelpNum < Lol.sGame.mConfig.getNumHelpScenes()) {
                     Lol.sGame.mCurrHelpNum++;
                     Lol.sGame.doHelpLevel(Lol.sGame.mCurrHelpNum);
                     return true;
@@ -177,11 +176,9 @@ public class HelpLevel extends ScreenAdapter {
      * @param imgName
      *            Name of the picture to display
      */
-    public static void drawPicture(final int x, final int y, final int width,
-            final int height, String imgName) {
+    public static void drawPicture(final int x, final int y, final int width, final int height, String imgName) {
         // set up the image to display
-        sCurrentLevel.mSprites.add(Util.makePicture(x, y, width, height,
-                imgName));
+        sCurrentLevel.mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -196,12 +193,9 @@ public class HelpLevel extends ScreenAdapter {
      *            The message to display
      */
     static public void drawText(int x, int y, String message) {
-        sCurrentLevel.mSprites.add(Util.makeText(x, y, message,
-                Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontSize()));
+        sCurrentLevel.mSprites.add(Util.makeText(x, y, message, Lol.sGame.mConfig.getDefaultFontRed(),
+                Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(),
+                Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontSize()));
     }
 
     /**
@@ -225,10 +219,8 @@ public class HelpLevel extends ScreenAdapter {
      * @param size
      *            The font size to use (20 is usually a good value)
      */
-    static public void drawText(final int x, final int y, final String message,
-            final int red, final int green, final int blue, String fontName,
-            int size) {
-        sCurrentLevel.mSprites.add(Util.makeText(x, y, message, red, green,
-                blue, fontName, size));
+    static public void drawText(final int x, final int y, final String message, final int red, final int green,
+            final int blue, String fontName, int size) {
+        sCurrentLevel.mSprites.add(Util.makeText(x, y, message, red, green, blue, fontName, size));
     }
 }

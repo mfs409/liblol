@@ -76,8 +76,7 @@ public class Facts {
     public static int getLevelFact(String factName) {
         Integer i = mLevelFacts.get(factName);
         if (i == null) {
-            Util.message("ERROR", "Error retreiving level fact '" + factName
-                    + "'");
+            Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return -1;
         }
         return i;
@@ -107,8 +106,7 @@ public class Facts {
     public static int getSessionFact(String factName) {
         Integer i = mSessionFacts.get(factName);
         if (i == null) {
-            Util.message("ERROR", "Error retreiving level fact '" + factName
-                    + "'");
+            Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return -1;
         }
         return i;
@@ -136,8 +134,7 @@ public class Facts {
      * @return The integer value corresponding to the last value stored
      */
     public static int getGameFact(String factName) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
-                .getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         return prefs.getInteger(factName, -1);
     }
 
@@ -151,8 +148,7 @@ public class Facts {
      *            The integer value that is the fact being saved
      */
     public static void putGameFact(String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig
-                .getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         prefs.putInteger(factName, factValue);
         prefs.flush();
     }

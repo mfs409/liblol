@@ -162,10 +162,8 @@ public class PreScene {
      * @param size
      *            The size of the text
      */
-    public static void addText(String text, int x, int y, int red, int green,
-            int blue, String fontName, int size) {
-        getCurrPreScene().mSprites.add(Util.makeText(x, y, text, red, green,
-                blue, fontName, size));
+    public static void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
+        getCurrPreScene().mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -184,10 +182,8 @@ public class PreScene {
      * @param size
      *            The size of the text
      */
-    public static void addText(String text, int red, int green, int blue,
-            String fontName, int size) {
-        getCurrPreScene().mSprites.add(Util.makeText(text, red, green, blue,
-                fontName, size));
+    public static void addText(String text, int red, int green, int blue, String fontName, int size) {
+        getCurrPreScene().mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -204,10 +200,8 @@ public class PreScene {
      * @param height
      *            Height of the image
      */
-    public static void addImage(String imgName, int x, int y, int width,
-            int height) {
-        getCurrPreScene().mSprites.add(Util.makePicture(x, y, width, height,
-                imgName));
+    public static void addImage(String imgName, int x, int y, int width, int height) {
+        getCurrPreScene().mSprites.add(Util.makePicture(x, y, width, height, imgName));
     }
 
     /**

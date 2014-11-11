@@ -118,14 +118,12 @@ public class ProjectilePool {
      * @param isCircle
      *            Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(int size, float width, float height, String imgName,
-            int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         // set up the pool
         mPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            mPool[i] = new Projectile(width, height, imgName, -100 - i * width,
-                    -100 - i * height, zIndex, isCircle);
+            mPool[i] = new Projectile(width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
@@ -264,9 +262,7 @@ public class ProjectilePool {
 
         // rotate the projectile
         if (mRotateVectorThrow) {
-            double angle = Math.atan2(toY - heroY - offsetY, toX - heroX
-                    - offsetX)
-                    - Math.atan2(-1, 0);
+            double angle = Math.atan2(toY - heroY - offsetY, toX - heroX - offsetX) - Math.atan2(-1, 0);
             b.mBody.setTransform(b.mBody.getPosition(), (float) angle);
         }
 
@@ -383,10 +379,9 @@ public class ProjectilePool {
      * @param isCircle
      *            Should projectiles have an underlying circle or box shape?
      */
-    public static void configure(int size, float width, float height,
-            String imgName, int strength, int zIndex, boolean isCircle) {
-        Level.sCurrent.mProjectilePool = new ProjectilePool(size, width,
-                height, imgName, strength, zIndex, isCircle);
+    public static void configure(int size, float width, float height, String imgName, int strength, int zIndex,
+            boolean isCircle) {
+        Level.sCurrent.mProjectilePool = new ProjectilePool(size, width, height, imgName, strength, zIndex, isCircle);
     }
 
     /**
@@ -416,8 +411,7 @@ public class ProjectilePool {
      *            the name of the sound file to play
      */
     public static void setProjectileDisappearSound(String soundName) {
-        Level.sCurrent.mProjectilePool.mProjectileDisappearSound = Media
-                .getSound(soundName);
+        Level.sCurrent.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
     }
 
     /**

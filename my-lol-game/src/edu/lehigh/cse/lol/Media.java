@@ -101,8 +101,7 @@ public class Media {
         //
         // NB: if this crashes, the user will get a reasonably good error
         // message
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-                Gdx.files.internal(fontFileName));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
         FreeTypeFontParameter fp = new FreeTypeFontParameter();
         fp.size = fontSize;
         fp.characters = FreeTypeFontGenerator.DEFAULT_CHARS;
@@ -165,7 +164,7 @@ public class Media {
             m.setVolume(Facts.getGameFact("volume"));
         }
     }
-    
+
     /*
      * PUBLIC INTERFACE
      */
@@ -205,8 +204,7 @@ public class Media {
      * @param rows
      *            The number of rows that comprise this image file
      */
-    static public void registerAnimatableImage(String imgName, int columns,
-            int rows) {
+    static public void registerAnimatableImage(String imgName, int columns, int rows) {
         // Load the file as a texture
         Texture t = new Texture(Gdx.files.internal(imgName));
         // carve the image into cells of equal width and height

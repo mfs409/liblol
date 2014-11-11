@@ -261,13 +261,10 @@ public class Splash extends ScreenAdapter {
         mSpriteBatch.begin();
         mSpriteBatch.enableBlending();
         if (mImage != null)
-            mSpriteBatch.draw(mImage[0], 0, 0,
-                    Lol.sGame.mConfig.getScreenWidth(),
-                    Lol.sGame.mConfig.getScreenHeight());
+            mSpriteBatch.draw(mImage[0], 0, 0, Lol.sGame.mConfig.getScreenWidth(), Lol.sGame.mConfig.getScreenHeight());
         // draw the mute button?
         if (mCurrMuteImg != null)
-            mSpriteBatch.draw(mCurrMuteImg, mMute.x, mMute.y, mMute.width,
-                    mMute.height);
+            mSpriteBatch.draw(mCurrMuteImg, mMute.x, mMute.y, mMute.width, mMute.height);
         mSpriteBatch.end();
 
         // DEBUG: show where the buttons' boxes are
@@ -405,8 +402,7 @@ public class Splash extends ScreenAdapter {
      * @param offImg
      *            Image to display when the music is off
      */
-    public static void drawMuteButton(int x, int y, int width, int height,
-            String onImg, String offImg) {
+    public static void drawMuteButton(int x, int y, int width, int height, String onImg, String offImg) {
         sCurrent.mMute = new Rectangle(x, y, width, height);
         sCurrent.mMuteImg = Media.getImage(offImg);
         sCurrent.mUnMuteImg = Media.getImage(onImg);

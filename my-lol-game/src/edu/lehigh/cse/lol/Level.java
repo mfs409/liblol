@@ -269,8 +269,7 @@ public class Level extends ScreenAdapter {
             // check if we tapped a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
             for (Controls.Control c : mTapControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onTap(mTouchVec);
                     return true;
@@ -280,8 +279,8 @@ public class Level extends ScreenAdapter {
             // check if we tapped an entity
             mHitSprite = null;
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
-                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                    mTouchVec.y + 0.1f);
             if (mHitSprite != null && mHitSprite.onTap(mTouchVec))
                 return true;
 
@@ -328,8 +327,7 @@ public class Level extends ScreenAdapter {
             // check if we panned a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
             for (Controls.Control c : mPanControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPan(mTouchVec, deltaX, deltaY);
                     return true;
@@ -339,8 +337,7 @@ public class Level extends ScreenAdapter {
             // did we pan the level?
             if (Level.sCurrent.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPan(mTouchVec,
-                        deltaX, deltaY);
+                return Level.sCurrent.mGestureResponder.onPan(mTouchVec, deltaX, deltaY);
             }
             return false;
         }
@@ -362,8 +359,7 @@ public class Level extends ScreenAdapter {
             // check if we panStopped a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
             for (Controls.Control c : mPanControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPanStop(mTouchVec);
                     return true;
@@ -407,14 +403,12 @@ public class Level extends ScreenAdapter {
          * @param button
          *            The mouse button that was pressed
          */
-        public boolean touchDown(int screenX, int screenY, int pointer,
-                int button) {
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
             for (Controls.Control c : mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(false, mTouchVec);
                     return true;
@@ -423,8 +417,7 @@ public class Level extends ScreenAdapter {
 
             // pass to pinch-zoom?
             for (Controls.Control c : mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.onDown(mTouchVec);
                     return true;
@@ -435,8 +428,8 @@ public class Level extends ScreenAdapter {
             // touch, hitSprite will change
             mHitSprite = null;
             mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f,
-                    mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                    mTouchVec.y + 0.1f);
 
             // PhysicsSprites don't respond to DOWN... if it's a down on a
             // physicssprite, we are supposed to remember the most recently
@@ -467,8 +460,7 @@ public class Level extends ScreenAdapter {
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
             for (Controls.Control c : mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive
-                        && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(true, mTouchVec);
                     return true;
@@ -547,8 +539,7 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<Lol.Renderable>> mSprites = new ArrayList<ArrayList<Lol.Renderable>>(
-            5);
+    private final ArrayList<ArrayList<Lol.Renderable>> mSprites = new ArrayList<ArrayList<Lol.Renderable>>(5);
 
     /**
      * The controls / heads-up-display
@@ -700,23 +691,16 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mConfig.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO)
-            Util.message("Warning",
-                    "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mConfig.getScreenHeight()
-                / Physics.PIXEL_METER_RATIO)
-            Util.message("Warning",
-                    "Your game height is less than 1/10 of the screen height");
+        if (width < Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
+            Util.message("Warning", "Your game width is less than 1/10 of the screen width");
+        if (height < Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
+            Util.message("Warning", "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO,
+        mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO,
                 Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth()
-                / Physics.PIXEL_METER_RATIO / 2,
-                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO
-                        / 2, 0);
+        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
+                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
@@ -742,8 +726,7 @@ public class Level extends ScreenAdapter {
                 // if the hit point is inside the fixture of the body we report
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    PhysicsSprite hs = (PhysicsSprite) fixture.getBody()
-                            .getUserData();
+                    PhysicsSprite hs = (PhysicsSprite) fixture.getBody().getUserData();
                     if (hs.mVisible) {
                         mHitSprite = hs;
                         return false;
@@ -755,10 +738,8 @@ public class Level extends ScreenAdapter {
 
         // When debug mode is on, print the frames per second
         if (Lol.sGame.mConfig.showDebugBoxes())
-            Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(),
-                    Lol.sGame.mConfig.getDefaultFontRed(),
-                    Lol.sGame.mConfig.getDefaultFontGreen(),
-                    Lol.sGame.mConfig.getDefaultFontBlue(), 12);
+            Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
+                    Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 
     /**
@@ -799,33 +780,23 @@ public class Level extends ScreenAdapter {
         if (mChaseEntity == null)
             return;
         // figure out the entity's position
-        float x = mChaseEntity.mBody.getWorldCenter().x
-                + mChaseEntity.mCameraOffset.x;
-        float y = mChaseEntity.mBody.getWorldCenter().y
-                + mChaseEntity.mCameraOffset.y;
+        float x = mChaseEntity.mBody.getWorldCenter().x + mChaseEntity.mCameraOffset.x;
+        float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight()
-                * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight()
-                    * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                / Physics.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom
-                    / Physics.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -897,14 +868,10 @@ public class Level extends ScreenAdapter {
         // this is very useful when trying to adjust screen coordinates
         if (Lol.sGame.mConfig.showDebugBoxes()) {
             if (Gdx.input.justTouched()) {
-                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(),
-                        Gdx.input.getY(), 0));
-                Util.message("Screen Coordinates", mTouchVec.x + ", "
-                        + mTouchVec.y);
-                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(),
-                        Gdx.input.getY(), 0));
-                Util.message("World Coordinates", mTouchVec.x + ", "
-                        + mTouchVec.y);
+                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Util.message("Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Util.message("World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
 
             }
         }
@@ -950,8 +917,7 @@ public class Level extends ScreenAdapter {
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g,
-                mBackground.mColor.b, 1);
+        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g, mBackground.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // prepare the main camera... we do it here, so that the parallax code
@@ -990,8 +956,7 @@ public class Level extends ScreenAdapter {
             mShapeRender.setColor(Color.RED);
             for (Controls.Control pe : mControls)
                 if (pe.mRange != null)
-                    mShapeRender.rect(pe.mRange.x, pe.mRange.y,
-                            pe.mRange.width, pe.mRange.height);
+                    mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
             mShapeRender.end();
         }
     }
@@ -1081,14 +1046,12 @@ public class Level extends ScreenAdapter {
      * @param ps
      *            The entity that should be passed along
      */
-    public static void setTimerTrigger(final int timerId, float howLong,
-            final PhysicsSprite ps) {
+    public static void setTimerTrigger(final int timerId, float howLong, final PhysicsSprite ps) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onTimerTrigger(timerId,
-                            Lol.sGame.mCurrLevelNum, ps);
+                    Lol.sGame.onTimerTrigger(timerId, Lol.sGame.mCurrLevelNum, ps);
             }
         }, howLong);
     }
@@ -1121,9 +1084,8 @@ public class Level extends ScreenAdapter {
      *            events... use this to avoid outrageously high rates of
      *            scribbling
      */
-    public static void setScribbleMode(final String imgName,
-            final float duration, final float width, final float height,
-            final float density, final float elasticity, final float friction,
+    public static void setScribbleMode(final String imgName, final float duration, final float width,
+            final float height, final float density, final float elasticity, final float friction,
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
@@ -1144,8 +1106,7 @@ public class Level extends ScreenAdapter {
              *            The Y coordinate of the touch
              */
             @Override
-            public boolean onPan(final Vector3 touchLoc, float deltaX,
-                    float deltaY) {
+            public boolean onPan(final Vector3 touchLoc, float deltaX, float deltaY) {
                 // check if enough milliseconds have passed
                 long now = System.nanoTime();
                 if (now < mLastTime + interval * 1000000) {
@@ -1154,8 +1115,7 @@ public class Level extends ScreenAdapter {
                 mLastTime = now;
 
                 // make a circular obstacle
-                final Obstacle o = Obstacle.makeAsCircle(
-                        touchLoc.x - width / 2, touchLoc.y - height / 2, width,
+                final Obstacle o = Obstacle.makeAsCircle(touchLoc.x - width / 2, touchLoc.y - height / 2, width,
                         height, imgName);
                 o.setPhysics(density, elasticity, friction);
                 if (moveable)

@@ -81,8 +81,7 @@ public class Tilt {
         // if we're on a phone, read from the accelerometer device, taking into
         // account the rotation of the device
         ApplicationType appType = Gdx.app.getType();
-        if (appType == ApplicationType.Android
-                || appType == ApplicationType.iOS) {
+        if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
             float rot = Gdx.input.getRotation();
             if (rot == 0) {
                 xGravity = -Gdx.input.getAccelerometerX();
@@ -115,19 +114,15 @@ public class Tilt {
         yGravity *= mMultiplier;
 
         // ensure x is within the -GravityMax.x : GravityMax.x range
-        xGravity = (xGravity > Physics.PIXEL_METER_RATIO * mGravityMax.x) ? Physics.PIXEL_METER_RATIO
-                * mGravityMax.x
+        xGravity = (xGravity > Physics.PIXEL_METER_RATIO * mGravityMax.x) ? Physics.PIXEL_METER_RATIO * mGravityMax.x
                 : xGravity;
-        xGravity = (xGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.x) ? Physics.PIXEL_METER_RATIO
-                * -mGravityMax.x
+        xGravity = (xGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.x) ? Physics.PIXEL_METER_RATIO * -mGravityMax.x
                 : xGravity;
 
         // ensure y is within the -GravityMax.y : GravityMax.y range
-        yGravity = (yGravity > Physics.PIXEL_METER_RATIO * mGravityMax.y) ? Physics.PIXEL_METER_RATIO
-                * mGravityMax.y
+        yGravity = (yGravity > Physics.PIXEL_METER_RATIO * mGravityMax.y) ? Physics.PIXEL_METER_RATIO * mGravityMax.y
                 : yGravity;
-        yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.y) ? Physics.PIXEL_METER_RATIO
-                * -mGravityMax.y
+        yGravity = (yGravity < Physics.PIXEL_METER_RATIO * -mGravityMax.y) ? Physics.PIXEL_METER_RATIO * -mGravityMax.y
                 : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
@@ -138,16 +133,14 @@ public class Tilt {
             if (mGravityMax.x == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
-                        gfo.updateVelocity(gfo.mBody.getLinearVelocity().x,
-                                yGravity);
+                        gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
             }
             // if Y is clipped to zero, set each entitiy's X velocity, leave Y
             // unchanged
             else if (mGravityMax.y == 0) {
                 for (PhysicsSprite gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
-                        gfo.updateVelocity(xGravity,
-                                gfo.mBody.getLinearVelocity().y);
+                        gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {

@@ -129,10 +129,8 @@ class RouteDriver {
         // if we haven't passed the goal, keep going. we tell if we've passed
         // the goal by comparing the magnitudes of the vectors from source (s)
         // to here and from goal (g) to here
-        float sx = mRoute.mXIndices[mNextRouteGoal - 1]
-                - mEntity.getXPosition();
-        float sy = mRoute.mYIndices[mNextRouteGoal - 1]
-                - mEntity.getYPosition();
+        float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
+        float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
         float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
         float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
         boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
@@ -149,10 +147,8 @@ class RouteDriver {
                 }
             } else {
                 // advance to next point
-                mRouteVec.x = mRoute.mXIndices[mNextRouteGoal]
-                        - mEntity.getXPosition();
-                mRouteVec.y = mRoute.mYIndices[mNextRouteGoal]
-                        - mEntity.getYPosition();
+                mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+                mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
                 mRouteVec.nor();
                 mRouteVec.scl(mRouteVelocity);
                 mEntity.mBody.setLinearVelocity(mRouteVec);

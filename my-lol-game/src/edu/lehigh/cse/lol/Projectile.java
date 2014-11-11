@@ -80,13 +80,11 @@ public class Projectile extends PhysicsSprite {
      * @param isCircle
      *            True if it is a circle, false if it is a box
      */
-    Projectile(float width, float height, String imgName, float x, float y,
-            int zIndex, boolean isCircle) {
+    Projectile(float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
         super(imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
-            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y,
-                    radius / 2);
+            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
         } else {
             setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
         }
