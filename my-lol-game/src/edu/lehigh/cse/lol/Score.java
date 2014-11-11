@@ -472,5 +472,18 @@ public class Score {
         Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
         return prefs.getInteger(key, defaultVal);
     }
+    
+    /**
+     * Force the level to end in victory... useful in callbacks
+     */
+    public static void winLevel() {
+        Level.sCurrent.mScore.endLevel(true);
+    }
 
+    /**
+     * Force the level to end in defeat... useful in callbacks
+     */
+    public static void loseLevel() {
+        Level.sCurrent.mScore.endLevel(false);
+    }
 }

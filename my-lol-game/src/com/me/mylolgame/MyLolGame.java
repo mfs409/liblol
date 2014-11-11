@@ -3672,10 +3672,10 @@ public class MyLolGame extends Lol {
     {
         if (whichLevel == 88) {
             if (id == 1) {
-                Util.message("touch", "" + id);
+                Score.winLevel();
             }
             if (id == 2) {
-                Util.message("touch", "" + id);                
+                Score.loseLevel();                
             }
         }
     }
