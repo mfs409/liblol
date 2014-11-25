@@ -27,6 +27,14 @@
 
 package com.me.mylolgame;
 
+// TODO: Separate Controls into Inputs and Outputs
+// TODO: replace flipped hack with forward and backward animations
+// TODO: add a way to have multiple screens in the introduction to a level
+// TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings?
+// TODO: programatically pause/unpause timers?
+// TODO: add a moveDirectional button that takes an angle and a velocity?
+// TODO: make sure all angles use same untis (degrees or radians)
+
 import com.badlogic.gdx.math.Vector2;
 
 import edu.lehigh.cse.lol.Animation;
@@ -3212,9 +3220,9 @@ public class MyLolGame extends Lol {
             PreScene.addText("Keep pressing until\na hero makes it to\nthe destination", 255, 255, 255, "arial.ttf", 32);
 
             for (int i = 0; i < 10; ++i) {
-                Hero h = Hero.makeAsBox(4*i + 2, 0.1f, 2, 2, "greenball.png");
+                Hero h = Hero.makeAsBox(4 * i + 2, 0.1f, 2, 2, "greenball.png");
                 h.setPhysics(1, 1, 5);
-                Facts.putLevelEntity(""+i, h);
+                Facts.putLevelEntity("" + i, h);
             }
 
             Destination.makeAsCircle(29, 16, 2, 2, "mustardball.png");
@@ -3614,7 +3622,7 @@ public class MyLolGame extends Lol {
      *            true if the level was won, false otherwise
      */
     @Override
-    public void levelCompleteCallback(int whichLevel, boolean win) {
+    public void onLevelCompleteCallback(int whichLevel, boolean win) {
         // if we are on level 32, see if this is the farthest the hero has ever
         // traveled, and if so, update the persistent score
         if (whichLevel == 32) {
@@ -3653,13 +3661,12 @@ public class MyLolGame extends Lol {
                 PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
                 PauseScene.show();
             }
-        }
-        else if (whichLevel == 90) {
+        } else if (whichLevel == 90) {
             for (int i = 0; i < 10; ++i) {
-                PhysicsSprite p = Facts.getLevelEntity(""+i);
+                PhysicsSprite p = Facts.getLevelEntity("" + i);
                 p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
             }
-            
+
         }
     }
 

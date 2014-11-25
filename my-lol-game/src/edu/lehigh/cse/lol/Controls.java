@@ -90,7 +90,7 @@ public class Controls {
 
         /**
          * Use this constructor for controls that provide pressable images
-         *
+         * 
          * @param imgName
          *            The name of the image to display. If "" is given as the
          *            name, it will not crash.
@@ -118,7 +118,7 @@ public class Controls {
 
         /**
          * Use this constructor for controls that are simply for displaying text
-         *
+         * 
          * @param red
          *            The red portion of text color (0-255)
          * @param green
@@ -138,7 +138,7 @@ public class Controls {
          * we're displaying text, which probably means we're also dynamically
          * updating the text to display on every render, so it makes sense to
          * overload the render() call for those Controls
-         *
+         * 
          * @param sb
          *            The SpriteBatch to use to draw the image
          */
@@ -187,7 +187,7 @@ public class Controls {
      * A helper method to draw text nicely. In GDX, we draw everything by giving
      * the bottom left corner, except text, which takes the top left corner.
      * This function handles the conversion, so that we can use bottom-left.
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -210,7 +210,7 @@ public class Controls {
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * defeat
-     *
+     * 
      * @param timeout
      *            Starting value of the timer
      * @param text
@@ -229,7 +229,7 @@ public class Controls {
     /**
      * Add a countdown timer to the screen, with extra features for describing
      * the appearance of the font. When time is up, the level ends in defeat.
-     *
+     * 
      * @param timeout
      *            Starting value of the timer
      * @param text
@@ -272,7 +272,7 @@ public class Controls {
 
     /**
      * Print the frames per second
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -308,7 +308,7 @@ public class Controls {
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * victory
-     *
+     * 
      * @param timeout
      *            Starting value of the timer
      * @param x
@@ -325,7 +325,7 @@ public class Controls {
     /**
      * Add a countdown timer to the screen, with extra features for describing
      * the appearance of the font. When time is up, the level ends in victory
-     *
+     * 
      * @param timeout
      *            Starting value of the timer
      * @param x
@@ -366,7 +366,7 @@ public class Controls {
     /**
      * Add a count of the current number of goodies of the specified type, with
      * extra features for describing the appearance of the font
-     *
+     * 
      * @param type
      *            The type of goodie to show (1-4)
      * @param max
@@ -407,7 +407,7 @@ public class Controls {
 
     /**
      * Add a count of the number of enemies who have been defeated
-     *
+     * 
      * @param max
      *            If this is > 0, then the message will be of the form XX/max
      *            instead of just XX
@@ -427,7 +427,7 @@ public class Controls {
     /**
      * Add a count of the number of enemies who have been defeated, with extra
      * features for describing the appearance of the font
-     *
+     * 
      * @param max
      *            If this is > 0, then the message wil be of the form XX/max
      *            instead of just XX
@@ -466,7 +466,7 @@ public class Controls {
 
     /**
      * Add a stopwatch for tracking how long a level takes
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -481,7 +481,7 @@ public class Controls {
     /**
      * Add a stopwatch for tracking how long a level takes, with extra features
      * for describing the appearance of the font
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -514,7 +514,7 @@ public class Controls {
 
     /**
      * Display a strength meter for a specific hero
-     *
+     * 
      * @param text
      *            The text to display after the remaining strength value
      * @param x
@@ -534,7 +534,7 @@ public class Controls {
     /**
      * Display a strength meter for a specific hero, with extra features for
      * describing the appearance of the font
-     *
+     * 
      * @param text
      *            The text to display after the remaining strength value
      * @param x
@@ -570,7 +570,7 @@ public class Controls {
 
     /**
      * Display a meter showing how far a hero has traveled
-     *
+     * 
      * @param text
      *            The text to display after the remaining strength value
      * @param x
@@ -607,7 +607,7 @@ public class Controls {
 
     /**
      * Display the number of remaining projectiles
-     *
+     * 
      * @param text
      *            The text to display after the number of goodies
      * @param x
@@ -643,7 +643,7 @@ public class Controls {
      * Add a button that pauses the game by causing a PauseScene to be
      * displayed. Note that you must configure a PauseScene, or pressing this
      * button will cause your game to crash.
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -672,7 +672,7 @@ public class Controls {
 
     /**
      * Add a button that moves an entity
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -698,7 +698,7 @@ public class Controls {
 
             /**
              * Run this when a control is down-pressed or up-pressed
-             *
+             * 
              * @param isUp
              *            True if it is an up-press
              */
@@ -740,7 +740,7 @@ public class Controls {
 
     /**
      * Add a button that moves an entity downward
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -764,7 +764,7 @@ public class Controls {
 
     /**
      * Add a button that moves an entity upward
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -788,7 +788,7 @@ public class Controls {
 
     /**
      * Add a button that moves the given entity left
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -812,7 +812,7 @@ public class Controls {
 
     /**
      * Add a button that moves the given entity to the right
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -837,7 +837,7 @@ public class Controls {
     /**
      * Add a button that moves the given entity at one speed when it is
      * depressed, and at another otherwise
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -896,7 +896,7 @@ public class Controls {
     /**
      * Add a button that moves the given entity at one speed, but doesn't stop
      * the entity when the button is released
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -947,7 +947,7 @@ public class Controls {
     /**
      * Add a button that puts the hero into crawl mode when depressed, and
      * regular mode when released
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -981,7 +981,7 @@ public class Controls {
 
     /**
      * Add a button to make the hero jump
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1012,7 +1012,7 @@ public class Controls {
 
     /**
      * Add a button to make the hero throw a projectile
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1074,7 +1074,7 @@ public class Controls {
     /**
      * Add a button to make the hero throw a projectile, but holding doesn't
      * make it throw more often
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1122,7 +1122,7 @@ public class Controls {
      * need to use this method, which throws toward where the screen was pressed
      * Note: you probably want to use an invisible button that covers the
      * screen...
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1201,7 +1201,7 @@ public class Controls {
     /**
      * This is almost exactly like addVectorThrowButton. The only difference is
      * that holding won't cause the hero to throw more projectiles
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1243,7 +1243,7 @@ public class Controls {
     /**
      * Display a zoom out button. Note that zooming in and out does not work
      * well with elements that hover on the screen. Use with care.
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1278,7 +1278,7 @@ public class Controls {
 
     /**
      * Display a zoom in button
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1313,7 +1313,7 @@ public class Controls {
 
     /**
      * Add a button that rotates the hero
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1352,7 +1352,7 @@ public class Controls {
 
     /**
      * Add an image to the heads-up display. Touching the image has no effect
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1375,7 +1375,7 @@ public class Controls {
     /**
      * Add a button to the heads-up display that runs custom code via an
      * onControlPress callback
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1407,7 +1407,7 @@ public class Controls {
     /**
      * Add a button to the heads-up display that runs custom code via an
      * onControlPress callback, but the button only works once
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1450,7 +1450,7 @@ public class Controls {
 
     /**
      * Display text corresponding to a fact saved for the current level
-     *
+     * 
      * @param key
      *            The key to look up in the Fact store
      * @param x
@@ -1488,7 +1488,7 @@ public class Controls {
 
     /**
      * Display text corresponding to a fact saved for the current game session
-     *
+     * 
      * @param key
      *            The key to look up in the Fact store
      * @param x
@@ -1526,7 +1526,7 @@ public class Controls {
 
     /**
      * Display text corresponding to a fact saved for the game
-     *
+     * 
      * @param key
      *            The key to look up in the Fact store
      * @param x
@@ -1564,7 +1564,7 @@ public class Controls {
 
     /**
      * Allow panning to view more of the screen than is currently visible
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1588,7 +1588,7 @@ public class Controls {
             /**
              * Handle a pan stop event by restoring the chase entity, if there
              * was one
-             *
+             * 
              * @param touchVec
              *            The x/y/z coordinates of the touch
              */
@@ -1601,13 +1601,13 @@ public class Controls {
 
             /**
              * Run this when the screen is panned
-             *
+             * 
              * @param touchVec
              *            The x/y/z world coordinates of the touch
-             *
+             * 
              * @param deltaX
              *            the change in X, in screen coordinates
-             *
+             * 
              * @param deltaY
              *            the change in Y, in screen coordinates
              */
@@ -1655,10 +1655,10 @@ public class Controls {
 
     /**
      * Allow pinch-to-zoom
-     *
+     * 
      * TODO: this isn't quite right, because we are treating zoom like a
      * touchable control, but it's really a whole-screen affair...
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1683,7 +1683,7 @@ public class Controls {
 
             /**
              * Handle a down press (hopefully to turn it into a hold/release)
-             *
+             * 
              * @param touchVec
              *            The x/y/z coordinates of the touch
              */
@@ -1694,7 +1694,7 @@ public class Controls {
 
             /**
              * Handle a zoom-via-pinch event
-             *
+             * 
              * @param initialDistance
              *            The distance between fingers when the pinch started
              * @param distance
@@ -1717,7 +1717,7 @@ public class Controls {
      * Add an image to the heads-up display that changes its clipping rate to
      * seem to grow vertically, without stretching. Touching the image causes
      * its scale (0-100) to be sent to a ControlPressEntity event
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1769,7 +1769,7 @@ public class Controls {
              * This is the render method when we've got a valid TR. We're going
              * to play with how we draw, so that we can clip and stretch the
              * image
-             *
+             * 
              * @param sb
              *            The SpriteBatch to use to draw the image
              */
@@ -1824,7 +1824,7 @@ public class Controls {
     /**
      * Add a rotating button that generates a ControlPressEntity event and
      * passes the rotation to the handler.
-     *
+     * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
      * @param y
@@ -1852,7 +1852,7 @@ public class Controls {
              * This is the render method when we've got a valid TR. We're going
              * to play with how we draw, so that we can clip and stretch the
              * image
-             *
+             * 
              * @param sb
              *            The SpriteBatch to use to draw the image
              */

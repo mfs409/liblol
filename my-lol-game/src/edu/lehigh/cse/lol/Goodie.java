@@ -58,7 +58,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Build a Goodie This should never be invoked directly. Instead, LOL game
      * designers should use the makeAsXYZ methods
-     *
+     * 
      * @param x
      *            X position of bottom left corner
      * @param y
@@ -81,7 +81,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Internal method: Goodie collision is always handled by the other entity
      * involved in the collision, so we leave this method blank
-     *
+     * 
      * @param other
      *            Other object involved in this collision
      * @param contact
@@ -98,7 +98,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Draw a goodie with an underlying box shape, and a default score of
      * [1,0,0,0]
-     *
+     * 
      * @param x
      *            X coordinate of bottom left corner
      * @param y
@@ -122,7 +122,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Draw a goodie with an underlying circle shape, and a default score of
      * [1,0,0,0]
-     *
+     * 
      * @param x
      *            X coordinate of bottom left corner
      * @param y
@@ -147,7 +147,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Set the score of this goodie. This indicates how many points the goodie
      * is worth... each value can be positive or negative
-     *
+     * 
      * @param v1
      *            The number of points that are added to the first score when
      *            the goodie is collected
@@ -170,7 +170,7 @@ public class Goodie extends PhysicsSprite {
 
     /**
      * Indicate how much strength the hero gains by collecting this goodie
-     *
+     * 
      * @param boost
      *            Amount of strength to add (can be negative)
      */
@@ -181,7 +181,7 @@ public class Goodie extends PhysicsSprite {
     /**
      * Indicate how long the hero will be invincible after collecting this
      * goodie
-     *
+     * 
      * @param duration
      *            Amount of time the hero will be invincible. Note that for a
      *            hero who is currently invincible, this value will be /added/

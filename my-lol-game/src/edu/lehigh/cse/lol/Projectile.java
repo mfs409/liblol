@@ -64,7 +64,7 @@ public class Projectile extends PhysicsSprite {
     /**
      * Internal method to create a projectile. Projectiles have an underlying
      * circle as their physics body
-     *
+     * 
      * @param width
      *            width of the projectile
      * @param height
@@ -99,7 +99,7 @@ public class Projectile extends PhysicsSprite {
      * obstacle, which makes the projectile disappear, or on hitting a
      * projectile, which is a bit funny because one of the two projectiles will
      * live.
-     *
+     * 
      * @param other
      *            The other entity involved in the collision
      * @param contact

@@ -81,7 +81,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Internal constructor to build an Obstacle. This should never be invoked
      * directly. Instead, use the 'addXXX' methods of the Object class.
-     *
+     * 
      * @param width
      *            width of this Obstacle
      * @param height
@@ -113,7 +113,7 @@ public class Obstacle extends PhysicsSprite {
      * Called when this Obstacle is the dominant obstacle in a collision Note:
      * This Obstacle is /never/ the dominant obstacle in a collision, since it
      * is #6 or #7
-     *
+     * 
      * @param other
      *            The other entity involved in this collision
      * @param contact
@@ -129,7 +129,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying box shape
-     *
+     * 
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -151,7 +151,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying polygon shape
-     *
+     * 
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -176,7 +176,7 @@ public class Obstacle extends PhysicsSprite {
 
     /**
      * Draw an obstacle with an underlying circle shape
-     *
+     * 
      * @param x
      *            X coordinate of the bottom left corner
      * @param y
@@ -202,7 +202,7 @@ public class Obstacle extends PhysicsSprite {
      * over damp Obstacles. Damp factors can be negative to cause a reverse
      * direction, less than 1 to cause a slowdown (friction pads), or greater
      * than 1 to serve as zoom pads.
-     *
+     * 
      * @param factor
      *            Value to multiply the hero's velocity when it collides with
      *            this Obstacle
@@ -224,7 +224,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Call this on an event to make it behave like a "damp" obstacle, except
      * with a constant additive (or subtractive) effect on the hero's speed.
-     *
+     * 
      * @param boostAmountX
      *            The amount to add to the hero's X velocity
      * @param boostAmountY
@@ -265,7 +265,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Control whether the hero can jump if it collides with this obstacle while
      * in the air
-     *
+     * 
      * @param enable
      *            true if the hero can jump again, false otherwise
      */
@@ -276,7 +276,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Make the object a callback object, so that custom code will run when a
      * hero collides with it
-     *
+     * 
      * @param id
      *            identifier for the callback
      * @param activationGoodies1
@@ -333,7 +333,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Make the object a callback object, so that custom code will run when an
      * enemy collides with it
-     *
+     * 
      * @param id
      *            identifier for the callback
      * @param activationGoodies1
@@ -386,7 +386,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Make the object a callback object, so that custom code will run when a
      * projectile collides with it.
-     *
+     * 
      * @param id
      *            identifier for the callback
      * @param activationGoodies1
@@ -422,7 +422,7 @@ public class Obstacle extends PhysicsSprite {
     /**
      * Indicate that when the hero collides with this obstacle, we should make a
      * sound
-     *
+     * 
      * @param sound
      *            The name of the sound file to play
      * @param delay

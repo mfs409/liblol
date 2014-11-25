@@ -139,7 +139,7 @@ public class Score {
 
     /**
      * Use this to inform the level that a hero has been defeated
-     *
+     * 
      * @param e
      *            The enemy who defeated the hero
      */
@@ -154,7 +154,7 @@ public class Score {
 
     /**
      * Use this to inform the level that a goodie has been collected by a hero
-     *
+     * 
      * @param g
      *            The goodie that was collected
      */
@@ -176,7 +176,7 @@ public class Score {
 
     /**
      * Use this to inform the level that a hero has reached a destination
-     *
+     * 
      * @param d
      *            The destination that the hero reached
      */
@@ -210,7 +210,7 @@ public class Score {
     /**
      * When a level ends, we run this code to shut it down, print a message, and
      * then let the user resume play
-     *
+     * 
      * @param win
      *            /true/ if the level was won, /false/ otherwise
      */
@@ -225,7 +225,7 @@ public class Score {
                     mGameOver = true;
 
                     // Run the level-complete callback
-                    Lol.sGame.levelCompleteCallback(Lol.sGame.mCurrLevelNum, win);
+                    Lol.sGame.onLevelCompleteCallback(Lol.sGame.mCurrLevelNum, win);
 
                     // if we won, unlock the next level
                     if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
@@ -250,7 +250,7 @@ public class Score {
 
     /**
      * Manually set the number of goodies of type 1 that have been collected.
-     *
+     * 
      * @param value
      *            The new value
      */
@@ -260,7 +260,7 @@ public class Score {
 
     /**
      * Manually set the number of goodies of type 2 that have been collected.
-     *
+     * 
      * @param value
      *            The new value
      */
@@ -270,7 +270,7 @@ public class Score {
 
     /**
      * Manually set the number of goodies of type 3 that have been collected.
-     *
+     * 
      * @param value
      *            The new value
      */
@@ -280,7 +280,7 @@ public class Score {
 
     /**
      * Manually set the number of goodies of type 4 that have been collected.
-     *
+     * 
      * @param value
      *            The new value
      */
@@ -322,7 +322,7 @@ public class Score {
 
     /**
      * Getter for number of goodies of type 1 that have been collected.
-     *
+     * 
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected1() {
@@ -331,7 +331,7 @@ public class Score {
 
     /**
      * Getter for number of goodies of type 2 that have been collected.
-     *
+     * 
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected2() {
@@ -340,7 +340,7 @@ public class Score {
 
     /**
      * Getter for number of goodies of type 3 that have been collected.
-     *
+     * 
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected3() {
@@ -349,7 +349,7 @@ public class Score {
 
     /**
      * Getter for number of goodies of type 4 that have been collected.
-     *
+     * 
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected4() {
@@ -368,7 +368,7 @@ public class Score {
 
     /**
      * Indicate that the level is won by defeating a certain number of enemies
-     *
+     * 
      * @param howMany
      *            The number of enemies that must be defeated to win the level
      */
@@ -379,7 +379,7 @@ public class Score {
 
     /**
      * Indicate that the level is won by collecting enough goodies
-     *
+     * 
      * @param v1
      *            Number of type-1 goodies that must be collected to win the
      *            level
@@ -404,7 +404,7 @@ public class Score {
     /**
      * Indicate that the level is won by having a certain number of heroes reach
      * destinations
-     *
+     * 
      * @param howMany
      *            Number of heroes that must reach destinations
      */
@@ -415,7 +415,7 @@ public class Score {
 
     /**
      * Change the amount of time left in a countdown timer
-     *
+     * 
      * @param delta
      *            The amount of time to add before the timer expires
      */
@@ -447,7 +447,7 @@ public class Score {
     /**
      * Access the persistent storage to set a key/value pair, so that the
      * information will be available forever
-     *
+     * 
      * @param key
      *            The key to use to remember this value
      * @param value
@@ -461,7 +461,7 @@ public class Score {
 
     /**
      * Access the persistent storage to read the value associated with a key
-     *
+     * 
      * @param key
      *            The key to use to get the value
      * @param defaultVal

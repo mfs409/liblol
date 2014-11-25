@@ -96,7 +96,7 @@ public class PauseScene {
      * For suppressing clear clicks
      */
     private boolean mSuppressClearClick;
-    
+
     /**
      * All buttons on the PauseScene are stored here
      */
@@ -130,7 +130,7 @@ public class PauseScene {
             mVisible = false;
             Lol.sGame.handleBack();
         }
-        
+
         // check for taps to the buttons
         for (Button b : mButtons) {
             if (b.mRect.contains(mV.x, mV.y)) {
@@ -139,7 +139,7 @@ public class PauseScene {
                 return;
             }
         }
-        
+
         // swallow any clicks
         Level.sCurrent.liftAllButtons(mV);
 
@@ -159,7 +159,7 @@ public class PauseScene {
         Timer.instance().delay(showTime);
         Timer.instance().start();
     }
-    
+
     /**
      * Internal method to draw a PauseScene
      * 

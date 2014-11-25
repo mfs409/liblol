@@ -309,7 +309,7 @@ public abstract class Lol extends Game {
      */
 
     /**
-     * 
+     * Set the next level to play
      */
     public void setNextLevel(int nextLevel) {
         mCurrLevelNum = nextLevel;
@@ -369,8 +369,8 @@ public abstract class Lol extends Game {
     abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
 
     /**
-     * When the player touches an entity that has a TouchCallback attached to it,
-     * this code will run
+     * When the player touches an entity that has a TouchCallback attached to
+     * it, this code will run
      * 
      * @param id
      *            The number assigned to the entity's TouchCallback
@@ -470,11 +470,11 @@ public abstract class Lol extends Game {
      * @param win
      *            True if the level was won, false otherwise
      */
-    abstract public void levelCompleteCallback(int whichLevel, boolean win);
+    abstract public void onLevelCompleteCallback(int whichLevel, boolean win);
 
     /**
-     * When a Control is pressed, for which there is a ControlCallback, this code
-     * will run.
+     * When a Control is pressed, for which there is a ControlCallback, this
+     * code will run.
      * 
      * @param id
      *            The number assigned to this callback
@@ -484,8 +484,8 @@ public abstract class Lol extends Game {
     abstract public void onControlPressCallback(int id, int whichLevel);
 
     /**
-     * When a Control is pressed, for which there is a ControlCallback that takes
-     * an entity and value, this code will run.
+     * When a Control is pressed, for which there is a ControlCallback that
+     * takes an entity and value, this code will run.
      * 
      * @param id
      *            The number assigned to this callback

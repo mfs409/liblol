@@ -177,8 +177,8 @@ public class Facts {
     }
 
     /**
-     * Save a PhysicsSprite from the current level.  If the entityName has already been
-     * used for this level, the new value will overwrite the old.
+     * Save a PhysicsSprite from the current level. If the entityName has
+     * already been used for this level, the new value will overwrite the old.
      * 
      * @param entityName
      *            The name for the PhysicsSprite being saved
