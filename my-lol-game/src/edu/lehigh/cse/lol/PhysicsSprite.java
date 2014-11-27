@@ -43,6 +43,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -246,6 +247,16 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      */
     Joint mRevJoint;
 
+    /**
+     * A definition for when we attach a distance joint to this entity
+     */
+    DistanceJointDef mDistJointDef;
+    
+    /**
+     * A joint that allows this entity to stay within a fixed distance of another
+     */
+    Joint mDistJoint;
+    
     /**
      * If this PhysicsSprite is chasing another PhysicsSprite, we track who is
      * being chased via this field
@@ -1645,6 +1656,43 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         w.referenceAngle = angle;
         w.collideConnected = false;
         mExplicitWeldJoint = (WeldJoint) Level.sCurrent.mWorld.createJoint(w);
+    }
+
+    /**
+     * Create a distance joint between this entity and some other entity
+     * 
+     * @param anchor
+     *            The entity to which this entity is connected
+     * @param anchorX
+     *            The X coordinate (relative to the center of the entity) where
+     *            the joint fuses to the anchor
+     * @param anchorY
+     *            The Y coordinate (relative to the center of the entity) where
+     *            the joint fuses to the anchor
+     * @param localAnchorX
+     *            The X coordinate (relative to the center of the entity) where
+     *            the joint fuses to this entity
+     * @param localAnchorY
+     *            The Y coordinate (relative to the center of the entity) where
+     *            the joint fuses to this entity
+     */
+    public void setDistanceJoint(PhysicsSprite anchor, float anchorX, float anchorY, float localAnchorX,
+            float localAnchorY) {
+        // make the body dynamic
+        setCanFall();
+        
+        
+        // set up a joint so the head can't move too far
+        mDistJointDef = new DistanceJointDef();
+        mDistJointDef.bodyA = anchor.mBody;
+        mDistJointDef.bodyB = mBody;
+        mDistJointDef.localAnchorA.set(anchorX, anchorY);
+        mDistJointDef.localAnchorB.set(localAnchorX, localAnchorY);
+        mDistJointDef.collideConnected = false;
+        mDistJointDef.dampingRatio = 0.1f;
+        mDistJointDef.frequencyHz = 2;
+
+        mDistJoint = Level.sCurrent.mWorld.createJoint(mDistJointDef);
     }
 
     /**

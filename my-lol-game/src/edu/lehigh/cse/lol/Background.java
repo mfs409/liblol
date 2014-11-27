@@ -88,6 +88,16 @@ public class Background {
         private boolean mYRepeat;
 
         /**
+         * Width of the image
+         */
+        private float mWidth;
+
+        /**
+         * Height of the image
+         */
+        private float mHeight;
+
+        /**
          * Simple constructor... just set the fields
          * 
          * @param xSpeed
@@ -100,13 +110,20 @@ public class Background {
          *            X offset
          * @param yOffset
          *            Y offset
+         * @param width
+         *            Width of the image
+         * @param height
+         *            Height of the image
          */
-        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset) {
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset, float width,
+                float height) {
             mXSpeed = xSpeed;
             mYSpeed = ySpeed;
             mImage = tr;
             mXOffset = xOffset;
             mYOffset = yOffset;
+            mWidth = width;
+            mHeight = height;
         }
     }
 
@@ -149,7 +166,7 @@ public class Background {
                 // the zoom factor
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
                 while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
-                    sb.draw(pl.mImage, currX, pl.mYOffset);
+                    sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth, pl.mHeight);
                     currX += pl.mImage.getRegionWidth();
                 }
             }
@@ -219,10 +236,15 @@ public class Background {
      * @param yOffset
      *            The default is to draw the image at y=0. This field allows the
      *            picture to be moved up or down.
+     * @param width
+     *            The width of the image being used as a background layer
+     * @param height
+     *            The height of the image being used as a background layer
      */
-    static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset) {
+    static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset, float width,
+            float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
-                * Physics.PIXEL_METER_RATIO);
+                * Physics.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);
     }
@@ -243,10 +265,14 @@ public class Background {
      * @param xOffset
      *            The default is to draw the image at x=0. This field allows the
      *            picture to be moved left or right.
+     * @param width
+     *            The width of the image being used as a background layer
+     * @param height
+     *            The height of the image being used as a background layer
      */
-    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset) {
+    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
-                * Physics.PIXEL_METER_RATIO, 0);
+                * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);
     }

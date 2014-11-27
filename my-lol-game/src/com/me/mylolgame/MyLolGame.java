@@ -29,13 +29,12 @@ package com.me.mylolgame;
 
 // TODO: add a way to have multiple screens in the introduction to a level
 // TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings?
-// TODO: programatically pause/unpause timers?
-// TODO: add a moveDirectional button that takes an angle and a velocity?
 // TODO: make sure all angles use same units (degrees or radians)
-// TODO: Add obstacle/obstacle, enemy/enemy, and */SVG callbacks
-// TODO: better truck demo?
-// TODO: clean up 87 and 88
-// TODO: scale x and y of backgrounds
+// TODO: Add SVG collision callbacks?
+// TODO: clean up the last 6 levels
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -1202,7 +1201,7 @@ public class MyLolGame extends Lol {
             // the x direction. Note that background "layers" are all drawn
             // *before* anything that is drawn with a z index... so the
             // background will be behind the hero
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // make an obstacle that hovers in a fixed place. Note that hovering
             // and zoom do not work together nicely.
@@ -1249,11 +1248,11 @@ public class MyLolGame extends Lol {
             // set up our background again, but add a few more layers
             Background.setColor(23, 180, 255);
             // this layer has a scroll factor of 0... it won't move
-            Background.addHorizontalLayer(0, 1, "back.png", 0);
+            Background.addHorizontalLayer(0, 1, "back.png", 0, 480, 320);
             // this layer moves at half the speed of the hero
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
             // this layer is faster than the hero
-            Background.addHorizontalLayer(1.25f, 1, "front.png", 20);
+            Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
         }
 
         /*
@@ -1289,7 +1288,7 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
             // set up the background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // draw a jump button that covers the whole screen
             Controls.addJumpButton(0, 0, 480, 320, "", h);
@@ -1325,7 +1324,7 @@ public class MyLolGame extends Lol {
 
             // this is all the same as before, to include the invisible enemy
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
             Controls.addJumpButton(0, 0, 480, 320, "", h);
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Enemy.makeAsBox(130, 0, .5f, 38, "");
@@ -1354,7 +1353,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // let's draw an enemy, just in case anyone wants to try to go to
             // the top left corner
@@ -1382,7 +1381,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1437,7 +1436,7 @@ public class MyLolGame extends Lol {
             Physics.configure(0, -10);
             PreScene.addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1507,7 +1506,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // place a speed-up obstacle that lasts for 2 seconds
             Obstacle o1 = Obstacle.makeAsCircle(40, 1, 4, 4, "purpleball.png");
@@ -1544,9 +1543,9 @@ public class MyLolGame extends Lol {
 
             // set up vertical scrolling backgrounds
             Background.setColor(255, 0, 255);
-            Background.addVerticalLayer(1, 0, "back.png", 0);
-            Background.addVerticalLayer(1, .5f, "mid.png", 0);
-            Background.addVerticalLayer(1, 1, "front.png", 0);
+            Background.addVerticalLayer(1, 0, "back.png", 0, 480, 320);
+            Background.addVerticalLayer(1, .5f, "mid.png", 0, 480, 320);
+            Background.addVerticalLayer(1, 1, "front.png", 0, 454, 80);
         }
 
         /*
@@ -1859,7 +1858,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2158,7 +2157,7 @@ public class MyLolGame extends Lol {
 
             // draw a background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
         }
 
         /*
@@ -2845,7 +2844,7 @@ public class MyLolGame extends Lol {
 
             // set up the background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero velocity
@@ -2871,7 +2870,7 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
 
             // This control has a dampening effect, so that on release, the hero
             // slowly stops
@@ -3238,6 +3237,35 @@ public class MyLolGame extends Lol {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             Controls.addCallbackControl(0, 0, 480, 320, "", 0);
+        }
+        
+        /**
+         * Demo a truck, using distance and revolute joints
+         */
+        else if (whichLevel == 91) {
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            
+            Hero truck = Hero.makeAsBox(3, 3, 4, 1.5f, "red.png");
+            truck.setPhysics(1, 0, 0);
+            Obstacle head = Obstacle.makeAsCircle(4.5f, 4, 1, 1, "blueball.png");
+            head.setPhysics(1, 0, 0);
+            Obstacle backWheel = Obstacle.makeAsCircle(3, 2, 1.5f, 1.5f, "blueball.png");
+            backWheel.setPhysics(3, 0, 1);
+            Obstacle frontWheel = Obstacle.makeAsCircle(5.5f, 2, 1.5f, 1.5f, "blueball.png");
+            frontWheel.setPhysics(3, 0, 1);
+            
+            backWheel.setRevoluteJoint(truck, -1.5f, -1, 0, 0);
+            backWheel.setRevoluteJointMotor(-10f, 10f);
+            frontWheel.setRevoluteJoint(truck, 1.5f, -1, 0, 0);
+            frontWheel.setRevoluteJointMotor(-10f, 10f);
+            
+            // this is not how we want the head to look, but it makes for a nice demo
+            head.setDistanceJoint(truck, 0, 1, 0, 0);
+            
+            Destination.makeAsBox(47, 0, .1f, 32, "");
+            Score.setVictoryDestination(1);
         }
     }
 

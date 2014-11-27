@@ -68,7 +68,7 @@ public class LolConfig implements LolConfiguration {
      */
     @Override
     public int getNumLevels() {
-        return 90;
+        return 91;
     }
 
     /**
