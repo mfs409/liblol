@@ -542,10 +542,15 @@ public class Level extends ScreenAdapter {
     private final ArrayList<ArrayList<Lol.Renderable>> mSprites = new ArrayList<ArrayList<Lol.Renderable>>(5);
 
     /**
-     * The controls / heads-up-display
+     * Input Controls
      */
     ArrayList<Controls.Control> mControls = new ArrayList<Controls.Control>();
 
+    /**
+     * Output Displays
+     */
+    ArrayList<Displays.Display> mDisplays = new ArrayList<Displays.Display>();
+    
     /**
      * Controls that have a tap event
      */
@@ -738,7 +743,7 @@ public class Level extends ScreenAdapter {
 
         // When debug mode is on, print the frames per second
         if (Lol.sGame.mConfig.showDebugBoxes())
-            Controls.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
+            Displays.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
                     Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 
@@ -947,6 +952,9 @@ public class Level extends ScreenAdapter {
         for (Controls.Control c : mControls)
             if (c.mIsActive)
                 c.render(mSpriteBatch);
+        for (Displays.Display d : mDisplays)
+            if (d.mIsActive)
+                d.render(mSpriteBatch);
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines

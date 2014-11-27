@@ -233,6 +233,7 @@ public class Score {
 
                     // drop everything from the hud
                     Level.sCurrent.mControls.clear();
+                    Level.sCurrent.mDisplays.clear();
 
                     // clear any pending timers
                     Timer.instance().clear();

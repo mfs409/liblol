@@ -46,6 +46,7 @@ import edu.lehigh.cse.lol.Background;
 import edu.lehigh.cse.lol.ChooserConfiguration;
 import edu.lehigh.cse.lol.Controls;
 import edu.lehigh.cse.lol.Destination;
+import edu.lehigh.cse.lol.Displays;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Facts;
 import edu.lehigh.cse.lol.Goodie;
@@ -600,7 +601,7 @@ public class MyLolGame extends Lol {
             // let's put a display on the screen to see how many type-1 goodies
             // we've collected. Since the second parameter is "2", we'll display
             // the count as "X/2 Goodies" instead of "X Goodies"
-            Controls.addGoodieCount(1, 2, "Goodies", 220, 280, "arial.ttf", 255, 0, 255, 20);
+            Displays.addGoodieCount(1, 2, "Goodies", 220, 280, "arial.ttf", 255, 0, 255, 20);
         }
 
         /*
@@ -636,7 +637,7 @@ public class MyLolGame extends Lol {
 
             // draw a goodie counter in light blue (60, 70, 255) with a 12-point
             // font
-            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /*
@@ -665,10 +666,10 @@ public class MyLolGame extends Lol {
             Score.setVictoryGoodies(5, 0, 0, 0);
 
             // put the goodie count on the screen
-            Controls.addGoodieCount(1, 5, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 5, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // put a simple countdown on the screen
-            Controls.addCountdown(15, "Time Up!", 400, 50);
+            Displays.addCountdown(15, "Time Up!", 400, 50);
 
             // let's also add a screen for pausing the game. In a real game,
             // every level should have a button for pausing the game, and the
@@ -699,7 +700,7 @@ public class MyLolGame extends Lol {
 
             // add a stopwatch... note that there are two ways to add a
             // stopwatch, the other of which allows for configuring the font
-            Controls.addStopwatch(50, 50);
+            Displays.addStopwatch(50, 50);
 
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level
@@ -756,7 +757,7 @@ public class MyLolGame extends Lol {
             h.setStrength(10);
 
             // draw a strength meter to show this hero's strength
-            Controls.addStrengthMeter("Strength", 220, 280, h);
+            Displays.addStrengthMeter("Strength", 220, 280, h);
 
             // our first enemy stands still:
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -813,7 +814,7 @@ public class MyLolGame extends Lol {
             e.setDamage(4);
 
             // put a countdown on the screen
-            Controls.addCountdown(10, "Time Up!", 200, 25);
+            Displays.addCountdown(10, "Time Up!", 200, 25);
 
             // indicate that defeating all of the enemies is the way to win this
             // level
@@ -853,7 +854,7 @@ public class MyLolGame extends Lol {
             g.setDisappearSound("woowoowoo.ogg");
 
             // Display the hero's strength
-            Controls.addStrengthMeter("Strength", 220, 280, h);
+            Displays.addStrengthMeter("Strength", 220, 280, h);
 
             // win by defeating one enemy
             Score.setVictoryEnemyCount(1);
@@ -893,12 +894,12 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             // display a goodie count for type-1 goodies
-            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // put a frames-per-second display on the screen. This is going to
             // look funny, because when debug mode is set (in Config.java), a
             // FPS will be shown on every screen anyway
-            Controls.addFPS(400, 15, "arial.ttf", 200, 200, 100, 12);
+            Displays.addFPS(400, 15, "arial.ttf", 200, 200, 100, 12);
         }
 
         /*
@@ -931,7 +932,7 @@ public class MyLolGame extends Lol {
             Goodie.makeAsCircle(35, 30, 2, 2, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
-            Controls.addGoodieCount(1, 0, "Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /*
@@ -1210,7 +1211,7 @@ public class MyLolGame extends Lol {
             o.setHover(100, 100);
 
             // Add a meter to show how far the hero has traveled
-            Controls.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 255, 255, 16, h);
+            Displays.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 0, 255, 16, h);
 
             // Add some text about the previous best score. If you look in the
             // onLevelCompleteCallback() code (far below in this file), you'll
@@ -1787,7 +1788,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryEnemyCount();
 
             // put a count of defeated enemies on the screen
-            Controls.addDefeatedCount(0, "Enemies Defeated", 20, 20);
+            Displays.addDefeatedCount(0, "Enemies Defeated", 20, 20);
         }
 
         /*
@@ -1973,7 +1974,7 @@ public class MyLolGame extends Lol {
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
-            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
@@ -2083,7 +2084,7 @@ public class MyLolGame extends Lol {
 
             // put an enemy defeated count on the screen, in red with a small
             // font
-            Controls.addDefeatedCount(2, "Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
+            Displays.addDefeatedCount(2, "Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
 
             // make a moveable obstacle that can defeat enemies
             Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
@@ -2192,7 +2193,7 @@ public class MyLolGame extends Lol {
             ProjectilePool.setImageSource("colorstar.png");
 
             // show how many shots are left
-            Controls.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
+            Displays.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
 
             // draw a bunch of enemies to defeat
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -2364,7 +2365,7 @@ public class MyLolGame extends Lol {
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
             Score.setVictoryDestination(1);
 
             // this obstacle is a collision callback... when the hero hits it,
@@ -2492,7 +2493,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Controls.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // the destination won't work until some goodies are collected...
             Destination d = Destination.makeAsBox(46, 2, 2, 2, "colorstar.png");
@@ -2536,7 +2537,7 @@ public class MyLolGame extends Lol {
 
             // we're going to win by "surviving" for 25 seconds... with no
             // enemies, that shouldn't be too hard
-            Controls.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
+            Displays.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
             // just to play it safe, let's say that we win on destination...
             // this ensures that collecting goodies or defeating enemies won't
             // accidentally cause us to win. Of course, with no destination,
@@ -2666,7 +2667,7 @@ public class MyLolGame extends Lol {
             // small image. One way to do it is to make an invisible control,
             // then put a picture on top of it. This next line shows how to draw
             // a picture on the HUD
-            Controls.addImage(40, 40, 40, 40, "red.png");
+            Displays.addImage(40, 40, 40, 40, "red.png");
         }
 
         /*
@@ -2769,11 +2770,11 @@ public class MyLolGame extends Lol {
             d.setActivationScore(1, 1, 3, 0);
             Score.setVictoryDestination(1);
 
-            Controls.addGoodieCount(1, 0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
-            Controls.addGoodieCount(2, 0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
-            Controls.addGoodieCount(3, 0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(1, 0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(2, 0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(3, 0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
 
-            Controls.addCountdown(100, "", 250, 30);
+            Displays.addCountdown(100, "", 250, 30);
 
             // draw the goodies
             for (int i = 0; i < 3; ++i) {
@@ -2937,9 +2938,9 @@ public class MyLolGame extends Lol {
             // of behavior we might want. See onControlPressCallback().
             Controls.addCallbackControl(40, 40, 40, 40, "red.png", 747);
 
-            Controls.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
-            Controls.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
-            Controls.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
+            Displays.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
+            Displays.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
+            Displays.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
 
             Controls.addCallbackControl(40, 90, 40, 40, "red.png", 748);
             Controls.addCallbackControl(40, 140, 40, 40, "red.png", 749);
