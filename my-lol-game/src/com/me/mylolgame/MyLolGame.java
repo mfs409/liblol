@@ -27,13 +27,11 @@
 
 package com.me.mylolgame;
 
-// TODO: Separate Controls into Inputs and Outputs
-// TODO: replace flipped hack with forward and backward animations
 // TODO: add a way to have multiple screens in the introduction to a level
 // TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings?
 // TODO: programatically pause/unpause timers?
 // TODO: add a moveDirectional button that takes an angle and a velocity?
-// TODO: make sure all angles use same untis (degrees or radians)
+// TODO: make sure all angles use same units (degrees or radians)
 // TODO: Add obstacle/obstacle, enemy/enemy, and */SVG callbacks
 // TODO: better truck demo?
 // TODO: clean up 87 and 88
@@ -109,6 +107,7 @@ public class MyLolGame extends Lol {
 
         // load animated images (a.k.a. Sprite Sheets)
         Media.registerAnimatableImage("stars.png", 8, 1);
+        Media.registerAnimatableImage("stars_flipped.png", 8, 1);
         Media.registerAnimatableImage("flystar.png", 2, 1);
         Media.registerAnimatableImage("starburst.png", 4, 1);
         Media.registerAnimatableImage("colorstar.png", 8, 1);
@@ -1348,7 +1347,8 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             // this lets the hero flip its image when it moves backwards
-            h.setCanFaceBackwards();
+            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 0));
+            h.setDefaultReverseAnimation(new Animation("stars_flipped.png", 200, true, 7, 7));
 
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -2657,7 +2657,8 @@ public class MyLolGame extends Lol {
             // change its direction of travel. The second "true" means the hero
             // will stop immediately when we release our finger.
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
-            h.setCanFaceBackwards();
+            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 0));
+            h.setDefaultReverseAnimation(new Animation("stars_flipped.png", 200, true, 7, 7));
             h.setPokePath(4, false);
 
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
@@ -2667,7 +2668,7 @@ public class MyLolGame extends Lol {
             // small image. One way to do it is to make an invisible control,
             // then put a picture on top of it. This next line shows how to draw
             // a picture on the HUD
-            Displays.addImage(40, 40, 40, 40, "red.png");
+            Controls.addImage(40, 40, 40, 40, "red.png");
         }
 
         /*

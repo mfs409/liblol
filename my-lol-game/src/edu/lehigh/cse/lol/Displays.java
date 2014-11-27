@@ -31,85 +31,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-
-import edu.lehigh.cse.lol.Level.GestureAction;
 
 public class Displays {
     /**
-     * This is for handling everything that gets drawn on the HUD, whether it is
-     * pressable or not
+     * This is for handling text that gets drawn on the HUD
      */
-    public static class Display {
+    abstract public static class Display {
         /**
-         * A custom value that the control can store
-         */
-        float mVal;
-
-        /**
-         * Should we run code when this Control is touched?
-         */
-        boolean mIsTouchable;
-
-        /**
-         * Code to run when this Control is touched
-         */
-        GestureAction mGestureAction;
-
-        /**
-         * For touchable Controls, this is the rectangle on the screen that is
-         * touchable
-         */
-        Rectangle mRange;
-
-        /**
-         * What color should we use to draw text, if this Control is a text
-         * entity?
+         * What color should we use to draw text
          */
         Color mColor = new Color(0, 0, 0, 1);
 
         /**
-         * For disabling a control and stopping its rendering
+         * The font object to use
          */
-        boolean mIsActive = true;
+        BitmapFont mFont;
 
         /**
-         * What image should we display, if this Control has an image associated
-         * with it?
-         */
-        TextureRegion mImage;
-
-        /**
-         * Use this constructor for controls that provide pressable images
-         * 
-         * @param imgName
-         *            The name of the image to display. If "" is given as the
-         *            name, it will not crash.
-         * @param x
-         *            The X coordinate (in pixels) of the bottom left corner.
-         * @param y
-         *            The Y coordinate (in pixels) of the bottom left corner.
-         * @param width
-         *            The width of the Control
-         * @param height
-         *            The height of the Control
-         */
-        Display(String imgName, int x, int y, int width, int height) {
-            // set up the image to display
-            //
-            // NB: this will fail gracefully (no crash) for invalid file names
-            TextureRegion[] trs = Media.getImage(imgName);
-            if (trs != null)
-                mImage = trs[0];
-
-            // set up the touchable range for the image
-            mRange = new Rectangle(x, y, width, height);
-            mIsTouchable = true;
-        }
-
-        /**
-         * Use this constructor for controls that are simply for displaying text
+         * The constructor keeps track of the text color, but that's it.
          * 
          * @param red
          *            The red portion of text color (0-255)
@@ -117,55 +56,26 @@ public class Displays {
          *            The green portion of text color (0-255)
          * @param blue
          *            The blue portion of text color (0-255)
+         * @param fontName
+         *            The name of the .ttf font file to use
+         * @param fontSize
+         *            The point size of the font
          */
-        Display(int red, int green, int blue) {
+        Display(int red, int green, int blue, String fontName, int fontSize) {
             mColor.r = ((float) red) / 256;
             mColor.g = ((float) green) / 256;
             mColor.b = ((float) blue) / 256;
-            mIsTouchable = false;
+            mFont = Media.getFont(fontName, fontSize);
         }
 
         /**
-         * This is the render method when we've got a valid TR. When we don't,
-         * we're displaying text, which probably means we're also dynamically
-         * updating the text to display on every render, so it makes sense to
-         * overload the render() call for those Controls
+         * Render the text. Since each control needs to get its text at the time
+         * it is rendered, we don't provide a default implementation.
          * 
          * @param sb
          *            The SpriteBatch to use to draw the image
          */
-        void render(SpriteBatch sb) {
-            if (mIsActive && mImage != null)
-                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
-        }
-
-        /**
-         * Disable a control
-         */
-        public void setInactive() {
-            mIsActive = false;
-        }
-
-        /**
-         * Enable a control
-         */
-        public void setActive() {
-            mIsActive = true;
-        }
-
-        /**
-         * Disable touch
-         */
-        public void disableTouch() {
-            mIsTouchable = false;
-        }
-
-        /**
-         * Enable touch
-         */
-        public void enableTouch() {
-            mIsTouchable = true;
-        }
+        abstract void render(SpriteBatch sb);
     }
 
     /**
@@ -244,14 +154,13 @@ public class Displays {
     public static Display addCountdown(final float timeout, final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mCountDownRemaining = timeout;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mCountDownRemaining, bf, sb);
+                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mCountDownRemaining, mFont, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
                     Level.sCurrent.mScore.endLevel(false);
@@ -282,15 +191,13 @@ public class Displays {
      */
     public static Display addFPS(final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             // TODO: we could have render() take a 'if text' route, and then
             // just override a "maketext" method
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -338,15 +245,14 @@ public class Displays {
     public static Display addWinCountdown(final float timeout, final int x, final int y, String fontName,
             final int red, final int green, final int blue, int size) {
         Level.sCurrent.mScore.mWinCountRemaining = timeout;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (Level.sCurrent.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mWinCountRemaining, bf, sb);
+                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mWinCountRemaining, mFont, sb);
                 else
                     Level.sCurrent.mScore.endLevel(true);
             }
@@ -385,12 +291,11 @@ public class Displays {
             String fontName, final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1] + suffix, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1] + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -444,12 +349,11 @@ public class Displays {
             final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -491,13 +395,12 @@ public class Displays {
      */
     static public Display addStopwatch(final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mStopWatchProgress, bf, sb);
+                drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mStopWatchProgress, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -548,12 +451,11 @@ public class Displays {
      */
     static public Display addStrengthMeter(final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size, final Hero h) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -584,13 +486,12 @@ public class Displays {
      */
     static public Display addDistanceMeter(final String text, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size, final Hero h) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Level.sCurrent.mScore.mDistance = (int) h.getXPosition();
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, bf, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -619,36 +520,13 @@ public class Displays {
      */
     public static Display addProjectileCount(final String text, final int x, final int y, String fontName,
             final int red, final int green, final int blue, int size) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + " " + text, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + " " + text, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
-        return d;
-    }
-
-    /**
-     * Add an image to the heads-up display. Touching the image has no effect
-     * 
-     * @param x
-     *            The X coordinate of the bottom left corner (in pixels)
-     * @param y
-     *            The Y coordinate of the bottom left corner (in pixels)
-     * @param width
-     *            The width of the image
-     * @param height
-     *            The height of the image
-     * @param imgName
-     *            The name of the image to display. Use "" for an invisible
-     *            button
-     */
-    public static Display addImage(int x, int y, int width, int height, String imgName) {
-        Display d = new Display(imgName, x, y, width, height);
-        d.mIsTouchable = false;
         Level.sCurrent.mDisplays.add(d);
         return d;
     }
@@ -679,12 +557,11 @@ public class Displays {
      */
     static public Display addLevelFact(final String key, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size, final String prefix, final String suffix) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + suffix, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -717,12 +594,11 @@ public class Displays {
      */
     static public Display addSessionFact(final String key, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size, final String prefix, final String suffix) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + suffix, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -755,12 +631,11 @@ public class Displays {
      */
     static public Display addGameFact(final String key, final int x, final int y, String fontName, final int red,
             final int green, final int blue, int size, final String prefix, final String suffix) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Display d = new Display(red, green, blue) {
+        Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                bf.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + suffix, bf, sb);
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);

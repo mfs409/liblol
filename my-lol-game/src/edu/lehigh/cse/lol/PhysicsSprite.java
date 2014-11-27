@@ -104,18 +104,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     boolean mVisible = true;
 
     /**
-     * Does the entity's image flip when the hero moves backwards?
-     */
-    private boolean mReverseFace = false;
-
-    /**
-     * We may opt to flip the image when it is moving in the -X direction. If
-     * so, this tracks if the image is flipped, so that we draw its sprite
-     * correctly.
-     */
-    private boolean mIsFlipped;
-
-    /**
      * The z index of this entity. Valid range is [-2, 2]
      */
     int mZIndex = 0;
@@ -192,6 +180,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Animation support: the cells of the default animation
      */
     Animation mDefaultAnimation;
+
+    /**
+     * Animation support: the cells of the animation to use when moving
+     * backwards
+     */
+    Animation mDefaultReverseAnimation;
 
     /**
      * Animation support: the cells of the disappearance animation
@@ -511,20 +505,21 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
             // now draw this sprite, flipping it if necessary
             Vector2 pos = mBody.getPosition();
-            if (mReverseFace && mBody.getLinearVelocity().x < 0) {
-                if (!mIsFlipped) {
-                    tr.flip(true, false);
-                    mIsFlipped = true;
+            if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x < 0) {
+                if (mAnimator.mCurrentAnimation != mDefaultReverseAnimation) {
+                    mAnimator.setCurrentAnimation(mDefaultReverseAnimation);
                 }
-            } else if (mReverseFace && mBody.getLinearVelocity().x > 0) {
-                if (mIsFlipped) {
-                    tr.flip(true, false);
-                    mIsFlipped = false;
+            } else if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x > 0) {
+                if (mAnimator.mCurrentAnimation == mDefaultReverseAnimation) {
+                    if (mDefaultAnimation != null) {
+                        mAnimator.setCurrentAnimation(mDefaultAnimation);
+                    }
                 }
             }
-            if (tr != null)
+            if (tr != null) {
                 sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
                         MathUtils.radiansToDegrees * mBody.getAngle());
+            }
         }
     }
 
@@ -1101,13 +1096,24 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * Save the animation sequence and start it right away
      * 
      * @param a
-     *            The animation do display
+     *            The animation to display
      */
     public void setDefaultAnimation(Animation a) {
         mDefaultAnimation = a;
         // we'll assume we're using the default animation as our first
         // animation...
         mAnimator.setCurrentAnimation(mDefaultAnimation);
+    }
+
+    /**
+     * Save the animation sequence that we'll use when the entity is moving in
+     * the negative X direction
+     * 
+     * @param a
+     *            The animation to display
+     */
+    public void setDefaultReverseAnimation(Animation a) {
+        mDefaultReverseAnimation = a;
     }
 
     /**
@@ -1132,15 +1138,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         mDisappearAnimateOffset.y = offsetY;
         mDisappearAnimateSize.x = width;
         mDisappearAnimateSize.y = height;
-    }
-
-    /**
-     * Indicate that this entity's image should be reversed when it is moving in
-     * the negative x direction. For tilt, this only applies to the last hero
-     * created. For velocity, it applies to everyone.
-     */
-    public void setCanFaceBackwards() {
-        mReverseFace = true;
     }
 
     /**

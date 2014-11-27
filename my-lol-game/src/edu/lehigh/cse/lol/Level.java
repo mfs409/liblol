@@ -953,8 +953,7 @@ public class Level extends ScreenAdapter {
             if (c.mIsActive)
                 c.render(mSpriteBatch);
         for (Displays.Display d : mDisplays)
-            if (d.mIsActive)
-                d.render(mSpriteBatch);
+            d.render(mSpriteBatch);
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines

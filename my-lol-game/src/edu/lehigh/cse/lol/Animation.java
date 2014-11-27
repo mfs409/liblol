@@ -90,7 +90,7 @@ public class Animation {
         /**
          * The currently running animation
          */
-        private Animation mCurrentAnimation;
+        Animation mCurrentAnimation;
 
         /**
          * The frame of the currently running animation that is being displayed

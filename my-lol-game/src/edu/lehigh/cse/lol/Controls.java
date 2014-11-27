@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -70,12 +69,6 @@ public class Controls {
         Rectangle mRange;
 
         /**
-         * What color should we use to draw text, if this Control is a text
-         * entity?
-         */
-        Color mColor = new Color(0, 0, 0, 1);
-
-        /**
          * For disabling a control and stopping its rendering
          */
         boolean mIsActive = true;
@@ -112,23 +105,6 @@ public class Controls {
             // set up the touchable range for the image
             mRange = new Rectangle(x, y, width, height);
             mIsTouchable = true;
-        }
-
-        /**
-         * Use this constructor for controls that are simply for displaying text
-         * 
-         * @param red
-         *            The red portion of text color (0-255)
-         * @param green
-         *            The green portion of text color (0-255)
-         * @param blue
-         *            The blue portion of text color (0-255)
-         */
-        Control(int red, int green, int blue) {
-            mColor.r = ((float) red) / 256;
-            mColor.g = ((float) green) / 256;
-            mColor.b = ((float) blue) / 256;
-            mIsTouchable = false;
         }
 
         /**
@@ -1297,6 +1273,28 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Add an image to the heads-up display. Touching the image has no effect
+     * 
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     */
+    public static Control addImage(int x, int y, int width, int height, String imgName) {
+        Control c = new Control(imgName, x, y, width, height);
+        c.mIsTouchable = false;
+        Level.sCurrent.mControls.add(c);
         return c;
     }
 }
