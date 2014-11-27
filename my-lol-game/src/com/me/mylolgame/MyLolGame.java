@@ -33,9 +33,6 @@ package com.me.mylolgame;
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import com.badlogic.gdx.math.Vector2;
 
 import edu.lehigh.cse.lol.Animation;
