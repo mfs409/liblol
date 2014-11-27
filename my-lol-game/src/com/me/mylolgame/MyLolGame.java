@@ -34,6 +34,10 @@ package com.me.mylolgame;
 // TODO: programatically pause/unpause timers?
 // TODO: add a moveDirectional button that takes an angle and a velocity?
 // TODO: make sure all angles use same untis (degrees or radians)
+// TODO: Add obstacle/obstacle, enemy/enemy, and */SVG callbacks
+// TODO: better truck demo?
+// TODO: clean up 87 and 88
+// TODO: scale x and y of backgrounds
 
 import com.badlogic.gdx.math.Vector2;
 
