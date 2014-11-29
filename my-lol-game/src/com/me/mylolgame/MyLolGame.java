@@ -28,12 +28,9 @@
 package com.me.mylolgame;
 
 // TODO: add a way to have multiple screens in the introduction to a level
-// TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings (level 30)?
 // TODO: make sure all angles use same units (degrees or radians)
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
-// TODO: switch to double-wide screens (in progress)
-// TODO: there's a chooser bug... play level 81, then hit back, and the next arrow won't draw.
 // TODO: add a 'demos' section?
 // TODO: add a 'store'?
 // TODO: add 'share' button?
@@ -1149,6 +1146,9 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setFlickable(1f);
             h.disableRotation();
+            
+            Obstacle o = Obstacle.makeAsCircle(8, 27, 3, 3, "purpleball.png");
+            o.setFlickable(.5f);
         }
 
         /*

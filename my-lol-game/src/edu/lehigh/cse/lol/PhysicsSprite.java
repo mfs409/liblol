@@ -951,9 +951,11 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         // set the code to run on touch
         mGestureResponder = new GestureAction() {
             long mLastPokeTime;
-
+            boolean mEnabled = true;
             @Override
             public boolean onTap(Vector3 tapLocation) {
+                if (!mEnabled)
+                    return false;
                 Lol.sGame.vibrate(100);
                 long time = System.nanoTime();
                 // double touch
@@ -961,7 +963,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     // hide sprite, disable physics
                     mBody.setActive(false);
                     mVisible = false;
-                    Level.sCurrent.mGestureResponder = null;
+                    mEnabled = false;
                     return true;
                 }
                 // repeat single-touch
@@ -969,17 +971,20 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the entity
-                Level.sCurrent.mGestureResponder = new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                    boolean mEnabled = true;
                     @Override
                     public boolean onTap(Vector3 tapLocation) {
+                        if (!mEnabled || !mVisible)
+                            return false;
                         Lol.sGame.vibrate(100);
                         // move the object
                         mBody.setTransform(tapLocation.x, tapLocation.y, mBody.getAngle());
                         // clear the Level responder
-                        Level.sCurrent.mGestureResponder = null;
+                        mEnabled = false;
                         return true;
                     }
-                };
+                });
                 return true;
             }
         };
@@ -998,7 +1003,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        Level.sCurrent.mGestureResponder = new GestureAction() {
+        Level.sCurrent.mGestureResponders.add(new GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
                 if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
@@ -1007,7 +1012,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 }
                 return true;
             }
-        };
+        });
     }
 
     /**
@@ -1030,18 +1035,21 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponder = new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                    boolean mEnabled = true;
                     @Override
                     public boolean onTap(Vector3 touchVec) {
+                        if (!mEnabled)
+                            return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
                                 touchVec.y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
                         if (oncePerTouch)
-                            Level.sCurrent.mGestureResponder = null;
+                            mEnabled = false;
                         return true;
                     }
-                };
+                });
                 return true;
             }
         };
@@ -1069,9 +1077,12 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponder = new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                    boolean mEnabled = true;
                     @Override
                     public boolean onDown(Vector3 touchVec) {
+                        if (!mEnabled)
+                            return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
                                 touchVec.y - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
@@ -1081,23 +1092,29 @@ public abstract class PhysicsSprite implements Lol.Renderable {
 
                     @Override
                     public boolean onUp(Vector3 touchVec) {
+                        if (!mEnabled)
+                            return false;
                         if (stopOnUp && mRoute != null)
                             mRoute.haltRoute();
                         if (oncePerTouch)
-                            Level.sCurrent.mGestureResponder = null;
+                            mEnabled = false;
                         return true;
                     }
 
                     @Override
                     public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+                        if (!mEnabled)
+                            return false;
                         return onDown(touchVec);
                     }
 
                     @Override
                     public boolean onPanStop(Vector3 touchVec) {
+                        if (!mEnabled)
+                            return false;
                         return onUp(touchVec);
                     }
-                };
+                });
                 return true;
             }
         };

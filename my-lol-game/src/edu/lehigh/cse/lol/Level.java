@@ -285,8 +285,9 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // is this a raw screen tap?
-            if (mGestureResponder != null && mGestureResponder.onTap(mTouchVec))
-                return true;
+            for (GestureAction ga : mGestureResponders)
+                if (ga.onTap(mTouchVec))
+                    return true;
             return false;
         }
 
@@ -303,9 +304,10 @@ public class Level extends ScreenAdapter {
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             // we only fling at the whole-level layer
-            if (Level.sCurrent.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-                return Level.sCurrent.mGestureResponder.onFling(mTouchVec);
+            mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
+            for (GestureAction ga : Level.sCurrent.mGestureResponders) {
+                if (ga.onFling(mTouchVec))
+                    return true;
             }
             return false;
         }
@@ -335,9 +337,10 @@ public class Level extends ScreenAdapter {
             }
 
             // did we pan the level?
-            if (Level.sCurrent.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPan(mTouchVec, deltaX, deltaY);
+            mGameCam.unproject(mTouchVec.set(x, y, 0));
+            for (GestureAction ga : Level.sCurrent.mGestureResponders) {
+                if (ga.onPan(mTouchVec, deltaX, deltaY))
+                    return true;
             }
             return false;
         }
@@ -367,10 +370,10 @@ public class Level extends ScreenAdapter {
             }
 
             // handle panstop on level
-            if (Level.sCurrent.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(x, y, 0));
-                return Level.sCurrent.mGestureResponder.onPanStop(mTouchVec);
-            }
+            mGameCam.unproject(mTouchVec.set(x, y, 0));
+            for (GestureAction ga : Level.sCurrent.mGestureResponders)
+                if (ga.onPanStop(mTouchVec))
+                    return true;
             return false;
         }
 
@@ -438,8 +441,8 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // forward to the level's handler
-            if (mGestureResponder != null)
-                if (mGestureResponder.onDown(mTouchVec))
+            for (GestureAction ga : mGestureResponders)
+                if (ga.onDown(mTouchVec))
                     return true;
             return false;
         }
@@ -484,8 +487,8 @@ public class Level extends ScreenAdapter {
                 mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                 return mHitSprite.mGestureResponder.onDrag(mTouchVec);
             }
-            if (mGestureResponder != null)
-                if (mGestureResponder.onDrag(mTouchVec))
+            for (GestureAction ga : mGestureResponders)
+                if (ga.onDrag(mTouchVec))
                     return true;
             return false;
         }
@@ -659,7 +662,7 @@ public class Level extends ScreenAdapter {
      * Entities may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
-    GestureAction mGestureResponder;
+    ArrayList<GestureAction> mGestureResponders = new ArrayList<GestureAction>();
 
     /**
      * In levels with a projectile pool, the pool is accessed from here
@@ -850,9 +853,9 @@ public class Level extends ScreenAdapter {
                 c.mGestureAction.toggle(true, touchVec);
             }
         }
-        if (mGestureResponder != null) {
-            mGestureResponder.onPanStop(mTouchVec);
-            mGestureResponder.onUp(mTouchVec);
+        for (GestureAction ga : mGestureResponders) {
+            ga.onPanStop(mTouchVec);
+            ga.onUp(mTouchVec);
         }
     }
 
@@ -1096,7 +1099,7 @@ public class Level extends ScreenAdapter {
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Level.sCurrent.mGestureResponder = new GestureAction() {
+        Level.sCurrent.mGestureResponders.add(new GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -1139,7 +1142,7 @@ public class Level extends ScreenAdapter {
                 }
                 return true;
             }
-        };
+        });
     }
 
     /**
