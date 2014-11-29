@@ -743,7 +743,7 @@ public class Level extends ScreenAdapter {
 
         // When debug mode is on, print the frames per second
         if (Lol.sGame.mConfig.showDebugBoxes())
-            Displays.addFPS(400, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
+            Displays.addFPS(800, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
                     Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(), 12);
     }
 

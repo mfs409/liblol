@@ -28,10 +28,15 @@
 package com.me.mylolgame;
 
 // TODO: add a way to have multiple screens in the introduction to a level
-// TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings?
+// TODO: should we have multiple GestureActions for a level, e.g., to handle multiple flings (level 30)?
 // TODO: make sure all angles use same units (degrees or radians)
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
+// TODO: switch to double-wide screens (in progress)
+// TODO: there's a chooser bug... play level 81, then hit back, and the next arrow won't draw.
+// TODO: add a 'demos' section?
+// TODO: add a 'store'?
+// TODO: add 'share' button?
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -131,10 +136,10 @@ public class MyLolGame extends Lol {
         // quit, and mute buttons. If you are having trouble figuring these out,
         // note that clicking on the splash screen will display xy coordinates
         // in the Console to help
-        Splash.drawPlayButton(192, 91, 93, 52);
-        Splash.drawHelpButton(48, 93, 80, 40);
-        Splash.drawQuitButton(363, 93, 69, 39);
-        Splash.drawMuteButton(455, 0, 25, 26, "audio_on.png", "audio_off.png");
+        Splash.drawPlayButton(384, 182, 186, 104);
+        Splash.drawHelpButton(96, 186, 160, 80);
+        Splash.drawQuitButton(726, 186, 138, 78);
+        Splash.drawMuteButton(900, 0, 50, 52, "audio_on.png", "audio_off.png");
 
         // Provide a name for the background image
         Splash.setBackground("splash.png");
@@ -281,7 +286,7 @@ public class MyLolGame extends Lol {
             // Let's show msg1.png instead of text. Note that we had to
             // register it in registerMedia(), and that we're stretching it
             // slightly, since its dimensions are 460x320
-            PreScene.addImage("msg1.png", 0, 0, 480, 320);
+            PreScene.addImage("msg1.png", 0, 0, 960, 640);
         }
 
         /*
@@ -431,7 +436,7 @@ public class MyLolGame extends Lol {
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(0.1f, 0, 0.6f);
             h.setMoveByTilting();
-            PreScene.addImage("msg2.png", 10, 10, 460, 320);
+            PreScene.addImage("msg2.png", 0, 0, 960, 640);
 
             // let's make the destination rotate:
             Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
@@ -485,8 +490,8 @@ public class MyLolGame extends Lol {
             // outline of the two rectangles. You could also use images (that
             // you registered, of course), but if you did, you'd either need to
             // make them small, or make them semi-transparent.
-            Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
-            Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
+            Controls.addZoomOutButton(0, 0, 480, 640, "", 8);
+            Controls.addZoomInButton(480, 0, 480, 640, "", .25f);
 
             PreScene.addText("Press left to zoom out\nright to zoom in", 255, 255, 255, "arial.ttf", 32);
         }
@@ -698,9 +703,10 @@ public class MyLolGame extends Lol {
             Displays.addStopwatch(50, 50);
 
             // Create a pause scene that has a back button on it, and a button
-            // for pausing the level
+            // for pausing the level.  Note that the background image must come first
+            PauseScene.addImage("fade.png", 0, 0, 960, 640);
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
-            PauseScene.addBackButton("red.png", 0, 300, 20, 20);
+            PauseScene.addBackButton("greyball.png", 0, 300, 20, 20);
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
 
             // now draw three obstacles. Note that they have different dampening
@@ -1198,7 +1204,7 @@ public class MyLolGame extends Lol {
             // the x direction. Note that background "layers" are all drawn
             // *before* anything that is drawn with a z index... so the
             // background will be behind the hero
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // make an obstacle that hovers in a fixed place. Note that hovering
             // and zoom do not work together nicely.
@@ -1245,7 +1251,7 @@ public class MyLolGame extends Lol {
             // set up our background again, but add a few more layers
             Background.setColor(23, 180, 255);
             // this layer has a scroll factor of 0... it won't move
-            Background.addHorizontalLayer(0, 1, "back.png", 0, 480, 320);
+            Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
             // this layer moves at half the speed of the hero
             Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
             // this layer is faster than the hero
@@ -1285,10 +1291,10 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
             // set up the background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // draw a jump button that covers the whole screen
-            Controls.addJumpButton(0, 0, 480, 320, "", h);
+            Controls.addJumpButton(0, 0, 960, 640, "", h);
 
             // if the hero jumps over the destination, we have a problem. To fix
             // it, let's put an invisible enemy right after the destination, so
@@ -1305,6 +1311,7 @@ public class MyLolGame extends Lol {
          * swimming or controlling a helicopter.
          */
         else if (whichLevel == 35) {
+            // Note: we can go above the trees
             Level.configure(3 * 48, 38);
             Physics.configure(0, -10);
             PreScene.addText("Multi-jump is enabled", 255, 255, 255, "arial.ttf", 32);
@@ -1321,8 +1328,8 @@ public class MyLolGame extends Lol {
 
             // this is all the same as before, to include the invisible enemy
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
-            Controls.addJumpButton(0, 0, 480, 320, "", h);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Controls.addJumpButton(0, 0, 960, 640, "", h);
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Enemy.makeAsBox(130, 0, .5f, 38, "");
             Score.setVictoryDestination(1);
@@ -1350,17 +1357,17 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // let's draw an enemy, just in case anyone wants to try to go to
             // the top left corner
             Enemy.makeAsCircle(3, 27, 3, 3, "redball.png");
 
             // draw some buttons for moving the hero
-            Controls.addLeftButton(0, 50, 50, 220, "", 15, h);
-            Controls.addRightButton(430, 50, 50, 220, "", 15, h);
-            Controls.addUpButton(50, 270, 380, 50, "", 15, h);
-            Controls.addDownButton(50, 0, 380, 50, "", 15, h);
+            Controls.addLeftButton(0, 100, 100, 440, "", 15, h);
+            Controls.addRightButton(860, 100, 100, 440, "", 15, h);
+            Controls.addUpButton(100, 540, 760, 100, "", 15, h);
+            Controls.addDownButton(100, 0, 760, 100, "", 15, h);
         }
 
         /*
@@ -1378,7 +1385,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1392,8 +1399,8 @@ public class MyLolGame extends Lol {
             Enemy.makeAsBox(130, 0, .5f, 32, "");
 
             // draw the up/down controls
-            Controls.addDownButton(50, 0, 380, 50, "", 15, h);
-            Controls.addUpButton(50, 270, 380, 50, "", 15, h);
+            Controls.addDownButton(100, 0, 760, 100, "", 15, h);
+            Controls.addUpButton(100, 540, 760, 100, "", 15, h);
         }
 
         /*
@@ -1413,7 +1420,7 @@ public class MyLolGame extends Lol {
             h.addVelocity(5, 0, false);
             Level.setCameraChase(h);
             // to enable crawling, we just draw a crawl button on the screen
-            Controls.addCrawlButton(0, 0, 480, 320, "", h);
+            Controls.addCrawlButton(0, 0, 960, 640, "", h);
 
             // make an enemy who we can defeat by colliding with it while
             // crawling
@@ -1433,7 +1440,7 @@ public class MyLolGame extends Lol {
             Physics.configure(0, -10);
             PreScene.addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1478,7 +1485,7 @@ public class MyLolGame extends Lol {
 
             // notice that we can only get to the destination by jumping from
             // *on top of* the obstacle
-            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }
 
@@ -1491,7 +1498,7 @@ public class MyLolGame extends Lol {
             Level.configure(10 * 48, 32);
             Physics.configure(0, 0);
             PreScene.addText("Speed boosters and reducers", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 10 * 480, 320, "", 1, 0, 1);
+            Util.drawBoundingBox(0, 0, 10 * 480, 32, "", 1, 0, 1);
 
             Hero h = Hero.makeAsCircle(2, 0, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1503,7 +1510,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // place a speed-up obstacle that lasts for 2 seconds
             Obstacle o1 = Obstacle.makeAsCircle(40, 1, 4, 4, "purpleball.png");
@@ -1540,8 +1547,8 @@ public class MyLolGame extends Lol {
 
             // set up vertical scrolling backgrounds
             Background.setColor(255, 0, 255);
-            Background.addVerticalLayer(1, 0, "back.png", 0, 480, 320);
-            Background.addVerticalLayer(1, .5f, "mid.png", 0, 480, 320);
+            Background.addVerticalLayer(1, 0, "back.png", 0, 960, 640);
+            Background.addVerticalLayer(1, .5f, "mid.png", 0, 960, 640);
             Background.addVerticalLayer(1, 1, "front.png", 0, 454, 80);
         }
 
@@ -1603,7 +1610,7 @@ public class MyLolGame extends Lol {
             // add a button for throwing projectiles. Notice that this butotn
             // keeps throwing as long as it is held, but we've capped it to
             // throw no more than once per 100 milliseconds
-            Controls.addThrowButton(0, 0, 480, 320, "", h, 100, 3, 1.5f, 30, 0);
+            Controls.addThrowButton(0, 0, 960, 640, "", h, 100, 3, 1.5f, 30, 0);
             Level.setCameraChase(h);
         }
 
@@ -1642,7 +1649,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
-            Controls.addSingleThrowButton(0, 0, 480, 320, "", h, .2f, -.5f, 0, 10);
+            Controls.addSingleThrowButton(0, 0, 960, 640, "", h, .2f, -.5f, 0, 10);
         }
 
         /*
@@ -1666,7 +1673,7 @@ public class MyLolGame extends Lol {
 
             // draw a button for throwing projectiles in many directions...
             // again, note that if we hold the button, it keeps throwing
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 0, 0, 0);
+            Controls.addVectorThrowButton(0, 0, 960, 640, "", h, 0, 0, 0);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
@@ -1699,7 +1706,7 @@ public class MyLolGame extends Lol {
 
             // we use a "single throw" button so that holding doesn't throw more
             // projectiles.
-            Controls.addVectorSingleThrowButton(0, 0, 480, 320, "", h, 1.5f, 1.5f);
+            Controls.addVectorSingleThrowButton(0, 0, 960, 640, "", h, 1.5f, 1.5f);
 
             // we turn on projectile gravity, and then we enable collisions for
             // projectiles. This means that when a projectile collides with
@@ -1826,7 +1833,7 @@ public class MyLolGame extends Lol {
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Tilt.enable(10, 10);
-            PreScene.addText("Make a wish!", 255, 255, 255, "arial.ttf", 32);
+            PreScene.addText("Animations", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
@@ -1855,7 +1862,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1974,7 +1981,7 @@ public class MyLolGame extends Lol {
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
-            PostScene.addWinImage("fade.png", 0, 0, 480, 320);
+            PostScene.addWinImage("fade.png", 0, 0, 960, 640);
             PostScene.setDefaultWinText("");
         }
 
@@ -2002,8 +2009,8 @@ public class MyLolGame extends Lol {
 
             // enable hero jumping and crawling
             h.setJumpImpulses(0, 15);
-            Controls.addJumpButton(0, 0, 240, 320, "", h);
-            Controls.addCrawlButton(241, 0, 480, 320, "", h);
+            Controls.addJumpButton(0, 0, 480, 640, "", h);
+            Controls.addCrawlButton(480, 0, 480, 640, "", h);
 
             // add an enemy we can defeat via crawling, just for fun. It should
             // be defeated even by a "jump crawl"
@@ -2012,7 +2019,7 @@ public class MyLolGame extends Lol {
             e.setDefeatByCrawl();
 
             // include a picture on the "try again" screen
-            PostScene.addLoseImage("fade.png", 0, 0, 480, 320);
+            PostScene.addLoseImage("fade.png", 0, 0, 960, 640);
             PostScene.setDefaultLoseText("Oh well...");
             Level.setCameraChase(h);
         }
@@ -2154,7 +2161,7 @@ public class MyLolGame extends Lol {
 
             // draw a background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
         }
 
         /*
@@ -2217,7 +2224,7 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * @level: 59 this level shows that we can make a hero in the air
+         * this level shows that we can make a hero in the air
          * rotate. Rotation doesn't do anything, but it looks nice...
          */
         else if (whichLevel == 59) {
@@ -2227,6 +2234,8 @@ public class MyLolGame extends Lol {
             Tilt.enable(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
+            PreScene.addText("Press to rotate the hero", 255, 255, 255, "arial.ttf", 32);
+            
             // warning: this destination is just out of the hero's reach when
             // the hero
             // jumps... you'll have to hit the side wall and jump again to reach
@@ -2242,8 +2251,8 @@ public class MyLolGame extends Lol {
             h.setTouchToJump();
 
             // add rotation buttons
-            Controls.addRotateButton(0, 240, 80, 80, "", -.5f, h);
-            Controls.addRotateButton(380, 240, 80, 80, "", .5f, h);
+            Controls.addRotateButton(0, 480, 160, 160, "", -.5f, h);
+            Controls.addRotateButton(760, 480, 160, 160, "", .5f, h);
         }
 
         /**
@@ -2523,7 +2532,7 @@ public class MyLolGame extends Lol {
             // game, with a hero covering the bottom of the screen, so that
             // anything that falls to the bottom counts against the player
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
-            Controls.addVectorThrowButton(0, 0, 480, 320, "", h, 100, 0, 1);
+            Controls.addVectorThrowButton(0, 0, 960, 640, "", h, 100, 0, 1);
 
             // set up our pool of projectiles, then set them to have a fixed
             // velocity when using the vector throw mechanism
@@ -2702,8 +2711,8 @@ public class MyLolGame extends Lol {
             o2.setPhysics(100, 0, 1f);
 
             // draw some buttons for moving the hero
-            Controls.addLeftButton(0, 50, 50, 220, "", 5, h);
-            Controls.addRightButton(430, 50, 50, 220, "", 5, h);
+            Controls.addLeftButton(0, 100, 100, 440, "", 5, h);
+            Controls.addRightButton(860, 100, 100, 440, "", 5, h);
         }
 
         /*
@@ -2729,7 +2738,7 @@ public class MyLolGame extends Lol {
             // draw a button for throwing projectiles in many directions. It
             // only covers half the screen, to show how such an effect would
             // behave
-            Controls.addVectorThrowButton(0, 0, 240, 320, "", h, 100, 0, 0);
+            Controls.addVectorThrowButton(0, 0, 480, 640, "", h, 100, 0, 0);
 
             // set up a pool of projectiles with fixed velocity, and with
             // rotation
@@ -2841,11 +2850,11 @@ public class MyLolGame extends Lol {
 
             // set up the background
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero velocity
-            Controls.addTurboButton(0, 0, 480, 320, "", 15, 0, 4, 0, h);
+            Controls.addTurboButton(0, 0, 960, 640, "", 15, 0, 4, 0, h);
         }
 
         /*
@@ -2867,11 +2876,11 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // This control has a dampening effect, so that on release, the hero
             // slowly stops
-            Controls.addDampenedMotionButton(0, 0, 480, 320, "", 10, 0, 4, h);
+            Controls.addDampenedMotionButton(0, 0, 960, 640, "", 10, 0, 4, h);
         }
 
         /*
@@ -3068,11 +3077,11 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             // zoom buttons
-            Controls.addZoomOutButton(0, 0, 240, 320, "", 8);
-            Controls.addZoomInButton(240, 0, 240, 320, "", .25f);
+            Controls.addZoomOutButton(0, 0, 480, 640, "", 8);
+            Controls.addZoomInButton(480, 0, 480, 640, "", .25f);
 
             // turn on panning
-            Controls.addPanControl(0, 0, 480, 320, "");
+            Controls.addPanControl(0, 0, 960, 640, "");
         }
 
         /*
@@ -3097,7 +3106,7 @@ public class MyLolGame extends Lol {
             Level.setCameraChase(h);
 
             // turn on pinch zoomg
-            Controls.addPinchZoomControl(0, 0, 480, 320, "", 8, .25f);
+            Controls.addPinchZoomControl(0, 0, 960, 640, "", 8, .25f);
 
             // add a one-time callback control
             Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", 992);
@@ -3172,9 +3181,9 @@ public class MyLolGame extends Lol {
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
-            PauseScene.addBackButton("red.png", 0, 300, 20, 20);
-            PauseScene.addCallbackButton(5, 5, 10, 10, 1);
-            PauseScene.addCallbackButton(95, 95, 10, 10, 2);
+            PauseScene.addBackButton("red.png", 0, 600, 40, 40);
+            PauseScene.addCallbackButton(10, 10, 20, 20, 1);
+            PauseScene.addCallbackButton(190, 190, 20, 20, 2);
             PauseScene.suppressClearClick();
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
         }
@@ -3233,7 +3242,7 @@ public class MyLolGame extends Lol {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            Controls.addCallbackControl(0, 0, 480, 320, "", 0);
+            Controls.addCallbackControl(0, 0, 960, 640, "", 0);
         }
         
         /**

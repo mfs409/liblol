@@ -52,7 +52,7 @@ public class LolConfig implements LolConfiguration {
      */
     @Override
     public int getScreenWidth() {
-        return 480;
+        return 960;
     }
 
     /**
@@ -60,7 +60,7 @@ public class LolConfig implements LolConfiguration {
      */
     @Override
     public int getScreenHeight() {
-        return 320;
+        return 640;
     }
 
     /**

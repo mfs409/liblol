@@ -54,7 +54,7 @@ public class Physics {
      * Config says, not the actual screen size, because the programmer's Config
      * gets scaled to screen dimensions.
      */
-    static final float PIXEL_METER_RATIO = 10;
+    static final float PIXEL_METER_RATIO = 20;
 
     /**
      * When a hero collides with a "sticky" obstacle, this is the code we run to
