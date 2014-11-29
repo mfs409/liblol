@@ -238,15 +238,6 @@ public class Chooser extends ScreenAdapter {
                     cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
         }
 
-        // make the next button if we aren't drawing the last set of choices
-        int start = Lol.sGame.mCurrLevelNum;
-        if (start == 0)
-            start = 1;
-        if (start + levelsPerChooser - 1 < totalLevels) {
-            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
-                    cc.getNextButtonHeight(), 0, cc.getNextButtonName());
-        }
-
         // figure out the first level to draw on this chooser. Note that '0' is
         // a possible value of mCurrLevelNum when we come straight from Splash,
         // so we must handle it
@@ -257,6 +248,12 @@ public class Chooser extends ScreenAdapter {
         // figure out the last level to draw on this chooser
         int last = Math.min(totalLevels, first + levelsPerChooser - 1);
 
+        // make the next button if we aren't drawing the last set of choices
+        if (totalLevels > last) {
+            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
+                    cc.getNextButtonHeight(), 0, cc.getNextButtonName());
+        }
+        
         // get screen dimensions, and figure out the *top* left corner of the
         // first level button
         int camWidth = Lol.sGame.mConfig.getScreenWidth();
