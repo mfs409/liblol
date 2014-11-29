@@ -3292,7 +3292,7 @@ public class MyLolGame extends Lol {
         // Our first scene describes the color coding that we use for the
         // different entities in the game
         if (whichScene == 1) {
-            HelpLevel.configure(0, 0, 0);
+            HelpLevel.configure(255, 255, 255);
             HelpLevel.drawText(50, 240, "The levels of this game\ndemonstrate LOL features");
 
             HelpLevel.drawPicture(50, 200, 30, 30, "greenball.png");
