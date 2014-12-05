@@ -395,17 +395,6 @@ public abstract class Lol extends Game {
     abstract public void onStopCallback(int id, int whichLevel, PhysicsSprite o);
 
     /**
-     * When the player requests a TimerCallback, and the required time passes,
-     * this code will run
-     * 
-     * @param id
-     *            The number assigned to the TimerCallback
-     * @param whichLevel
-     *            The current level
-     */
-    abstract public void onTimerCallback(int id, int whichLevel);
-
-    /**
      * When a player requests an TimerCallback that has an attached
      * PhysicsSprite, and the required time passes, and the PhysicsSprite is
      * still visible, this code will run

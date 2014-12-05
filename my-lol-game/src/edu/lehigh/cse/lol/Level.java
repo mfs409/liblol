@@ -553,7 +553,7 @@ public class Level extends ScreenAdapter {
      * Output Displays
      */
     ArrayList<Displays.Display> mDisplays = new ArrayList<Displays.Display>();
-    
+
     /**
      * Controls that have a tap event
      */
@@ -1029,19 +1029,39 @@ public class Level extends ScreenAdapter {
      * Specify that you want some code to run after a fixed amount of time
      * passes.
      * 
-     * @param timerId
-     *            A (possibly) unique identifier for this timer
      * @param howLong
      *            How long to wait before the timer code runs
+     * @param sc
+     *            A SimpleCallback to run
      */
-    public static void setTimerCallback(final int timerId, float howLong) {
+    public static void setTimerCallback(float howLong, final SimpleCallback sc) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onTimerCallback(timerId, Lol.sGame.mCurrLevelNum);
+                    sc.onEvent();
             }
         }, howLong);
+    }
+
+    /**
+     * Specify that you want some code to run repeatedly
+     * 
+     * @param howLong
+     *            How long to wait before the timer code runs for the first time
+     * @param interval
+     *            The time between subsequent executions of the code
+     * @param sc
+     *            A SimpleCallback to run
+     */
+    public static void setTimerCallback(float howLong, float interval, final SimpleCallback sc) {
+        Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                if (!Level.sCurrent.mScore.mGameOver)
+                    sc.onEvent();
+            }
+        }, howLong, interval);
     }
 
     /**

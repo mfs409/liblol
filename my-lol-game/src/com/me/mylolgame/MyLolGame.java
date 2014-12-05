@@ -62,6 +62,7 @@ import edu.lehigh.cse.lol.Projectile;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.Score;
+import edu.lehigh.cse.lol.SimpleCallback;
 import edu.lehigh.cse.lol.Splash;
 import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Tilt;
@@ -700,7 +701,8 @@ public class MyLolGame extends Lol {
             Displays.addStopwatch(50, 50);
 
             // Create a pause scene that has a back button on it, and a button
-            // for pausing the level.  Note that the background image must come first
+            // for pausing the level. Note that the background image must come
+            // first
             PauseScene.addImage("fade.png", 0, 0, 960, 640);
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("greyball.png", 0, 300, 20, 20);
@@ -1146,7 +1148,7 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setFlickable(1f);
             h.disableRotation();
-            
+
             Obstacle o = Obstacle.makeAsCircle(8, 27, 3, 3, "purpleball.png");
             o.setFlickable(.5f);
         }
@@ -2224,8 +2226,8 @@ public class MyLolGame extends Lol {
         }
 
         /*
-         * this level shows that we can make a hero in the air
-         * rotate. Rotation doesn't do anything, but it looks nice...
+         * this level shows that we can make a hero in the air rotate. Rotation
+         * doesn't do anything, but it looks nice...
          */
         else if (whichLevel == 59) {
             // make a simple level
@@ -2235,7 +2237,7 @@ public class MyLolGame extends Lol {
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             PreScene.addText("Press to rotate the hero", 255, 255, 255, "arial.ttf", 32);
-            
+
             // warning: this destination is just out of the hero's reach when
             // the hero
             // jumps... you'll have to hit the side wall and jump again to reach
@@ -2319,14 +2321,6 @@ public class MyLolGame extends Lol {
          * the timer callbacks together, so that we can get more and more things
          * to develop. Be sure to look at the onTimerCallback code to see how
          * the rest of this level works.
-         * 
-         * @demonstrates: destinations and goodies with fixed velocities
-         * 
-         * @demonstrates: enemy who disappears when it is touched
-         * 
-         * @demonstrates: enemy who can be dragged around
-         * 
-         * @demonstrates: timer callbacks
          */
         else if (whichLevel == 62) {
             Level.configure(48, 32);
@@ -2344,9 +2338,74 @@ public class MyLolGame extends Lol {
             // run...
             Score.setVictoryDestination(1);
 
-            // now set a timer callback. after three seconds, the
-            // onTimerCallback() method will run, with level=62 and id=0
-            Level.setTimerCallback(0, 3);
+            // set a timer callback. after three seconds, the callback will run
+            Level.setTimerCallback(2, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // put up a pause scene to interrupt gameplay
+                    PauseScene.reset();
+                    PauseScene.addText("Ooh... a draggable enemy", 255, 255, 0, "arial.ttf", 12);
+                    PauseScene.show();
+                    // make a draggable enemy
+                    Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+                    e3.setPhysics(1.0f, 0.3f, 0.6f);
+                    e3.setCanDrag(true);
+                }
+            });
+
+            // set another callback that runs after 6 seconds (note: time
+            // doesn't count while the PauseScene is showing...)
+            Level.setTimerCallback(6, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // clear the pause scene, then put new text on it
+                    PauseScene.reset();
+                    PauseScene.addText("Touch the enemy and it will go away", 255, 0, 255, "arial.ttf", 12);
+                    PauseScene.show();
+                    // add an enemy that is touch-to-defeat
+                    Enemy e4 = Enemy.makeAsCircle(35, 5, 2, 2, "redball.png");
+                    e4.setPhysics(1.0f, 0.3f, 0.6f);
+                    e4.setDisappearOnTouch();
+                }
+            });
+
+            // set a callback that runs after 9 seconds. Though it's not
+            // necessary in this case, we're going to make the callback an
+            // explicit object. This can be useful, as we'll see later on.
+            Level.setTimerCallback(9, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // draw an enemy, a goodie, and a destination, all with
+                    // fixed velocities
+                    PauseScene.reset();
+                    PauseScene.addText("Now you can see the rest of the level", 255, 255, 0, "arial.ttf", 12);
+                    PauseScene.show();
+                    Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+                    d.addVelocity(-.5f, -1, false);
+
+                    Enemy e5 = Enemy.makeAsCircle(35, 15, 2, 2, "redball.png");
+                    e5.setPhysics(1.0f, 0.3f, 0.6f);
+                    e5.addVelocity(4, 4, false);
+
+                    Goodie gg = Goodie.makeAsCircle(10, 10, 2, 2, "blueball.png");
+                    gg.addVelocity(5, 5, false);
+                }
+            });
+
+            // Lastly, we can make a timer callback that runs over and over
+            // again. This one starts after 2 seconds, then runs every second.
+            Level.setTimerCallback(2, 1, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // note that every SimpleCallback has a field called
+                    // "intVal" that is initially 0. By using and then modifying
+                    // that field inside of the timer code, we can ensure that
+                    // each execution of the timer is slightly different, even
+                    // if the game state hasn't changed.
+                    Obstacle.makeAsCircle(intVal % 48, intVal / 48, 1, 1, "purpleball.png");
+                    intVal++;
+                }
+            });
         }
 
         /*
@@ -3244,7 +3303,7 @@ public class MyLolGame extends Lol {
             // of behavior we might want. See onControlPressCallback().
             Controls.addCallbackControl(0, 0, 960, 640, "", 0);
         }
-        
+
         /**
          * Demo a truck, using distance and revolute joints
          */
@@ -3252,7 +3311,7 @@ public class MyLolGame extends Lol {
             Level.configure(48, 32);
             Physics.configure(0, -10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
-            
+
             Hero truck = Hero.makeAsBox(3, 3, 4, 1.5f, "red.png");
             truck.setPhysics(1, 0, 0);
             Obstacle head = Obstacle.makeAsCircle(4.5f, 4, 1, 1, "blueball.png");
@@ -3261,15 +3320,16 @@ public class MyLolGame extends Lol {
             backWheel.setPhysics(3, 0, 1);
             Obstacle frontWheel = Obstacle.makeAsCircle(5.5f, 2, 1.5f, 1.5f, "blueball.png");
             frontWheel.setPhysics(3, 0, 1);
-            
+
             backWheel.setRevoluteJoint(truck, -1.5f, -1, 0, 0);
             backWheel.setRevoluteJointMotor(-10f, 10f);
             frontWheel.setRevoluteJoint(truck, 1.5f, -1, 0, 0);
             frontWheel.setRevoluteJointMotor(-10f, 10f);
-            
-            // this is not how we want the head to look, but it makes for a nice demo
+
+            // this is not how we want the head to look, but it makes for a nice
+            // demo
             head.setDistanceJoint(truck, 0, 1, 0, 0);
-            
+
             Destination.makeAsBox(47, 0, .1f, 32, "");
             Score.setVictoryDestination(1);
         }
@@ -3438,67 +3498,6 @@ public class MyLolGame extends Lol {
                 entity.remove(false);
                 for (int i = 0; i < 3; ++i)
                     Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
-            }
-        }
-    }
-
-    /**
-     * If a game uses timer callbacks, it must provide this to specify what to
-     * do when a timer expires.
-     * 
-     * @param id
-     *            The ID of the timer
-     * @param whichLevel
-     *            The current level
-     */
-    @Override
-    public void onTimerCallback(int id, int whichLevel) {
-        // here's the code for level 62
-        if (whichLevel == 62) {
-            // after first callback, print a message, draw an enemy, register a
-            // new timer
-            if (id == 0) {
-                // put up a pause scene to interrupt gameplay
-                PauseScene.addText("Ooh... a draggable enemy", 255, 255, 0, "arial.ttf", 12);
-                PauseScene.show();
-
-                // make a draggable enemy
-                Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
-                e3.setPhysics(1.0f, 0.3f, 0.6f);
-                e3.setCanDrag(true);
-
-                // set up a new timer, with id == 1
-                Level.setTimerCallback(1, 3);
-            }
-            // after second callback, draw an enemy who disappears on touch,
-            // and register a new timer
-            else if (id == 1) {
-                // clear the pause scene, then put new text on it
-                PauseScene.reset();
-                PauseScene.addText("Touch the enemy and it will go away", 255, 0, 255, "arial.ttf", 12);
-                PauseScene.show();
-                // add an enemy that is touch-to-defeat
-                Enemy e4 = Enemy.makeAsCircle(35, 5, 2, 2, "redball.png");
-                e4.setPhysics(1.0f, 0.3f, 0.6f);
-                e4.setDisappearOnTouch();
-                // set another timer with id == 2
-                Level.setTimerCallback(2, 3);
-            }
-            // after third callback, draw an enemy, a goodie, and a destination,
-            // all with fixed velocities
-            else if (id == 2) {
-                PauseScene.reset();
-                PauseScene.addText("Now you can see the rest of the level", 255, 255, 0, "arial.ttf", 12);
-                PauseScene.show();
-                Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
-                d.addVelocity(-.5f, -1, false);
-
-                Enemy e5 = Enemy.makeAsCircle(35, 15, 2, 2, "redball.png");
-                e5.setPhysics(1.0f, 0.3f, 0.6f);
-                e5.addVelocity(4, 4, false);
-
-                Goodie gg = Goodie.makeAsCircle(10, 10, 2, 2, "blueball.png");
-                gg.addVelocity(5, 5, false);
             }
         }
     }
