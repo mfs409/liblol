@@ -3080,15 +3080,37 @@ public class MyLolGame extends Lol {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            Controls.addCallbackControl(40, 40, 40, 40, "red.png", 747);
+            Controls.addCallbackControl(40, 40, 40, 40, "red.png", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    PauseScene.reset();
+                    PauseScene.addText("Current score " + Score.getGoodiesCollected1(), 255, 255, 255, "arial.ttf", 20);
+                    PauseScene.show();
+                    Score.incrementGoodiesCollected1();
+                }
+            });
 
             Displays.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Displays.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Displays.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
-
-            Controls.addCallbackControl(40, 90, 40, 40, "red.png", 748);
-            Controls.addCallbackControl(40, 140, 40, 40, "red.png", 749);
-            Controls.addCallbackControl(40, 190, 40, 40, "red.png", 750);
+            Controls.addCallbackControl(40, 90, 40, 40, "red.png", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test"));
+                }
+            });
+            Controls.addCallbackControl(40, 140, 40, 40, "red.png", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test"));
+                }
+            });
+            Controls.addCallbackControl(40, 190, 40, 40, "red.png", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Facts.putGameFact("game test", 1 + Facts.getGameFact("game test"));
+                }
+            });
         }
 
         /*
@@ -3247,7 +3269,13 @@ public class MyLolGame extends Lol {
             Controls.addPinchZoomControl(0, 0, 960, 640, "", 8, .25f);
 
             // add a one-time callback control
-            Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", 992);
+            Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
+                    PauseScene.show();
+                }
+            });
         }
 
         /*
@@ -3389,7 +3417,15 @@ public class MyLolGame extends Lol {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            Controls.addCallbackControl(0, 0, 960, 640, "", 0);
+            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    for (int i = 0; i < 10; ++i) {
+                        PhysicsSprite p = Facts.getLevelEntity("" + i);
+                        p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
+                    }
+                }
+            });
         }
 
         /**
@@ -3703,43 +3739,6 @@ public class MyLolGame extends Lol {
             if (oldBest < Score.getDistance()) {
                 Score.savePersistent("HighScore", Score.getDistance());
             }
-        }
-    }
-
-    /**
-     * If you use CallbackControls, you must override this to define what
-     * happens when the control is pressed
-     * 
-     * @param id
-     *            The id that was assigned to the Control
-     * @param whichLevel
-     *            The current level
-     */
-    @Override
-    public void onControlPressCallback(int id, int whichLevel) {
-        // for lack of anything better to do, we'll just pause the game
-        if (whichLevel == 79) {
-            if (id == 747) {
-                PauseScene.addText("Current score " + Score.getGoodiesCollected1(), 255, 255, 255, "arial.ttf", 20);
-                PauseScene.show();
-            } else if (id == 748) {
-                Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test"));
-            } else if (id == 749) {
-                Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test"));
-            } else if (id == 750) {
-                Facts.putGameFact("game test", 1 + Facts.getGameFact("game test"));
-            }
-        } else if (whichLevel == 85) {
-            if (id == 992) {
-                PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
-                PauseScene.show();
-            }
-        } else if (whichLevel == 90) {
-            for (int i = 0; i < 10; ++i) {
-                PhysicsSprite p = Facts.getLevelEntity("" + i);
-                p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
-            }
-
         }
     }
 

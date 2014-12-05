@@ -435,17 +435,6 @@ public abstract class Lol extends Game {
     abstract public void onLevelCompleteCallback(int whichLevel, boolean win);
 
     /**
-     * When a Control is pressed, for which there is a ControlCallback, this
-     * code will run.
-     * 
-     * @param id
-     *            The number assigned to this callback
-     * @param whichLevel
-     *            The current level
-     */
-    abstract public void onControlPressCallback(int id, int whichLevel);
-
-    /**
      * When a Control is pressed, for which there is a ControlCallback that
      * takes an entity and value, this code will run.
      * 

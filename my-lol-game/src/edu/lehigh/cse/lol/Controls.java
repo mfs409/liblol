@@ -887,15 +887,16 @@ public class Controls {
      * @param imgName
      *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param id
-     *            An id to use for the callback event
+     * @param sc
+     *            The code to run when the button is pressed
      */
-    public static Control addCallbackControl(int x, int y, int width, int height, String imgName, final int id) {
+    public static Control addCallbackControl(int x, int y, int width, int height, String imgName,
+            final SimpleCallback sc) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                Lol.sGame.onControlPressCallback(id, Lol.sGame.mCurrLevelNum);
+                sc.onEvent();
                 return true;
             }
         };
@@ -921,16 +922,16 @@ public class Controls {
      *            Use "" for an invisible button
      * @params inactiveImgName The name of the image to display after the button
      *         is pressed.
-     * @param id
-     *            An id to use for the callback event
+     * @param sc
+     *            The code to run in response to the control press
      */
     public static Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
-            final String inactiveImgName, final int id) {
+            final String inactiveImgName, final SimpleCallback sc) {
         final Control c = new Control(activeImgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                Lol.sGame.onControlPressCallback(id, Lol.sGame.mCurrLevelNum);
+                sc.onEvent();
                 c.mIsTouchable = false;
                 TextureRegion[] trs = Media.getImage(inactiveImgName);
                 if (trs != null) {
