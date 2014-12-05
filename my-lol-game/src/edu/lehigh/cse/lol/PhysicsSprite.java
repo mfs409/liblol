@@ -861,7 +861,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 else if (moving && speed.x == 0 && speed.y == 0) {
                     sc.onEvent();
                     moving = false;
-                    Util.message("stop", "handler''");
                 }
             }
         });

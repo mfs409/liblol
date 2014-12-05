@@ -3262,7 +3262,7 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            final Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
             h.setDamping(1);
@@ -3271,7 +3271,8 @@ public class MyLolGame extends Lol {
             h.setStopCallback(new SimpleCallback() {
                 @Override
                 public void onEvent() {
-                    Util.message("stop", "handler");
+                    // NB: the setStopCallback call sets the callback's
+                    // attachedSprite to the hero.
                     attachedSprite.setImage("red.png", 0);
                 }
             });
