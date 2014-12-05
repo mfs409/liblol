@@ -34,6 +34,7 @@ package com.me.mylolgame;
 // TODO: add a 'demos' section?
 // TODO: add a 'store'?
 // TODO: add 'share' button?
+// TODO: reorder and recomment.  Level 48 comes too early...
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -1783,11 +1784,69 @@ public class MyLolGame extends Lol {
             Enemy e = Enemy.makeAsCircle(23, 20, 1, 1, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
 
+            // This is tricky. We want to make the enemy reproduce. To that end,
+            // we're going to set up a Callback that runs in a few seconds. The
+            // tricky things are that (a) we don't want an enemy to reproduce if
+            // the enemy has been defeated; (b) we want to limit the number of
+            // times any enemy reproduces, so that reproductions don't get out
+            // of hand; and (c) we want the reproduced enemies to also
+            // reproduce.
+
+            // We're going to make a SimpleCallback object to encapsulate the
+            // code that we want to run. The trick is that SimpleCallback has a
+            // field called "intVal", which is just an integer that we can use
+            // however we want, and it has a field called "attachedSprite",
+            // which is a way of keeping track of the entity (in this case, an
+            // enemy) with which the callback is associated.
+            SimpleCallback sc = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // only reproduce the enemy if it is visible
+                    if (attachedSprite.getVisible()) {
+                        // make an enemy to the left of and above attachedSprite
+                        Enemy left = Enemy.makeAsCircle(attachedSprite.getXPosition() - 2 * intVal,
+                                attachedSprite.getYPosition() + 2 * intVal, attachedSprite.getWidth(),
+                                attachedSprite.getHeight(), "redball.png");
+                        left.setDisappearSound("lowpitch.ogg");
+
+                        // make an enemy to the right of and above
+                        // attachedSprite
+                        Enemy right = Enemy.makeAsCircle(attachedSprite.getXPosition() + 2 * intVal,
+                                attachedSprite.getYPosition() + 2 * intVal, attachedSprite.getWidth(),
+                                attachedSprite.getHeight(), "redball.png");
+                        right.setDisappearSound("lowpitch.ogg");
+
+                        // if there are reproductions left, then have
+                        // attachedSprite and its two new children all reproduce
+                        // in 2 seconds
+                        if (intVal > 0) {
+                            // first, do the parent
+                            intVal--;
+                            // on the next line, 'this' refers to the
+                            // SimpleCallback object
+                            Level.setTimerCallback(2, this);
+                            // to do the children, create a new callback for
+                            // each of them. We can 'clone' this SimpleCallback
+                            // and then just change the attachedSprite, so that
+                            // we don't have to re-write this code.
+                            SimpleCallback l = this.clone();
+                            l.attachedSprite = left;
+                            Level.setTimerCallback(2, l);
+                            SimpleCallback r = this.clone();
+                            r.attachedSprite = right;
+                            Level.setTimerCallback(2, r);
+                        }
+                    }
+                }
+            };
+            sc.intVal = 2;
+            sc.attachedSprite = e;
+
             // request that in 2 seconds, if the enemy is still visible,
             // onTimerCallback() will run, with id == 2. Be sure to look at
             // the onTimerCallback code (below) for more information. Note that
             // there are two versions of the function, and this uses the second!
-            Level.setTimerCallback(2, 2, e);
+            Level.setTimerCallback(2, sc);
 
             // win by defeating enemies
             Score.setVictoryEnemyCount();
@@ -1823,7 +1882,27 @@ public class MyLolGame extends Lol {
             // to lots of enemies eventually, and there's no way to defeat them
             // in this level! Again, be sure to look at onEnemyTimerCallback()
             // below.
-            Level.setTimerCallback(6, 2, e);
+            SimpleCallback sc = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // Make the new enemy
+                    Enemy e2 = Enemy.makeAsCircle(attachedSprite.getXPosition(), attachedSprite.getYPosition(),
+                            attachedSprite.getWidth(), attachedSprite.getHeight(), "redball.png");
+                    e2.setPhysics(1.0f, 0.3f, 0.6f);
+                    e2.setMoveByTilting();
+                    // make more enemies?
+                    if (intVal > 0) {
+                        intVal--;
+                        Level.setTimerCallback(2, this);
+                        SimpleCallback c2 = this.clone();
+                        c2.attachedSprite = e2;
+                        Level.setTimerCallback(2, c2);
+                    }
+                }
+            };
+            sc.attachedSprite = e;
+            sc.intVal = 6;
+            Level.setTimerCallback(2, sc);
         }
 
         /*
@@ -3183,11 +3262,19 @@ public class MyLolGame extends Lol {
             Score.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            final Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
+            h.setDamping(1);
+            h.setAngularDamping(1);
             // when the hero stops, we'll run code that turns the hero red
-            h.setStopCallback(99);
+            h.setStopCallback(new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Util.message("stop", "handler");
+                    attachedSprite.setImage("red.png", 0);
+                }
+            });
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
@@ -3503,60 +3590,6 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you want to have timercallbacks with attached entityes, then you must
-     * override this to define what happens when the timer expires
-     * 
-     * @param id
-     *            The id that was assigned to the timer that exired
-     * @param whichLevel
-     *            The current level
-     * @param ps
-     *            The PhysicsSprite that was connected to the timer
-     */
-    @Override
-    public void onTimerCallback(int id, int whichLevel, PhysicsSprite ps) {
-        // Code for level 48's EnemyTimerCallback
-        if (whichLevel == 48) {
-            // we're simulating cancer cells that can reproduce a fixed number
-            // of times. The ID here represents the number of remaining
-            // reproductions for the current enemy (e), so that we don't
-            // reproduce forever (note that we could, if we wanted to...)
-
-            // make an enemy just like "e", but to the left
-            Enemy left = Enemy.makeAsCircle(ps.getXPosition() - 2 * id, ps.getYPosition() + 2 * id, ps.getWidth(),
-                    ps.getHeight(), "redball.png");
-            left.setDisappearSound("lowpitch.ogg");
-
-            // make an enemy just like "e", but to the right
-            Enemy right = Enemy.makeAsCircle(ps.getXPosition() + 2 * id, ps.getYPosition() + 2 * id, ps.getWidth(),
-                    ps.getHeight(), "redball.png");
-            right.setDisappearSound("lowpitch.ogg");
-
-            // if there are reproductions left, then have e and its two new
-            // children all reproduce in 2 seconds
-            if (id > 0) {
-                Level.setTimerCallback(id - 1, 2, left);
-                Level.setTimerCallback(id - 1, 2, ps);
-                Level.setTimerCallback(id - 1, 2, right);
-            }
-        }
-        // Code for level 49's EnemyTimerCallback
-        else if (whichLevel == 49) {
-            // in this case, every enemy will produce one offspring on each
-            // timer
-            Enemy e2 = Enemy.makeAsCircle(ps.getXPosition(), ps.getYPosition(), ps.getWidth(), ps.getHeight(),
-                    "redball.png");
-            e2.setPhysics(1.0f, 0.3f, 0.6f);
-            e2.setMoveByTilting();
-            // make more enemies?
-            if (id > 0) {
-                Level.setTimerCallback(id - 1, 2, ps);
-                Level.setTimerCallback(id - 1, 2, e2);
-            }
-        }
-    }
-
-    /**
      * If a game has Enemies that have 'defeatCallback' set, then when any of
      * those enemies are defeated, this code will run
      * 
@@ -3760,18 +3793,6 @@ public class MyLolGame extends Lol {
             // set the hero's image index to (s-1), i.e., one of the indices in
             // the range 0..7, depending on strength
             h.setImage("colorstar.png", s - 1);
-        }
-    }
-
-    /**
-     * When an entity stops moving, this code runs
-     */
-    @Override
-    public void onStopCallback(int id, int whichLevel, PhysicsSprite o) {
-        if (whichLevel == 86) {
-            if (id == 99) {
-                o.setImage("red.png", 0);
-            }
         }
     }
 

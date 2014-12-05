@@ -251,12 +251,13 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * A definition for when we attach a distance joint to this entity
      */
     DistanceJointDef mDistJointDef;
-    
+
     /**
-     * A joint that allows this entity to stay within a fixed distance of another
+     * A joint that allows this entity to stay within a fixed distance of
+     * another
      */
     Joint mDistJoint;
-    
+
     /**
      * If this PhysicsSprite is chasing another PhysicsSprite, we track who is
      * being chased via this field
@@ -688,6 +689,17 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     }
 
     /**
+     * Indicate whether the entity is currently visible or not.
+     * 
+     * @return true if the entity is visible, false if it is currently in a
+     *         hidden state (i.e., because it has been collected, defeated, or
+     *         removed)
+     */
+    public boolean getVisible() {
+        return mVisible;
+    }
+
+    /**
      * Make an entity disappear
      * 
      * @param quiet
@@ -834,21 +846,22 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Indicate that when this entity stops, we should run custom code
      * 
-     * @param callbackId
-     *            An id to attach to this event
+     * @param sc
+     *            The callback to run when the entity stops
      */
-    public void setStopCallback(final int callbackId) {
+    public void setStopCallback(final SimpleCallback sc) {
+        sc.attachedSprite = this;
         Level.sCurrent.mRepeatEvents.add(new Action() {
             boolean moving = false;
-
             @Override
             public void go() {
                 Vector2 speed = mBody.getLinearVelocity();
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    Lol.sGame.onStopCallback(callbackId, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    sc.onEvent();
                     moving = false;
+                    Util.message("stop", "handler''");
                 }
             }
         });
@@ -952,6 +965,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         mGestureResponder = new GestureAction() {
             long mLastPokeTime;
             boolean mEnabled = true;
+
             @Override
             public boolean onTap(Vector3 tapLocation) {
                 if (!mEnabled)
@@ -973,6 +987,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 // set a screen handler to detect when/where to move the entity
                 Level.sCurrent.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
+
                     @Override
                     public boolean onTap(Vector3 tapLocation) {
                         if (!mEnabled || !mVisible)
@@ -1037,6 +1052,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 Lol.sGame.vibrate(5);
                 Level.sCurrent.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
+
                     @Override
                     public boolean onTap(Vector3 touchVec) {
                         if (!mEnabled)
@@ -1079,6 +1095,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 Lol.sGame.vibrate(5);
                 Level.sCurrent.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
+
                     @Override
                     public boolean onDown(Vector3 touchVec) {
                         if (!mEnabled)
@@ -1697,8 +1714,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             float localAnchorY) {
         // make the body dynamic
         setCanFall();
-        
-        
+
         // set up a joint so the head can't move too far
         mDistJointDef = new DistanceJointDef();
         mDistJointDef.bodyA = anchor.mBody;

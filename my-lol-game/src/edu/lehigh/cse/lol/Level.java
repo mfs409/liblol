@@ -1065,28 +1065,6 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Specify that you want some code to run after a fixed amount of time
-     * passes, and that it should return a specific PhysicsSprite to the
-     * programmer's code
-     * 
-     * @param timerId
-     *            A (possibly) unique identifier for this timer
-     * @param howLong
-     *            How long to wait before the timer code runs
-     * @param ps
-     *            The entity that should be passed along
-     */
-    public static void setTimerCallback(final int timerId, float howLong, final PhysicsSprite ps) {
-        Timer.schedule(new Task() {
-            @Override
-            public void run() {
-                if (!Level.sCurrent.mScore.mGameOver)
-                    Lol.sGame.onTimerCallback(timerId, Lol.sGame.mCurrLevelNum, ps);
-            }
-        }, howLong);
-    }
-
-    /**
      * Turn on scribble mode, so that scene touch events draw circular objects
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly

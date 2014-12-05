@@ -382,33 +382,6 @@ public abstract class Lol extends Game {
     abstract public void onTouchCallback(int id, int whichLevel, PhysicsSprite o);
 
     /**
-     * When an entity stops, if it has a StopCallback attached to it, this code
-     * will run
-     * 
-     * @param id
-     *            The number assigned to the entity's TouchCallback
-     * @param whichLevel
-     *            The current level
-     * @param o
-     *            The entity that stopped
-     */
-    abstract public void onStopCallback(int id, int whichLevel, PhysicsSprite o);
-
-    /**
-     * When a player requests an TimerCallback that has an attached
-     * PhysicsSprite, and the required time passes, and the PhysicsSprite is
-     * still visible, this code will run
-     * 
-     * @param id
-     *            The number assigned to the TimerCallback
-     * @param whichLevel
-     *            The current level
-     * @param ps
-     *            The PhysicsSprite to which the timer was attached
-     */
-    abstract public void onTimerCallback(int id, int whichLevel, PhysicsSprite ps);
-
-    /**
      * When an enemy is defeated, this code will run if the enemy has an
      * EnemyDefeatCallback
      * 
