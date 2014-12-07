@@ -2630,23 +2630,39 @@ public class MyLolGame extends Lol {
             o.setEnemyCollisionCallback(0, 0, 0, 0, 0, 0);
 
             // now draw our enemies... we need enough to be able to test that
-            // all four defeat mechanisms work.
+            // all four defeat mechanisms work. Note that we attach defeat
+            // callback code to each of them.
+            SimpleCallback sc = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // always reset the pausescene, in case it has something on
+                    // it from before...
+                    PauseScene.reset();
+                    PauseScene.addText("good job, here's a prize", 88, 226, 160, "arial.ttf", 16);
+                    PauseScene.show();
+                    // use random numbers to figure out where to draw a goodie
+                    // as a reward... picking in the range 0-46,0-30 ensures
+                    // that with width and height of 2, the goodie stays on
+                    // screen
+                    Goodie.makeAsCircle(Util.getRandom(46), Util.getRandom(30), 2, 2, "blueball.png");
+                }
+            };
             Enemy e1 = Enemy.makeAsCircle(5, 5, 1, 1, "redball.png");
-            e1.setDefeatCallback(0);
+            e1.setDefeatCallback(sc);
 
             Enemy e2 = Enemy.makeAsCircle(5, 5, 2, 2, "redball.png");
-            e2.setDefeatCallback(0);
+            e2.setDefeatCallback(sc);
             e2.setInfoText("weak");
 
             Enemy e3 = Enemy.makeAsCircle(40, 3, 1, 1, "redball.png");
-            e3.setDefeatCallback(0);
+            e3.setDefeatCallback(sc);
 
             Enemy e4 = Enemy.makeAsCircle(25, 25, 1, 1, "redball.png");
-            e4.setDefeatCallback(0);
+            e4.setDefeatCallback(sc);
             e4.setDisappearOnTouch();
 
             Enemy e5 = Enemy.makeAsCircle(25, 29, 1, 1, "redball.png");
-            e5.setDefeatCallback(0);
+            e5.setDefeatCallback(sc);
 
             // win by defeating enemies
             Score.setVictoryEnemyCount();
@@ -3660,34 +3676,6 @@ public class MyLolGame extends Lol {
         else if (whichLevel == 78) {
             hero.setAbsoluteVelocity(hero.getXVelocity(), 5, false);
             return;
-        }
-    }
-
-    /**
-     * If a game has Enemies that have 'defeatCallback' set, then when any of
-     * those enemies are defeated, this code will run
-     * 
-     * @param id
-     *            The ID of the enemy that was defeated by the hero
-     * @param whichLevel
-     *            The current level
-     * @param enemy
-     *            The enemy that was defeated
-     */
-    @Override
-    public void onEnemyDefeatCallback(int id, int whichLevel, Enemy enemy) {
-        // in level 65, whenever we defeat an enemy, we pause the game, print a
-        // message, and then put a goodie at a random location
-        if (whichLevel == 65) {
-            // always reset the pausescene, in case it has something on it from
-            // before...
-            PauseScene.reset();
-            PauseScene.addText("good job, here's a prize", 88, 226, 160, "arial.ttf", 16);
-            PauseScene.show();
-            // use random numbers to figure out where to draw a goodie as a
-            // reward... picking in the range 0-46,0-30 ensures that with width
-            // and height of 2, the goodie stays on screen
-            Goodie.makeAsCircle(Util.getRandom(46), Util.getRandom(30), 2, 2, "blueball.png");
         }
     }
 

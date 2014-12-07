@@ -369,19 +369,6 @@ public abstract class Lol extends Game {
     abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
 
      /**
-     * When an enemy is defeated, this code will run if the enemy has an
-     * EnemyDefeatCallback
-     * 
-     * @param id
-     *            The number assigned to this callback
-     * @param whichLevel
-     *            The current level
-     * @param e
-     *            The enemy who was defeated
-     */
-    abstract public void onEnemyDefeatCallback(int id, int whichLevel, Enemy e);
-
-    /**
      * When an obstacle collides with an enemy, if the obstacle has an
      * EnemyCollideCallback, then this code will run.
      * 

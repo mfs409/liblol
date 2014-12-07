@@ -295,15 +295,15 @@ public class Enemy extends PhysicsSprite {
      * Make the enemy a "defeat callback" enemy, so that custom code will run
      * when this enemy is defeated
      * 
-     * @param id
-     *            The id of this enemy, so that we can disambiguate enemy
-     *            collisions in the onEnemyCallback code
+     * @param sc
+     * The callback to run when the enemy is defeated
      */
-    public void setDefeatCallback(final int id) {
+    public void setDefeatCallback(final SimpleCallback sc) {
         mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(PhysicsSprite ps, Contact c) {
-                Lol.sGame.onEnemyDefeatCallback(id, Lol.sGame.mCurrLevelNum, Enemy.this);
+                sc.attachedSprite = Enemy.this;
+                sc.onEvent();
             }
         };
     }

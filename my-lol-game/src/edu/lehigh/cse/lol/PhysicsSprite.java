@@ -824,7 +824,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
             int activationGoodies4, final boolean disappear, final SimpleCallback sc) {
         final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
-        sc.attachedSprite = this;
         // set the code to run on touch
         mGestureResponder = new GestureAction() {
             @Override
@@ -837,6 +836,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
+                    sc.attachedSprite = PhysicsSprite.this;
                     sc.onEvent();
                 }
                 return true;
@@ -851,7 +851,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The callback to run when the entity stops
      */
     public void setStopCallback(final SimpleCallback sc) {
-        sc.attachedSprite = this;
         Level.sCurrent.mRepeatEvents.add(new Action() {
             boolean moving = false;
 
@@ -861,6 +860,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
+                    sc.attachedSprite = PhysicsSprite.this;
                     sc.onEvent();
                     moving = false;
                 }

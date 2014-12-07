@@ -352,8 +352,10 @@ public class Hero extends PhysicsSprite {
      */
     private void addStrength(int amount) {
         mStrength += amount;
-        if (mStrengthChangeCallback != null)
+        if (mStrengthChangeCallback != null) {
+            mStrengthChangeCallback.attachedSprite = this;
             mStrengthChangeCallback.onEvent();
+        }
     }
 
     /**
@@ -624,7 +626,6 @@ public class Hero extends PhysicsSprite {
      *            The code to run.
      */
     public void setStrengthChangeCallback(SimpleCallback sc) {
-        sc.attachedSprite = this;
         mStrengthChangeCallback = sc;
     }
 }
