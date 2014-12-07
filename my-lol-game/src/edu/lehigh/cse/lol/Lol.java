@@ -382,19 +382,4 @@ public abstract class Lol extends Game {
      *            The enemy involved in the collision
      */
     abstract public void onEnemyCollideCallback(int id, int whichLevel, Obstacle o, Enemy e);
-
-    /**
-     * When a projectile collides with an obstacle, if the obstacle has a
-     * ProjectileCollideCallback, then this code will run
-     * 
-     * @param id
-     *            The number assigned to this callback
-     * @param whichLevel
-     *            The current level
-     * @param o
-     *            The obstacle involved in the collision
-     * @param p
-     *            The projectile involved in the collision
-     */
-    abstract public void onProjectileCollideCallback(int id, int whichLevel, Obstacle o, Projectile p);
 }

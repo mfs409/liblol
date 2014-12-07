@@ -387,8 +387,6 @@ public class Obstacle extends PhysicsSprite {
      * Make the object a callback object, so that custom code will run when a
      * projectile collides with it.
      * 
-     * @param id
-     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
      *            callback works
@@ -402,8 +400,8 @@ public class Obstacle extends PhysicsSprite {
      *            Number of type-4 goodies that must be collected before this
      *            callback works
      */
-    public void setProjectileCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4) {
+    public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2,
+            int activationGoodies3, int activationGoodies4, final SimpleCallback sc) {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
@@ -413,8 +411,11 @@ public class Obstacle extends PhysicsSprite {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= projectileCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
-                if (match)
-                    Lol.sGame.onProjectileCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Projectile) ps);
+                if (match) {
+                    sc.attachedSprite = Obstacle.this;
+                    sc.collideSprite = ps;
+                    sc.onEvent();
+                }
             }
         };
     }

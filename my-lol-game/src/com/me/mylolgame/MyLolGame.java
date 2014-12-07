@@ -1755,12 +1755,8 @@ public class MyLolGame extends Lol {
 
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
-            // "onProjectileCollideCallback()" method that appears later in this
-            // file. When onProjectileCollideCallback() runs, it will have an id
-            // of 7, because we arbitrarily picked 7 as the id... for this
-            // simple example, our use of an id isn't important, but for more
-            // complex games, having different ids can be really useful.
-            o.setProjectileCollisionCallback(7, 0, 0, 0, 0);
+            // callback code.
+            o.setProjectileCollisionCallback(0, 0, 0, 0, new SimpleCallback());
         }
 
         /*
@@ -3715,33 +3711,6 @@ public class MyLolGame extends Lol {
         else if (whichLevel == 65) {
             if (enemy.getInfoText() == "weak") {
                 enemy.defeat(true);
-            }
-        }
-    }
-
-    /**
-     * If you want to have Obstacle/Projectile callbacks, then you must override
-     * this to define what happens when a projectile hits the obstacle
-     * 
-     * @param id
-     *            The ID of the callback
-     * @param whichLevel
-     *            The current level
-     * @param obstacle
-     *            The obstacle involved in the collision
-     * @param projectile
-     *            The projectile involved in the collision
-     */
-    @Override
-    public void onProjectileCollideCallback(int id, int whichLevel, Obstacle obstacle, Projectile projectile) {
-        if (whichLevel == 47) {
-            if (id == 7) {
-                // don't do anything... we want the projectile to stay on the
-                // screen!
-            } else {
-                // the ID is not 7... remove the projectile without making a
-                // projectile disappear sound.
-                projectile.remove(true);
             }
         }
     }
