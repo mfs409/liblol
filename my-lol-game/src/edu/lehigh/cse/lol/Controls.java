@@ -48,11 +48,6 @@ public class Controls {
      */
     public static class Control {
         /**
-         * A custom value that the control can store
-         */
-        float mVal;
-
-        /**
          * Should we run code when this Control is touched?
          */
         boolean mIsTouchable;
@@ -1116,15 +1111,11 @@ public class Controls {
      * @param imgName
      *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param id
-     *            The id to use when this generates an onControlPressCallback
-     *            event
-     * @param entity
-     *            An entity that can be passed to the onControlPressCallback
-     *            event
+     * @param sc
+     *            The code to run when the bar is pressed
      */
     public static Control addVerticalBar(final int x, final int y, final int width, final int height, String imgName,
-            final int id, final PhysicsSprite entity) {
+            final SimpleCallback sc) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * Track if the bar is growing (true) or shrinking (false)
@@ -1174,8 +1165,8 @@ public class Controls {
                     return;
 
                 // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) mVal) / 100, 1, 1, 0,
-                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) mVal) / 100, false, true);
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) sc.floatVal) / 100, 1, 1, 0,
+                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) sc.floatVal) / 100, false, true);
 
                 // don't keep showing anything if we've already received a
                 // touch...
@@ -1183,11 +1174,11 @@ public class Controls {
                     return;
 
                 // update size
-                if (mVal == 100)
+                if (sc.floatVal == 100)
                     mGrow = false;
-                if (mVal == 0)
+                if (sc.floatVal == 0)
                     mGrow = true;
-                mVal = mVal + (mGrow ? 1 : -1);
+                sc.floatVal = sc.floatVal + (mGrow ? 1 : -1);
             }
         };
         c.mGestureAction = new GestureAction() {
@@ -1198,7 +1189,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
-                Lol.sGame.onControlPressEntityCallback(id, (int) c.mVal, entity, Lol.sGame.mCurrLevelNum);
+                sc.onEvent();
                 return true;
             }
         };
@@ -1225,15 +1216,11 @@ public class Controls {
      *            button
      * @param delta
      *            Amount of rotation to add during each fraction of a second
-     * @param id
-     *            The id to use when this generates an onControlPressCallback
-     *            event
-     * @param entity
-     *            An entity that can be passed to the onControlPressCallback
-     *            event
+     *            @param sc
+     *            The code to run when the rotator is pressed
      */
     public static Control addRotator(final int x, final int y, final int width, final int height, String imgName,
-            final float delta, final int id, final PhysicsSprite entity) {
+            final float delta, final SimpleCallback sc) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * This is the render method when we've got a valid TR. We're going
@@ -1248,16 +1235,16 @@ public class Controls {
                 if (!mIsActive)
                     return;
                 // draw it
-                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, mVal);
+                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, sc.floatVal);
 
                 // don't keep rotating if we've got a touch...
                 if (!mIsTouchable)
                     return;
 
                 // update rotation
-                mVal += delta;
-                if (mVal == 360)
-                    mVal = 0;
+                sc.floatVal += delta;
+                if (sc.floatVal == 360)
+                    sc.floatVal = 0;
             }
         };
         c.mGestureAction = new GestureAction() {
@@ -1268,7 +1255,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive)
                     return false;
-                Lol.sGame.onControlPressEntityCallback(id, c.mVal, entity, Lol.sGame.mCurrLevelNum);
+                sc.onEvent();
                 return true;
             }
         };

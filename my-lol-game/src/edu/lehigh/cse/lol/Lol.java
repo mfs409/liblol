@@ -435,21 +435,6 @@ public abstract class Lol extends Game {
     abstract public void onLevelCompleteCallback(int whichLevel, boolean win);
 
     /**
-     * When a Control is pressed, for which there is a ControlCallback that
-     * takes an entity and value, this code will run.
-     * 
-     * @param id
-     *            The number assigned to this callback
-     * @param val
-     *            The value that was sent by the control
-     * @param entity
-     *            The entity to modify via this control press
-     * @param whichLevel
-     *            The current level
-     */
-    abstract public void onControlPressEntityCallback(int id, float val, PhysicsSprite entity, int whichLevel);
-
-    /**
      * When a hero collides with a goodie or enemy, and it leads to the hero's
      * strength changing, we can opt to run this code.
      * 
@@ -459,14 +444,4 @@ public abstract class Lol extends Game {
      *            The hero whose strength just changed
      */
     abstract public void onStrengthChangeCallback(int whichLevel, Hero h);
-
-    /**
-     * When a PauseScene button is pressed, this code will run.
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param id
-     *            The number assigned to this PauseScene button
-     */
-    abstract public void onPauseSceneCallback(int whichLevel, int id);
 }

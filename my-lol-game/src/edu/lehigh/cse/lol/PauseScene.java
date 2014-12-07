@@ -56,9 +56,9 @@ public class PauseScene {
         Rectangle mRect;
 
         /**
-         * The ID associated with this region, for calling back to the main code
+         * The Callback to run when this button is pressed
          */
-        int mId;
+        SimpleCallback mCallback;
     }
 
     /**
@@ -135,7 +135,7 @@ public class PauseScene {
         for (Button b : mButtons) {
             if (b.mRect.contains(mV.x, mV.y)) {
                 dismiss();
-                Lol.sGame.onPauseSceneCallback(Lol.sGame.mCurrLevelNum, b.mId);
+                b.mCallback.onEvent();
                 return;
             }
         }
@@ -318,10 +318,10 @@ public class PauseScene {
      * @param callbackId
      *            The value to pass back to the main game
      */
-    public static void addCallbackButton(int x, int y, int width, int height, int callbackId) {
+    public static void addCallbackButton(int x, int y, int width, int height, SimpleCallback sc) {
         Button b = new Button();
         b.mRect = new Rectangle(x, y, width, height);
-        b.mId = callbackId;
+        b.mCallback = sc;
         getCurrPauseScene().mButtons.add(b);
     }
 

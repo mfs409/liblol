@@ -3307,8 +3307,26 @@ public class MyLolGame extends Lol {
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
-            Controls.addRotator(215, 135, 50, 50, "stars.png", 2, 72, h);
-            Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", 71, h);
+            SimpleCallback rotatorSC = new SimpleCallback(){@Override public void onEvent(){
+                // rotator... save the rotation and rotate the hero
+                attachedSprite.setRotation(floatVal * (float) Math.PI / 180);
+                // multiply float val by 100 to preserve some decimal places
+                Facts.putLevelFact("rotation", (int) (100 * floatVal));
+            }};
+            rotatorSC.attachedSprite = h;
+            Controls.addRotator(215, 135, 50, 50, "stars.png", 2, rotatorSC);
+            SimpleCallback barSC = new SimpleCallback(){@Override public void onEvent(){
+                // vertical bar... make the entity move
+                int rotation = Facts.getLevelFact("rotation") / 100;
+                // create a unit vector
+                Vector2 v = new Vector2(1, 0);
+                v.scl(floatVal);
+                v.rotate(rotation + 90);
+                attachedSprite.setDamping(2f);
+                attachedSprite.setAbsoluteVelocity(v.x, v.y, false);
+            }};
+            barSC.attachedSprite = h;
+            Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", barSC);
         }
 
         /*
@@ -3357,8 +3375,8 @@ public class MyLolGame extends Lol {
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("red.png", 0, 600, 40, 40);
-            PauseScene.addCallbackButton(10, 10, 20, 20, 1);
-            PauseScene.addCallbackButton(190, 190, 20, 20, 2);
+            PauseScene.addCallbackButton(10, 10, 20, 20, new SimpleCallback(){@Override public void onEvent(){Score.winLevel();}});
+            PauseScene.addCallbackButton(190, 190, 20, 20, new SimpleCallback(){@Override public void onEvent(){Score.loseLevel();}});
             PauseScene.suppressClearClick();
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
         }
@@ -3743,37 +3761,6 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * If you use EntityCallbackControls, you must override this to define what
-     * happens when the control is pressed
-     * 
-     * @param id
-     *            The id that was assigned to the Control
-     * @param whichLevel
-     *            The current level
-     */
-    @Override
-    public void onControlPressEntityCallback(int id, float val, PhysicsSprite entity, int whichLevel) {
-        // for lack of anything better to do, we'll just pause the game
-        if (whichLevel == 86) {
-            if (id == 71) {
-                // vertical bar... make the entity move
-                int rotation = Facts.getLevelFact("rotation") / 100;
-                // create a unit vector
-                Vector2 v = new Vector2(1, 0);
-                v.scl(val);
-                v.rotate(rotation + 90);
-                entity.setDamping(2f);
-                entity.setAbsoluteVelocity(v.x, v.y, false);
-            } else if (id == 72) {
-                // rotator... save the rotation and rotate the hero
-                entity.setRotation(val * (float) Math.PI / 180);
-                // multiply float val by 100 to preserve some decimal places
-                Facts.putLevelFact("rotation", (int) (100 * val));
-            }
-        }
-    }
-
-    /**
      * Whenever a hero's strength changes due to a collision with a goodie or
      * enemy, this is called. The most common use is to change the hero's
      * appearance.
@@ -3793,26 +3780,6 @@ public class MyLolGame extends Lol {
             // set the hero's image index to (s-1), i.e., one of the indices in
             // the range 0..7, depending on strength
             h.setImage("colorstar.png", s - 1);
-        }
-    }
-
-    /**
-     * When a PauseScene button is pressed, this code will run.
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param id
-     *            The number assigned to this PauseScene button
-     */
-    @Override
-    public void onPauseSceneCallback(int whichLevel, int id) {
-        if (whichLevel == 88) {
-            if (id == 1) {
-                Score.winLevel();
-            }
-            if (id == 2) {
-                Score.loseLevel();
-            }
         }
     }
 
