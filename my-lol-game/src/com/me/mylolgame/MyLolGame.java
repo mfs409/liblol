@@ -34,7 +34,12 @@ package com.me.mylolgame;
 // TODO: add a 'demos' section?
 // TODO: add a 'store'?
 // TODO: add 'share' button?
-// TODO: reorder and recomment.  Level 48 comes too early...
+// TODO: Verify comments
+// TODO: verify chooser and level music stops on Android events
+// TODO: Hero animation sequences could use work... we can lose information (e.g., if
+//       invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
+// TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
+// TODO: make panning return to the chasesprite more nicely
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -59,7 +64,6 @@ import edu.lehigh.cse.lol.Physics;
 import edu.lehigh.cse.lol.PhysicsSprite;
 import edu.lehigh.cse.lol.PostScene;
 import edu.lehigh.cse.lol.PreScene;
-import edu.lehigh.cse.lol.Projectile;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.Score;
@@ -2198,14 +2202,30 @@ public class MyLolGame extends Lol {
             // collides with any enemy, the onEnemyCollideCallback() code will
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
-            o.setEnemyCollisionCallback(14, 0, 0, 0, 0, .5f);
+            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // This obstacle can only defeat the big enemy, and it
+                    // disappears when it defeats the enemy
+                    if (collideSprite.getInfoText() == "big") {
+                        ((Enemy) collideSprite).defeat(true);
+                        attachedSprite.remove(true);
+                    }
+
+                }
+            });
 
             // make a small obstacle that can also defeat enemies, but doesn't
             // disappear
             Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionCallback(1, 0, 0, 0, 0, 0);
+            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    ((Enemy) collideSprite).defeat(true);
+                }
+            });
 
             // make four enemies
             Enemy e = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
@@ -2623,7 +2643,14 @@ public class MyLolGame extends Lol {
             Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, 0);
+            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    if (collideSprite.getInfoText() == "weak") {
+                        ((Enemy) collideSprite).defeat(true);
+                    }
+                }
+            });
 
             // now draw our enemies... we need enough to be able to test that
             // all four defeat mechanisms work. Note that we attach defeat
@@ -3672,46 +3699,6 @@ public class MyLolGame extends Lol {
         else if (whichLevel == 78) {
             hero.setAbsoluteVelocity(hero.getXVelocity(), 5, false);
             return;
-        }
-    }
-
-    /**
-     * If you want to have EnemyCollide callbacks, then you must override this
-     * to define what happens when an enemy hits the obstacle
-     * 
-     * @param id
-     *            The ID of the callback
-     * @param whichLevel
-     *            The current level
-     * @param obstacle
-     *            The obstacle involved in the collision
-     * @param enemy
-     *            The enemy involved in the collision
-     */
-    @Override
-    public void onEnemyCollideCallback(int id, int whichLevel, Obstacle obstacle, Enemy enemy) {
-        // this is the code for level 56, to handle collisions between obstacles
-        // and enemies
-        if (whichLevel == 56) {
-            // only the small obstacle can defeat small enemies
-            if (enemy.getInfoText() == "small" && id == 1) {
-                enemy.defeat(true);
-            }
-            // both obstacles can defeat big enemies, but the big obstacle will
-            // disappear
-            if (enemy.getInfoText() == "big") {
-                enemy.defeat(true);
-                if (id == 14) {
-                    obstacle.remove(true);
-                }
-            }
-        }
-        // this is the code for level 65... if the obstacle collides with the
-        // "weak" enemy, we defeat the enemy.
-        else if (whichLevel == 65) {
-            if (enemy.getInfoText() == "weak") {
-                enemy.defeat(true);
-            }
         }
     }
 

@@ -27,20 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-// TODO: verify chooser and level music stops on Android events
-
-// TODO: verify that flipped animations work correctly, even when they change while flipped
-
-// TODO: Hero animation sequences could use work... we can lose information (e.g., if
-// invincibility runs out while jumping), and we don't have invincible+X or jump+crawl
-// animation
-
-// TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
-
-// TODO: consider making sprite sheets more useful (i.e., cut out arbitrary regions)
-
-// TODO: make panning return to the chasesprite more nicely
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -367,19 +353,4 @@ public abstract class Lol extends Game {
      *            The hero involved in the collision
      */
     abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
-
-     /**
-     * When an obstacle collides with an enemy, if the obstacle has an
-     * EnemyCollideCallback, then this code will run.
-     * 
-     * @param id
-     *            The number assigned to this callback
-     * @param whichLevel
-     *            The current level
-     * @param o
-     *            The obstacle involved in the collision
-     * @param e
-     *            The enemy involved in the collision
-     */
-    abstract public void onEnemyCollideCallback(int id, int whichLevel, Obstacle o, Enemy e);
 }

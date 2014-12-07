@@ -334,8 +334,6 @@ public class Obstacle extends PhysicsSprite {
      * Make the object a callback object, so that custom code will run when an
      * enemy collides with it
      * 
-     * @param id
-     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
      *            callback works
@@ -351,9 +349,11 @@ public class Obstacle extends PhysicsSprite {
      * @param delay
      *            The time between when the collision happens, and when the
      *            callback code runs. Use 0 for immediately
+     * @param sc
+     *            The code to run when an enemy collides with this obstacle
      */
-    public void setEnemyCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4, final float delay) {
+    public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
+            int activationGoodies4, final float delay, final SimpleCallback sc) {
         /**
          * Enemy callbacks can require certain Goodie counts in order to run
          */
@@ -369,15 +369,19 @@ public class Obstacle extends PhysicsSprite {
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        Lol.sGame.onEnemyCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
-                        return;
+                        sc.attachedSprite = Obstacle.this;
+                        sc.collideSprite = ps;
+                        sc.onEvent();
+                    } else {
+                        Timer.schedule(new Task() {
+                            @Override
+                            public void run() {
+                                sc.attachedSprite = Obstacle.this;
+                                sc.collideSprite = ps;
+                                sc.onEvent();
+                            }
+                        }, delay);
                     }
-                    Timer.schedule(new Task() {
-                        @Override
-                        public void run() {
-                            Lol.sGame.onEnemyCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Enemy) ps);
-                        }
-                    }, delay);
                 }
             }
         };
@@ -400,8 +404,8 @@ public class Obstacle extends PhysicsSprite {
      *            Number of type-4 goodies that must be collected before this
      *            callback works
      */
-    public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4, final SimpleCallback sc) {
+    public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
+            int activationGoodies4, final SimpleCallback sc) {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
