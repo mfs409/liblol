@@ -2574,7 +2574,17 @@ public class MyLolGame extends Lol {
             Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
-            o.setTouchCallback(39, 1, 0, 0, 0, true);
+            o.setTouchCallback(1, 0, 0, 0, true, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // note: we could draw a picture of an open chest in the
+                    // obstacle's place, or even use a disappear animation whose
+                    // final frame looks like an open treasure chest.
+                    attachedSprite.remove(false);
+                    for (int i = 0; i < 3; ++i)
+                        Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
+                }
+            });
             o.setDisappearSound("hipitch.ogg");
 
             Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
@@ -3650,36 +3660,6 @@ public class MyLolGame extends Lol {
         else if (whichLevel == 78) {
             hero.setAbsoluteVelocity(hero.getXVelocity(), 5, false);
             return;
-        }
-    }
-
-    /**
-     * If a game uses entities that are touch callbacks, it must provide this to
-     * specify what to do when such an entity is touched by the user. The idea
-     * behind this mechanism is that it allows the creation of more interactive
-     * games, since there can be items to unlock, treasure chests to open, and
-     * other such behaviors.
-     * 
-     * @param id
-     *            The ID of the obstacle that was hit by the hero
-     * @param whichLevel
-     *            The current level
-     * @param entity
-     *            The entity that was touched
-     */
-    @Override
-    public void onTouchCallback(int id, int whichLevel, PhysicsSprite entity) {
-        // In level 64, we draw a bunch of goodies when the obstacle is touched.
-        // This is supposed to be like having a treasure chest open up.
-        if (whichLevel == 64) {
-            if (id == 39) {
-                // note: we could draw a picture of an open chest in the
-                // obstacle's place, or even use a disappear animation whose
-                // final frame looks like an open treasure chest.
-                entity.remove(false);
-                for (int i = 0; i < 3; ++i)
-                    Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
-            }
         }
     }
 

@@ -802,8 +802,6 @@ public abstract class PhysicsSprite implements Lol.Renderable {
     /**
      * Indicate that touching this object will cause some special code to run
      * 
-     * @param id
-     *            identifier for the callback.
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before it
      *            works
@@ -819,11 +817,14 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param disapper
      *            True if the entity should disappear after the callback
      *            completes
+     * @param sc
+     *            The callback to run when the entitiy is touched
      */
-    public void setTouchCallback(final int id, int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final boolean disappear) {
+    public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
+            int activationGoodies4, final boolean disappear, final SimpleCallback sc) {
         final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
+        sc.attachedSprite = this;
         // set the code to run on touch
         mGestureResponder = new GestureAction() {
             @Override
@@ -836,7 +837,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    Lol.sGame.onTouchCallback(id, Lol.sGame.mCurrLevelNum, PhysicsSprite.this);
+                    sc.onEvent();
                 }
                 return true;
             }
@@ -853,6 +854,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         sc.attachedSprite = this;
         Level.sCurrent.mRepeatEvents.add(new Action() {
             boolean moving = false;
+
             @Override
             public void go() {
                 Vector2 speed = mBody.getLinearVelocity();

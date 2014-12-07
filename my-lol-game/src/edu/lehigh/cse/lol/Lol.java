@@ -368,20 +368,7 @@ public abstract class Lol extends Game {
      */
     abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
 
-    /**
-     * When the player touches an entity that has a TouchCallback attached to
-     * it, this code will run
-     * 
-     * @param id
-     *            The number assigned to the entity's TouchCallback
-     * @param whichLevel
-     *            The current level
-     * @param o
-     *            The entity involved in the collision
-     */
-    abstract public void onTouchCallback(int id, int whichLevel, PhysicsSprite o);
-
-    /**
+     /**
      * When an enemy is defeated, this code will run if the enemy has an
      * EnemyDefeatCallback
      * 
