@@ -338,19 +338,4 @@ public abstract class Lol extends Game {
      * Describe how to draw the splash scene
      */
     abstract public void configureSplash();
-
-    /**
-     * When a Hero collides with an Obstacle for which a HeroCollideCallback has
-     * been set, this code will run
-     * 
-     * @param id
-     *            The number assigned to the Obstacle's HeroCollideCallback
-     * @param whichLevel
-     *            The current level
-     * @param o
-     *            The obstacle involved in the collision
-     * @param h
-     *            The hero involved in the collision
-     */
-    abstract public void onHeroCollideCallback(int id, int whichLevel, Obstacle o, Hero h);
 }

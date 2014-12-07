@@ -2557,9 +2557,57 @@ public class MyLolGame extends Lol {
             Obstacle o = Obstacle.makeAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // the callback id is 0, there is no delay, and no goodies are
-            // needed
-            // before it works
-            o.setHeroCollisionCallback(0, 0, 0, 0, 0, 0);
+            // needed before it works
+            o.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // get rid of the obstacle we just collided with
+                    attachedSprite.remove(false);
+                    // make a goodie
+                    Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
+                    // make an obstacle that is a callback, but that doesn't
+                    // work until the goodie count is 1
+                    Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
+
+                    // we're going to chain a bunch of callbacks together, and
+                    // the best way to do that is to make a single callback that
+                    // behaves differently based on the value of the callback's
+                    // intVal field.
+                    SimpleCallback sc2 = new SimpleCallback() {
+                        @Override
+                        public void onEvent() {
+                            // The second callback works the same way
+                            if (intVal == 0) {
+                                attachedSprite.remove(false);
+                                Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
+
+                                Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
+                                oo.setHeroCollisionCallback(2, 0, 0, 0, 0, this);
+                                intVal = 1;
+                            }
+                            // same for the third callback
+                            else if (intVal == 1) {
+                                attachedSprite.remove(false);
+                                Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
+
+                                Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
+                                oo.setHeroCollisionCallback(3, 0, 0, 0, 0, this);
+                                intVal = 2;
+                            }
+                            // The fourth callback draws the destination
+                            else if (intVal == 2) {
+                                attachedSprite.remove(false);
+                                // print a message and pause the game, via
+                                // PauseScene
+                                PauseScene.addText("The destination is\nnow available", 255, 255, 255, "arial.ttf", 32);
+                                Destination.makeAsCircle(120, 20, 2, 2, "mustardball.png");
+                            }
+
+                        }
+                    };
+                    oo.setHeroCollisionCallback(1, 0, 0, 0, 0, sc2);
+                }
+            });
             o.setDisappearSound("hipitch.ogg");
         }
 
@@ -2719,7 +2767,23 @@ public class MyLolGame extends Lol {
             // onHeroCollideCallback for details
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionCallback(0, 0, 0, 0, 0, 1);
+            o.setHeroCollisionCallback(0, 0, 0, 0, 1, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // here's a simple way to increment a goodie count
+                    Score.incrementGoodiesCollected2();
+                    // here's a way to set a goodie count
+                    Score.setGoodiesCollected3(3);
+                    // here's a way to read and write a goodie count
+                    Score.setGoodiesCollected1(4 + Score.getGoodiesCollected1());
+                    // get rid of the star, so we know it's been used
+                    attachedSprite.remove(true);
+                    // resize the hero, and change its image
+                    collideSprite.resize(collideSprite.getXPosition(), collideSprite.getYPosition(), 5, 5);
+                    collideSprite.setImage("stars.png", 0);
+
+                }
+            });
         }
 
         /*
@@ -3005,7 +3069,14 @@ public class MyLolGame extends Lol {
             // When the hero collides with this obstacle, we'll increase the
             // time remaining. See onHeroCollideCallback()
             Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
-            o.setHeroCollisionCallback(0, 1, 1, 1, 0, 0);
+            o.setHeroCollisionCallback(1, 1, 1, 0, 0, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // add 15 seconds to the timer
+                    Score.updateTimerExpiration(15);
+                    attachedSprite.remove(true);
+                }
+            });
         }
 
         /*
@@ -3120,7 +3191,12 @@ public class MyLolGame extends Lol {
             platform.setOneSided(2);
             // Set a callback, then re-enable the platform's collision effect.
             // Be sure to check onHeroCollideCallback
-            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, 0);
+            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    collideSprite.setAbsoluteVelocity(collideSprite.getXVelocity(), 5, false);
+                }
+            });
             platform.setCollisionEffect(true);
 
             // make the z index of the platform -1, so that the hero (index 0)
@@ -3609,96 +3685,6 @@ public class MyLolGame extends Lol {
             HelpLevel.configure(255, 255, 0);
             HelpLevel.drawText(100, 150, "Be sure to read the MyLolGame.java code\n"
                     + "while you play, so you can see\n" + "how everything works", 55, 110, 165, "arial.ttf", 14);
-        }
-    }
-
-    /**
-     * If a game uses Obstacles that are callbacks, it must provide this to
-     * specify what to do when such an obstacle is hit by a hero. The idea
-     * behind this mechanism is that it allows the creation of more things in
-     * the game, but only after the game has reached a particular state. The
-     * most obvious example is 'infinite' levels. There, it is impossible to
-     * draw the entire scene, so instead one can place an invisible, full-length
-     * CallbackObstacle at some point in the scene, and then when that obstacle
-     * is hit, this code will run.
-     * 
-     * @param id
-     *            The ID of the obstacle that was hit by the hero
-     * @param whichLevel
-     *            The current level
-     * @param obstacle
-     *            The obstacle that the hero just collided with
-     * @param hero
-     *            The hero who collided with the obstacle
-     */
-    @Override
-    public void onHeroCollideCallback(int id, int whichLevel, Obstacle obstacle, Hero hero) {
-        // Code to run on level 63 for hero/obstacle collisions:
-        if (whichLevel == 63) {
-            // the first callback just causes us to make a new obstacle a little
-            // farther out
-            if (id == 0) {
-                // get rid of the obstacle we just collided with
-                obstacle.remove(false);
-                // make a goodie
-                Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
-                // make an obstacle that is a callback, but that doesn't work
-                // until the goodie count is 1
-                Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionCallback(1, 1, 0, 0, 0, 0);
-            }
-            // The second callback works the same way
-            else if (id == 1) {
-                obstacle.remove(false);
-                Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
-
-                Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionCallback(2, 2, 0, 0, 0, 0);
-            }
-            // same for the third callback
-            else if (id == 2) {
-                obstacle.remove(false);
-                Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
-
-                Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
-                oo.setHeroCollisionCallback(3, 3, 0, 0, 0, 0);
-            }
-            // The fourth callback draws the destination
-            else if (id == 3) {
-                obstacle.remove(false);
-                // print a message and pause the game, via PauseScene
-                PauseScene.addText("The destination is\nnow available", 255, 255, 255, "arial.ttf", 32);
-                Destination.makeAsCircle(120, 20, 2, 2, "mustardball.png");
-            }
-        }
-        // in level 66, we use obstacle/hero collisions to change the goodie
-        // count, and change the hero appearance
-        else if (whichLevel == 66) {
-            // here's a simple way to increment a goodie count
-            Score.incrementGoodiesCollected2();
-            // here's a way to set a goodie count
-            Score.setGoodiesCollected3(3);
-            // here's a way to read and write a goodie count
-            Score.setGoodiesCollected1(4 + Score.getGoodiesCollected1());
-            // get rid of the star, so we know it's been used
-            obstacle.remove(true);
-            // resize the hero, and change its image
-            hero.resize(hero.getXPosition(), hero.getYPosition(), 5, 5);
-            hero.setImage("stars.png", 0);
-        }
-        // on level 74, we use a collision as an excuse to add more time before
-        // time's up.
-        else if (whichLevel == 74) {
-            // add 15 seconds to the timer
-            Score.updateTimerExpiration(15);
-            obstacle.remove(true);
-        }
-        // on level 78, we make the hero jump by giving it an upward velocity.
-        // Note that the obstacle is one-sided, so this will only run when the
-        // hero comes down onto the platform, not when he goes up through it.
-        else if (whichLevel == 78) {
-            hero.setAbsoluteVelocity(hero.getXVelocity(), 5, false);
-            return;
         }
     }
 

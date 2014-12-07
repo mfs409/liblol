@@ -277,8 +277,6 @@ public class Obstacle extends PhysicsSprite {
      * Make the object a callback object, so that custom code will run when a
      * hero collides with it
      * 
-     * @param id
-     *            identifier for the callback
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
      *            callback works
@@ -294,9 +292,11 @@ public class Obstacle extends PhysicsSprite {
      * @param delay
      *            The time between when the collision happens, and when the
      *            callback code runs. Use 0 for immediately
+     * @param sc
+     *            The code to run when the collision happens
      */
-    public void setHeroCollisionCallback(final int id, int activationGoodies1, int activationGoodies2,
-            int activationGoodies3, int activationGoodies4, final float delay) {
+    public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
+            int activationGoodies4, final float delay, final SimpleCallback sc) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
         setCollisionEffect(false);
@@ -315,15 +315,19 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            Lol.sGame.onHeroCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
-                            return;
+                            sc.attachedSprite = Obstacle.this;
+                            sc.collideSprite = ps;
+                            sc.onEvent();
+                        } else {
+                            Timer.schedule(new Task() {
+                                @Override
+                                public void run() {
+                                    sc.attachedSprite = Obstacle.this;
+                                    sc.collideSprite = ps;
+                                    sc.onEvent();
+                                }
+                            }, delay);
                         }
-                        Timer.schedule(new Task() {
-                            @Override
-                            public void run() {
-                                Lol.sGame.onHeroCollideCallback(id, Lol.sGame.mCurrLevelNum, Obstacle.this, (Hero) ps);
-                            }
-                        }, delay);
                     }
                 }
             }
