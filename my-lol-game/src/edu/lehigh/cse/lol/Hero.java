@@ -122,6 +122,11 @@ public class Hero extends PhysicsSprite {
     private boolean mMustSurvive;
 
     /**
+     * Code to run when the hero's strength changes
+     */
+    private SimpleCallback mStrengthChangeCallback;
+
+    /**
      * Construct a Hero by creating a PhysicsSprite and incrementing the number
      * of heroes created. This code should never be called directly by the game
      * designer.
@@ -347,7 +352,8 @@ public class Hero extends PhysicsSprite {
      */
     private void addStrength(int amount) {
         mStrength += amount;
-        Lol.sGame.onStrengthChangeCallback(Lol.sGame.mCurrLevelNum, this);
+        if (mStrengthChangeCallback != null)
+            mStrengthChangeCallback.onEvent();
     }
 
     /**
@@ -609,5 +615,16 @@ public class Hero extends PhysicsSprite {
      */
     public void setMustSurvive() {
         mMustSurvive = true;
+    }
+
+    /**
+     * Provide code to run when the hero's strength changes
+     * 
+     * @param sc
+     *            The code to run.
+     */
+    public void setStrengthChangeCallback(SimpleCallback sc) {
+        sc.attachedSprite = this;
+        mStrengthChangeCallback = sc;
     }
 }

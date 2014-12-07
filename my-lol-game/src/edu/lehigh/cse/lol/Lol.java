@@ -423,25 +423,4 @@ public abstract class Lol extends Game {
      *            The projectile involved in the collision
      */
     abstract public void onProjectileCollideCallback(int id, int whichLevel, Obstacle o, Projectile p);
-
-    /**
-     * When a level finishes, this code will run
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param win
-     *            True if the level was won, false otherwise
-     */
-    abstract public void onLevelCompleteCallback(int whichLevel, boolean win);
-
-    /**
-     * When a hero collides with a goodie or enemy, and it leads to the hero's
-     * strength changing, we can opt to run this code.
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param h
-     *            The hero whose strength just changed
-     */
-    abstract public void onStrengthChangeCallback(int whichLevel, Hero h);
 }

@@ -225,7 +225,10 @@ public class Score {
                     mGameOver = true;
 
                     // Run the level-complete callback
-                    Lol.sGame.onLevelCompleteCallback(Lol.sGame.mCurrLevelNum, win);
+                    if (win && Level.sCurrent.mWinCallback != null)
+                        Level.sCurrent.mWinCallback.onEvent();
+                    else if (!win && Level.sCurrent.mLoseCallback != null)
+                        Level.sCurrent.mLoseCallback.onEvent();
 
                     // if we won, unlock the next level
                     if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)

@@ -1217,12 +1217,23 @@ public class MyLolGame extends Lol {
             // Add a meter to show how far the hero has traveled
             Displays.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 0, 255, 16, h);
 
-            // Add some text about the previous best score. If you look in the
-            // onLevelCompleteCallback() code (far below in this file), you'll
-            // see that when this level ends, we save the best score. Once the
+            // Add some text about the previous best score.
+            Util.drawText(30, 30, "best: " + Score.readPersistent("HighScore32", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
+
+            // when this level ends, we save the best score. Once the
             // score is saved, it is saved permanently on the phone, though
-            // every re-execution on the desktop resets the best score.
-            Util.drawText(30, 30, "best: " + Score.readPersistent("HighScore", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
+            // every re-execution on the desktop resets the best score. Note
+            // that we save the score whether we win or lose.
+            SimpleCallback sc = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    int oldBest = Score.readPersistent("HighScore32", 0);
+                    if (oldBest < Score.getDistance())
+                        Score.savePersistent("HighScore32", Score.getDistance());
+                }
+            };
+            Level.setWinCallback(sc);
+            Level.setLoseCallback(sc);
         }
 
         /*
@@ -2144,8 +2155,20 @@ public class MyLolGame extends Lol {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            // Be sure to look at onStrengthChangeCallback. As the hero's
-            // strength moves up and down, its image will change.
+            // provide some code to run when the hero's strength changes
+            h.setStrengthChangeCallback(new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // get the hero's strength. Since the hero isn't dead, the
+                    // strength is at least 1. Since there are 7 strength
+                    // booster goodies, the strength is at most 8.
+                    int s = ((Hero) attachedSprite).getStrength();
+                    // set the hero's image index to (s-1), i.e., one of the
+                    // indices in the range 0..7, depending on strength
+                    attachedSprite.setImage("colorstar.png", s - 1);
+
+                }
+            });
         }
 
         /*
@@ -3307,24 +3330,30 @@ public class MyLolGame extends Lol {
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
-            SimpleCallback rotatorSC = new SimpleCallback(){@Override public void onEvent(){
-                // rotator... save the rotation and rotate the hero
-                attachedSprite.setRotation(floatVal * (float) Math.PI / 180);
-                // multiply float val by 100 to preserve some decimal places
-                Facts.putLevelFact("rotation", (int) (100 * floatVal));
-            }};
+            SimpleCallback rotatorSC = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // rotator... save the rotation and rotate the hero
+                    attachedSprite.setRotation(floatVal * (float) Math.PI / 180);
+                    // multiply float val by 100 to preserve some decimal places
+                    Facts.putLevelFact("rotation", (int) (100 * floatVal));
+                }
+            };
             rotatorSC.attachedSprite = h;
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, rotatorSC);
-            SimpleCallback barSC = new SimpleCallback(){@Override public void onEvent(){
-                // vertical bar... make the entity move
-                int rotation = Facts.getLevelFact("rotation") / 100;
-                // create a unit vector
-                Vector2 v = new Vector2(1, 0);
-                v.scl(floatVal);
-                v.rotate(rotation + 90);
-                attachedSprite.setDamping(2f);
-                attachedSprite.setAbsoluteVelocity(v.x, v.y, false);
-            }};
+            SimpleCallback barSC = new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    // vertical bar... make the entity move
+                    int rotation = Facts.getLevelFact("rotation") / 100;
+                    // create a unit vector
+                    Vector2 v = new Vector2(1, 0);
+                    v.scl(floatVal);
+                    v.rotate(rotation + 90);
+                    attachedSprite.setDamping(2f);
+                    attachedSprite.setAbsoluteVelocity(v.x, v.y, false);
+                }
+            };
             barSC.attachedSprite = h;
             Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", barSC);
         }
@@ -3375,8 +3404,18 @@ public class MyLolGame extends Lol {
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("red.png", 0, 600, 40, 40);
-            PauseScene.addCallbackButton(10, 10, 20, 20, new SimpleCallback(){@Override public void onEvent(){Score.winLevel();}});
-            PauseScene.addCallbackButton(190, 190, 20, 20, new SimpleCallback(){@Override public void onEvent(){Score.loseLevel();}});
+            PauseScene.addCallbackButton(10, 10, 20, 20, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Score.winLevel();
+                }
+            });
+            PauseScene.addCallbackButton(190, 190, 20, 20, new SimpleCallback() {
+                @Override
+                public void onEvent() {
+                    Score.loseLevel();
+                }
+            });
             PauseScene.suppressClearClick();
             Controls.addPauseButton(0, 300, 20, 20, "red.png");
         }
@@ -3736,50 +3775,6 @@ public class MyLolGame extends Lol {
                 // projectile disappear sound.
                 projectile.remove(true);
             }
-        }
-    }
-
-    /**
-     * If you want to do something when the level ends (like record a high
-     * score), you will need to override this method
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param win
-     *            true if the level was won, false otherwise
-     */
-    @Override
-    public void onLevelCompleteCallback(int whichLevel, boolean win) {
-        // if we are on level 32, see if this is the farthest the hero has ever
-        // traveled, and if so, update the persistent score
-        if (whichLevel == 32) {
-            int oldBest = Score.readPersistent("HighScore", 0);
-            if (oldBest < Score.getDistance()) {
-                Score.savePersistent("HighScore", Score.getDistance());
-            }
-        }
-    }
-
-    /**
-     * Whenever a hero's strength changes due to a collision with a goodie or
-     * enemy, this is called. The most common use is to change the hero's
-     * appearance.
-     * 
-     * @param whichLevel
-     *            The current level
-     * @param h
-     *            The hero involved in the collision
-     */
-    @Override
-    public void onStrengthChangeCallback(int whichLevel, Hero h) {
-        if (whichLevel == 55) {
-            // get the hero's strength. Since the hero isn't dead, the strength
-            // is at least 1. Since there are 7 strength booster goodies, the
-            // strength is at most 8.
-            int s = h.getStrength();
-            // set the hero's image index to (s-1), i.e., one of the indices in
-            // the range 0..7, depending on strength
-            h.setImage("colorstar.png", s - 1);
         }
     }
 

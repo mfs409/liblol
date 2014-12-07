@@ -670,6 +670,16 @@ public class Level extends ScreenAdapter {
     ProjectilePool mProjectilePool;
 
     /**
+     * Code to run when a level is won
+     */
+    SimpleCallback mWinCallback;
+
+    /**
+     * Code to run when a level is lost
+     */
+    SimpleCallback mLoseCallback;
+
+    /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
      * 
@@ -1152,5 +1162,25 @@ public class Level extends ScreenAdapter {
     public static void setZoom(float zoom) {
         Level.sCurrent.mGameCam.zoom = zoom;
         Level.sCurrent.mBgCam.zoom = zoom;
+    }
+
+    /**
+     * Register a callback so that custom code will run when the level is won
+     * 
+     * @param sc
+     *            The code to run
+     */
+    public static void setWinCallback(SimpleCallback sc) {
+        Level.sCurrent.mWinCallback = sc;
+    }
+
+    /**
+     * Register a callback so that custom code will run when the level is lost
+     * 
+     * @param sc
+     *            The code to run
+     */
+    public static void setLoseCallback(SimpleCallback sc) {
+        Level.sCurrent.mLoseCallback = sc;
     }
 }
