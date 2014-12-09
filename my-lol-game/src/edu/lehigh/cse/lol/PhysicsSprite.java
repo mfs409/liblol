@@ -972,7 +972,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (!mEnabled)
                     return false;
                 Lol.sGame.vibrate(100);
-                long time = System.nanoTime();
+                long time = System.currentTimeMillis();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
                     // hide sprite, disable physics

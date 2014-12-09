@@ -1126,8 +1126,8 @@ public class Level extends ScreenAdapter {
             @Override
             public boolean onPan(final Vector3 touchLoc, float deltaX, float deltaY) {
                 // check if enough milliseconds have passed
-                long now = System.nanoTime();
-                if (now < mLastTime + interval * 1000000) {
+                long now = System.currentTimeMillis();
+                if (now < mLastTime + interval) {
                     return true;
                 }
                 mLastTime = now;

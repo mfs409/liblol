@@ -151,7 +151,7 @@ public class Util {
      * @param text
      *            The message text
      */
-    public static void message(String tag, String text) {
+    static void message(String tag, String text) {
         if (Lol.sGame.mConfig.showDebugBoxes())
             Gdx.app.log(tag, text);
     }
@@ -232,9 +232,10 @@ public class Util {
     }
 
     /**
-     * Draw some text on the current level Note: the order in which this is
-     * called relative to other entities will determine whether they go under or
-     * over this text.
+     * Draw some text on the current level
+     * 
+     * Note: the order in which this is called relative to other entities will
+     * determine whether they go under or over this text.
      * 
      * @param x
      *            X coordinate of bottom left corner of the text

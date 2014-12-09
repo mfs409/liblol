@@ -72,7 +72,7 @@ public class Physics {
         if (other.mDJoint != null)
             return;
         // don't create a joint if we're supposed to wait
-        if (System.nanoTime() < other.mStickyDelay)
+        if (System.currentTimeMillis() < other.mStickyDelay)
             return;
         // handle sticky obstacles... only do something if we're hitting the
         // obstacle from the right direction

@@ -82,7 +82,7 @@ public class PreScene {
         Level.sCurrent.mPreScene = ps;
         // pause the timer
         Timer.instance().stop();
-        ps.showingAt = System.nanoTime();
+        ps.showingAt = System.currentTimeMillis();
         return ps;
     }
 
@@ -93,7 +93,7 @@ public class PreScene {
         // resume timers only on clickToClear, because that's the only time
         // they're suspended
         if (mClickToClear) {
-            long showTime = System.nanoTime() - showingAt;
+            long showTime = System.currentTimeMillis() - showingAt;
             showTime /= 1000000;
             Timer.instance().delay(showTime);
             Timer.instance().start();

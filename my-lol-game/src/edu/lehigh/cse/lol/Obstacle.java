@@ -102,7 +102,7 @@ public class Obstacle extends PhysicsSprite {
             return;
 
         // Make sure we have waited long enough
-        long now = System.nanoTime();
+        long now = System.currentTimeMillis();
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;

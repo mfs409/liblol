@@ -27,7 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.Hashtable;
+
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -47,22 +48,22 @@ public class Media {
     /**
      * Store the fonts used by this game
      */
-    static private final Hashtable<String, BitmapFont> sFonts = new Hashtable<String, BitmapFont>();
+    static private final TreeMap<String, BitmapFont> sFonts = new TreeMap<String, BitmapFont>();
 
     /**
      * Store the sounds used by this game
      */
-    static private final Hashtable<String, Sound> sSounds = new Hashtable<String, Sound>();
+    static private final TreeMap<String, Sound> sSounds = new TreeMap<String, Sound>();
 
     /**
      * Store the music used by this game
      */
-    static private final Hashtable<String, Music> sTunes = new Hashtable<String, Music>();
+    static private final TreeMap<String, Music> sTunes = new TreeMap<String, Music>();
 
     /**
      * Store the images used by this game
      */
-    static private final Hashtable<String, TextureRegion[]> sImages = new Hashtable<String, TextureRegion[]>();
+    static private final TreeMap<String, TextureRegion[]> sImages = new TreeMap<String, TextureRegion[]>();
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are

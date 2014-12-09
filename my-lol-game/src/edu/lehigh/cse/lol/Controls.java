@@ -577,8 +577,8 @@ public class Controls {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
-                    long now = System.nanoTime();
-                    if (mLastThrow + milliDelay * 1000000 < now) {
+                    long now = System.currentTimeMillis();
+                    if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
                         Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                     }
@@ -703,8 +703,8 @@ public class Controls {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
-                    long now = System.nanoTime();
-                    if (mLastThrow + milliDelay * 1000000 < now) {
+                    long now = System.currentTimeMillis();
+                    if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
                         Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, v.x,
                                 v.y, h, offsetX, offsetY);

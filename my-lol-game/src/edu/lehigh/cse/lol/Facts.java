@@ -27,7 +27,7 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.Hashtable;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -44,17 +44,17 @@ public class Facts {
     /**
      * Store string/integer pairs that get reset at the end of every level
      */
-    private static final Hashtable<String, Integer> mLevelFacts = new Hashtable<String, Integer>();
+    private static final TreeMap<String, Integer> mLevelFacts = new TreeMap<String, Integer>();
 
     /**
      * Store string/integer pairs that get reset whenever we restart the program
      */
-    private static final Hashtable<String, Integer> mSessionFacts = new Hashtable<String, Integer>();
+    private static final TreeMap<String, Integer> mSessionFacts = new TreeMap<String, Integer>();
 
     /**
      * Store PhysicsSprites, so that we can get to them in callbacks
      */
-    private static final Hashtable<String, PhysicsSprite> mLevelEntities = new Hashtable<String, PhysicsSprite>();
+    private static final TreeMap<String, PhysicsSprite> mLevelEntities = new TreeMap<String, PhysicsSprite>();
 
     /**
      * Reset all per-level facts

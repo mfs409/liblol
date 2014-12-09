@@ -193,7 +193,7 @@ public class Hero extends PhysicsSprite {
         if (mJumpSound != null)
             mJumpSound.play(Facts.getGameFact("volume"));
         // break any sticky joints, so the hero can actually move
-        mStickyDelay = System.nanoTime() + 10000000;
+        mStickyDelay = System.currentTimeMillis() + 10;
     }
 
     /**

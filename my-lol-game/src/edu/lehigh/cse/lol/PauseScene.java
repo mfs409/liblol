@@ -154,8 +154,7 @@ public class PauseScene {
     void dismiss() {
         // otherwise, just clear the pauseScene (be sure to resume timers)
         mVisible = false;
-        long showTime = System.nanoTime() - showingAt;
-        showTime /= 1000000;
+        long showTime = System.currentTimeMillis() - showingAt;
         Timer.instance().delay(showTime);
         Timer.instance().start();
     }
@@ -291,7 +290,7 @@ public class PauseScene {
     public static void show() {
         Timer.instance().stop();
         getCurrPauseScene().mVisible = true;
-        getCurrPauseScene().showingAt = System.nanoTime();
+        getCurrPauseScene().showingAt = System.currentTimeMillis();
     }
 
     /**
