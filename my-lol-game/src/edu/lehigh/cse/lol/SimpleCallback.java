@@ -35,34 +35,27 @@ package edu.lehigh.cse.lol;
  * In the interest of simplicity, we use some public fields instead of getters
  * and setters. This also lets us get away with using the default constructor.
  */
-public class SimpleCallback implements Cloneable {
+public abstract class SimpleCallback implements Cloneable {
     /**
      * An integer that may be of use during the callback
      */
-    public int intVal;
+    public int mIntVal;
 
     /**
      * A float that may be of use during the callback
      */
-    public float floatVal;
+    public float mFloatVal;
 
     /**
      * For collision events or entity press events, this is the entity to which
-     * the callback is attacheed
+     * the callback is attached
      */
-    public PhysicsSprite attachedSprite;
+    public Actor mAttachedActor;
 
     /**
      * For collision events, this is the other entity involved in the collision
      */
-    public PhysicsSprite collideSprite;
-
-    /**
-     * This code will run in response to the event for which the callback is
-     * registered
-     */
-    public void onEvent() {
-    }
+    public Actor mCollideActor;
 
     /**
      * Make a copy of the current SimpleCallback
@@ -80,10 +73,16 @@ public class SimpleCallback implements Cloneable {
             e.printStackTrace();
             return null;
         }
-        sc.intVal = this.intVal;
-        sc.floatVal = this.floatVal;
-        sc.attachedSprite = this.attachedSprite;
-        sc.collideSprite = this.collideSprite;
+        sc.mIntVal = this.mIntVal;
+        sc.mFloatVal = this.mFloatVal;
+        sc.mAttachedActor = this.mAttachedActor;
+        sc.mCollideActor = this.mCollideActor;
         return sc;
     }
+
+    /**
+     * This code will run in response to the event for which the callback is
+     * registered
+     */
+    abstract public void onEvent();
 }

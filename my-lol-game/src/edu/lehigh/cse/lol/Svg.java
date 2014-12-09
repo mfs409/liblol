@@ -119,13 +119,13 @@ public class Svg {
      * collisions with the SVG won't enable it to re-jump. This class is a very
      * lightweight PhysicsSprite that serves our need.
      */
-    class SVGSprite extends PhysicsSprite {
+    class SVGSprite extends Actor {
         SVGSprite(String imgName, float width, float height) {
             super(imgName, width, height);
         }
 
         @Override
-        void onCollide(PhysicsSprite other, Contact contact) {
+        void onCollide(Actor other, Contact contact) {
         }
     }
 

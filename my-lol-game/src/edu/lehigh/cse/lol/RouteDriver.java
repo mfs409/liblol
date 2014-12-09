@@ -43,7 +43,7 @@ class RouteDriver {
     /**
      * The entity to which the route is being applied
      */
-    private final PhysicsSprite mEntity;
+    private final Actor mEntity;
 
     /**
      * The speed at which the entity moves along the route
@@ -82,7 +82,7 @@ class RouteDriver {
      * @param entity
      *            The entity to which the route should be applied
      */
-    RouteDriver(Route route, float velocity, boolean loop, PhysicsSprite entity) {
+    RouteDriver(Route route, float velocity, boolean loop, Actor entity) {
         mRoute = route;
         mRouteVelocity = velocity;
         mRouteLoop = loop;

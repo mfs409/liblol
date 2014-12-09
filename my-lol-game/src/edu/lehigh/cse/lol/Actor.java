@@ -57,7 +57,7 @@ import edu.lehigh.cse.lol.Level.GestureAction;
 /**
  * PhysicsSprite is the base class upon which every game entity is built
  */
-public abstract class PhysicsSprite implements Lol.Renderable {
+public abstract class Actor implements Lol.Renderable {
     /**
      * When a PhysicsSprite collides with another PhysicsSprite, and that
      * collision is intended to cause some custom code to run, we use this
@@ -74,7 +74,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
          * @param c
          *            A description of the contact, in case it is useful
          */
-        void go(final PhysicsSprite ps, Contact c);
+        void go(final Actor ps, Contact c);
     }
 
     /**
@@ -262,7 +262,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * If this PhysicsSprite is chasing another PhysicsSprite, we track who is
      * being chased via this field
      */
-    PhysicsSprite mChaseTarget;
+    Actor mChaseTarget;
 
     /**
      * Create a new PhysicsSprite that does not yet have physics, but that has a
@@ -277,7 +277,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param height
      *            The height
      */
-    PhysicsSprite(String imgName, float width, float height) {
+    Actor(String imgName, float width, float height) {
         mAnimator = new AnimationDriver(imgName);
         mSize.x = width;
         mSize.y = height;
@@ -290,7 +290,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param other
      *            The other entity involved in the collision
      */
-    abstract void onCollide(PhysicsSprite other, Contact contact);
+    abstract void onCollide(Actor other, Contact contact);
 
     /**
      * Internal method for updating an entity's velocity, so that we can handle
@@ -836,7 +836,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    sc.attachedSprite = PhysicsSprite.this;
+                    sc.mAttachedActor = Actor.this;
                     sc.onEvent();
                 }
                 return true;
@@ -860,7 +860,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    sc.attachedSprite = PhysicsSprite.this;
+                    sc.mAttachedActor = Actor.this;
                     sc.onEvent();
                     moving = false;
                 }
@@ -1022,7 +1022,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
         Level.sCurrent.mGestureResponders.add(new GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
-                if (Level.sCurrent.mHitSprite == PhysicsSprite.this) {
+                if (Level.sCurrent.mHitSprite == Actor.this) {
                     mHover = null;
                     updateVelocity((touchVec.x) * dampFactor, (touchVec.y) * dampFactor);
                 }
@@ -1468,7 +1468,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param chaseInY
      *            Should the entity change its y velocity?
      */
-    public void setChaseSpeed(final float speed, final PhysicsSprite target, final boolean chaseInX,
+    public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX,
             final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
@@ -1523,7 +1523,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            False if we should apply yMagnitude, true if we should keep
      *            the hero's existing Y velocity
      */
-    public void setChaseFixedMagnitude(final PhysicsSprite target, final float xMagnitude, final float yMagnitude,
+    public void setChaseFixedMagnitude(final Actor target, final float xMagnitude, final float yMagnitude,
             final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
@@ -1552,7 +1552,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * 
      * @return The entity being chased
      */
-    public PhysicsSprite getChaseEntity() {
+    public Actor getChaseEntity() {
         return mChaseTarget;
     }
 
@@ -1607,7 +1607,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The Y coordinate (relative to the center of the entity) where
      *            the joint fuses to this entity
      */
-    public void setRevoluteJoint(PhysicsSprite anchor, float anchorX, float anchorY, float localAnchorX,
+    public void setRevoluteJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX,
             float localAnchorY) {
         // make the body dynamic
         setCanFall();
@@ -1682,7 +1682,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      * @param angle
      *            The angle between the entities
      */
-    public void setWeldJoint(PhysicsSprite other, float otherX, float otherY, float localX, float localY, float angle) {
+    public void setWeldJoint(Actor other, float otherX, float otherY, float localX, float localY, float angle) {
         WeldJointDef w = new WeldJointDef();
         w.bodyA = mBody;
         w.bodyB = other.mBody;
@@ -1711,7 +1711,7 @@ public abstract class PhysicsSprite implements Lol.Renderable {
      *            The Y coordinate (relative to the center of the entity) where
      *            the joint fuses to this entity
      */
-    public void setDistanceJoint(PhysicsSprite anchor, float anchorX, float anchorY, float localAnchorX,
+    public void setDistanceJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX,
             float localAnchorY) {
         // make the body dynamic
         setCanFall();

@@ -608,7 +608,7 @@ public class Level extends ScreenAdapter {
     /**
      * This is the sprite that the camera chases
      */
-    PhysicsSprite mChaseEntity;
+    Actor mChaseEntity;
 
     /**
      * The maximum x value of the camera
@@ -645,7 +645,7 @@ public class Level extends ScreenAdapter {
      * When there is a touch of an entity in the physics world, this is how we
      * find it
      */
-    PhysicsSprite mHitSprite = null;
+    Actor mHitSprite = null;
 
     /**
      * This callback is used to get a touched entity from the physics world
@@ -744,7 +744,7 @@ public class Level extends ScreenAdapter {
                 // if the hit point is inside the fixture of the body we report
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    PhysicsSprite hs = (PhysicsSprite) fixture.getBody().getUserData();
+                    Actor hs = (Actor) fixture.getBody().getUserData();
                     if (hs.mVisible) {
                         mHitSprite = hs;
                         return false;
@@ -1020,7 +1020,7 @@ public class Level extends ScreenAdapter {
      * @param ps
      *            The entity the camera should chase
      */
-    public static void setCameraChase(PhysicsSprite ps) {
+    public static void setCameraChase(Actor ps) {
         sCurrent.mChaseEntity = ps;
     }
 

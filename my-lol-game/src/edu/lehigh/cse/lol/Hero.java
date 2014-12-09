@@ -36,7 +36,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 
 import edu.lehigh.cse.lol.Level.GestureAction;
 
-public class Hero extends PhysicsSprite {
+public class Hero extends Actor {
 
     /**
      * Strength of the hero This determines how many collisions with enemies the
@@ -261,7 +261,7 @@ public class Hero extends PhysicsSprite {
      *            A description of the contact that caused this collision
      */
     @Override
-    void onCollide(PhysicsSprite other, Contact contact) {
+    void onCollide(Actor other, Contact contact) {
         // NB: we currently ignore SpriteId.PROJECTILE
         if (other instanceof Enemy)
             onCollideWithEnemy((Enemy) other);
@@ -353,7 +353,7 @@ public class Hero extends PhysicsSprite {
     private void addStrength(int amount) {
         mStrength += amount;
         if (mStrengthChangeCallback != null) {
-            mStrengthChangeCallback.attachedSprite = this;
+            mStrengthChangeCallback.mAttachedActor = this;
             mStrengthChangeCallback.onEvent();
         }
     }
@@ -390,7 +390,7 @@ public class Hero extends PhysicsSprite {
      * @param s
      *            The svg line with which this hero collided
      */
-    private void onCollideWithSVG(PhysicsSprite s) {
+    private void onCollideWithSVG(Actor s) {
         // all we do is record that the hero is not in the air anymore, and is
         // not in a jump animation anymore
         stopJump();

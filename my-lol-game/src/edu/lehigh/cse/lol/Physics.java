@@ -67,7 +67,7 @@ public class Physics {
      * @param contact
      *            A description of the contact event
      */
-    static void handleSticky(final PhysicsSprite sticky, final PhysicsSprite other, Contact contact) {
+    static void handleSticky(final Actor sticky, final Actor other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -127,7 +127,7 @@ public class Physics {
                 // Get the bodies, make sure both are PhysicsSprites
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
+                if (!(a instanceof Actor) || !(b instanceof Actor))
                     return;
 
                 // the order is Hero, Enemy, Goodie, Projectile, Obstacle, SVG,
@@ -135,26 +135,26 @@ public class Physics {
                 //
                 // Of those, Hero, Enemy, and Projectile are the only ones with
                 // a non-empty onCollide
-                final PhysicsSprite c0;
-                final PhysicsSprite c1;
+                final Actor c0;
+                final Actor c1;
                 if (a instanceof Hero) {
-                    c0 = (PhysicsSprite) a;
-                    c1 = (PhysicsSprite) b;
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
                 } else if (b instanceof Hero) {
-                    c0 = (PhysicsSprite) b;
-                    c1 = (PhysicsSprite) a;
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
                 } else if (a instanceof Enemy) {
-                    c0 = (PhysicsSprite) a;
-                    c1 = (PhysicsSprite) b;
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
                 } else if (b instanceof Enemy) {
-                    c0 = (PhysicsSprite) b;
-                    c1 = (PhysicsSprite) a;
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
                 } else if (a instanceof Projectile) {
-                    c0 = (PhysicsSprite) a;
-                    c1 = (PhysicsSprite) b;
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
                 } else if (b instanceof Projectile) {
-                    c0 = (PhysicsSprite) b;
-                    c1 = (PhysicsSprite) a;
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
                 } else {
                     return;
                 }
@@ -190,10 +190,10 @@ public class Physics {
                 // get the bodies, make sure both are PhysicsSprites
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof PhysicsSprite) || !(b instanceof PhysicsSprite))
+                if (!(a instanceof Actor) || !(b instanceof Actor))
                     return;
-                PhysicsSprite gfoA = (PhysicsSprite) a;
-                PhysicsSprite gfoB = (PhysicsSprite) b;
+                Actor gfoA = (Actor) a;
+                Actor gfoB = (Actor) b;
 
                 // handle sticky obstacles... only do something if at least one
                 // entity is a sticky entity
@@ -213,8 +213,8 @@ public class Physics {
                 }
 
                 // is either one-sided? If not, we're done
-                PhysicsSprite onesided = null;
-                PhysicsSprite other = null;
+                Actor onesided = null;
+                Actor other = null;
                 if (gfoA.mIsOneSided > -1) {
                     onesided = gfoA;
                     other = gfoB;

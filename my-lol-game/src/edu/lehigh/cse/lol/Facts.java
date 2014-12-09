@@ -54,7 +54,7 @@ public class Facts {
     /**
      * Store PhysicsSprites, so that we can get to them in callbacks
      */
-    private static final TreeMap<String, PhysicsSprite> mLevelEntities = new TreeMap<String, PhysicsSprite>();
+    private static final TreeMap<String, Actor> mLevelEntities = new TreeMap<String, Actor>();
 
     /**
      * Reset all per-level facts
@@ -163,29 +163,29 @@ public class Facts {
      * Look up a PhysicsSprite that was stored for the current level. If no such
      * PhysicsSprite exists, null will be returned.
      * 
-     * @param entityName
+     * @param actorName
      *            The name used to store the PhysicsSprite
      * @return The last PhysicsSprite stored with this name
      */
-    public static PhysicsSprite getLevelEntity(String entityName) {
-        PhysicsSprite ps = mLevelEntities.get(entityName);
-        if (ps == null) {
-            Util.message("ERROR", "Error retreiving level fact '" + entityName + "'");
+    public static Actor getLevelActor(String actorName) {
+        Actor actor = mLevelEntities.get(actorName);
+        if (actor == null) {
+            Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
         }
-        return ps;
+        return actor;
     }
 
     /**
      * Save a PhysicsSprite from the current level. If the entityName has
      * already been used for this level, the new value will overwrite the old.
      * 
-     * @param entityName
+     * @param actorName
      *            The name for the PhysicsSprite being saved
-     * @param entity
+     * @param actor
      *            The PhysicsSprite that is the fact being saved
      */
-    public static void putLevelEntity(String entityName, PhysicsSprite entity) {
-        mLevelEntities.put(entityName, entity);
+    public static void putLevelActor(String actorName, Actor actor) {
+        mLevelEntities.put(actorName, actor);
     }
 }

@@ -41,7 +41,7 @@ import edu.lehigh.cse.lol.Level.GestureAction;
  * can require all enemies to be defeated before the level can be won. Note that
  * Enemies can move in a variety of ways
  */
-public class Enemy extends PhysicsSprite {
+public class Enemy extends Actor {
     /**
      * Amount of damage this enemy does to a hero on a collision. The default is
      * 2, so that an enemy will defeat a hero and not disappear.
@@ -113,7 +113,7 @@ public class Enemy extends PhysicsSprite {
      *            The other entity involved in the collision
      */
     @Override
-    void onCollide(PhysicsSprite other, Contact contact) {
+    void onCollide(Actor other, Contact contact) {
         // collision with obstacles
         if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle) other, contact);
@@ -301,8 +301,8 @@ public class Enemy extends PhysicsSprite {
     public void setDefeatCallback(final SimpleCallback sc) {
         mDefeatCallback = new CollisionCallback() {
             @Override
-            public void go(PhysicsSprite ps, Contact c) {
-                sc.attachedSprite = Enemy.this;
+            public void go(Actor ps, Contact c) {
+                sc.mAttachedActor = Enemy.this;
                 sc.onEvent();
             }
         };

@@ -42,7 +42,7 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.PauseScene;
 import edu.lehigh.cse.lol.Physics;
-import edu.lehigh.cse.lol.PhysicsSprite;
+import edu.lehigh.cse.lol.Actor;
 import edu.lehigh.cse.lol.PostScene;
 import edu.lehigh.cse.lol.PreScene;
 import edu.lehigh.cse.lol.ProjectilePool;
@@ -1126,7 +1126,6 @@ public class GameLevels {
             // every re-execution on the desktop resets the best score. Note
             // that we save the score whether we win or lose.
             SimpleCallback sc = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     int oldBest = Score.readPersistent("HighScore32", 0);
                     if (oldBest < Score.getDistance())
@@ -1657,7 +1656,7 @@ public class GameLevels {
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
             // callback code.
-            o.setProjectileCollisionCallback(0, 0, 0, 0, new SimpleCallback());
+            o.setProjectileCollisionCallback(0, 0, 0, 0, new SimpleCallback(){public void onEvent(){}});
         }
 
         /*
@@ -1707,29 +1706,28 @@ public class GameLevels {
             // which is a way of keeping track of the entity (in this case, an
             // enemy) with which the callback is associated.
             SimpleCallback sc = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // only reproduce the enemy if it is visible
-                    if (attachedSprite.getVisible()) {
+                    if (mAttachedActor.getVisible()) {
                         // make an enemy to the left of and above attachedSprite
-                        Enemy left = Enemy.makeAsCircle(attachedSprite.getXPosition() - 2 * intVal,
-                                attachedSprite.getYPosition() + 2 * intVal, attachedSprite.getWidth(),
-                                attachedSprite.getHeight(), "redball.png");
+                        Enemy left = Enemy.makeAsCircle(mAttachedActor.getXPosition() - 2 * mIntVal,
+                                mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
+                                mAttachedActor.getHeight(), "redball.png");
                         left.setDisappearSound("lowpitch.ogg");
 
                         // make an enemy to the right of and above
                         // attachedSprite
-                        Enemy right = Enemy.makeAsCircle(attachedSprite.getXPosition() + 2 * intVal,
-                                attachedSprite.getYPosition() + 2 * intVal, attachedSprite.getWidth(),
-                                attachedSprite.getHeight(), "redball.png");
+                        Enemy right = Enemy.makeAsCircle(mAttachedActor.getXPosition() + 2 * mIntVal,
+                                mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
+                                mAttachedActor.getHeight(), "redball.png");
                         right.setDisappearSound("lowpitch.ogg");
 
                         // if there are reproductions left, then have
                         // attachedSprite and its two new children all reproduce
                         // in 2 seconds
-                        if (intVal > 0) {
+                        if (mIntVal > 0) {
                             // first, do the parent
-                            intVal--;
+                            mIntVal--;
                             // on the next line, 'this' refers to the
                             // SimpleCallback object
                             Level.setTimerCallback(2, this);
@@ -1738,17 +1736,17 @@ public class GameLevels {
                             // and then just change the attachedSprite, so that
                             // we don't have to re-write this code.
                             SimpleCallback l = this.clone();
-                            l.attachedSprite = left;
+                            l.mAttachedActor = left;
                             Level.setTimerCallback(2, l);
                             SimpleCallback r = this.clone();
-                            r.attachedSprite = right;
+                            r.mAttachedActor = right;
                             Level.setTimerCallback(2, r);
                         }
                     }
                 }
             };
-            sc.intVal = 2;
-            sc.attachedSprite = e;
+            sc.mIntVal = 2;
+            sc.mAttachedActor = e;
 
             // request that in 2 seconds, if the enemy is still visible,
             // onTimerCallback() will run, with id == 2. Be sure to look at
@@ -1791,25 +1789,24 @@ public class GameLevels {
             // in this level! Again, be sure to look at onEnemyTimerCallback()
             // below.
             SimpleCallback sc = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // Make the new enemy
-                    Enemy e2 = Enemy.makeAsCircle(attachedSprite.getXPosition(), attachedSprite.getYPosition(),
-                            attachedSprite.getWidth(), attachedSprite.getHeight(), "redball.png");
+                    Enemy e2 = Enemy.makeAsCircle(mAttachedActor.getXPosition(), mAttachedActor.getYPosition(),
+                            mAttachedActor.getWidth(), mAttachedActor.getHeight(), "redball.png");
                     e2.setPhysics(1.0f, 0.3f, 0.6f);
                     e2.setMoveByTilting();
                     // make more enemies?
-                    if (intVal > 0) {
-                        intVal--;
+                    if (mIntVal > 0) {
+                        mIntVal--;
                         Level.setTimerCallback(2, this);
                         SimpleCallback c2 = this.clone();
-                        c2.attachedSprite = e2;
+                        c2.mAttachedActor = e2;
                         Level.setTimerCallback(2, c2);
                     }
                 }
             };
-            sc.attachedSprite = e;
-            sc.intVal = 6;
+            sc.mAttachedActor = e;
+            sc.mIntVal = 6;
             Level.setTimerCallback(2, sc);
         }
 
@@ -2054,15 +2051,14 @@ public class GameLevels {
 
             // provide some code to run when the hero's strength changes
             h.setStrengthChangeCallback(new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // get the hero's strength. Since the hero isn't dead, the
                     // strength is at least 1. Since there are 7 strength
                     // booster goodies, the strength is at most 8.
-                    int s = ((Hero) attachedSprite).getStrength();
+                    int s = ((Hero) mAttachedActor).getStrength();
                     // set the hero's image index to (s-1), i.e., one of the
                     // indices in the range 0..7, depending on strength
-                    attachedSprite.setImage("colorstar.png", s - 1);
+                    mAttachedActor.setImage("colorstar.png", s - 1);
 
                 }
             });
@@ -2100,13 +2096,12 @@ public class GameLevels {
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
             o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // This obstacle can only defeat the big enemy, and it
                     // disappears when it defeats the enemy
-                    if (collideSprite.getInfoText() == "big") {
-                        ((Enemy) collideSprite).defeat(true);
-                        attachedSprite.remove(true);
+                    if (mCollideActor.getInfoText() == "big") {
+                        ((Enemy) mCollideActor).defeat(true);
+                        mAttachedActor.remove(true);
                     }
 
                 }
@@ -2118,9 +2113,8 @@ public class GameLevels {
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
             o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
-                @Override
                 public void onEvent() {
-                    ((Enemy) collideSprite).defeat(true);
+                    ((Enemy) mCollideActor).defeat(true);
                 }
             });
 
@@ -2355,7 +2349,6 @@ public class GameLevels {
 
             // set a timer callback. after three seconds, the callback will run
             Level.setTimerCallback(2, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // put up a pause scene to interrupt gameplay
                     PauseScene.reset();
@@ -2371,7 +2364,6 @@ public class GameLevels {
             // set another callback that runs after 6 seconds (note: time
             // doesn't count while the PauseScene is showing...)
             Level.setTimerCallback(6, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // clear the pause scene, then put new text on it
                     PauseScene.reset();
@@ -2388,7 +2380,6 @@ public class GameLevels {
             // necessary in this case, we're going to make the callback an
             // explicit object. This can be useful, as we'll see later on.
             Level.setTimerCallback(9, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // draw an enemy, a goodie, and a destination, all with
                     // fixed velocities
@@ -2410,15 +2401,14 @@ public class GameLevels {
             // Lastly, we can make a timer callback that runs over and over
             // again. This one starts after 2 seconds, then runs every second.
             Level.setTimerCallback(2, 1, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // note that every SimpleCallback has a field called
                     // "intVal" that is initially 0. By using and then modifying
                     // that field inside of the timer code, we can ensure that
                     // each execution of the timer is slightly different, even
                     // if the game state hasn't changed.
-                    Obstacle.makeAsCircle(intVal % 48, intVal / 48, 1, 1, "purpleball.png");
-                    intVal++;
+                    Obstacle.makeAsCircle(mIntVal % 48, mIntVal / 48, 1, 1, "purpleball.png");
+                    mIntVal++;
                 }
             });
         }
@@ -2456,10 +2446,9 @@ public class GameLevels {
             // the callback id is 0, there is no delay, and no goodies are
             // needed before it works
             o.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // get rid of the obstacle we just collided with
-                    attachedSprite.remove(false);
+                    mAttachedActor.remove(false);
                     // make a goodie
                     Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
                     // make an obstacle that is a callback, but that doesn't
@@ -2471,29 +2460,28 @@ public class GameLevels {
                     // behaves differently based on the value of the callback's
                     // intVal field.
                     SimpleCallback sc2 = new SimpleCallback() {
-                        @Override
                         public void onEvent() {
                             // The second callback works the same way
-                            if (intVal == 0) {
-                                attachedSprite.remove(false);
+                            if (mIntVal == 0) {
+                                mAttachedActor.remove(false);
                                 Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
 
                                 Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(2, 0, 0, 0, 0, this);
-                                intVal = 1;
+                                mIntVal = 1;
                             }
                             // same for the third callback
-                            else if (intVal == 1) {
-                                attachedSprite.remove(false);
+                            else if (mIntVal == 1) {
+                                mAttachedActor.remove(false);
                                 Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
 
                                 Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(3, 0, 0, 0, 0, this);
-                                intVal = 2;
+                                mIntVal = 2;
                             }
                             // The fourth callback draws the destination
-                            else if (intVal == 2) {
-                                attachedSprite.remove(false);
+                            else if (mIntVal == 2) {
+                                mAttachedActor.remove(false);
                                 // print a message and pause the game, via
                                 // PauseScene
                                 PauseScene.addText("The destination is\nnow available", 255, 255, 255, "arial.ttf", 32);
@@ -2536,12 +2524,11 @@ public class GameLevels {
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
             o.setTouchCallback(1, 0, 0, 0, true, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // note: we could draw a picture of an open chest in the
                     // obstacle's place, or even use a disappear animation whose
                     // final frame looks like an open treasure chest.
-                    attachedSprite.remove(false);
+                    mAttachedActor.remove(false);
                     for (int i = 0; i < 3; ++i)
                         Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
                 }
@@ -2589,10 +2576,9 @@ public class GameLevels {
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
             o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
-                @Override
                 public void onEvent() {
-                    if (collideSprite.getInfoText() == "weak") {
-                        ((Enemy) collideSprite).defeat(true);
+                    if (mCollideActor.getInfoText() == "weak") {
+                        ((Enemy) mCollideActor).defeat(true);
                     }
                 }
             });
@@ -2601,7 +2587,6 @@ public class GameLevels {
             // all four defeat mechanisms work. Note that we attach defeat
             // callback code to each of them.
             SimpleCallback sc = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // always reset the pausescene, in case it has something on
                     // it from before...
@@ -2665,7 +2650,6 @@ public class GameLevels {
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
             o.setHeroCollisionCallback(0, 0, 0, 0, 1, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // here's a simple way to increment a goodie count
                     Score.incrementGoodiesCollected2();
@@ -2674,10 +2658,10 @@ public class GameLevels {
                     // here's a way to read and write a goodie count
                     Score.setGoodiesCollected1(4 + Score.getGoodiesCollected1());
                     // get rid of the star, so we know it's been used
-                    attachedSprite.remove(true);
+                    mAttachedActor.remove(true);
                     // resize the hero, and change its image
-                    collideSprite.resize(collideSprite.getXPosition(), collideSprite.getYPosition(), 5, 5);
-                    collideSprite.setImage("stars.png", 0);
+                    mCollideActor.resize(mCollideActor.getXPosition(), mCollideActor.getYPosition(), 5, 5);
+                    mCollideActor.setImage("stars.png", 0);
 
                 }
             });
@@ -2967,11 +2951,10 @@ public class GameLevels {
             // time remaining. See onHeroCollideCallback()
             Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
             o.setHeroCollisionCallback(1, 1, 1, 0, 0, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // add 15 seconds to the timer
                     Score.updateTimerExpiration(15);
-                    attachedSprite.remove(true);
+                    mAttachedActor.remove(true);
                 }
             });
         }
@@ -3089,9 +3072,8 @@ public class GameLevels {
             // Set a callback, then re-enable the platform's collision effect.
             // Be sure to check onHeroCollideCallback
             platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
-                @Override
                 public void onEvent() {
-                    collideSprite.setAbsoluteVelocity(collideSprite.getXVelocity(), 5, false);
+                    mCollideActor.setAbsoluteVelocity(mCollideActor.getXVelocity(), 5, false);
                 }
             });
             platform.setCollisionEffect(true);
@@ -3126,7 +3108,6 @@ public class GameLevels {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             Controls.addCallbackControl(40, 40, 40, 40, "red.png", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     PauseScene.reset();
                     PauseScene.addText("Current score " + Score.getGoodiesCollected1(), 255, 255, 255, "arial.ttf", 20);
@@ -3139,19 +3120,16 @@ public class GameLevels {
             Displays.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Displays.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Controls.addCallbackControl(40, 90, 40, 40, "red.png", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test"));
                 }
             });
             Controls.addCallbackControl(40, 140, 40, 40, "red.png", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test"));
                 }
             });
             Controls.addCallbackControl(40, 190, 40, 40, "red.png", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     Facts.putGameFact("game test", 1 + Facts.getGameFact("game test"));
                 }
@@ -3315,7 +3293,6 @@ public class GameLevels {
 
             // add a one-time callback control
             Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
                     PauseScene.show();
@@ -3342,41 +3319,38 @@ public class GameLevels {
             h.setAngularDamping(1);
             // when the hero stops, we'll run code that turns the hero red
             h.setStopCallback(new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // NB: the setStopCallback call sets the callback's
                     // attachedSprite to the hero.
-                    attachedSprite.setImage("red.png", 0);
+                    mAttachedActor.setImage("red.png", 0);
                 }
             });
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
             SimpleCallback rotatorSC = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // rotator... save the rotation and rotate the hero
-                    attachedSprite.setRotation(floatVal * (float) Math.PI / 180);
+                    mAttachedActor.setRotation(mFloatVal * (float) Math.PI / 180);
                     // multiply float val by 100 to preserve some decimal places
-                    Facts.putLevelFact("rotation", (int) (100 * floatVal));
+                    Facts.putLevelFact("rotation", (int) (100 * mFloatVal));
                 }
             };
-            rotatorSC.attachedSprite = h;
+            rotatorSC.mAttachedActor = h;
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, rotatorSC);
             SimpleCallback barSC = new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     // vertical bar... make the entity move
                     int rotation = Facts.getLevelFact("rotation") / 100;
                     // create a unit vector
                     Vector2 v = new Vector2(1, 0);
-                    v.scl(floatVal);
+                    v.scl(mFloatVal);
                     v.rotate(rotation + 90);
-                    attachedSprite.setDamping(2f);
-                    attachedSprite.setAbsoluteVelocity(v.x, v.y, false);
+                    mAttachedActor.setDamping(2f);
+                    mAttachedActor.setAbsoluteVelocity(v.x, v.y, false);
                 }
             };
-            barSC.attachedSprite = h;
+            barSC.mAttachedActor = h;
             Controls.addVerticalBar(470, 0, 10, 320, "greenball.png", barSC);
         }
 
@@ -3427,13 +3401,11 @@ public class GameLevels {
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("red.png", 0, 600, 40, 40);
             PauseScene.addCallbackButton(10, 10, 20, 20, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     Score.winLevel();
                 }
             });
             PauseScene.addCallbackButton(190, 190, 20, 20, new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     Score.loseLevel();
                 }
@@ -3487,7 +3459,7 @@ public class GameLevels {
             for (int i = 0; i < 10; ++i) {
                 Hero h = Hero.makeAsBox(4 * i + 2, 0.1f, 2, 2, "greenball.png");
                 h.setPhysics(1, 1, 5);
-                Facts.putLevelEntity("" + i, h);
+                Facts.putLevelActor("" + i, h);
             }
 
             Destination.makeAsCircle(29, 16, 2, 2, "mustardball.png");
@@ -3497,10 +3469,9 @@ public class GameLevels {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
-                @Override
                 public void onEvent() {
                     for (int i = 0; i < 10; ++i) {
-                        PhysicsSprite p = Facts.getLevelEntity("" + i);
+                        Actor p = Facts.getLevelActor("" + i);
                         p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
                     }
                 }

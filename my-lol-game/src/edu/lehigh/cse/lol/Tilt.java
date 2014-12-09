@@ -64,7 +64,7 @@ public class Tilt {
     /**
      * List of entities that change behavior based on tilt
      */
-    ArrayList<PhysicsSprite> mAccelEntities = new ArrayList<PhysicsSprite>();
+    ArrayList<Actor> mAccelEntities = new ArrayList<Actor>();
 
     /**
      * The main render loop calls this to determine what to do when there is a
@@ -131,20 +131,20 @@ public class Tilt {
             // if X is clipped to zero, set each entity's Y velocity, leave X
             // unchanged
             if (mGravityMax.x == 0) {
-                for (PhysicsSprite gfo : mAccelEntities)
+                for (Actor gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
             }
             // if Y is clipped to zero, set each entitiy's X velocity, leave Y
             // unchanged
             else if (mGravityMax.y == 0) {
-                for (PhysicsSprite gfo : mAccelEntities)
+                for (Actor gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {
-                for (PhysicsSprite gfo : mAccelEntities)
+                for (Actor gfo : mAccelEntities)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(xGravity, yGravity);
             }
@@ -152,7 +152,7 @@ public class Tilt {
         // when not in velocity mode, apply the accelerometer reading to each
         // entity as a force
         else {
-            for (PhysicsSprite gfo : mAccelEntities)
+            for (Actor gfo : mAccelEntities)
                 if (gfo.mBody.isActive())
                     gfo.mBody.applyForceToCenter(xGravity, yGravity, true);
         }

@@ -35,7 +35,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * Destinations are entities that the hero should try to reach. When a hero
  * reaches a destination, the hero disappears, and the score updates.
  */
-public class Destination extends PhysicsSprite {
+public class Destination extends Actor {
     /**
      * number of heroes who can fit at /this/ destination
      */
@@ -85,7 +85,7 @@ public class Destination extends PhysicsSprite {
      *            the other entity
      */
     @Override
-    void onCollide(PhysicsSprite other, Contact contact) {
+    void onCollide(Actor other, Contact contact) {
     }
 
     /*

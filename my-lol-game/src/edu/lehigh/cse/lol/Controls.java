@@ -209,7 +209,7 @@ public class Controls {
      *            The new Y velocity
      */
     public static Control addMoveButton(int x, int y, int width, int height, String imgName,
-            final PhysicsSprite entity, final float dx, final float dy) {
+            final Actor entity, final float dx, final float dy) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
 
@@ -275,7 +275,7 @@ public class Controls {
      *            The entity to move downward
      */
     public static Control addDownButton(int x, int y, int width, int height, String imgName, float rate,
-            PhysicsSprite entity) {
+            Actor entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, -rate);
     }
 
@@ -299,7 +299,7 @@ public class Controls {
      *            The entity to move upward
      */
     public static Control addUpButton(int x, int y, int width, int height, String imgName, float rate,
-            PhysicsSprite entity) {
+            Actor entity) {
         return addMoveButton(x, y, width, height, imgName, entity, 0, rate);
     }
 
@@ -323,7 +323,7 @@ public class Controls {
      *            The entity that should move left when the button is pressed
      */
     public static Control addLeftButton(int x, int y, int width, int height, String imgName, float rate,
-            PhysicsSprite entity) {
+            Actor entity) {
         return addMoveButton(x, y, width, height, imgName, entity, -rate, 0);
     }
 
@@ -347,7 +347,7 @@ public class Controls {
      *            The entity that should move right when the button is pressed
      */
     public static Control addRightButton(int x, int y, int width, int height, String imgName, float rate,
-            PhysicsSprite entity) {
+            Actor entity) {
         return addMoveButton(x, y, width, height, imgName, entity, rate, 0);
     }
 
@@ -380,7 +380,7 @@ public class Controls {
      *            The entity that the button controls
      */
     public static Control addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
-            final int rateDownY, final int rateUpX, final int rateUpY, final PhysicsSprite entity) {
+            final int rateDownY, final int rateUpX, final int rateUpY, final Actor entity) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -433,7 +433,7 @@ public class Controls {
      *            The entity that the button controls
      */
     public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
-            final float rateX, final float rateY, final float dampening, final PhysicsSprite entity) {
+            final float rateX, final float rateY, final float dampening, final Actor entity) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -965,7 +965,7 @@ public class Controls {
             /**
              * Use this to restore the chase entity when the Pan stops
              */
-            PhysicsSprite oldChaseEntity;
+            Actor oldChaseEntity;
 
             /**
              * Handle a pan stop event by restoring the chase entity, if there
@@ -1165,8 +1165,8 @@ public class Controls {
                     return;
 
                 // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) sc.floatVal) / 100, 1, 1, 0,
-                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) sc.floatVal) / 100, false, true);
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) sc.mFloatVal) / 100, 1, 1, 0,
+                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) sc.mFloatVal) / 100, false, true);
 
                 // don't keep showing anything if we've already received a
                 // touch...
@@ -1174,11 +1174,11 @@ public class Controls {
                     return;
 
                 // update size
-                if (sc.floatVal == 100)
+                if (sc.mFloatVal == 100)
                     mGrow = false;
-                if (sc.floatVal == 0)
+                if (sc.mFloatVal == 0)
                     mGrow = true;
-                sc.floatVal = sc.floatVal + (mGrow ? 1 : -1);
+                sc.mFloatVal = sc.mFloatVal + (mGrow ? 1 : -1);
             }
         };
         c.mGestureAction = new GestureAction() {
@@ -1235,16 +1235,16 @@ public class Controls {
                 if (!mIsActive)
                     return;
                 // draw it
-                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, sc.floatVal);
+                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, sc.mFloatVal);
 
                 // don't keep rotating if we've got a touch...
                 if (!mIsTouchable)
                     return;
 
                 // update rotation
-                sc.floatVal += delta;
-                if (sc.floatVal == 360)
-                    sc.floatVal = 0;
+                sc.mFloatVal += delta;
+                if (sc.mFloatVal == 360)
+                    sc.mFloatVal = 0;
             }
         };
         c.mGestureAction = new GestureAction() {

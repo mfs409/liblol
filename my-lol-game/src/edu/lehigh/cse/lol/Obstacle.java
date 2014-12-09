@@ -39,7 +39,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * sorts of abritrary code that changes the game, or the behavior of the things
  * that collide with them
  */
-public class Obstacle extends PhysicsSprite {
+public class Obstacle extends Actor {
     /**
      * One of the main uses of obstacles is to use hero/obstacle collisions as a
      * way to run custom code. This callback defines what code to run when a
@@ -120,7 +120,7 @@ public class Obstacle extends PhysicsSprite {
      *            A description of the collision
      */
     @Override
-    void onCollide(PhysicsSprite other, Contact contact) {
+    void onCollide(Actor other, Contact contact) {
     }
 
     /*
@@ -213,7 +213,7 @@ public class Obstacle extends PhysicsSprite {
         // register a callback to multiply the hero's speed by factor
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(PhysicsSprite h, Contact c) {
+            public void go(Actor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.scl(factor);
                 h.updateVelocity(v.x, v.y);
@@ -239,7 +239,7 @@ public class Obstacle extends PhysicsSprite {
         // register a callback to change the hero's speed
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final PhysicsSprite h, Contact c) {
+            public void go(final Actor h, Contact c) {
                 // boost the speed
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.x += boostAmountX;
@@ -304,7 +304,7 @@ public class Obstacle extends PhysicsSprite {
         // register a callback
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final PhysicsSprite ps, Contact c) {
+            public void go(final Actor ps, Contact c) {
                 // Make sure the contact is active (it's not if this is a
                 // pass-through event)
                 if (c.isEnabled()) {
@@ -315,15 +315,15 @@ public class Obstacle extends PhysicsSprite {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            sc.attachedSprite = Obstacle.this;
-                            sc.collideSprite = ps;
+                            sc.mAttachedActor = Obstacle.this;
+                            sc.mCollideActor = ps;
                             sc.onEvent();
                         } else {
                             Timer.schedule(new Task() {
                                 @Override
                                 public void run() {
-                                    sc.attachedSprite = Obstacle.this;
-                                    sc.collideSprite = ps;
+                                    sc.mAttachedActor = Obstacle.this;
+                                    sc.mCollideActor = ps;
                                     sc.onEvent();
                                 }
                             }, delay);
@@ -366,22 +366,22 @@ public class Obstacle extends PhysicsSprite {
 
         mEnemyCollision = new CollisionCallback() {
             @Override
-            public void go(final PhysicsSprite ps, Contact c) {
+            public void go(final Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= enemyCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        sc.attachedSprite = Obstacle.this;
-                        sc.collideSprite = ps;
+                        sc.mAttachedActor = Obstacle.this;
+                        sc.mCollideActor = ps;
                         sc.onEvent();
                     } else {
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                sc.attachedSprite = Obstacle.this;
-                                sc.collideSprite = ps;
+                                sc.mAttachedActor = Obstacle.this;
+                                sc.mCollideActor = ps;
                                 sc.onEvent();
                             }
                         }, delay);
@@ -415,13 +415,13 @@ public class Obstacle extends PhysicsSprite {
 
         mProjectileCollision = new CollisionCallback() {
             @Override
-            public void go(PhysicsSprite ps, Contact c) {
+            public void go(Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= projectileCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
-                    sc.attachedSprite = Obstacle.this;
-                    sc.collideSprite = ps;
+                    sc.mAttachedActor = Obstacle.this;
+                    sc.mCollideActor = ps;
                     sc.onEvent();
                 }
             }
