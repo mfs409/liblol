@@ -40,6 +40,7 @@ package com.me.mylolgame;
 //       invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 // TODO: make panning return to the chasesprite more nicely
+// TODO: verify tilt gets its directions correct
 
 import edu.lehigh.cse.lol.ChooserConfiguration;
 import edu.lehigh.cse.lol.Lol;
@@ -113,7 +114,7 @@ public class MyLolGame extends Lol {
 
     /**
      * Describe how to draw the initial state of each level of our game
-     * 
+     *
      * @param whichLevel
      *            The level to be drawn
      */
@@ -127,7 +128,7 @@ public class MyLolGame extends Lol {
      * this method to describe how each help scene should appear. Note that you
      * *must* specify the maximum number of help scenes for your game in the
      * Config.java file. If you specify "0", then you can leave this code blank.
-     * 
+     *
      * @param whichScene
      *            The help scene being drawn. The game engine will set this
      *            value to indicate which scene needs to be drawn.
