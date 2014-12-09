@@ -542,7 +542,7 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<Lol.Renderable>> mSprites = new ArrayList<ArrayList<Lol.Renderable>>(5);
+    private final ArrayList<ArrayList<LolRenderable>> mSprites = new ArrayList<ArrayList<LolRenderable>>(5);
 
     /**
      * Input Controls
@@ -734,7 +734,7 @@ public class Level extends ScreenAdapter {
 
         // set up the sprite sets
         for (int i = 0; i < 5; ++i)
-            mSprites.add(new ArrayList<Lol.Renderable>());
+            mSprites.add(new ArrayList<LolRenderable>());
 
         // set up the callback for finding out who in the physics world was
         // touched
@@ -830,7 +830,7 @@ public class Level extends ScreenAdapter {
      *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addSprite(Lol.Renderable r, int zIndex) {
+    void addSprite(LolRenderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).add(r);
@@ -844,7 +844,7 @@ public class Level extends ScreenAdapter {
      * @param zIndex
      *            The z plane where it is expected to be
      */
-    void removeSprite(Lol.Renderable r, int zIndex) {
+    void removeSprite(LolRenderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).remove(r);
@@ -949,8 +949,8 @@ public class Level extends ScreenAdapter {
         // Render the entities in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);
         mSpriteBatch.begin();
-        for (ArrayList<Lol.Renderable> a : mSprites)
-            for (Lol.Renderable r : a)
+        for (ArrayList<LolRenderable> a : mSprites)
+            for (LolRenderable r : a)
                 r.render(mSpriteBatch, delta);
         mSpriteBatch.end();
 

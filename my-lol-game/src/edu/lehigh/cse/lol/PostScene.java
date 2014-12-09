@@ -65,12 +65,12 @@ public class PostScene {
     /**
      * The pictures and text to display when a level is won.
      */
-    private final ArrayList<Lol.Renderable> mWinSprites = new ArrayList<Lol.Renderable>();
+    private final ArrayList<LolRenderable> mWinSprites = new ArrayList<LolRenderable>();
 
     /**
      * The pictures and text to display when a level is lost.
      */
-    private final ArrayList<Lol.Renderable> mLoseSprites = new ArrayList<Lol.Renderable>();
+    private final ArrayList<LolRenderable> mLoseSprites = new ArrayList<LolRenderable>();
 
     /**
      * Track if the level has been won or lost
@@ -192,7 +192,7 @@ public class PostScene {
     boolean render(SpriteBatch sb) {
         if (!mVisible)
             return false;
-        ArrayList<Lol.Renderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
+        ArrayList<LolRenderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
 
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
@@ -200,7 +200,7 @@ public class PostScene {
         Level.sCurrent.mHudCam.update();
         sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
-        for (Lol.Renderable r : sprites)
+        for (LolRenderable r : sprites)
             r.render(sb, 0);
         sb.end();
         return true;

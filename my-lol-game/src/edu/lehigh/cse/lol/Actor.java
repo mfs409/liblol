@@ -57,7 +57,7 @@ import edu.lehigh.cse.lol.Level.GestureAction;
 /**
  * PhysicsSprite is the base class upon which every game entity is built
  */
-public abstract class Actor implements Lol.Renderable {
+public abstract class Actor implements LolRenderable {
     /**
      * When a PhysicsSprite collides with another PhysicsSprite, and that
      * collision is intended to cause some custom code to run, we use this

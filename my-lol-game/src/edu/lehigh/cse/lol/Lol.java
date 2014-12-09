@@ -30,7 +30,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 
 /**
@@ -45,19 +44,12 @@ import com.badlogic.gdx.utils.Timer;
  */
 public abstract class Lol extends Game {
     /**
-     * This interface is used to store items that can be rendered
+     * Modes of the game: we can be showing the main screen, the help screens,
+     * the level chooser, or a playable level
      */
-    interface Renderable {
-        /**
-         * Render something to the screen
-         * 
-         * @param sb
-         *            The SpriteBatch to use for rendering
-         * @param elapsed
-         *            The time since the last render
-         */
-        void render(SpriteBatch sb, float elapsed);
-    }
+    private enum Modes {
+        SPLASH, HELP, CHOOSE, PLAY, STORE
+    };
 
     /**
      * The current mode of the program
@@ -97,14 +89,6 @@ public abstract class Lol extends Game {
      * The configuratoin of the chooser screen is accessible through this
      */
     ChooserConfiguration mChooserConfig;
-
-    /**
-     * Modes of the game: we can be showing the main screen, the help screens,
-     * the level chooser, or a playable level
-     */
-    private enum Modes {
-        SPLASH, HELP, CHOOSE, PLAY
-    };
 
     /**
      * Use this to load the splash screen

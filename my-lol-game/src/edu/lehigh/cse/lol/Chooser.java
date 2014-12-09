@@ -51,17 +51,17 @@ public class Chooser extends ScreenAdapter {
     /**
      * The "Previous Chooser Screen" button
      */
-    private Button mPrev;
+    private ChooserButton mPrev;
 
     /**
      * The "Next Chooser Screen" button
      */
-    private Button mNext;
+    private ChooserButton mNext;
 
     /**
      * The "Back To Splash" button
      */
-    private final Button mBack;
+    private final ChooserButton mBack;
 
     /**
      * The image to display as the background
@@ -86,7 +86,7 @@ public class Chooser extends ScreenAdapter {
     /**
      * All the level boxes we drew
      */
-    private final Button[] levels;
+    private final ChooserButton[] levels;
 
     /**
      * The camera we will use
@@ -111,7 +111,7 @@ public class Chooser extends ScreenAdapter {
     /**
      * A helper class for tracking where the buttons are
      */
-    private class Button {
+    private class ChooserButton {
         /**
          * The rectangle that describes the coordinates of this button
          */
@@ -143,7 +143,7 @@ public class Chooser extends ScreenAdapter {
          * @param imgName
          *            The image to display behind the text for this button
          */
-        Button(int x, int y, int w, int h, int level, String imgName) {
+        ChooserButton(int x, int y, int w, int h, int level, String imgName) {
             mRect = new Rectangle(x, y, w, h);
             mLevel = level;
             mTr = Media.getImage(imgName);
@@ -210,7 +210,7 @@ public class Chooser extends ScreenAdapter {
 
                 // check for press to an unlocked level
                 int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
-                for (Button ls : levels) {
+                for (ChooserButton ls : levels) {
                     if (ls != null && (ls.mLevel <= unlocked || Lol.sGame.mConfig.getUnlockMode())) {
                         if (ls.mRect.contains(mV.x, mV.y)) {
                             Lol.sGame.doPlayLevel(ls.mLevel);
@@ -228,13 +228,13 @@ public class Chooser extends ScreenAdapter {
             mMusic = Media.getMusic(cc.getMusicName());
 
         // always make the back button
-        mBack = new Button(cc.getBackButtonX(), cc.getBackButtonY(), cc.getBackButtonWidth(), cc.getBackButtonHeight(),
+        mBack = new ChooserButton(cc.getBackButtonX(), cc.getBackButtonY(), cc.getBackButtonWidth(), cc.getBackButtonHeight(),
                 0, cc.getBackButtonName());
 
         // make the previous button if we aren't drawing the first set of
         // choices
         if (Lol.sGame.mCurrLevelNum > levelsPerChooser) {
-            mPrev = new Button(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
+            mPrev = new ChooserButton(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
                     cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
         }
 
@@ -250,7 +250,7 @@ public class Chooser extends ScreenAdapter {
 
         // make the next button if we aren't drawing the last set of choices
         if (totalLevels > last) {
-            mNext = new Button(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
+            mNext = new ChooserButton(cc.getNextButtonX(), cc.getNextButtonY(), cc.getNextButtonWidth(),
                     cc.getNextButtonHeight(), 0, cc.getNextButtonName());
         }
         
@@ -271,7 +271,7 @@ public class Chooser extends ScreenAdapter {
         int mytop = top - bHeight;
         int myleft = left;
         // now let's make buttons for the levels
-        levels = new Button[levelsPerChooser];
+        levels = new ChooserButton[levelsPerChooser];
         int index = 0;
         for (int i = first; i <= last; ++i) {
             // move down a row?
@@ -279,7 +279,7 @@ public class Chooser extends ScreenAdapter {
                 mytop = mytop - bHeight - vGutter;
                 myleft = left;
             }
-            levels[index] = new Button(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
+            levels[index] = new ChooserButton(myleft, mytop, bWidth, bHeight, i, cc.getLevelButtonName());
             myleft = myleft + bWidth + hGutter;
             index++;
         }
@@ -364,7 +364,7 @@ public class Chooser extends ScreenAdapter {
 
         // draw the level buttons
         int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
-        for (Button ls : levels) {
+        for (ChooserButton ls : levels) {
             if (ls != null) {
                 // draw picture
                 mSpriteBatch.draw(ls.mTr[0], ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
@@ -393,7 +393,7 @@ public class Chooser extends ScreenAdapter {
             if (mNext != null)
                 mShapeRender.rect(mNext.mRect.x, mNext.mRect.y, mNext.mRect.width, mNext.mRect.height);
 
-            for (Button ls : levels) {
+            for (ChooserButton ls : levels) {
                 if (ls != null) {
                     mShapeRender.rect(ls.mRect.x, ls.mRect.y, ls.mRect.width, ls.mRect.height);
                 }
