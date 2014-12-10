@@ -27,23 +27,75 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.Splash;
+import edu.lehigh.cse.lol.Controls;
+import edu.lehigh.cse.lol.Level;
+import edu.lehigh.cse.lol.Lol;
+import edu.lehigh.cse.lol.Obstacle;
+import edu.lehigh.cse.lol.Physics;
+import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.Util;
 
+/**
+ * SplashScreen encapsulates the code that will be run to configure the opening
+ * screen of the game. Typically this has buttons for playing, getting help, and
+ * quitting.
+ */
 public class SplashScreen {
+
     public static void display() {
-        // Describe the regions of the screen that correspond to the play, help,
-        // quit, and mute buttons. If you are having trouble figuring these out,
-        // note that clicking on the splash screen will display xy coordinates
-        // in the Console to help
-        Splash.drawPlayButton(384, 182, 186, 104);
-        Splash.drawHelpButton(96, 186, 160, 80);
-        Splash.drawQuitButton(726, 186, 138, 78);
-        Splash.drawMuteButton(900, 0, 50, 52, "audio_on.png", "audio_off.png");
+        // set up a simple level. We could make interesting things happen, since
+        // we've got a physics world, but we won't.
+        Level.configure(48, 32);
+        Physics.configure(0, 0);
+        // draw the background. Note that "Play", "Help", and "Quit" are part of
+        // this background image.
+        Util.drawPicture(0, 0, 48, 32, "splash.png", 0);
+        // start the music
+        Level.setMusic("tune.ogg");
 
-        // Provide a name for the background image
-        Splash.setBackground("splash.png");
+        // This is the Play button... it switches to the first screen of the
+        // level chooser
+        Controls.addCallbackControl(384, 182, 186, 104, "", new SimpleCallback() {
+            public void onEvent() {
+                Lol.doChooser(1);
+            }
+        });
 
-        // Provide a name for the music file
-        Splash.setMusic("tune.ogg");
+        // This is the Help button... it switches to the first screen of the
+        // help system
+        Controls.addCallbackControl(96, 186, 160, 80, "", new SimpleCallback() {
+            public void onEvent() {
+                Lol.doHelp(1);
+            }
+        });
+
+        // This is the Quit button
+        Controls.addCallbackControl(726, 186, 138, 78, "", new SimpleCallback() {
+            public void onEvent() {
+                Lol.doQuit();
+            }
+        });
+
+        // Mute button is a tad tricky... we'll do it as an obstacle
+        Obstacle o = Obstacle.makeAsBox(45, 0, 2.5f, 2.5f, "");
+        // figure out which image to use for the obstacle based on the current
+        // volume state
+        if (Lol.getVolume()) {
+            o.setImage("audio_off.png", 0);
+        } else {
+            o.setImage("audio_on.png", 0);
+        }
+        // when the obstacle is touched, change the mute and then update the
+        // picture for the obstacle
+        o.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+            public void onEvent() {
+                Lol.toggleMute();
+                if (Lol.getVolume()) {
+                    mAttachedActor.setImage("audio_off.png", 0);
+                } else {
+                    mAttachedActor.setImage("audio_on.png", 0);
+                }
+            }
+        });
     }
 }

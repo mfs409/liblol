@@ -105,9 +105,9 @@ public class HelpLevel extends ScreenAdapter {
             public boolean tap(float x, float y, int count, int button) {
                 // On tap, either advance to the next help scene, or
                 // return to the splash screen
-                if (Lol.sGame.mCurrHelpNum < Lol.sGame.mConfig.getNumHelpScenes()) {
-                    Lol.sGame.mCurrHelpNum++;
-                    Lol.sGame.doHelpLevel(Lol.sGame.mCurrHelpNum);
+                if (Lol.sGame.mModeStates[Lol.HELP] < Lol.sGame.mConfig.getNumHelpScenes()) {
+                    Lol.sGame.mModeStates[Lol.HELP]++;
+                    Lol.doHelp(Lol.sGame.mModeStates[Lol.HELP]);
                     return true;
                 }
                 Lol.sGame.doSplash();

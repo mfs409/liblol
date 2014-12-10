@@ -160,13 +160,13 @@ public class PostScene {
 
         // repeat on loss, else go to next level (or chooser)
         if (!mWin) {
-            Lol.sGame.doPlayLevel(Lol.sGame.mCurrLevelNum);
+            Lol.sGame.doPlayLevel(Lol.sGame.mModeStates[Lol.PLAY]);
         } else {
-            if (Lol.sGame.mCurrLevelNum == Lol.sGame.mConfig.getNumLevels()) {
-                Lol.sGame.doChooser();
+            if (Lol.sGame.mModeStates[Lol.PLAY] == Lol.sGame.mConfig.getNumLevels()) {
+                Lol.doChooser(1);
             } else {
-                Lol.sGame.mCurrLevelNum++;
-                Lol.sGame.doPlayLevel(Lol.sGame.mCurrLevelNum);
+                Lol.sGame.mModeStates[Lol.PLAY]++;
+                Lol.sGame.doPlayLevel(Lol.sGame.mModeStates[Lol.PLAY]);
             }
         }
     }

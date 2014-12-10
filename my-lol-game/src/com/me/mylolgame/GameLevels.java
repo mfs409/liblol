@@ -2282,14 +2282,14 @@ public class GameLevels {
             // make a hero who is always moving... note there is no friction,
             // anywhere, and the hero is elastic... it won't ever stop...
             Hero h = Hero.makeAsCircle(4, 4, 3, 3, "greenball.png");
-            h.setPhysics(0, 1, 0);
+            h.setPhysics(0, 1, .1f);
             h.addVelocity(0, 10, false);
 
             // make an obstacle and then connect it to some controls
             Obstacle o = Obstacle.makeAsBox(2, 30.9f, 4, 1, "red.png");
-            o.setPhysics(100, 1, 0);
-            Controls.addLeftButton(0, 0, 240, 320, "", 5, o);
-            Controls.addRightButton(240, 0, 240, 320, "", 5, o);
+            o.setPhysics(100, 1, .1f);
+            Controls.addLeftButton(0, 0, 480, 640, "", 5, o);
+            Controls.addRightButton(480, 0, 480, 640, "", 5, o);
         }
 
         /*

@@ -231,8 +231,8 @@ public class Score {
                         Level.sCurrent.mLoseCallback.onEvent();
 
                     // if we won, unlock the next level
-                    if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mCurrLevelNum)
-                        Facts.putGameFact("unlocked", Lol.sGame.mCurrLevelNum + 1);
+                    if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mModeStates[Lol.PLAY])
+                        Facts.putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
 
                     // drop everything from the hud
                     Level.sCurrent.mControls.clear();

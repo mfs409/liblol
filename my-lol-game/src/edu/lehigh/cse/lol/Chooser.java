@@ -154,7 +154,7 @@ public class Chooser extends ScreenAdapter {
      * Construct a chooser for the currently selected set of levels, and prepare
      * all the buttons
      */
-    public Chooser() {
+    public Chooser(int whichChooser) {
         // start by getting the pieces of configuration that we use over and
         // over again
         final ChooserConfiguration cc = Lol.sGame.mChooserConfig;
@@ -192,8 +192,8 @@ public class Chooser extends ScreenAdapter {
 
                 // handle 'previous screen' requests
                 if (mPrev != null && mPrev.mRect.contains(mV.x, mV.y)) {
-                    Lol.sGame.mCurrLevelNum -= (cc.getColumns() * cc.getRows());
-                    Lol.sGame.doChooser();
+                    Lol.sGame.mModeStates[Lol.PLAY] -= (cc.getColumns() * cc.getRows());
+                    Lol.doChooser(1);
                     return true;
                 }
 
@@ -201,10 +201,10 @@ public class Chooser extends ScreenAdapter {
                 if (mNext != null && mNext.mRect.contains(mV.x, mV.y)) {
                     // special case for when we came straight from the Splash
                     // screen
-                    if (Lol.sGame.mCurrLevelNum == 0)
-                        Lol.sGame.mCurrLevelNum = 1;
-                    Lol.sGame.mCurrLevelNum += (cc.getColumns() * cc.getRows());
-                    Lol.sGame.doChooser();
+                    if (Lol.sGame.mModeStates[Lol.PLAY] == 0)
+                        Lol.sGame.mModeStates[Lol.PLAY] = 1;
+                    Lol.sGame.mModeStates[Lol.PLAY] += (cc.getColumns() * cc.getRows());
+                    Lol.doChooser(1);
                     return true;
                 }
 
@@ -233,7 +233,7 @@ public class Chooser extends ScreenAdapter {
 
         // make the previous button if we aren't drawing the first set of
         // choices
-        if (Lol.sGame.mCurrLevelNum > levelsPerChooser) {
+        if (Lol.sGame.mModeStates[Lol.PLAY] > levelsPerChooser) {
             mPrev = new ChooserButton(cc.getPrevButtonX(), cc.getPrevButtonY(), cc.getPrevButtonWidth(),
                     cc.getPrevButtonHeight(), 0, cc.getPrevButtonName());
         }
@@ -241,7 +241,7 @@ public class Chooser extends ScreenAdapter {
         // figure out the first level to draw on this chooser. Note that '0' is
         // a possible value of mCurrLevelNum when we come straight from Splash,
         // so we must handle it
-        int first = Lol.sGame.mCurrLevelNum;
+        int first = Lol.sGame.mModeStates[Lol.PLAY];
         if (first > 0)
             first--;
         first = first - (first % levelsPerChooser) + 1;

@@ -41,6 +41,7 @@ package com.me.mylolgame;
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 // TODO: make panning return to the chasesprite more nicely
 // TODO: verify tilt gets its directions correct
+// TODO: make sure music stops when game quits (on phone)
 
 import edu.lehigh.cse.lol.ChooserConfiguration;
 import edu.lehigh.cse.lol.Lol;

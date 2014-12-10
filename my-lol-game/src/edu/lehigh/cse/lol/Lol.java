@@ -45,26 +45,24 @@ import com.badlogic.gdx.utils.Timer;
 public abstract class Lol extends Game {
     /**
      * Modes of the game: we can be showing the main screen, the help screens,
-     * the level chooser, or a playable level
+     * the level chooser, the store, or a playable level
      */
-    private enum Modes {
-        SPLASH, HELP, CHOOSE, PLAY, STORE
-    };
+    static final int SPLASH = 0;
+    static final int HELP = 1;
+    static final int CHOOSER = 2;
+    static final int PLAY = 3;
+    static final int STORE = 4;
 
     /**
      * The current mode of the program
      */
-    private Modes mMode;
+    int mMode;
 
     /**
-     * The current level being played
+     * The mode state is used to represent the current level within a mode
+     * (i.e., 3rd help screen, or 5th page of the store)
      */
-    int mCurrLevelNum;
-
-    /**
-     * Track the current help scene being displayed
-     */
-    int mCurrHelpNum;
+    int mModeStates[] = new int[5];
 
     /**
      * A reference to the game object
@@ -86,7 +84,7 @@ public abstract class Lol extends Game {
     LolConfiguration mConfig;
 
     /**
-     * The configuratoin of the chooser screen is accessible through this
+     * The configuration of the chooser screen is accessible through this
      */
     ChooserConfiguration mChooserConfig;
 
@@ -94,31 +92,34 @@ public abstract class Lol extends Game {
      * Use this to load the splash screen
      */
     void doSplash() {
-        // set the default display mode
-        mCurrLevelNum = 0;
-        mCurrHelpNum = 0;
-        mMode = Modes.SPLASH;
-        setScreen(new Splash());
+        // reset state of all screens
+        for (int i = 0; i < 5; ++i)
+            mModeStates[i] = 1;
+        mMode = SPLASH;
+        configureSplash();
+        setScreen(Level.sCurrent);
+        // setScreen(new Splash());
     }
 
     /**
      * Use this to load the level-chooser screen. Note that when the chooser is
      * disabled, we jump straight to level 1.
+     * 
+     * TODO: use whichChooser
      */
-    void doChooser() {
+    public static void doChooser(int whichChooser) {
         // if chooser disabled, then we either called this from splash, or from
         // a game level
-        if (!mChooserConfig.showChooser()) {
-            if (mMode == Modes.PLAY) {
-                doSplash();
+        if (!sGame.mChooserConfig.showChooser()) {
+            if (sGame.mMode == PLAY) {
+                sGame.doSplash();
             } else {
-                doPlayLevel(mCurrLevelNum == 0 ? 1 : mCurrLevelNum);
+                sGame.doPlayLevel(sGame.mModeStates[PLAY]);
             }
             return;
         }
-        mCurrHelpNum = 0;
-        mMode = Modes.CHOOSE;
-        setScreen(new Chooser());
+        sGame.mMode = CHOOSER;
+        sGame.setScreen(new Chooser(whichChooser));
     }
 
     /**
@@ -128,9 +129,8 @@ public abstract class Lol extends Game {
      *            The index of the level to load
      */
     void doPlayLevel(int which) {
-        mCurrLevelNum = which;
-        mCurrHelpNum = 0;
-        mMode = Modes.PLAY;
+        mModeStates[PLAY] = which;
+        mMode = PLAY;
         configureLevel(which);
         setScreen(Level.sCurrent);
     }
@@ -141,20 +141,43 @@ public abstract class Lol extends Game {
      * @param which
      *            The index of the help level to load
      */
-    void doHelpLevel(int which) {
-        mCurrHelpNum = which;
-        mCurrLevelNum = 0;
-        mMode = Modes.HELP;
-        configureHelpScene(which);
-        setScreen(HelpLevel.sCurrentLevel);
+    public static void doHelp(int which) {
+        sGame.mModeStates[HELP] = which;
+        sGame.mMode = HELP;
+        sGame.configureHelpScene(which);
+        sGame.setScreen(HelpLevel.sCurrentLevel);
     }
 
     /**
      * Use this to quit the app
      */
-    void doQuit() {
-        getScreen().dispose();
+    public static void doQuit() {
+        sGame.getScreen().dispose();
         Gdx.app.exit();
+    }
+
+    /**
+     * Use this to manage the state of Mute
+     */
+    public static void toggleMute() {
+        // volume is either 1 or 0
+        if (Facts.getGameFact("volume") == 1) {
+            // set volume to 0, set image to 'unmute'
+            Facts.putGameFact("volume", 0);
+        } else {
+            // set volume to 1, set image to 'mute'
+            Facts.putGameFact("volume", 1);
+        }
+        // update all music
+        Media.resetMusicVolume();
+    }
+
+    /**
+     * Use this to determine if the game is muted or not. True corresponds to
+     * not muted, false corresponds to muted.
+     */
+    public static boolean getVolume() {
+        return Facts.getGameFact("volume") == 1;
     }
 
     /**
@@ -196,18 +219,18 @@ public abstract class Lol extends Game {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit
-        if (mMode == Modes.SPLASH) {
+        if (mMode == SPLASH) {
             dispose();
             Gdx.app.exit();
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (mMode == Modes.CHOOSE || mMode == Modes.HELP) {
+        else if (mMode == CHOOSER || mMode == HELP) {
             doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            doChooser();
+            doChooser(sGame.mModeStates[PLAY]);
         }
     }
 
@@ -221,7 +244,12 @@ public abstract class Lol extends Game {
      */
     @Override
     public void create() {
+        // save instance
         sGame = this;
+
+        // set current mode states
+        for (int i = 0; i < 5; ++i)
+            mModeStates[i] = 1;
 
         // reset session facts
         Facts.resetSessionFacts();
@@ -282,7 +310,7 @@ public abstract class Lol extends Game {
      * Set the next level to play
      */
     public void setNextLevel(int nextLevel) {
-        mCurrLevelNum = nextLevel;
+        mModeStates[PLAY] = nextLevel;
     }
 
     /**
