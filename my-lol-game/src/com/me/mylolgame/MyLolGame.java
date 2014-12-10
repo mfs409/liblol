@@ -139,6 +139,11 @@ public class MyLolGame extends Lol {
         HelpScreens.display(whichScene);
     }
 
+    @Override
+    public void configureChooser(int whichScreen) {
+        ChooserScreens.display(whichScreen);
+    }
+    
     /**
      * Mandatory method. Don't change this.
      */

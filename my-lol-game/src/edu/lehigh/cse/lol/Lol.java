@@ -91,14 +91,13 @@ public abstract class Lol extends Game {
     /**
      * Use this to load the splash screen
      */
-    void doSplash() {
+    public static void doSplash() {
         // reset state of all screens
         for (int i = 0; i < 5; ++i)
-            mModeStates[i] = 1;
-        mMode = SPLASH;
-        configureSplash();
-        setScreen(Level.sCurrent);
-        // setScreen(new Splash());
+            sGame.mModeStates[i] = 1;
+        sGame.mMode = SPLASH;
+        sGame.configureSplash();
+        sGame.setScreen(Level.sCurrent);
     }
 
     /**
@@ -112,14 +111,15 @@ public abstract class Lol extends Game {
         // a game level
         if (!sGame.mChooserConfig.showChooser()) {
             if (sGame.mMode == PLAY) {
-                sGame.doSplash();
+                doSplash();
             } else {
                 sGame.doPlayLevel(sGame.mModeStates[PLAY]);
             }
             return;
         }
         sGame.mMode = CHOOSER;
-        sGame.setScreen(new Chooser(whichChooser));
+        sGame.configureChooser(whichChooser);
+        sGame.setScreen(Level.sCurrent);
     }
 
     /**
@@ -128,11 +128,11 @@ public abstract class Lol extends Game {
      * @param which
      *            The index of the level to load
      */
-    void doPlayLevel(int which) {
-        mModeStates[PLAY] = which;
-        mMode = PLAY;
-        configureLevel(which);
-        setScreen(Level.sCurrent);
+    public static void doPlayLevel(int which) {
+        sGame.mModeStates[PLAY] = which;
+        sGame.mMode = PLAY;
+        sGame.configureLevel(which);
+        sGame.setScreen(Level.sCurrent);
     }
 
     /**
@@ -145,7 +145,8 @@ public abstract class Lol extends Game {
         sGame.mModeStates[HELP] = which;
         sGame.mMode = HELP;
         sGame.configureHelpScene(which);
-        sGame.setScreen(HelpLevel.sCurrentLevel);
+        // TODO: do we even need a parameter to setScreen anymore?
+        sGame.setScreen(Level.sCurrent);
     }
 
     /**
@@ -350,4 +351,9 @@ public abstract class Lol extends Game {
      * Describe how to draw the splash scene
      */
     abstract public void configureSplash();
+
+    /**
+     * Describe how to draw the chooser scenes
+     */
+    abstract public void configureChooser(int whichChooser);
 }

@@ -257,7 +257,7 @@ public class Util {
      *            The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *            and 2. By default, everything goes to plane 0
      */
-    public static void drawText(final int x, final int y, final String text, final int red, final int green,
+    public static void drawText(final float x, final float y, final String text, final int red, final int green,
             final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
         LolRenderable r = new LolRenderable() {
@@ -266,6 +266,55 @@ public class Util {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
                 bf.setScale(1 / Physics.PIXEL_METER_RATIO);
                 bf.drawMultiLine(sb, text, x, y + bf.getMultiLineBounds(text).height);
+                bf.setScale(1);
+            }
+        };
+        Level.sCurrent.addSprite(r, zIndex);
+    }
+    
+    /**
+     * Draw some text on the current level
+     * 
+     * Note: the order in which this is called relative to other entities will
+     * determine whether they go under or over this text.
+     * 
+     * @param centerX
+     *            X coordinate of center of the text
+     * @param centerY
+     *            Y coordinate of center of the text
+     * @param text
+     *            The text to display
+     * @param red
+     *            The red component of the color (0-255)
+     * @param green
+     *            The green component of the color (0-255)
+     * @param blue
+     *            The blue component of the color (0-255)
+     * @param fontName
+     *            The name of the font file to use
+     * @param size
+     *            The font size to use
+     * @param zIndex
+     *            The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     *            and 2. By default, everything goes to plane 0
+     */
+    public static void drawTextCentered(final float centerX, final float centerY, final String text, final int red, final int green,
+            final int blue, String fontName, int size, int zIndex) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+
+        // figure out the image dimensions
+        bf.setScale(1 / Physics.PIXEL_METER_RATIO);
+        final float w = bf.getMultiLineBounds(text).width;
+        final float h = bf.getMultiLineBounds(text).height;
+        bf.setScale(1);
+
+        // describe how to render it
+        LolRenderable r = new LolRenderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.setScale(1 / Physics.PIXEL_METER_RATIO);
+                bf.drawMultiLine(sb, text, centerX - w/2, centerY + h/2);
                 bf.setScale(1);
             }
         };

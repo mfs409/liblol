@@ -27,42 +27,72 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.HelpLevel;
+import edu.lehigh.cse.lol.Background;
+import edu.lehigh.cse.lol.Controls;
+import edu.lehigh.cse.lol.Level;
+import edu.lehigh.cse.lol.Lol;
+import edu.lehigh.cse.lol.Obstacle;
+import edu.lehigh.cse.lol.Physics;
+import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.Util;
 
 public class HelpScreens {
     public static void display(int whichScene) {
-        // Note: this is not very good help right now. It's just a demo
-
         // Our first scene describes the color coding that we use for the
         // different entities in the game
         if (whichScene == 1) {
-            HelpLevel.configure(255, 255, 255);
-            HelpLevel.drawText(50, 240, "The levels of this game\ndemonstrate LOL features");
+            // set up a basic screen
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Background.setColor(255, 255, 255);
 
-            HelpLevel.drawPicture(50, 200, 30, 30, "greenball.png");
-            HelpLevel.drawText(100, 200, "You control the hero");
+            // put some information on the screen
+            Util.drawText(5, 26, "The levels of this game\ndemonstrate LOL features", 0, 0, 0, "arial.ttf", 40, 0);
 
-            HelpLevel.drawPicture(50, 160, 30, 30, "blueball.png");
-            HelpLevel.drawText(100, 160, "Collect these goodies");
+            // draw a legend, using obstacles and text
+            Obstacle.makeAsBox(5, 20, 3, 3, "greenball.png");
+            Util.drawText(9, 21, "You control the hero", 0, 0, 0, "arial.ttf", 24, 0);
 
-            HelpLevel.drawPicture(50, 120, 30, 30, "redball.png");
-            HelpLevel.drawText(100, 120, "Avoid or defeat enemies");
+            Obstacle.makeAsBox(5, 16, 3, 3, "blueball.png");
+            Util.drawText(9, 17, "Collect these goodies", 0, 0, 0, "arial.ttf", 24, 0);
 
-            HelpLevel.drawPicture(50, 80, 30, 30, "mustardball.png");
-            HelpLevel.drawText(100, 80, "Reach the destination");
+            Obstacle.makeAsBox(5, 12, 3, 3, "redball.png");
+            Util.drawText(9, 13, "Avoid or defeat enemies", 0, 0, 0, "arial.ttf", 24, 0);
 
-            HelpLevel.drawPicture(50, 40, 30, 30, "purpleball.png");
-            HelpLevel.drawText(100, 40, "These are walls");
+            Obstacle.makeAsBox(5, 8, 3, 3, "mustardball.png");
+            Util.drawText(9, 9, "Reach the destination", 0, 0, 0, "arial.ttf", 24, 0);
 
-            HelpLevel.drawPicture(50, 0, 30, 30, "greyball.png");
-            HelpLevel.drawText(100, 0, "Throw projectiles");
+            Obstacle.makeAsBox(5, 4, 3, 3, "purpleball.png");
+            Util.drawText(9, 5, "These are walls", 0, 0, 0, "arial.ttf", 24, 0);
+
+            Obstacle.makeAsBox(5, 0, 3, 3, "greyball.png");
+            Util.drawText(9, 1, "Throw projectiles", 0, 0, 0, "arial.ttf", 24, 0);
+
+            // set up a control to go to the next level on screen press
+            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+                public void onEvent() {
+                    Lol.doHelp(2);
+                }
+            });
         }
+
         // Our second help scene is just here to show that it is possible to
         // have more than one help scene.
         else if (whichScene == 2) {
-            HelpLevel.configure(255, 255, 0);
-            HelpLevel.drawText(100, 150, "Be sure to read the MyLolGame.java code\n"
-                    + "while you play, so you can see\n" + "how everything works", 55, 110, 165, "arial.ttf", 14);
+            Level.configure(48, 32);
+            Physics.configure(0, 0);
+            Background.setColor(255, 255, 0);
+
+            // for now, just print a message
+            Util.drawText(10, 15, "Be sure to read the code\n" + "while you play, so you can see\n"
+                    + "how everything works", 55, 110, 165, "arial.ttf", 14, 0);
+
+            // set up a control to go to the splash screen on screen press
+            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+                public void onEvent() {
+                    Lol.doSplash();
+                }
+            });
         }
     }
 }
