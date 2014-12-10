@@ -124,4 +124,10 @@ public interface LolConfiguration {
      * window's title bar
      */
     public String getGameTitle();
+
+    /**
+     * Indicate whether the chooser ought to be displayed on return from a game
+     * level, or if the game should go straight back to the splash screen
+     */
+    public boolean showChooserOnBack();
 }

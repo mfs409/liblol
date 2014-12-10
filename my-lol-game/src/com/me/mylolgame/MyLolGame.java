@@ -43,7 +43,6 @@ package com.me.mylolgame;
 // TODO: verify tilt gets its directions correct
 // TODO: make sure music stops when game quits (on phone)
 
-import edu.lehigh.cse.lol.ChooserConfiguration;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolConfiguration;
 import edu.lehigh.cse.lol.Media;
@@ -150,13 +149,5 @@ public class MyLolGame extends Lol {
     @Override
     public LolConfiguration lolConfig() {
         return new LolConfig();
-    }
-
-    /**
-     * Mandatory method. Don't change this.
-     */
-    @Override
-    public ChooserConfiguration chooserConfig() {
-        return new ChooserConfig();
     }
 }

@@ -185,4 +185,13 @@ public class LolConfig implements LolConfiguration {
     public String getGameTitle() {
         return "My LOL Game";
     }
+
+    /**
+     * Indicate whether we should display a chooser when the back button is
+     * pressed during gameplay
+     */
+    @Override
+    public boolean showChooserOnBack() {
+        return false;
+    }
 }

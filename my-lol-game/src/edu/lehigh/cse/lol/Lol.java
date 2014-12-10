@@ -84,11 +84,6 @@ public abstract class Lol extends Game {
     LolConfiguration mConfig;
 
     /**
-     * The configuration of the chooser screen is accessible through this
-     */
-    ChooserConfiguration mChooserConfig;
-
-    /**
      * Use this to load the splash screen
      */
     public static void doSplash() {
@@ -109,15 +104,16 @@ public abstract class Lol extends Game {
     public static void doChooser(int whichChooser) {
         // if chooser disabled, then we either called this from splash, or from
         // a game level
-        if (!sGame.mChooserConfig.showChooser()) {
+        if (!sGame.mConfig.showChooserOnBack()) {
             if (sGame.mMode == PLAY) {
                 doSplash();
             } else {
-                sGame.doPlayLevel(sGame.mModeStates[PLAY]);
+                doPlayLevel(sGame.mModeStates[PLAY]);
             }
             return;
         }
         sGame.mMode = CHOOSER;
+        sGame.mModeStates[CHOOSER] = whichChooser;
         sGame.configureChooser(whichChooser);
         sGame.setScreen(Level.sCurrent);
     }
@@ -226,12 +222,12 @@ public abstract class Lol extends Game {
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (mMode == CHOOSER || mMode == HELP) {
+        else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
             doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            doChooser(sGame.mModeStates[PLAY]);
+            doChooser(sGame.mModeStates[CHOOSER]);
         }
     }
 
@@ -257,7 +253,6 @@ public abstract class Lol extends Game {
 
         // get configuration
         mConfig = lolConfig();
-        mChooserConfig = chooserConfig();
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
@@ -319,12 +314,6 @@ public abstract class Lol extends Game {
      * returning a LolConfiguration object
      */
     abstract public LolConfiguration lolConfig();
-
-    /**
-     * The programmer configures the chooser screen by implementing this method,
-     * and returning a ChooserConfiguration object
-     */
-    abstract public ChooserConfiguration chooserConfig();
 
     /**
      * Register any sound or image files to be used by the game
