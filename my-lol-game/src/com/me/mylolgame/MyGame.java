@@ -35,12 +35,14 @@ package com.me.mylolgame;
 // TODO: add 'share' button?
 // TODO: Verify comments
 // TODO: verify chooser and level music stops on Android events
-// TODO: Hero animation sequences could use work... we can lose information (e.g., if
-//       invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
+// TODO: Hero animation sequences could use work... we can lose information (e.g., if invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 // TODO: make panning return to the chasesprite more nicely
 // TODO: verify tilt gets its directions correct on phones and tablets
 // TODO: make sure music stops when game quits (on phone)
+// TODO: in Level 83, play with timers to change direction of the rotating actor?
+// TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
+// TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
 
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
@@ -124,7 +126,7 @@ public class MyGame extends Lol {
         mDefaultLoseText = "Try Again";
         mGameTitle = "My Lol Game";
         mEnableChooser = true;
-        
+
         // don't change these lines unless you know what you are doing
         mLevels = new Levels();
         mChooser = new Chooser();

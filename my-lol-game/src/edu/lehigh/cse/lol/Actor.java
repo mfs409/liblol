@@ -51,11 +51,17 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 /**
- * PhysicsSprite is the base class upon which every game entity is built
+ * Actor is the base class upon which every game entity is built. Every actor
+ * has a physics representation (rectangle, circle, or convex polygon). Actors
+ * typically have an image associated with them, too, so that they have a visual
+ * appearance during gameplay.
+ * 
+ * A game should rarely deal with Actors directly, instead using Hero, Goodie,
+ * Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class Actor implements Util.Renderable {
     /**
-     * Physics body for this PhysicsSprite
+     * Physics body for this Actor
      */
     Body mBody;
 
@@ -75,7 +81,7 @@ public abstract class Actor implements Util.Renderable {
     private boolean mIsPolygonBody;
 
     /**
-     * Track if the entity is currently being rendered. This is a proxy for
+     * Track if the actor is currently being rendered. This is a proxy for
      * "is important to the rest of the game" and when it is false, we don't run
      * any updates on the PhysicsSprite
      */
@@ -1445,8 +1451,7 @@ public abstract class Actor implements Util.Renderable {
      * @param chaseInY
      *            Should the entity change its y velocity?
      */
-    public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX,
-            final boolean chaseInY) {
+    public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
         Level.sCurrent.mRepeatEvents.add(new Util.Action() {
@@ -1584,8 +1589,7 @@ public abstract class Actor implements Util.Renderable {
      *            The Y coordinate (relative to the center of the entity) where
      *            the joint fuses to this entity
      */
-    public void setRevoluteJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX,
-            float localAnchorY) {
+    public void setRevoluteJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
         // create joint, connect anchors
@@ -1688,8 +1692,7 @@ public abstract class Actor implements Util.Renderable {
      *            The Y coordinate (relative to the center of the entity) where
      *            the joint fuses to this entity
      */
-    public void setDistanceJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX,
-            float localAnchorY) {
+    public void setDistanceJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
 

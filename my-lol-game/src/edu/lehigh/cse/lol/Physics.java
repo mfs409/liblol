@@ -47,10 +47,10 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  */
 public class Physics {
     /**
-     * This ratio means that every 10 pixels on the screen will correspond to a
+     * This ratio means that every 20 pixels on the screen will correspond to a
      * meter. Note that 'pixels' are defined in terms of what a programmer's
-     * Config says, not the actual screen size, because the programmer's Config
-     * gets scaled to screen dimensions.
+     * configuration() says, not the actual screen size, because the configuration
+     * gets scaled to screen dimensions.  The default is 960x640.
      */
     static final float PIXEL_METER_RATIO = 20;
 
@@ -243,7 +243,7 @@ public class Physics {
             }
 
             /**
-             * We don't do anything fancy on postsolve
+             * We ignore postsolve
              */
             @Override
             public void postSolve(Contact contact, ContactImpulse impulse) {

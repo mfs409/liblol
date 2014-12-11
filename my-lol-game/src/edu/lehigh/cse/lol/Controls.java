@@ -218,8 +218,6 @@ public class Controls {
              * @param isUp
              *            True if it is an up-press
              */
-            // TODO: might want to have some ability to detect when we slide off
-            // of a toggle button... see level 72 for explanation of why
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
@@ -1036,9 +1034,6 @@ public class Controls {
 
     /**
      * Allow pinch-to-zoom
-     * 
-     * TODO: this isn't quite right, because we are treating zoom like a
-     * touchable control, but it's really a whole-screen affair...
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)

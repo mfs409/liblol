@@ -192,8 +192,6 @@ public class Displays {
     public static Display addFPS(final int x, final int y, String fontName, final int red, final int green,
             final int blue, int size) {
         Display d = new Display(red, green, blue, fontName, size) {
-            // TODO: we could have render() take a 'if text' route, and then
-            // just override a "maketext" method
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);

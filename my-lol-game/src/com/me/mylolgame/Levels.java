@@ -65,7 +65,7 @@ public class Levels implements ScreenManager{
         if (whichLevel == 1) {
             // set the screen to 48 meters wide by 32 meters high... this is
             // important, because Config.java says the screen is 480x320, and
-            // LOL likes a 10:1 pixel to meter ratio. If we went smaller than
+            // LOL likes a 20:1 pixel to meter ratio. If we went smaller than
             // 48x32, things would get really weird. And, of course, if you make
             // your screen resolution higher in Config.java, these numbers would
             // need to get bigger.
@@ -3232,7 +3232,6 @@ public class Levels implements ScreenManager{
             revolving.setPhysics(1, 0, 0);
             Obstacle anchor = Obstacle.makeAsBox(20, 19, 2, 2, "blueball.png");
 
-            // TODO: play with timers to change direction of velocity?
             revolving.setRevoluteJoint(anchor, 0, 0, 0, 6);
             revolving.setRevoluteJointLimits(1.7f, -1.7f);
             revolving.setRevoluteJointMotor(4, Float.POSITIVE_INFINITY);

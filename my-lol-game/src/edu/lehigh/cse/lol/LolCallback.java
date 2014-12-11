@@ -69,7 +69,7 @@ public abstract class LolCallback implements Cloneable {
         try {
             sc = (LolCallback) super.clone();
         } catch (CloneNotSupportedException e) {
-            // TODO Auto-generated catch block
+            // this should never happen, and if it does, we'll crash in the caller
             e.printStackTrace();
             return null;
         }
