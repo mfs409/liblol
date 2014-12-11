@@ -31,6 +31,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 import java.util.Random;
 
@@ -39,6 +41,377 @@ import java.util.Random;
  * few simple wrappers that we give to the game developer
  */
 public class Util {
+
+    /**
+     * This interface allows items that can be displayed on the screen to
+     * describe how they ought to be displayed. This allows us, for example, to
+     * let a text item describe how its display value should change over time.
+     */
+    interface Renderable {
+        /**
+         * Render something to the screen
+         * 
+         * @param sb
+         *            The SpriteBatch to use for rendering
+         * @param elapsed
+         *            The time since the last render
+         */
+        void render(SpriteBatch sb, float elapsed);
+    }
+
+    /**
+     * When an Actor collides with another Actor, and that
+     * collision is intended to cause some custom code to run, we use this
+     * interface
+     */
+    interface CollisionCallback {
+        /**
+         * Respond to a collision with a PhysicsSprite. Note that one of the
+         * collision entities is not named; it should be clear from the context
+         * in which this was constructed.
+         * 
+         * @param actor
+         *            The PhysicsSprite involved in the collision
+         * @param contact
+         *            A description of the contact, in case it is useful
+         */
+        void go(final Actor actor, Contact contact);
+    }
+
+    /**
+     * Wrapper for actions that we generate and then want handled during the
+     * render loop
+     */
+    interface Action {
+        void go();
+    }
+
+    /**
+     * AnimationDriver is an internal class that PhysicsSprites can use to
+     * figure out which frame of an animation to show next
+     */
+    static class AnimationDriver {
+        /**
+         * The images that comprise the current animation will be the elements
+         * of this array
+         */
+        TextureRegion[] mImages;
+
+        /**
+         * The index to display from mImages for the case where there is no
+         * active animation. This is useful for animateByGoodieCount.
+         */
+        int mImageIndex;
+
+        /**
+         * The currently running animation
+         */
+        Animation mCurrentAnimation;
+
+        /**
+         * The frame of the currently running animation that is being displayed
+         */
+        private int mCurrentAnimationFrame;
+
+        /**
+         * The amout of time for which the current frame has been displayed
+         */
+        private float mCurrentAnimationTime;
+
+        /**
+         * Build an AnimationDriver by giving it an imageName. This allows us to
+         * use AnimationDriver for displaying non-animated images
+         * 
+         * @param imgName
+         *            The name of the image file to use
+         */
+        AnimationDriver(String imgName) {
+            updateImage(imgName);
+        }
+
+        /**
+         * Set the current animation, and reset internal fields
+         * 
+         * @param a
+         *            The animation to start using
+         */
+        void setCurrentAnimation(Animation a) {
+            mCurrentAnimation = a;
+            mCurrentAnimationFrame = 0;
+            mCurrentAnimationTime = 0;
+        }
+
+        /**
+         * Change the source for the default image to display
+         * 
+         * @param imgName
+         *            The name of the image file to use
+         */
+        void updateImage(String imgName) {
+            mImages = Media.getImage(imgName);
+            mImageIndex = 0;
+        }
+
+        /**
+         * Change the index of the default image to display
+         * 
+         * @param i
+         *            The index to use
+         */
+        void setIndex(int i) {
+            mImageIndex = i;
+        }
+
+        /**
+         * Request a random index from the mImages array to pick an image to
+         * display
+         */
+        void pickRandomIndex() {
+            mImageIndex = Util.getRandom(mImages.length);
+        }
+
+        /**
+         * When a PhysicsSprite renders, we use this method to figure out which
+         * textureRegion to display
+         * 
+         * @param delta
+         *            The time since the last render
+         * @return The TextureRegion to display
+         */
+        TextureRegion getTr(float delta) {
+            if (mCurrentAnimation == null) {
+                if (mImages == null)
+                    return null;
+                return mImages[mImageIndex];
+            }
+            mCurrentAnimationTime += delta;
+            long millis = (long) (1000 * mCurrentAnimationTime);
+            // are we still in this frame?
+            if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+            // are we on the last frame, with no loop? If so, stay where we
+            // are...
+            else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+            // else advance, reset, go
+            else {
+                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
+                mCurrentAnimationTime = 0;
+                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            }
+        }
+    }
+
+    /**
+     * This object holds the configuration information for a Parallax layer.
+     */
+    static class ParallaxLayer {
+        /**
+         * How fast should this layer scroll in the X dimension
+         */
+        final float mXSpeed;
+
+        /**
+         * How fast should it scroll in Y
+         */
+        final float mYSpeed;
+
+        /**
+         * The image to display
+         */
+        final TextureRegion mImage;
+
+        /**
+         * How much X offset when drawing this (only useful for Y repeat)
+         */
+        final float mXOffset;
+
+        /**
+         * How much Y offset when drawing this (only useful for X repeat)
+         */
+        final float mYOffset;
+
+        /**
+         * Loop in X?
+         */
+        boolean mXRepeat;
+
+        /**
+         * Loop in Y?
+         */
+        boolean mYRepeat;
+
+        /**
+         * Width of the image
+         */
+        float mWidth;
+
+        /**
+         * Height of the image
+         */
+        float mHeight;
+
+        /**
+         * Simple constructor... just set the fields
+         * 
+         * @param xSpeed
+         *            Speed that the layer moves in the X dimension
+         * @param ySpeed
+         *            Y speed
+         * @param tr
+         *            Image to use
+         * @param xOffset
+         *            X offset
+         * @param yOffset
+         *            Y offset
+         * @param width
+         *            Width of the image
+         * @param height
+         *            Height of the image
+         */
+        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset, float width,
+                float height) {
+            mXSpeed = xSpeed;
+            mYSpeed = ySpeed;
+            mImage = tr;
+            mXOffset = xOffset;
+            mYOffset = yOffset;
+            mWidth = width;
+            mHeight = height;
+        }
+    }
+
+    /**
+     * RouteDriver is an internal class, used by LOL to determine placement for an
+     * Entity whose motion is controlled by a Route.
+     */
+    static class RouteDriver {
+
+        /**
+         * The route that is being applied
+         */
+        private final Route mRoute;
+
+        /**
+         * The entity to which the route is being applied
+         */
+        private final Actor mEntity;
+
+        /**
+         * The speed at which the entity moves along the route
+         */
+        private final float mRouteVelocity;
+
+        /**
+         * When the entity reaches the end of the route, should it start again?
+         */
+        private final boolean mRouteLoop;
+
+        /**
+         * A temp for computing position
+         */
+        private final Vector2 mRouteVec = new Vector2();
+
+        /**
+         * Is the route still running?
+         */
+        private boolean mRouteDone;
+
+        /**
+         * Index of the next point in the route
+         */
+        private int mNextRouteGoal;
+
+        /**
+         * The constructor actually gets the route motion started
+         * 
+         * @param route
+         *            The route to apply
+         * @param velocity
+         *            The speed at which the entity moves
+         * @param loop
+         *            Should the route repeat when it completes?
+         * @param entity
+         *            The entity to which the route should be applied
+         */
+        RouteDriver(Route route, float velocity, boolean loop, Actor entity) {
+            mRoute = route;
+            mRouteVelocity = velocity;
+            mRouteLoop = loop;
+            mEntity = entity;
+            // kick off the route, indicate that we aren't all done yet
+            startRoute();
+            mRouteDone = false;
+        }
+
+        /**
+         * Stop a route
+         */
+        void haltRoute() {
+            mRouteDone = true;
+            // NB: third parameter doesn't matter, because the entity isn't a static
+            // body, so its bodytype won't change.
+            mEntity.setAbsoluteVelocity(0, 0, false);
+        }
+
+        /**
+         * Begin running a route
+         */
+        private void startRoute() {
+            // move to the starting point
+            mEntity.mBody.setTransform(mRoute.mXIndices[0] + mEntity.mSize.x / 2,
+                    mRoute.mYIndices[0] + mEntity.mSize.y / 2, 0);
+            // set up our next goal, start moving toward it
+            mNextRouteGoal = 1;
+            mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+            mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+            mRouteVec.nor();
+            mRouteVec.scl(mRouteVelocity);
+            mEntity.mBody.setLinearVelocity(mRouteVec);
+        }
+
+        /**
+         * Internal method for figuring out where we need to go next when driving a
+         * route
+         */
+        void drive() {
+            // quit if we're done and we don't loop
+            if (mRouteDone)
+                return;
+            // if we haven't passed the goal, keep going. we tell if we've passed
+            // the goal by comparing the magnitudes of the vectors from source (s)
+            // to here and from goal (g) to here
+            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mEntity.getXPosition();
+            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mEntity.getYPosition();
+            float gx = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+            float gy = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+            boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
+            boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
+            if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
+                mNextRouteGoal++;
+                if (mNextRouteGoal == mRoute.mPoints) {
+                    // reset if it's a loop, else terminate Route
+                    if (mRouteLoop) {
+                        startRoute();
+                    } else {
+                        mRouteDone = true;
+                        mEntity.mBody.setLinearVelocity(0, 0);
+                    }
+                } else {
+                    // advance to next point
+                    mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mEntity.getXPosition();
+                    mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mEntity.getYPosition();
+                    mRouteVec.nor();
+                    mRouteVec.scl(mRouteVelocity);
+                    mEntity.mBody.setLinearVelocity(mRouteVec);
+                }
+            }
+            // NB: 'else keep going at current velocity'
+        }
+    }
+
     /**
      * A random number generator... We provide this so that new game developers
      * don't create lots of Random()s throughout their code
@@ -60,14 +433,14 @@ public class Util {
      *            The file name for the image, or ""
      * @return A Renderable of the image
      */
-    static LolRenderable makePicture(final float x, final float y, final float width, final float height,
+    static Util.Renderable makePicture(final float x, final float y, final float width, final float height,
             String imgName) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
         TextureRegion[] trs = Media.getImage(imgName);
         final TextureRegion tr = (trs != null) ? trs[0] : null;
-        return new LolRenderable() {
+        return new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 if (tr != null)
@@ -97,10 +470,10 @@ public class Util {
      *            The font size
      * @return A Renderable of the text
      */
-    static LolRenderable makeText(final int x, final int y, final String message, final int red, final int green,
+    static Util.Renderable makeText(final int x, final int y, final String message, final int red, final int green,
             final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        return new LolRenderable() {
+        return new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
@@ -127,12 +500,12 @@ public class Util {
      *            The font size
      * @return A Renderable of the text
      */
-    static LolRenderable makeText(final String message, final int red, final int green, final int blue,
+    static Util.Renderable makeText(final String message, final int red, final int green, final int blue,
             String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = Lol.sGame.mConfig.getScreenWidth() / 2 - bf.getMultiLineBounds(message).width / 2;
         final float y = Lol.sGame.mConfig.getScreenHeight() / 2 + bf.getMultiLineBounds(message).height / 2;
-        return new LolRenderable() {
+        return new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
@@ -260,7 +633,7 @@ public class Util {
     public static void drawText(final float x, final float y, final String text, final int red, final int green,
             final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        LolRenderable r = new LolRenderable() {
+        Util.Renderable r = new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
@@ -271,7 +644,7 @@ public class Util {
         };
         Level.sCurrent.addSprite(r, zIndex);
     }
-    
+
     /**
      * Draw some text on the current level
      * 
@@ -298,8 +671,8 @@ public class Util {
      *            The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *            and 2. By default, everything goes to plane 0
      */
-    public static void drawTextCentered(final float centerX, final float centerY, final String text, final int red, final int green,
-            final int blue, String fontName, int size, int zIndex) {
+    public static void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
+            final int green, final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         // figure out the image dimensions
@@ -309,12 +682,12 @@ public class Util {
         bf.setScale(1);
 
         // describe how to render it
-        LolRenderable r = new LolRenderable() {
+        Util.Renderable r = new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
                 bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-                bf.drawMultiLine(sb, text, centerX - w/2, centerY + h/2);
+                bf.drawMultiLine(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.setScale(1);
             }
         };

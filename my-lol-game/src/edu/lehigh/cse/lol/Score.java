@@ -31,8 +31,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Timer;
 
-import edu.lehigh.cse.lol.Level.Action;
-
 /**
  * Score is used by Level to track the progress through a level. There are four
  * things tracked: the number of heroes created and destroyed, the number of
@@ -216,7 +214,7 @@ public class Score {
      */
     void endLevel(final boolean win) {
         if (Level.sCurrent.mEndGameEvent == null)
-            Level.sCurrent.mEndGameEvent = new Action() {
+            Level.sCurrent.mEndGameEvent = new Util.Action() {
                 @Override
                 public void go() {
                     // Safeguard: only call this method once per level

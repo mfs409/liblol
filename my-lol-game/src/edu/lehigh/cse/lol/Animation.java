@@ -45,7 +45,7 @@ public class Animation {
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
      */
-    private final TextureRegion[] mCells;
+    final TextureRegion[] mCells;
 
     /**
      * This array holds the indices that should be displayed.
@@ -61,7 +61,7 @@ public class Animation {
     /**
      * Should the animation repeat?
      */
-    private final boolean mLoop;
+    final boolean mLoop;
 
     /**
      * The next available position in the frames and durations arrays. Note that
@@ -69,124 +69,6 @@ public class Animation {
      * entries.
      */
     int mNextCell;
-
-    /**
-     * AnimationDriver is an internal class that PhysicsSprites can use to
-     * figure out which frame of an animation to show next
-     */
-    static class AnimationDriver {
-        /**
-         * The images that comprise the current animation will be the elements
-         * of this array
-         */
-        TextureRegion[] mImages;
-
-        /**
-         * The index to display from mImages for the case where there is no
-         * active animation. This is useful for animateByGoodieCount.
-         */
-        int mImageIndex;
-
-        /**
-         * The currently running animation
-         */
-        Animation mCurrentAnimation;
-
-        /**
-         * The frame of the currently running animation that is being displayed
-         */
-        private int mCurrentAnimationFrame;
-
-        /**
-         * The amout of time for which the current frame has been displayed
-         */
-        private float mCurrentAnimationTime;
-
-        /**
-         * Build an AnimationDriver by giving it an imageName. This allows us to
-         * use AnimationDriver for displaying non-animated images
-         * 
-         * @param imgName
-         *            The name of the image file to use
-         */
-        AnimationDriver(String imgName) {
-            updateImage(imgName);
-        }
-
-        /**
-         * Set the current animation, and reset internal fields
-         * 
-         * @param a
-         *            The animation to start using
-         */
-        void setCurrentAnimation(Animation a) {
-            mCurrentAnimation = a;
-            mCurrentAnimationFrame = 0;
-            mCurrentAnimationTime = 0;
-        }
-
-        /**
-         * Change the source for the default image to display
-         * 
-         * @param imgName
-         *            The name of the image file to use
-         */
-        void updateImage(String imgName) {
-            mImages = Media.getImage(imgName);
-            mImageIndex = 0;
-        }
-
-        /**
-         * Change the index of the default image to display
-         * 
-         * @param i
-         *            The index to use
-         */
-        void setIndex(int i) {
-            mImageIndex = i;
-        }
-
-        /**
-         * Request a random index from the mImages array to pick an image to
-         * display
-         */
-        void pickRandomIndex() {
-            mImageIndex = Util.getRandom(mImages.length);
-        }
-
-        /**
-         * When a PhysicsSprite renders, we use this method to figure out which
-         * textureRegion to display
-         * 
-         * @param delta
-         *            The time since the last render
-         * @return The TextureRegion to display
-         */
-        TextureRegion getTr(float delta) {
-            if (mCurrentAnimation == null) {
-                if (mImages == null)
-                    return null;
-                return mImages[mImageIndex];
-            }
-            mCurrentAnimationTime += delta;
-            long millis = (long) (1000 * mCurrentAnimationTime);
-            // are we still in this frame?
-            if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
-                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
-            }
-            // are we on the last frame, with no loop? If so, stay where we
-            // are...
-            else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
-                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
-            }
-            // else advance, reset, go
-            else {
-                mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
-                mCurrentAnimationTime = 0;
-                return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
-            }
-        }
-    }
 
     /*
      * PUBLIC INTERFACE

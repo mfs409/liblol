@@ -27,11 +27,10 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
-import java.util.ArrayList;
 
 /**
  * The Background class provides a way to declare images that go in the
@@ -46,86 +45,7 @@ public class Background {
     /**
      * All the background layers to show for the current level
      */
-    private final ArrayList<ParallaxLayer> mLayers = new ArrayList<ParallaxLayer>();
-
-    /**
-     * This object holds the configuration information for a Parallax layer.
-     */
-    static class ParallaxLayer {
-        /**
-         * How fast should this layer scroll in the X dimension
-         */
-        private final float mXSpeed;
-
-        /**
-         * How fast should it scroll in Y
-         */
-        private final float mYSpeed;
-
-        /**
-         * The image to display
-         */
-        private final TextureRegion mImage;
-
-        /**
-         * How much X offset when drawing this (only useful for Y repeat)
-         */
-        private final float mXOffset;
-
-        /**
-         * How much Y offset when drawing this (only useful for X repeat)
-         */
-        private final float mYOffset;
-
-        /**
-         * Loop in X?
-         */
-        private boolean mXRepeat;
-
-        /**
-         * Loop in Y?
-         */
-        private boolean mYRepeat;
-
-        /**
-         * Width of the image
-         */
-        private float mWidth;
-
-        /**
-         * Height of the image
-         */
-        private float mHeight;
-
-        /**
-         * Simple constructor... just set the fields
-         * 
-         * @param xSpeed
-         *            Speed that the layer moves in the X dimension
-         * @param ySpeed
-         *            Y speed
-         * @param tr
-         *            Image to use
-         * @param xOffset
-         *            X offset
-         * @param yOffset
-         *            Y offset
-         * @param width
-         *            Width of the image
-         * @param height
-         *            Height of the image
-         */
-        ParallaxLayer(float xSpeed, float ySpeed, TextureRegion tr, float xOffset, float yOffset, float width,
-                float height) {
-            mXSpeed = xSpeed;
-            mYSpeed = ySpeed;
-            mImage = tr;
-            mXOffset = xOffset;
-            mYOffset = yOffset;
-            mWidth = width;
-            mHeight = height;
-        }
-    }
+    private final ArrayList<Util.ParallaxLayer> mLayers = new ArrayList<Util.ParallaxLayer>();
 
     /**
      * This method, called from the render loop, is responsible for drawing all
@@ -142,7 +62,7 @@ public class Background {
         Level.sCurrent.mBgCam.update();
 
         // draw the layers
-        for (ParallaxLayer pl : mLayers) {
+        for (Util.ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(Level.sCurrent.mBgCam.calculateParallaxMatrix(
                     pl.mXSpeed * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
@@ -243,7 +163,7 @@ public class Background {
      */
     static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset, float width,
             float height) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
+        Util.ParallaxLayer pl = new Util.ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
                 * Physics.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);
@@ -271,7 +191,7 @@ public class Background {
      *            The height of the image being used as a background layer
      */
     static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset, float width, float height) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
+        Util.ParallaxLayer pl = new Util.ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
                 * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Level.sCurrent.mBackground.mLayers.add(pl);

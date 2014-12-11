@@ -77,7 +77,7 @@ public class Enemy extends Actor {
     /**
      * A callback to run when the enemy is defeated
      */
-    private CollisionCallback mDefeatCallback;
+    private Util.CollisionCallback mDefeatCallback;
 
     /**
      * Create an Enemy This should never be called directly.
@@ -299,7 +299,7 @@ public class Enemy extends Actor {
      * The callback to run when the enemy is defeated
      */
     public void setDefeatCallback(final SimpleCallback sc) {
-        mDefeatCallback = new CollisionCallback() {
+        mDefeatCallback = new Util.CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 sc.mAttachedActor = Enemy.this;

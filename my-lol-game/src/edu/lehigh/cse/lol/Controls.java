@@ -33,7 +33,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import edu.lehigh.cse.lol.Level.Action;
 import edu.lehigh.cse.lol.Level.GestureAction;
 
 /**
@@ -239,7 +238,7 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -391,7 +390,7 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -444,7 +443,7 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -571,7 +570,7 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             long mLastThrow;
 
             @Override
@@ -697,7 +696,7 @@ public class Controls {
         // direction
         Level.sCurrent.mToggleControls.add(c);
         Level.sCurrent.mPanControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             long mLastThrow;
 
             @Override
@@ -857,7 +856,7 @@ public class Controls {
         };
         Level.sCurrent.mControls.add(c);
         Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding)

@@ -64,7 +64,7 @@ public class PauseScene {
     /**
      * All text and images that go on the PauseScreen are stored here
      */
-    private final ArrayList<LolRenderable> mSprites = new ArrayList<LolRenderable>();
+    private final ArrayList<Util.Renderable> mSprites = new ArrayList<Util.Renderable>();
 
     /**
      * Track if the PauseScene is visible. Initially it is not.
@@ -177,7 +177,7 @@ public class PauseScene {
         Level.sCurrent.mHudCam.update();
         sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
-        for (LolRenderable r : mSprites)
+        for (Util.Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
 

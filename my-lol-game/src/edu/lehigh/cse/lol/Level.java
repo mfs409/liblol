@@ -63,13 +63,6 @@ import com.badlogic.gdx.utils.Timer.Task;
  * for keeping track of everything on the screen (game entities and Controls).
  */
 public class Level extends ScreenAdapter {
-    /**
-     * Wrapper for actions that we generate and then want handled during the
-     * render loop
-     */
-    interface Action {
-        void go();
-    }
 
     /**
      * When there is a gesture on the screen, we will convert the event's
@@ -542,7 +535,7 @@ public class Level extends ScreenAdapter {
     /**
      * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<LolRenderable>> mSprites = new ArrayList<ArrayList<LolRenderable>>(5);
+    private final ArrayList<ArrayList<Util.Renderable>> mSprites = new ArrayList<ArrayList<Util.Renderable>>(5);
 
     /**
      * Input Controls
@@ -577,18 +570,18 @@ public class Level extends ScreenAdapter {
     /**
      * Events that get processed on the next render, then discarded
      */
-    ArrayList<Action> mOneTimeEvents = new ArrayList<Action>();
+    ArrayList<Util.Action> mOneTimeEvents = new ArrayList<Util.Action>();
 
     /**
      * When the level is won or lost, this is where we store the event that
      * needs to run
      */
-    Action mEndGameEvent;
+    Util.Action mEndGameEvent;
 
     /**
      * Events that get processed on every render
      */
-    ArrayList<Action> mRepeatEvents = new ArrayList<Action>();
+    ArrayList<Util.Action> mRepeatEvents = new ArrayList<Util.Action>();
 
     /**
      * This camera is for drawing entities that exist in the physics world
@@ -734,7 +727,7 @@ public class Level extends ScreenAdapter {
 
         // set up the sprite sets
         for (int i = 0; i < 5; ++i)
-            mSprites.add(new ArrayList<LolRenderable>());
+            mSprites.add(new ArrayList<Util.Renderable>());
 
         // set up the callback for finding out who in the physics world was
         // touched
@@ -830,7 +823,7 @@ public class Level extends ScreenAdapter {
      *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addSprite(LolRenderable r, int zIndex) {
+    void addSprite(Util.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).add(r);
@@ -844,7 +837,7 @@ public class Level extends ScreenAdapter {
      * @param zIndex
      *            The z plane where it is expected to be
      */
-    void removeSprite(LolRenderable r, int zIndex) {
+    void removeSprite(Util.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).remove(r);
@@ -920,12 +913,12 @@ public class Level extends ScreenAdapter {
 
         // now handle any events that occurred on account of the world movement
         // or screen touches
-        for (Action pe : mOneTimeEvents)
+        for (Util.Action pe : mOneTimeEvents)
             pe.go();
         mOneTimeEvents.clear();
 
         // handle repeat events
-        for (Action pe : mRepeatEvents)
+        for (Util.Action pe : mRepeatEvents)
             pe.go();
 
         // check for end of game
@@ -949,8 +942,8 @@ public class Level extends ScreenAdapter {
         // Render the entities in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);
         mSpriteBatch.begin();
-        for (ArrayList<LolRenderable> a : mSprites)
-            for (LolRenderable r : a)
+        for (ArrayList<Util.Renderable> a : mSprites)
+            for (Util.Renderable r : a)
                 r.render(mSpriteBatch, delta);
         mSpriteBatch.end();
 

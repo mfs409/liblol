@@ -45,17 +45,17 @@ public class Obstacle extends Actor {
      * way to run custom code. This callback defines what code to run when a
      * hero collides with this obstacle.
      */
-    CollisionCallback mHeroCollision;
+    Util.CollisionCallback mHeroCollision;
 
     /**
      * This callback is for when an enemy collides with an obstacle
      */
-    CollisionCallback mEnemyCollision;
+    Util.CollisionCallback mEnemyCollision;
 
     /**
      * This callback is for when a projectile collides with an obstacle
      */
-    CollisionCallback mProjectileCollision;
+    Util.CollisionCallback mProjectileCollision;
 
     /**
      * Indicate that this obstacle does not re-enable jumping for the hero
@@ -211,7 +211,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionEffect(false);
         // register a callback to multiply the hero's speed by factor
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Util.CollisionCallback() {
             @Override
             public void go(Actor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
@@ -237,7 +237,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionEffect(false);
         // register a callback to change the hero's speed
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Util.CollisionCallback() {
             @Override
             public void go(final Actor h, Contact c) {
                 // boost the speed
@@ -302,7 +302,7 @@ public class Obstacle extends Actor {
         setCollisionEffect(false);
 
         // register a callback
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Util.CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 // Make sure the contact is active (it's not if this is a
@@ -364,7 +364,7 @@ public class Obstacle extends Actor {
         final int[] enemyCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
 
-        mEnemyCollision = new CollisionCallback() {
+        mEnemyCollision = new Util.CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
@@ -413,7 +413,7 @@ public class Obstacle extends Actor {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
-        mProjectileCollision = new CollisionCallback() {
+        mProjectileCollision = new Util.CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 boolean match = true;

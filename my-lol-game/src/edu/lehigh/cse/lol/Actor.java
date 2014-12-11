@@ -50,33 +50,12 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Animation.AnimationDriver;
-import edu.lehigh.cse.lol.Level.Action;
 import edu.lehigh.cse.lol.Level.GestureAction;
 
 /**
  * PhysicsSprite is the base class upon which every game entity is built
  */
-public abstract class Actor implements LolRenderable {
-    /**
-     * When a PhysicsSprite collides with another PhysicsSprite, and that
-     * collision is intended to cause some custom code to run, we use this
-     * interface
-     */
-    interface CollisionCallback {
-        /**
-         * Respond to a collision with a PhysicsSprite. Note that one of the
-         * collision entities is not named; it should be clear from the context
-         * in which this was constructed.
-         * 
-         * @param ps
-         *            The PhysicsSprite involved in the collision
-         * @param c
-         *            A description of the contact, in case it is useful
-         */
-        void go(final Actor ps, Contact c);
-    }
-
+public abstract class Actor implements Util.Renderable {
     /**
      * Physics body for this PhysicsSprite
      */
@@ -118,7 +97,7 @@ public abstract class Actor implements LolRenderable {
      * Does this entity follow a route? If so, the RouteDriver will be used to
      * advance the entity along its route.
      */
-    private RouteDriver mRoute;
+    private Util.RouteDriver mRoute;
 
     /**
      * Text that game designer can modify to hold additional information
@@ -175,7 +154,7 @@ public abstract class Actor implements LolRenderable {
      * Animation support: this tracks the current state of the active animation
      * (if any)
      */
-    AnimationDriver mAnimator;
+    Util.AnimationDriver mAnimator;
 
     /**
      * Animation support: the cells of the default animation
@@ -278,7 +257,7 @@ public abstract class Actor implements LolRenderable {
      *            The height
      */
     Actor(String imgName, float width, float height) {
-        mAnimator = new AnimationDriver(imgName);
+        mAnimator = new Util.AnimationDriver(imgName);
         mSize.x = width;
         mSize.y = height;
     }
@@ -851,7 +830,7 @@ public abstract class Actor implements LolRenderable {
      *            The callback to run when the entity stops
      */
     public void setStopCallback(final SimpleCallback sc) {
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             boolean moving = false;
 
             @Override
@@ -904,7 +883,7 @@ public abstract class Actor implements LolRenderable {
 
         // Create a RouteDriver to advance the entity's position according to
         // the route
-        mRoute = new RouteDriver(route, velocity, loop, this);
+        mRoute = new Util.RouteDriver(route, velocity, loop, this);
     }
 
     /**
@@ -1348,7 +1327,7 @@ public abstract class Actor implements LolRenderable {
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (mHover == null)
@@ -1472,7 +1451,7 @@ public abstract class Actor implements LolRenderable {
             final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1527,7 +1506,7 @@ public abstract class Actor implements LolRenderable {
             final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1561,7 +1540,7 @@ public abstract class Actor implements LolRenderable {
      * direction in which it is traveling
      */
     public void setRotationByDirection() {
-        Level.sCurrent.mRepeatEvents.add(new Action() {
+        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // handle rotating the hero based on the direction it faces

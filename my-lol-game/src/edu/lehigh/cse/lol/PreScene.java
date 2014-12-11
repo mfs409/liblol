@@ -44,7 +44,7 @@ public class PreScene {
     /**
      * The text and pictures to display
      */
-    private final ArrayList<LolRenderable> mSprites = new ArrayList<LolRenderable>();
+    private final ArrayList<Util.Renderable> mSprites = new ArrayList<Util.Renderable>();
 
     /**
      * True if we must click in order to clear the PreScene
@@ -132,7 +132,7 @@ public class PreScene {
         Level.sCurrent.mHudCam.update();
         sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
         sb.begin();
-        for (LolRenderable r : mSprites)
+        for (Util.Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
         return true;
