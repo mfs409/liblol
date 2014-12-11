@@ -123,9 +123,9 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addCountdown(float timeout, String text, int x, int y) {
-        return addCountdown(timeout, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addCountdown(timeout, text, x, y, Lol.sGame.mDefaultFontFace,
+                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -216,9 +216,9 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addWinCountdown(timeout, x, y, Lol.sGame.mDefaultFontFace,
+                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -316,9 +316,9 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize());
+        return addDefeatedCount(max, text, x, y, Lol.sGame.mDefaultFontFace,
+                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -369,9 +369,9 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     static public Display addStopwatch(int x, int y) {
-        return addStopwatch(x, y, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
-                Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(),
-                Lol.sGame.mConfig.getDefaultFontSize());
+        return addStopwatch(x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue,
+                Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -421,9 +421,9 @@ public class Displays {
      */
     static public Display addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, Lol.sGame.mConfig.getDefaultFontFace(),
-                Lol.sGame.mConfig.getDefaultFontRed(), Lol.sGame.mConfig.getDefaultFontGreen(),
-                Lol.sGame.mConfig.getDefaultFontBlue(), Lol.sGame.mConfig.getDefaultFontSize(), h);
+        return addStrengthMeter(text, x, y, Lol.sGame.mDefaultFontFace,
+                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize, h);
     }
 
     /**

@@ -92,8 +92,8 @@ public class PostScene {
      * are set
      */
     PostScene() {
-        mWinText = Lol.sGame.mConfig.getDefaultWinText();
-        mLoseText = Lol.sGame.mConfig.getDefaultLoseText();
+        mWinText = Lol.sGame.mDefaultWinText;
+        mLoseText = Lol.sGame.mDefaultLoseText;
     }
 
     /**
@@ -137,13 +137,13 @@ public class PostScene {
         if (win) {
             if (mWinSound != null)
                 mWinSound.play(Facts.getGameFact("volume"));
-            mWinSprites.add(Util.makeText(mWinText, 255, 255, 255, Lol.sGame.mConfig.getDefaultFontFace(),
-                    Lol.sGame.mConfig.getDefaultFontSize()));
+            mWinSprites.add(Util.makeText(mWinText, 255, 255, 255, Lol.sGame.mDefaultFontFace,
+                    Lol.sGame.mDefaultFontSize));
         } else {
             if (mLoseSound != null)
                 mLoseSound.play(Facts.getGameFact("volume"));
-            mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255, Lol.sGame.mConfig.getDefaultFontFace(),
-                    Lol.sGame.mConfig.getDefaultFontSize()));
+            mLoseSprites.add(Util.makeText(mLoseText, 255, 255, 255, Lol.sGame.mDefaultFontFace,
+                    Lol.sGame.mDefaultFontSize));
         }
     }
 
@@ -162,7 +162,7 @@ public class PostScene {
         if (!mWin) {
             Lol.doPlayLevel(Lol.sGame.mModeStates[Lol.PLAY]);
         } else {
-            if (Lol.sGame.mModeStates[Lol.PLAY] == Lol.sGame.mConfig.getNumLevels()) {
+            if (Lol.sGame.mModeStates[Lol.PLAY] == Lol.sGame.mNumLevels) {
                 Lol.doChooser(1);
             } else {
                 Lol.sGame.mModeStates[Lol.PLAY]++;

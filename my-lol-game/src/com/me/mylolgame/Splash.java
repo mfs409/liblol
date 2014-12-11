@@ -32,7 +32,8 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Physics;
-import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
 /**
@@ -40,9 +41,9 @@ import edu.lehigh.cse.lol.Util;
  * screen of the game. Typically this has buttons for playing, getting help, and
  * quitting.
  */
-public class SplashScreen {
+public class Splash implements ScreenManager {
 
-    public static void display() {
+    public void display(int which) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
         Level.configure(48, 32);
@@ -55,7 +56,7 @@ public class SplashScreen {
 
         // This is the Play button... it switches to the first screen of the
         // level chooser
-        Controls.addCallbackControl(384, 182, 186, 104, "", new SimpleCallback() {
+        Controls.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(1);
             }
@@ -63,14 +64,14 @@ public class SplashScreen {
 
         // This is the Help button... it switches to the first screen of the
         // help system
-        Controls.addCallbackControl(96, 186, 160, 80, "", new SimpleCallback() {
+        Controls.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
             public void onEvent() {
                 Lol.doHelp(1);
             }
         });
 
         // This is the Quit button
-        Controls.addCallbackControl(726, 186, 138, 78, "", new SimpleCallback() {
+        Controls.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
             public void onEvent() {
                 Lol.doQuit();
             }
@@ -87,7 +88,7 @@ public class SplashScreen {
         }
         // when the obstacle is touched, change the mute and then update the
         // picture for the obstacle
-        o.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+        o.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.toggleMute();
                 if (Lol.getVolume()) {

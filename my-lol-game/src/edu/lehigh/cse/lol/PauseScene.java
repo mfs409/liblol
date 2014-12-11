@@ -58,7 +58,7 @@ public class PauseScene {
         /**
          * The Callback to run when this button is pressed
          */
-        SimpleCallback mCallback;
+        LolCallback mCallback;
     }
 
     /**
@@ -182,7 +182,7 @@ public class PauseScene {
         sb.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -317,7 +317,7 @@ public class PauseScene {
      * @param callbackId
      *            The value to pass back to the main game
      */
-    public static void addCallbackButton(int x, int y, int width, int height, SimpleCallback sc) {
+    public static void addCallbackButton(int x, int y, int width, int height, LolCallback sc) {
         Button b = new Button();
         b.mRect = new Rectangle(x, y, width, height);
         b.mCallback = sc;

@@ -42,7 +42,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -63,168 +62,6 @@ import com.badlogic.gdx.utils.Timer.Task;
  * for keeping track of everything on the screen (game entities and Controls).
  */
 public class Level extends ScreenAdapter {
-
-    /**
-     * When there is a gesture on the screen, we will convert the event's
-     * coordinates to world coordinates, then use this to handle it. This object
-     * can be attached to PhysicsSprites, Controls, or to the Level itself, to
-     * specify a handler for certain events.
-     */
-    static class GestureAction {
-        /**
-         * We offer a HOLD/RELEASE gesture. This flag tells us if we're in a
-         * hold event.
-         */
-        boolean mHolding;
-
-        /**
-         * Handle a drag event
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        boolean onDrag(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a down press (hopefully to turn it into a hold/release)
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        public boolean onDown(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle an up press (hopefully to turn it into a release)
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        public boolean onUp(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a tap event
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        boolean onTap(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a pan event
-         * 
-         * @param touchVec
-         *            The x/y/z world coordinates of the touch
-         * @param deltaX
-         *            the change in X scale, in screen coordinates
-         * @param deltaY
-         *            the change in Y scale, in screen coordinates
-         */
-        boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-            return false;
-        }
-
-        /**
-         * Handle a pan stop event
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        boolean onPanStop(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a fling event
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        boolean onFling(Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a toggle event. This is usually built from a down and an up.
-         * 
-         * @param touchVec
-         *            The x/y/z coordinates of the touch
-         */
-        boolean toggle(boolean isUp, Vector3 touchVec) {
-            return false;
-        }
-
-        /**
-         * Handle a zoom event
-         * 
-         * @param initialDistance
-         *            The distance between fingers when the pinch started
-         * @param distance
-         *            The current distance between fingers
-         */
-        boolean zoom(float initialDistance, float distance) {
-            return false;
-        }
-    }
-
-    /**
-     * Custom camera that can do parallax... taken directly from GDX tests
-     */
-    class ParallaxCamera extends OrthographicCamera {
-        /**
-         * This matrix helps us compute the view
-         */
-        private final Matrix4 parallaxView = new Matrix4();
-
-        /**
-         * This matrix helps us compute the camera.combined
-         */
-        private final Matrix4 parallaxCombined = new Matrix4();
-
-        /**
-         * A temporary vector for doing the calculations
-         */
-        private final Vector3 tmp = new Vector3();
-
-        /**
-         * Another temporary vector for doing the calculations
-         */
-        private final Vector3 tmp2 = new Vector3();
-
-        /**
-         * The constructor simply forwards to the OrthographicCamera constructor
-         * 
-         * @param viewportWidth
-         *            Width of the camera
-         * @param viewportHeight
-         *            Height of the camera
-         */
-        ParallaxCamera(float viewportWidth, float viewportHeight) {
-            super(viewportWidth, viewportHeight);
-        }
-
-        /**
-         * This is how we calculate the position of a parallax camera
-         */
-        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
-            update();
-            tmp.set(position);
-            tmp.x *= parallaxX;
-            tmp.y *= parallaxY;
-
-            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
-            parallaxCombined.set(projection);
-            Matrix4.mul(parallaxCombined.val, parallaxView.val);
-            return parallaxCombined;
-        }
-    }
 
     /**
      * To properly handle gestures, we need to provide the code to run on each
@@ -278,7 +115,7 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // is this a raw screen tap?
-            for (GestureAction ga : mGestureResponders)
+            for (Util.GestureAction ga : mGestureResponders)
                 if (ga.onTap(mTouchVec))
                     return true;
             return false;
@@ -298,7 +135,7 @@ public class Level extends ScreenAdapter {
         public boolean fling(float velocityX, float velocityY, int button) {
             // we only fling at the whole-level layer
             mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-            for (GestureAction ga : Level.sCurrent.mGestureResponders) {
+            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders) {
                 if (ga.onFling(mTouchVec))
                     return true;
             }
@@ -331,7 +168,7 @@ public class Level extends ScreenAdapter {
 
             // did we pan the level?
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : Level.sCurrent.mGestureResponders) {
+            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders) {
                 if (ga.onPan(mTouchVec, deltaX, deltaY))
                     return true;
             }
@@ -364,7 +201,7 @@ public class Level extends ScreenAdapter {
 
             // handle panstop on level
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : Level.sCurrent.mGestureResponders)
+            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders)
                 if (ga.onPanStop(mTouchVec))
                     return true;
             return false;
@@ -434,7 +271,7 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // forward to the level's handler
-            for (GestureAction ga : mGestureResponders)
+            for (Util.GestureAction ga : mGestureResponders)
                 if (ga.onDown(mTouchVec))
                     return true;
             return false;
@@ -480,7 +317,7 @@ public class Level extends ScreenAdapter {
                 mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                 return mHitSprite.mGestureResponder.onDrag(mTouchVec);
             }
-            for (GestureAction ga : mGestureResponders)
+            for (Util.GestureAction ga : mGestureResponders)
                 if (ga.onDrag(mTouchVec))
                     return true;
             return false;
@@ -596,7 +433,7 @@ public class Level extends ScreenAdapter {
     /**
      * This camera is for drawing parallax backgrounds that go behind the world
      */
-    ParallaxCamera mBgCam;
+    Util.ParallaxCamera mBgCam;
 
     /**
      * This is the sprite that the camera chases
@@ -655,7 +492,7 @@ public class Level extends ScreenAdapter {
      * Entities may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
-    ArrayList<GestureAction> mGestureResponders = new ArrayList<GestureAction>();
+    ArrayList<Util.GestureAction> mGestureResponders = new ArrayList<Util.GestureAction>();
 
     /**
      * In levels with a projectile pool, the pool is accessed from here
@@ -665,12 +502,12 @@ public class Level extends ScreenAdapter {
     /**
      * Code to run when a level is won
      */
-    SimpleCallback mWinCallback;
+    LolCallback mWinCallback;
 
     /**
      * Code to run when a level is lost
      */
-    SimpleCallback mLoseCallback;
+    LolCallback mLoseCallback;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
@@ -702,26 +539,26 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO)
+        if (width < Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO)
+        if (height < Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO,
-                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mConfig.getScreenWidth() / Physics.PIXEL_METER_RATIO / 2,
-                Lol.sGame.mConfig.getScreenHeight() / Physics.PIXEL_METER_RATIO / 2, 0);
+        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO,
+                Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO / 2,
+                Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
-        int camWidth = Lol.sGame.mConfig.getScreenWidth();
-        int camHeight = Lol.sGame.mConfig.getScreenHeight();
+        int camWidth = Lol.sGame.mWidth;
+        int camHeight = Lol.sGame.mHeight;
         mHudCam = new OrthographicCamera(camWidth, camHeight);
         mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
         // the background camera is like the hudcam
-        mBgCam = new ParallaxCamera(camWidth, camHeight);
+        mBgCam = new Util.ParallaxCamera(camWidth, camHeight);
         mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
         mBgCam.zoom = 1;
 
@@ -748,9 +585,9 @@ public class Level extends ScreenAdapter {
         };
 
         // When debug mode is on, print the frames per second
-        if (Lol.sGame.mConfig.showDebugBoxes())
-            Displays.addFPS(800, 15, Lol.sGame.mConfig.getDefaultFontFace(), Lol.sGame.mConfig.getDefaultFontRed(),
-                    Lol.sGame.mConfig.getDefaultFontGreen(), Lol.sGame.mConfig.getDefaultFontBlue(), 12);
+        if (Lol.sGame.mShowDebugBoxes)
+            Displays.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                    Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, 12);
     }
 
     /**
@@ -795,19 +632,19 @@ public class Level extends ScreenAdapter {
         float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mConfig.getScreenWidth() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mConfig.getScreenHeight() * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -856,7 +693,7 @@ public class Level extends ScreenAdapter {
                 c.mGestureAction.toggle(true, touchVec);
             }
         }
-        for (GestureAction ga : mGestureResponders) {
+        for (Util.GestureAction ga : mGestureResponders) {
             ga.onPanStop(mTouchVec);
             ga.onUp(mTouchVec);
         }
@@ -877,7 +714,7 @@ public class Level extends ScreenAdapter {
     public void render(float delta) {
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
                 mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 Util.message("Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
@@ -948,7 +785,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: draw outlines of physics entities
-        if (Lol.sGame.mConfig.showDebugBoxes())
+        if (Lol.sGame.mShowDebugBoxes)
             mDebugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
@@ -963,7 +800,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
-        if (Lol.sGame.mConfig.showDebugBoxes()) {
+        if (Lol.sGame.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -1037,7 +874,7 @@ public class Level extends ScreenAdapter {
      * @param sc
      *            A SimpleCallback to run
      */
-    public static void setTimerCallback(float howLong, final SimpleCallback sc) {
+    public static void setTimerCallback(float howLong, final LolCallback sc) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
@@ -1057,7 +894,7 @@ public class Level extends ScreenAdapter {
      * @param sc
      *            A SimpleCallback to run
      */
-    public static void setTimerCallback(float howLong, float interval, final SimpleCallback sc) {
+    public static void setTimerCallback(float howLong, float interval, final LolCallback sc) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
@@ -1100,7 +937,7 @@ public class Level extends ScreenAdapter {
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Level.sCurrent.mGestureResponders.add(new GestureAction() {
+        Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -1163,7 +1000,7 @@ public class Level extends ScreenAdapter {
      * @param sc
      *            The code to run
      */
-    public static void setWinCallback(SimpleCallback sc) {
+    public static void setWinCallback(LolCallback sc) {
         Level.sCurrent.mWinCallback = sc;
     }
 
@@ -1173,7 +1010,7 @@ public class Level extends ScreenAdapter {
      * @param sc
      *            The code to run
      */
-    public static void setLoseCallback(SimpleCallback sc) {
+    public static void setLoseCallback(LolCallback sc) {
         Level.sCurrent.mLoseCallback = sc;
     }
 }

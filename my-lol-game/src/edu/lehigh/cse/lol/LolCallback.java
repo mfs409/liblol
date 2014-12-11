@@ -35,7 +35,7 @@ package edu.lehigh.cse.lol;
  * In the interest of simplicity, we use some public fields instead of getters
  * and setters. This also lets us get away with using the default constructor.
  */
-public abstract class SimpleCallback implements Cloneable {
+public abstract class LolCallback implements Cloneable {
     /**
      * An integer that may be of use during the callback
      */
@@ -60,14 +60,14 @@ public abstract class SimpleCallback implements Cloneable {
     /**
      * Make a copy of the current SimpleCallback
      */
-    public SimpleCallback clone() {
+    public LolCallback clone() {
         // This code is trickier than one would think. The issue is
         // that we are doing this copy as a way of getting a new object with the
         // same overridden onEvent() method. That, in turn, means we need to
         // implement Cloneable.
-        SimpleCallback sc;
+        LolCallback sc;
         try {
-            sc = (SimpleCallback) super.clone();
+            sc = (LolCallback) super.clone();
         } catch (CloneNotSupportedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

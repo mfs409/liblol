@@ -456,7 +456,7 @@ public class Score {
      *            The value to save
      */
     public static void savePersistent(String key, int value) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
         prefs.putInteger(key, value);
         prefs.flush();
     }
@@ -471,7 +471,7 @@ public class Score {
      * @returns The current value saved for the give
      */
     public static int readPersistent(String key, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.getStorageKey());
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
         return prefs.getInteger(key, defaultVal);
     }
 

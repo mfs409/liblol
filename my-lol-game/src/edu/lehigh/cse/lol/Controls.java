@@ -33,7 +33,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import edu.lehigh.cse.lol.Level.GestureAction;
+import edu.lehigh.cse.lol.Util.GestureAction;
 
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying
@@ -54,7 +54,7 @@ public class Controls {
         /**
          * Code to run when this Control is touched
          */
-        GestureAction mGestureAction;
+        Util.GestureAction mGestureAction;
 
         /**
          * For touchable Controls, this is the rectangle on the screen that is
@@ -210,7 +210,7 @@ public class Controls {
     public static Control addMoveButton(int x, int y, int width, int height, String imgName,
             final Actor entity, final float dx, final float dy) {
         final Control c = new Control(imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
+        c.mGestureAction = new Util.GestureAction() {
 
             /**
              * Run this when a control is down-pressed or up-pressed
@@ -434,7 +434,7 @@ public class Controls {
     public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
             final float rateX, final float rateY, final float dampening, final Actor entity) {
         final Control c = new Control(imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
+        c.mGestureAction = new Util.GestureAction() {
             @Override
             boolean toggle(boolean isUp, Vector3 vv) {
                 mHolding = !isUp;
@@ -885,7 +885,7 @@ public class Controls {
      *            The code to run when the button is pressed
      */
     public static Control addCallbackControl(int x, int y, int width, int height, String imgName,
-            final SimpleCallback sc) {
+            final LolCallback sc) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -920,7 +920,7 @@ public class Controls {
      *            The code to run in response to the control press
      */
     public static Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
-            final String inactiveImgName, final SimpleCallback sc) {
+            final String inactiveImgName, final LolCallback sc) {
         final Control c = new Control(activeImgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -1002,13 +1002,13 @@ public class Controls {
                 float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f * Level.sCurrent.mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > Level.sCurrent.mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom
+                if (x > Level.sCurrent.mCamBoundX - Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    x = Level.sCurrent.mCamBoundX - Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom
+                    x = Level.sCurrent.mCamBoundX - Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
-                if (y > Level.sCurrent.mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom
+                if (y > Level.sCurrent.mCamBoundY - Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    y = Level.sCurrent.mCamBoundY - Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom
+                    y = Level.sCurrent.mCamBoundY - Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1016,13 +1016,13 @@ public class Controls {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                if (x < Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
                         / 2)
-                    x = Lol.sGame.mConfig.getScreenWidth() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                    x = Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
                             / 2;
-                if (y < Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                if (y < Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
                         / 2)
-                    y = Lol.sGame.mConfig.getScreenHeight() * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
+                    y = Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
                             / 2;
 
                 // update the camera position
@@ -1114,7 +1114,7 @@ public class Controls {
      *            The code to run when the bar is pressed
      */
     public static Control addVerticalBar(final int x, final int y, final int width, final int height, String imgName,
-            final SimpleCallback sc) {
+            final LolCallback sc) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * Track if the bar is growing (true) or shrinking (false)
@@ -1219,7 +1219,7 @@ public class Controls {
      *            The code to run when the rotator is pressed
      */
     public static Control addRotator(final int x, final int y, final int width, final int height, String imgName,
-            final float delta, final SimpleCallback sc) {
+            final float delta, final LolCallback sc) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * This is the render method when we've got a valid TR. We're going

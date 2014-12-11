@@ -29,6 +29,7 @@ package com.me.mylolgame;
 
 import com.badlogic.gdx.math.Vector2;
 
+import edu.lehigh.cse.lol.Actor;
 import edu.lehigh.cse.lol.Animation;
 import edu.lehigh.cse.lol.Background;
 import edu.lehigh.cse.lol.Controls;
@@ -42,20 +43,20 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.PauseScene;
 import edu.lehigh.cse.lol.Physics;
-import edu.lehigh.cse.lol.Actor;
 import edu.lehigh.cse.lol.PostScene;
 import edu.lehigh.cse.lol.PreScene;
 import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.Score;
-import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Tilt;
 import edu.lehigh.cse.lol.Util;
 
-public class GameLevels {
+public class Levels implements ScreenManager{
 
-    public static void display(int whichLevel) {
+    public void display(int whichLevel) {
         /*
          * In this level, all we have is a hero (the green ball) who needs to
          * make it to the destination (a mustard colored ball). The game is
@@ -1125,7 +1126,7 @@ public class GameLevels {
             // score is saved, it is saved permanently on the phone, though
             // every re-execution on the desktop resets the best score. Note
             // that we save the score whether we win or lose.
-            SimpleCallback sc = new SimpleCallback() {
+            LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     int oldBest = Score.readPersistent("HighScore32", 0);
                     if (oldBest < Score.getDistance())
@@ -1656,7 +1657,7 @@ public class GameLevels {
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
             // callback code.
-            o.setProjectileCollisionCallback(0, 0, 0, 0, new SimpleCallback(){public void onEvent(){}});
+            o.setProjectileCollisionCallback(0, 0, 0, 0, new LolCallback(){public void onEvent(){}});
         }
 
         /*
@@ -1705,7 +1706,7 @@ public class GameLevels {
             // however we want, and it has a field called "attachedSprite",
             // which is a way of keeping track of the entity (in this case, an
             // enemy) with which the callback is associated.
-            SimpleCallback sc = new SimpleCallback() {
+            LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     // only reproduce the enemy if it is visible
                     if (mAttachedActor.getVisible()) {
@@ -1735,10 +1736,10 @@ public class GameLevels {
                             // each of them. We can 'clone' this SimpleCallback
                             // and then just change the attachedSprite, so that
                             // we don't have to re-write this code.
-                            SimpleCallback l = this.clone();
+                            LolCallback l = this.clone();
                             l.mAttachedActor = left;
                             Level.setTimerCallback(2, l);
-                            SimpleCallback r = this.clone();
+                            LolCallback r = this.clone();
                             r.mAttachedActor = right;
                             Level.setTimerCallback(2, r);
                         }
@@ -1788,7 +1789,7 @@ public class GameLevels {
             // to lots of enemies eventually, and there's no way to defeat them
             // in this level! Again, be sure to look at onEnemyTimerCallback()
             // below.
-            SimpleCallback sc = new SimpleCallback() {
+            LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     // Make the new enemy
                     Enemy e2 = Enemy.makeAsCircle(mAttachedActor.getXPosition(), mAttachedActor.getYPosition(),
@@ -1799,7 +1800,7 @@ public class GameLevels {
                     if (mIntVal > 0) {
                         mIntVal--;
                         Level.setTimerCallback(2, this);
-                        SimpleCallback c2 = this.clone();
+                        LolCallback c2 = this.clone();
                         c2.mAttachedActor = e2;
                         Level.setTimerCallback(2, c2);
                     }
@@ -2050,7 +2051,7 @@ public class GameLevels {
             h.setMoveByTilting();
 
             // provide some code to run when the hero's strength changes
-            h.setStrengthChangeCallback(new SimpleCallback() {
+            h.setStrengthChangeCallback(new LolCallback() {
                 public void onEvent() {
                     // get the hero's strength. Since the hero isn't dead, the
                     // strength is at least 1. Since there are 7 strength
@@ -2095,7 +2096,7 @@ public class GameLevels {
             // collides with any enemy, the onEnemyCollideCallback() code will
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
-            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new SimpleCallback() {
+            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new LolCallback() {
                 public void onEvent() {
                     // This obstacle can only defeat the big enemy, and it
                     // disappears when it defeats the enemy
@@ -2112,7 +2113,7 @@ public class GameLevels {
             Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
                 public void onEvent() {
                     ((Enemy) mCollideActor).defeat(true);
                 }
@@ -2348,7 +2349,7 @@ public class GameLevels {
             Score.setVictoryDestination(1);
 
             // set a timer callback. after three seconds, the callback will run
-            Level.setTimerCallback(2, new SimpleCallback() {
+            Level.setTimerCallback(2, new LolCallback() {
                 public void onEvent() {
                     // put up a pause scene to interrupt gameplay
                     PauseScene.reset();
@@ -2363,7 +2364,7 @@ public class GameLevels {
 
             // set another callback that runs after 6 seconds (note: time
             // doesn't count while the PauseScene is showing...)
-            Level.setTimerCallback(6, new SimpleCallback() {
+            Level.setTimerCallback(6, new LolCallback() {
                 public void onEvent() {
                     // clear the pause scene, then put new text on it
                     PauseScene.reset();
@@ -2379,7 +2380,7 @@ public class GameLevels {
             // set a callback that runs after 9 seconds. Though it's not
             // necessary in this case, we're going to make the callback an
             // explicit object. This can be useful, as we'll see later on.
-            Level.setTimerCallback(9, new SimpleCallback() {
+            Level.setTimerCallback(9, new LolCallback() {
                 public void onEvent() {
                     // draw an enemy, a goodie, and a destination, all with
                     // fixed velocities
@@ -2400,7 +2401,7 @@ public class GameLevels {
 
             // Lastly, we can make a timer callback that runs over and over
             // again. This one starts after 2 seconds, then runs every second.
-            Level.setTimerCallback(2, 1, new SimpleCallback() {
+            Level.setTimerCallback(2, 1, new LolCallback() {
                 public void onEvent() {
                     // note that every SimpleCallback has a field called
                     // "intVal" that is initially 0. By using and then modifying
@@ -2445,7 +2446,7 @@ public class GameLevels {
             o.setPhysics(1, 0, 1);
             // the callback id is 0, there is no delay, and no goodies are
             // needed before it works
-            o.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+            o.setHeroCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
                 public void onEvent() {
                     // get rid of the obstacle we just collided with
                     mAttachedActor.remove(false);
@@ -2459,7 +2460,7 @@ public class GameLevels {
                     // the best way to do that is to make a single callback that
                     // behaves differently based on the value of the callback's
                     // intVal field.
-                    SimpleCallback sc2 = new SimpleCallback() {
+                    LolCallback sc2 = new LolCallback() {
                         public void onEvent() {
                             // The second callback works the same way
                             if (mIntVal == 0) {
@@ -2523,7 +2524,7 @@ public class GameLevels {
             Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
-            o.setTouchCallback(1, 0, 0, 0, true, new SimpleCallback() {
+            o.setTouchCallback(1, 0, 0, 0, true, new LolCallback() {
                 public void onEvent() {
                     // note: we could draw a picture of an open chest in the
                     // obstacle's place, or even use a disappear animation whose
@@ -2575,7 +2576,7 @@ public class GameLevels {
             Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
                 public void onEvent() {
                     if (mCollideActor.getInfoText() == "weak") {
                         ((Enemy) mCollideActor).defeat(true);
@@ -2586,7 +2587,7 @@ public class GameLevels {
             // now draw our enemies... we need enough to be able to test that
             // all four defeat mechanisms work. Note that we attach defeat
             // callback code to each of them.
-            SimpleCallback sc = new SimpleCallback() {
+            LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     // always reset the pausescene, in case it has something on
                     // it from before...
@@ -2649,7 +2650,7 @@ public class GameLevels {
             // onHeroCollideCallback for details
             Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionCallback(0, 0, 0, 0, 1, new SimpleCallback() {
+            o.setHeroCollisionCallback(0, 0, 0, 0, 1, new LolCallback() {
                 public void onEvent() {
                     // here's a simple way to increment a goodie count
                     Score.incrementGoodiesCollected2();
@@ -2950,7 +2951,7 @@ public class GameLevels {
             // When the hero collides with this obstacle, we'll increase the
             // time remaining. See onHeroCollideCallback()
             Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
-            o.setHeroCollisionCallback(1, 1, 1, 0, 0, new SimpleCallback() {
+            o.setHeroCollisionCallback(1, 1, 1, 0, 0, new LolCallback() {
                 public void onEvent() {
                     // add 15 seconds to the timer
                     Score.updateTimerExpiration(15);
@@ -3071,7 +3072,7 @@ public class GameLevels {
             platform.setOneSided(2);
             // Set a callback, then re-enable the platform's collision effect.
             // Be sure to check onHeroCollideCallback
-            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new SimpleCallback() {
+            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
                 public void onEvent() {
                     mCollideActor.setAbsoluteVelocity(mCollideActor.getXVelocity(), 5, false);
                 }
@@ -3107,7 +3108,7 @@ public class GameLevels {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            Controls.addCallbackControl(40, 40, 40, 40, "red.png", new SimpleCallback() {
+            Controls.addCallbackControl(40, 40, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
                     PauseScene.reset();
                     PauseScene.addText("Current score " + Score.getGoodiesCollected1(), 255, 255, 255, "arial.ttf", 20);
@@ -3119,17 +3120,17 @@ public class GameLevels {
             Displays.addLevelFact("level test", 240, 40, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Displays.addSessionFact("session test", 240, 80, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Displays.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
-            Controls.addCallbackControl(40, 90, 40, 40, "red.png", new SimpleCallback() {
+            Controls.addCallbackControl(40, 90, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
                     Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test"));
                 }
             });
-            Controls.addCallbackControl(40, 140, 40, 40, "red.png", new SimpleCallback() {
+            Controls.addCallbackControl(40, 140, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
                     Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test"));
                 }
             });
-            Controls.addCallbackControl(40, 190, 40, 40, "red.png", new SimpleCallback() {
+            Controls.addCallbackControl(40, 190, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
                     Facts.putGameFact("game test", 1 + Facts.getGameFact("game test"));
                 }
@@ -3292,7 +3293,7 @@ public class GameLevels {
             Controls.addPinchZoomControl(0, 0, 960, 640, "", 8, .25f);
 
             // add a one-time callback control
-            Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", new SimpleCallback() {
+            Controls.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", new LolCallback() {
                 public void onEvent() {
                     PauseScene.addText("you can only pause once...", 255, 255, 255, "arial.ttf", 20);
                     PauseScene.show();
@@ -3318,7 +3319,7 @@ public class GameLevels {
             h.setDamping(1);
             h.setAngularDamping(1);
             // when the hero stops, we'll run code that turns the hero red
-            h.setStopCallback(new SimpleCallback() {
+            h.setStopCallback(new LolCallback() {
                 public void onEvent() {
                     // NB: the setStopCallback call sets the callback's
                     // attachedSprite to the hero.
@@ -3328,7 +3329,7 @@ public class GameLevels {
 
             // add some new controls for setting the rotation of the hero and
             // making the hero move based on a speed
-            SimpleCallback rotatorSC = new SimpleCallback() {
+            LolCallback rotatorSC = new LolCallback() {
                 public void onEvent() {
                     // rotator... save the rotation and rotate the hero
                     mAttachedActor.setRotation(mFloatVal * (float) Math.PI / 180);
@@ -3338,7 +3339,7 @@ public class GameLevels {
             };
             rotatorSC.mAttachedActor = h;
             Controls.addRotator(215, 135, 50, 50, "stars.png", 2, rotatorSC);
-            SimpleCallback barSC = new SimpleCallback() {
+            LolCallback barSC = new LolCallback() {
                 public void onEvent() {
                     // vertical bar... make the entity move
                     int rotation = Facts.getLevelFact("rotation") / 100;
@@ -3400,12 +3401,12 @@ public class GameLevels {
             // for pausing the level
             PauseScene.addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
             PauseScene.addBackButton("red.png", 0, 600, 40, 40);
-            PauseScene.addCallbackButton(10, 10, 20, 20, new SimpleCallback() {
+            PauseScene.addCallbackButton(10, 10, 20, 20, new LolCallback() {
                 public void onEvent() {
                     Score.winLevel();
                 }
             });
-            PauseScene.addCallbackButton(190, 190, 20, 20, new SimpleCallback() {
+            PauseScene.addCallbackButton(190, 190, 20, 20, new LolCallback() {
                 public void onEvent() {
                     Score.loseLevel();
                 }
@@ -3468,7 +3469,7 @@ public class GameLevels {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+            Controls.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = Facts.getLevelActor("" + i);

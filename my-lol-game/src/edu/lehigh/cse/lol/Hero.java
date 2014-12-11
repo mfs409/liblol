@@ -34,8 +34,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.Level.GestureAction;
-
 public class Hero extends Actor {
 
     /**
@@ -124,7 +122,7 @@ public class Hero extends Actor {
     /**
      * Code to run when the hero's strength changes
      */
-    private SimpleCallback mStrengthChangeCallback;
+    private LolCallback mStrengthChangeCallback;
 
     /**
      * Construct a Hero by creating a PhysicsSprite and incrementing the number
@@ -503,7 +501,7 @@ public class Hero extends Actor {
      *            Velocity in Y dimension
      */
     public void setTouchAndGo(final float x, final float y) {
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 mHover = null;
@@ -543,7 +541,7 @@ public class Hero extends Actor {
      */
 
     public void setTouchToJump() {
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
                 jump();
@@ -625,7 +623,7 @@ public class Hero extends Actor {
      * @param sc
      *            The code to run.
      */
-    public void setStrengthChangeCallback(SimpleCallback sc) {
+    public void setStrengthChangeCallback(LolCallback sc) {
         mStrengthChangeCallback = sc;
     }
 }

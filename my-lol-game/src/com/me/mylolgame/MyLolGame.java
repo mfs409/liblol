@@ -44,16 +44,15 @@ package com.me.mylolgame;
 // TODO: make sure music stops when game quits (on phone)
 
 import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.LolConfiguration;
 import edu.lehigh.cse.lol.Media;
 
 public class MyLolGame extends Lol {
 
     /**
-     * Configure all the images and sounds used by our game
+     * Load all the images and sounds used by our game
      */
     @Override
-    public void nameResources() {
+    public void loadResources() {
         // load regular (non-animated) images
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");
@@ -104,50 +103,30 @@ public class MyLolGame extends Lol {
     }
 
     /**
-     * Describe how to draw the first scene that displays when the game app is
-     * started
+     * Set up all the global configuration options for the game
      */
     @Override
-    public void configureSplash() {
-        SplashScreen.display();
-    }
-
-    /**
-     * Describe how to draw the initial state of each level of our game
-     *
-     * @param whichLevel
-     *            The level to be drawn
-     */
-    @Override
-    public void configureLevel(int whichLevel) {
-        GameLevels.display(whichLevel);
-    }
-
-    /**
-     * Describe how each help scene ought to be drawn. Every game must implement
-     * this method to describe how each help scene should appear. Note that you
-     * *must* specify the maximum number of help scenes for your game in the
-     * Config.java file. If you specify "0", then you can leave this code blank.
-     *
-     * @param whichScene
-     *            The help scene being drawn. The game engine will set this
-     *            value to indicate which scene needs to be drawn.
-     */
-    @Override
-    public void configureHelpScene(int whichScene) {
-        HelpScreens.display(whichScene);
-    }
-
-    @Override
-    public void configureChooser(int whichScreen) {
-        ChooserScreens.display(whichScreen);
-    }
-    
-    /**
-     * Mandatory method. Don't change this.
-     */
-    @Override
-    public LolConfiguration lolConfig() {
-        return new LolConfig();
+    public void configure() {
+        mWidth = 960;
+        mHeight = 640;
+        mNumLevels = 91;
+        mEnableVibration = true;
+        mUnlockAllLevels = true;
+        mShowDebugBoxes = true;
+        mStorageKey = "com.me.mylolgame.prefs";
+        mDefaultFontFace = "arial.ttf";
+        mDefaultFontSize = 32;
+        mDefaultFontRed = 0;
+        mDefaultFontGreen = 0;
+        mDefaultFontBlue = 0;
+        mDefaultWinText = "Good Job";
+        mDefaultLoseText = "Try Again";
+        mGameTitle = "My Lol Game";
+        mEnableChooser = true;
+        mLevels = new Levels();
+        mChooser = new Chooser();
+        mHelp = new Help();
+        mSplash = new Splash();
+        mStore = new Store();
     }
 }

@@ -50,8 +50,6 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.Level.GestureAction;
-
 /**
  * PhysicsSprite is the base class upon which every game entity is built
  */
@@ -108,7 +106,7 @@ public abstract class Actor implements Util.Renderable {
      * Some PhysicsSprites run custom code when they are touched. This is a
      * reference to the code to run.
      */
-    GestureAction mGestureResponder;
+    Util.GestureAction mGestureResponder;
 
     /**
      * When the camera follows the entity without centering on it, this gives us
@@ -800,11 +798,11 @@ public abstract class Actor implements Util.Renderable {
      *            The callback to run when the entitiy is touched
      */
     public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final boolean disappear, final SimpleCallback sc) {
+            int activationGoodies4, final boolean disappear, final LolCallback sc) {
         final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
         // set the code to run on touch
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 // check if we've got enough goodies
@@ -829,7 +827,7 @@ public abstract class Actor implements Util.Renderable {
      * @param sc
      *            The callback to run when the entity stops
      */
-    public void setStopCallback(final SimpleCallback sc) {
+    public void setStopCallback(final LolCallback sc) {
         Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             boolean moving = false;
 
@@ -908,7 +906,7 @@ public abstract class Actor implements Util.Renderable {
             mBody.setType(BodyType.KinematicBody);
         else
             mBody.setType(BodyType.DynamicBody);
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onDrag(Vector3 touchVec) {
                 mBody.setTransform(touchVec.x, touchVec.y, mBody.getAngle());
@@ -942,7 +940,7 @@ public abstract class Actor implements Util.Renderable {
         // convert threshold to nanoseconds
         final long deleteThreshold = deleteThresholdMillis * 1000000;
         // set the code to run on touch
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             long mLastPokeTime;
             boolean mEnabled = true;
 
@@ -965,7 +963,7 @@ public abstract class Actor implements Util.Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the entity
-                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -998,7 +996,7 @@ public abstract class Actor implements Util.Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        Level.sCurrent.mGestureResponders.add(new GestureAction() {
+        Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
                 if (Level.sCurrent.mHitSprite == Actor.this) {
@@ -1026,11 +1024,11 @@ public abstract class Actor implements Util.Renderable {
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1069,11 +1067,11 @@ public abstract class Actor implements Util.Renderable {
     public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponders.add(new GestureAction() {
+                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1394,7 +1392,7 @@ public abstract class Actor implements Util.Renderable {
      */
     public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
             final float velocityY) {
-        mGestureResponder = new GestureAction() {
+        mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);

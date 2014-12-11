@@ -25,12 +25,19 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package com.me.mylolgame;
+package edu.lehigh.cse.lol;
 
-import edu.lehigh.cse.lol.ScreenManager;
-
-public class Store implements ScreenManager {
-    public void display(int which) {
-        // TODO
-    }
+/**
+ * ScreenManager presents a set of related screens, such as playable levels. It
+ * allows us to group lots of functionality together in a relatively clean and
+ * straightforward way.
+ */
+public interface ScreenManager {
+    /**
+     * Display one of the screens
+     * 
+     * @param which
+     *            The screen to display
+     */
+    void display(int which);
 }

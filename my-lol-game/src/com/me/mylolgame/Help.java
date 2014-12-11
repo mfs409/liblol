@@ -33,14 +33,15 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Physics;
-import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
-public class HelpScreens {
-    public static void display(int whichScene) {
+public class Help implements ScreenManager {
+    public void display(int which) {
         // Our first scene describes the color coding that we use for the
         // different entities in the game
-        if (whichScene == 1) {
+        if (which == 1) {
             // set up a basic screen
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -69,7 +70,7 @@ public class HelpScreens {
             Util.drawText(9, 1, "Throw projectiles", 0, 0, 0, "arial.ttf", 24, 0);
 
             // set up a control to go to the next level on screen press
-            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+            Controls.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     Lol.doHelp(2);
                 }
@@ -78,7 +79,7 @@ public class HelpScreens {
 
         // Our second help scene is just here to show that it is possible to
         // have more than one help scene.
-        else if (whichScene == 2) {
+        else if (which == 2) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
             Background.setColor(255, 255, 0);
@@ -88,7 +89,7 @@ public class HelpScreens {
                     + "how everything works", 55, 110, 165, "arial.ttf", 14, 0);
 
             // set up a control to go to the splash screen on screen press
-            Controls.addCallbackControl(0, 0, 960, 640, "", new SimpleCallback() {
+            Controls.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     Lol.doSplash();
                 }

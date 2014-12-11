@@ -32,14 +32,15 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Physics;
-import edu.lehigh.cse.lol.SimpleCallback;
+import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
-public class ChooserScreens {
+public class Chooser implements ScreenManager {
 
-    public static void display(int whichScreen) {
+    public void display(int which) {
         // screen 1: show 1-->15
-        if (whichScreen == 1) {
+        if (which == 1) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
 
@@ -75,7 +76,7 @@ public class ChooserScreens {
         }
 
         // screen 2: show levels 16-->30
-        else if (whichScreen == 2) {
+        else if (which == 2) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
 
@@ -113,7 +114,7 @@ public class ChooserScreens {
         }
 
         // screen 3: show levels 31-->45
-        else if (whichScreen == 3) {
+        else if (which == 3) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
 
@@ -145,7 +146,7 @@ public class ChooserScreens {
         // screen 4: show levels 46-->60
         // screen 5: show levels 61-->75
         // screen 6: show levels 75-->90
-        else if (whichScreen < 7) {
+        else if (which < 7) {
             // set-up
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -154,7 +155,7 @@ public class ChooserScreens {
 
             // levels
             float y = 16;
-            int level = (whichScreen - 1) * 15 + 1;
+            int level = (which - 1) * 15 + 1;
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
@@ -166,12 +167,12 @@ public class ChooserScreens {
             }
 
             // navigation buttons
-            drawPrevButton(0, 9.5f, 5, 5, whichScreen - 1);
-            drawNextButton(43, 9.5f, 5, 5, whichScreen + 1);
+            drawPrevButton(0, 9.5f, 5, 5, which - 1);
+            drawNextButton(43, 9.5f, 5, 5, which + 1);
             drawSplashButton(0, 0, 5, 5);
         }
 
-        else if (whichScreen == 7) {
+        else if (which == 7) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
 
@@ -198,8 +199,8 @@ public class ChooserScreens {
         // if this level is unlocked, or if we are in unlocked mode, then attach
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
-        if (level <= unlocked || new LolConfig().getUnlockMode()) {
-            l1.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+        if (level <= unlocked || Lol.getUnlockMode()) {
+            l1.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
                 public void onEvent() {
                     Lol.doPlayLevel(level);
                 }
@@ -214,7 +215,7 @@ public class ChooserScreens {
 
     static void drawPrevButton(float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "leftarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(chooserLevel);
             }
@@ -223,7 +224,7 @@ public class ChooserScreens {
 
     static void drawNextButton(float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "rightarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(chooserLevel);
             }
@@ -232,7 +233,7 @@ public class ChooserScreens {
 
     static void drawSplashButton(float x, float y, float width, float height) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "backarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new SimpleCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doSplash();
             }

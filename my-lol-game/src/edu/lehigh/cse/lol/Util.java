@@ -28,10 +28,13 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 import java.util.Random;
@@ -41,6 +44,168 @@ import java.util.Random;
  * few simple wrappers that we give to the game developer
  */
 public class Util {
+
+    /**
+     * When there is a gesture on the screen, we will convert the event's
+     * coordinates to world coordinates, then use this to handle it. This object
+     * can be attached to PhysicsSprites, Controls, or to the Level itself, to
+     * specify a handler for certain events.
+     */
+    static class GestureAction {
+        /**
+         * We offer a HOLD/RELEASE gesture. This flag tells us if we're in a
+         * hold event.
+         */
+        boolean mHolding;
+
+        /**
+         * Handle a drag event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onDrag(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a down press (hopefully to turn it into a hold/release)
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        public boolean onDown(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle an up press (hopefully to turn it into a release)
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        public boolean onUp(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a tap event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onTap(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a pan event
+         * 
+         * @param touchVec
+         *            The x/y/z world coordinates of the touch
+         * @param deltaX
+         *            the change in X scale, in screen coordinates
+         * @param deltaY
+         *            the change in Y scale, in screen coordinates
+         */
+        boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+            return false;
+        }
+
+        /**
+         * Handle a pan stop event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onPanStop(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a fling event
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean onFling(Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a toggle event. This is usually built from a down and an up.
+         * 
+         * @param touchVec
+         *            The x/y/z coordinates of the touch
+         */
+        boolean toggle(boolean isUp, Vector3 touchVec) {
+            return false;
+        }
+
+        /**
+         * Handle a zoom event
+         * 
+         * @param initialDistance
+         *            The distance between fingers when the pinch started
+         * @param distance
+         *            The current distance between fingers
+         */
+        boolean zoom(float initialDistance, float distance) {
+            return false;
+        }
+    }
+
+    /**
+     * Custom camera that can do parallax... taken directly from GDX tests
+     */
+    static class ParallaxCamera extends OrthographicCamera {
+        /**
+         * This matrix helps us compute the view
+         */
+        private final Matrix4 parallaxView = new Matrix4();
+
+        /**
+         * This matrix helps us compute the camera.combined
+         */
+        private final Matrix4 parallaxCombined = new Matrix4();
+
+        /**
+         * A temporary vector for doing the calculations
+         */
+        private final Vector3 tmp = new Vector3();
+
+        /**
+         * Another temporary vector for doing the calculations
+         */
+        private final Vector3 tmp2 = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         * 
+         * @param viewportWidth
+         *            Width of the camera
+         * @param viewportHeight
+         *            Height of the camera
+         */
+        ParallaxCamera(float viewportWidth, float viewportHeight) {
+            super(viewportWidth, viewportHeight);
+        }
+
+        /**
+         * This is how we calculate the position of a parallax camera
+         */
+        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
+        }
+    }
 
     /**
      * This interface allows items that can be displayed on the screen to
@@ -503,8 +668,8 @@ public class Util {
     static Util.Renderable makeText(final String message, final int red, final int green, final int blue,
             String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        final float x = Lol.sGame.mConfig.getScreenWidth() / 2 - bf.getMultiLineBounds(message).width / 2;
-        final float y = Lol.sGame.mConfig.getScreenHeight() / 2 + bf.getMultiLineBounds(message).height / 2;
+        final float x = Lol.sGame.mWidth / 2 - bf.getMultiLineBounds(message).width / 2;
+        final float y = Lol.sGame.mHeight / 2 + bf.getMultiLineBounds(message).height / 2;
         return new Util.Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -525,7 +690,7 @@ public class Util {
      *            The message text
      */
     static void message(String tag, String text) {
-        if (Lol.sGame.mConfig.showDebugBoxes())
+        if (Lol.sGame.mShowDebugBoxes)
             Gdx.app.log(tag, text);
     }
 

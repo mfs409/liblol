@@ -296,7 +296,7 @@ public class Obstacle extends Actor {
      *            The code to run when the collision happens
      */
     public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay, final SimpleCallback sc) {
+            int activationGoodies4, final float delay, final LolCallback sc) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
         setCollisionEffect(false);
@@ -357,7 +357,7 @@ public class Obstacle extends Actor {
      *            The code to run when an enemy collides with this obstacle
      */
     public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay, final SimpleCallback sc) {
+            int activationGoodies4, final float delay, final LolCallback sc) {
         /**
          * Enemy callbacks can require certain Goodie counts in order to run
          */
@@ -409,7 +409,7 @@ public class Obstacle extends Actor {
      *            callback works
      */
     public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final SimpleCallback sc) {
+            int activationGoodies4, final LolCallback sc) {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 

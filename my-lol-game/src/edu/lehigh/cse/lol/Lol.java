@@ -43,6 +43,7 @@ import com.badlogic.gdx.utils.Timer;
  * that they can do the real work.
  */
 public abstract class Lol extends Game {
+
     /**
      * Modes of the game: we can be showing the main screen, the help screens,
      * the level chooser, the store, or a playable level
@@ -78,105 +79,122 @@ public abstract class Lol extends Game {
      */
     boolean mKeyDown;
 
-    /**
-     * The configuration of the game is accessible through this
+    /*
+     * GAME CONFIGURATION VARIABLES
      */
-    LolConfiguration mConfig;
 
     /**
-     * Use this to load the splash screen
+     * The default screen width (note: it will be stretched appropriately on a
+     * phone)
      */
-    public static void doSplash() {
-        // reset state of all screens
-        for (int i = 0; i < 5; ++i)
-            sGame.mModeStates[i] = 1;
-        sGame.mMode = SPLASH;
-        sGame.configureSplash();
-        sGame.setScreen(Level.sCurrent);
-    }
+    public int mWidth;
+    
+    /**
+     * The default screen height (note: it will be stretched appropriately on a
+     * phone)
+     */
+    public int mHeight;
+    
+    /**
+     * The total number of levels. This is only useful for knowing what to do
+     * when the last level is completed.
+     */
+    protected int mNumLevels;
+    
+    /**
+     * Should the phone vibrate on certain events?
+     */
+    protected boolean mEnableVibration;
+    
+    /**
+     * Should all levels be unlocked?
+     */
+    protected boolean mUnlockAllLevels;
+    
+    /**
+     * This is a debug feature, to help see the physics behind every Actor
+     */
+    protected boolean mShowDebugBoxes;
+    
+    /**
+     * A per-game string, to use for storing information on an Android device
+     */
+    protected String mStorageKey;
+    
+    /**
+     * Default font face
+     */
+    protected String mDefaultFontFace;
+    
+    /**
+     * Default font size
+     */
+    protected int mDefaultFontSize;
+    
+    /**
+     * Red component of default font color
+     */
+    protected int mDefaultFontRed;
+    
+    /**
+     * Green component of default font color
+     */
+    protected int mDefaultFontGreen;
+    
+    /**
+     * Blue component of default font color
+     */
+    protected int mDefaultFontBlue;
+    
+    /**
+     * Default text to display when a level is won
+     */
+    protected String mDefaultWinText;
+    
+    /**
+     * Default text to display when a level is lost
+     */
+    protected String mDefaultLoseText;
+    
+    /**
+     * Title of the game (for desktop mode)
+     */
+    public String mGameTitle;
+    
+    /**
+     * Should the level chooser be activated?
+     */
+    protected boolean mEnableChooser;
+    
+    /**
+     * The levels of the game are drawn by this object
+     */
+    protected ScreenManager mLevels;
+    
+    /**
+     * The chooser is drawn by this object
+     */
+    protected ScreenManager mChooser;
+    
+    /**
+     * The help screens are drawn by this object
+     */
+    protected ScreenManager mHelp;
+    
+    /**
+     * The splash screen is drawn by this object
+     */
+    protected ScreenManager mSplash;
 
     /**
-     * Use this to load the level-chooser screen. Note that when the chooser is
-     * disabled, we jump straight to level 1.
-     * 
-     * TODO: use whichChooser
+     * The store is drawn by this object
      */
-    public static void doChooser(int whichChooser) {
-        // if chooser disabled, then we either called this from splash, or from
-        // a game level
-        if (!sGame.mConfig.showChooserOnBack()) {
-            if (sGame.mMode == PLAY) {
-                doSplash();
-            } else {
-                doPlayLevel(sGame.mModeStates[PLAY]);
-            }
-            return;
-        }
-        sGame.mMode = CHOOSER;
-        sGame.mModeStates[CHOOSER] = whichChooser;
-        sGame.configureChooser(whichChooser);
-        sGame.setScreen(Level.sCurrent);
-    }
+    protected ScreenManager mStore;
 
-    /**
-     * Use this to load a playable level.
-     * 
-     * @param which
-     *            The index of the level to load
+    /*
+     * INTERNAL METHODS
      */
-    public static void doPlayLevel(int which) {
-        sGame.mModeStates[PLAY] = which;
-        sGame.mMode = PLAY;
-        sGame.configureLevel(which);
-        sGame.setScreen(Level.sCurrent);
-    }
-
-    /**
-     * Use this to load a help level.
-     * 
-     * @param which
-     *            The index of the help level to load
-     */
-    public static void doHelp(int which) {
-        sGame.mModeStates[HELP] = which;
-        sGame.mMode = HELP;
-        sGame.configureHelpScene(which);
-        // TODO: do we even need a parameter to setScreen anymore?
-        sGame.setScreen(Level.sCurrent);
-    }
-
-    /**
-     * Use this to quit the app
-     */
-    public static void doQuit() {
-        sGame.getScreen().dispose();
-        Gdx.app.exit();
-    }
-
-    /**
-     * Use this to manage the state of Mute
-     */
-    public static void toggleMute() {
-        // volume is either 1 or 0
-        if (Facts.getGameFact("volume") == 1) {
-            // set volume to 0, set image to 'unmute'
-            Facts.putGameFact("volume", 0);
-        } else {
-            // set volume to 1, set image to 'mute'
-            Facts.putGameFact("volume", 1);
-        }
-        // update all music
-        Media.resetMusicVolume();
-    }
-
-    /**
-     * Use this to determine if the game is muted or not. True corresponds to
-     * not muted, false corresponds to muted.
-     */
-    public static boolean getVolume() {
-        return Facts.getGameFact("volume") == 1;
-    }
-
+    
     /**
      * Vibrate the phone for a fixed amount of time. Note that this only
      * vibrates the phone if the configuration says that vibration should be
@@ -186,7 +204,7 @@ public abstract class Lol extends Game {
      *            The amount of time to vibrate
      */
     void vibrate(int millis) {
-        if (mConfig.getVibration())
+        if (mEnableVibration)
             Gdx.input.vibrate(millis);
     }
 
@@ -231,6 +249,15 @@ public abstract class Lol extends Game {
         }
     }
 
+    /**
+     * The constructor just calls configure, so that all of our globals will be
+     * set. Doing it this early lets us access the configuration from within the
+     * LWJGL (Desktop) main class.
+     */
+    public Lol() {
+        configure();
+    }
+
     /*
      * APPLICATIONLISTENER (GAME) OVERRIDES
      */
@@ -251,14 +278,11 @@ public abstract class Lol extends Game {
         // reset session facts
         Facts.resetSessionFacts();
 
-        // get configuration
-        mConfig = lolConfig();
-
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
 
         // Load Resources
-        nameResources();
+        loadResources();
 
         // show the splash screen
         doSplash();
@@ -303,6 +327,114 @@ public abstract class Lol extends Game {
      */
 
     /**
+     * Use this to load the splash screen
+     */
+    public static void doSplash() {
+        // reset state of all screens
+        for (int i = 0; i < 5; ++i)
+            sGame.mModeStates[i] = 1;
+        sGame.mMode = SPLASH;
+        sGame.mSplash.display(0);
+        sGame.setScreen(Level.sCurrent);
+    }
+
+    /**
+     * Use this to load the level-chooser screen. Note that when the chooser is
+     * disabled, we jump straight to level 1.
+     */
+    public static void doChooser(int whichChooser) {
+        // if chooser disabled, then we either called this from splash, or from
+        // a game level
+        if (!sGame.mEnableChooser) {
+            if (sGame.mMode == PLAY) {
+                doSplash();
+            } else {
+                doPlayLevel(sGame.mModeStates[PLAY]);
+            }
+            return;
+        }
+        sGame.mMode = CHOOSER;
+        sGame.mModeStates[CHOOSER] = whichChooser;
+        sGame.mChooser.display(whichChooser);
+        sGame.setScreen(Level.sCurrent);
+    }
+
+    /**
+     * Use this to load a playable level.
+     * 
+     * @param which
+     *            The index of the level to load
+     */
+    public static void doPlayLevel(int which) {
+        sGame.mModeStates[PLAY] = which;
+        sGame.mMode = PLAY;
+        sGame.mLevels.display(which);
+        sGame.setScreen(Level.sCurrent);
+    }
+
+    /**
+     * Use this to load a help level.
+     * 
+     * @param which
+     *            The index of the help level to load
+     */
+    public static void doHelp(int which) {
+        sGame.mModeStates[HELP] = which;
+        sGame.mMode = HELP;
+        sGame.mHelp.display(which);
+        sGame.setScreen(Level.sCurrent);
+    }
+
+    /**
+     * Use this to load a screen of the store.
+     * 
+     * @param which
+     *            The index of the help level to load
+     */
+    public static void doStore(int which) {
+        sGame.mModeStates[STORE] = which;
+        sGame.mMode = STORE;
+        sGame.mStore.display(which);
+        sGame.setScreen(Level.sCurrent);
+    }
+
+    /**
+     * Use this to quit the game
+     */
+    public static void doQuit() {
+        sGame.getScreen().dispose();
+        Gdx.app.exit();
+    }
+
+    /**
+     * Use this to manage the state of Mute
+     */
+    public static void toggleMute() {
+        // volume is either 1 or 0
+        if (Facts.getGameFact("volume") == 1) {
+            // set volume to 0, set image to 'unmute'
+            Facts.putGameFact("volume", 0);
+        } else {
+            // set volume to 1, set image to 'mute'
+            Facts.putGameFact("volume", 1);
+        }
+        // update all music
+        Media.resetMusicVolume();
+    }
+
+    /**
+     * Use this to determine if the game is muted or not. True corresponds to
+     * not muted, false corresponds to muted.
+     */
+    public static boolean getVolume() {
+        return Facts.getGameFact("volume") == 1;
+    }
+
+    public static boolean getUnlockMode() {
+        return sGame.mUnlockAllLevels;
+    }
+
+    /**
      * Set the next level to play
      */
     public void setNextLevel(int nextLevel) {
@@ -310,39 +442,12 @@ public abstract class Lol extends Game {
     }
 
     /**
-     * The programmer configures the game by implementing this method, and
-     * returning a LolConfiguration object
-     */
-    abstract public LolConfiguration lolConfig();
-
-    /**
      * Register any sound or image files to be used by the game
      */
-    abstract public void nameResources();
+    abstract public void loadResources();
 
     /**
-     * Describe how to draw the levels of the game
-     * 
-     * @param whichLevel
-     *            The number of the level being drawn
+     * Set up all the global configuration options for the game
      */
-    abstract public void configureLevel(int whichLevel);
-
-    /**
-     * Describe how to draw the help scenes
-     * 
-     * @param whichScene
-     *            The number of the help scene being drawn
-     */
-    abstract public void configureHelpScene(int whichScene);
-
-    /**
-     * Describe how to draw the splash scene
-     */
-    abstract public void configureSplash();
-
-    /**
-     * Describe how to draw the chooser scenes
-     */
-    abstract public void configureChooser(int whichChooser);
+    abstract public void configure();
 }

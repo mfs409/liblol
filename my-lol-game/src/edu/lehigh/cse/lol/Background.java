@@ -77,7 +77,7 @@ public class Background {
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
                 screensBefore += Level.sCurrent.mBgCam.zoom;
-                startX -= (screensBefore * Lol.sGame.mConfig.getScreenWidth());
+                startX -= (screensBefore * Lol.sGame.mWidth);
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
                 float currX = startX;
@@ -85,7 +85,7 @@ public class Background {
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currX < startX + limit * Lol.sGame.mConfig.getScreenWidth()) {
+                while (currX < startX + limit * Lol.sGame.mWidth) {
                     sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth, pl.mHeight);
                     currX += pl.mImage.getRegionWidth();
                 }
@@ -95,13 +95,13 @@ public class Background {
                 // get the camera center, translate, and scale
                 float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + Level.sCurrent.mBgCam.zoom) * Lol.sGame.mConfig.getScreenHeight();
+                startY -= (1.5f + Level.sCurrent.mBgCam.zoom) * Lol.sGame.mHeight;
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
                 float limit = 2 + 2 * Level.sCurrent.mBgCam.zoom;
-                while (currY < startY + limit * Lol.sGame.mConfig.getScreenHeight()) {
+                while (currY < startY + limit * Lol.sGame.mHeight) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
                 }
