@@ -31,6 +31,6 @@ import edu.lehigh.cse.lol.ScreenManager;
 
 public class Store implements ScreenManager {
     public void display(int which) {
-        // TODO
+        // Right now, there is no store, so this is just a placeholder
     }
 }

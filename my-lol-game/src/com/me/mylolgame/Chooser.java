@@ -202,7 +202,7 @@ public class Chooser implements ScreenManager {
         if (level <= unlocked || Lol.getUnlockMode()) {
             l1.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
                 public void onEvent() {
-                    Lol.doPlayLevel(level);
+                    Lol.doLevel(level);
                 }
             });
             Util.drawTextCentered(x + width / 2, y + height / 2, "" + level, 255, 255, 255, "arial.ttf", 56, 0);

@@ -31,7 +31,6 @@ package com.me.mylolgame;
 // TODO: make sure all angles use same units (degrees or radians)
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
-// TODO: add a 'demos' section?
 // TODO: add a 'store'?
 // TODO: add 'share' button?
 // TODO: Verify comments
@@ -40,13 +39,13 @@ package com.me.mylolgame;
 //       invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
 // TODO: make panning return to the chasesprite more nicely
-// TODO: verify tilt gets its directions correct
+// TODO: verify tilt gets its directions correct on phones and tablets
 // TODO: make sure music stops when game quits (on phone)
 
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
 
-public class MyLolGame extends Lol {
+public class MyGame extends Lol {
 
     /**
      * Load all the images and sounds used by our game
@@ -107,6 +106,8 @@ public class MyLolGame extends Lol {
      */
     @Override
     public void configure() {
+        // to see documentation for any of these variables, hover your mouse
+        // over the word on the left side of the equals sign
         mWidth = 960;
         mHeight = 640;
         mNumLevels = 91;
@@ -123,6 +124,8 @@ public class MyLolGame extends Lol {
         mDefaultLoseText = "Try Again";
         mGameTitle = "My Lol Game";
         mEnableChooser = true;
+        
+        // don't change these lines unless you know what you are doing
         mLevels = new Levels();
         mChooser = new Chooser();
         mHelp = new Help();

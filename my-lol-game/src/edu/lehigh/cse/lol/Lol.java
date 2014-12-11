@@ -349,7 +349,7 @@ public abstract class Lol extends Game {
             if (sGame.mMode == PLAY) {
                 doSplash();
             } else {
-                doPlayLevel(sGame.mModeStates[PLAY]);
+                doLevel(sGame.mModeStates[PLAY]);
             }
             return;
         }
@@ -365,7 +365,7 @@ public abstract class Lol extends Game {
      * @param which
      *            The index of the level to load
      */
-    public static void doPlayLevel(int which) {
+    public static void doLevel(int which) {
         sGame.mModeStates[PLAY] = which;
         sGame.mMode = PLAY;
         sGame.mLevels.display(which);

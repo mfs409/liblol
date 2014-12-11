@@ -37,8 +37,8 @@ import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
 /**
- * SplashScreen encapsulates the code that will be run to configure the opening
- * screen of the game. Typically this has buttons for playing, getting help, and
+ * Splash encapsulates the code that will be run to configure the opening screen
+ * of the game. Typically this has buttons for playing, getting help, and
  * quitting.
  */
 public class Splash implements ScreenManager {
@@ -55,7 +55,10 @@ public class Splash implements ScreenManager {
         Level.setMusic("tune.ogg");
 
         // This is the Play button... it switches to the first screen of the
-        // level chooser
+        // level chooser. You could jump straight to the first level by using
+        // "doLevel(1)", but check the configuration in MyLolGame... there's a
+        // field you should change if you don't want the 'back' button to go
+        // from the level to the chooser.
         Controls.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(1);
