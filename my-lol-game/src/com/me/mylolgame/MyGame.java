@@ -27,8 +27,7 @@
 
 package com.me.mylolgame;
 
-// TODO: add a way to have multiple screens in the introduction to a level
-// TODO: make sure all angles use same units (degrees or radians)
+// TODO: make sure all angles use same units (degrees or radians): Actor has 3 joint functions that need work
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
 // TODO: add a 'store'?
@@ -43,11 +42,44 @@ package com.me.mylolgame;
 // TODO: in Level 83, play with timers to change direction of the rotating actor?
 // TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
 // TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
+// TODO: finger chase that is restricted to X or Y dimension
 
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
 
 public class MyGame extends Lol {
+
+    /**
+     * Set up all the global configuration options for the game
+     */
+    @Override
+    public void configure() {
+        // to see documentation for any of these variables, hover your mouse
+        // over the word on the left side of the equals sign
+        mWidth = 960;
+        mHeight = 640;
+        mNumLevels = 92;
+        mEnableVibration = true;
+        mUnlockAllLevels = true;
+        mShowDebugBoxes = true;
+        mStorageKey = "com.me.mylolgame.prefs";
+        mDefaultFontFace = "arial.ttf";
+        mDefaultFontSize = 32;
+        mDefaultFontRed = 0;
+        mDefaultFontGreen = 0;
+        mDefaultFontBlue = 0;
+        mDefaultWinText = "Good Job";
+        mDefaultLoseText = "Try Again";
+        mGameTitle = "My Lol Game";
+        mEnableChooser = true;
+
+        // don't change these lines unless you know what you are doing
+        mLevels = new Levels();
+        mChooser = new Chooser();
+        mHelp = new Help();
+        mSplash = new Splash();
+        mStore = new Store();
+    }
 
     /**
      * Load all the images and sounds used by our game
@@ -101,37 +133,5 @@ public class MyGame extends Lol {
 
         // load background music
         Media.registerMusic("tune.ogg", true);
-    }
-
-    /**
-     * Set up all the global configuration options for the game
-     */
-    @Override
-    public void configure() {
-        // to see documentation for any of these variables, hover your mouse
-        // over the word on the left side of the equals sign
-        mWidth = 960;
-        mHeight = 640;
-        mNumLevels = 91;
-        mEnableVibration = true;
-        mUnlockAllLevels = true;
-        mShowDebugBoxes = true;
-        mStorageKey = "com.me.mylolgame.prefs";
-        mDefaultFontFace = "arial.ttf";
-        mDefaultFontSize = 32;
-        mDefaultFontRed = 0;
-        mDefaultFontGreen = 0;
-        mDefaultFontBlue = 0;
-        mDefaultWinText = "Good Job";
-        mDefaultLoseText = "Try Again";
-        mGameTitle = "My Lol Game";
-        mEnableChooser = true;
-
-        // don't change these lines unless you know what you are doing
-        mLevels = new Levels();
-        mChooser = new Chooser();
-        mHelp = new Help();
-        mSplash = new Splash();
-        mStore = new Store();
     }
 }

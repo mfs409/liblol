@@ -145,7 +145,7 @@ public class Obstacle extends Actor {
     public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level.sCurrent.addSprite(o, 0);
+        Level.sCurrent.addActor(o, 0);
         return o;
     }
 
@@ -170,7 +170,7 @@ public class Obstacle extends Actor {
     public static Obstacle makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Level.sCurrent.addSprite(o, 0);
+        Level.sCurrent.addActor(o, 0);
         return o;
     }
 
@@ -193,7 +193,7 @@ public class Obstacle extends Actor {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level.sCurrent.addSprite(o, 0);
+        Level.sCurrent.addActor(o, 0);
         return o;
     }
 
@@ -209,7 +209,7 @@ public class Obstacle extends Actor {
      */
     public void setDamp(final float factor) {
         // disable collisions on this obstacle
-        setCollisionEffect(false);
+        setCollisionsEnabled(false);
         // register a callback to multiply the hero's speed by factor
         mHeroCollision = new Util.CollisionCallback() {
             @Override
@@ -235,7 +235,7 @@ public class Obstacle extends Actor {
      */
     public void setSpeedBoost(final float boostAmountX, final float boostAmountY, final float boostDuration) {
         // disable collisions on this obstacle
-        setCollisionEffect(false);
+        setCollisionsEnabled(false);
         // register a callback to change the hero's speed
         mHeroCollision = new Util.CollisionCallback() {
             @Override
@@ -299,7 +299,7 @@ public class Obstacle extends Actor {
             int activationGoodies4, final float delay, final LolCallback sc) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
-        setCollisionEffect(false);
+        setCollisionsEnabled(false);
 
         // register a callback
         mHeroCollision = new Util.CollisionCallback() {

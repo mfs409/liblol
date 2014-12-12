@@ -171,7 +171,7 @@ public class ProjectilePool {
         // get the next projectile, reset sensor, set sprite
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
-        b.setCollisionEffect(!mSensorProjectiles);
+        b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
             b.mAnimator.pickRandomIndex();
 
@@ -228,7 +228,7 @@ public class ProjectilePool {
         // get the next projectile, set sensor, set sprite
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
-        b.setCollisionEffect(!mSensorProjectiles);
+        b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
             b.mAnimator.pickRandomIndex();
 

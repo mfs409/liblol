@@ -393,7 +393,7 @@ public class Svg {
         b.setUserData(invis);
         // NB: we probably don't need to put the invisible sprite on the screen,
         // since we don't overload render()... this is invisible.
-        Level.sCurrent.addSprite(invis, 0);
+        Level.sCurrent.addActor(invis, 0);
     }
 
     /**

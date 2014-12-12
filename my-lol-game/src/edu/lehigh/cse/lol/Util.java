@@ -766,7 +766,7 @@ public class Util {
      */
     public static void drawPicture(final float x, final float y, final float width, final float height,
             final String imgName, int zIndex) {
-        Level.sCurrent.addSprite(Util.makePicture(x, y, width, height, imgName), zIndex);
+        Level.sCurrent.addActor(Util.makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
@@ -807,7 +807,7 @@ public class Util {
                 bf.setScale(1);
             }
         };
-        Level.sCurrent.addSprite(r, zIndex);
+        Level.sCurrent.addActor(r, zIndex);
     }
 
     /**
@@ -856,6 +856,6 @@ public class Util {
                 bf.setScale(1);
             }
         };
-        Level.sCurrent.addSprite(r, zIndex);
+        Level.sCurrent.addActor(r, zIndex);
     }
 }

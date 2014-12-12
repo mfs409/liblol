@@ -107,11 +107,11 @@ public class Level extends ScreenAdapter {
             }
 
             // check if we tapped an entity
-            mHitSprite = null;
+            mHitActor = null;
             mGameCam.unproject(mTouchVec.set(x, y, 0));
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                     mTouchVec.y + 0.1f);
-            if (mHitSprite != null && mHitSprite.onTap(mTouchVec))
+            if (mHitActor != null && mHitActor.onTap(mTouchVec))
                 return true;
 
             // is this a raw screen tap?
@@ -259,7 +259,7 @@ public class Level extends ScreenAdapter {
 
             // check for sprite touch, by looking at gameCam coordinates... on
             // touch, hitSprite will change
-            mHitSprite = null;
+            mHitActor = null;
             mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                     mTouchVec.y + 0.1f);
@@ -267,7 +267,7 @@ public class Level extends ScreenAdapter {
             // PhysicsSprites don't respond to DOWN... if it's a down on a
             // physicssprite, we are supposed to remember the most recently
             // touched physicssprite, and that's it
-            if (mHitSprite != null)
+            if (mHitActor != null)
                 return true;
 
             // forward to the level's handler
@@ -313,9 +313,9 @@ public class Level extends ScreenAdapter {
          *            The finger that was used
          */
         public boolean touchDragged(int screenX, int screenY, int pointer) {
-            if (mHitSprite != null && mHitSprite.mGestureResponder != null) {
+            if (mHitActor != null && mHitActor.mGestureResponder != null) {
                 mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                return mHitSprite.mGestureResponder.onDrag(mTouchVec);
+                return mHitActor.mGestureResponder.onDrag(mTouchVec);
             }
             for (Util.GestureAction ga : mGestureResponders)
                 if (ga.onDrag(mTouchVec))
@@ -475,7 +475,7 @@ public class Level extends ScreenAdapter {
      * When there is a touch of an entity in the physics world, this is how we
      * find it
      */
-    Actor mHitSprite = null;
+    Actor mHitActor = null;
 
     /**
      * This callback is used to get a touched entity from the physics world
@@ -576,7 +576,7 @@ public class Level extends ScreenAdapter {
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
                     Actor hs = (Actor) fixture.getBody().getUserData();
                     if (hs.mVisible) {
-                        mHitSprite = hs;
+                        mHitActor = hs;
                         return false;
                     }
                 }
@@ -660,7 +660,7 @@ public class Level extends ScreenAdapter {
      *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addSprite(Util.Renderable r, int zIndex) {
+    void addActor(Util.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).add(r);
@@ -674,7 +674,7 @@ public class Level extends ScreenAdapter {
      * @param zIndex
      *            The z plane where it is expected to be
      */
-    void removeSprite(Util.Renderable r, int zIndex) {
+    void removeActor(Util.Renderable r, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
         mSprites.get(zIndex + 2).remove(r);

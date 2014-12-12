@@ -442,7 +442,7 @@ public class Hero extends Actor {
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level.sCurrent.addSprite(h, 0);
+        Level.sCurrent.addActor(h, 0);
         return h;
     }
 
@@ -465,7 +465,7 @@ public class Hero extends Actor {
         float radius = Math.max(width, height);
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Level.sCurrent.addSprite(h, 0);
+        Level.sCurrent.addActor(h, 0);
         return h;
     }
 

@@ -54,7 +54,7 @@ import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.Tilt;
 import edu.lehigh.cse.lol.Util;
 
-public class Levels implements ScreenManager{
+public class Levels implements ScreenManager {
 
     public void display(int whichLevel) {
         /*
@@ -1657,7 +1657,10 @@ public class Levels implements ScreenManager{
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
             // callback code.
-            o.setProjectileCollisionCallback(0, 0, 0, 0, new LolCallback(){public void onEvent(){}});
+            o.setProjectileCollisionCallback(0, 0, 0, 0, new LolCallback() {
+                public void onEvent() {
+                }
+            });
         }
 
         /*
@@ -2195,7 +2198,7 @@ public class Levels implements ScreenManager{
             // make an obstacle that causes the hero to throw Projectiles when
             // touched
             Obstacle o = Obstacle.makeAsCircle(43, 27, 5, 5, "purpleball.png");
-            o.setCollisionEffect(false);
+            o.setCollisionsEnabled(false);
             o.setTouchToThrow(h, 1.5f, 1.5f, 0, 15);
 
             // set up our projectiles
@@ -2784,10 +2787,10 @@ public class Levels implements ScreenManager{
             // These obstacles chase the hero, but only in one dimension
             Obstacle e = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
             e.setChaseSpeed(15, h, false, true);
-            e.setCollisionEffect(true);
+            e.setCollisionsEnabled(true);
             Obstacle e2 = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
             e2.setChaseSpeed(15, h, true, false);
-            e2.setCollisionEffect(true);
+            e2.setCollisionsEnabled(true);
 
             // Here's a wall, and a movable round obstacle
             Obstacle o = Obstacle.makeAsBox(40, 1, .5f, 20, "red.png");
@@ -3077,7 +3080,7 @@ public class Levels implements ScreenManager{
                     mCollideActor.setAbsoluteVelocity(mCollideActor.getXVelocity(), 5, false);
                 }
             });
-            platform.setCollisionEffect(true);
+            platform.setCollisionsEnabled(true);
 
             // make the z index of the platform -1, so that the hero (index 0)
             // will be drawn on top of the box, not under it
@@ -3506,6 +3509,30 @@ public class Levels implements ScreenManager{
 
             Destination.makeAsBox(47, 0, .1f, 32, "");
             Score.setVictoryDestination(1);
+        }
+
+        else if (whichLevel == 92) {
+            Level.configure(48, 32);
+            Physics.configure(0, -10);
+
+            PauseScene.reset();
+            PauseScene.addText("test", 255, 255, 255, "arial.ttf", 32);
+            final LolCallback sc2 = new LolCallback() {
+                public void onEvent() {
+                    PauseScene.dismiss();
+                }
+            };
+            LolCallback sc1 = new LolCallback() {
+                public void onEvent() {
+                    PauseScene.dismiss();
+                    PauseScene.reset();
+                    PauseScene.addText("test2", 255, 255, 255, "arial.ttf", 32);
+                    PauseScene.addCallbackButton(0, 0, 960, 640, sc2);
+                    PauseScene.show();
+                }
+            };
+            PauseScene.addCallbackButton(0, 0, 960, 640, sc1);
+            PauseScene.show();
         }
     }
 }

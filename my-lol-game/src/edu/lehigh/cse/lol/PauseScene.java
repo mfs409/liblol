@@ -149,17 +149,6 @@ public class PauseScene {
     }
 
     /**
-     * Stop showing this PauseScene
-     */
-    void dismiss() {
-        // otherwise, just clear the pauseScene (be sure to resume timers)
-        mVisible = false;
-        long showTime = System.currentTimeMillis() - showingAt;
-        Timer.instance().delay(showTime);
-        Timer.instance().start();
-    }
-
-    /**
      * Internal method to draw a PauseScene
      * 
      * @param sb
@@ -297,6 +286,7 @@ public class PauseScene {
      * Clear everything off of the level's pause scene, so it can be reused
      */
     public static void reset() {
+        getCurrPauseScene().mButtons.clear();
         getCurrPauseScene().mSprites.clear();
         getCurrPauseScene().mBackRectangle = null;
     }
@@ -330,5 +320,16 @@ public class PauseScene {
      */
     public static void suppressClearClick() {
         getCurrPauseScene().mSuppressClearClick = true;
+    }
+
+    /**
+     * Stop showing the PauseScene
+     */
+    public static void dismiss() {
+        // otherwise, just clear the pauseScene (be sure to resume timers)
+        getCurrPauseScene().mVisible = false;
+        long showTime = System.currentTimeMillis() - getCurrPauseScene().showingAt;
+        Timer.instance().delay(showTime);
+        Timer.instance().start();
     }
 }

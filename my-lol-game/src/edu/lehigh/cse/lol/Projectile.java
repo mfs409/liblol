@@ -89,9 +89,9 @@ public class Projectile extends Actor {
             setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
         }
         mBody.setGravityScale(0);
-        setCollisionEffect(false);
+        setCollisionsEnabled(false);
         disableRotation();
-        Level.sCurrent.addSprite(this, zIndex);
+        Level.sCurrent.addActor(this, zIndex);
     }
 
     /**

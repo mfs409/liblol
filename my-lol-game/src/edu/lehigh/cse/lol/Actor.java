@@ -51,13 +51,13 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 /**
- * Actor is the base class upon which every game entity is built. Every actor
- * has a physics representation (rectangle, circle, or convex polygon). Actors
+ * Actor is the base class upon which every game actor is built. Every actor has
+ * a physics representation (rectangle, circle, or convex polygon). Actors
  * typically have an image associated with them, too, so that they have a visual
  * appearance during gameplay.
  * 
- * A game should rarely deal with Actors directly, instead using Hero, Goodie,
- * Destination, Enemy, Obstacle, and Projectile objects.
+ * A game should rarely deal with Actor objectss directly, instead using Hero,
+ * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class Actor implements Util.Renderable {
     /**
@@ -83,23 +83,23 @@ public abstract class Actor implements Util.Renderable {
     /**
      * Track if the actor is currently being rendered. This is a proxy for
      * "is important to the rest of the game" and when it is false, we don't run
-     * any updates on the PhysicsSprite
+     * any updates on the actor
      */
     boolean mVisible = true;
 
     /**
-     * The z index of this entity. Valid range is [-2, 2]
+     * The z index of this actor. Valid range is [-2, 2]
      */
     int mZIndex = 0;
 
     /**
-     * The dimensions of the PhysicsSprite... x is width, y is height
+     * The dimensions of the Actor... x is width, y is height
      */
     Vector2 mSize = new Vector2();
 
     /**
-     * Does this entity follow a route? If so, the RouteDriver will be used to
-     * advance the entity along its route.
+     * Does this Actor follow a route? If so, the RouteDriver will be used to
+     * advance the actor along its route.
      */
     private Util.RouteDriver mRoute;
 
@@ -109,30 +109,28 @@ public abstract class Actor implements Util.Renderable {
     String mInfoText = "";
 
     /**
-     * Some PhysicsSprites run custom code when they are touched. This is a
-     * reference to the code to run.
+     * Some actors run custom code when they are touched. This is a reference to
+     * the code to run.
      */
     Util.GestureAction mGestureResponder;
 
     /**
-     * When the camera follows the entity without centering on it, this gives us
-     * the difference between the hero and camera
+     * When the camera follows the actor without centering on it, this gives us
+     * the difference between the actor and camera
      */
     Vector2 mCameraOffset = new Vector2(0, 0);
 
     /**
-     * Sometimes a hero collides with an obstacle, and should stick to it. In
-     * that case, we create a pair of joints to connect the two entities. This
-     * is the Distance joint that connects them (Note: for convenience, we store
-     * the joints in a common parent class)
+     * Sometimes an actor collides with another actor, and should stick to it.
+     * In that case, we create a pair of joints to connect the two actors. This
+     * is the Distance joint that connects them
      */
     DistanceJoint mDJoint;
 
     /**
-     * Sometimes a hero collides with an obstacle, and should stick to it. In
-     * that case, we create a pair of joints to connect the two entities. This
-     * is the Weld joint that connects them (Note: for convenience, we store the
-     * joints in a common parent class)
+     * Sometimes an actor collides with another actor, and should stick to it.
+     * In that case, we create a pair of joints to connect the two entities.
+     * This is the Weld joint that connects them
      */
     WeldJoint mWJoint;
 
@@ -143,14 +141,14 @@ public abstract class Actor implements Util.Renderable {
     WeldJoint mExplicitWeldJoint;
 
     /**
-     * When we have PhysicsSprites stuck together, we might want to set a brief
-     * delay before they can re-join. This field represents that delay time, in
+     * When we have actors stuck together, we might want to set a brief delay
+     * before they can re-join. This field represents that delay time, in
      * milliseconds.
      */
     long mStickyDelay;
 
     /**
-     * a sound to play when the obstacle is touched
+     * a sound to play when this actor is touched
      */
     Sound mTouchSound;
 
@@ -178,12 +176,12 @@ public abstract class Actor implements Util.Renderable {
 
     /**
      * Animation support: the offset for placing the disappearance animation
-     * relative to the disappearing sprite
+     * relative to the disappearing actor
      */
     final Vector2 mDisappearAnimateOffset = new Vector2();
 
     /**
-     * Animation support: the width of the disappearance animation
+     * Animation support: the dimensions of the disappearance animation
      */
     Vector2 mDisappearAnimateSize = new Vector2();
 
@@ -193,7 +191,7 @@ public abstract class Actor implements Util.Renderable {
     Vector3 mHover = new Vector3();
 
     /**
-     * Track if heroes stick to this PhysicsSprite. The array has 4 positions,
+     * Track if Heros stick to this Actor. The array has 4 positions,
      * corresponding to top, right, bottom, left
      */
     boolean[] mIsSticky = new boolean[4];
@@ -204,57 +202,54 @@ public abstract class Actor implements Util.Renderable {
     protected Sound mDisappearSound;
 
     /**
-     * Disable 3 of 4 sides of a PhysicsSprite, to allow walking through walls.
-     * The value reflects the side that remains active. 0 is top, 1 is right, 2
-     * is bottom, 3 is left
+     * Disable 3 of 4 sides of a Actors, to allow walking through walls. The
+     * value reflects the side that remains active. 0 is top, 1 is right, 2 is
+     * bottom, 3 is left
      */
     int mIsOneSided = -1;
 
     /**
-     * Entities with a matching nonzero Id don't collide with each other
+     * Actors with a matching nonzero Id don't collide with each other
      */
     int mPassThroughId = 0;
 
     /**
      * A temporary vertex that we use when resizing
      */
-    Vector2 tmpVert = new Vector2();
+    Vector2 mTmpVert = new Vector2();
 
     /**
-     * A definition for when we attach a revolute joint to this entity
+     * A definition for when we attach a revolute joint to this actor
      */
     RevoluteJointDef mRevJointDef;
 
     /**
-     * A joint that allows this entity to revolve around another
+     * A joint that allows this actor to revolve around another
      */
     Joint mRevJoint;
 
     /**
-     * A definition for when we attach a distance joint to this entity
+     * A definition for when we attach a distance joint to this actor
      */
     DistanceJointDef mDistJointDef;
 
     /**
-     * A joint that allows this entity to stay within a fixed distance of
-     * another
+     * A joint that allows this actor to stay within a fixed distance of another
      */
     Joint mDistJoint;
 
     /**
-     * If this PhysicsSprite is chasing another PhysicsSprite, we track who is
-     * being chased via this field
+     * If this actor is chasing another actor, we track who is being chased via
+     * this field
      */
     Actor mChaseTarget;
 
     /**
-     * Create a new PhysicsSprite that does not yet have physics, but that has a
+     * Create a new actor that does not yet have physics, but that has a
      * renderable picture
      * 
      * @param imgName
      *            The image to display
-     * @param id
-     *            The type of PhysicsSprite
      * @param width
      *            The width
      * @param height
@@ -271,12 +266,12 @@ public abstract class Actor implements Util.Renderable {
      * deal with on a collision
      * 
      * @param other
-     *            The other entity involved in the collision
+     *            The other actor involved in the collision
      */
     abstract void onCollide(Actor other, Contact contact);
 
     /**
-     * Internal method for updating an entity's velocity, so that we can handle
+     * Internal method for updating an actor's velocity, so that we can handle
      * its direction correctly
      * 
      * @param x
@@ -301,7 +296,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Whenever any class derived from this is touched, we want to play the
+     * Whenever any class derived from Actor is touched, we want to play the
      * touchsound before we run the gesture responder.
      * 
      * @param touchVec
@@ -319,14 +314,14 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Specify that this entity should have a rectangular physics shape
+     * Specify that this Actor should have a rectangular physics shape
      * 
      * @param density
-     *            Density of the entity
+     *            Density of the actor
      * @param elasticity
-     *            Elasticity of the entity
+     *            Elasticity of the actor
      * @param friction
-     *            Friction of the entity
+     *            Friction of the actor
      * @param type
      *            Is this static or dynamic?
      * @param isProjectile
@@ -338,8 +333,8 @@ public abstract class Actor implements Util.Renderable {
      */
     void setBoxPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile, float x,
             float y) {
-        PolygonShape boxPoly = new PolygonShape();
-        boxPoly.setAsBox(mSize.x / 2, mSize.y / 2);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(mSize.x / 2, mSize.y / 2);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
@@ -350,13 +345,12 @@ public abstract class Actor implements Util.Renderable {
         fd.density = density;
         fd.restitution = elasticity;
         fd.friction = friction;
-        fd.shape = boxPoly;
-        // NB: could use fd.filter to prevent some from colliding with others...
+        fd.shape = shape;
         mBody.createFixture(fd);
 
-        // link the body to the sprite
+        // link the body to the actor
         mBody.setUserData(this);
-        boxPoly.dispose();
+        shape.dispose();
 
         if (isProjectile)
             mBody.setBullet(true);
@@ -368,16 +362,16 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Specify that this entity should have a polygon physics shape. You must
+     * Specify that this Actor should have a polygon physics shape. You must
      * take extreme care when using this method. Polygon vertices must be given
      * in counter-clockwise order, and they must describe a convex shape.
      * 
      * @param density
-     *            Density of the entity
+     *            Density of the actor
      * @param elasticity
-     *            Elasticity of the entity
+     *            Elasticity of the actor
      * @param friction
-     *            Friction of the entity
+     *            Friction of the actor
      * @param type
      *            Is this static or dynamic?
      * @param isProjectile
@@ -392,14 +386,14 @@ public abstract class Actor implements Util.Renderable {
      */
     void setPolygonPhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile,
             float x, float y, float... vertices) {
-        PolygonShape boxPoly = new PolygonShape();
+        PolygonShape shape = new PolygonShape();
         Vector2[] verts = new Vector2[vertices.length / 2];
-        for (int i = 0; i < vertices.length; i += 2) {
+        for (int i = 0; i < vertices.length; i += 2)
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
-        }
+        // print some debug info, since vertices are tricky
         for (int i = 0; i < verts.length; ++i)
             Util.message("vert", "at " + verts[i].x + "," + verts[i].y);
-        boxPoly.set(verts);
+        shape.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
@@ -410,13 +404,12 @@ public abstract class Actor implements Util.Renderable {
         fd.density = density;
         fd.restitution = elasticity;
         fd.friction = friction;
-        fd.shape = boxPoly;
-        // NB: could use fd.filter to prevent some from colliding with others...
+        fd.shape = shape;
         mBody.createFixture(fd);
 
-        // link the body to the sprite
+        // link the body to the actor
         mBody.setUserData(this);
-        boxPoly.dispose();
+        shape.dispose();
 
         if (isProjectile)
             mBody.setBullet(true);
@@ -428,14 +421,14 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Specify that this entity should have a circular physics shape
+     * Specify that this Actor should have a circular physics shape
      * 
      * @param density
-     *            Density of the entity
+     *            Density of the actor
      * @param elasticity
-     *            Elasticity of the entity
+     *            Elasticity of the actor
      * @param friction
-     *            Friction of the entity
+     *            Friction of the actor
      * @param type
      *            Is this static or dynamic?
      * @param isProjectile
@@ -449,8 +442,8 @@ public abstract class Actor implements Util.Renderable {
      */
     void setCirclePhysics(float density, float elasticity, float friction, BodyType type, boolean isProjectile,
             float x, float y, float radius) {
-        CircleShape c = new CircleShape();
-        c.setRadius(radius);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
@@ -461,15 +454,14 @@ public abstract class Actor implements Util.Renderable {
         fd.density = density;
         fd.restitution = elasticity;
         fd.friction = friction;
-        fd.shape = c;
-        // NB: could use fd.filter to prevent some from colliding with others...
+        fd.shape = shape;
         mBody.createFixture(fd);
-        c.dispose();
+        shape.dispose();
 
         if (isProjectile)
             mBody.setBullet(true);
 
-        // link the body to the sprite
+        // link the body to the actor
         mBody.setUserData(this);
 
         // remember this is a box
@@ -484,7 +476,7 @@ public abstract class Actor implements Util.Renderable {
 
     /**
      * Every time the world advances by a timestep, we call this code. It
-     * updates the PhysicsSprite and draws it. User code should never call this.
+     * updates the Actor and draws it. User code should never call this.
      */
     @Override
     public void render(SpriteBatch sb, float delta) {
@@ -498,7 +490,7 @@ public abstract class Actor implements Util.Renderable {
             // animate
             TextureRegion tr = mAnimator.getTr(delta);
 
-            // now draw this sprite, flipping it if necessary
+            // now draw this actor, flipping the image it if necessary
             Vector2 pos = mBody.getPosition();
             if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x < 0) {
                 if (mAnimator.mCurrentAnimation != mDefaultReverseAnimation) {
@@ -523,7 +515,7 @@ public abstract class Actor implements Util.Renderable {
      */
 
     /**
-     * Set any additional information for this sprite
+     * Set any additional information for this actor
      * 
      * @param text
      *            Text coming in from the programmer
@@ -533,7 +525,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Retrieve any additional information for this sprite
+     * Retrieve any additional information for this actor
      * 
      * @return The string that the programmer provided
      */
@@ -542,13 +534,13 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Make the camera follow the entity, but without centering the entity on
-     * the screen
+     * Make the camera follow the actor, but without centering the actor on the
+     * screen
      * 
      * @param x
-     *            Amount of x distance between entity and center
+     *            Amount of x distance between actor and center
      * @param y
-     *            Amount of y distance between entity and center
+     *            Amount of y distance between actor and center
      */
     public void setCameraOffset(float x, float y) {
         mCameraOffset.x = x;
@@ -556,30 +548,30 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Change whether this entity engages in physics collisions or not
+     * Change whether this actor engages in physics collisions or not
      * 
      * @param state
      *            either true or false. true indicates that the object will
      *            participate in physics collisions. false indicates that it
      *            will not.
      */
-    public void setCollisionEffect(boolean state) {
-        // The default is for all fixtures of a PhysicsSprite have the same
+    public void setCollisionsEnabled(boolean state) {
+        // The default is for all fixtures of a actor have the same
         // sensor state
         for (Fixture f : mBody.getFixtureList())
             f.setSensor(!state);
     }
 
     /**
-     * Allow the user to adjust the default physics settings (density,
-     * elasticity, friction) for this entity
+     * Adjust the default physics settings (density, elasticity, friction) for
+     * this actor
      * 
      * @param density
-     *            New density of the entity
+     *            New density of the actor
      * @param elasticity
-     *            New elasticity of the entity
+     *            New elasticity of the actor
      * @param friction
-     *            New friction of the entity
+     *            New friction of the actor
      */
     public void setPhysics(float density, float elasticity, float friction) {
         for (Fixture f : mBody.getFixtureList()) {
@@ -591,14 +583,14 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity should not rotate due to torque
+     * Indicate that this actor should not rotate due to torque
      */
     public void disableRotation() {
         mBody.setFixedRotation(true);
     }
 
     /**
-     * Returns the X coordinate of this entity
+     * Returns the X coordinate of this actor
      * 
      * @return x coordinate of bottom left corner
      */
@@ -607,7 +599,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Returns the Y coordinate of this entity
+     * Returns the Y coordinate of this actor
      * 
      * @return y coordinate of bottom left corner
      */
@@ -616,25 +608,25 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Returns the width of this entity
+     * Returns the width of this actor
      * 
-     * @return the entity's width
+     * @return the actor's width
      */
     public float getWidth() {
         return mSize.x;
     }
 
     /**
-     * Return the height of this entity
+     * Return the height of this actor
      * 
-     * @return the entity's height
+     * @return the actor's height
      */
     public float getHeight() {
         return mSize.y;
     }
 
     /**
-     * Indicate that the entity should move with the tilt of the phone
+     * Indicate that the actor should move with the tilt of the phone
      */
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
@@ -647,34 +639,32 @@ public abstract class Actor implements Util.Renderable {
             mBody.setType(BodyType.DynamicBody);
         Level.sCurrent.mTilt.mAccelEntities.add(this);
         // turn off sensor behavior, so this collides with stuff...
-        setCollisionEffect(true);
+        setCollisionsEnabled(true);
     }
 
     /**
-     * Call this on an Entity to rotate it. Note that this works best on boxes.
+     * Call this on an actor to rotate it. Note that this works best on boxes.
      * 
      * @param rotation
-     *            amount to rotate the Entity (in degrees)
+     *            amount to rotate the actor (in degrees)
      */
     public void setRotation(float rotation) {
-        // NB: the javadocs say "radians", but this appears to want rotation in
-        // degrees
         mBody.setTransform(mBody.getPosition(), rotation);
     }
 
     /**
-     * Use this to find the current rotation of an entity
+     * Use this to find the current rotation of an actor
      * 
-     * @return The rotation, in radians
+     * @return The rotation, in degrees
      */
     public float getRotation() {
-        return mBody.getAngle() % (2 * (float) Math.PI);
+        return mBody.getAngle();
     }
 
     /**
-     * Indicate whether the entity is currently visible or not.
+     * Indicate whether the actor is currently visible or not.
      * 
-     * @return true if the entity is visible, false if it is currently in a
+     * @return true if the actor is visible, false if it is currently in a
      *         hidden state (i.e., because it has been collected, defeated, or
      *         removed)
      */
@@ -683,23 +673,24 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Make an entity disappear
+     * Make an actor disappear
      * 
      * @param quiet
      *            True if the disappear sound should not be played
      */
     public void remove(boolean quiet) {
         // set it invisible immediately, so that future calls know to ignore
-        // this PhysicsSprite
+        // this actor
         mVisible = false;
         mBody.setActive(false);
 
-        // play a sound when we remove this thing?
+        // play a sound when we remove this actor?
         if (mDisappearSound != null && !quiet)
             mDisappearSound.play(Facts.getGameFact("volume"));
 
-        // This is a bit slimy... we draw an obstacle here, so that we have a
-        // clean hook into the animation system, but we disable its physics
+        // This is a bit of a hack... to do a disappear animation after we've
+        // removed the entity, we draw an obstacle, so that we have a clean hook
+        // into the animation system, but we disable its physics
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
@@ -710,7 +701,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Add velocity to this entity
+     * Add velocity to this actor
      * 
      * @param x
      *            Velocity in X dimension
@@ -718,28 +709,28 @@ public abstract class Actor implements Util.Renderable {
      *            Velocity in Y dimension
      * @param immuneToPhysics
      *            Should never be true for heroes! This means that gravity won't
-     *            affect the entity, and it can pass through other entities
+     *            affect the actor, and it can pass through other entities
      *            without colliding.
      */
     public void addVelocity(float x, float y, boolean immuneToPhysics) {
-        // ensure this is a moveable entity
+        // ensure this is a moveable actor
         if (mBody.getType() == BodyType.StaticBody)
             if (immuneToPhysics)
                 mBody.setType(BodyType.KinematicBody);
             else
                 mBody.setType(BodyType.DynamicBody);
 
-        // Add to the velocity of the entity
+        // Add to the velocity of the actor
         Vector2 v = mBody.getLinearVelocity();
         v.y += y;
         v.x += x;
         updateVelocity(v.x, v.y);
-        // Disable sensor, or else this entity will go right through walls
-        setCollisionEffect(true);
+        // Disable sensor, or else this actor will go right through walls
+        setCollisionsEnabled(true);
     }
 
     /**
-     * Set the absolute velocity of this Entity
+     * Set the absolute velocity of this actor
      * 
      * @param x
      *            Velocity in X dimension
@@ -747,7 +738,7 @@ public abstract class Actor implements Util.Renderable {
      *            Velocity in Y dimension
      */
     public void setAbsoluteVelocity(float x, float y, boolean immuneToPhysics) {
-        // ensure this is a moveable entity
+        // ensure this is a moveable actor
         if (mBody.getType() == BodyType.StaticBody)
             if (immuneToPhysics)
                 mBody.setType(BodyType.KinematicBody);
@@ -756,8 +747,8 @@ public abstract class Actor implements Util.Renderable {
 
         // change its velocity
         updateVelocity(x, y);
-        // Disable sensor, or else this entity will go right through walls
-        setCollisionEffect(true);
+        // Disable sensor, or else this actor will go right through walls
+        setCollisionsEnabled(true);
     }
 
     /**
@@ -798,13 +789,12 @@ public abstract class Actor implements Util.Renderable {
      *            Number of type-4 goodies that must be collected before it
      *            works
      * @param disapper
-     *            True if the entity should disappear after the callback
-     *            completes
-     * @param sc
-     *            The callback to run when the entitiy is touched
+     *            True if the actor should disappear when the callback runs
+     * @param callback
+     *            The callback to run when the actor is touched
      */
     public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final boolean disappear, final LolCallback sc) {
+            int activationGoodies4, final boolean disappear, final LolCallback callback) {
         final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
         // set the code to run on touch
@@ -819,8 +809,8 @@ public abstract class Actor implements Util.Renderable {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    sc.mAttachedActor = Actor.this;
-                    sc.onEvent();
+                    callback.mAttachedActor = Actor.this;
+                    callback.onEvent();
                 }
                 return true;
             }
@@ -828,12 +818,12 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that when this entity stops, we should run custom code
+     * Indicate that when this actor stops, we should run custom code
      * 
-     * @param sc
-     *            The callback to run when the entity stops
+     * @param callback
+     *            The callback to run when the actor stops
      */
-    public void setStopCallback(final LolCallback sc) {
+    public void setStopCallback(final LolCallback callback) {
         Level.sCurrent.mRepeatEvents.add(new Util.Action() {
             boolean moving = false;
 
@@ -843,8 +833,8 @@ public abstract class Actor implements Util.Renderable {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    sc.mAttachedActor = Actor.this;
-                    sc.onEvent();
+                    callback.mAttachedActor = Actor.this;
+                    callback.onEvent();
                     moving = false;
                 }
             }
@@ -852,47 +842,47 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Returns the X velocity of of this entity
+     * Returns the X velocity of of this actor
      * 
-     * @return float Velocity in X dimension
+     * @return Velocity in X dimension
      */
     public float getXVelocity() {
         return mBody.getLinearVelocity().x;
     }
 
     /**
-     * Returns the Y velocity of of this entity
+     * Returns the Y velocity of of this actor
      * 
-     * @return float Velocity in Y dimension
+     * @return Velocity in Y dimension
      */
     public float getYVelocity() {
         return mBody.getLinearVelocity().y;
     }
 
     /**
-     * Make this entity move according to a route. The entity can loop back to
-     * the beginning of the route.
+     * Make this actor move according to a route. The actor can loop back to the
+     * beginning of the route.
      * 
      * @param route
      *            The route to follow.
      * @param velocity
      *            speed at which to travel
      * @param loop
-     *            Should this route loop continuously
+     *            Should this route loop continuously?
      */
     public void setRoute(Route route, float velocity, boolean loop) {
-        // This must be a KinematicBody!
+        // This must be a KinematicBody or a Dynamic Body!
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
 
-        // Create a RouteDriver to advance the entity's position according to
+        // Create a RouteDriver to advance the actor's position according to
         // the route
         mRoute = new Util.RouteDriver(route, velocity, loop, this);
     }
 
     /**
-     * Make the entity continuously rotate. This is usually only useful for
-     * fixed objects.
+     * Make the actor continuously rotate. This is usually only useful for fixed
+     * objects.
      * 
      * @param duration
      *            Time it takes to complete one rotation
@@ -904,8 +894,12 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Call this on an entity to make it draggable. Be careful when dragging
+     * Call this on an actor to make it draggable. Be careful when dragging
      * things. If they are small, they will be hard to touch.
+     * 
+     * @param immuneToPhysics
+     *            Indicate whether the actor should pass through other objects
+     *            or collide with them
      */
     public void setCanDrag(boolean immuneToPhysics) {
         if (immuneToPhysics)
@@ -933,18 +927,18 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Call this on an Entity to make it pokeable. Poke the entity, then poke
-     * the screen, and the entity will move to the location that was pressed.
-     * Poke the entity twice in rapid succession to delete it.
+     * Call this on an actor to make it pokeable. Poke the actor, then poke the
+     * screen, and the actor will move to the location that was pressed. Poke
+     * the actor twice in rapid succession to delete it.
      * 
      * @param deleteThresholdMillis
-     *            If two touches happen within this many milliseconds, the
-     *            entity will be deleted. Use 0 to disable this
+     *            If two touches happen within this many milliseconds, the actor
+     *            will be deleted. Use 0 to disable this
      *            "delete by double-touch" feature.
      */
     public void setPokeToPlace(long deleteThresholdMillis) {
         // convert threshold to nanoseconds
-        final long deleteThreshold = deleteThresholdMillis * 1000000;
+        final long deleteThreshold = deleteThresholdMillis;
         // set the code to run on touch
         mGestureResponder = new Util.GestureAction() {
             long mLastPokeTime;
@@ -958,7 +952,7 @@ public abstract class Actor implements Util.Renderable {
                 long time = System.currentTimeMillis();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
-                    // hide sprite, disable physics
+                    // hide actor, disable physics
                     mBody.setActive(false);
                     mVisible = false;
                     mEnabled = false;
@@ -968,7 +962,7 @@ public abstract class Actor implements Util.Renderable {
                 else {
                     mLastPokeTime = time;
                 }
-                // set a screen handler to detect when/where to move the entity
+                // set a screen handler to detect when/where to move the actor
                 Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
@@ -990,7 +984,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity can be flicked on the screen
+     * Indicate that this actor can be flicked on the screen
      * 
      * @param dampFactor
      *            A value that is multiplied by the vector for the flick, to
@@ -1005,7 +999,8 @@ public abstract class Actor implements Util.Renderable {
         Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
-                if (Level.sCurrent.mHitSprite == Actor.this) {
+                // note: may need to disable hovering
+                if (Level.sCurrent.mHitActor == Actor.this) {
                     mHover = null;
                     updateVelocity((touchVec.x) * dampFactor, (touchVec.y) * dampFactor);
                 }
@@ -1015,17 +1010,17 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Configure an entity so that touching an arbitrary point on the screen
-     * makes the entity move toward that point. The behavior is similar to
-     * pokeToPlace, in that one touches the entity, then where she wants the
-     * entity to go. However, this involves moving with velocity, instead of
+     * Configure an actor so that touching an arbitrary point on the screen
+     * makes the actor move toward that point. The behavior is similar to
+     * pokeToPlace, in that one touches the actor, then where she wants the
+     * actor to go. However, this involves moving with velocity, instead of
      * teleporting
      * 
      * @param velocity
      *            The constant velocity for poke movement
      * @param oncePerTouch
      *            After starting a path, does the player need to re-select
-     *            (re-touch) the entity before giving it a new destinaion point?
+     *            (re-touch) the actor before giving it a new destinaion point?
      */
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
@@ -1056,18 +1051,18 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Configure an entity so that touching an arbitrary point on the screen
-     * makes the entity move toward that point. The behavior is similar to
-     * pokePath, except that as the finger moves, the entity keeps changing its
+     * Configure an actor so that touching an arbitrary point on the screen
+     * makes the actor move toward that point. The behavior is similar to
+     * pokePath, except that as the finger moves, the actor keeps changing its
      * destination accordingly.
      * 
      * @param velocity
      *            The constant velocity for poke movement
      * @param oncePerTouch
      *            After starting a path, does the player need to re-select
-     *            (re-touch) the entity before giving it a new destinaion point?
+     *            (re-touch) the actor before giving it a new destinaion point?
      * @param stopOnUp
-     *            When the touch is released, should the entity stop moving, or
+     *            When the touch is released, should the actor stop moving, or
      *            continue in the same direction?
      */
     public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
@@ -1135,7 +1130,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Save the animation sequence that we'll use when the entity is moving in
+     * Save the animation sequence that we'll use when the actor is moving in
      * the negative X direction
      * 
      * @param a
@@ -1146,14 +1141,14 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Save an animation sequence for showing when we get rid of a sprite
+     * Save an animation sequence for showing when we get rid of a actor
      * 
      * @param a
      *            The animation to display
      * @param offsetX
-     *            We can offset the animation from the bottom left of the sprite
-     *            (useful if animation is larger than sprite dimensions). This
-     *            is the x offset.
+     *            We can offset the animation from the bottom left of the actor
+     *            (useful if animation is larger than actor dimensions). This is
+     *            the x offset.
      * @param offsetY
      *            The Y offset (see offsetX for more information)
      * @param width
@@ -1206,7 +1201,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Change the image being used by the entity
+     * Change the image being used to display the actor
      * 
      * @param imgName
      *            The name of the new image file to use
@@ -1220,19 +1215,19 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Change the size of an entity, and/or change its position
+     * Change the size of an actor, and/or change its position
      * 
      * @param x
      *            The new X coordinate of its bottom left corner
      * @param y
      *            The new Y coordinate of its bototm left corner
      * @param width
-     *            The new width of the entity
+     *            The new width of the actor
      * @param height
-     *            The new height of the entity
+     *            The new height of the actor
      */
     public void resize(float x, float y, float width, float height) {
-        // To scale a polygon, we'll need to scaling factor here, so we can
+        // To scale a polygon, we'll need a scaling factor, so we can
         // manually scale each point
         float xscale = height / mSize.y;
         float yscale = width / mSize.x;
@@ -1256,9 +1251,9 @@ public abstract class Actor implements Util.Renderable {
             PolygonShape ps = (PolygonShape) oldFix.getShape();
             float[] verts = new float[ps.getVertexCount() * 2];
             for (int i = 0; i < ps.getVertexCount(); ++i) {
-                ps.getVertex(i, tmpVert);
-                verts[2 * i] = tmpVert.x * xscale;
-                verts[2 * i + 1] = tmpVert.y * yscale;
+                ps.getVertex(i, mTmpVert);
+                verts[2 * i] = mTmpVert.x * xscale;
+                verts[2 * i + 1] = mTmpVert.y * yscale;
             }
             setPolygonPhysics(oldFix.getDensity(), oldFix.getRestitution(), oldFix.getFriction(), oldBody.getType(),
                     oldBody.isBullet(), x, y, verts);
@@ -1274,7 +1269,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity should shrink over time
+     * Indicate that this actor should shrink over time
      * 
      * @param shrinkX
      *            The number of meters by which the X dimension should shrink
@@ -1283,7 +1278,7 @@ public abstract class Actor implements Util.Renderable {
      *            The number of meters by which the Y dimension should shrink
      *            each second
      * @param keepCentered
-     *            Should the entity's center point stay the same as it shrinks
+     *            Should the actor's center point stay the same as it shrinks
      *            (true), or should its bottom left corner stay in the same
      *            position (false)
      */
@@ -1317,17 +1312,17 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity should hover at a specific location on the
+     * Indicate that this actor should hover at a specific location on the
      * screen, rather than being placed at some point on the level itself. Note
      * that the coordinates to this command are the center position of the
-     * hovering entity. Also, be careful about using hover with zoom... hover is
+     * hovering actor. Also, be careful about using hover with zoom... hover is
      * relative to screen coordinates (pixels), not world coordinates, so it's
      * going to look funny to use this with zoom
      * 
      * @param x
-     *            the X coordinate (in pixels) where the entity should appear
+     *            the X coordinate (in pixels) where the actor should appear
      * @param y
-     *            the Y coordinate (in pixels) where the entity should appear
+     *            the Y coordinate (in pixels) where the actor should appear
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
@@ -1346,14 +1341,14 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity should be immune to the force of gravity
+     * Indicate that this actor should be immune to the force of gravity
      */
     public void setGravityDefy() {
         mBody.setGravityScale(0);
     }
 
     /**
-     * Make this obstacle sticky, so that a hero will stick to it
+     * Make this actor sticky, so that another actor will stick to it
      * 
      * @param top
      *            Is the top sticky?
@@ -1369,7 +1364,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Set the sound to play when this entity disappears
+     * Set the sound to play when this actor disappears
      * 
      * @param soundName
      *            Name of the sound file
@@ -1379,7 +1374,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that touching this entity should make a hero throw a projectile
+     * Indicate that touching this actor should make a hero throw a projectile
      * 
      * @param h
      *            The hero who should throw a projectile when this is touched
@@ -1419,37 +1414,37 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Indicate that this entity should not have collisions with any other
-     * entity that has the same ID
+     * Indicate that this actor should not have collisions with any other actor
+     * that has the same ID
      * 
      * @param id
-     *            The number for this class of non-interacting entities
+     *            The number for this class of non-interacting actors
      */
     public void setPassThrough(int id) {
         mPassThroughId = id;
     }
 
     /**
-     * By default, non-hero entities are not subject to gravity or forces until
+     * By default, non-hero actors are not subject to gravity or forces until
      * they are given a path, velocity, or other form of motion. This lets an
-     * entity be subject to forces... in practice, using this in a side-scroller
-     * means the entity will fall to the ground.
+     * actor be subject to forces... in practice, using this in a side-scroller
+     * means the actor will fall to the ground.
      */
     public void setCanFall() {
         mBody.setType(BodyType.DynamicBody);
     }
 
     /**
-     * Specify that this entity is supposed to chase another entity
+     * Specify that this actor is supposed to chase another actor
      * 
      * @param speed
-     *            The speed with which it chases the other entity
+     *            The speed with which it chases the other actor
      * @param target
-     *            The entity to chase
+     *            The actor to chase
      * @param chaseInX
-     *            Should the entity change its x velocity?
+     *            Should the actor change its x velocity?
      * @param chaseInY
-     *            Should the entity change its y velocity?
+     *            Should the actor change its y velocity?
      */
     public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
@@ -1460,7 +1455,7 @@ public abstract class Actor implements Util.Renderable {
                 // don't chase something that isn't visible
                 if (!target.mVisible)
                     return;
-                // don't run if this sprite isn't visible
+                // don't run if this actor isn't visible
                 if (!mVisible)
                     return;
                 // compute vector between entities, and normalize it
@@ -1489,11 +1484,11 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Specify that this entity is supposed to chase another entity, but using
+     * Specify that this actor is supposed to chase another actor, but using
      * fixed X and Y velocities
      * 
      * @param target
-     *            The entity to chase
+     *            The actor to chase
      * @param xMagnitude
      *            The magnitude in the x direction, if ignoreX is false
      * @param yMagnitude
@@ -1515,7 +1510,7 @@ public abstract class Actor implements Util.Renderable {
                 // don't chase something that isn't visible
                 if (!target.mVisible)
                     return;
-                // don't run if this sprite isn't visible
+                // don't run if this actor isn't visible
                 if (!mVisible)
                     return;
                 // determine directions for X and Y
@@ -1530,17 +1525,17 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Get the entity being chased by this PhysicsSprite
+     * Get the actor being chased by this actor
      * 
-     * @return The entity being chased
+     * @return The actor being chased
      */
-    public Actor getChaseEntity() {
+    public Actor getChaseactor() {
         return mChaseTarget;
     }
 
     /**
-     * Indicate that this entity's rotation should be determined by the
-     * direction in which it is traveling
+     * Indicate that this actor's rotation should be determined by the direction
+     * in which it is traveling
      */
     public void setRotationByDirection() {
         Level.sCurrent.mRepeatEvents.add(new Util.Action() {
@@ -1558,7 +1553,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Set the z plane for this entity
+     * Set the z plane for this actor
      * 
      * @param zIndex
      *            The z plane. Values range from -2 to 2. The default is 0.
@@ -1566,28 +1561,30 @@ public abstract class Actor implements Util.Renderable {
     public void setZIndex(int zIndex) {
         assert (zIndex <= 2);
         assert (zIndex >= -2);
-        Level.sCurrent.removeSprite(this, mZIndex);
+        Level.sCurrent.removeActor(this, mZIndex);
         mZIndex = zIndex;
-        Level.sCurrent.addSprite(this, mZIndex);
+        Level.sCurrent.addActor(this, mZIndex);
     }
 
     /**
-     * Create a revolute joint between this entity and some other entity
+     * Create a revolute joint between this actor and some other actor. Note
+     * that both actors need to have some mass (density > 0) or else this won't
+     * work.
      * 
      * @param anchor
-     *            The entity around which this entity will rotate
+     *            The actor around which this actor will rotate
      * @param anchorX
-     *            The X coordinate (relative to the center of the entity) where
+     *            The X coordinate (relative to the center of the actor) where
      *            the joint fuses to the anchor
      * @param anchorY
-     *            The Y coordinate (relative to the center of the entity) where
+     *            The Y coordinate (relative to the center of the actor) where
      *            the joint fuses to the anchor
      * @param localAnchorX
-     *            The X coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The X coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      * @param localAnchorY
-     *            The Y coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The Y coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      */
     public void setRevoluteJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
@@ -1643,23 +1640,23 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Create a weld joint between this entity and some other entity, to force
-     * the entities to stick together.
+     * Create a weld joint between this actor and some other actor, to force the
+     * actors to stick together.
      * 
      * @param other
-     *            The entity that will be fused to this entity
+     *            The actor that will be fused to this actor
      * @param otherX
-     *            The X coordinate (relative to the center of the entity) where
-     *            the joint fuses to the other entity
+     *            The X coordinate (relative to the center of the actor) where
+     *            the joint fuses to the other actor
      * @param otherY
-     *            The Y coordinate (relative to the center of the entity) where
-     *            the joint fuses to the other entity
+     *            The Y coordinate (relative to the center of the actor) where
+     *            the joint fuses to the other actor
      * @param localX
-     *            The X coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The X coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      * @param localY
-     *            The Y coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The Y coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      * @param angle
      *            The angle between the entities
      */
@@ -1675,22 +1672,22 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * Create a distance joint between this entity and some other entity
+     * Create a distance joint between this actor and some other actor
      * 
      * @param anchor
-     *            The entity to which this entity is connected
+     *            The actor to which this actor is connected
      * @param anchorX
-     *            The X coordinate (relative to the center of the entity) where
+     *            The X coordinate (relative to the center of the actor) where
      *            the joint fuses to the anchor
      * @param anchorY
-     *            The Y coordinate (relative to the center of the entity) where
+     *            The Y coordinate (relative to the center of the actor) where
      *            the joint fuses to the anchor
      * @param localAnchorX
-     *            The X coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The X coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      * @param localAnchorY
-     *            The Y coordinate (relative to the center of the entity) where
-     *            the joint fuses to this entity
+     *            The Y coordinate (relative to the center of the actor) where
+     *            the joint fuses to this actor
      */
     public void setDistanceJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
@@ -1710,7 +1707,7 @@ public abstract class Actor implements Util.Renderable {
     }
 
     /**
-     * In some cases, we need to force an entity to have a kinematic body type
+     * In some cases, we need to force an actor to have a kinematic body type
      */
     public void setKinematic() {
         if (mBody.getType() != BodyType.KinematicBody)

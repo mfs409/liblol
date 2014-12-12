@@ -114,8 +114,8 @@ public class Goodie extends Actor {
     public static Goodie makeAsBox(float x, float y, float width, float height, String imgName) {
         Goodie g = new Goodie(width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        g.setCollisionEffect(false);
-        Level.sCurrent.addSprite(g, 0);
+        g.setCollisionsEnabled(false);
+        Level.sCurrent.addActor(g, 0);
         return g;
     }
 
@@ -139,8 +139,8 @@ public class Goodie extends Actor {
         float radius = Math.max(width, height);
         Goodie g = new Goodie(width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        g.setCollisionEffect(false);
-        Level.sCurrent.addSprite(g, 0);
+        g.setCollisionsEnabled(false);
+        Level.sCurrent.addActor(g, 0);
         return g;
     }
 
