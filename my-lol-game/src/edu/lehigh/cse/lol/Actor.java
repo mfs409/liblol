@@ -129,7 +129,7 @@ public abstract class Actor implements Util.Renderable {
 
     /**
      * Sometimes an actor collides with another actor, and should stick to it.
-     * In that case, we create a pair of joints to connect the two entities.
+     * In that case, we create a pair of joints to connect the two actors.
      * This is the Weld joint that connects them
      */
     WeldJoint mWJoint;
@@ -631,13 +631,13 @@ public abstract class Actor implements Util.Renderable {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (Level.sCurrent.mTilt.mAccelEntities.contains(this))
+        if (Level.sCurrent.mTilt.mAccelActors.contains(this))
             return;
 
-        // make sure it is moveable, add it to the list of tilt entities
+        // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mTilt.mAccelEntities.add(this);
+        Level.sCurrent.mTilt.mAccelActors.add(this);
         // turn off sensor behavior, so this collides with stuff...
         setCollisionsEnabled(true);
     }
@@ -689,7 +689,7 @@ public abstract class Actor implements Util.Renderable {
             mDisappearSound.play(Facts.getGameFact("volume"));
 
         // This is a bit of a hack... to do a disappear animation after we've
-        // removed the entity, we draw an obstacle, so that we have a clean hook
+        // removed the actor, we draw an obstacle, so that we have a clean hook
         // into the animation system, but we disable its physics
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
@@ -709,7 +709,7 @@ public abstract class Actor implements Util.Renderable {
      *            Velocity in Y dimension
      * @param immuneToPhysics
      *            Should never be true for heroes! This means that gravity won't
-     *            affect the actor, and it can pass through other entities
+     *            affect the actor, and it can pass through other actors
      *            without colliding.
      */
     public void addVelocity(float x, float y, boolean immuneToPhysics) {
@@ -1458,7 +1458,7 @@ public abstract class Actor implements Util.Renderable {
                 // don't run if this actor isn't visible
                 if (!mVisible)
                     return;
-                // compute vector between entities, and normalize it
+                // compute vector between actors, and normalize it
                 float x = target.mBody.getPosition().x - mBody.getPosition().x;
                 float y = target.mBody.getPosition().y - mBody.getPosition().y;
                 float denom = (float) Math.sqrt(x * x + y * y);
@@ -1658,7 +1658,7 @@ public abstract class Actor implements Util.Renderable {
      *            The Y coordinate (relative to the center of the actor) where
      *            the joint fuses to this actor
      * @param angle
-     *            The angle between the entities
+     *            The angle between the actors
      */
     public void setWeldJoint(Actor other, float otherX, float otherY, float localX, float localY, float angle) {
         WeldJointDef w = new WeldJointDef();

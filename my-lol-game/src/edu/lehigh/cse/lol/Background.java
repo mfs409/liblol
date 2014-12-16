@@ -34,7 +34,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * The Background class provides a way to declare images that go in the
- * background of the game, and which automatically pan and repeat
+ * background of the game, and which automatically pan and repeat. Note that if
+ * you wish to have a background image that does not pan and repeat, you should
+ * use Util.drawPicture.
  */
 public class Background {
     /**
@@ -190,7 +192,8 @@ public class Background {
      * @param height
      *            The height of the image being used as a background layer
      */
-    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset, float width, float height) {
+    static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset, float width,
+            float height) {
         Util.ParallaxLayer pl = new Util.ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
                 * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;

@@ -34,13 +34,20 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
+/**
+ * The Hero is the focal point of a game. While it is technically possible to
+ * have many heroes, or invisible heroes that exist just so that the player has
+ * to keep bad things from happening to the hero, it is usually the case that a
+ * game has one hero who moves around on the screen, possibly jumping and
+ * crawling.
+ */
 public class Hero extends Actor {
 
     /**
-     * Strength of the hero This determines how many collisions with enemies the
-     * hero can sustain before it is defeated. The default is 1, and the default
-     * enemy damage amount is 2, so that the default behavior is for the hero to
-     * be defeated on any collision with an enemy, with the enemy *not*
+     * Strength of the hero. This determines how many collisions with enemies
+     * the hero can sustain before it is defeated. The default is 1, and the
+     * default enemy damage amount is 2, so that the default behavior is for the
+     * hero to be defeated on any collision with an enemy, with the enemy *not*
      * disappearing
      */
     private int mStrength = 1;
@@ -125,7 +132,7 @@ public class Hero extends Actor {
     private LolCallback mStrengthChangeCallback;
 
     /**
-     * Construct a Hero by creating a PhysicsSprite and incrementing the number
+     * Construct a Hero by creating an Actor and incrementing the number
      * of heroes created. This code should never be called directly by the game
      * designer.
      * 
@@ -142,7 +149,7 @@ public class Hero extends Actor {
     }
 
     /**
-     * We can't just use the basic PhysicsSprite renderer, because we might need
+     * We can't just use the basic Actor renderer, because we might need
      * to adjust a one-off animation (invincibility or throw) first
      * 
      * @param sb

@@ -438,7 +438,7 @@ public class Level extends ScreenAdapter {
     /**
      * This is the sprite that the camera chases
      */
-    Actor mChaseEntity;
+    Actor mChaseActor;
 
     /**
      * The maximum x value of the camera
@@ -625,11 +625,11 @@ public class Level extends ScreenAdapter {
      * updating the camera position
      */
     private void adjustCamera() {
-        if (mChaseEntity == null)
+        if (mChaseActor == null)
             return;
         // figure out the entity's position
-        float x = mChaseEntity.mBody.getWorldCenter().x + mChaseEntity.mCameraOffset.x;
-        float y = mChaseEntity.mBody.getWorldCenter().y + mChaseEntity.mCameraOffset.y;
+        float x = mChaseActor.mBody.getWorldCenter().x + mChaseActor.mCameraOffset.x;
+        float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
         if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
@@ -851,7 +851,7 @@ public class Level extends ScreenAdapter {
      *            The entity the camera should chase
      */
     public static void setCameraChase(Actor ps) {
-        sCurrent.mChaseEntity = ps;
+        sCurrent.mChaseActor = ps;
     }
 
     /**

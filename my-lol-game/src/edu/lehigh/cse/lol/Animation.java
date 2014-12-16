@@ -31,7 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * Animation is a way of describing a set of images that can be used to animate
- * an entity. Animations consist of regions of an image, the indices that should
+ * an actor. Animations consist of regions of an image, the indices that should
  * be played, and the time each should be shown. For example, suppose there is
  * an image "glowball.png" with 5 frames. The "cells" will consist of the 5
  * frames (numbered 0 to 4) that can be shown. We can then set an animation such
@@ -39,6 +39,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * show the 0th frame for 300 milliseconds, then the 2nd frame for 100
  * milliseconds, then the 0th frame for 600 milliseconds, then the 4th frame for
  * 100 milliseconds.
+ * 
+ * There are two ways to make an animation. The more powerful uses to() to chain
+ * together frame/duration pairs. The less powerful uses a constructor with more
+ * parameters to define the entire animation in equal-duration pieces.
  */
 public class Animation {
     /**

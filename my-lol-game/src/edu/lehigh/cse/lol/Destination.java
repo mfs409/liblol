@@ -32,7 +32,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Destinations are entities that the hero should try to reach. When a hero
+ * Destinations are actors that the hero should try to reach. When a hero
  * reaches a destination, the hero disappears, and the score updates.
  */
 public class Destination extends Actor {
@@ -75,14 +75,14 @@ public class Destination extends Actor {
     }
 
     /**
-     * Destinations are the last collision detection entity, so their collision
+     * Destinations are the last collision detection actor, so their collision
      * detection code does nothing.
      * 
      * @param other
      *            Other object involved in this collision
      * @param contact
      *            A description of the collision between this destination and
-     *            the other entity
+     *            the other actor
      */
     @Override
     void onCollide(Actor other, Contact contact) {

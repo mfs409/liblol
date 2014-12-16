@@ -30,7 +30,7 @@ package edu.lehigh.cse.lol;
 /**
  * SimpleCallback provides an easy way to describe code that should run in
  * response to special events, such as timers, screen presses, or collisions
- * between entities.
+ * between actors.
  * 
  * In the interest of simplicity, we use some public fields instead of getters
  * and setters. This also lets us get away with using the default constructor.
@@ -47,13 +47,13 @@ public abstract class LolCallback implements Cloneable {
     public float mFloatVal;
 
     /**
-     * For collision events or entity press events, this is the entity to which
+     * For collision events or actor press events, this is the actor to which
      * the callback is attached
      */
     public Actor mAttachedActor;
 
     /**
-     * For collision events, this is the other entity involved in the collision
+     * For collision events, this is the other actor involved in the collision
      */
     public Actor mCollideActor;
 

@@ -1,5 +1,4 @@
 /**
- * This is free and unencumbered software released into the public domain.
  *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
@@ -32,6 +31,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * LOL Games have a heads-up display (hud). The hud is a place for displaying
+ * text and drawing touchable buttons, so that as the hero moves through the
+ * level, the buttons and text can remain at the same place on the screen. This
+ * class encapsulates all of the displayable text.
+ */
 public class Displays {
     /**
      * This is for handling text that gets drawn on the HUD
@@ -79,7 +84,7 @@ public class Displays {
     }
 
     /**
-     * Controls is a pure static class, and should never be constructed
+     * Displays is a pure static class, and should never be constructed
      * explicitly
      */
     private Displays() {
@@ -123,9 +128,8 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addCountdown(float timeout, String text, int x, int y) {
-        return addCountdown(timeout, text, x, y, Lol.sGame.mDefaultFontFace,
-                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addCountdown(timeout, text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -172,7 +176,8 @@ public class Displays {
     }
 
     /**
-     * Print the frames per second
+     * Print the frames per second. We use this in debug mode, but some people
+     * like to show it all the time.
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -214,9 +219,8 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y, Lol.sGame.mDefaultFontFace,
-                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addWinCountdown(timeout, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -288,7 +292,7 @@ public class Displays {
     public static Display addGoodieCount(final int type, int max, final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
+        final String suffix = (max > 0) ? "/" + max + text : text;
         Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
@@ -314,9 +318,8 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     public static Display addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, Lol.sGame.mDefaultFontFace,
-                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addDefeatedCount(max, text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -346,7 +349,7 @@ public class Displays {
     public static Display addDefeatedCount(int max, final String text, final int x, final int y, String fontName,
             final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + " " + text : " " + text;
+        final String suffix = (max > 0) ? "/" + max + text : text;
         Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
@@ -367,9 +370,8 @@ public class Displays {
      *            The Y coordinate of the bottom left corner (in pixels)
      */
     static public Display addStopwatch(int x, int y) {
-        return addStopwatch(x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue,
-                Lol.sGame.mDefaultFontSize);
+        return addStopwatch(x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
     }
 
     /**
@@ -419,9 +421,8 @@ public class Displays {
      */
     static public Display addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, Lol.sGame.mDefaultFontFace,
-                Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize, h);
+        return addStrengthMeter(text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize, h);
     }
 
     /**
@@ -453,7 +454,7 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + " " + text, mFont, sb);
+                drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -461,7 +462,7 @@ public class Displays {
     }
 
     /**
-     * Display a meter showing how far a hero has traveled
+     * Display a meter showing how far an actor has traveled
      * 
      * @param text
      *            The text to display after the remaining strength value
@@ -479,17 +480,17 @@ public class Displays {
      *            The blue portion of text color (0-255)
      * @param size
      *            The font size to use (20 is usually a good value)
-     * @param h
-     *            The Hero whose distance should be displayed
+     * @param actor
+     *            The Actor whose distance should be displayed
      */
     static public Display addDistanceMeter(final String text, final int x, final int y, String fontName, final int red,
-            final int green, final int blue, int size, final Hero h) {
+            final int green, final int blue, int size, final Actor actor) {
         Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mDistance = (int) h.getXPosition();
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + " " + text, mFont, sb);
+                Level.sCurrent.mScore.mDistance = (int) actor.getXPosition();
+                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + text, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -522,7 +523,8 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + " " + text, mFont, sb);
+                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + text, mFont,
+                        sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -639,5 +641,4 @@ public class Displays {
         Level.sCurrent.mDisplays.add(d);
         return d;
     }
-
 }

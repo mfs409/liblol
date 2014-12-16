@@ -38,7 +38,8 @@ import edu.lehigh.cse.lol.Util.GestureAction;
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying
  * text and drawing touchable buttons, so that as the hero moves through the
- * level, the buttons and text can remain at the same place on the screen
+ * level, the buttons and text can remain at the same place on the screen. This
+ * class encapsulates all of the touchable buttons.
  */
 public class Controls {
     /**
@@ -57,8 +58,7 @@ public class Controls {
         Util.GestureAction mGestureAction;
 
         /**
-         * For touchable Controls, this is the rectangle on the screen that is
-         * touchable
+         * The rectangle on the screen that is touchable
          */
         Rectangle mRange;
 
@@ -74,7 +74,7 @@ public class Controls {
         TextureRegion mImage;
 
         /**
-         * Use this constructor for controls that provide pressable images
+         * Create a control on the heads up display
          * 
          * @param imgName
          *            The name of the image to display. If "" is given as the
@@ -102,10 +102,7 @@ public class Controls {
         }
 
         /**
-         * This is the render method when we've got a valid TR. When we don't,
-         * we're displaying text, which probably means we're also dynamically
-         * updating the text to display on every render, so it makes sense to
-         * overload the render() call for those Controls
+         * Render the control
          * 
          * @param sb
          *            The SpriteBatch to use to draw the image
@@ -116,28 +113,28 @@ public class Controls {
         }
 
         /**
-         * Disable a control
+         * Disable the control, so that it doesn't get displayed
          */
         public void setInactive() {
             mIsActive = false;
         }
 
         /**
-         * Enable a control
+         * Enable the control, so that it gets displayed again
          */
         public void setActive() {
             mIsActive = true;
         }
 
         /**
-         * Disable touch
+         * Disable touch for this control
          */
         public void disableTouch() {
             mIsTouchable = false;
         }
 
         /**
-         * Enable touch
+         * Enable touch for this control
          */
         public void enableTouch() {
             mIsTouchable = true;
@@ -156,9 +153,9 @@ public class Controls {
      */
 
     /**
-     * Add a button that pauses the game by causing a PauseScene to be
-     * displayed. Note that you must configure a PauseScene, or pressing this
-     * button will cause your game to crash.
+     * Add a button that pauses the game (via a single tap) by causing a
+     * PauseScene to be displayed. Note that you must configure a PauseScene, or
+     * pressing this button will cause your game to crash.
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -187,7 +184,8 @@ public class Controls {
     }
 
     /**
-     * Add a button that moves an entity
+     * Add a button that makes an actor move as long as the button is being held
+     * down
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -200,15 +198,15 @@ public class Controls {
      * @param imgName
      *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param entity
-     *            The entity to move downward
+     * @param actor
+     *            The actor to move downward
      * @param dx
      *            The new X velocity
      * @param dy
      *            The new Y velocity
      */
-    public static Control addMoveButton(int x, int y, int width, int height, String imgName,
-            final Actor entity, final float dx, final float dy) {
+    public static Control addMoveButton(int x, int y, int width, int height, String imgName, final Actor actor,
+            final float dx, final float dy) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new Util.GestureAction() {
 
@@ -221,12 +219,12 @@ public class Controls {
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
-                    Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = actor.mBody.getLinearVelocity();
                     if (dx != 0)
                         v.x = 0;
                     if (dy != 0)
                         v.y = 0;
-                    entity.updateVelocity(v.x, v.y);
+                    actor.updateVelocity(v.x, v.y);
                     mHolding = false;
                 } else {
                     mHolding = true;
@@ -240,12 +238,12 @@ public class Controls {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
-                    Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = actor.mBody.getLinearVelocity();
                     if (dx != 0)
                         v.x = dx;
                     if (dy != 0)
                         v.y = dy;
-                    entity.updateVelocity(v.x, v.y);
+                    actor.updateVelocity(v.x, v.y);
                 }
             }
         });
@@ -253,7 +251,7 @@ public class Controls {
     }
 
     /**
-     * Add a button that moves an entity downward
+     * Add a button that moves an actor downward while the button is being held
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -267,17 +265,16 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rate
-     *            Rate at which the entity moves
-     * @param entity
-     *            The entity to move downward
+     *            Rate at which the actor moves
+     * @param actor
+     *            The actor to move downward
      */
-    public static Control addDownButton(int x, int y, int width, int height, String imgName, float rate,
-            Actor entity) {
-        return addMoveButton(x, y, width, height, imgName, entity, 0, -rate);
+    public static Control addDownButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
+        return addMoveButton(x, y, width, height, imgName, actor, 0, -rate);
     }
 
     /**
-     * Add a button that moves an entity upward
+     * Add a button that moves an actor upward while the button is being held
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -291,17 +288,17 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rate
-     *            Rate at which the entity moves
-     * @param entity
-     *            The entity to move upward
+     *            Rate at which the actor moves
+     * @param actor
+     *            The actor to move upward
      */
-    public static Control addUpButton(int x, int y, int width, int height, String imgName, float rate,
-            Actor entity) {
-        return addMoveButton(x, y, width, height, imgName, entity, 0, rate);
+    public static Control addUpButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
+        return addMoveButton(x, y, width, height, imgName, actor, 0, rate);
     }
 
     /**
-     * Add a button that moves the given entity left
+     * Add a button that moves the given actor left while the button is being
+     * held
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -315,17 +312,17 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rate
-     *            Rate at which the entity moves
-     * @param entity
-     *            The entity that should move left when the button is pressed
+     *            Rate at which the actor moves
+     * @param actor
+     *            The actor that should move left when the button is pressed
      */
-    public static Control addLeftButton(int x, int y, int width, int height, String imgName, float rate,
-            Actor entity) {
-        return addMoveButton(x, y, width, height, imgName, entity, -rate, 0);
+    public static Control addLeftButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
+        return addMoveButton(x, y, width, height, imgName, actor, -rate, 0);
     }
 
     /**
-     * Add a button that moves the given entity to the right
+     * Add a button that moves the given actor to the right while the button is
+     * being held
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -339,17 +336,16 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rate
-     *            Rate at which the entity moves
-     * @param entity
-     *            The entity that should move right when the button is pressed
+     *            Rate at which the actor moves
+     * @param actor
+     *            The actor that should move right when the button is pressed
      */
-    public static Control addRightButton(int x, int y, int width, int height, String imgName, float rate,
-            Actor entity) {
-        return addMoveButton(x, y, width, height, imgName, entity, rate, 0);
+    public static Control addRightButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
+        return addMoveButton(x, y, width, height, imgName, actor, rate, 0);
     }
 
     /**
-     * Add a button that moves the given entity at one speed when it is
+     * Add a button that moves the given actor at one speed when it is
      * depressed, and at another otherwise
      * 
      * @param x
@@ -364,20 +360,20 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rateDownX
-     *            Rate (X) at which the entity moves when the button is pressed
+     *            Rate (X) at which the actor moves when the button is pressed
      * @param rateDownY
-     *            Rate (Y) at which the entity moves when the button is pressed
+     *            Rate (Y) at which the actor moves when the button is pressed
      * @param rateUpX
-     *            Rate (X) at which the entity moves when the button is not
+     *            Rate (X) at which the actor moves when the button is not
      *            pressed
      * @param rateUpY
-     *            Rate (Y) at which the entity moves when the button is not
+     *            Rate (Y) at which the actor moves when the button is not
      *            pressed
-     * @param entity
-     *            The entity that the button controls
+     * @param actor
+     *            The actor that the button controls
      */
     public static Control addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
-            final int rateDownY, final int rateUpX, final int rateUpY, final Actor entity) {
+            final int rateDownY, final int rateUpX, final int rateUpY, final Actor actor) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -392,15 +388,15 @@ public class Controls {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
-                    Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = actor.mBody.getLinearVelocity();
                     v.x = rateDownX;
                     v.y = rateDownY;
-                    entity.updateVelocity(v.x, v.y);
+                    actor.updateVelocity(v.x, v.y);
                 } else {
-                    Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = actor.mBody.getLinearVelocity();
                     v.x = rateUpX;
                     v.y = rateUpY;
-                    entity.updateVelocity(v.x, v.y);
+                    actor.updateVelocity(v.x, v.y);
                 }
             }
         });
@@ -408,8 +404,8 @@ public class Controls {
     }
 
     /**
-     * Add a button that moves the given entity at one speed, but doesn't stop
-     * the entity when the button is released
+     * Add a button that moves the given actor at one speed, but doesn't
+     * immediately stop the actor when the button is released
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -423,14 +419,14 @@ public class Controls {
      *            The name of the image to display. Use "" for an invisible
      *            button
      * @param rateX
-     *            Rate (X) at which the entity moves when the button is pressed
+     *            Rate (X) at which the actor moves when the button is pressed
      * @param rateY
-     *            Rate (Y) at which the entity moves when the button is pressed
-     * @param entity
-     *            The entity that the button controls
+     *            Rate (Y) at which the actor moves when the button is pressed
+     * @param actor
+     *            The actor that the button controls
      */
     public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
-            final float rateX, final float rateY, final float dampening, final Actor entity) {
+            final float rateX, final float rateY, final float dampening, final Actor actor) {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new Util.GestureAction() {
             @Override
@@ -445,13 +441,13 @@ public class Controls {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
-                    Vector2 v = entity.mBody.getLinearVelocity();
+                    Vector2 v = actor.mBody.getLinearVelocity();
                     v.x = rateX;
                     v.y = rateY;
-                    entity.mBody.setLinearDamping(0);
-                    entity.updateVelocity(v.x, v.y);
+                    actor.mBody.setLinearDamping(0);
+                    actor.updateVelocity(v.x, v.y);
                 } else {
-                    entity.mBody.setLinearDamping(dampening);
+                    actor.mBody.setLinearDamping(dampening);
                 }
             }
         });
@@ -459,8 +455,8 @@ public class Controls {
     }
 
     /**
-     * Add a button that puts the hero into crawl mode when depressed, and
-     * regular mode when released
+     * Add a button that puts a hero into crawl mode when depressed, and regular
+     * mode when released
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -494,7 +490,7 @@ public class Controls {
     }
 
     /**
-     * Add a button to make the hero jump
+     * Add a button to make a hero jump
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -634,6 +630,7 @@ public class Controls {
      * The default behavior for throwing is to throw in a straight line. If we
      * instead desire that the projectiles have some sort of aiming to them, we
      * need to use this method, which throws toward where the screen was pressed
+     * 
      * Note: you probably want to use an invisible button that covers the
      * screen...
      * 
@@ -662,12 +659,11 @@ public class Controls {
      *            projectile and the bottom left of the hero throwing the
      *            projectile
      */
-    public static Control addVectorThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+    public static Control addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
             final long milliDelay, final float offsetX, final float offsetY) {
         final Control c = new Control(imgName, x, y, width, height);
         final Vector3 v = new Vector3();
         c.mGestureAction = new GestureAction() {
-
             @Override
             boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
@@ -713,7 +709,7 @@ public class Controls {
     }
 
     /**
-     * This is almost exactly like addVectorThrowButton. The only difference is
+     * This is almost exactly like addDirectionalThrowButton. The only difference is
      * that holding won't cause the hero to throw more projectiles
      * 
      * @param x
@@ -738,7 +734,7 @@ public class Controls {
      *            projectile and the bottom left of the hero throwing the
      *            projectile
      */
-    public static Control addVectorSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+    public static Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
             final float offsetX, final float offsetY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
@@ -879,16 +875,15 @@ public class Controls {
      * @param imgName
      *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param sc
+     * @param callback
      *            The code to run when the button is pressed
      */
-    public static Control addCallbackControl(int x, int y, int width, int height, String imgName,
-            final LolCallback sc) {
+    public static Control addCallbackControl(int x, int y, int width, int height, String imgName, final LolCallback callback) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                sc.onEvent();
+                callback.onEvent();
                 return true;
             }
         };
@@ -914,16 +909,16 @@ public class Controls {
      *            Use "" for an invisible button
      * @params inactiveImgName The name of the image to display after the button
      *         is pressed.
-     * @param sc
+     * @param callback
      *            The code to run in response to the control press
      */
     public static Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
-            final String inactiveImgName, final LolCallback sc) {
+            final String inactiveImgName, final LolCallback callback) {
         final Control c = new Control(activeImgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                sc.onEvent();
+                callback.onEvent();
                 c.mIsTouchable = false;
                 TextureRegion[] trs = Media.getImage(inactiveImgName);
                 if (trs != null) {
@@ -960,12 +955,12 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             /**
-             * Use this to restore the chase entity when the Pan stops
+             * Use this to restore the chase actor when the Pan stops
              */
-            Actor oldChaseEntity;
+            Actor oldChaseactor;
 
             /**
-             * Handle a pan stop event by restoring the chase entity, if there
+             * Handle a pan stop event by restoring the chase actor, if there
              * was one
              * 
              * @param touchVec
@@ -973,8 +968,8 @@ public class Controls {
              */
             @Override
             boolean onPanStop(Vector3 touchVec) {
-                Level.setCameraChase(oldChaseEntity);
-                oldChaseEntity = null;
+                Level.setCameraChase(oldChaseactor);
+                oldChaseactor = null;
                 return true;
             }
 
@@ -992,9 +987,9 @@ public class Controls {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                if (Level.sCurrent.mChaseEntity != null) {
-                    oldChaseEntity = Level.sCurrent.mChaseEntity;
-                    Level.sCurrent.mChaseEntity = null;
+                if (Level.sCurrent.mChaseActor != null) {
+                    oldChaseactor = Level.sCurrent.mChaseActor;
+                    Level.sCurrent.mChaseActor = null;
                 }
                 float x = Level.sCurrent.mGameCam.position.x - deltaX * .1f * Level.sCurrent.mGameCam.zoom;
                 float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f * Level.sCurrent.mGameCam.zoom;
@@ -1014,14 +1009,10 @@ public class Controls {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
-                        / 2)
-                    x = Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
-                            / 2;
-                if (y < Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
-                        / 2)
-                    y = Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO
-                            / 2;
+                if (x < Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
                 Level.sCurrent.mGameCam.position.set(x, y, 0);
@@ -1092,7 +1083,7 @@ public class Controls {
     /**
      * Add an image to the heads-up display that changes its clipping rate to
      * seem to grow vertically, without stretching. Touching the image causes
-     * its scale (0-100) to be sent to a ControlPressEntity event
+     * its scale (0-100) to be sent to a ControlPressactor event
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -1105,11 +1096,11 @@ public class Controls {
      * @param imgName
      *            The name of the image to display. Use "" for an invisible
      *            button
-     * @param sc
+     * @param callback
      *            The code to run when the bar is pressed
      */
     public static Control addVerticalBar(final int x, final int y, final int width, final int height, String imgName,
-            final LolCallback sc) {
+            final LolCallback callback) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * Track if the bar is growing (true) or shrinking (false)
@@ -1159,8 +1150,8 @@ public class Controls {
                     return;
 
                 // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) sc.mFloatVal) / 100, 1, 1, 0,
-                        mTrueX, 0, mTrueWidth, (mTrueHeight * (int) sc.mFloatVal) / 100, false, true);
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) callback.mFloatVal) / 100,
+                        1, 1, 0, mTrueX, 0, mTrueWidth, (mTrueHeight * (int) callback.mFloatVal) / 100, false, true);
 
                 // don't keep showing anything if we've already received a
                 // touch...
@@ -1168,11 +1159,11 @@ public class Controls {
                     return;
 
                 // update size
-                if (sc.mFloatVal == 100)
+                if (callback.mFloatVal == 100)
                     mGrow = false;
-                if (sc.mFloatVal == 0)
+                if (callback.mFloatVal == 0)
                     mGrow = true;
-                sc.mFloatVal = sc.mFloatVal + (mGrow ? 1 : -1);
+                callback.mFloatVal = callback.mFloatVal + (mGrow ? 1 : -1);
             }
         };
         c.mGestureAction = new GestureAction() {
@@ -1183,7 +1174,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
-                sc.onEvent();
+                callback.onEvent();
                 return true;
             }
         };
@@ -1194,8 +1185,8 @@ public class Controls {
     }
 
     /**
-     * Add a rotating button that generates a ControlPressEntity event and
-     * passes the rotation to the handler.
+     * Add a rotating button that generates a ControlPressactor event and passes
+     * the rotation to the handler.
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -1210,11 +1201,11 @@ public class Controls {
      *            button
      * @param delta
      *            Amount of rotation to add during each fraction of a second
-     *            @param sc
+     * @param callback
      *            The code to run when the rotator is pressed
      */
     public static Control addRotator(final int x, final int y, final int width, final int height, String imgName,
-            final float delta, final LolCallback sc) {
+            final float delta, final LolCallback callback) {
         final Control c = new Control(imgName, x, y, width, height) {
             /**
              * This is the render method when we've got a valid TR. We're going
@@ -1229,16 +1220,17 @@ public class Controls {
                 if (!mIsActive)
                     return;
                 // draw it
-                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1, sc.mFloatVal);
+                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1,
+                        callback.mFloatVal);
 
                 // don't keep rotating if we've got a touch...
                 if (!mIsTouchable)
                     return;
 
                 // update rotation
-                sc.mFloatVal += delta;
-                if (sc.mFloatVal == 360)
-                    sc.mFloatVal = 0;
+                callback.mFloatVal += delta;
+                if (callback.mFloatVal == 360)
+                    callback.mFloatVal = 0;
             }
         };
         c.mGestureAction = new GestureAction() {
@@ -1249,7 +1241,7 @@ public class Controls {
             boolean onTap(Vector3 v) {
                 if (!c.mIsActive)
                     return false;
-                sc.onEvent();
+                callback.onEvent();
                 return true;
             }
         };

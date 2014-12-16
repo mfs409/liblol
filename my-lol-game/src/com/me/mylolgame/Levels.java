@@ -502,7 +502,7 @@ public class Levels implements ScreenManager {
             // let's put a display on the screen to see how many type-1 goodies
             // we've collected. Since the second parameter is "2", we'll display
             // the count as "X/2 Goodies" instead of "X Goodies"
-            Displays.addGoodieCount(1, 2, "Goodies", 220, 280, "arial.ttf", 255, 0, 255, 20);
+            Displays.addGoodieCount(1, 2, " Goodies", 220, 280, "arial.ttf", 255, 0, 255, 20);
         }
 
         /*
@@ -538,7 +538,7 @@ public class Levels implements ScreenManager {
 
             // draw a goodie counter in light blue (60, 70, 255) with a 12-point
             // font
-            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /*
@@ -567,7 +567,7 @@ public class Levels implements ScreenManager {
             Score.setVictoryGoodies(5, 0, 0, 0);
 
             // put the goodie count on the screen
-            Displays.addGoodieCount(1, 5, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 5, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // put a simple countdown on the screen
             Displays.addCountdown(15, "Time Up!", 400, 50);
@@ -660,7 +660,7 @@ public class Levels implements ScreenManager {
             h.setStrength(10);
 
             // draw a strength meter to show this hero's strength
-            Displays.addStrengthMeter("Strength", 220, 280, h);
+            Displays.addStrengthMeter(" Strength", 220, 280, h);
 
             // our first enemy stands still:
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -757,7 +757,7 @@ public class Levels implements ScreenManager {
             g.setDisappearSound("woowoowoo.ogg");
 
             // Display the hero's strength
-            Displays.addStrengthMeter("Strength", 220, 280, h);
+            Displays.addStrengthMeter(" Strength", 220, 280, h);
 
             // win by defeating one enemy
             Score.setVictoryEnemyCount(1);
@@ -797,7 +797,7 @@ public class Levels implements ScreenManager {
             Score.setVictoryDestination(1);
 
             // display a goodie count for type-1 goodies
-            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // put a frames-per-second display on the screen. This is going to
             // look funny, because when debug mode is set (in Config.java), a
@@ -835,7 +835,7 @@ public class Levels implements ScreenManager {
             Goodie.makeAsCircle(35, 30, 2, 2, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
-            Displays.addGoodieCount(1, 0, "Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
         }
 
         /*
@@ -1588,7 +1588,7 @@ public class Levels implements ScreenManager {
 
             // draw a button for throwing projectiles in many directions...
             // again, note that if we hold the button, it keeps throwing
-            Controls.addVectorThrowButton(0, 0, 960, 640, "", h, 0, 0, 0);
+            Controls.addDirectionalThrowButton(0, 0, 960, 640, "", h, 0, 0, 0);
 
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
@@ -1621,7 +1621,7 @@ public class Levels implements ScreenManager {
 
             // we use a "single throw" button so that holding doesn't throw more
             // projectiles.
-            Controls.addVectorSingleThrowButton(0, 0, 960, 640, "", h, 1.5f, 1.5f);
+            Controls.addDirectionalSingleThrowButton(0, 0, 960, 640, "", h, 1.5f, 1.5f);
 
             // we turn on projectile gravity, and then we enable collisions for
             // projectiles. This means that when a projectile collides with
@@ -1762,7 +1762,7 @@ public class Levels implements ScreenManager {
             Score.setVictoryEnemyCount();
 
             // put a count of defeated enemies on the screen
-            Displays.addDefeatedCount(0, "Enemies Defeated", 20, 20);
+            Displays.addDefeatedCount(0, " Enemies Defeated", 20, 20);
         }
 
         /*
@@ -1967,7 +1967,7 @@ public class Levels implements ScreenManager {
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
-            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
@@ -2088,7 +2088,7 @@ public class Levels implements ScreenManager {
 
             // put an enemy defeated count on the screen, in red with a small
             // font
-            Displays.addDefeatedCount(2, "Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
+            Displays.addDefeatedCount(2, " Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
 
             // make a moveable obstacle that can defeat enemies
             Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
@@ -2211,7 +2211,7 @@ public class Levels implements ScreenManager {
             ProjectilePool.setImageSource("colorstar.png");
 
             // show how many shots are left
-            Displays.addProjectileCount("projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
+            Displays.addProjectileCount(" projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
 
             // draw a bunch of enemies to defeat
             Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
@@ -2438,7 +2438,7 @@ public class Levels implements ScreenManager {
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
             Score.setVictoryDestination(1);
 
             // this obstacle is a collision callback... when the hero hits it,
@@ -2642,7 +2642,7 @@ public class Levels implements ScreenManager {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Displays.addGoodieCount(1, 0, "Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
+            Displays.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // the destination won't work until some goodies are collected...
             Destination d = Destination.makeAsBox(46, 2, 2, 2, "colorstar.png");
@@ -2691,7 +2691,7 @@ public class Levels implements ScreenManager {
             // game, with a hero covering the bottom of the screen, so that
             // anything that falls to the bottom counts against the player
             Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
-            Controls.addVectorThrowButton(0, 0, 960, 640, "", h, 100, 0, 1);
+            Controls.addDirectionalThrowButton(0, 0, 960, 640, "", h, 100, 0, 1);
 
             // set up our pool of projectiles, then set them to have a fixed
             // velocity when using the vector throw mechanism
@@ -2897,7 +2897,7 @@ public class Levels implements ScreenManager {
             // draw a button for throwing projectiles in many directions. It
             // only covers half the screen, to show how such an effect would
             // behave
-            Controls.addVectorThrowButton(0, 0, 480, 640, "", h, 100, 0, 0);
+            Controls.addDirectionalThrowButton(0, 0, 480, 640, "", h, 100, 0, 0);
 
             // set up a pool of projectiles with fixed velocity, and with
             // rotation
@@ -2935,9 +2935,9 @@ public class Levels implements ScreenManager {
             d.setActivationScore(1, 1, 3, 0);
             Score.setVictoryDestination(1);
 
-            Displays.addGoodieCount(1, 0, "blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
-            Displays.addGoodieCount(2, 0, "green", 10, 140, "arial.ttf", 0, 255, 255, 16);
-            Displays.addGoodieCount(3, 0, "red", 10, 170, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(1, 0, " blue", 10, 110, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(2, 0, " green", 10, 140, "arial.ttf", 0, 255, 255, 16);
+            Displays.addGoodieCount(3, 0, " red", 10, 170, "arial.ttf", 0, 255, 255, 16);
 
             Displays.addCountdown(100, "", 250, 30);
 
@@ -3097,7 +3097,6 @@ public class Levels implements ScreenManager {
         else if (whichLevel == 79) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
-            Tilt.enable(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             PreScene.addText("Poke the hero, then\n where you want it\nto go.", 255, 255, 255, "arial.ttf", 32);
 

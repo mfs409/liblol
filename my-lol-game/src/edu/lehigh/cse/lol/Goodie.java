@@ -31,10 +31,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Goodies are physical entities in a game whose main purpose is for the hero to
- * collect them. Collecting a goodie has three possible consequences: it can
- * lead to the score changing, it can lead to the hero's strength changing, and
- * it can lead to the hero becoming invincible for some time.
+ * Goodies are actors in a game whose main purpose is for the hero to collect
+ * them. Collecting a goodie has three possible consequences: it can lead to the
+ * score changing, it can lead to the hero's strength changing, and it can lead
+ * to the hero becoming invincible for some time.
  */
 public class Goodie extends Actor {
     /**
@@ -59,15 +59,11 @@ public class Goodie extends Actor {
      * Build a Goodie This should never be invoked directly. Instead, LOL game
      * designers should use the makeAsXYZ methods
      * 
-     * @param x
-     *            X position of bottom left corner
-     * @param y
-     *            Y position of bottom left corner
      * @param width
      *            width of this Obstacle
      * @param height
      *            height of this Obstacle
-     * @param tr
+     * @param imgName
      *            image to use for this Obstacle
      */
     protected Goodie(float width, float height, String imgName) {
@@ -79,7 +75,7 @@ public class Goodie extends Actor {
     }
 
     /**
-     * Internal method: Goodie collision is always handled by the other entity
+     * Internal method: Goodie collision is always handled by the other actor
      * involved in the collision, so we leave this method blank
      * 
      * @param other

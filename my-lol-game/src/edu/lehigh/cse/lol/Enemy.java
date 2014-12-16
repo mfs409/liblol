@@ -78,23 +78,14 @@ public class Enemy extends Actor {
     private Util.CollisionCallback mDefeatCallback;
 
     /**
-     * Create an Enemy This should never be called directly.
+     * Create an Enemy. This should never be called directly.
      * 
-     * @param x
-     *            X coordinate of bottom left corner of this enemy
-     * @param y
-     *            X coordinate of bottom left corner of this enemy
      * @param width
      *            Width of this enemy
      * @param height
      *            Height of this enemy
-     * @param ttr
+     * @param imgName
      *            Image to display
-     * @param isStatic
-     *            Can this enemy move, or is it at a fixed location
-     * @param isCircle
-     *            true if this should use a circle underneath for its collision
-     *            detection, and false if a box should be used
      */
     protected Enemy(float width, float height, String imgName) {
         super(imgName, width, height);
@@ -102,13 +93,15 @@ public class Enemy extends Actor {
     }
 
     /**
-     * Collision behavior of enemies. Based on our PhysicsSprite numbering
-     * scheme, the only concerns are to ensure that when a projectile hits this
-     * enemy, we remove the enemy and hide the projectile, and to handle
-     * collisions with SubClass obstacles
+     * Collision behavior of enemies. Based on our Actor numbering scheme, the
+     * only concerns are to ensure that when a projectile hits this enemy, we
+     * remove the enemy and hide the projectile, and to handle collisions with
+     * certain obstacles
      * 
      * @param other
-     *            The other entity involved in the collision
+     *            The other actor involved in the collision
+     * @param contact
+     *            The contact information for the collision
      */
     @Override
     void onCollide(Actor other, Contact contact) {
@@ -125,18 +118,20 @@ public class Enemy extends Actor {
      * 
      * @param o
      *            The obstacle with which this Enemy collided
+     * @param contact
+     *            The contact information for the collision
      */
-    private void onCollideWithObstacle(final Obstacle o, Contact c) {
+    private void onCollideWithObstacle(final Obstacle o, Contact contact) {
         // handle any callbacks the obstacle has
         if (o.mEnemyCollision != null)
-            o.mEnemyCollision.go(this, c);
+            o.mEnemyCollision.go(this, contact);
     }
 
     /**
      * Dispatch method for handling Enemy collisions with projectiles
      * 
      * @param p
-     *            The projectile with which this hero collided
+     *            The projectile with which this enemy collided
      */
     private void onCollideWithProjectile(Projectile p) {
         // only work with active projectiles
@@ -294,7 +289,7 @@ public class Enemy extends Actor {
      * when this enemy is defeated
      * 
      * @param sc
-     * The callback to run when the enemy is defeated
+     *            The callback to run when the enemy is defeated
      */
     public void setDefeatCallback(final LolCallback sc) {
         mDefeatCallback = new Util.CollisionCallback() {

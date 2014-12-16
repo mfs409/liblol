@@ -38,6 +38,11 @@ import com.badlogic.gdx.Preferences;
  * example, in a game of golf, one could use per-level to track the current
  * number of strokes, use per-session to track the score across all 18 holes,
  * and per-game to track the player's high score.
+ * 
+ * One might argue that it's easier to create fields inside of some of the game
+ * classes to handle this role. However, doing so is (a) confusing for novices,
+ * and (b) risky if the programmer isn't completely certain about the lifecycle
+ * of the object. Using Facts takes a bit more code, but in the end it's easier.
  */
 public class Facts {
 
@@ -52,16 +57,16 @@ public class Facts {
     private static final TreeMap<String, Integer> mSessionFacts = new TreeMap<String, Integer>();
 
     /**
-     * Store PhysicsSprites, so that we can get to them in callbacks
+     * Store Actors, so that we can get to them in callbacks
      */
-    private static final TreeMap<String, Actor> mLevelEntities = new TreeMap<String, Actor>();
+    private static final TreeMap<String, Actor> mLevelActors = new TreeMap<String, Actor>();
 
     /**
      * Reset all per-level facts
      */
     static void resetLevelFacts() {
         mLevelFacts.clear();
-        mLevelEntities.clear();
+        mLevelActors.clear();
     }
 
     /**
@@ -160,15 +165,15 @@ public class Facts {
     }
 
     /**
-     * Look up a PhysicsSprite that was stored for the current level. If no such
-     * PhysicsSprite exists, null will be returned.
+     * Look up an Actor that was stored for the current level. If no such
+     * Actor exists, null will be returned.
      * 
      * @param actorName
-     *            The name used to store the PhysicsSprite
-     * @return The last PhysicsSprite stored with this name
+     *            The name used to store the Actor
+     * @return The last Actor stored with this name
      */
     public static Actor getLevelActor(String actorName) {
-        Actor actor = mLevelEntities.get(actorName);
+        Actor actor = mLevelActors.get(actorName);
         if (actor == null) {
             Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -177,15 +182,15 @@ public class Facts {
     }
 
     /**
-     * Save a PhysicsSprite from the current level. If the entityName has
+     * Save a Actor from the current level. If the actorName has
      * already been used for this level, the new value will overwrite the old.
      * 
      * @param actorName
-     *            The name for the PhysicsSprite being saved
+     *            The name for the Actor being saved
      * @param actor
-     *            The PhysicsSprite that is the fact being saved
+     *            The Actor that is the fact being saved
      */
     public static void putLevelActor(String actorName, Actor actor) {
-        mLevelEntities.put(actorName, actor);
+        mLevelActors.put(actorName, actor);
     }
 }
