@@ -95,10 +95,10 @@ public class Projectile extends Actor {
     }
 
     /**
-     * Standard collision detection routine. This only callbacks on hitting an
-     * obstacle, which makes the projectile disappear, or on hitting a
-     * projectile, which is a bit funny because one of the two projectiles will
-     * live.
+     * Standard collision detection routine. This only causes a callback on
+     * hitting an obstacle, which makes the projectile disappear, or on hitting
+     * a projectile, which is a bit funny because one of the two projectiles
+     * will live.
      * 
      * @param other
      *            The other actor involved in the collision
@@ -129,7 +129,7 @@ public class Projectile extends Actor {
 
     /**
      * When drawing a projectile, we first check if it is too far from its
-     * starting point.  We only draw it if it is not.
+     * starting point. We only draw it if it is not.
      */
     @Override
     public void render(SpriteBatch sb, float delta) {

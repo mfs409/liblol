@@ -29,8 +29,25 @@ package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.ScreenManager;
 
+/**
+ * In games that have a store, there should be a button on the main screen (or
+ * somewhere!) for going to the first screen of the store.
+ * 
+ * The store is built the same way as any other part of a game, but you'll
+ * probably want to use the Facts interface to keep track of coins, inventories,
+ * etc.
+ * 
+ * Our demo doesn't use a store, so we leave our code blank.
+ */
 public class Store implements ScreenManager {
+    /**
+     * This function draws the different screens of our store
+     * 
+     * @param which
+     *            The store screen to draw.
+     */
     public void display(int which) {
-        // TODO: Right now, there is no store, so this is just a placeholder
+        // If the store has multiple screens, use Lol.doStore(int) as the
+        // callback on buttons for navigating among store screens
     }
 }

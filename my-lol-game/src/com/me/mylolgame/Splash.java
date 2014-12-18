@@ -43,14 +43,20 @@ import edu.lehigh.cse.lol.Util;
  */
 public class Splash implements ScreenManager {
 
+    /**
+     * There is usually only one splash screen. However, the ScreenManager
+     * interface requires display() to take a parameter.  We ignore it.
+     */
     public void display(int which) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
         Level.configure(48, 32);
         Physics.configure(0, 0);
+
         // draw the background. Note that "Play", "Help", and "Quit" are part of
         // this background image.
         Util.drawPicture(0, 0, 48, 32, "splash.png", 0);
+        
         // start the music
         Level.setMusic("tune.ogg");
 
@@ -58,7 +64,7 @@ public class Splash implements ScreenManager {
         // level chooser. You could jump straight to the first level by using
         // "doLevel(1)", but check the configuration in MyLolGame... there's a
         // field you should change if you don't want the 'back' button to go
-        // from the level to the chooser.
+        // from that level to the chooser.
         Controls.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(1);

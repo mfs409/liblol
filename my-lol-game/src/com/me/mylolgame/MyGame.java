@@ -28,7 +28,7 @@
 package com.me.mylolgame;
 
 // TODO: make sure all angles use same units (degrees or radians): Actor has 3 joint functions that need work; Hero has increaseRotation
-// TODO: Add SVG collision callbacks?
+// TODO: replace SVG lines with obstacles
 // TODO: clean up the last 6 levels
 // TODO: add a 'store'?
 // TODO: add 'share' button?
@@ -47,6 +47,15 @@ package com.me.mylolgame;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
 
+/**
+ * The starting point for a Lol game is right here. This code does two important
+ * configuration tasks: it loads all the assets (images and sounds) used by the
+ * game, and it tells the Lol engine about all of the other configuration that
+ * needs to be done.
+ * 
+ * Be sure to look at the Levels.java file for how each level of the game is
+ * drawn, as well as Splash.java, Chooser.java, Help.java, and Store.java.
+ */
 public class MyGame extends Lol {
 
     /**
@@ -86,6 +95,7 @@ public class MyGame extends Lol {
      */
     @Override
     public void loadResources() {
+
         // load regular (non-animated) images
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");

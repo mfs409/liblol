@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-
 import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
@@ -68,7 +67,7 @@ public class Media {
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
      * too, except that references to old fonts don't resurrect nicely. Clearing
-     * the collection when the game dispose()s is satisfactory to avoid visual
+     * the collection when the game disposes is satisfactory to avoid visual
      * glitches when the game comes back to the foreground.
      */
     static void onDispose() {
@@ -191,10 +190,10 @@ public class Media {
     /**
      * Register an animatable image file, so that it can be used later. The
      * difference between regular images and animatable images is that
-     * animatable images have multiple columns and rows, which allows cell-based
-     * animation. Images should be .png files. Note that images with internal
-     * animations (i.e., gifs) do not work correctly. You should use cell-based
-     * animation instead.
+     * animatable images should be thought of as having multiple columns and
+     * rows, which allow cell-based animation. Images should be .png files.
+     * Note that images with internal animations (i.e., gifs) do not work
+     * correctly. You should use cell-based animation instead.
      * 
      * @param imgName
      *            the name of the image file (assumed to be in the "assets"
@@ -226,8 +225,8 @@ public class Media {
 
     /**
      * Register a music file, so that it can be used later. Music should be in
-     * .ogg files. You can use Audacity to convert music as needed. mp3 files
-     * should work too.
+     * .ogg format. You can use Audacity to convert music as needed. mp3 files
+     * should work too, but may have licensing restrictions in some countries.
      * 
      * @param musicName
      *            the name of the music file (assumed to be in the "assets"

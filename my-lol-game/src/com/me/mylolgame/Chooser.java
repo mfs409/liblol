@@ -36,10 +36,24 @@ import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
+/**
+ * Chooser draws the level chooser screens. Our chooser code is pretty
+ * straightforward. However, the different screens are drawn in different ways,
+ * to show how we can write more effective code once we are comfortable with
+ * loops and basic geometry.
+ */
 public class Chooser implements ScreenManager {
 
+    /**
+     * Describe how to draw each level of the chooser. Our chooser will have 15
+     * levels per screen, so we need 7 screens.
+     */
     public void display(int which) {
         // screen 1: show 1-->15
+        //
+        // NB: in this screen, we assume you haven't done much programming, so
+        // we draw each button with its own line of code, and we don't use any
+        // variables.
         if (which == 1) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -76,6 +90,11 @@ public class Chooser implements ScreenManager {
         }
 
         // screen 2: show levels 16-->30
+        //
+        // NB: this time, we'll use three loops to create the three rows. By
+        // using some variables in the loops, we get the same effect as the
+        // previous screen. The code isn't simpler yet, but it's still pretty
+        // easy to understand.
         else if (which == 2) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -114,6 +133,9 @@ public class Chooser implements ScreenManager {
         }
 
         // screen 3: show levels 31-->45
+        //
+        // NB: now we use a nested pair of loops, and we can do three rows in
+        // just a few more lines than one row.
         else if (which == 3) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -172,6 +194,8 @@ public class Chooser implements ScreenManager {
             drawSplashButton(0, 0, 5, 5);
         }
 
+        // The final case is the 7th screen, which just shows levels 91 and 92.
+        // We'll just do it by hand.
         else if (which == 7) {
             Level.configure(48, 32);
             Physics.configure(0, 0);
@@ -190,10 +214,26 @@ public class Chooser implements ScreenManager {
         }
     }
 
+    /**
+     * This is a helper function for drawing a level button. If the level is
+     * locked, the button isn't playable. Otherwise, the player can tap the
+     * button to start a level.
+     * 
+     * @param x
+     *            X coordinate of the bottom left corner of the button
+     * @param y
+     *            Y coordinate of the bottom left corner of the button
+     * @param width
+     *            width of the button
+     * @param height
+     *            height of the button
+     * @param level
+     *            which level to play when the button is tapped
+     */
     static void drawLevelButton(float x, float y, float width, float height, final int level) {
         // figure out the last unlocked level
-        int unlocked = Math.max(1, Facts.getGameFact("unlocked", 1));
-        unlocked = 2;
+        int unlocked = Facts.getGameFact("unlocked", 1);
+        
         // for each button, start by drawing an obstacle
         Obstacle l1 = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");
 
@@ -214,6 +254,14 @@ public class Chooser implements ScreenManager {
         }
     }
 
+    /**
+     * This helper function is for drawing the button that takes us to the previous chooser screen
+     * @param x X coordinate of bottom left corner of the button
+     * @param y Y coordinate of bottom left corner of the button
+     * @param width width of the button
+     * @param height height of the button
+     * @param chooserLevel The chooser screen to create
+     */
     static void drawPrevButton(float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "leftarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
@@ -223,6 +271,14 @@ public class Chooser implements ScreenManager {
         });
     }
 
+    /**
+     * This helper function is for drawing the button that takes us to the next chooser screen
+     * @param x X coordinate of bottom left corner of the button
+     * @param y Y coordinate of bottom left corner of the button
+     * @param width width of the button
+     * @param height height of the button
+     * @param chooserLevel The chooser screen to create
+     */
     static void drawNextButton(float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "rightarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
@@ -232,6 +288,13 @@ public class Chooser implements ScreenManager {
         });
     }
 
+    /**
+     * This helper function is for drawing the button that takes us back to the splash screen
+     * @param x X coordinate of bottom left corner of the button
+     * @param y Y coordinate of bottom left corner of the button
+     * @param width width of the button
+     * @param height height of the button
+     */
     static void drawSplashButton(float x, float y, float width, float height) {
         Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "backarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {

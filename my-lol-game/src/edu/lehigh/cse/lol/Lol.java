@@ -45,28 +45,31 @@ import com.badlogic.gdx.utils.Timer;
 public abstract class Lol extends Game {
 
     /**
-     * Modes of the game: we can be showing the main screen, the help screens,
-     * the level chooser, the store, or a playable level
+     * Modes of the game: we can be showing the main splash screen, the help
+     * screens, the level chooser, the store, or a playable level
      */
     static final int SPLASH = 0;
     static final int HELP = 1;
     static final int CHOOSER = 2;
-    static final int PLAY = 3;
-    static final int STORE = 4;
+    static final int STORE = 3;
+    static final int PLAY = 4;
 
     /**
-     * The current mode of the program
+     * The current mode of the program (from among the above choices)
      */
     int mMode;
 
     /**
      * The mode state is used to represent the current level within a mode
-     * (i.e., 3rd help screen, or 5th page of the store)
+     * (i.e., 3rd help screen, or 5th page of the store). Tracking state
+     * separately for each mode makes going between a level and the chooser much
+     * easier.
      */
     int mModeStates[] = new int[5];
 
     /**
-     * A reference to the game object
+     * A reference to the game object... Since the interfaces are mostly static,
+     * we need an instance of a Lol object that the static methods can call.
      */
     static Lol sGame;
 
@@ -81,6 +84,8 @@ public abstract class Lol extends Game {
 
     /*
      * GAME CONFIGURATION VARIABLES
+     * 
+     * These get set in MyGame.java
      */
 
     /**
@@ -88,99 +93,99 @@ public abstract class Lol extends Game {
      * phone)
      */
     public int mWidth;
-    
+
     /**
      * The default screen height (note: it will be stretched appropriately on a
      * phone)
      */
     public int mHeight;
-    
+
     /**
      * The total number of levels. This is only useful for knowing what to do
      * when the last level is completed.
      */
     protected int mNumLevels;
-    
+
     /**
      * Should the phone vibrate on certain events?
      */
     protected boolean mEnableVibration;
-    
+
     /**
      * Should all levels be unlocked?
      */
     protected boolean mUnlockAllLevels;
-    
+
     /**
      * This is a debug feature, to help see the physics behind every Actor
      */
     protected boolean mShowDebugBoxes;
-    
+
     /**
      * A per-game string, to use for storing information on an Android device
      */
     protected String mStorageKey;
-    
+
     /**
      * Default font face
      */
     protected String mDefaultFontFace;
-    
+
     /**
      * Default font size
      */
     protected int mDefaultFontSize;
-    
+
     /**
      * Red component of default font color
      */
     protected int mDefaultFontRed;
-    
+
     /**
      * Green component of default font color
      */
     protected int mDefaultFontGreen;
-    
+
     /**
      * Blue component of default font color
      */
     protected int mDefaultFontBlue;
-    
+
     /**
      * Default text to display when a level is won
      */
     protected String mDefaultWinText;
-    
+
     /**
      * Default text to display when a level is lost
      */
     protected String mDefaultLoseText;
-    
+
     /**
      * Title of the game (for desktop mode)
      */
     public String mGameTitle;
-    
+
     /**
      * Should the level chooser be activated?
      */
     protected boolean mEnableChooser;
-    
+
     /**
      * The levels of the game are drawn by this object
      */
     protected ScreenManager mLevels;
-    
+
     /**
      * The chooser is drawn by this object
      */
     protected ScreenManager mChooser;
-    
+
     /**
      * The help screens are drawn by this object
      */
     protected ScreenManager mHelp;
-    
+
     /**
      * The splash screen is drawn by this object
      */
@@ -194,7 +199,7 @@ public abstract class Lol extends Game {
     /*
      * INTERNAL METHODS
      */
-    
+
     /**
      * Vibrate the phone for a fixed amount of time. Note that this only
      * vibrates the phone if the configuration says that vibration should be
@@ -209,7 +214,7 @@ public abstract class Lol extends Game {
     }
 
     /**
-     * We can use this method from the render loop to poll for back presses
+     * We can call this method from the render loop to poll for back presses
      */
     private void handleKeyDown() {
         // if neither BACK nor ESCAPE is being pressed, do nothing, but
@@ -252,7 +257,8 @@ public abstract class Lol extends Game {
     /**
      * The constructor just calls configure, so that all of our globals will be
      * set. Doing it this early lets us access the configuration from within the
-     * LWJGL (Desktop) main class.
+     * LWJGL (Desktop) main class. That, in turn, lets us get the screen size
+     * correct (see the -desktop project's Java file).
      */
     public Lol() {
         configure();
@@ -284,12 +290,12 @@ public abstract class Lol extends Game {
         // Load Resources
         loadResources();
 
-        // show the splash screen
-        doSplash();
-
         // configure the volume
         if (Facts.getGameFact("volume", 1) == 1)
             Facts.putGameFact("volume", 1);
+
+        // show the splash screen
+        doSplash();
     }
 
     /**
@@ -341,6 +347,9 @@ public abstract class Lol extends Game {
     /**
      * Use this to load the level-chooser screen. Note that when the chooser is
      * disabled, we jump straight to level 1.
+     * 
+     * @param whichChooser
+     *            The chooser screen to create
      */
     public static void doChooser(int whichChooser) {
         // if chooser disabled, then we either called this from splash, or from
@@ -353,6 +362,8 @@ public abstract class Lol extends Game {
             }
             return;
         }
+        // the chooser is not disabled... save the choice of level, configure
+        // it, and show it.
         sGame.mMode = CHOOSER;
         sGame.mModeStates[CHOOSER] = whichChooser;
         sGame.mChooser.display(whichChooser);
@@ -430,15 +441,12 @@ public abstract class Lol extends Game {
         return Facts.getGameFact("volume", 1) == 1;
     }
 
+    /**
+     * Report whether all levels should be treated as unlocked. This is useful
+     * in Chooser, where we might need to prevent some levels from being played.
+     */
     public static boolean getUnlockMode() {
         return sGame.mUnlockAllLevels;
-    }
-
-    /**
-     * Set the next level to play
-     */
-    public void setNextLevel(int nextLevel) {
-        mModeStates[PLAY] = nextLevel;
     }
 
     /**

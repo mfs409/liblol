@@ -45,14 +45,14 @@ import java.io.IOException;
 /**
  * The Svg infrastructure allows the game designer to load SVG line drawings
  * into a game. SVG line drawings can be made in Inkscape. In LOL, we do not use
- * line drawings to the full extend. We only use them to define a set of
+ * line drawings to their full potential. We only use them to define a set of
  * invisible lines for a simple, stationary obstacle. You should draw a picture
  * on top of your line drawing, so that the player knows that there is a physics
  * entity on the screen.
  */
 public class Svg {
     /**
-     * This description will be used for every line we create
+     * This description will be used for the physics of every line we create
      */
     private final FixtureDef mFixture;
 
@@ -115,9 +115,9 @@ public class Svg {
     private BodyDef mBodyDef = new BodyDef();
 
     /**
-     * When we draw a line, we must make it a actor or else hero
-     * collisions with the SVG won't enable it to re-jump. This class is a very
-     * lightweight actor that serves our need.
+     * When we draw a line, we must make it an actor or else hero collisions
+     * with the SVG won't enable it to re-jump. This class is a very lightweight
+     * actor that serves our need.
      */
     class SVGSprite extends Actor {
         SVGSprite(String imgName, float width, float height) {
@@ -171,7 +171,7 @@ public class Svg {
 
     /**
      * When we encounter a "transform" attribute, we use this code to parse it,
-     * in case there is a "translate" directive that we should handle
+     * in case it has a "translate" directive that we should handle
      * 
      * @param attribute
      *            The attribute being processed... we hope it's a valid
@@ -197,7 +197,7 @@ public class Svg {
      * The root of an SVG drawing will have a <g> element, which will have some
      * number of <path> elements. Each <path> will have a "d=" attribute, which
      * stores the points and information about how to connect them. The "d" is a
-     * single string, which we parse in this file
+     * single string, which we parse in this function.
      * 
      * @param d
      *            The string that describes the path
@@ -355,9 +355,9 @@ public class Svg {
     /**
      * Internal method used by the SVG parser to draw a line. This is a bit of a
      * hack, in that we create a simple Box2d Edge, and then we make an
-     * invisible actor that we connect to the Edge, so that LOL
-     * collision detection works correctly. There are no images being displayed,
-     * and this is not a proper "Obstacle"
+     * invisible actor that we connect to the Edge, so that LOL collision
+     * detection works correctly. There are no images being displayed, and this
+     * is not a proper "Obstacle"
      * 
      * @param x1
      *            X coordinate of first endpoint
@@ -432,9 +432,9 @@ public class Svg {
 
     /**
      * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
-     * as an immobile obstacle. Note that not all Inkscape drawings will work as
+     * as an immobile Obstacle. Note that not all Inkscape drawings will work as
      * expected... if you need more power than this provides, you'll have to
-     * modify SVG.java
+     * modify Svg.java
      * 
      * @param svgName
      *            Name of the svg file to load. It should be in the assets
