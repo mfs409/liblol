@@ -56,7 +56,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * typically have an image associated with them, too, so that they have a visual
  * appearance during gameplay.
  * 
- * A game should rarely deal with Actor objectss directly, instead using Hero,
+ * A game should rarely deal with Actor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class Actor implements Util.Renderable {
@@ -305,7 +305,7 @@ public abstract class Actor implements Util.Renderable {
      */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
-            mTouchSound.play(Facts.getGameFact("volume"));
+            mTouchSound.play(Facts.getGameFact("volume", 1));
         if (mGestureResponder != null) {
             mGestureResponder.onTap(touchVec);
             return true;
@@ -686,7 +686,7 @@ public abstract class Actor implements Util.Renderable {
 
         // play a sound when we remove this actor?
         if (mDisappearSound != null && !quiet)
-            mDisappearSound.play(Facts.getGameFact("volume"));
+            mDisappearSound.play(Facts.getGameFact("volume", 1));
 
         // This is a bit of a hack... to do a disappear animation after we've
         // removed the actor, we draw an obstacle, so that we have a clean hook

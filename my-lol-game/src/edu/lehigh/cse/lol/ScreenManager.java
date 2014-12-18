@@ -29,15 +29,16 @@ package edu.lehigh.cse.lol;
 
 /**
  * ScreenManager presents a set of related screens, such as playable levels. It
- * allows us to group lots of functionality together in a relatively clean and
- * straightforward way.
+ * allows us to manage all the different types of screens from the same code
+ * within Lol.
  */
 public interface ScreenManager {
     /**
      * Display one of the screens
      * 
      * @param which
-     *            The screen to display
+     *            The screen to display. Your code should use an /if/ statement
+     *            to decide what screen to display based on the value of /which/
      */
     void display(int which);
 }

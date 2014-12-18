@@ -78,17 +78,19 @@ public class Facts {
 
     /**
      * Look up a fact that was stored for the current level. If no such fact
-     * exists, -1 will be returned.
+     * exists, defaultVal will be returned.
      * 
      * @param factName
      *            The name used to store the fact
+     * @param defaultVal
+     *            The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public static int getLevelFact(String factName) {
+    public static int getLevelFact(String factName, int defaultVal) {
         Integer i = mLevelFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
-            return -1;
+            return defaultVal;
         }
         return i;
     }
@@ -112,13 +114,15 @@ public class Facts {
      * 
      * @param factName
      *            The name used to store the fact
+     * @param defaultVal
+     *            The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public static int getSessionFact(String factName) {
+    public static int getSessionFact(String factName, int defaultVal) {
         Integer i = mSessionFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
-            return -1;
+            return defaultVal;
         }
         return i;
     }
@@ -138,15 +142,17 @@ public class Facts {
 
     /**
      * Look up a fact that was stored for the current game session. If no such
-     * fact exists, -1 will be returned.
+     * fact exists, defaultVal will be returned.
      * 
      * @param factName
      *            The name used to store the fact
+     * @param defaultVal
+     *            The value to return if the fact does not exist
      * @return The integer value corresponding to the last value stored
      */
-    public static int getGameFact(String factName) {
+    public static int getGameFact(String factName, int defaultVal) {
         Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
-        return prefs.getInteger(factName, -1);
+        return prefs.getInteger(factName, defaultVal);
     }
 
     /**
@@ -165,8 +171,8 @@ public class Facts {
     }
 
     /**
-     * Look up an Actor that was stored for the current level. If no such
-     * Actor exists, null will be returned.
+     * Look up an Actor that was stored for the current level. If no such Actor
+     * exists, null will be returned.
      * 
      * @param actorName
      *            The name used to store the Actor
@@ -182,8 +188,8 @@ public class Facts {
     }
 
     /**
-     * Save a Actor from the current level. If the actorName has
-     * already been used for this level, the new value will overwrite the old.
+     * Save a Actor from the current level. If the actorName has already been
+     * used for this level, the new value will overwrite the old.
      * 
      * @param actorName
      *            The name for the Actor being saved

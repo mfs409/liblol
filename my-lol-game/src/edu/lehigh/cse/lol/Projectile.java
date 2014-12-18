@@ -33,7 +33,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Projectiles are entities that can be thrown from the hero's location in order
+ * Projectiles are actors that can be thrown from the hero's location in order
  * to remove enemies. Note that there is no public interface to this file.
  * Projectiles should be controlled via ProjectilePool.
  */
@@ -52,14 +52,14 @@ public class Projectile extends Actor {
 
     /**
      * When projectiles collide, and they are not sensors, one will disappear.
-     * We can keep both on screen by setting this true
+     * We can keep both on screen by setting this false
      */
     boolean mDisappearOnCollide = true;
 
     /**
      * How much damage does this projectile do?
      */
-    int mStrength;
+    int mDamage;
 
     /**
      * Internal method to create a projectile. Projectiles have an underlying
@@ -101,7 +101,7 @@ public class Projectile extends Actor {
      * live.
      * 
      * @param other
-     *            The other entity involved in the collision
+     *            The other actor involved in the collision
      * @param contact
      *            A description of the contact
      */
@@ -129,7 +129,7 @@ public class Projectile extends Actor {
 
     /**
      * When drawing a projectile, we first check if it is too far from its
-     * starting point
+     * starting point.  We only draw it if it is not.
      */
     @Override
     public void render(SpriteBatch sb, float delta) {

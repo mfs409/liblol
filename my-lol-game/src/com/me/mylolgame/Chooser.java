@@ -192,7 +192,7 @@ public class Chooser implements ScreenManager {
 
     static void drawLevelButton(float x, float y, float width, float height, final int level) {
         // figure out the last unlocked level
-        int unlocked = Math.max(1, Facts.getGameFact("unlocked"));
+        int unlocked = Math.max(1, Facts.getGameFact("unlocked", 1));
         unlocked = 2;
         // for each button, start by drawing an obstacle
         Obstacle l1 = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");

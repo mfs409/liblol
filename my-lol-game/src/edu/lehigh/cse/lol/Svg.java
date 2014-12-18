@@ -115,9 +115,9 @@ public class Svg {
     private BodyDef mBodyDef = new BodyDef();
 
     /**
-     * When we draw a line, we must make it a PhysicsSprite or else hero
+     * When we draw a line, we must make it a actor or else hero
      * collisions with the SVG won't enable it to re-jump. This class is a very
-     * lightweight PhysicsSprite that serves our need.
+     * lightweight actor that serves our need.
      */
     class SVGSprite extends Actor {
         SVGSprite(String imgName, float width, float height) {
@@ -355,7 +355,7 @@ public class Svg {
     /**
      * Internal method used by the SVG parser to draw a line. This is a bit of a
      * hack, in that we create a simple Box2d Edge, and then we make an
-     * invisible PhysicsSprite that we connect to the Edge, so that LOL
+     * invisible actor that we connect to the Edge, so that LOL
      * collision detection works correctly. There are no images being displayed,
      * and this is not a proper "Obstacle"
      * 
@@ -386,7 +386,7 @@ public class Svg {
         mFixture.shape.dispose(); // i.e., line.dispose()
         b.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
 
-        // connect it to an invisible PhysicsSprite, so that collision callbacks
+        // connect it to an invisible actor, so that collision callbacks
         // will work (i.e., for inAir)
         SVGSprite invis = new SVGSprite("", len, .1f);
         invis.mBody = b;

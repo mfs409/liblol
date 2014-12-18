@@ -27,20 +27,18 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * Score is used by Level to track the progress through a level. There are four
- * things tracked: the number of heroes created and destroyed, the number of
- * enemies created and destroyed, the number of heroes at destinations, and the
- * number of (each type of) goodie that has been collected. Apart from storing
- * the counts, this class provides a public interface for manipulating the
- * goodie counts, and a set of internal convenience methods for updating values
- * and checking for win/lose. It also manages the mode of the level (i.e., what
- * must be done to finish the level... collecting goodies, reaching a
- * destination, etc).
+ * Score encapsulates the data used by a Level to track the player's progress.
+ * There are four things tracked: the number of heroes created and destroyed,
+ * the number of enemies created and destroyed, the number of heroes at
+ * destinations, and the number of (each type of) goodie that has been
+ * collected. Apart from storing the counts, this class provides a public
+ * interface for manipulating the goodie counts, and a set of internal
+ * convenience methods for updating values and checking for win/lose. It also
+ * manages the mode of the level (i.e., what must be done to finish the level...
+ * collecting goodies, reaching a destination, etc).
  */
 public class Score {
     /**
@@ -74,7 +72,7 @@ public class Score {
     int mEnemiesDefeated = 0;
 
     /**
-     * Describes how a level is won
+     * Describes how a level is won.
      */
     private VictoryType mVictoryType = VictoryType.DESTINATION;
 
@@ -103,7 +101,7 @@ public class Score {
     boolean mGameOver;
 
     /**
-     * these are the ways you can complete a level: you can reach the
+     * These are the ways you can complete a level: you can reach the
      * destination, you can collect enough stuff, or you can reach a certain
      * number of enemies defeated Technically, there's also 'survive for x
      * seconds', but that doesn't need special support
@@ -144,6 +142,7 @@ public class Score {
     void defeatHero(Enemy e) {
         mHeroesDefeated++;
         if (mHeroesDefeated == mHeroesCreated) {
+            // possibly change the end-of-level text
             if (e.mOnDefeatHeroText != "")
                 PostScene.setDefaultLoseText(e.mOnDefeatHeroText);
             endLevel(false);
@@ -174,9 +173,6 @@ public class Score {
 
     /**
      * Use this to inform the level that a hero has reached a destination
-     * 
-     * @param d
-     *            The destination that the hero reached
      */
     void onDestinationArrive() {
         // check if the level is complete
@@ -210,7 +206,7 @@ public class Score {
      * then let the user resume play
      * 
      * @param win
-     *            /true/ if the level was won, /false/ otherwise
+     *            true if the level was won, false otherwise
      */
     void endLevel(final boolean win) {
         if (Level.sCurrent.mEndGameEvent == null)
@@ -229,7 +225,7 @@ public class Score {
                         Level.sCurrent.mLoseCallback.onEvent();
 
                     // if we won, unlock the next level
-                    if (win && Facts.getGameFact("unlocked") <= Lol.sGame.mModeStates[Lol.PLAY])
+                    if (win && Facts.getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
                         Facts.putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
 
                     // drop everything from the hud
@@ -359,9 +355,9 @@ public class Score {
     }
 
     /**
-     * Indicate that the level is won by defeating all the enemies This version
+     * Indicate that the level is won by defeating all the enemies. This version
      * is useful if the number of enemies isn't known, or if the goal is to
-     * defeat enemies before more are are created.
+     * defeat all enemies before more are are created.
      */
     static public void setVictoryEnemyCount() {
         Level.sCurrent.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
@@ -447,43 +443,20 @@ public class Score {
     }
 
     /**
-     * Access the persistent storage to set a key/value pair, so that the
-     * information will be available forever
+     * Force the level to end in victory
      * 
-     * @param key
-     *            The key to use to remember this value
-     * @param value
-     *            The value to save
-     */
-    public static void savePersistent(String key, int value) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
-        prefs.putInteger(key, value);
-        prefs.flush();
-    }
-
-    /**
-     * Access the persistent storage to read the value associated with a key
-     * 
-     * @param key
-     *            The key to use to get the value
-     * @param defaultVal
-     *            The default value to return if the key is not found
-     * @returns The current value saved for the give
-     */
-    public static int readPersistent(String key, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
-        return prefs.getInteger(key, defaultVal);
-    }
-
-    /**
-     * Force the level to end in victory... useful in callbacks
+     * This is useful in callbacks, where we might want to immediately end the
+     * game
      */
     public static void winLevel() {
         Level.sCurrent.mScore.endLevel(true);
     }
 
     /**
-     * Force the level to end in defeat... useful in callbacks
+     * Force the level to end in defeat
+     * 
+     * This is useful in callbacks, where we might want to immediately end the
+     * game
      */
     public static void loseLevel() {
         Level.sCurrent.mScore.endLevel(false);

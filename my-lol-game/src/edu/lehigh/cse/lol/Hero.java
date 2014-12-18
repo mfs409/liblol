@@ -132,8 +132,8 @@ public class Hero extends Actor {
     private LolCallback mStrengthChangeCallback;
 
     /**
-     * Construct a Hero by creating an Actor and incrementing the number
-     * of heroes created. This code should never be called directly by the game
+     * Construct a Hero by creating an Actor and incrementing the number of
+     * heroes created. This code should never be called directly by the game
      * designer.
      * 
      * @param width
@@ -149,8 +149,8 @@ public class Hero extends Actor {
     }
 
     /**
-     * We can't just use the basic Actor renderer, because we might need
-     * to adjust a one-off animation (invincibility or throw) first
+     * We can't just use the basic Actor renderer, because we might need to
+     * adjust a one-off animation (invincibility or throw) first
      * 
      * @param sb
      *            The SpriteBatch to use for drawing this hero
@@ -186,6 +186,7 @@ public class Hero extends Actor {
      * Make the hero jump, unless it is in the air and not multijump
      */
     void jump() {
+        // nb: multijump prevents us from ever setting mInAir, so this is safe:
         if (mInAir)
             return;
         Vector2 v = mBody.getLinearVelocity();
@@ -196,7 +197,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(Facts.getGameFact("volume"));
+            mJumpSound.play(Facts.getGameFact("volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -267,7 +268,7 @@ public class Hero extends Actor {
      */
     @Override
     void onCollide(Actor other, Contact contact) {
-        // NB: we currently ignore SpriteId.PROJECTILE
+        // NB: we currently ignore Projectile and Hero
         if (other instanceof Enemy)
             onCollideWithEnemy((Enemy) other);
         else if (other instanceof Destination)
@@ -297,7 +298,7 @@ public class Hero extends Actor {
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Facts.getGameFact("volume"));
+                d.mArrivalSound.play(Facts.getGameFact("volume", 1));
             Level.sCurrent.mScore.onDestinationArrive();
         }
     }
@@ -627,10 +628,10 @@ public class Hero extends Actor {
     /**
      * Provide code to run when the hero's strength changes
      * 
-     * @param sc
+     * @param callback
      *            The code to run.
      */
-    public void setStrengthChangeCallback(LolCallback sc) {
-        mStrengthChangeCallback = sc;
+    public void setStrengthChangeCallback(LolCallback callback) {
+        mStrengthChangeCallback = callback;
     }
 }

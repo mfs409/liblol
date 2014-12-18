@@ -48,7 +48,7 @@ public class Util {
     /**
      * When there is a gesture on the screen, we will convert the event's
      * coordinates to world coordinates, then use this to handle it. This object
-     * can be attached to PhysicsSprites, Controls, or to the Level itself, to
+     * can be attached to actors, Controls, or to the Level itself, to
      * specify a handler for certain events.
      */
     static class GestureAction {
@@ -231,12 +231,12 @@ public class Util {
      */
     interface CollisionCallback {
         /**
-         * Respond to a collision with a PhysicsSprite. Note that one of the
+         * Respond to a collision with a actor. Note that one of the
          * collision entities is not named; it should be clear from the context
          * in which this was constructed.
          * 
          * @param actor
-         *            The PhysicsSprite involved in the collision
+         *            The actor involved in the collision
          * @param contact
          *            A description of the contact, in case it is useful
          */
@@ -252,7 +252,7 @@ public class Util {
     }
 
     /**
-     * AnimationDriver is an internal class that PhysicsSprites can use to
+     * AnimationDriver is an internal class that actors can use to
      * figure out which frame of an animation to show next
      */
     static class AnimationDriver {
@@ -336,7 +336,7 @@ public class Util {
         }
 
         /**
-         * When a PhysicsSprite renders, we use this method to figure out which
+         * When an actor renders, we use this method to figure out which
          * textureRegion to display
          * 
          * @param delta

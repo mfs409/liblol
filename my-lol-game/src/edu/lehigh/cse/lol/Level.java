@@ -264,9 +264,9 @@ public class Level extends ScreenAdapter {
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                     mTouchVec.y + 0.1f);
 
-            // PhysicsSprites don't respond to DOWN... if it's a down on a
-            // physicssprite, we are supposed to remember the most recently
-            // touched physicssprite, and that's it
+            // actors don't respond to DOWN... if it's a down on a
+            // actor, we are supposed to remember the most recently
+            // touched actor, and that's it
             if (mHitActor != null)
                 return true;
 

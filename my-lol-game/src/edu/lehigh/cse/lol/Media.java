@@ -162,7 +162,7 @@ public class Media {
      */
     static void resetMusicVolume() {
         for (Music m : sTunes.values()) {
-            m.setVolume(Facts.getGameFact("volume"));
+            m.setVolume(Facts.getGameFact("volume", 1));
         }
     }
 
@@ -240,7 +240,7 @@ public class Media {
     static public void registerMusic(String musicName, boolean loop) {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
-        m.setVolume(Facts.getGameFact("volume"));
+        m.setVolume(Facts.getGameFact("volume", 1));
         sTunes.put(musicName, m);
     }
 

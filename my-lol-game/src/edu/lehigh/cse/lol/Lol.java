@@ -288,7 +288,7 @@ public abstract class Lol extends Game {
         doSplash();
 
         // configure the volume
-        if (Facts.getGameFact("volume") == -1)
+        if (Facts.getGameFact("volume", 1) == 1)
             Facts.putGameFact("volume", 1);
     }
 
@@ -411,7 +411,7 @@ public abstract class Lol extends Game {
      */
     public static void toggleMute() {
         // volume is either 1 or 0
-        if (Facts.getGameFact("volume") == 1) {
+        if (Facts.getGameFact("volume", 1) == 1) {
             // set volume to 0, set image to 'unmute'
             Facts.putGameFact("volume", 0);
         } else {
@@ -427,7 +427,7 @@ public abstract class Lol extends Game {
      * not muted, false corresponds to muted.
      */
     public static boolean getVolume() {
-        return Facts.getGameFact("volume") == 1;
+        return Facts.getGameFact("volume", 1) == 1;
     }
 
     public static boolean getUnlockMode() {

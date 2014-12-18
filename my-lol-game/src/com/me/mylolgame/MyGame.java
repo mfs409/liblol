@@ -27,7 +27,7 @@
 
 package com.me.mylolgame;
 
-// TODO: make sure all angles use same units (degrees or radians): Actor has 3 joint functions that need work
+// TODO: make sure all angles use same units (degrees or radians): Actor has 3 joint functions that need work; Hero has increaseRotation
 // TODO: Add SVG collision callbacks?
 // TODO: clean up the last 6 levels
 // TODO: add a 'store'?

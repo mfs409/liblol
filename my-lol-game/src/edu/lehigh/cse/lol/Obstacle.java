@@ -106,7 +106,7 @@ public class Obstacle extends Actor {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play(Facts.getGameFact("volume"));
+        mCollideSound.play(Facts.getGameFact("volume", 1));
     }
 
     /**

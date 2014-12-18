@@ -35,11 +35,11 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 /**
- * Tilt provides a mechanism for moving entities on the screen. To use tilt, you
- * must enable() it for a level, and also indicate that some entities move via
+ * Tilt provides a mechanism for moving actors on the screen. To use tilt, you
+ * must enable it for a level, and also indicate that some actors move via
  * tilting. Tilt has two flavors: tilt can cause gravitational effects, where a
  * sustained tilt causes acceleration (this is the default), or it can cause
- * sprites to move with a fixed velocity. Be careful when using tilt. Different
+ * actors to move with a fixed velocity. Be careful when using tilt. Different
  * phones' accelerometers vary in terms of sensitivity. It is possible to set
  * multipliers and/or caps on the effect of Tilt, but these may not suffice to
  * make your game playable and enjoyable.
@@ -62,7 +62,7 @@ public class Tilt {
     private float mMultiplier = 1;
 
     /**
-     * List of entities that change behavior based on tilt
+     * List of actors that change behavior based on tilt
      */
     ArrayList<Actor> mAccelActors = new ArrayList<Actor>();
 
@@ -126,16 +126,16 @@ public class Tilt {
                 : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
-        // entity as a fixed velocity
+        // actor as a fixed velocity
         if (mTiltVelocityOverride) {
-            // if X is clipped to zero, set each entity's Y velocity, leave X
+            // if X is clipped to zero, set each actor's Y velocity, leave X
             // unchanged
             if (mGravityMax.x == 0) {
                 for (Actor gfo : mAccelActors)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
             }
-            // if Y is clipped to zero, set each entitiy's X velocity, leave Y
+            // if Y is clipped to zero, set each actor's X velocity, leave Y
             // unchanged
             else if (mGravityMax.y == 0) {
                 for (Actor gfo : mAccelActors)
@@ -150,7 +150,7 @@ public class Tilt {
             }
         }
         // when not in velocity mode, apply the accelerometer reading to each
-        // entity as a force
+        // actor as a force
         else {
             for (Actor gfo : mAccelActors)
                 if (gfo.mBody.isActive())
@@ -163,7 +163,7 @@ public class Tilt {
      */
 
     /**
-     * Turn on accelerometer support so that tilt can control entities in this
+     * Turn on accelerometer support so that tilt can control actors in this
      * level
      * 
      * @param xGravityMax

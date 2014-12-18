@@ -138,7 +138,7 @@ public class Enemy extends Actor {
         if (!p.mVisible)
             return;
         // compute damage to determine if the enemy is defeated
-        mDamage -= p.mStrength;
+        mDamage -= p.mDamage;
         if (mDamage <= 0) {
             // hide the projectile quietly, so that the sound of the enemy can
             // be heard

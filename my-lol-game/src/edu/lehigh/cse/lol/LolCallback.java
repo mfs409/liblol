@@ -28,7 +28,7 @@
 package edu.lehigh.cse.lol;
 
 /**
- * SimpleCallback provides an easy way to describe code that should run in
+ * LolCallback provides an easy way to describe code that should run in
  * response to special events, such as timers, screen presses, or collisions
  * between actors.
  * 
@@ -58,7 +58,7 @@ public abstract class LolCallback implements Cloneable {
     public Actor mCollideActor;
 
     /**
-     * Make a copy of the current SimpleCallback
+     * Make a copy of the current LolCallback
      */
     public LolCallback clone() {
         // This code is trickier than one would think. The issue is
@@ -69,7 +69,7 @@ public abstract class LolCallback implements Cloneable {
         try {
             sc = (LolCallback) super.clone();
         } catch (CloneNotSupportedException e) {
-            // this should never happen, and if it does, we'll crash in the caller
+            // this should never happen.  If it does, we'll probably crash in the caller
             e.printStackTrace();
             return null;
         }

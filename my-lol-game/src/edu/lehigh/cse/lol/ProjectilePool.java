@@ -36,9 +36,10 @@ import com.badlogic.gdx.audio.Sound;
  */
 public class ProjectilePool {
     /**
-     * A dampening factor to apply to projectiles thrown via "vector" mechanism
+     * A dampening factor to apply to projectiles thrown via "directional"
+     * mechanism
      */
-    private float mVectorDamp;
+    private float mDirectionalDamp;
 
     /**
      * Indicates that projectiles should be sensors
@@ -88,7 +89,7 @@ public class ProjectilePool {
     private boolean mRandomizeImages;
 
     /**
-     * Sound to play when projectiles are fired
+     * Sound to play when projectiles are thrown
      */
     private Sound mThrowSound;
 
@@ -99,7 +100,7 @@ public class ProjectilePool {
 
     /**
      * Create a pool of projectiles, and configure the way they are thrown. Note
-     * that this is private... the LOL paradigm is that the programmer calls
+     * that this is private... in LOL the programmer calls
      * ProjectilePool.configure, which forwards to this.
      * 
      * @param size
@@ -127,7 +128,7 @@ public class ProjectilePool {
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
-            mPool[i].mStrength = strength;
+            mPool[i].mDamage = strength;
         }
         mNextIndex = 0;
         mPoolSize = size;
@@ -186,7 +187,7 @@ public class ProjectilePool {
         b.updateVelocity(velocityX, velocityY);
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play(Facts.getGameFact("volume"));
+            mThrowSound.play(Facts.getGameFact("volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }
@@ -255,8 +256,8 @@ public class ProjectilePool {
             float dX = toX - heroX - offsetX;
             float dY = toY - heroY - offsetY;
             // compute absolute vector, multiply by dampening factor
-            float tmpX = dX * mVectorDamp;
-            float tmpY = dY * mVectorDamp;
+            float tmpX = dX * mDirectionalDamp;
+            float tmpY = dY * mDirectionalDamp;
             b.updateVelocity(tmpX, tmpY);
         }
 
@@ -269,7 +270,7 @@ public class ProjectilePool {
         // show the projectile, play sound, and animate the hero
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play(Facts.getGameFact("volume"));
+            mThrowSound.play(Facts.getGameFact("volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }
@@ -312,14 +313,14 @@ public class ProjectilePool {
     }
 
     /**
-     * The "vector projectile" mechanism might lead to the projectiles moving
+     * The "directional projectile" mechanism might lead to the projectiles moving
      * too fast. This will cause the speed to be multiplied by a factor
      * 
      * @param factor
      *            The value to multiply against the projectile speed.
      */
     public static void setProjectileVectorDampeningFactor(float factor) {
-        Level.sCurrent.mProjectilePool.mVectorDamp = factor;
+        Level.sCurrent.mProjectilePool.mDirectionalDamp = factor;
     }
 
     /**
@@ -331,7 +332,7 @@ public class ProjectilePool {
     }
 
     /**
-     * Indicate that projectiles thrown with the "vector" mechanism should have
+     * Indicate that projectiles thrown with the "directional" mechanism should have
      * a fixed velocity
      * 
      * @param velocity
@@ -343,7 +344,7 @@ public class ProjectilePool {
     }
 
     /**
-     * Indicate that projectiles thrown via the "vector" mechanism should be
+     * Indicate that projectiles thrown via the "directional" mechanism should be
      * rotated to face in their direction or movement
      */
     public static void setRotateVectorThrow() {

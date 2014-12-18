@@ -561,7 +561,7 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -598,7 +598,7 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);
@@ -635,7 +635,7 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
         Level.sCurrent.mDisplays.add(d);

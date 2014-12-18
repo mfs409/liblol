@@ -1120,7 +1120,7 @@ public class Levels implements ScreenManager {
             Displays.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 0, 255, 16, h);
 
             // Add some text about the previous best score.
-            Util.drawText(30, 30, "best: " + Score.readPersistent("HighScore32", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
+            Util.drawText(30, 30, "best: " + Facts.getGameFact("HighScore32", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
 
             // when this level ends, we save the best score. Once the
             // score is saved, it is saved permanently on the phone, though
@@ -1128,9 +1128,9 @@ public class Levels implements ScreenManager {
             // that we save the score whether we win or lose.
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
-                    int oldBest = Score.readPersistent("HighScore32", 0);
+                    int oldBest = Facts.getGameFact("HighScore32", 0);
                     if (oldBest < Score.getDistance())
-                        Score.savePersistent("HighScore32", Score.getDistance());
+                        Facts.putGameFact("HighScore32", Score.getDistance());
                 }
             };
             Level.setWinCallback(sc);
@@ -3124,17 +3124,17 @@ public class Levels implements ScreenManager {
             Displays.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
             Controls.addCallbackControl(40, 90, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test"));
+                    Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test", -1));
                 }
             });
             Controls.addCallbackControl(40, 140, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test"));
+                    Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test", -1));
                 }
             });
             Controls.addCallbackControl(40, 190, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putGameFact("game test", 1 + Facts.getGameFact("game test"));
+                    Facts.putGameFact("game test", 1 + Facts.getGameFact("game test", -1));
                 }
             });
         }
@@ -3343,7 +3343,7 @@ public class Levels implements ScreenManager {
             LolCallback barSC = new LolCallback() {
                 public void onEvent() {
                     // vertical bar... make the entity move
-                    int rotation = Facts.getLevelFact("rotation") / 100;
+                    int rotation = Facts.getLevelFact("rotation", 0) / 100;
                     // create a unit vector
                     Vector2 v = new Vector2(1, 0);
                     v.scl(mFloatVal);

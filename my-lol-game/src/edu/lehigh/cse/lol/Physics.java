@@ -59,9 +59,9 @@ public class Physics {
      * figure out what to do
      * 
      * @param sticky
-     *            The sticky entity... it should always be an obstacle for now
+     *            The sticky actor... it should always be an obstacle for now
      * @param other
-     *            The other entity... it should always be a hero for now
+     *            The other actor... it should always be a hero for now
      * @param contact
      *            A description of the contact event
      */
@@ -73,7 +73,7 @@ public class Physics {
         if (System.currentTimeMillis() < other.mStickyDelay)
             return;
         // handle sticky obstacles... only do something if we're hitting the
-        // obstacle from the right direction
+        // obstacle from the correct direction
         if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
                 || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
                 || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
@@ -104,10 +104,10 @@ public class Physics {
      * Configure physics for the current level
      * 
      * @param defaultXGravity
-     *            The default force moving entities to the left (negative) or
+     *            The default force moving actors to the left (negative) or
      *            right (positive)... Usually zero
      * @param defaultYGravity
-     *            The default force pushing the hero down (negative) or up
+     *            The default force pushing actors down (negative) or up
      *            (positive)... Usually zero or -10
      */
     public static void configure(float defaultXGravity, float defaultYGravity) {
@@ -122,7 +122,7 @@ public class Physics {
              */
             @Override
             public void beginContact(final Contact contact) {
-                // Get the bodies, make sure both are PhysicsSprites
+                // Get the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
                 if (!(a instanceof Actor) || !(b instanceof Actor))
@@ -161,7 +161,7 @@ public class Physics {
                 // finishes its step.
                 //
                 // NB: this is called from render, while world is updating...
-                // you can't modify the world or its entities until the update
+                // you can't modify the world or its actors until the update
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
                 Level.sCurrent.mOneTimeEvents.add(new Util.Action() {
@@ -185,7 +185,7 @@ public class Physics {
              */
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
-                // get the bodies, make sure both are PhysicsSprites
+                // get the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
                 if (!(a instanceof Actor) || !(b instanceof Actor))
@@ -194,7 +194,7 @@ public class Physics {
                 Actor gfoB = (Actor) b;
 
                 // handle sticky obstacles... only do something if at least one
-                // entity is a sticky entity
+                // actor is a sticky actor
                 if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
                     handleSticky(gfoA, gfoB, contact);
                     return;
@@ -203,7 +203,7 @@ public class Physics {
                     return;
                 }
 
-                // if the PhysicsSprites have the same passthrough ID, and it's
+                // if the actors have the same passthrough ID, and it's
                 // not zero, then disable the contact
                 if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
                     contact.setEnabled(false);
@@ -230,7 +230,7 @@ public class Physics {
                 for (int i = 0; i < numPoints; i++) {
                     Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
                     // disable based on the value of isOneSided and the vector
-                    // between the entities
+                    // between the actors
                     if (onesided.mIsOneSided == 0 && vector2.y < 0)
                         contact.setEnabled(false);
                     else if (onesided.mIsOneSided == 2 && vector2.y > 0)
