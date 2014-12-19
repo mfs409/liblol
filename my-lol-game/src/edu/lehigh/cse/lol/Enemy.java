@@ -288,15 +288,15 @@ public class Enemy extends Actor {
      * Make the enemy a "defeat callback" enemy, so that custom code will run
      * when this enemy is defeated
      * 
-     * @param sc
+     * @param callback
      *            The callback to run when the enemy is defeated
      */
-    public void setDefeatCallback(final LolCallback sc) {
+    public void setDefeatCallback(final LolCallback callback) {
         mDefeatCallback = new Util.CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
-                sc.mAttachedActor = Enemy.this;
-                sc.onEvent();
+                callback.mAttachedActor = Enemy.this;
+                callback.onEvent();
             }
         };
     }

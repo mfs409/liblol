@@ -52,14 +52,18 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 /**
- * A Level is a playable portion of the game. Levels can be infinite, or they
- * can have an end goal. Level has two components. One is the part that is
+ * A Level is an interactive portion of the game. Levels can be infinite, or
+ * they can have an end goal. Level has two components. One is the part that is
  * visible to the game designer, which involves some limited control over the
  * camera and music, and the ability to request that custom code run after a
  * fixed amount of time. These timers can also be attached to a specific enemy,
  * if desired. Internally, Level is responsible for managing a set of cameras
  * used to display everything that appears on the screen. It is also responsible
- * for keeping track of everything on the screen (game entities and Controls).
+ * for keeping track of everything on the screen (Actors, Controls, and
+ * Displays), so we can draw the game correctly.
+ * 
+ * Note that everything in Lol is a level... the splash screen, the choosers,
+ * the help, and the game levels themselves.
  */
 public class Level extends ScreenAdapter {
 
@@ -207,6 +211,14 @@ public class Level extends ScreenAdapter {
             return false;
         }
 
+        /**
+         * Handle zoom (i.e., pinch)
+         * 
+         * @param initialDistance
+         *            The distance between fingers when the pinch started
+         * @param distance
+         *            The current distance between fingers
+         */
         @Override
         public boolean zoom(float initialDistance, float distance) {
             for (Controls.Control c : mZoomControls) {
@@ -221,9 +233,11 @@ public class Level extends ScreenAdapter {
 
     /**
      * Gestures can't cover everything we care about (specifically 'hold this
-     * button' sorts of things), so we need a low-level input adapter, too.
+     * button' sorts of things, for which longpress is not responsive enough),
+     * so we need a low-level input adapter, too.
      */
     class LolInputManager extends InputAdapter {
+
         /**
          * Handle when a downward touch happens
          * 
@@ -237,7 +251,6 @@ public class Level extends ScreenAdapter {
          *            The mouse button that was pressed
          */
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
             for (Controls.Control c : mToggleControls) {
@@ -485,6 +498,8 @@ public class Level extends ScreenAdapter {
     /**
      * The LOL interface requires that game designers don't have to construct
      * Level manually. To make it work, we store the current Level here
+     * 
+     * TODO
      */
     static Level sCurrent;
 
@@ -545,10 +560,10 @@ public class Level extends ScreenAdapter {
             Util.message("Warning", "Your game height is less than 1/10 of the screen height");
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO,
-                Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO / 2,
-                Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO / 2, 0);
+        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO, Lol.sGame.mHeight
+                / Physics.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
+                / Physics.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
@@ -651,33 +666,32 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Add a renderable entity to the level, putting it into the appropriate z
-     * plane
+     * Add an actor to the level, putting it into the appropriate z plane
      * 
-     * @param r
-     *            The renderable entity
+     * @param actor
+     *            The actor to add
      * @param zIndex
      *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addActor(Util.Renderable r, int zIndex) {
+    void addActor(Util.Renderable actor, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        mSprites.get(zIndex + 2).add(r);
+        mSprites.get(zIndex + 2).add(actor);
     }
 
     /**
-     * Remove a renderable entity from its z plane
+     * Remove an actor from its z plane
      * 
-     * @param r
-     *            The entity to remove
+     * @param actor
+     *            The actor to remove
      * @param zIndex
      *            The z plane where it is expected to be
      */
-    void removeActor(Util.Renderable r, int zIndex) {
+    void removeActor(Util.Renderable actor, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        mSprites.get(zIndex + 2).remove(r);
+        mSprites.get(zIndex + 2).remove(actor);
     }
 
     /**
@@ -723,13 +737,16 @@ public class Level extends ScreenAdapter {
 
             }
         }
+
         // Make sure the music is playing... Note that we start music before the
         // PreScene shows
         playMusic();
 
-        // Handle pauses due to pre, pause, or post scenes... Note that these
-        // handle their own screen touches... Note that postscene should come
-        // first.
+        // Handle pauses due to pre, pause, or post scenes...
+        //
+        // Note that these handle their own screen touches...
+        //
+        // Note that postscene should come first.
         if (mPostScene != null && mPostScene.render(mSpriteBatch))
             return;
         if (mPreScene != null && mPreScene.render(mSpriteBatch))
@@ -871,15 +888,15 @@ public class Level extends ScreenAdapter {
      * 
      * @param howLong
      *            How long to wait before the timer code runs
-     * @param sc
-     *            A SimpleCallback to run
+     * @param callback
+     *            The code to run
      */
-    public static void setTimerCallback(float howLong, final LolCallback sc) {
+    public static void setTimerCallback(float howLong, final LolCallback callback) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    sc.onEvent();
+                    callback.onEvent();
             }
         }, howLong);
     }
@@ -891,21 +908,22 @@ public class Level extends ScreenAdapter {
      *            How long to wait before the timer code runs for the first time
      * @param interval
      *            The time between subsequent executions of the code
-     * @param sc
-     *            A SimpleCallback to run
+     * @param callback
+     *            The code to run
      */
-    public static void setTimerCallback(float howLong, float interval, final LolCallback sc) {
+    public static void setTimerCallback(float howLong, float interval, final LolCallback callback) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
                 if (!Level.sCurrent.mScore.mGameOver)
-                    sc.onEvent();
+                    callback.onEvent();
             }
         }, howLong, interval);
     }
 
     /**
      * Turn on scribble mode, so that scene touch events draw circular objects
+     * 
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
@@ -997,20 +1015,20 @@ public class Level extends ScreenAdapter {
     /**
      * Register a callback so that custom code will run when the level is won
      * 
-     * @param sc
+     * @param callback
      *            The code to run
      */
-    public static void setWinCallback(LolCallback sc) {
-        Level.sCurrent.mWinCallback = sc;
+    public static void setWinCallback(LolCallback callback) {
+        Level.sCurrent.mWinCallback = callback;
     }
 
     /**
      * Register a callback so that custom code will run when the level is lost
      * 
-     * @param sc
+     * @param callback
      *            The code to run
      */
-    public static void setLoseCallback(LolCallback sc) {
-        Level.sCurrent.mLoseCallback = sc;
+    public static void setLoseCallback(LolCallback callback) {
+        Level.sCurrent.mLoseCallback = callback;
     }
 }

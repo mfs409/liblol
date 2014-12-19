@@ -65,19 +65,19 @@ public abstract class LolCallback implements Cloneable {
         // that we are doing this copy as a way of getting a new object with the
         // same overridden onEvent() method. That, in turn, means we need to
         // implement Cloneable.
-        LolCallback sc;
+        LolCallback callback;
         try {
-            sc = (LolCallback) super.clone();
+            callback = (LolCallback) super.clone();
         } catch (CloneNotSupportedException e) {
             // this should never happen.  If it does, we'll probably crash in the caller
             e.printStackTrace();
             return null;
         }
-        sc.mIntVal = this.mIntVal;
-        sc.mFloatVal = this.mFloatVal;
-        sc.mAttachedActor = this.mAttachedActor;
-        sc.mCollideActor = this.mCollideActor;
-        return sc;
+        callback.mIntVal = this.mIntVal;
+        callback.mFloatVal = this.mFloatVal;
+        callback.mAttachedActor = this.mAttachedActor;
+        callback.mCollideActor = this.mCollideActor;
+        return callback;
     }
 
     /**

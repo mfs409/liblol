@@ -620,18 +620,18 @@ public class Levels implements ScreenManager {
             // hero's velocity is multiplied by -1... he bounces off at an
             // angle.
             Obstacle o = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
-            o.setDamp(-1);
+            o.setPad(-1);
 
             // this obstacle accelerates the hero... it's like a turbo booster
             o = Obstacle.makeAsCircle(20, 10, 3.5f, 3.5f, "purpleball.png");
-            o.setDamp(5);
+            o.setPad(5);
 
             // this obstacle slows the hero down... it's like running on
             // sandpaper. Note that the hero only slows down on initial
             // collision, not while going under it.
             o = Obstacle.makeAsBox(30, 10, 3.5f, 3.5f, "purpleball.png");
             o.setRotationSpeed(2);
-            o.setDamp(0.2f);
+            o.setPad(0.2f);
         }
 
         /*

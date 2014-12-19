@@ -37,7 +37,8 @@ import com.badlogic.gdx.utils.Timer.Task;
 /**
  * Obstacles are usually walls, except they can move, and can be used to run all
  * sorts of abritrary code that changes the game, or the behavior of the things
- * that collide with them
+ * that collide with them. It's best to think of them as being both "a wall" and
+ * "a catch-all for any behavior that we don't have anywhere else".
  */
 public class Obstacle extends Actor {
     /**
@@ -110,9 +111,10 @@ public class Obstacle extends Actor {
     }
 
     /**
-     * Called when this Obstacle is the dominant obstacle in a collision Note:
-     * This Obstacle is /never/ the dominant obstacle in a collision, since it
-     * is #6 or #7
+     * Called when this Obstacle is the dominant obstacle in a collision
+     * 
+     * Note: This Obstacle is /never/ the dominant obstacle in a collision,
+     * since it is #6 or #7
      * 
      * @param other
      *            The other entity involved in this collision
@@ -198,16 +200,19 @@ public class Obstacle extends Actor {
     }
 
     /**
-     * Call this on an Obstacle to give it a dampening factor. A hero can glide
-     * over damp Obstacles. Damp factors can be negative to cause a reverse
-     * direction, less than 1 to cause a slowdown (friction pads), or greater
-     * than 1 to serve as zoom pads.
+     * Call this on an Obstacle to make it into a pad that changes the hero's
+     * speed when the hero glides over it.
+     * 
+     * These "pads" will multiply the hero's speed by the factor given as a
+     * parameter. Factors can be negative to cause a reverse direction, less
+     * than 1 to cause a slowdown (friction pads), or greater than 1 to serve as
+     * zoom pads.
      * 
      * @param factor
      *            Value to multiply the hero's velocity when it collides with
      *            this Obstacle
      */
-    public void setDamp(final float factor) {
+    public void setPad(final float factor) {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to multiply the hero's speed by factor
@@ -222,7 +227,7 @@ public class Obstacle extends Actor {
     }
 
     /**
-     * Call this on an event to make it behave like a "damp" obstacle, except
+     * Call this on an obstacle to make it behave like a "pad" obstacle, except
      * with a constant additive (or subtractive) effect on the hero's speed.
      * 
      * @param boostAmountX
@@ -275,7 +280,7 @@ public class Obstacle extends Actor {
 
     /**
      * Make the object a callback object, so that custom code will run when a
-     * hero collides with it
+     * /hero/ collides with it
      * 
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
@@ -292,11 +297,11 @@ public class Obstacle extends Actor {
      * @param delay
      *            The time between when the collision happens, and when the
      *            callback code runs. Use 0 for immediately
-     * @param sc
+     * @param callback
      *            The code to run when the collision happens
      */
     public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay, final LolCallback sc) {
+            int activationGoodies4, final float delay, final LolCallback callback) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[] { activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4 };
         setCollisionsEnabled(false);
@@ -315,16 +320,16 @@ public class Obstacle extends Actor {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            sc.mAttachedActor = Obstacle.this;
-                            sc.mCollideActor = ps;
-                            sc.onEvent();
+                            callback.mAttachedActor = Obstacle.this;
+                            callback.mCollideActor = ps;
+                            callback.onEvent();
                         } else {
                             Timer.schedule(new Task() {
                                 @Override
                                 public void run() {
-                                    sc.mAttachedActor = Obstacle.this;
-                                    sc.mCollideActor = ps;
-                                    sc.onEvent();
+                                    callback.mAttachedActor = Obstacle.this;
+                                    callback.mCollideActor = ps;
+                                    callback.onEvent();
                                 }
                             }, delay);
                         }
@@ -336,7 +341,7 @@ public class Obstacle extends Actor {
 
     /**
      * Make the object a callback object, so that custom code will run when an
-     * enemy collides with it
+     * /enemy/ collides with it
      * 
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
@@ -353,11 +358,11 @@ public class Obstacle extends Actor {
      * @param delay
      *            The time between when the collision happens, and when the
      *            callback code runs. Use 0 for immediately
-     * @param sc
+     * @param callback
      *            The code to run when an enemy collides with this obstacle
      */
     public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final float delay, final LolCallback sc) {
+            int activationGoodies4, final float delay, final LolCallback callback) {
         /**
          * Enemy callbacks can require certain Goodie counts in order to run
          */
@@ -373,16 +378,16 @@ public class Obstacle extends Actor {
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        sc.mAttachedActor = Obstacle.this;
-                        sc.mCollideActor = ps;
-                        sc.onEvent();
+                        callback.mAttachedActor = Obstacle.this;
+                        callback.mCollideActor = ps;
+                        callback.onEvent();
                     } else {
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                sc.mAttachedActor = Obstacle.this;
-                                sc.mCollideActor = ps;
-                                sc.onEvent();
+                                callback.mAttachedActor = Obstacle.this;
+                                callback.mCollideActor = ps;
+                                callback.onEvent();
                             }
                         }, delay);
                     }
@@ -393,7 +398,7 @@ public class Obstacle extends Actor {
 
     /**
      * Make the object a callback object, so that custom code will run when a
-     * projectile collides with it.
+     * /projectile/ collides with it.
      * 
      * @param activationGoodies1
      *            Number of type-1 goodies that must be collected before this
@@ -407,9 +412,11 @@ public class Obstacle extends Actor {
      * @param activationGoodies4
      *            Number of type-4 goodies that must be collected before this
      *            callback works
+     * @param callback
+     *            The code to run on a collision
      */
     public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-            int activationGoodies4, final LolCallback sc) {
+            int activationGoodies4, final LolCallback callback) {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
@@ -420,9 +427,9 @@ public class Obstacle extends Actor {
                 for (int i = 0; i < 4; ++i)
                     match &= projectileCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
                 if (match) {
-                    sc.mAttachedActor = Obstacle.this;
-                    sc.mCollideActor = ps;
-                    sc.onEvent();
+                    callback.mAttachedActor = Obstacle.this;
+                    callback.mCollideActor = ps;
+                    callback.onEvent();
                 }
             }
         };

@@ -307,10 +307,10 @@ public class PauseScene {
      * @param callbackId
      *            The value to pass back to the main game
      */
-    public static void addCallbackButton(int x, int y, int width, int height, LolCallback sc) {
+    public static void addCallbackButton(int x, int y, int width, int height, LolCallback callback) {
         Button b = new Button();
         b.mRect = new Rectangle(x, y, width, height);
-        b.mCallback = sc;
+        b.mCallback = callback;
         getCurrPauseScene().mButtons.add(b);
     }
 
