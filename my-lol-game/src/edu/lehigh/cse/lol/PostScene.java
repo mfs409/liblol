@@ -27,12 +27,14 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.util.ArrayList;
+import edu.lehigh.cse.lol.internals.Renderable;
 
 /**
  * PostScene provides a way to display text and images after a level is
@@ -65,12 +67,12 @@ public class PostScene {
     /**
      * The pictures and text to display when a level is won.
      */
-    private final ArrayList<Util.Renderable> mWinSprites = new ArrayList<Util.Renderable>();
+    private final ArrayList<Renderable> mWinSprites = new ArrayList<Renderable>();
 
     /**
      * The pictures and text to display when a level is lost.
      */
-    private final ArrayList<Util.Renderable> mLoseSprites = new ArrayList<Util.Renderable>();
+    private final ArrayList<Renderable> mLoseSprites = new ArrayList<Renderable>();
 
     /**
      * Track if the level has been won or lost
@@ -192,7 +194,7 @@ public class PostScene {
     boolean render(SpriteBatch sb) {
         if (!mVisible)
             return false;
-        ArrayList<Util.Renderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
+        ArrayList<Renderable> sprites = (mWin) ? mWinSprites : mLoseSprites;
 
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
@@ -200,7 +202,7 @@ public class PostScene {
         Lol.sGame.mCurrentLevel.mHudCam.update();
         sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
-        for (Util.Renderable r : sprites)
+        for (Renderable r : sprites)
             r.render(sb, 0);
         sb.end();
         return true;

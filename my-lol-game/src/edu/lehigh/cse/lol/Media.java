@@ -141,14 +141,15 @@ public class Media {
     }
 
     /**
-     * Internal method to retrieve an image by name
+     * Internal method to retrieve an image by name. User code should not call
+     * this.
      * 
      * @param imgName
      *            Name of the image file to retrieve
-     * @return a TiledTextureRegion object that can be used to create
-     *         AnimatedSprites
+     * @return a TextureRegion object that can be used to create
+     *         Actors
      */
-    static TextureRegion[] getImage(String imgName) {
+    public static TextureRegion[] getImage(String imgName) {
         TextureRegion[] ret = sImages.get(imgName);
         if (ret == null)
             Util.message("ERROR", "Error retreiving image '" + imgName + "'");
@@ -191,9 +192,9 @@ public class Media {
      * Register an animatable image file, so that it can be used later. The
      * difference between regular images and animatable images is that
      * animatable images should be thought of as having multiple columns and
-     * rows, which allow cell-based animation. Images should be .png files.
-     * Note that images with internal animations (i.e., gifs) do not work
-     * correctly. You should use cell-based animation instead.
+     * rows, which allow cell-based animation. Images should be .png files. Note
+     * that images with internal animations (i.e., gifs) do not work correctly.
+     * You should use cell-based animation instead.
      * 
      * @param imgName
      *            the name of the image file (assumed to be in the "assets"

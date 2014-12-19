@@ -31,6 +31,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
+import edu.lehigh.cse.lol.internals.CollisionCallback;
+import edu.lehigh.cse.lol.internals.GestureAction;
+
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be
  * defeated via projectiles. They can also be defeated by colliding with
@@ -75,7 +78,7 @@ public class Enemy extends Actor {
     /**
      * A callback to run when the enemy is defeated
      */
-    private Util.CollisionCallback mDefeatCallback;
+    private CollisionCallback mDefeatCallback;
 
     /**
      * Create an Enemy. This should never be called directly.
@@ -273,9 +276,9 @@ public class Enemy extends Actor {
      * from the game
      */
     public void setDisappearOnTouch() {
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            boolean onTap(Vector3 touchVec) {
+            public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(100);
                 defeat(true);
                 mGestureResponder = null;
@@ -292,7 +295,7 @@ public class Enemy extends Actor {
      *            The callback to run when the enemy is defeated
      */
     public void setDefeatCallback(final LolCallback callback) {
-        mDefeatCallback = new Util.CollisionCallback() {
+        mDefeatCallback = new CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 callback.mAttachedActor = Enemy.this;

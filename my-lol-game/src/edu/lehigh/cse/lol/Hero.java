@@ -34,6 +34,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
+import edu.lehigh.cse.lol.internals.GestureAction;
+
 /**
  * The Hero is the focal point of a game. While it is technically possible to
  * have many heroes, or invisible heroes that exist just so that the player has
@@ -42,7 +44,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * crawling.
  */
 public class Hero extends Actor {
-
     /**
      * Strength of the hero. This determines how many collisions with enemies
      * the hero can sustain before it is defeated. The default is 1, and the
@@ -275,7 +276,7 @@ public class Hero extends Actor {
             onCollideWithDestination((Destination) other);
         else if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle) other, contact);
-        else if (other instanceof Svg.SVGSprite)
+        else if (other instanceof Svg.SVGActor)
             onCollideWithSVG(other);
         else if (other instanceof Goodie)
             onCollideWithGoodie((Goodie) other);
@@ -509,9 +510,9 @@ public class Hero extends Actor {
      *            Velocity in Y dimension
      */
     public void setTouchAndGo(final float x, final float y) {
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            boolean onTap(Vector3 touchVec) {
+            public boolean onTap(Vector3 touchVec) {
                 mHover = null;
                 // if it was hovering, its body type won't be Dynamic
                 if (mBody.getType() != BodyType.DynamicBody)
@@ -549,9 +550,9 @@ public class Hero extends Actor {
      */
 
     public void setTouchToJump() {
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
-            boolean onTap(Vector3 touchVec) {
+            public boolean onTap(Vector3 touchVec) {
                 jump();
                 return true;
             }

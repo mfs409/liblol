@@ -34,6 +34,8 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.lol.internals.CollisionCallback;
+
 /**
  * Obstacles are usually walls, except they can move, and can be used to run all
  * sorts of abritrary code that changes the game, or the behavior of the things
@@ -46,17 +48,17 @@ public class Obstacle extends Actor {
      * way to run custom code. This callback defines what code to run when a
      * hero collides with this obstacle.
      */
-    Util.CollisionCallback mHeroCollision;
+    CollisionCallback mHeroCollision;
 
     /**
      * This callback is for when an enemy collides with an obstacle
      */
-    Util.CollisionCallback mEnemyCollision;
+    CollisionCallback mEnemyCollision;
 
     /**
      * This callback is for when a projectile collides with an obstacle
      */
-    Util.CollisionCallback mProjectileCollision;
+    CollisionCallback mProjectileCollision;
 
     /**
      * Indicate that this obstacle does not re-enable jumping for the hero
@@ -117,7 +119,7 @@ public class Obstacle extends Actor {
      * since it is #6 or #7
      * 
      * @param other
-     *            The other entity involved in this collision
+     *            The other actor involved in this collision
      * @param contact
      *            A description of the collision
      */
@@ -216,7 +218,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to multiply the hero's speed by factor
-        mHeroCollision = new Util.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(Actor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
@@ -242,7 +244,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to change the hero's speed
-        mHeroCollision = new Util.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(final Actor h, Contact c) {
                 // boost the speed
@@ -307,7 +309,7 @@ public class Obstacle extends Actor {
         setCollisionsEnabled(false);
 
         // register a callback
-        mHeroCollision = new Util.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 // Make sure the contact is active (it's not if this is a
@@ -369,7 +371,7 @@ public class Obstacle extends Actor {
         final int[] enemyCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
 
-        mEnemyCollision = new Util.CollisionCallback() {
+        mEnemyCollision = new CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
@@ -420,7 +422,7 @@ public class Obstacle extends Actor {
         final int[] projectileCallbackActivation = new int[] { activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4 };
 
-        mProjectileCollision = new Util.CollisionCallback() {
+        mProjectileCollision = new CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 boolean match = true;

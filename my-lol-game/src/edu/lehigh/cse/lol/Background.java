@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import edu.lehigh.cse.lol.internals.ParallaxLayer;
+
 /**
  * The Background class provides a way to declare images that go in the
  * background of the game, and which automatically pan and repeat. Note that if
@@ -47,7 +49,7 @@ public class Background {
     /**
      * All the background layers to show for the current level
      */
-    private final ArrayList<Util.ParallaxLayer> mLayers = new ArrayList<Util.ParallaxLayer>();
+    private final ArrayList<ParallaxLayer> mLayers = new ArrayList<ParallaxLayer>();
 
     /**
      * This method, called from the render loop, is responsible for drawing all
@@ -64,7 +66,7 @@ public class Background {
         Lol.sGame.mCurrentLevel.mBgCam.update();
 
         // draw the layers
-        for (Util.ParallaxLayer pl : mLayers) {
+        for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam.calculateParallaxMatrix(
                     pl.mXSpeed * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
@@ -165,7 +167,7 @@ public class Background {
      */
     static public void addHorizontalLayer(float xSpeed, float ySpeed, String imgName, float yOffset, float width,
             float height) {
-        Util.ParallaxLayer pl = new Util.ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], 0, yOffset
                 * Physics.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
@@ -194,7 +196,7 @@ public class Background {
      */
     static public void addVerticalLayer(float xSpeed, float ySpeed, String imgName, float xOffset, float width,
             float height) {
-        Util.ParallaxLayer pl = new Util.ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed, Media.getImage(imgName)[0], xOffset
                 * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);

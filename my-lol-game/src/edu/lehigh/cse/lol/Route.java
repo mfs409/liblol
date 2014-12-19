@@ -28,22 +28,22 @@
 package edu.lehigh.cse.lol;
 
 /**
- * A Route specifies a set of points that an entity will move between at a fixed
+ * A Route specifies a set of points that an actor will move between at a fixed
  * speed.
  */
 public class Route {
     /**
      * The X coordinates of the points in the route
      */
-    float[] mXIndices;
+    public float[] mXIndices;
 
     /**
      * The Y coordinates of the points in the route
      */
-    float[] mYIndices;
+    public float[] mYIndices;
 
     /**
-     * The speed at which the entity should move along the route
+     * The speed at which the actor should move along the route
      */
     float mVelocity;
 
@@ -55,7 +55,7 @@ public class Route {
     /**
      * The current number of points that have been set
      */
-    int mPoints;
+    public int mPoints;
 
     /**
      * Define a new path, by specifying the number of points in the path. Note

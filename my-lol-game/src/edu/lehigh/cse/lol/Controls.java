@@ -33,7 +33,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import edu.lehigh.cse.lol.Util.GestureAction;
+import edu.lehigh.cse.lol.internals.GestureAction;
+import edu.lehigh.cse.lol.internals.LolAction;
 
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying
@@ -55,7 +56,7 @@ public class Controls {
         /**
          * Code to run when this Control is touched
          */
-        Util.GestureAction mGestureAction;
+        GestureAction mGestureAction;
 
         /**
          * The rectangle on the screen that is touchable
@@ -173,7 +174,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 vv) {
+            public boolean onTap(Vector3 vv) {
                 PauseScene.show();
                 return true;
             }
@@ -208,7 +209,7 @@ public class Controls {
     public static Control addMoveButton(int x, int y, int width, int height, String imgName, final Actor actor,
             final float dx, final float dy) {
         final Control c = new Control(imgName, x, y, width, height);
-        c.mGestureAction = new Util.GestureAction() {
+        c.mGestureAction = new GestureAction() {
 
             /**
              * Run this when a control is down-pressed or up-pressed
@@ -217,7 +218,7 @@ public class Controls {
              *            True if it is an up-press
              */
             @Override
-            boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
                     Vector2 v = actor.mBody.getLinearVelocity();
                     if (dx != 0)
@@ -234,7 +235,7 @@ public class Controls {
         };
         Lol.sGame.mCurrentLevel.mControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -377,14 +378,14 @@ public class Controls {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
                 mHolding = !isUp;
                 return true;
             }
         };
         Lol.sGame.mCurrentLevel.mControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -428,16 +429,16 @@ public class Controls {
     public static Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
             final float rateX, final float rateY, final float dampening, final Actor actor) {
         final Control c = new Control(imgName, x, y, width, height);
-        c.mGestureAction = new Util.GestureAction() {
+        c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean isUp, Vector3 vv) {
+            public boolean toggle(boolean isUp, Vector3 vv) {
                 mHolding = !isUp;
                 return true;
             }
         };
         Lol.sGame.mCurrentLevel.mControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -476,7 +477,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean upPress, Vector3 touchVec) {
+            public boolean toggle(boolean upPress, Vector3 touchVec) {
                 if (upPress)
                     h.crawlOff();
                 else
@@ -510,7 +511,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 vv) {
+            public boolean onTap(Vector3 vv) {
                 h.jump();
                 return true;
             }
@@ -557,14 +558,14 @@ public class Controls {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
                 mHolding = !isUp;
                 return true;
             }
         };
         Lol.sGame.mCurrentLevel.mControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -616,7 +617,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 vv) {
+            public boolean onTap(Vector3 vv) {
                 Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
@@ -665,7 +666,7 @@ public class Controls {
         final Vector3 v = new Vector3();
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
                     mHolding = false;
                 } else {
@@ -678,7 +679,7 @@ public class Controls {
             }
 
             @Override
-            boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
                 v.x = touchVec.x;
                 v.y = touchVec.y;
                 v.z = touchVec.z;
@@ -690,7 +691,7 @@ public class Controls {
         // direction
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
         Lol.sGame.mCurrentLevel.mPanControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -739,7 +740,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 touchVec) {
+            public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, touchVec.x,
                         touchVec.y, h, offsetX, offsetY);
                 return true;
@@ -772,7 +773,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 worldTouchCoord) {
+            public boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     Lol.sGame.mCurrentLevel.mGameCam.zoom *= 2;
@@ -807,7 +808,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 worldTouchCoord) {
+            public boolean onTap(Vector3 worldTouchCoord) {
                 float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 if (curzoom > minZoom) {
                     Lol.sGame.mCurrentLevel.mGameCam.zoom /= 2;
@@ -843,14 +844,14 @@ public class Controls {
         final Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
                 mHolding = !isUp;
                 return true;
             }
         };
         Lol.sGame.mCurrentLevel.mControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding)
@@ -882,7 +883,7 @@ public class Controls {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 vv) {
+            public boolean onTap(Vector3 vv) {
                 callback.onEvent();
                 return true;
             }
@@ -917,7 +918,7 @@ public class Controls {
         final Control c = new Control(activeImgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            boolean onTap(Vector3 vv) {
+            public boolean onTap(Vector3 vv) {
                 callback.onEvent();
                 c.mIsTouchable = false;
                 TextureRegion[] trs = Media.getImage(inactiveImgName);
@@ -967,7 +968,7 @@ public class Controls {
              *            The x/y/z coordinates of the touch
              */
             @Override
-            boolean onPanStop(Vector3 touchVec) {
+            public boolean onPanStop(Vector3 touchVec) {
                 Level.setCameraChase(oldChaseactor);
                 oldChaseactor = null;
                 return true;
@@ -1171,7 +1172,7 @@ public class Controls {
              * This is a touchable control...
              */
             @Override
-            boolean onTap(Vector3 v) {
+            public boolean onTap(Vector3 v) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
                 callback.onEvent();
@@ -1238,7 +1239,7 @@ public class Controls {
              * This is a touchable control...
              */
             @Override
-            boolean onTap(Vector3 v) {
+            public boolean onTap(Vector3 v) {
                 if (!c.mIsActive)
                     return false;
                 callback.onEvent();

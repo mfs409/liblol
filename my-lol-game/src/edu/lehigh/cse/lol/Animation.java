@@ -49,30 +49,30 @@ public class Animation {
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
      */
-    final TextureRegion[] mCells;
+    public final TextureRegion[] mCells;
 
     /**
      * This array holds the indices that should be displayed.
      */
-    int[] mFrames;
+    public int[] mFrames;
 
     /**
      * This array holds the durations for which each of the indices should be
      * displayed
      */
-    long[] mDurations;
+    public long[] mDurations;
 
     /**
      * Should the animation repeat?
      */
-    final boolean mLoop;
+    public final boolean mLoop;
 
     /**
      * The next available position in the frames and durations arrays. Note that
      * frames and durations should have the same length, and the same number of
      * entries.
      */
-    int mNextCell;
+    public int mNextCell;
 
     /*
      * PUBLIC INTERFACE

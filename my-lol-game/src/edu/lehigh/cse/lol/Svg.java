@@ -47,8 +47,8 @@ import java.io.IOException;
  * into a game. SVG line drawings can be made in Inkscape. In LOL, we do not use
  * line drawings to their full potential. We only use them to define a set of
  * invisible lines for a simple, stationary obstacle. You should draw a picture
- * on top of your line drawing, so that the player knows that there is a physics
- * entity on the screen.
+ * on top of your line drawing, so that the player knows that there is an actor
+ * on the screen.
  */
 public class Svg {
     /**
@@ -119,8 +119,8 @@ public class Svg {
      * with the SVG won't enable it to re-jump. This class is a very lightweight
      * actor that serves our need.
      */
-    class SVGSprite extends Actor {
-        SVGSprite(String imgName, float width, float height) {
+    class SVGActor extends Actor {
+        SVGActor(String imgName, float width, float height) {
             super(imgName, width, height);
         }
 
@@ -309,7 +309,7 @@ public class Svg {
      * logic from the logic for actually drawing lines
      * 
      * There are two challenges. The first is that an SVG deals with pixels,
-     * whereas we like to draw physics sprites in meters. This matters because
+     * whereas we like to draw actors in meters. This matters because
      * user translations will be in meters, but SVG points and SVG translations
      * will be in pixels.
      * 
@@ -388,10 +388,10 @@ public class Svg {
 
         // connect it to an invisible actor, so that collision callbacks
         // will work (i.e., for inAir)
-        SVGSprite invis = new SVGSprite("", len, .1f);
+        SVGActor invis = new SVGActor("", len, .1f);
         invis.mBody = b;
         b.setUserData(invis);
-        // NB: we probably don't need to put the invisible sprite on the screen,
+        // NB: we probably don't need to put the invisible actor on the screen,
         // since we don't overload render()... this is invisible.
         Lol.sGame.mCurrentLevel.addActor(invis, 0);
     }

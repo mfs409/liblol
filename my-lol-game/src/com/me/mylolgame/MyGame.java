@@ -43,6 +43,8 @@ package com.me.mylolgame;
 // TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
 // TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
 // TODO: finger chase that is restricted to X or Y dimension
+// TODO: refactor controls to control and displays to display?
+// TODO: remove statics from Util, Facts, Media?
 
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;

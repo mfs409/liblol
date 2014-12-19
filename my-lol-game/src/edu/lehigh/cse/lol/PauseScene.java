@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -37,7 +39,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.ArrayList;
+import edu.lehigh.cse.lol.internals.Renderable;
 
 /**
  * PauseScene provides a way to suspend gameplay briefly and display information
@@ -64,7 +66,7 @@ public class PauseScene {
     /**
      * All text and images that go on the PauseScreen are stored here
      */
-    private final ArrayList<Util.Renderable> mSprites = new ArrayList<Util.Renderable>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * Track if the PauseScene is visible. Initially it is not.
@@ -166,7 +168,7 @@ public class PauseScene {
         Lol.sGame.mCurrentLevel.mHudCam.update();
         sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
-        for (Util.Renderable r : mSprites)
+        for (Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
 

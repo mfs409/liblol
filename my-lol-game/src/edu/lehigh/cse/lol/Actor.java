@@ -50,6 +50,12 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.lol.internals.AnimationDriver;
+import edu.lehigh.cse.lol.internals.GestureAction;
+import edu.lehigh.cse.lol.internals.LolAction;
+import edu.lehigh.cse.lol.internals.Renderable;
+import edu.lehigh.cse.lol.internals.RouteDriver;
+
 /**
  * Actor is the base class upon which every game actor is built. Every actor has
  * a physics representation (rectangle, circle, or convex polygon). Actors
@@ -59,11 +65,11 @@ import com.badlogic.gdx.utils.Timer.Task;
  * A game should rarely deal with Actor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
-public abstract class Actor implements Util.Renderable {
+public abstract class Actor implements Renderable {
     /**
      * Physics body for this Actor
      */
-    Body mBody;
+    public Body mBody;
 
     /**
      * Track if the underlying body is a circle
@@ -95,13 +101,13 @@ public abstract class Actor implements Util.Renderable {
     /**
      * The dimensions of the Actor... x is width, y is height
      */
-    Vector2 mSize = new Vector2();
+    public Vector2 mSize = new Vector2();
 
     /**
      * Does this Actor follow a route? If so, the RouteDriver will be used to
      * advance the actor along its route.
      */
-    private Util.RouteDriver mRoute;
+    private RouteDriver mRoute;
 
     /**
      * Text that game designer can modify to hold additional information
@@ -112,7 +118,7 @@ public abstract class Actor implements Util.Renderable {
      * Some actors run custom code when they are touched. This is a reference to
      * the code to run.
      */
-    Util.GestureAction mGestureResponder;
+    GestureAction mGestureResponder;
 
     /**
      * When the camera follows the actor without centering on it, this gives us
@@ -156,7 +162,7 @@ public abstract class Actor implements Util.Renderable {
      * Animation support: this tracks the current state of the active animation
      * (if any)
      */
-    Util.AnimationDriver mAnimator;
+    AnimationDriver mAnimator;
 
     /**
      * Animation support: the cells of the default animation
@@ -256,7 +262,7 @@ public abstract class Actor implements Util.Renderable {
      *            The height
      */
     Actor(String imgName, float width, float height) {
-        mAnimator = new Util.AnimationDriver(imgName);
+        mAnimator = new AnimationDriver(imgName);
         mSize.x = width;
         mSize.y = height;
     }
@@ -798,7 +804,7 @@ public abstract class Actor implements Util.Renderable {
         final int[] touchCallbackActivation = new int[] { activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4 };
         // set the code to run on touch
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 // check if we've got enough goodies
@@ -824,7 +830,7 @@ public abstract class Actor implements Util.Renderable {
      *            The callback to run when the actor stops
      */
     public void setStopCallback(final LolCallback callback) {
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             boolean moving = false;
 
             @Override
@@ -877,7 +883,7 @@ public abstract class Actor implements Util.Renderable {
 
         // Create a RouteDriver to advance the actor's position according to
         // the route
-        mRoute = new Util.RouteDriver(route, velocity, loop, this);
+        mRoute = new RouteDriver(route, velocity, loop, this);
     }
 
     /**
@@ -906,7 +912,7 @@ public abstract class Actor implements Util.Renderable {
             mBody.setType(BodyType.KinematicBody);
         else
             mBody.setType(BodyType.DynamicBody);
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
             public boolean onDrag(Vector3 touchVec) {
                 mBody.setTransform(touchVec.x, touchVec.y, mBody.getAngle());
@@ -940,7 +946,7 @@ public abstract class Actor implements Util.Renderable {
         // convert threshold to nanoseconds
         final long deleteThreshold = deleteThresholdMillis;
         // set the code to run on touch
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             long mLastPokeTime;
             boolean mEnabled = true;
 
@@ -963,7 +969,7 @@ public abstract class Actor implements Util.Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the actor
-                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -996,7 +1002,7 @@ public abstract class Actor implements Util.Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
+        Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
                 // note: may need to disable hovering
@@ -1025,11 +1031,11 @@ public abstract class Actor implements Util.Renderable {
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1068,11 +1074,11 @@ public abstract class Actor implements Util.Renderable {
     public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1326,7 +1332,7 @@ public abstract class Actor implements Util.Renderable {
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (mHover == null)
@@ -1393,7 +1399,7 @@ public abstract class Actor implements Util.Renderable {
      */
     public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
             final float velocityY) {
-        mGestureResponder = new Util.GestureAction() {
+        mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
@@ -1449,7 +1455,7 @@ public abstract class Actor implements Util.Renderable {
     public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1504,7 +1510,7 @@ public abstract class Actor implements Util.Renderable {
             final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1538,7 +1544,7 @@ public abstract class Actor implements Util.Renderable {
      * in which it is traveling
      */
     public void setRotationByDirection() {
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // handle rotating the hero based on the direction it faces

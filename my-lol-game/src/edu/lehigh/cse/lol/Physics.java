@@ -39,6 +39,8 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
+import edu.lehigh.cse.lol.internals.LolAction;
+
 /**
  * Game designers can configure the physics of a level (i.e., the default
  * forces, if any), via this class. Internally, the class constructs a box2d
@@ -83,7 +85,7 @@ public class Physics {
             // the box2d step, so we need to make the joint in a callback that
             // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new Util.Action() {
+            Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
                 @Override
                 public void go() {
                     other.mBody.setLinearVelocity(0, 0);
@@ -164,7 +166,7 @@ public class Physics {
                 // you can't modify the world or its actors until the update
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
-                Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new Util.Action() {
+                Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
                     @Override
                     public void go() {
                         c0.onCollide(c1, contact);

@@ -51,6 +51,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
+import edu.lehigh.cse.lol.internals.GestureAction;
+import edu.lehigh.cse.lol.internals.LolAction;
+import edu.lehigh.cse.lol.internals.ParallaxCamera;
+import edu.lehigh.cse.lol.internals.Renderable;
+
 /**
  * A Level is an interactive portion of the game. Levels can be infinite, or
  * they can have an end goal. Level has two components. One is the part that is
@@ -110,7 +115,7 @@ public class Level extends ScreenAdapter {
                 }
             }
 
-            // check if we tapped an entity
+            // check if we tapped an actor
             mHitActor = null;
             mGameCam.unproject(mTouchVec.set(x, y, 0));
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
@@ -119,7 +124,7 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // is this a raw screen tap?
-            for (Util.GestureAction ga : mGestureResponders)
+            for (GestureAction ga : mGestureResponders)
                 if (ga.onTap(mTouchVec))
                     return true;
             return false;
@@ -139,7 +144,7 @@ public class Level extends ScreenAdapter {
         public boolean fling(float velocityX, float velocityY, int button) {
             // we only fling at the whole-level layer
             mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
+            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
                 if (ga.onFling(mTouchVec))
                     return true;
             }
@@ -172,7 +177,7 @@ public class Level extends ScreenAdapter {
 
             // did we pan the level?
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
+            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
                 if (ga.onPan(mTouchVec, deltaX, deltaY))
                     return true;
             }
@@ -205,7 +210,7 @@ public class Level extends ScreenAdapter {
 
             // handle panstop on level
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders)
+            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders)
                 if (ga.onPanStop(mTouchVec))
                     return true;
             return false;
@@ -270,8 +275,8 @@ public class Level extends ScreenAdapter {
                 }
             }
 
-            // check for sprite touch, by looking at gameCam coordinates... on
-            // touch, hitSprite will change
+            // check for actor touch, by looking at gameCam coordinates... on
+            // touch, hitActor will change
             mHitActor = null;
             mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
             mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
@@ -284,7 +289,7 @@ public class Level extends ScreenAdapter {
                 return true;
 
             // forward to the level's handler
-            for (Util.GestureAction ga : mGestureResponders)
+            for (GestureAction ga : mGestureResponders)
                 if (ga.onDown(mTouchVec))
                     return true;
             return false;
@@ -330,7 +335,7 @@ public class Level extends ScreenAdapter {
                 mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                 return mHitActor.mGestureResponder.onDrag(mTouchVec);
             }
-            for (Util.GestureAction ga : mGestureResponders)
+            for (GestureAction ga : mGestureResponders)
                 if (ga.onDrag(mTouchVec))
                     return true;
             return false;
@@ -358,7 +363,7 @@ public class Level extends ScreenAdapter {
     Tilt mTilt = new Tilt();
 
     /**
-     * The physics world in which all entities interact
+     * The physics world in which all actors interact
      */
     World mWorld;
 
@@ -383,9 +388,10 @@ public class Level extends ScreenAdapter {
     PauseScene mPauseScene;
 
     /**
-     * All the sprites, in 5 planes. We draw them as planes -2, -1, 0, 1, 2
+     * All the things that can be rendered, in 5 planes. We draw them as planes
+     * -2, -1, 0, 1, 2
      */
-    private final ArrayList<ArrayList<Util.Renderable>> mSprites = new ArrayList<ArrayList<Util.Renderable>>(5);
+    private final ArrayList<ArrayList<Renderable>> mRenderables = new ArrayList<ArrayList<Renderable>>(5);
 
     /**
      * Input Controls
@@ -420,21 +426,21 @@ public class Level extends ScreenAdapter {
     /**
      * Events that get processed on the next render, then discarded
      */
-    ArrayList<Util.Action> mOneTimeEvents = new ArrayList<Util.Action>();
+    ArrayList<LolAction> mOneTimeEvents = new ArrayList<LolAction>();
 
     /**
      * When the level is won or lost, this is where we store the event that
      * needs to run
      */
-    Util.Action mEndGameEvent;
+    LolAction mEndGameEvent;
 
     /**
      * Events that get processed on every render
      */
-    ArrayList<Util.Action> mRepeatEvents = new ArrayList<Util.Action>();
+    ArrayList<LolAction> mRepeatEvents = new ArrayList<LolAction>();
 
     /**
-     * This camera is for drawing entities that exist in the physics world
+     * This camera is for drawing actors that exist in the physics world
      */
     OrthographicCamera mGameCam;
 
@@ -446,10 +452,10 @@ public class Level extends ScreenAdapter {
     /**
      * This camera is for drawing parallax backgrounds that go behind the world
      */
-    Util.ParallaxCamera mBgCam;
+    ParallaxCamera mBgCam;
 
     /**
-     * This is the sprite that the camera chases
+     * This is the Actor that the camera chases
      */
     Actor mChaseActor;
 
@@ -464,17 +470,17 @@ public class Level extends ScreenAdapter {
     int mCamBoundY;
 
     /**
-     * The debug renderer, for printing circles and boxes for each entity
+     * The debug renderer, for printing circles and boxes for each actor
      */
     private final Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
 
     /**
-     * The spritebatch for drawing all texture regions and fonts
+     * The SpriteBatch for drawing all texture regions and fonts
      */
     private final SpriteBatch mSpriteBatch = new SpriteBatch();
 
     /**
-     * The debug shape renderer, for putting boxes around HUD entities
+     * The debug shape renderer, for putting boxes around Controls and Displays
      */
     private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
@@ -485,21 +491,21 @@ public class Level extends ScreenAdapter {
     private final Vector3 mTouchVec = new Vector3();
 
     /**
-     * When there is a touch of an entity in the physics world, this is how we
+     * When there is a touch of an actor in the physics world, this is how we
      * find it
      */
     Actor mHitActor = null;
 
     /**
-     * This callback is used to get a touched entity from the physics world
+     * This callback is used to get a touched actor from the physics world
      */
     private QueryCallback mTouchCallback;
 
     /**
-     * Entities may need to set callbacks to run on a screen touch. If so, they
+     * actors may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
-    ArrayList<Util.GestureAction> mGestureResponders = new ArrayList<Util.GestureAction>();
+    ArrayList<GestureAction> mGestureResponders = new ArrayList<GestureAction>();
 
     /**
      * In levels with a projectile pool, the pool is accessed from here
@@ -564,13 +570,13 @@ public class Level extends ScreenAdapter {
         mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
         // the background camera is like the hudcam
-        mBgCam = new Util.ParallaxCamera(camWidth, camHeight);
+        mBgCam = new ParallaxCamera(camWidth, camHeight);
         mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
         mBgCam.zoom = 1;
 
-        // set up the sprite sets
+        // set up the renderables
         for (int i = 0; i < 5; ++i)
-            mSprites.add(new ArrayList<Util.Renderable>());
+            mRenderables.add(new ArrayList<Renderable>());
 
         // set up the callback for finding out who in the physics world was
         // touched
@@ -622,13 +628,13 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * If the camera is supposed to follow an entity, this code will handle
+     * If the camera is supposed to follow an actor, this code will handle
      * updating the camera position
      */
     private void adjustCamera() {
         if (mChaseActor == null)
             return;
-        // figure out the entity's position
+        // figure out the actor's position
         float x = mChaseActor.mBody.getWorldCenter().x + mChaseActor.mCameraOffset.x;
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
@@ -660,10 +666,10 @@ public class Level extends ScreenAdapter {
      *            The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
      *            default.
      */
-    void addActor(Util.Renderable actor, int zIndex) {
+    void addActor(Renderable actor, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        mSprites.get(zIndex + 2).add(actor);
+        mRenderables.get(zIndex + 2).add(actor);
     }
 
     /**
@@ -674,10 +680,10 @@ public class Level extends ScreenAdapter {
      * @param zIndex
      *            The z plane where it is expected to be
      */
-    void removeActor(Util.Renderable actor, int zIndex) {
+    void removeActor(Renderable actor, int zIndex) {
         assert zIndex >= -2;
         assert zIndex <= 2;
-        mSprites.get(zIndex + 2).remove(actor);
+        mRenderables.get(zIndex + 2).remove(actor);
     }
 
     /**
@@ -693,7 +699,7 @@ public class Level extends ScreenAdapter {
                 c.mGestureAction.toggle(true, touchVec);
             }
         }
-        for (Util.GestureAction ga : mGestureResponders) {
+        for (GestureAction ga : mGestureResponders) {
             ga.onPanStop(mTouchVec);
             ga.onUp(mTouchVec);
         }
@@ -753,12 +759,12 @@ public class Level extends ScreenAdapter {
 
         // now handle any events that occurred on account of the world movement
         // or screen touches
-        for (Util.Action pe : mOneTimeEvents)
+        for (LolAction pe : mOneTimeEvents)
             pe.go();
         mOneTimeEvents.clear();
 
         // handle repeat events
-        for (Util.Action pe : mRepeatEvents)
+        for (LolAction pe : mRepeatEvents)
             pe.go();
 
         // check for end of game
@@ -779,15 +785,15 @@ public class Level extends ScreenAdapter {
         // draw parallax backgrounds
         mBackground.renderLayers(mSpriteBatch);
 
-        // Render the entities in order from z=-2 through z=2
+        // Render the actors in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);
         mSpriteBatch.begin();
-        for (ArrayList<Util.Renderable> a : mSprites)
-            for (Util.Renderable r : a)
+        for (ArrayList<Renderable> a : mRenderables)
+            for (Renderable r : a)
                 r.render(mSpriteBatch, delta);
         mSpriteBatch.end();
 
-        // DEBUG: draw outlines of physics entities
+        // DEBUG: draw outlines of physics actors
         if (Lol.sGame.mShowDebugBoxes)
             mDebugRender.render(mWorld, mGameCam.combined);
 
@@ -855,14 +861,14 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Identify the entity that the camera should try to keep on screen at all
+     * Identify the actor that the camera should try to keep on screen at all
      * times
      * 
-     * @param ps
-     *            The entity the camera should chase
+     * @param actor
+     *            The actor the camera should chase
      */
-    public static void setCameraChase(Actor ps) {
-        Lol.sGame.mCurrentLevel.mChaseActor = ps;
+    public static void setCameraChase(Actor actor) {
+        Lol.sGame.mCurrentLevel.mChaseActor = actor;
     }
 
     /**
@@ -949,7 +955,7 @@ public class Level extends ScreenAdapter {
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
+        Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble

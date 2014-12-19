@@ -169,7 +169,7 @@ public class ProjectilePool {
         // is there an available projectile?
         if (mPool[mNextIndex].mVisible)
             return;
-        // get the next projectile, reset sensor, set sprite
+        // get the next projectile, reset sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
@@ -226,7 +226,7 @@ public class ProjectilePool {
         // is there an available projectile?
         if (mPool[mNextIndex].mVisible)
             return;
-        // get the next projectile, set sensor, set sprite
+        // get the next projectile, set sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
@@ -325,7 +325,7 @@ public class ProjectilePool {
 
     /**
      * Indicate that all projectiles should participate in collisions, rather
-     * than disappearing when they collide with other entities
+     * than disappearing when they collide with other actors
      */
     public static void enableCollisionsForProjectiles() {
         Lol.sGame.mCurrentLevel.mProjectilePool.mSensorProjectiles = false;

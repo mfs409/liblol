@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,7 +36,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import java.util.ArrayList;
+import edu.lehigh.cse.lol.internals.Renderable;
 
 /**
  * PreScene provides a way to put a pop-up on the screen before a level begins.
@@ -44,7 +46,7 @@ public class PreScene {
     /**
      * The text and pictures to display
      */
-    private final ArrayList<Util.Renderable> mSprites = new ArrayList<Util.Renderable>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<Renderable>();
 
     /**
      * True if we must click in order to clear the PreScene
@@ -132,7 +134,7 @@ public class PreScene {
         Lol.sGame.mCurrentLevel.mHudCam.update();
         sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
-        for (Util.Renderable r : mSprites)
+        for (Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
         return true;

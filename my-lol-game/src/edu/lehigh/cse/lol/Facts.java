@@ -45,35 +45,34 @@ import com.badlogic.gdx.Preferences;
  * of the object. Using Facts takes a bit more code, but in the end it's easier.
  */
 public class Facts {
-
     /**
      * Store string/integer pairs that get reset at the end of every level
      */
-    private static final TreeMap<String, Integer> mLevelFacts = new TreeMap<String, Integer>();
+    private static final TreeMap<String, Integer> sLevelFacts = new TreeMap<String, Integer>();
 
     /**
      * Store string/integer pairs that get reset whenever we restart the program
      */
-    private static final TreeMap<String, Integer> mSessionFacts = new TreeMap<String, Integer>();
+    private static final TreeMap<String, Integer> sSessionFacts = new TreeMap<String, Integer>();
 
     /**
      * Store Actors, so that we can get to them in callbacks
      */
-    private static final TreeMap<String, Actor> mLevelActors = new TreeMap<String, Actor>();
+    private static final TreeMap<String, Actor> sLevelActors = new TreeMap<String, Actor>();
 
     /**
      * Reset all per-level facts
      */
     static void resetLevelFacts() {
-        mLevelFacts.clear();
-        mLevelActors.clear();
+        sLevelFacts.clear();
+        sLevelActors.clear();
     }
 
     /**
      * Reset all per-session facts
      */
     static void resetSessionFacts() {
-        mSessionFacts.clear();
+        sSessionFacts.clear();
     }
 
     /**
@@ -87,7 +86,7 @@ public class Facts {
      * @return The integer value corresponding to the last value stored
      */
     public static int getLevelFact(String factName, int defaultVal) {
-        Integer i = mLevelFacts.get(factName);
+        Integer i = sLevelFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -105,7 +104,7 @@ public class Facts {
      *            The integer value that is the fact being saved
      */
     public static void putLevelFact(String factName, int factValue) {
-        mLevelFacts.put(factName, factValue);
+        sLevelFacts.put(factName, factValue);
     }
 
     /**
@@ -119,7 +118,7 @@ public class Facts {
      * @return The integer value corresponding to the last value stored
      */
     public static int getSessionFact(String factName, int defaultVal) {
-        Integer i = mSessionFacts.get(factName);
+        Integer i = sSessionFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -137,7 +136,7 @@ public class Facts {
      *            The integer value that is the fact being saved
      */
     public static void putSessionFact(String factName, int factValue) {
-        mSessionFacts.put(factName, factValue);
+        sSessionFacts.put(factName, factValue);
     }
 
     /**
@@ -179,7 +178,7 @@ public class Facts {
      * @return The last Actor stored with this name
      */
     public static Actor getLevelActor(String actorName) {
-        Actor actor = mLevelActors.get(actorName);
+        Actor actor = sLevelActors.get(actorName);
         if (actor == null) {
             Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -197,6 +196,6 @@ public class Facts {
      *            The Actor that is the fact being saved
      */
     public static void putLevelActor(String actorName, Actor actor) {
-        mLevelActors.put(actorName, actor);
+        sLevelActors.put(actorName, actor);
     }
 }
