@@ -157,21 +157,21 @@ public class Displays {
      */
     public static Display addCountdown(final float timeout, final String text, final int x, final int y,
             String fontName, final int red, final int green, final int blue, int size) {
-        Level.sCurrent.mScore.mCountDownRemaining = timeout;
+        Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining = timeout;
         Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
-                if (Level.sCurrent.mScore.mCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mCountDownRemaining, mFont, sb);
+                Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
+                if (Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining > 0) {
+                    drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
                 } else {
                     PostScene.setDefaultLoseText(text);
-                    Level.sCurrent.mScore.endLevel(false);
+                    Lol.sGame.mCurrentLevel.mScore.endLevel(false);
                 }
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -203,7 +203,7 @@ public class Displays {
                 drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -246,20 +246,20 @@ public class Displays {
      */
     public static Display addWinCountdown(final float timeout, final int x, final int y, String fontName,
             final int red, final int green, final int blue, int size) {
-        Level.sCurrent.mScore.mWinCountRemaining = timeout;
+        Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining = timeout;
         Display d = new Display(red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-                if (Level.sCurrent.mScore.mWinCountRemaining > 0)
+                Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+                if (Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mWinCountRemaining, mFont, sb);
+                    drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining, mFont, sb);
                 else
-                    Level.sCurrent.mScore.endLevel(true);
+                    Lol.sGame.mCurrentLevel.mScore.endLevel(true);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -297,10 +297,10 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mGoodiesCollected[type - 1] + suffix, mFont, sb);
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -354,10 +354,10 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mEnemiesDefeated + suffix, mFont, sb);
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated + suffix, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -399,11 +399,11 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int) Level.sCurrent.mScore.mStopWatchProgress, mFont, sb);
+                Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+                drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -457,7 +457,7 @@ public class Displays {
                 drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -489,11 +489,11 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Level.sCurrent.mScore.mDistance = (int) actor.getXPosition();
-                drawTextTransposed(x, y, "" + Level.sCurrent.mScore.mDistance + text, mFont, sb);
+                Lol.sGame.mCurrentLevel.mScore.mDistance = (int) actor.getXPosition();
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mDistance + text, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -523,11 +523,11 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Level.sCurrent.mProjectilePool.mProjectilesRemaining + text, mFont,
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text, mFont,
                         sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -564,7 +564,7 @@ public class Displays {
                 drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -601,7 +601,7 @@ public class Displays {
                 drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 
@@ -638,7 +638,7 @@ public class Displays {
                 drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Level.sCurrent.mDisplays.add(d);
+        Lol.sGame.mCurrentLevel.mDisplays.add(d);
         return d;
     }
 }

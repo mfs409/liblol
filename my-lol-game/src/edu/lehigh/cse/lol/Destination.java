@@ -111,7 +111,7 @@ public class Destination extends Actor {
         Destination d = new Destination(width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
         d.setCollisionsEnabled(false);
-        Level.sCurrent.addActor(d, 0);
+        Lol.sGame.mCurrentLevel.addActor(d, 0);
         return d;
     }
 
@@ -135,7 +135,7 @@ public class Destination extends Actor {
         Destination d = new Destination(radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionsEnabled(false);
-        Level.sCurrent.addActor(d, 0);
+        Lol.sGame.mCurrentLevel.addActor(d, 0);
         return d;
     }
 

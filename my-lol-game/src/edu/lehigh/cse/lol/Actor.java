@@ -287,9 +287,9 @@ public abstract class Actor implements Util.Renderable {
             mBody.setType(BodyType.KinematicBody);
         // Clobber any joints, or this won't be able to move
         if (mDJoint != null) {
-            Level.sCurrent.mWorld.destroyJoint(mDJoint);
+            Lol.sGame.mCurrentLevel.mWorld.destroyJoint(mDJoint);
             mDJoint = null;
-            Level.sCurrent.mWorld.destroyJoint(mWJoint);
+            Lol.sGame.mCurrentLevel.mWorld.destroyJoint(mWJoint);
             mWJoint = null;
         }
         mBody.setLinearVelocity(x, y);
@@ -339,7 +339,7 @@ public abstract class Actor implements Util.Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
+        mBody = Lol.sGame.mCurrentLevel.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -398,7 +398,7 @@ public abstract class Actor implements Util.Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
+        mBody = Lol.sGame.mCurrentLevel.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -448,7 +448,7 @@ public abstract class Actor implements Util.Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = Level.sCurrent.mWorld.createBody(boxBodyDef);
+        mBody = Lol.sGame.mCurrentLevel.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -631,13 +631,13 @@ public abstract class Actor implements Util.Renderable {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (Level.sCurrent.mTilt.mAccelActors.contains(this))
+        if (Lol.sGame.mCurrentLevel.mTilt.mAccelActors.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mTilt.mAccelActors.add(this);
+        Lol.sGame.mCurrentLevel.mTilt.mAccelActors.add(this);
         // turn off sensor behavior, so this collides with stuff...
         setCollisionsEnabled(true);
     }
@@ -804,7 +804,7 @@ public abstract class Actor implements Util.Renderable {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= touchCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= touchCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
                 // if so, run the callback
                 if (match) {
                     if (disappear)
@@ -824,7 +824,7 @@ public abstract class Actor implements Util.Renderable {
      *            The callback to run when the actor stops
      */
     public void setStopCallback(final LolCallback callback) {
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             boolean moving = false;
 
             @Override
@@ -963,7 +963,7 @@ public abstract class Actor implements Util.Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the actor
-                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -996,11 +996,11 @@ public abstract class Actor implements Util.Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
+        Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
             @Override
             public boolean onFling(Vector3 touchVec) {
                 // note: may need to disable hovering
-                if (Level.sCurrent.mHitActor == Actor.this) {
+                if (Lol.sGame.mCurrentLevel.mHitActor == Actor.this) {
                     mHover = null;
                     updateVelocity((touchVec.x) * dampFactor, (touchVec.y) * dampFactor);
                 }
@@ -1029,7 +1029,7 @@ public abstract class Actor implements Util.Renderable {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1072,7 +1072,7 @@ public abstract class Actor implements Util.Renderable {
             @Override
             public boolean onTap(Vector3 touchVec) {
                 Lol.sGame.vibrate(5);
-                Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
+                Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
                     boolean mEnabled = true;
 
                     @Override
@@ -1326,7 +1326,7 @@ public abstract class Actor implements Util.Renderable {
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (mHover == null)
@@ -1334,7 +1334,7 @@ public abstract class Actor implements Util.Renderable {
                 mHover.x = x;
                 mHover.y = y;
                 mHover.z = 0;
-                Level.sCurrent.mGameCam.unproject(mHover);
+                Lol.sGame.mCurrentLevel.mGameCam.unproject(mHover);
                 mBody.setTransform(mHover.x, mHover.y, mBody.getAngle());
             }
         });
@@ -1396,7 +1396,7 @@ public abstract class Actor implements Util.Renderable {
         mGestureResponder = new Util.GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
@@ -1449,7 +1449,7 @@ public abstract class Actor implements Util.Renderable {
     public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1504,7 +1504,7 @@ public abstract class Actor implements Util.Renderable {
             final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1538,7 +1538,7 @@ public abstract class Actor implements Util.Renderable {
      * in which it is traveling
      */
     public void setRotationByDirection() {
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 // handle rotating the hero based on the direction it faces
@@ -1561,9 +1561,9 @@ public abstract class Actor implements Util.Renderable {
     public void setZIndex(int zIndex) {
         assert (zIndex <= 2);
         assert (zIndex >= -2);
-        Level.sCurrent.removeActor(this, mZIndex);
+        Lol.sGame.mCurrentLevel.removeActor(this, mZIndex);
         mZIndex = zIndex;
-        Level.sCurrent.addActor(this, mZIndex);
+        Lol.sGame.mCurrentLevel.addActor(this, mZIndex);
     }
 
     /**
@@ -1599,7 +1599,7 @@ public abstract class Actor implements Util.Renderable {
         mRevJointDef.collideConnected = false;
         mRevJointDef.referenceAngle = 0;
         mRevJointDef.enableLimit = false;
-        mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+        mRevJoint = Lol.sGame.mCurrentLevel.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1614,11 +1614,11 @@ public abstract class Actor implements Util.Renderable {
     public void setRevoluteJointMotor(float motorSpeed, float motorTorque) {
         // destroy the previously created joint, change the definition,
         // re-create the joint
-        Level.sCurrent.mWorld.destroyJoint(mRevJoint);
+        Lol.sGame.mCurrentLevel.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.enableMotor = true;
         mRevJointDef.motorSpeed = motorSpeed;
         mRevJointDef.maxMotorTorque = motorTorque;
-        mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+        mRevJoint = Lol.sGame.mCurrentLevel.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1632,11 +1632,11 @@ public abstract class Actor implements Util.Renderable {
     public void setRevoluteJointLimits(float upper, float lower) {
         // destroy the previously created joint, change the definition,
         // re-create the joint
-        Level.sCurrent.mWorld.destroyJoint(mRevJoint);
+        Lol.sGame.mCurrentLevel.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.upperAngle = upper;
         mRevJointDef.lowerAngle = lower;
         mRevJointDef.enableLimit = true;
-        mRevJoint = Level.sCurrent.mWorld.createJoint(mRevJointDef);
+        mRevJoint = Lol.sGame.mCurrentLevel.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1668,7 +1668,7 @@ public abstract class Actor implements Util.Renderable {
         w.localAnchorB.set(otherX, otherY);
         w.referenceAngle = angle;
         w.collideConnected = false;
-        mExplicitWeldJoint = (WeldJoint) Level.sCurrent.mWorld.createJoint(w);
+        mExplicitWeldJoint = (WeldJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(w);
     }
 
     /**
@@ -1703,7 +1703,7 @@ public abstract class Actor implements Util.Renderable {
         mDistJointDef.dampingRatio = 0.1f;
         mDistJointDef.frequencyHz = 2;
 
-        mDistJoint = Level.sCurrent.mWorld.createJoint(mDistJointDef);
+        mDistJoint = Lol.sGame.mCurrentLevel.mWorld.createJoint(mDistJointDef);
     }
 
     /**

@@ -89,7 +89,7 @@ public class Enemy extends Actor {
      */
     protected Enemy(float width, float height, String imgName) {
         super(imgName, width, height);
-        Level.sCurrent.mScore.mEnemiesCreated++;
+        Lol.sGame.mCurrentLevel.mScore.mEnemiesCreated++;
     }
 
     /**
@@ -173,7 +173,7 @@ public class Enemy extends Actor {
     public static Enemy makeAsBox(float x, float y, float width, float height, String imgName) {
         Enemy e = new Enemy(width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level.sCurrent.addActor(e, 0);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
         return e;
     }
 
@@ -196,7 +196,7 @@ public class Enemy extends Actor {
         float radius = Math.max(width, height);
         Enemy e = new Enemy(radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level.sCurrent.addActor(e, 0);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
         return e;
     }
 
@@ -237,7 +237,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            Level.sCurrent.mScore.onDefeatEnemy();
+            Lol.sGame.mCurrentLevel.mScore.onDefeatEnemy();
 
         // handle defeat callbacks
         if (mDefeatCallback != null)

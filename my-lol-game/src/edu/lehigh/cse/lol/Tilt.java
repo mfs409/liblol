@@ -172,7 +172,7 @@ public class Tilt {
      *            Max Y force that the accelerometer can produce
      */
     public static void enable(float xGravityMax, float yGravityMax) {
-        Level.sCurrent.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+        Lol.sGame.mCurrentLevel.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
@@ -186,7 +186,7 @@ public class Tilt {
      *            of the phone directly sets velocities
      */
     public static void setAsVelocity(boolean toggle) {
-        Level.sCurrent.mTilt.mTiltVelocityOverride = toggle;
+        Lol.sGame.mCurrentLevel.mTilt.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -199,6 +199,6 @@ public class Tilt {
      *            accelerometer less sensitive
      */
     public static void setGravityMultiplier(float multiplier) {
-        Level.sCurrent.mTilt.mMultiplier = multiplier;
+        Lol.sGame.mCurrentLevel.mTilt.mMultiplier = multiplier;
     }
 }

@@ -147,7 +147,7 @@ public class Obstacle extends Actor {
     public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Level.sCurrent.addActor(o, 0);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
         return o;
     }
 
@@ -172,7 +172,7 @@ public class Obstacle extends Actor {
     public static Obstacle makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Level.sCurrent.addActor(o, 0);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
         return o;
     }
 
@@ -195,7 +195,7 @@ public class Obstacle extends Actor {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Level.sCurrent.addActor(o, 0);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
         return o;
     }
 
@@ -316,7 +316,7 @@ public class Obstacle extends Actor {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                        match &= counts[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
@@ -374,7 +374,7 @@ public class Obstacle extends Actor {
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= enemyCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
@@ -425,7 +425,7 @@ public class Obstacle extends Actor {
             public void go(Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= Level.sCurrent.mScore.mGoodiesCollected[i];
+                    match &= projectileCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     callback.mAttachedActor = Obstacle.this;
                     callback.mCollideActor = ps;

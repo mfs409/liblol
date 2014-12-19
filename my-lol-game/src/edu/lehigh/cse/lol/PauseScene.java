@@ -111,11 +111,11 @@ public class PauseScene {
      * @return The current PauseScene
      */
     private static PauseScene getCurrPauseScene() {
-        PauseScene ps = Level.sCurrent.mPauseScene;
+        PauseScene ps = Lol.sGame.mCurrentLevel.mPauseScene;
         if (ps != null)
             return ps;
         ps = new PauseScene();
-        Level.sCurrent.mPauseScene = ps;
+        Lol.sGame.mCurrentLevel.mPauseScene = ps;
         return ps;
     }
 
@@ -125,7 +125,7 @@ public class PauseScene {
      */
     void onTap(float x, float y) {
         // check if it's to the 'back to chooser' button
-        Level.sCurrent.mHudCam.unproject(mV.set(x, y, 0));
+        Lol.sGame.mCurrentLevel.mHudCam.unproject(mV.set(x, y, 0));
         if (mBackRectangle != null && mBackRectangle.contains(mV.x, mV.y)) {
             mVisible = false;
             Lol.sGame.handleBack();
@@ -141,7 +141,7 @@ public class PauseScene {
         }
 
         // swallow any clicks
-        Level.sCurrent.liftAllButtons(mV);
+        Lol.sGame.mCurrentLevel.liftAllButtons(mV);
 
         // only clear the screen if click supress is off
         if (!mSuppressClearClick)
@@ -163,8 +163,8 @@ public class PauseScene {
         // clear screen and draw sprites via HudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level.sCurrent.mHudCam.update();
-        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+        Lol.sGame.mCurrentLevel.mHudCam.update();
+        sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
         for (Util.Renderable r : mSprites)
             r.render(sb, 0);
@@ -172,7 +172,7 @@ public class PauseScene {
 
         // DEBUG: show where the buttons' boxes are
         if (Lol.sGame.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+            mShapeRender.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
             if (mBackRectangle != null)

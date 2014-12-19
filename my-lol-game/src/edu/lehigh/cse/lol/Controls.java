@@ -178,8 +178,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -232,9 +232,9 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -382,9 +382,9 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -435,9 +435,9 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -484,8 +484,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
         return c;
     }
 
@@ -515,8 +515,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -562,9 +562,9 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             long mLastThrow;
 
             @Override
@@ -573,7 +573,7 @@ public class Controls {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                        Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                     }
                 }
             }
@@ -617,12 +617,12 @@ public class Controls {
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 vv) {
-                Level.sCurrent.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -685,12 +685,12 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mPanControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mPanControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             long mLastThrow;
 
             @Override
@@ -699,7 +699,7 @@ public class Controls {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, v.x,
+                        Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, v.x,
                                 v.y, h, offsetX, offsetY);
                     }
                 }
@@ -740,13 +740,13 @@ public class Controls {
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 touchVec) {
-                Level.sCurrent.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, touchVec.x,
+                Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, touchVec.x,
                         touchVec.y, h, offsetX, offsetY);
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -773,16 +773,16 @@ public class Controls {
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = Level.sCurrent.mGameCam.zoom;
+                float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 if (curzoom < maxZoom) {
-                    Level.sCurrent.mGameCam.zoom *= 2;
-                    Level.sCurrent.mBgCam.zoom *= 2;
+                    Lol.sGame.mCurrentLevel.mGameCam.zoom *= 2;
+                    Lol.sGame.mCurrentLevel.mBgCam.zoom *= 2;
                 }
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -808,16 +808,16 @@ public class Controls {
         c.mGestureAction = new GestureAction() {
             @Override
             boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = Level.sCurrent.mGameCam.zoom;
+                float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 if (curzoom > minZoom) {
-                    Level.sCurrent.mGameCam.zoom /= 2;
-                    Level.sCurrent.mBgCam.zoom /= 2;
+                    Lol.sGame.mCurrentLevel.mGameCam.zoom /= 2;
+                    Lol.sGame.mCurrentLevel.mBgCam.zoom /= 2;
                 }
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -848,9 +848,9 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mToggleControls.add(c);
-        Level.sCurrent.mRepeatEvents.add(new Util.Action() {
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new Util.Action() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding)
@@ -887,8 +887,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -931,8 +931,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -987,21 +987,21 @@ public class Controls {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                if (Level.sCurrent.mChaseActor != null) {
-                    oldChaseactor = Level.sCurrent.mChaseActor;
-                    Level.sCurrent.mChaseActor = null;
+                if (Lol.sGame.mCurrentLevel.mChaseActor != null) {
+                    oldChaseactor = Lol.sGame.mCurrentLevel.mChaseActor;
+                    Lol.sGame.mCurrentLevel.mChaseActor = null;
                 }
-                float x = Level.sCurrent.mGameCam.position.x - deltaX * .1f * Level.sCurrent.mGameCam.zoom;
-                float y = Level.sCurrent.mGameCam.position.y + deltaY * .1f * Level.sCurrent.mGameCam.zoom;
+                float x = Lol.sGame.mCurrentLevel.mGameCam.position.x - deltaX * .1f * Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float y = Lol.sGame.mCurrentLevel.mGameCam.position.y + deltaY * .1f * Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > Level.sCurrent.mCamBoundX - Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom
+                if (x > Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    x = Level.sCurrent.mCamBoundX - Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom
+                    x = Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
-                if (y > Level.sCurrent.mCamBoundY - Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom
+                if (y > Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
                         / Physics.PIXEL_METER_RATIO / 2)
-                    y = Level.sCurrent.mCamBoundY - Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom
+                    y = Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
                             / Physics.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1009,17 +1009,17 @@ public class Controls {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight * Level.sCurrent.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
-                Level.sCurrent.mGameCam.position.set(x, y, 0);
+                Lol.sGame.mCurrentLevel.mGameCam.position.set(x, y, 0);
                 return true;
             }
         };
-        Level.sCurrent.mPanControls.add(c);
+        Lol.sGame.mCurrentLevel.mPanControls.add(c);
         return c;
     }
 
@@ -1055,7 +1055,7 @@ public class Controls {
              *            The x/y/z coordinates of the touch
              */
             public boolean onDown(Vector3 touchVec) {
-                lastZoom = Level.sCurrent.mGameCam.zoom;
+                lastZoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 return true;
             }
 
@@ -1072,11 +1072,11 @@ public class Controls {
                 float ratio = initialDistance / distance;
                 float newZoom = lastZoom * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
-                    Level.sCurrent.mGameCam.zoom = newZoom;
+                    Lol.sGame.mCurrentLevel.mGameCam.zoom = newZoom;
                 return false;
             }
         };
-        Level.sCurrent.mZoomControls.add(c);
+        Lol.sGame.mCurrentLevel.mZoomControls.add(c);
         return c;
     }
 
@@ -1179,8 +1179,8 @@ public class Controls {
             }
         };
         // add to hud
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -1245,8 +1245,8 @@ public class Controls {
                 return true;
             }
         };
-        Level.sCurrent.mControls.add(c);
-        Level.sCurrent.mTapControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mTapControls.add(c);
         return c;
     }
 
@@ -1268,7 +1268,7 @@ public class Controls {
     public static Control addImage(int x, int y, int width, int height, String imgName) {
         Control c = new Control(imgName, x, y, width, height);
         c.mIsTouchable = false;
-        Level.sCurrent.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mControls.add(c);
         return c;
     }
 }

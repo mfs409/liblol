@@ -287,7 +287,7 @@ public class ProjectilePool {
      *            Maximum distance from the hero that a projectile can travel
      */
     public static void setRange(float distance) {
-        for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
             p.mRange = distance;
     }
 
@@ -296,7 +296,7 @@ public class ProjectilePool {
      * they will be (more or less) immune to gravitational forces.
      */
     public static void setProjectileGravityOn() {
-        for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
             p.mBody.setGravityScale(1);
     }
 
@@ -307,9 +307,9 @@ public class ProjectilePool {
      *            This number indicates the number of cells
      */
     public static void setImageSource(String imgName) {
-        for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
             p.mAnimator.updateImage(imgName);
-        Level.sCurrent.mProjectilePool.mRandomizeImages = true;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mRandomizeImages = true;
     }
 
     /**
@@ -320,7 +320,7 @@ public class ProjectilePool {
      *            The value to multiply against the projectile speed.
      */
     public static void setProjectileVectorDampeningFactor(float factor) {
-        Level.sCurrent.mProjectilePool.mDirectionalDamp = factor;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mDirectionalDamp = factor;
     }
 
     /**
@@ -328,7 +328,7 @@ public class ProjectilePool {
      * than disappearing when they collide with other entities
      */
     public static void enableCollisionsForProjectiles() {
-        Level.sCurrent.mProjectilePool.mSensorProjectiles = false;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mSensorProjectiles = false;
     }
 
     /**
@@ -339,8 +339,8 @@ public class ProjectilePool {
      *            The magnitude of the velocity for projectiles
      */
     public static void setFixedVectorThrowVelocity(float velocity) {
-        Level.sCurrent.mProjectilePool.mEnableFixedVectorVelocity = true;
-        Level.sCurrent.mProjectilePool.mFixedVectorVelocity = velocity;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mEnableFixedVectorVelocity = true;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mFixedVectorVelocity = velocity;
     }
 
     /**
@@ -348,7 +348,7 @@ public class ProjectilePool {
      * rotated to face in their direction or movement
      */
     public static void setRotateVectorThrow() {
-        Level.sCurrent.mProjectilePool.mRotateVectorThrow = true;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mRotateVectorThrow = true;
     }
 
     /**
@@ -356,7 +356,7 @@ public class ProjectilePool {
      * screen
      */
     public static void setCollisionOk() {
-        for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
             p.mDisappearOnCollide = false;
     }
 
@@ -382,7 +382,7 @@ public class ProjectilePool {
      */
     public static void configure(int size, float width, float height, String imgName, int strength, int zIndex,
             boolean isCircle) {
-        Level.sCurrent.mProjectilePool = new ProjectilePool(size, width, height, imgName, strength, zIndex, isCircle);
+        Lol.sGame.mCurrentLevel.mProjectilePool = new ProjectilePool(size, width, height, imgName, strength, zIndex, isCircle);
     }
 
     /**
@@ -392,7 +392,7 @@ public class ProjectilePool {
      *            How many projectiles are available
      */
     public static void setNumberOfProjectiles(int number) {
-        Level.sCurrent.mProjectilePool.mProjectilesRemaining = number;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining = number;
     }
 
     /**
@@ -402,7 +402,7 @@ public class ProjectilePool {
      *            Name of the sound file to play
      */
     public static void setThrowSound(String soundName) {
-        Level.sCurrent.mProjectilePool.mThrowSound = Media.getSound(soundName);
+        Lol.sGame.mCurrentLevel.mProjectilePool.mThrowSound = Media.getSound(soundName);
     }
 
     /**
@@ -412,7 +412,7 @@ public class ProjectilePool {
      *            the name of the sound file to play
      */
     public static void setProjectileDisappearSound(String soundName) {
-        Level.sCurrent.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
+        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
     }
 
     /**
@@ -425,7 +425,7 @@ public class ProjectilePool {
      *            time to display each frame
      */
     public static void setAnimation(Animation a) {
-        for (Projectile p : Level.sCurrent.mProjectilePool.mPool)
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
             p.setDefaultAnimation(a);
     }
 }

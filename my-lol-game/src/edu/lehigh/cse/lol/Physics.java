@@ -83,18 +83,18 @@ public class Physics {
             // the box2d step, so we need to make the joint in a callback that
             // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            Level.sCurrent.mOneTimeEvents.add(new Util.Action() {
+            Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new Util.Action() {
                 @Override
                 public void go() {
                     other.mBody.setLinearVelocity(0, 0);
                     DistanceJointDef d = new DistanceJointDef();
                     d.initialize(sticky.mBody, other.mBody, v, v);
                     d.collideConnected = true;
-                    other.mDJoint = (DistanceJoint) Level.sCurrent.mWorld.createJoint(d);
+                    other.mDJoint = (DistanceJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(d);
                     WeldJointDef w = new WeldJointDef();
                     w.initialize(sticky.mBody, other.mBody, v);
                     w.collideConnected = true;
-                    other.mWJoint = (WeldJoint) Level.sCurrent.mWorld.createJoint(w);
+                    other.mWJoint = (WeldJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(w);
                 }
             });
         }
@@ -112,10 +112,10 @@ public class Physics {
      */
     public static void configure(float defaultXGravity, float defaultYGravity) {
         // create a world with gravity
-        Level.sCurrent.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        Lol.sGame.mCurrentLevel.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
         // set up the collision handlers
-        Level.sCurrent.mWorld.setContactListener(new ContactListener() {
+        Lol.sGame.mCurrentLevel.mWorld.setContactListener(new ContactListener() {
             /**
              * When two bodies start to collide, we can use this to forward to
              * our onCollide methods
@@ -164,7 +164,7 @@ public class Physics {
                 // you can't modify the world or its actors until the update
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
-                Level.sCurrent.mOneTimeEvents.add(new Util.Action() {
+                Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new Util.Action() {
                     @Override
                     public void go() {
                         c0.onCollide(c1, contact);

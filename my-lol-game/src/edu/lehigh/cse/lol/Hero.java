@@ -145,7 +145,7 @@ public class Hero extends Actor {
      */
     protected Hero(float width, float height, String imgName) {
         super(imgName, width, height);
-        Level.sCurrent.mScore.mHeroesCreated++;
+        Lol.sGame.mCurrentLevel.mScore.mHeroesCreated++;
     }
 
     /**
@@ -292,14 +292,14 @@ public class Hero extends Actor {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Level.sCurrent.mScore.mGoodiesCollected[i] >= d.mActivation[i];
+            match &= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && mVisible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
                 d.mArrivalSound.play(Facts.getGameFact("volume", 1));
-            Level.sCurrent.mScore.onDestinationArrive();
+            Lol.sGame.mCurrentLevel.mScore.onDestinationArrive();
         }
     }
 
@@ -314,9 +314,9 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            Level.sCurrent.mScore.defeatHero(e);
+            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Level.sCurrent.mScore.endLevel(false);
+                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
             return;
         }
         // handle hero invincibility
@@ -338,9 +338,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            Level.sCurrent.mScore.defeatHero(e);
+            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Level.sCurrent.mScore.endLevel(false);
+                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -413,7 +413,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        Level.sCurrent.mScore.onGoodieCollected(g);
+        Lol.sGame.mCurrentLevel.mScore.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);
@@ -450,7 +450,7 @@ public class Hero extends Actor {
     public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Level.sCurrent.addActor(h, 0);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
         return h;
     }
 
@@ -473,7 +473,7 @@ public class Hero extends Actor {
         float radius = Math.max(width, height);
         Hero h = new Hero(width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Level.sCurrent.addActor(h, 0);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
         return h;
     }
 

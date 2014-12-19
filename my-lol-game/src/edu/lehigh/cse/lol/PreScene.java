@@ -75,11 +75,11 @@ public class PreScene {
      * @return The current PreScene
      */
     private static PreScene getCurrPreScene() {
-        PreScene ps = Level.sCurrent.mPreScene;
+        PreScene ps = Lol.sGame.mCurrentLevel.mPreScene;
         if (ps != null)
             return ps;
         ps = new PreScene();
-        Level.sCurrent.mPreScene = ps;
+        Lol.sGame.mCurrentLevel.mPreScene = ps;
         // pause the timer
         Timer.instance().stop();
         ps.showingAt = System.currentTimeMillis();
@@ -98,7 +98,7 @@ public class PreScene {
             Timer.instance().delay(showTime);
             Timer.instance().start();
         }
-        Level.sCurrent.mPreScene.mVisible = false;
+        Lol.sGame.mCurrentLevel.mPreScene.mVisible = false;
     }
 
     /**
@@ -106,11 +106,11 @@ public class PreScene {
      * displayed
      */
     void onTap(float x, float y) {
-        Level.sCurrent.mHudCam.unproject(mV.set(x, y, 0));
+        Lol.sGame.mCurrentLevel.mHudCam.unproject(mV.set(x, y, 0));
         // hide the scene only if it's click-to-clear
         if (mVisible && mClickToClear) {
             hide();
-            Level.sCurrent.liftAllButtons(mV);
+            Lol.sGame.mCurrentLevel.liftAllButtons(mV);
         }
     }
 
@@ -129,8 +129,8 @@ public class PreScene {
         // clear screen and draw sprites... we can use the level's hudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level.sCurrent.mHudCam.update();
-        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+        Lol.sGame.mCurrentLevel.mHudCam.update();
+        sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
         for (Util.Renderable r : mSprites)
             r.render(sb, 0);

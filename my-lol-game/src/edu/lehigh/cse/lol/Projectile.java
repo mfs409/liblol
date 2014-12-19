@@ -91,7 +91,7 @@ public class Projectile extends Actor {
         mBody.setGravityScale(0);
         setCollisionsEnabled(false);
         disableRotation();
-        Level.sCurrent.addActor(this, zIndex);
+        Lol.sGame.mCurrentLevel.addActor(this, zIndex);
     }
 
     /**

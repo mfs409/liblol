@@ -82,6 +82,11 @@ public abstract class Lol extends Game {
      */
     boolean mKeyDown;
 
+    /**
+     * The current level being shown
+     */
+    Level mCurrentLevel;
+    
     /*
      * GAME CONFIGURATION VARIABLES
      * 
@@ -341,7 +346,7 @@ public abstract class Lol extends Game {
             sGame.mModeStates[i] = 1;
         sGame.mMode = SPLASH;
         sGame.mSplash.display(0);
-        sGame.setScreen(Level.sCurrent);
+        sGame.setScreen(sGame.mCurrentLevel);
     }
 
     /**
@@ -367,7 +372,7 @@ public abstract class Lol extends Game {
         sGame.mMode = CHOOSER;
         sGame.mModeStates[CHOOSER] = whichChooser;
         sGame.mChooser.display(whichChooser);
-        sGame.setScreen(Level.sCurrent);
+        sGame.setScreen(sGame.mCurrentLevel);
     }
 
     /**
@@ -380,7 +385,7 @@ public abstract class Lol extends Game {
         sGame.mModeStates[PLAY] = which;
         sGame.mMode = PLAY;
         sGame.mLevels.display(which);
-        sGame.setScreen(Level.sCurrent);
+        sGame.setScreen(sGame.mCurrentLevel);
     }
 
     /**
@@ -393,7 +398,7 @@ public abstract class Lol extends Game {
         sGame.mModeStates[HELP] = which;
         sGame.mMode = HELP;
         sGame.mHelp.display(which);
-        sGame.setScreen(Level.sCurrent);
+        sGame.setScreen(sGame.mCurrentLevel);
     }
 
     /**
@@ -406,7 +411,7 @@ public abstract class Lol extends Game {
         sGame.mModeStates[STORE] = which;
         sGame.mMode = STORE;
         sGame.mStore.display(which);
-        sGame.setScreen(Level.sCurrent);
+        sGame.setScreen(sGame.mCurrentLevel);
     }
 
     /**

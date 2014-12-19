@@ -105,11 +105,11 @@ public class PostScene {
      * @return The current PostScene
      */
     private static PostScene getCurrPostScene() {
-        PostScene ps = Level.sCurrent.mPostScene;
+        PostScene ps = Lol.sGame.mCurrentLevel.mPostScene;
         if (ps != null)
             return ps;
         ps = new PostScene();
-        Level.sCurrent.mPostScene = ps;
+        Lol.sGame.mCurrentLevel.mPostScene = ps;
         return ps;
     }
 
@@ -153,10 +153,10 @@ public class PostScene {
      */
     private void finish() {
         // we turn off music here, so that music plays during the PostScene
-        Level.sCurrent.stopMusic();
+        Lol.sGame.mCurrentLevel.stopMusic();
 
         // remove the previous level
-        Level.sCurrent = null;
+        Lol.sGame.mCurrentLevel = null;
 
         // repeat on loss, else go to next level (or chooser)
         if (!mWin) {
@@ -197,8 +197,8 @@ public class PostScene {
         // next we clear the color buffer and set the camera matrices
         Gdx.gl.glClearColor(0, 0, 0, 1); // NB: can change color here...
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Level.sCurrent.mHudCam.update();
-        sb.setProjectionMatrix(Level.sCurrent.mHudCam.combined);
+        Lol.sGame.mCurrentLevel.mHudCam.update();
+        sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
         sb.begin();
         for (Util.Renderable r : sprites)
             r.render(sb, 0);

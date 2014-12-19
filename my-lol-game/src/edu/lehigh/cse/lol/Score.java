@@ -209,8 +209,8 @@ public class Score {
      *            true if the level was won, false otherwise
      */
     void endLevel(final boolean win) {
-        if (Level.sCurrent.mEndGameEvent == null)
-            Level.sCurrent.mEndGameEvent = new Util.Action() {
+        if (Lol.sGame.mCurrentLevel.mEndGameEvent == null)
+            Lol.sGame.mCurrentLevel.mEndGameEvent = new Util.Action() {
                 @Override
                 public void go() {
                     // Safeguard: only call this method once per level
@@ -219,25 +219,25 @@ public class Score {
                     mGameOver = true;
 
                     // Run the level-complete callback
-                    if (win && Level.sCurrent.mWinCallback != null)
-                        Level.sCurrent.mWinCallback.onEvent();
-                    else if (!win && Level.sCurrent.mLoseCallback != null)
-                        Level.sCurrent.mLoseCallback.onEvent();
+                    if (win && Lol.sGame.mCurrentLevel.mWinCallback != null)
+                        Lol.sGame.mCurrentLevel.mWinCallback.onEvent();
+                    else if (!win && Lol.sGame.mCurrentLevel.mLoseCallback != null)
+                        Lol.sGame.mCurrentLevel.mLoseCallback.onEvent();
 
                     // if we won, unlock the next level
                     if (win && Facts.getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
                         Facts.putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
 
                     // drop everything from the hud
-                    Level.sCurrent.mControls.clear();
-                    Level.sCurrent.mDisplays.clear();
+                    Lol.sGame.mCurrentLevel.mControls.clear();
+                    Lol.sGame.mCurrentLevel.mDisplays.clear();
 
                     // clear any pending timers
                     Timer.instance().clear();
 
                     // display the PostScene, which provides a pause before we
                     // retry/start the next level
-                    Level.sCurrent.mPostScene.setWin(win);
+                    Lol.sGame.mCurrentLevel.mPostScene.setWin(win);
                 }
             };
     }
@@ -253,7 +253,7 @@ public class Score {
      *            The new value
      */
     public static void setGoodiesCollected1(int value) {
-        Level.sCurrent.mScore.mGoodiesCollected[0] = value;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0] = value;
     }
 
     /**
@@ -263,7 +263,7 @@ public class Score {
      *            The new value
      */
     public static void setGoodiesCollected2(int value) {
-        Level.sCurrent.mScore.mGoodiesCollected[1] = value;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1] = value;
     }
 
     /**
@@ -273,7 +273,7 @@ public class Score {
      *            The new value
      */
     public static void setGoodiesCollected3(int value) {
-        Level.sCurrent.mScore.mGoodiesCollected[2] = value;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2] = value;
     }
 
     /**
@@ -283,7 +283,7 @@ public class Score {
      *            The new value
      */
     public static void setGoodiesCollected4(int value) {
-        Level.sCurrent.mScore.mGoodiesCollected[3] = value;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3] = value;
     }
 
     /**
@@ -291,7 +291,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected1() {
-        Level.sCurrent.mScore.mGoodiesCollected[0]++;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0]++;
     }
 
     /**
@@ -299,7 +299,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected2() {
-        Level.sCurrent.mScore.mGoodiesCollected[1]++;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1]++;
     }
 
     /**
@@ -307,7 +307,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected3() {
-        Level.sCurrent.mScore.mGoodiesCollected[2]++;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2]++;
     }
 
     /**
@@ -315,7 +315,7 @@ public class Score {
      * collected.
      */
     public static void incrementGoodiesCollected4() {
-        Level.sCurrent.mScore.mGoodiesCollected[3]++;
+        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3]++;
     }
 
     /**
@@ -324,7 +324,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected1() {
-        return Level.sCurrent.mScore.mGoodiesCollected[0];
+        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0];
     }
 
     /**
@@ -333,7 +333,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected2() {
-        return Level.sCurrent.mScore.mGoodiesCollected[1];
+        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1];
     }
 
     /**
@@ -342,7 +342,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected3() {
-        return Level.sCurrent.mScore.mGoodiesCollected[2];
+        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2];
     }
 
     /**
@@ -351,7 +351,7 @@ public class Score {
      * @return The number of goodies collected.
      */
     public static int getGoodiesCollected4() {
-        return Level.sCurrent.mScore.mGoodiesCollected[3];
+        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3];
     }
 
     /**
@@ -360,8 +360,8 @@ public class Score {
      * defeat all enemies before more are are created.
      */
     static public void setVictoryEnemyCount() {
-        Level.sCurrent.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Level.sCurrent.mScore.mVictoryEnemyCount = -1;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = -1;
     }
 
     /**
@@ -371,8 +371,8 @@ public class Score {
      *            The number of enemies that must be defeated to win the level
      */
     static public void setVictoryEnemyCount(int howMany) {
-        Level.sCurrent.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Level.sCurrent.mScore.mVictoryEnemyCount = howMany;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = howMany;
     }
 
     /**
@@ -392,11 +392,11 @@ public class Score {
      *            level
      */
     static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        Level.sCurrent.mScore.mVictoryType = VictoryType.GOODIECOUNT;
-        Level.sCurrent.mScore.mVictoryGoodieCount[0] = v1;
-        Level.sCurrent.mScore.mVictoryGoodieCount[1] = v2;
-        Level.sCurrent.mScore.mVictoryGoodieCount[2] = v3;
-        Level.sCurrent.mScore.mVictoryGoodieCount[3] = v4;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.GOODIECOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[0] = v1;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[1] = v2;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[2] = v3;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[3] = v4;
     }
 
     /**
@@ -407,8 +407,8 @@ public class Score {
      *            Number of heroes that must reach destinations
      */
     static public void setVictoryDestination(int howMany) {
-        Level.sCurrent.mScore.mVictoryType = VictoryType.DESTINATION;
-        Level.sCurrent.mScore.mVictoryHeroCount = howMany;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.DESTINATION;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryHeroCount = howMany;
     }
 
     /**
@@ -418,28 +418,28 @@ public class Score {
      *            The amount of time to add before the timer expires
      */
     public static void updateTimerExpiration(float delta) {
-        Level.sCurrent.mScore.mCountDownRemaining += delta;
+        Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining += delta;
     }
 
     /**
      * Report the total distance the hero has traveled
      */
     public static int getDistance() {
-        return Level.sCurrent.mScore.mDistance;
+        return Lol.sGame.mCurrentLevel.mScore.mDistance;
     }
 
     /**
      * Report the stopwatch value
      */
     public static int getStopwatch() {
-        return (int) Level.sCurrent.mScore.mStopWatchProgress;
+        return (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress;
     }
 
     /**
      * Report the number of enemies that have been defeated
      */
     public static int getEnemiesDefeated() {
-        return Level.sCurrent.mScore.mEnemiesDefeated;
+        return Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated;
     }
 
     /**
@@ -449,7 +449,7 @@ public class Score {
      * game
      */
     public static void winLevel() {
-        Level.sCurrent.mScore.endLevel(true);
+        Lol.sGame.mCurrentLevel.mScore.endLevel(true);
     }
 
     /**
@@ -459,6 +459,6 @@ public class Score {
      * game
      */
     public static void loseLevel() {
-        Level.sCurrent.mScore.endLevel(false);
+        Lol.sGame.mCurrentLevel.mScore.endLevel(false);
     }
 }

@@ -375,7 +375,7 @@ public class Svg {
         float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         mBodyDef.position.set(centerX, centerY);
         mBodyDef.angle = 0;
-        Body b = Level.sCurrent.mWorld.createBody(mBodyDef);
+        Body b = Lol.sGame.mCurrentLevel.mWorld.createBody(mBodyDef);
         EdgeShape line = new EdgeShape();
 
         // set the line position as an offset from center, rotate it, and
@@ -393,7 +393,7 @@ public class Svg {
         b.setUserData(invis);
         // NB: we probably don't need to put the invisible sprite on the screen,
         // since we don't overload render()... this is invisible.
-        Level.sCurrent.addActor(invis, 0);
+        Lol.sGame.mCurrentLevel.addActor(invis, 0);
     }
 
     /**

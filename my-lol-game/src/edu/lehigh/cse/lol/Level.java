@@ -139,7 +139,7 @@ public class Level extends ScreenAdapter {
         public boolean fling(float velocityX, float velocityY, int button) {
             // we only fling at the whole-level layer
             mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders) {
+            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
                 if (ga.onFling(mTouchVec))
                     return true;
             }
@@ -172,7 +172,7 @@ public class Level extends ScreenAdapter {
 
             // did we pan the level?
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders) {
+            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
                 if (ga.onPan(mTouchVec, deltaX, deltaY))
                     return true;
             }
@@ -205,7 +205,7 @@ public class Level extends ScreenAdapter {
 
             // handle panstop on level
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (Util.GestureAction ga : Level.sCurrent.mGestureResponders)
+            for (Util.GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders)
                 if (ga.onPanStop(mTouchVec))
                     return true;
             return false;
@@ -496,14 +496,6 @@ public class Level extends ScreenAdapter {
     private QueryCallback mTouchCallback;
 
     /**
-     * The LOL interface requires that game designers don't have to construct
-     * Level manually. To make it work, we store the current Level here
-     * 
-     * TODO
-     */
-    static Level sCurrent;
-
-    /**
      * Entities may need to set callbacks to run on a screen touch. If so, they
      * can use this.
      */
@@ -548,8 +540,7 @@ public class Level extends ScreenAdapter {
         // reset the per-level object store
         Facts.resetLevelFacts();
 
-        // save the singleton and camera bounds
-        sCurrent = this;
+        // save the camera bounds
         mCamBoundX = width;
         mCamBoundY = height;
 
@@ -598,11 +589,6 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-
-        // When debug mode is on, print the frames per second
-        if (Lol.sGame.mShowDebugBoxes)
-            Displays.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                    Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, 12);
     }
 
     /**
@@ -757,7 +743,7 @@ public class Level extends ScreenAdapter {
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
-        Level.sCurrent.mTilt.handleTilt();
+        Lol.sGame.mCurrentLevel.mTilt.handleTilt();
 
         // Advance the physics world by 1/45 of a second.
         //
@@ -857,7 +843,15 @@ public class Level extends ScreenAdapter {
      *            height of the camera
      */
     public static void configure(int width, int height) {
-        sCurrent = new Level(width, height);
+        Lol.sGame.mCurrentLevel = new Level(width, height);
+
+        // When debug mode is on, print the frames per second. This is icky, but
+        // we need the singleton to be set before we call this, so we don't
+        // actually do it in the constructor...
+        if (Lol.sGame.mShowDebugBoxes)
+            Displays.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+                    Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, 12);
+
     }
 
     /**
@@ -868,7 +862,7 @@ public class Level extends ScreenAdapter {
      *            The entity the camera should chase
      */
     public static void setCameraChase(Actor ps) {
-        sCurrent.mChaseActor = ps;
+        Lol.sGame.mCurrentLevel.mChaseActor = ps;
     }
 
     /**
@@ -879,7 +873,7 @@ public class Level extends ScreenAdapter {
      */
     public static void setMusic(String musicName) {
         Music m = Media.getMusic(musicName);
-        sCurrent.mMusic = m;
+        Lol.sGame.mCurrentLevel.mMusic = m;
     }
 
     /**
@@ -895,7 +889,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level.sCurrent.mScore.mGameOver)
+                if (!Lol.sGame.mCurrentLevel.mScore.mGameOver)
                     callback.onEvent();
             }
         }, howLong);
@@ -915,7 +909,7 @@ public class Level extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Level.sCurrent.mScore.mGameOver)
+                if (!Lol.sGame.mCurrentLevel.mScore.mGameOver)
                     callback.onEvent();
             }
         }, howLong, interval);
@@ -955,7 +949,7 @@ public class Level extends ScreenAdapter {
             final boolean moveable, final int interval) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Level.sCurrent.mGestureResponders.add(new Util.GestureAction() {
+        Lol.sGame.mCurrentLevel.mGestureResponders.add(new Util.GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -1008,8 +1002,8 @@ public class Level extends ScreenAdapter {
      *            The amount of zoom (1 is no zoom, >1 zooms out)
      */
     public static void setZoom(float zoom) {
-        Level.sCurrent.mGameCam.zoom = zoom;
-        Level.sCurrent.mBgCam.zoom = zoom;
+        Lol.sGame.mCurrentLevel.mGameCam.zoom = zoom;
+        Lol.sGame.mCurrentLevel.mBgCam.zoom = zoom;
     }
 
     /**
@@ -1019,7 +1013,7 @@ public class Level extends ScreenAdapter {
      *            The code to run
      */
     public static void setWinCallback(LolCallback callback) {
-        Level.sCurrent.mWinCallback = callback;
+        Lol.sGame.mCurrentLevel.mWinCallback = callback;
     }
 
     /**
@@ -1029,6 +1023,6 @@ public class Level extends ScreenAdapter {
      *            The code to run
      */
     public static void setLoseCallback(LolCallback callback) {
-        Level.sCurrent.mLoseCallback = callback;
+        Lol.sGame.mCurrentLevel.mLoseCallback = callback;
     }
 }
