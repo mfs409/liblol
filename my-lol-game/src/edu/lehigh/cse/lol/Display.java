@@ -37,58 +37,47 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * level, the buttons and text can remain at the same place on the screen. This
  * class encapsulates all of the displayable text.
  */
-public class Displays {
+public class Display {
     /**
-     * This is for handling text that gets drawn on the HUD
+     * What color should we use to draw text
      */
-    abstract public static class Display {
-        /**
-         * What color should we use to draw text
-         */
-        Color mColor = new Color(0, 0, 0, 1);
+    Color mColor = new Color(0, 0, 0, 1);
 
-        /**
-         * The font object to use
-         */
-        BitmapFont mFont;
+    /**
+     * The font object to use
+     */
+    BitmapFont mFont;
 
-        /**
-         * The constructor keeps track of the text color, but that's it.
-         * 
-         * @param red
-         *            The red portion of text color (0-255)
-         * @param green
-         *            The green portion of text color (0-255)
-         * @param blue
-         *            The blue portion of text color (0-255)
-         * @param fontName
-         *            The name of the .ttf font file to use
-         * @param fontSize
-         *            The point size of the font
-         */
-        Display(int red, int green, int blue, String fontName, int fontSize) {
-            mColor.r = ((float) red) / 256;
-            mColor.g = ((float) green) / 256;
-            mColor.b = ((float) blue) / 256;
-            mFont = Media.getFont(fontName, fontSize);
-        }
-
-        /**
-         * Render the text. Since each control needs to get its text at the time
-         * it is rendered, we don't provide a default implementation.
-         * 
-         * @param sb
-         *            The SpriteBatch to use to draw the image
-         */
-        abstract void render(SpriteBatch sb);
+    /**
+     * The constructor keeps track of the text color, but that's it.
+     * 
+     * @param red
+     *            The red portion of text color (0-255)
+     * @param green
+     *            The green portion of text color (0-255)
+     * @param blue
+     *            The blue portion of text color (0-255)
+     * @param fontName
+     *            The name of the .ttf font file to use
+     * @param fontSize
+     *            The point size of the font
+     */
+    Display(int red, int green, int blue, String fontName, int fontSize) {
+        mColor.r = ((float) red) / 256;
+        mColor.g = ((float) green) / 256;
+        mColor.b = ((float) blue) / 256;
+        mFont = Media.getFont(fontName, fontSize);
     }
 
     /**
-     * Displays is a pure static class, and should never be constructed
-     * explicitly
+     * Render the text. Since each control needs to get its text at the time it
+     * is rendered, we don't provide a default implementation.
+     * 
+     * @param sb
+     *            The SpriteBatch to use to draw the image
      */
-    private Displays() {
-    }
+    void render(SpriteBatch sb) {
+    };
 
     /**
      * A helper method to draw text nicely. In GDX, we draw everything by giving
@@ -297,7 +286,8 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix, mFont, sb);
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix,
+                        mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -523,8 +513,8 @@ public class Displays {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text, mFont,
-                        sb);
+                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text,
+                        mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);

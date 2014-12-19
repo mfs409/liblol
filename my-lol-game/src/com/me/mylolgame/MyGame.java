@@ -36,14 +36,13 @@ package com.me.mylolgame;
 // TODO: verify chooser and level music stops on Android events
 // TODO: Hero animation sequences could use work... we can lose information (e.g., if invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
 // TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
-// TODO: make panning return to the chasesprite more nicely
+// TODO: make panning return to the chaseActor more nicely
 // TODO: verify tilt gets its directions correct on phones and tablets
 // TODO: make sure music stops when game quits (on phone)
 // TODO: in Level 83, play with timers to change direction of the rotating actor?
 // TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
 // TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
 // TODO: finger chase that is restricted to X or Y dimension
-// TODO: refactor controls to control and displays to display?
 // TODO: remove statics from Util, Facts, Media?
 
 import edu.lehigh.cse.lol.Lol;

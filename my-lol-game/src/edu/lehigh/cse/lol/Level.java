@@ -107,7 +107,7 @@ public class Level extends ScreenAdapter {
 
             // check if we tapped a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Controls.Control c : mTapControls) {
+            for (Control c : mTapControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onTap(mTouchVec);
@@ -167,7 +167,7 @@ public class Level extends ScreenAdapter {
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Controls.Control c : mPanControls) {
+            for (Control c : mPanControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPan(mTouchVec, deltaX, deltaY);
@@ -200,7 +200,7 @@ public class Level extends ScreenAdapter {
         public boolean panStop(float x, float y, int pointer, int button) {
             // check if we panStopped a control
             mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Controls.Control c : mPanControls) {
+            for (Control c : mPanControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPanStop(mTouchVec);
@@ -226,7 +226,7 @@ public class Level extends ScreenAdapter {
          */
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            for (Controls.Control c : mZoomControls) {
+            for (Control c : mZoomControls) {
                 if (c.mIsTouchable && c.mIsActive) {
                     c.mGestureAction.zoom(initialDistance, distance);
                     return true;
@@ -258,7 +258,7 @@ public class Level extends ScreenAdapter {
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Controls.Control c : mToggleControls) {
+            for (Control c : mToggleControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(false, mTouchVec);
@@ -267,7 +267,7 @@ public class Level extends ScreenAdapter {
             }
 
             // pass to pinch-zoom?
-            for (Controls.Control c : mZoomControls) {
+            for (Control c : mZoomControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.onDown(mTouchVec);
@@ -310,7 +310,7 @@ public class Level extends ScreenAdapter {
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
             mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Controls.Control c : mToggleControls) {
+            for (Control c : mToggleControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(true, mTouchVec);
@@ -396,32 +396,32 @@ public class Level extends ScreenAdapter {
     /**
      * Input Controls
      */
-    ArrayList<Controls.Control> mControls = new ArrayList<Controls.Control>();
+    ArrayList<Control> mControls = new ArrayList<Control>();
 
     /**
      * Output Displays
      */
-    ArrayList<Displays.Display> mDisplays = new ArrayList<Displays.Display>();
+    ArrayList<Display> mDisplays = new ArrayList<Display>();
 
     /**
      * Controls that have a tap event
      */
-    ArrayList<Controls.Control> mTapControls = new ArrayList<Controls.Control>();
+    ArrayList<Control> mTapControls = new ArrayList<Control>();
 
     /**
      * Controls that have a pan event
      */
-    ArrayList<Controls.Control> mPanControls = new ArrayList<Controls.Control>();
+    ArrayList<Control> mPanControls = new ArrayList<Control>();
 
     /**
      * Controls that have a pinch zoom event
      */
-    ArrayList<Controls.Control> mZoomControls = new ArrayList<Controls.Control>();
+    ArrayList<Control> mZoomControls = new ArrayList<Control>();
 
     /**
      * Toggle Controls
      */
-    ArrayList<Controls.Control> mToggleControls = new ArrayList<Controls.Control>();
+    ArrayList<Control> mToggleControls = new ArrayList<Control>();
 
     /**
      * Events that get processed on the next render, then discarded
@@ -694,7 +694,7 @@ public class Level extends ScreenAdapter {
      *            screen.
      */
     void liftAllButtons(Vector3 touchVec) {
-        for (Controls.Control c : mToggleControls) {
+        for (Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
                 c.mGestureAction.toggle(true, touchVec);
             }
@@ -801,10 +801,10 @@ public class Level extends ScreenAdapter {
         mHudCam.update();
         mSpriteBatch.setProjectionMatrix(mHudCam.combined);
         mSpriteBatch.begin();
-        for (Controls.Control c : mControls)
+        for (Control c : mControls)
             if (c.mIsActive)
                 c.render(mSpriteBatch);
-        for (Displays.Display d : mDisplays)
+        for (Display d : mDisplays)
             d.render(mSpriteBatch);
         mSpriteBatch.end();
 
@@ -813,7 +813,7 @@ public class Level extends ScreenAdapter {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            for (Controls.Control pe : mControls)
+            for (Control pe : mControls)
                 if (pe.mRange != null)
                     mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
             mShapeRender.end();
@@ -855,7 +855,7 @@ public class Level extends ScreenAdapter {
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (Lol.sGame.mShowDebugBoxes)
-            Displays.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
+            Display.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
                     Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, 12);
 
     }

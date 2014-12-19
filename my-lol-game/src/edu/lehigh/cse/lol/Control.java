@@ -42,116 +42,103 @@ import edu.lehigh.cse.lol.internals.LolAction;
  * level, the buttons and text can remain at the same place on the screen. This
  * class encapsulates all of the touchable buttons.
  */
-public class Controls {
+public class Control {
     /**
-     * This is for handling everything that gets drawn on the HUD, whether it is
-     * pressable or not
+     * Should we run code when this Control is touched?
      */
-    public static class Control {
-        /**
-         * Should we run code when this Control is touched?
-         */
-        boolean mIsTouchable;
+    boolean mIsTouchable;
 
-        /**
-         * Code to run when this Control is touched
-         */
-        GestureAction mGestureAction;
+    /**
+     * Code to run when this Control is touched
+     */
+    GestureAction mGestureAction;
 
-        /**
-         * The rectangle on the screen that is touchable
-         */
-        Rectangle mRange;
+    /**
+     * The rectangle on the screen that is touchable
+     */
+    Rectangle mRange;
 
-        /**
-         * For disabling a control and stopping its rendering
-         */
-        boolean mIsActive = true;
+    /**
+     * For disabling a control and stopping its rendering
+     */
+    boolean mIsActive = true;
 
-        /**
-         * What image should we display, if this Control has an image associated
-         * with it?
-         */
-        TextureRegion mImage;
+    /**
+     * What image should we display, if this Control has an image associated
+     * with it?
+     */
+    TextureRegion mImage;
 
-        /**
-         * Create a control on the heads up display
-         * 
-         * @param imgName
-         *            The name of the image to display. If "" is given as the
-         *            name, it will not crash.
-         * @param x
-         *            The X coordinate (in pixels) of the bottom left corner.
-         * @param y
-         *            The Y coordinate (in pixels) of the bottom left corner.
-         * @param width
-         *            The width of the Control
-         * @param height
-         *            The height of the Control
-         */
-        Control(String imgName, int x, int y, int width, int height) {
-            // set up the image to display
-            //
-            // NB: this will fail gracefully (no crash) for invalid file names
-            TextureRegion[] trs = Media.getImage(imgName);
-            if (trs != null)
-                mImage = trs[0];
+    /**
+     * Create a control on the heads up display
+     * 
+     * @param imgName
+     *            The name of the image to display. If "" is given as the name,
+     *            it will not crash.
+     * @param x
+     *            The X coordinate (in pixels) of the bottom left corner.
+     * @param y
+     *            The Y coordinate (in pixels) of the bottom left corner.
+     * @param width
+     *            The width of the Control
+     * @param height
+     *            The height of the Control
+     */
+    Control(String imgName, int x, int y, int width, int height) {
+        // set up the image to display
+        //
+        // NB: this will fail gracefully (no crash) for invalid file names
+        TextureRegion[] trs = Media.getImage(imgName);
+        if (trs != null)
+            mImage = trs[0];
 
-            // set up the touchable range for the image
-            mRange = new Rectangle(x, y, width, height);
-            mIsTouchable = true;
-        }
-
-        /**
-         * Render the control
-         * 
-         * @param sb
-         *            The SpriteBatch to use to draw the image
-         */
-        void render(SpriteBatch sb) {
-            if (mIsActive && mImage != null)
-                sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
-        }
-
-        /**
-         * Disable the control, so that it doesn't get displayed
-         */
-        public void setInactive() {
-            mIsActive = false;
-        }
-
-        /**
-         * Enable the control, so that it gets displayed again
-         */
-        public void setActive() {
-            mIsActive = true;
-        }
-
-        /**
-         * Disable touch for this control
-         */
-        public void disableTouch() {
-            mIsTouchable = false;
-        }
-
-        /**
-         * Enable touch for this control
-         */
-        public void enableTouch() {
-            mIsTouchable = true;
-        }
+        // set up the touchable range for the image
+        mRange = new Rectangle(x, y, width, height);
+        mIsTouchable = true;
     }
 
     /**
-     * Controls is a pure static class, and should never be constructed
-     * explicitly
+     * Render the control
+     * 
+     * @param sb
+     *            The SpriteBatch to use to draw the image
      */
-    private Controls() {
+    void render(SpriteBatch sb) {
+        if (mIsActive && mImage != null)
+            sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
     }
 
     /*
      * PUBLIC INTERFACE
      */
+
+    /**
+     * Disable the control, so that it doesn't get displayed
+     */
+    public void setInactive() {
+        mIsActive = false;
+    }
+
+    /**
+     * Enable the control, so that it gets displayed again
+     */
+    public void setActive() {
+        mIsActive = true;
+    }
+
+    /**
+     * Disable touch for this control
+     */
+    public void disableTouch() {
+        mIsTouchable = false;
+    }
+
+    /**
+     * Enable touch for this control
+     */
+    public void enableTouch() {
+        mIsTouchable = true;
+    }
 
     /**
      * Add a button that pauses the game (via a single tap) by causing a
@@ -700,8 +687,8 @@ public class Controls {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, v.x,
-                                v.y, h, offsetX, offsetY);
+                        Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                                h.mBody.getPosition().y, v.x, v.y, h, offsetX, offsetY);
                     }
                 }
             }
@@ -710,8 +697,8 @@ public class Controls {
     }
 
     /**
-     * This is almost exactly like addDirectionalThrowButton. The only difference is
-     * that holding won't cause the hero to throw more projectiles
+     * This is almost exactly like addDirectionalThrowButton. The only
+     * difference is that holding won't cause the hero to throw more projectiles
      * 
      * @param x
      *            The X coordinate of the bottom left corner (in pixels)
@@ -735,14 +722,14 @@ public class Controls {
      *            projectile and the bottom left of the hero throwing the
      *            projectile
      */
-    public static Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
-            final float offsetX, final float offsetY) {
+    public static Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName,
+            final Hero h, final float offsetX, final float offsetY) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y, touchVec.x,
-                        touchVec.y, h, offsetX, offsetY);
+                Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
+                        touchVec.x, touchVec.y, h, offsetX, offsetY);
                 return true;
             }
         };
@@ -879,7 +866,8 @@ public class Controls {
      * @param callback
      *            The code to run when the button is pressed
      */
-    public static Control addCallbackControl(int x, int y, int width, int height, String imgName, final LolCallback callback) {
+    public static Control addCallbackControl(int x, int y, int width, int height, String imgName,
+            final LolCallback callback) {
         Control c = new Control(imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
@@ -992,8 +980,10 @@ public class Controls {
                     oldChaseactor = Lol.sGame.mCurrentLevel.mChaseActor;
                     Lol.sGame.mCurrentLevel.mChaseActor = null;
                 }
-                float x = Lol.sGame.mCurrentLevel.mGameCam.position.x - deltaX * .1f * Lol.sGame.mCurrentLevel.mGameCam.zoom;
-                float y = Lol.sGame.mCurrentLevel.mGameCam.position.y + deltaY * .1f * Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float x = Lol.sGame.mCurrentLevel.mGameCam.position.x - deltaX * .1f
+                        * Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float y = Lol.sGame.mCurrentLevel.mGameCam.position.y + deltaY * .1f
+                        * Lol.sGame.mCurrentLevel.mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
                 if (x > Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
@@ -1151,8 +1141,9 @@ public class Controls {
                     return;
 
                 // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width, (height * (int) callback.mFloatVal) / 100,
-                        1, 1, 0, mTrueX, 0, mTrueWidth, (mTrueHeight * (int) callback.mFloatVal) / 100, false, true);
+                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width,
+                        (height * (int) callback.mFloatVal) / 100, 1, 1, 0, mTrueX, 0, mTrueWidth,
+                        (mTrueHeight * (int) callback.mFloatVal) / 100, false, true);
 
                 // don't keep showing anything if we've already received a
                 // touch...
