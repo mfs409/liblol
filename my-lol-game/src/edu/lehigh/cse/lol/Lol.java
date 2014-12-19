@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import java.util.TreeMap;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -86,7 +88,17 @@ public abstract class Lol extends Game {
      * The current level being shown
      */
     Level mCurrentLevel;
-    
+
+    /**
+     * Store string/integer pairs that get reset whenever we restart the program
+     */
+    final TreeMap<String, Integer> mSessionFacts = new TreeMap<String, Integer>();
+
+    /**
+     * Store all the images, sounds, and fonts for the game
+     */
+    Media mMedia;
+
     /*
      * GAME CONFIGURATION VARIABLES
      * 
@@ -260,12 +272,14 @@ public abstract class Lol extends Game {
     }
 
     /**
-     * The constructor just calls configure, so that all of our globals will be
-     * set. Doing it this early lets us access the configuration from within the
-     * LWJGL (Desktop) main class. That, in turn, lets us get the screen size
-     * correct (see the -desktop project's Java file).
+     * The constructor just creates a media object and calls configure, so that
+     * all of our globals will be set. Doing it this early lets us access the
+     * configuration from within the LWJGL (Desktop) main class. That, in turn,
+     * lets us get the screen size correct (see the desktop project's Java
+     * file).
      */
     public Lol() {
+        mMedia = new Media();
         configure();
     }
 

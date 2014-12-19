@@ -28,6 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -341,6 +342,16 @@ public class Level extends ScreenAdapter {
             return false;
         }
     }
+
+    /**
+     * Store string/integer pairs that get reset at the end of every level
+     */
+    final TreeMap<String, Integer> mLevelFacts = new TreeMap<String, Integer>();
+
+    /**
+     * Store Actors, so that we can get to them in callbacks
+     */
+    final TreeMap<String, Actor> mLevelActors = new TreeMap<String, Actor>();
 
     /**
      * The music, if any

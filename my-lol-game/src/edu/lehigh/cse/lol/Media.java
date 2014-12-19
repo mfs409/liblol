@@ -47,22 +47,22 @@ public class Media {
     /**
      * Store the fonts used by this game
      */
-    static private final TreeMap<String, BitmapFont> sFonts = new TreeMap<String, BitmapFont>();
+    private final TreeMap<String, BitmapFont> mFonts = new TreeMap<String, BitmapFont>();
 
     /**
      * Store the sounds used by this game
      */
-    static private final TreeMap<String, Sound> sSounds = new TreeMap<String, Sound>();
+    private final TreeMap<String, Sound> mSounds = new TreeMap<String, Sound>();
 
     /**
      * Store the music used by this game
      */
-    static private final TreeMap<String, Music> sTunes = new TreeMap<String, Music>();
+    private final TreeMap<String, Music> mTunes = new TreeMap<String, Music>();
 
     /**
      * Store the images used by this game
      */
-    static private final TreeMap<String, TextureRegion[]> sImages = new TreeMap<String, TextureRegion[]>();
+    private final TreeMap<String, TextureRegion[]> mImages = new TreeMap<String, TextureRegion[]>();
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
@@ -71,7 +71,7 @@ public class Media {
      * glitches when the game comes back to the foreground.
      */
     static void onDispose() {
-        sFonts.clear();
+        Lol.sGame.mMedia.mFonts.clear();
     }
 
     /**
@@ -89,7 +89,7 @@ public class Media {
         String key = fontFileName + "--" + fontSize;
 
         // check if we've already got this font, return it if we do
-        BitmapFont f = sFonts.get(key);
+        BitmapFont f = Lol.sGame.mMedia.mFonts.get(key);
         if (f != null) {
             // just to play it safe, make the font white... the caller can
             // change this
@@ -108,7 +108,7 @@ public class Media {
         fp.flip = false;
         f = generator.generateFont(fp);
         generator.dispose();
-        sFonts.put(key, f);
+        Lol.sGame.mMedia.mFonts.put(key, f);
         return f;
     }
 
@@ -120,7 +120,7 @@ public class Media {
      * @return a Sound object that can be used for sound effects
      */
     static Sound getSound(String soundName) {
-        Sound ret = sSounds.get(soundName);
+        Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
         if (ret == null)
             Util.message("ERROR", "Error retreiving sound '" + soundName + "'");
         return ret;
@@ -134,7 +134,7 @@ public class Media {
      * @return a Music object that can be used to play background music
      */
     static Music getMusic(String musicName) {
-        Music ret = sTunes.get(musicName);
+        Music ret = Lol.sGame.mMedia.mTunes.get(musicName);
         if (ret == null)
             Util.message("ERROR", "Error retreiving music '" + musicName + "'");
         return ret;
@@ -150,7 +150,7 @@ public class Media {
      *         Actors
      */
     public static TextureRegion[] getImage(String imgName) {
-        TextureRegion[] ret = sImages.get(imgName);
+        TextureRegion[] ret = Lol.sGame.mMedia.mImages.get(imgName);
         if (ret == null)
             Util.message("ERROR", "Error retreiving image '" + imgName + "'");
         return ret;
@@ -161,7 +161,7 @@ public class Media {
      * objects
      */
     static void resetMusicVolume() {
-        for (Music m : sTunes.values()) {
+        for (Music m : Lol.sGame.mMedia.mTunes.values()) {
             m.setVolume(Facts.getGameFact("volume", 1));
         }
     }
@@ -185,7 +185,7 @@ public class Media {
         // Create an array with one entry
         TextureRegion[] tr = new TextureRegion[1];
         tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
-        sImages.put(imgName, tr);
+        Lol.sGame.mMedia.mImages.put(imgName, tr);
     }
 
     /**
@@ -221,7 +221,7 @@ public class Media {
                 index++;
             }
         }
-        sImages.put(imgName, trs);
+        Lol.sGame.mMedia.mImages.put(imgName, trs);
     }
 
     /**
@@ -241,7 +241,7 @@ public class Media {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
         m.setVolume(Facts.getGameFact("volume", 1));
-        sTunes.put(musicName, m);
+        Lol.sGame.mMedia.mTunes.put(musicName, m);
     }
 
     /**
@@ -256,6 +256,6 @@ public class Media {
      */
     static public void registerSound(String soundName) {
         Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
-        sSounds.put(soundName, s);
+        Lol.sGame.mMedia.mSounds.put(soundName, s);
     }
 }

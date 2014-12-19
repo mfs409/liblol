@@ -27,8 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import java.util.TreeMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
@@ -46,33 +44,18 @@ import com.badlogic.gdx.Preferences;
  */
 public class Facts {
     /**
-     * Store string/integer pairs that get reset at the end of every level
-     */
-    private static final TreeMap<String, Integer> sLevelFacts = new TreeMap<String, Integer>();
-
-    /**
-     * Store string/integer pairs that get reset whenever we restart the program
-     */
-    private static final TreeMap<String, Integer> sSessionFacts = new TreeMap<String, Integer>();
-
-    /**
-     * Store Actors, so that we can get to them in callbacks
-     */
-    private static final TreeMap<String, Actor> sLevelActors = new TreeMap<String, Actor>();
-
-    /**
-     * Reset all per-level facts
+     * Reset all per-level facts.  Note that they are a field of the level
      */
     static void resetLevelFacts() {
-        sLevelFacts.clear();
-        sLevelActors.clear();
+        Lol.sGame.mCurrentLevel.mLevelFacts.clear();
+        Lol.sGame.mCurrentLevel.mLevelActors.clear();
     }
 
     /**
-     * Reset all per-session facts
+     * Reset all per-session facts.  Note that they are a field of the Lol game
      */
     static void resetSessionFacts() {
-        sSessionFacts.clear();
+        Lol.sGame.mSessionFacts.clear();
     }
 
     /**
@@ -86,7 +69,7 @@ public class Facts {
      * @return The integer value corresponding to the last value stored
      */
     public static int getLevelFact(String factName, int defaultVal) {
-        Integer i = sLevelFacts.get(factName);
+        Integer i = Lol.sGame.mCurrentLevel.mLevelFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -104,7 +87,7 @@ public class Facts {
      *            The integer value that is the fact being saved
      */
     public static void putLevelFact(String factName, int factValue) {
-        sLevelFacts.put(factName, factValue);
+        Lol.sGame.mCurrentLevel.mLevelFacts.put(factName, factValue);
     }
 
     /**
@@ -118,7 +101,7 @@ public class Facts {
      * @return The integer value corresponding to the last value stored
      */
     public static int getSessionFact(String factName, int defaultVal) {
-        Integer i = sSessionFacts.get(factName);
+        Integer i = Lol.sGame.mSessionFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -136,7 +119,7 @@ public class Facts {
      *            The integer value that is the fact being saved
      */
     public static void putSessionFact(String factName, int factValue) {
-        sSessionFacts.put(factName, factValue);
+        Lol.sGame.mSessionFacts.put(factName, factValue);
     }
 
     /**
@@ -178,7 +161,7 @@ public class Facts {
      * @return The last Actor stored with this name
      */
     public static Actor getLevelActor(String actorName) {
-        Actor actor = sLevelActors.get(actorName);
+        Actor actor = Lol.sGame.mCurrentLevel.mLevelActors.get(actorName);
         if (actor == null) {
             Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -196,6 +179,6 @@ public class Facts {
      *            The Actor that is the fact being saved
      */
     public static void putLevelActor(String actorName, Actor actor) {
-        sLevelActors.put(actorName, actor);
+        Lol.sGame.mCurrentLevel.mLevelActors.put(actorName, actor);
     }
 }

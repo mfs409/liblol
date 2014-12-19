@@ -43,7 +43,7 @@ package com.me.mylolgame;
 // TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
 // TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
 // TODO: finger chase that is restricted to X or Y dimension
-// TODO: remove statics from Util, Facts, Media?
+// TODO: make pre/post/pause scenes into levels?
 
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
@@ -58,7 +58,6 @@ import edu.lehigh.cse.lol.Media;
  * drawn, as well as Splash.java, Chooser.java, Help.java, and Store.java.
  */
 public class MyGame extends Lol {
-
     /**
      * Set up all the global configuration options for the game
      */
@@ -96,7 +95,6 @@ public class MyGame extends Lol {
      */
     @Override
     public void loadResources() {
-
         // load regular (non-animated) images
         Media.registerImage("greenball.png");
         Media.registerImage("mustardball.png");

@@ -46,7 +46,6 @@ import edu.lehigh.cse.lol.internals.Renderable;
  * to the player. A PauseScene can include arbitrary text and pictures.
  */
 public class PauseScene {
-
     /**
      * When we draw clickable buttons on the screen, this is how we know where
      * the buttons are and what to do when they are clicked
