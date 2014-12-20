@@ -346,12 +346,12 @@ public class Level extends ScreenAdapter {
     /**
      * Store string/integer pairs that get reset at the end of every level
      */
-    final TreeMap<String, Integer> mLevelFacts = new TreeMap<String, Integer>();
+    final TreeMap<String, Integer> mLevelFacts;
 
     /**
      * Store Actors, so that we can get to them in callbacks
      */
-    final TreeMap<String, Actor> mLevelActors = new TreeMap<String, Actor>();
+    final TreeMap<String, Actor> mLevelActors;
 
     /**
      * The music, if any
@@ -555,7 +555,8 @@ public class Level extends ScreenAdapter {
         Gdx.input.setInputProcessor(mux);
 
         // reset the per-level object store
-        Facts.resetLevelFacts();
+        mLevelFacts = new TreeMap<String, Integer>();
+        mLevelActors = new TreeMap<String, Actor>();
 
         // save the camera bounds
         mCamBoundX = width;

@@ -279,7 +279,6 @@ public abstract class Lol extends Game {
      * file).
      */
     public Lol() {
-        mMedia = new Media();
         configure();
     }
 
@@ -300,13 +299,11 @@ public abstract class Lol extends Game {
         for (int i = 0; i < 5; ++i)
             mModeStates[i] = 1;
 
-        // reset session facts
-        Facts.resetSessionFacts();
-
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
 
         // Load Resources
+        mMedia = new Media();
         loadResources();
 
         // configure the volume

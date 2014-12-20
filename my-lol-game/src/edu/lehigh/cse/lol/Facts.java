@@ -44,21 +44,6 @@ import com.badlogic.gdx.Preferences;
  */
 public class Facts {
     /**
-     * Reset all per-level facts.  Note that they are a field of the level
-     */
-    static void resetLevelFacts() {
-        Lol.sGame.mCurrentLevel.mLevelFacts.clear();
-        Lol.sGame.mCurrentLevel.mLevelActors.clear();
-    }
-
-    /**
-     * Reset all per-session facts.  Note that they are a field of the Lol game
-     */
-    static void resetSessionFacts() {
-        Lol.sGame.mSessionFacts.clear();
-    }
-
-    /**
      * Look up a fact that was stored for the current level. If no such fact
      * exists, defaultVal will be returned.
      * 
