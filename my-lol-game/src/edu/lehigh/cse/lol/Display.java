@@ -155,7 +155,7 @@ public class Display {
                 if (Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining > 0) {
                     drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
                 } else {
-                    PostScene.setDefaultLoseText(text);
+                    LoseScene.get().setDefaultText(text);
                     Lol.sGame.mCurrentLevel.mScore.endLevel(false);
                 }
             }

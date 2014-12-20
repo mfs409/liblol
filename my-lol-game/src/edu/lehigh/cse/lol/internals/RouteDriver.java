@@ -110,8 +110,8 @@ public class RouteDriver {
      */
     private void startRoute() {
         // move to the starting point
-        mActor.mBody.setTransform(mRoute.mXIndices[0] + mActor.mSize.x / 2,
-                mRoute.mYIndices[0] + mActor.mSize.y / 2, 0);
+        mActor.mBody
+                .setTransform(mRoute.mXIndices[0] + mActor.mSize.x / 2, mRoute.mYIndices[0] + mActor.mSize.y / 2, 0);
         // set up our next goal, start moving toward it
         mNextRouteGoal = 1;
         mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mActor.getXPosition();

@@ -37,7 +37,16 @@ import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Util;
 
+/**
+ * Technically, Help can be anything... even playable levels. In this
+ * demonstration, it's just a bit of information. It's a good place to put
+ * instructions, credits, etc.
+ */
 public class Help implements ScreenManager {
+
+    /**
+     * Describe how to draw each level of help. Our help will have 2 screens
+     */
     public void display(int which) {
         // Our first scene describes the color coding that we use for the
         // different entities in the game

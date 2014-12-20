@@ -95,8 +95,11 @@ public class Level extends ScreenAdapter {
         public boolean tap(float x, float y, int count, int button) {
             // if any pop-up scene is showing, forward the tap to the scene and
             // return true, so that the event doesn't get passed to the Scene
-            if (mPostScene != null && mPostScene.mVisible == true) {
-                mPostScene.onTap();
+            if (mWinScene != null && mWinScene.mVisible == true) {
+                mWinScene.onTap(x, y);
+                return true;
+            } else if (mLoseScene != null && mLoseScene.mVisible == true) {
+                mLoseScene.onTap(x, y);
                 return true;
             } else if (mPreScene != null && mPreScene.mVisible == true) {
                 mPreScene.onTap(x, y);
@@ -389,9 +392,14 @@ public class Level extends ScreenAdapter {
     PreScene mPreScene;
 
     /**
-     * The scene to show when the level is won or lost
+     * The scene to show when the level is won
      */
-    PostScene mPostScene = new PostScene();
+    WinScene mWinScene = new WinScene();
+
+    /**
+     * The scene to show when the level is lost
+     */
+    LoseScene mLoseScene = new LoseScene();
 
     /**
      * The scene to show when the level is paused (if any)
@@ -458,7 +466,7 @@ public class Level extends ScreenAdapter {
     /**
      * This camera is for drawing controls that sit above the world
      */
-    OrthographicCamera mHudCam;
+    public OrthographicCamera mHudCam;
 
     /**
      * This camera is for drawing parallax backgrounds that go behind the world
@@ -705,7 +713,7 @@ public class Level extends ScreenAdapter {
      *            The location of the touch that interacted with the pause
      *            screen.
      */
-    void liftAllButtons(Vector3 touchVec) {
+    public void liftAllButtons(Vector3 touchVec) {
         for (Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
                 c.mGestureAction.toggle(true, touchVec);
@@ -750,8 +758,10 @@ public class Level extends ScreenAdapter {
         //
         // Note that these handle their own screen touches...
         //
-        // Note that postscene should come first.
-        if (mPostScene != null && mPostScene.render(mSpriteBatch))
+        // Note that win and lose scenes should come first.
+        if (mWinScene != null && mWinScene.render(mSpriteBatch))
+            return;
+        if (mLoseScene != null && mLoseScene.render(mSpriteBatch))
             return;
         if (mPreScene != null && mPreScene.render(mSpriteBatch))
             return;
@@ -867,8 +877,8 @@ public class Level extends ScreenAdapter {
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (Lol.sGame.mShowDebugBoxes)
-            Display.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                    Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, 12);
+            Display.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+                    Lol.sGame.mDefaultFontBlue, 12);
 
     }
 

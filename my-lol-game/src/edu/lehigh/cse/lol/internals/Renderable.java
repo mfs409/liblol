@@ -30,9 +30,9 @@ package edu.lehigh.cse.lol.internals;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
- * This interface allows items that can be displayed on the screen to
- * describe how they ought to be displayed. This allows us, for example, to
- * let a text item describe how its display value should change over time.
+ * This interface allows items that can be displayed on the screen to describe
+ * how they ought to be displayed. This allows us, for example, to let a text
+ * item describe how its display value should change over time.
  */
 public interface Renderable {
     /**

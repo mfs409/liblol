@@ -146,7 +146,7 @@ public class Score {
         if (mHeroesDefeated == mHeroesCreated) {
             // possibly change the end-of-level text
             if (e.mOnDefeatHeroText != "")
-                PostScene.setDefaultLoseText(e.mOnDefeatHeroText);
+                LoseScene.get().setDefaultText(e.mOnDefeatHeroText);
             endLevel(false);
         }
     }
@@ -239,7 +239,10 @@ public class Score {
 
                     // display the PostScene, which provides a pause before we
                     // retry/start the next level
-                    Lol.sGame.mCurrentLevel.mPostScene.setWin(win);
+                    if (win)
+                        Lol.sGame.mCurrentLevel.mWinScene.show();
+                    else
+                        Lol.sGame.mCurrentLevel.mLoseScene.show();
                 }
             };
     }

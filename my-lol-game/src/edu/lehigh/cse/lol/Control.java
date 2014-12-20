@@ -162,7 +162,7 @@ public class Control {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 vv) {
-                PauseScene.show();
+                PauseScene.get().show();
                 return true;
             }
         };

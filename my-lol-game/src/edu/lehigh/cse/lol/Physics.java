@@ -51,8 +51,8 @@ public class Physics {
     /**
      * This ratio means that every 20 pixels on the screen will correspond to a
      * meter. Note that 'pixels' are defined in terms of what a programmer's
-     * configuration() says, not the actual screen size, because the configuration
-     * gets scaled to screen dimensions.  The default is 960x640.
+     * configuration() says, not the actual screen size, because the
+     * configuration gets scaled to screen dimensions. The default is 960x640.
      */
     static final float PIXEL_METER_RATIO = 20;
 

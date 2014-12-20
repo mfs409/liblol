@@ -32,14 +32,14 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import edu.lehigh.cse.lol.Actor;
 
 /**
- * When an Actor collides with another Actor, and that collision is intended
- * to cause some custom code to run, we use this interface
+ * When an Actor collides with another Actor, and that collision is intended to
+ * cause some custom code to run, we use this interface
  */
 public interface CollisionCallback {
     /**
      * Respond to a collision with a actor. Note that one of the collision
-     * actors is not named; it should be clear from the context in which
-     * this was constructed.
+     * actors is not named; it should be clear from the context in which this
+     * was constructed.
      * 
      * @param actor
      *            The actor involved in the collision

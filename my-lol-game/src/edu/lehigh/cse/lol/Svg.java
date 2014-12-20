@@ -309,9 +309,9 @@ public class Svg {
      * logic from the logic for actually drawing lines
      * 
      * There are two challenges. The first is that an SVG deals with pixels,
-     * whereas we like to draw actors in meters. This matters because
-     * user translations will be in meters, but SVG points and SVG translations
-     * will be in pixels.
+     * whereas we like to draw actors in meters. This matters because user
+     * translations will be in meters, but SVG points and SVG translations will
+     * be in pixels.
      * 
      * The second challenge is that SVGs appear to have a "down is plus" Y axis,
      * whereas our system has a "down is minus" Y axis. To get around this, we

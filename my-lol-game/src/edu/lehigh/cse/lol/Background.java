@@ -68,8 +68,8 @@ public class Background {
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
-            sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam.calculateParallaxMatrix(
-                    pl.mXSpeed * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
+            sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam.calculateParallaxMatrix(pl.mXSpeed
+                    * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
             sb.begin();
             // Figure out what to draw for layers that repeat in the x dimension
             if (pl.mXRepeat) {

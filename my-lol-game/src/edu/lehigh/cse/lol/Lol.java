@@ -73,7 +73,7 @@ public abstract class Lol extends Game {
      * A reference to the game object... Since the interfaces are mostly static,
      * we need an instance of a Lol object that the static methods can call.
      */
-    static Lol sGame;
+    public static Lol sGame;
 
     /**
      * This variable lets us track whether the user pressed 'back' on an
@@ -87,7 +87,7 @@ public abstract class Lol extends Game {
     /**
      * The current level being shown
      */
-    Level mCurrentLevel;
+    public Level mCurrentLevel;
 
     /**
      * Store string/integer pairs that get reset whenever we restart the program
@@ -136,7 +136,7 @@ public abstract class Lol extends Game {
     /**
      * This is a debug feature, to help see the physics behind every Actor
      */
-    protected boolean mShowDebugBoxes;
+    public boolean mShowDebugBoxes;
 
     /**
      * A per-game string, to use for storing information on an Android device
@@ -252,7 +252,7 @@ public abstract class Lol extends Game {
      * When the back key is pressed, or when we are simulating the back key
      * being pressed (e.g., a back button), this code runs.
      */
-    void handleBack() {
+    public void handleBack() {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit

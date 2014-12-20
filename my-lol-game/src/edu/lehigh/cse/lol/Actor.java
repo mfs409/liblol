@@ -135,8 +135,8 @@ public abstract class Actor implements Renderable {
 
     /**
      * Sometimes an actor collides with another actor, and should stick to it.
-     * In that case, we create a pair of joints to connect the two actors.
-     * This is the Weld joint that connects them
+     * In that case, we create a pair of joints to connect the two actors. This
+     * is the Weld joint that connects them
      */
     WeldJoint mWJoint;
 
@@ -715,8 +715,8 @@ public abstract class Actor implements Renderable {
      *            Velocity in Y dimension
      * @param immuneToPhysics
      *            Should never be true for heroes! This means that gravity won't
-     *            affect the actor, and it can pass through other actors
-     *            without colliding.
+     *            affect the actor, and it can pass through other actors without
+     *            colliding.
      */
     public void addVelocity(float x, float y, boolean immuneToPhysics) {
         // ensure this is a moveable actor

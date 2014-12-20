@@ -119,7 +119,7 @@ public class Media {
      *            Name of the sound file to retrieve
      * @return a Sound object that can be used for sound effects
      */
-    static Sound getSound(String soundName) {
+    public static Sound getSound(String soundName) {
         Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
         if (ret == null)
             Util.message("ERROR", "Error retreiving sound '" + soundName + "'");
@@ -146,8 +146,7 @@ public class Media {
      * 
      * @param imgName
      *            Name of the image file to retrieve
-     * @return a TextureRegion object that can be used to create
-     *         Actors
+     * @return a TextureRegion object that can be used to create Actors
      */
     public static TextureRegion[] getImage(String imgName) {
         TextureRegion[] ret = Lol.sGame.mMedia.mImages.get(imgName);

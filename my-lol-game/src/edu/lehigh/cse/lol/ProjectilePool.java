@@ -313,8 +313,8 @@ public class ProjectilePool {
     }
 
     /**
-     * The "directional projectile" mechanism might lead to the projectiles moving
-     * too fast. This will cause the speed to be multiplied by a factor
+     * The "directional projectile" mechanism might lead to the projectiles
+     * moving too fast. This will cause the speed to be multiplied by a factor
      * 
      * @param factor
      *            The value to multiply against the projectile speed.
@@ -332,8 +332,8 @@ public class ProjectilePool {
     }
 
     /**
-     * Indicate that projectiles thrown with the "directional" mechanism should have
-     * a fixed velocity
+     * Indicate that projectiles thrown with the "directional" mechanism should
+     * have a fixed velocity
      * 
      * @param velocity
      *            The magnitude of the velocity for projectiles
@@ -344,8 +344,8 @@ public class ProjectilePool {
     }
 
     /**
-     * Indicate that projectiles thrown via the "directional" mechanism should be
-     * rotated to face in their direction or movement
+     * Indicate that projectiles thrown via the "directional" mechanism should
+     * be rotated to face in their direction or movement
      */
     public static void setRotateVectorThrow() {
         Lol.sGame.mCurrentLevel.mProjectilePool.mRotateVectorThrow = true;
@@ -382,7 +382,8 @@ public class ProjectilePool {
      */
     public static void configure(int size, float width, float height, String imgName, int strength, int zIndex,
             boolean isCircle) {
-        Lol.sGame.mCurrentLevel.mProjectilePool = new ProjectilePool(size, width, height, imgName, strength, zIndex, isCircle);
+        Lol.sGame.mCurrentLevel.mProjectilePool = new ProjectilePool(size, width, height, imgName, strength, zIndex,
+                isCircle);
     }
 
     /**

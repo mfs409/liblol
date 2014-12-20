@@ -34,19 +34,19 @@ import edu.lehigh.cse.lol.Media;
 import edu.lehigh.cse.lol.Util;
 
 /**
- * AnimationDriver is an internal class that actors can use to figure out
- * which frame of an animation to show next
+ * AnimationDriver is an internal class that actors can use to figure out which
+ * frame of an animation to show next
  */
 public class AnimationDriver {
     /**
-     * The images that comprise the current animation will be the elements
-     * of this array
+     * The images that comprise the current animation will be the elements of
+     * this array
      */
     TextureRegion[] mImages;
 
     /**
-     * The index to display from mImages for the case where there is no
-     * active animation. This is useful for animateByGoodieCount.
+     * The index to display from mImages for the case where there is no active
+     * animation. This is useful for animateByGoodieCount.
      */
     int mImageIndex;
 
@@ -66,8 +66,8 @@ public class AnimationDriver {
     private float mCurrentAnimationTime;
 
     /**
-     * Build an AnimationDriver by giving it an imageName. This allows us to
-     * use AnimationDriver for displaying non-animated images
+     * Build an AnimationDriver by giving it an imageName. This allows us to use
+     * AnimationDriver for displaying non-animated images
      * 
      * @param imgName
      *            The name of the image file to use
@@ -110,8 +110,7 @@ public class AnimationDriver {
     }
 
     /**
-     * Request a random index from the mImages array to pick an image to
-     * display
+     * Request a random index from the mImages array to pick an image to display
      */
     public void pickRandomIndex() {
         mImageIndex = Util.getRandom(mImages.length);

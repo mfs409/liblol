@@ -62,7 +62,7 @@ public class Util {
      *            The file name for the image, or ""
      * @return A Renderable of the image
      */
-    static Renderable makePicture(final float x, final float y, final float width, final float height,
+    public static Renderable makePicture(final float x, final float y, final float width, final float height,
             String imgName) {
         // set up the image to display
         //
@@ -99,7 +99,7 @@ public class Util {
      *            The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
+    public static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
             final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         return new Renderable() {
@@ -129,7 +129,7 @@ public class Util {
      *            The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final String message, final int red, final int green, final int blue,
+    public static Renderable makeText(final String message, final int red, final int green, final int blue,
             String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         final float x = Lol.sGame.mWidth / 2 - bf.getMultiLineBounds(message).width / 2;
