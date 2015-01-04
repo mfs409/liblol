@@ -60,7 +60,7 @@ public abstract class LolCallback implements Cloneable {
     /**
      * Make a copy of the current LolCallback
      */
-    public LolCallback clone() throws CloneNotSupportedException {
+    public LolCallback clone() {
         // This code is trickier than one would think. The issue is
         // that we are doing this copy as a way of getting a new object with the
         // same overridden onEvent() method. That, in turn, means we need to
