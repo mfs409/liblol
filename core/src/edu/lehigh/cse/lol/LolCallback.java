@@ -31,7 +31,7 @@ package edu.lehigh.cse.lol;
  * LolCallback provides an easy way to describe code that should run in response
  * to special events, such as timers, screen presses, or collisions between
  * actors.
- * <p/>
+ *
  * In the interest of simplicity, we use some public fields instead of getters
  * and setters. This also lets us get away with using the default constructor.
  */

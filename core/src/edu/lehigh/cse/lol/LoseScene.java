@@ -32,7 +32,7 @@ import edu.lehigh.cse.lol.internals.QuickScene;
 /**
  * LoseScene provides a way to display text and images after a level is lost,
  * before gameplay resumes. A LoseScene can include arbitrary text and pictures.
- * <p/>
+ *
  * Every level gets a PostScene automatically, but it can be disabled.
  */
 public class LoseScene extends QuickScene {

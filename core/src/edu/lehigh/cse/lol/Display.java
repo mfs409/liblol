@@ -206,7 +206,7 @@ public class Display {
      * extra features for describing the appearance of the font
      *
      * @param type     The type of goodie to show (1-4)
-     * @param max      If this is > 0, then the message wil be of the form XX/max
+     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
      *                 instead of just XX
      * @param text     The text to display after the number of goodies
      * @param x        The X coordinate of the bottom left corner (in pixels)
@@ -236,7 +236,7 @@ public class Display {
     /**
      * Add a count of the number of enemies who have been defeated
      *
-     * @param max  If this is > 0, then the message will be of the form XX/max
+     * @param max  If this is &gt; 0, then the message will be of the form XX/max
      *             instead of just XX
      * @param text The text to display after the number of goodies
      * @param x    The X coordinate of the bottom left corner (in pixels)
@@ -251,7 +251,7 @@ public class Display {
      * Add a count of the number of enemies who have been defeated, with extra
      * features for describing the appearance of the font
      *
-     * @param max      If this is > 0, then the message wil be of the form XX/max
+     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
      *                 instead of just XX
      * @param text     The text to display after the number of goodies
      * @param x        The X coordinate of the bottom left corner (in pixels)

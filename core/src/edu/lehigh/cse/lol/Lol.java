@@ -38,7 +38,7 @@ import java.util.TreeMap;
  * A Lol object is the outermost container for all of the functionality of the
  * game. It implements ApplicationListener (through Game), which provides hooks
  * for GDX to render the game, stop it, resume it, etc.
- * <p/>
+ *
  * Lol is not responsible for doing anything significant. It keeps track of
  * which screen is currently in use, and forwards (through Game) to that screen.
  * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
@@ -89,7 +89,7 @@ public abstract class Lol extends Game {
 
     /*
      * GAME CONFIGURATION VARIABLES
-     * 
+     *
      * These get set in MyGame.java
      */
     /**

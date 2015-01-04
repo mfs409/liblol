@@ -67,7 +67,7 @@ import edu.lehigh.cse.lol.internals.Renderable;
  * used to display everything that appears on the screen. It is also responsible
  * for keeping track of everything on the screen (Actors, Controls, and
  * Displays), so we can draw the game correctly.
- * <p/>
+ *
  * Note that everything in Lol is a level... the splash screen, the choosers,
  * the help, and the game levels themselves.
  */
@@ -381,7 +381,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Turn on scribble mode, so that scene touch events draw circular objects
-     * <p/>
+     *
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
@@ -455,7 +455,7 @@ public class Level extends ScreenAdapter {
     /**
      * Manually set the zoom level of the game
      *
-     * @param zoom The amount of zoom (1 is no zoom, >1 zooms out)
+     * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
     public static void setZoom(float zoom) {
         Lol.sGame.mCurrentLevel.mGameCam.zoom = zoom;

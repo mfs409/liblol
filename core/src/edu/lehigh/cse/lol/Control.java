@@ -482,7 +482,7 @@ public class Control {
      * The default behavior for throwing is to throw in a straight line. If we
      * instead desire that the projectiles have some sort of aiming to them, we
      * need to use this method, which throws toward where the screen was pressed
-     * <p/>
+     *
      * Note: you probably want to use an invisible button that covers the
      * screen...
      *

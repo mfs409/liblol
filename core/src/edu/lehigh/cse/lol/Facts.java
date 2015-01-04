@@ -36,7 +36,7 @@ import com.badlogic.gdx.Preferences;
  * example, in a game of golf, one could use per-level to track the current
  * number of strokes, use per-session to track the score across all 18 holes,
  * and per-game to track the player's high score.
- * <p/>
+ *
  * One might argue that it's easier to create fields inside of some of the game
  * classes to handle this role. However, doing so is (a) confusing for novices,
  * and (b) risky if the programmer isn't completely certain about the lifecycle

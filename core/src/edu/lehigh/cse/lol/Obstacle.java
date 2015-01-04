@@ -169,7 +169,7 @@ public class Obstacle extends Actor {
 
     /**
      * Called when this Obstacle is the dominant obstacle in a collision
-     * <p/>
+     *
      * Note: This Obstacle is /never/ the dominant obstacle in a collision,
      * since it is #6 or #7
      *
@@ -183,7 +183,7 @@ public class Obstacle extends Actor {
     /**
      * Call this on an Obstacle to make it into a pad that changes the hero's
      * speed when the hero glides over it.
-     * <p/>
+     *
      * These "pads" will multiply the hero's speed by the factor given as a
      * parameter. Factors can be negative to cause a reverse direction, less
      * than 1 to cause a slowdown (friction pads), or greater than 1 to serve as

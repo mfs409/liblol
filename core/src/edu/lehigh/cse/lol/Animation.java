@@ -35,11 +35,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * be played, and the time each should be shown. For example, suppose there is
  * an image "glowball.png" with 5 frames. The "cells" will consist of the 5
  * frames (numbered 0 to 4) that can be shown. We can then set an animation such
- * as (0,300)->(2,100)->(0,600)->(4,100) to indicate that the animation should
+ * as (0,300)-&gt;(2,100)-&gt;(0,600)-&gt;(4,100) to indicate that the animation should
  * show the 0th frame for 300 milliseconds, then the 2nd frame for 100
  * milliseconds, then the 0th frame for 600 milliseconds, then the 4th frame for
  * 100 milliseconds.
- * <p/>
+ *
  * There are two ways to make an animation. The more powerful uses to() to chain
  * together frame/duration pairs. The less powerful uses a constructor with more
  * parameters to define the entire animation in equal-duration pieces.

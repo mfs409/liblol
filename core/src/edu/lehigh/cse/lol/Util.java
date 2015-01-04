@@ -142,7 +142,7 @@ public class Util {
      */
 
     /**
-     * Generate a random number x such that 0 <= x < max
+     * Generate a random number x such that 0 &lt;= x &lt; max
      *
      * @param max The largest number returned will be one less than max
      * @return a random integer
@@ -181,7 +181,7 @@ public class Util {
 
     /**
      * Draw a picture on the current level
-     * <p/>
+     *
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this picture.
      *
@@ -200,7 +200,7 @@ public class Util {
 
     /**
      * Draw some text on the current level
-     * <p/>
+     *
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *
@@ -232,7 +232,7 @@ public class Util {
 
     /**
      * Draw some text on the current level, centered on a point.
-     * <p/>
+     *
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *

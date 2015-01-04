@@ -302,7 +302,7 @@ public class Score {
 
     /**
      * Force the level to end in victory
-     * <p/>
+     *
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
@@ -312,7 +312,7 @@ public class Score {
 
     /**
      * Force the level to end in defeat
-     * <p/>
+     *
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */

@@ -37,7 +37,7 @@ import edu.lehigh.cse.lol.internals.GestureAction;
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be
  * defeated via projectiles. They can also be defeated by colliding with
- * invincible heroes, or by colliding with a hero whose strength is >= the
+ * invincible heroes, or by colliding with a hero whose strength is &gt;= the
  * enemy's damage, though that case results in the hero losing strength. A level
  * can require all enemies to be defeated before the level can be won. Note that
  * Enemies can move in a variety of ways

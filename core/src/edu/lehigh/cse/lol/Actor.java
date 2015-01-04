@@ -61,7 +61,7 @@ import edu.lehigh.cse.lol.internals.RouteDriver;
  * a physics representation (rectangle, circle, or convex polygon). Actors
  * typically have an image associated with them, too, so that they have a visual
  * appearance during gameplay.
- * <p/>
+ *
  * A game should rarely deal with Actor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
@@ -1433,7 +1433,7 @@ public abstract class Actor implements Renderable {
 
     /**
      * Create a revolute joint between this actor and some other actor. Note
-     * that both actors need to have some mass (density > 0) or else this won't
+     * that both actors need to have some mass (density &gt; 0) or else this won't
      * work.
      *
      * @param anchor       The actor around which this actor will rotate
