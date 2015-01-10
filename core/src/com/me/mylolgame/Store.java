@@ -32,11 +32,11 @@ import edu.lehigh.cse.lol.ScreenManager;
 /**
  * In games that have a store, there should be a button on the main screen (or
  * somewhere!) for going to the first screen of the store.
- * <p/>
+ *
  * The store is built the same way as any other part of a game, but you'll
  * probably want to use the Facts interface to keep track of coins, inventories,
  * etc.
- * <p/>
+ *
  * Our demo doesn't use a store, so we leave our code blank.
  */
 public class Store implements ScreenManager {

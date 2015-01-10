@@ -34,7 +34,7 @@ import com.badlogic.gdx.math.Vector3;
  * coordinates to world coordinates, then use this to handle it. This object can
  * be attached to actors, Controls, or to the Level itself, to specify a handler
  * for certain events.
- * <p/>
+ *
  * Note: typically, one will override certain methods of this class to get the
  * desired behavior
  */

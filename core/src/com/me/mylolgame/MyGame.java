@@ -27,21 +27,6 @@
 
 package com.me.mylolgame;
 
-// TODO: make sure all angles use same units (degrees or radians): Actor has 3 joint functions that need work; Hero has increaseRotation
-// TODO: replace SVG lines with obstacles
-// TODO: clean up the last 6 levels
-// TODO: add a 'store'?
-// TODO: add 'share' button?
-// TODO: Verify comments
-// TODO: Hero animation sequences could use work... we can lose information (e.g., if invincibility runs out while jumping), and we don't have invincible+X or jump+crawl animation
-// TODO: Make sure we have good error messages for common mistakes (filenames, animation, routes)
-// TODO: make panning return to the chaseActor more nicely
-// TODO: verify tilt gets its directions correct on tablets
-// TODO: in Level 83, play with timers to change direction of the rotating actor?
-// TODO: might want to have some ability to detect when we slide off of a toggle button... see level 72 for explanation of why
-// TODO: pinch zoom isn't quite right, because we are treating it like a touchable control, when it's really a whole-screen affair...
-// TODO: finger chase that is restricted to X or Y dimension
-
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
 
@@ -50,7 +35,7 @@ import edu.lehigh.cse.lol.Media;
  * configuration tasks: it loads all the assets (images and sounds) used by the
  * game, and it tells the Lol engine about all of the other configuration that
  * needs to be done.
- * <p/>
+ *
  * Be sure to look at the Levels.java file for how each level of the game is
  * drawn, as well as Splash.java, Chooser.java, Help.java, and Store.java.
  */

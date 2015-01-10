@@ -198,8 +198,8 @@ public class Svg {
     }
 
     /**
-     * The root of an SVG drawing will have a <g> element, which will have some
-     * number of <path> elements. Each <path> will have a "d=" attribute, which
+     * The root of an SVG drawing will have a g element, which will have some
+     * number of path elements. Each path will have a "d=" attribute, which
      * stores the points and information about how to connect them. The "d" is a
      * single string, which we parse in this function.
      *
@@ -310,12 +310,12 @@ public class Svg {
     /**
      * This is a convenience method to separate the transformation and stretch
      * logic from the logic for actually drawing lines
-     * <p/>
+     *
      * There are two challenges. The first is that an SVG deals with pixels,
      * whereas we like to draw actors in meters. This matters because user
      * translations will be in meters, but SVG points and SVG translations will
      * be in pixels.
-     * <p/>
+     *
      * The second challenge is that SVGs appear to have a "down is plus" Y axis,
      * whereas our system has a "down is minus" Y axis. To get around this, we
      * reflect every Y coordinate over the horizontal line that intersects with
@@ -395,7 +395,7 @@ public class Svg {
 
     /**
      * The main parse routine. We slurp the file into an XML DOM object, and
-     * then iterate over it, finding the <path>s within the <g>, and processing
+     * then iterate over it, finding the paths within the g, and processing
      * their "d" attributes
      *
      * @param svgName The name of the file to parse
