@@ -60,13 +60,13 @@ public class Chooser implements ScreenManager {
         int unlocked = Facts.getGameFact("unlocked", 1);
 
         // for each button, start by drawing an obstacle
-        Obstacle l1 = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");
+        Obstacle tile = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");
 
         // if this level is unlocked, or if we are in unlocked mode, then attach
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
         if (level <= unlocked || Lol.getUnlockMode()) {
-            l1.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
+            tile.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
                 public void onEvent() {
                     Lol.doLevel(level);
                 }
