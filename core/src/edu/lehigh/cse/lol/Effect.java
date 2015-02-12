@@ -77,32 +77,9 @@ public class Effect implements Renderable {
     public static Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
         Effect e = new Effect();
 
-        // create the particle effect system.  Note that the effect generator uses screen
-        // coordinates, so after we load the effect, we need to scale coordinates and velocity to
-        // meters
+        // create the particle effect system.
         ParticleEffect pe = new ParticleEffect();
         pe.load(Gdx.files.internal(filename), Gdx.files.internal(""));
-        float factor = 1 / Physics.PIXEL_METER_RATIO;
-        // scale the coordinates
-        float s = pe.getEmitters().first().getScale().getHighMax();
-        pe.getEmitters().first().getScale().setHighMax(s * factor);
-        s = pe.getEmitters().first().getScale().getHighMin();
-        pe.getEmitters().first().getScale().setHighMin(s * factor);
-        s = pe.getEmitters().get(0).getScale().getLowMax();
-        pe.getEmitters().get(0).getScale().setLowMax(s * factor);
-        s = pe.getEmitters().get(0).getScale().getLowMin();
-        pe.getEmitters().get(0).getScale().setLowMin(s * factor);
-
-        // scale the velocities
-        s = pe.getEmitters().get(0).getVelocity().getHighMax();
-        pe.getEmitters().get(0).getVelocity().setHighMax(s * factor);
-        s = pe.getEmitters().get(0).getVelocity().getHighMin();
-        pe.getEmitters().get(0).getVelocity().setHighMin(s * factor);
-        s = pe.getEmitters().get(0).getVelocity().getLowMax();
-        pe.getEmitters().get(0).getVelocity().setLowMax(s * factor);
-        s = pe.getEmitters().get(0).getVelocity().getLowMin();
-        pe.getEmitters().get(0).getVelocity().setLowMin(s * factor);
-
         e.mParticleEffect = pe;
 
         // update the effect's coordinates to reflect world coordinates

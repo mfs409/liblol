@@ -3557,6 +3557,10 @@ public class Levels implements ScreenManager {
                 e.setRepeat(true);
             }
 
+            // here's a weak attempt at snow
+            Effect e = Effect.makeParticleSystem("snow.txt", -2, 8, 35);
+            e.setRepeat(true);
+
             // the trick for getting one PauseScene's dismissal to result in another PauseScene
             // drawing right away is to use the PauseScene CallbackButton facility.  When the first
             // PauseScene is touched, we dismiss it and immediately draw another PauseScene
@@ -3585,6 +3589,9 @@ public class Levels implements ScreenManager {
             // set the callback for the first pausescene, and show it
             PauseScene.get().addCallbackButton(0, 0, 960, 640, sc1);
             PauseScene.get().show();
+
+            Control.addZoomOutButton(0, 0, 480, 640, "", 8);
+            Control.addZoomInButton(480, 0, 480, 640, "", .25f);
         }
     }
 }
