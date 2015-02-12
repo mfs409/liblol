@@ -35,6 +35,7 @@ import edu.lehigh.cse.lol.Background;
 import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Display;
+import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Facts;
 import edu.lehigh.cse.lol.Goodie;
@@ -1151,6 +1152,7 @@ public class Levels implements ScreenManager {
                         Facts.putGameFact("HighScore32", Score.getDistance());
                 }
             };
+
             Level.setWinCallback(sc);
             Level.setLoseCallback(sc);
         }
@@ -2686,7 +2688,6 @@ public class Levels implements ScreenManager {
                     // resize the hero, and change its image
                     mCollideActor.resize(mCollideActor.getXPosition(), mCollideActor.getYPosition(), 5, 5);
                     mCollideActor.setImage("stars.png", 0);
-
                 }
             });
         }
@@ -3530,19 +3531,50 @@ public class Levels implements ScreenManager {
 
             Destination.makeAsBox(47, 0, .1f, 32, "");
             Score.setVictoryDestination(1);
-        } else if (whichLevel == 92) {
-            Level.configure(48, 32);
-            Physics.configure(0, -10);
+        }
 
+        /**
+         * Demonstrate how we can chain pausescenes together, and also show how to use particle
+         * effects
+         */
+        else if (whichLevel == 92) {
+            // start with a basic tilt-based side-scroller
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+            Level.setCameraChase(h);
+
+            // put some flame effects on a black background
+            Background.setColor(0, 0, 0);
+            for (int i = 5; i < 150; i += 15) {
+                Effect e = Effect.makeParticleSystem("flame.txt", -2, i, 5);
+                e.setRepeat(true);
+            }
+
+            // the trick for getting one PauseScene's dismissal to result in another PauseScene
+            // drawing right away is to use the PauseScene CallbackButton facility.  When the first
+            // PauseScene is touched, we dismiss it and immediately draw another PauseScene
+
+            // set up a simple PauseScene
             PauseScene.get().reset();
             PauseScene.get().addText("test", 255, 255, 255, "arial.ttf", 32);
+            // this is the code to run when the *second* pausescene is touched.  Making it "final"
+            // means that we can refer to it inside of the other callback
             final LolCallback sc2 = new LolCallback() {
                 public void onEvent() {
                     PauseScene.get().dismiss();
                 }
             };
+            // this is the code to run when the *first* pausescene is touched
             LolCallback sc1 = new LolCallback() {
                 public void onEvent() {
+                    // clear the pausescene, draw another one
                     PauseScene.get().dismiss();
                     PauseScene.get().reset();
                     PauseScene.get().addText("test2", 255, 255, 255, "arial.ttf", 32);
@@ -3550,6 +3582,7 @@ public class Levels implements ScreenManager {
                     PauseScene.get().show();
                 }
             };
+            // set the callback for the first pausescene, and show it
             PauseScene.get().addCallbackButton(0, 0, 960, 640, sc1);
             PauseScene.get().show();
         }
