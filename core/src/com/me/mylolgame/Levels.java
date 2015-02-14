@@ -1416,10 +1416,17 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            Svg.importLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
+            Svg.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new Svg.ActorCallback() {
+                @Override
+                public void handle(Actor line) {
+                    // This code is run each time a line of the SVG is drawn.  When we get a line,
+                    // we'll give it some density and friction.  Remember that the line is
+                    // actually a rotated obstacle
+                    line.setPhysics(1, 0, .1f);
+                }
+            });
 
-            // notice that we can only get to the destination by jumping from
-            // *on top of* the obstacle
+            // provide a destination
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }

@@ -303,8 +303,6 @@ public class Hero extends Actor {
             onCollideWithDestination((Destination) other);
         else if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle) other, contact);
-        else if (other instanceof Svg.SVGActor)
-            onCollideWithSVG(other);
         else if (other instanceof Goodie)
             onCollideWithGoodie((Goodie) other);
     }
@@ -417,17 +415,6 @@ public class Hero extends Actor {
     /*
      * PUBLIC INTERFACE
      */
-
-    /**
-     * Dispatch method for handling Hero collisions with SVG lines
-     *
-     * @param s The svg line with which this hero collided
-     */
-    private void onCollideWithSVG(Actor s) {
-        // all we do is record that the hero is not in the air anymore, and is
-        // not in a jump animation anymore
-        stopJump();
-    }
 
     /**
      * Dispatch method for handling Hero collisions with Goodies

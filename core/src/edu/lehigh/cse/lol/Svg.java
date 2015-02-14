@@ -30,12 +30,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
@@ -52,9 +46,9 @@ import java.io.IOException;
  */
 public class Svg {
     /**
-     * This description will be used for the physics of every line we create
+     * This callback will run whenever we create a new line segment
      */
-    private final FixtureDef mFixture;
+    private final ActorCallback mActorCallback;
 
     /**
      * The offset by which we shift the line drawing
@@ -109,68 +103,27 @@ public class Svg {
     private int mMode = 0;
 
     /**
-     * This is used for defining the lines that we draw. Making it a member
-     * keeps us from creating as much garbage.
-     */
-    private BodyDef mBodyDef = new BodyDef();
-
-    /**
      * Configure a parser that we can use to load an SVG file and draw each of
      * its lines as a Box2d line
      *
-     * @param density    density of each line
-     * @param elasticity elasticity of each line
-     * @param friction   friction of each line
      * @param stretchX   Stretch the drawing in the X dimension by this percentage
      * @param stretchY   Stretch the drawing in the Y dimension by this percentage
      * @param xposeX     Shift the drawing in the X dimension. Note that shifting
      *                   occurs after stretching
      * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
      *                   occurs after stretching
+     * @param ac         The callback to run whenever a line is created
      */
-    private Svg(float density, float elasticity, float friction, float stretchX, float stretchY, float xposeX,
-                float xposeY) {
-        // create the physics fixture in a manner that is visible to the
-        // addLine routine of the parser
-        mFixture = new FixtureDef();
-        mFixture.density = density;
-        mFixture.restitution = elasticity;
-        mFixture.friction = friction;
-
+    private Svg(float stretchX, float stretchY, float xposeX,
+                float xposeY, ActorCallback ac) {
         // specify transpose and stretch information
         mUserStretch.x = stretchX;
         mUserStretch.y = stretchY;
         mUserTransform.x = xposeX;
         mUserTransform.y = xposeY;
 
-        // we will draw static bodies, not dynamic ones
-        mBodyDef.type = BodyType.StaticBody;
-    }
-
-    /**
-     * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
-     * as an immobile Obstacle. Note that not all Inkscape drawings will work as
-     * expected... if you need more power than this provides, you'll have to
-     * modify Svg.java
-     *
-     * @param svgName    Name of the svg file to load. It should be in the assets
-     *                   folder
-     * @param density    density of each line
-     * @param elasticity elasticity of each line
-     * @param friction   friction of each line
-     * @param stretchX   Stretch the drawing in the X dimension by this percentage
-     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX     Shift the drawing in the X dimension. Note that shifting
-     *                   occurs after stretching
-     * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
-     *                   occurs after stretching
-     */
-    public static void importLineDrawing(String svgName, float density, float elasticity, float friction,
-                                         float stretchX, float stretchY, float xposeX, float xposeY) {
-        // Create an SVG object to hold all the parameters, then use it to parse
-        // the file
-        Svg s = new Svg(density, elasticity, friction, stretchX, stretchY, xposeX, xposeY);
-        s.parse(svgName);
+        // save the Actor Callback
+        mActorCallback = ac;
     }
 
     /**
@@ -213,96 +166,98 @@ public class Svg {
         boolean absolute = false;
         for (String s0 : points) {
             String s = s0.trim();
-            // start of the path, relative mode
-            if (s.equals("m")) {
-                mState = -2;
-                absolute = false;
-            }
-            // start of the path, absolute mode
-            else if (s.equals("M")) {
-                mState = -2;
-                absolute = true;
-            }
-            // beginning of a (set of) curve definitions, relative mode
-            //
-            // NB: we coerce curves into lines by ignoring the first four
-            // parameters... this leaves us with just the endpoints
-            else if (s.equals("c")) {
-                mMode = 2;
-                mSwallow = 4;
-            }
-            // end of path, relative mode
-            else if (s.equals("z")) {
-                // draw a connecting line to complete the shape
-                addLine(mLast, mFirst);
-            }
-            // beginning of a (set of) line definitions, relative mode
-            else if (s.equals("l")) {
-                mMode = 3;
-                absolute = false;
-                mSwallow = 0;
-            }
-            // beginning of a (set of) line definitions, absolute mode
-            else if (s.equals("L")) {
-                mMode = 3;
-                absolute = true;
-                mSwallow = 0;
-            }
-            // floating point data that defines an endpoint of a line or curve
-            else {
-                // if it's a curve, we might need to swallow this value
-                if (mSwallow > 0) {
-                    mSwallow--;
-                }
-                // get the next point
-                else {
-                    try {
-                        // convert next point to float
-                        float val = Float.valueOf(s);
-                        // if it's the initial x, save it
-                        if (mState == -2) {
-                            mState = -1;
-                            mLast.x = val;
-                            mFirst.x = val;
+            switch (s) {
+                // start of the path, relative mode
+                case "m":
+                    mState = -2;
+                    absolute = false;
+                    break;
+                // start of the path, absolute mode
+                case "M":
+                    mState = -2;
+                    absolute = true;
+                    break;
+                // beginning of a (set of) curve definitions, relative mode
+                //
+                // NB: we coerce curves into lines by ignoring the first four
+                // parameters... this leaves us with just the endpoints
+                case "c":
+                    mMode = 2;
+                    mSwallow = 4;
+                    break;
+                // end of path, relative mode
+                case "z":
+                    // draw a connecting line to complete the shape
+                    addLine(mLast, mFirst);
+                    break;
+                // beginning of a (set of) line definitions, relative mode
+                case "l":
+                    mMode = 3;
+                    absolute = false;
+                    mSwallow = 0;
+                    break;
+                // beginning of a (set of) line definitions, absolute mode
+                case "L":
+                    mMode = 3;
+                    absolute = true;
+                    mSwallow = 0;
+                    break;
+                // floating point data that defines an endpoint of a line or curve
+                default:
+                    // if it's a curve, we might need to swallow this value
+                    if (mSwallow > 0) {
+                        mSwallow--;
+                    }
+                    // get the next point
+                    else {
+                        try {
+                            // convert next point to float
+                            float val = Float.valueOf(s);
+                            // if it's the initial x, save it
+                            if (mState == -2) {
+                                mState = -1;
+                                mLast.x = val;
+                                mFirst.x = val;
+                            }
+                            // if it's the initial y, save it... can't draw a line
+                            // yet, because we have 1 endpoint
+                            else if (mState == -1) {
+                                mState = 0;
+                                mLast.y = val;
+                                mFirst.y = val;
+                            }
+                            // if it's an X value, save it
+                            else if (mState == 0) {
+                                if (absolute)
+                                    mCurr.x = val;
+                                else
+                                    mCurr.x = mLast.x + val;
+                                mState = 1;
+                            }
+                            // if it's a Y value, save it and draw a line
+                            else if (mState == 1) {
+                                mState = 0;
+                                if (absolute)
+                                    mCurr.y = val;
+                                else
+                                    mCurr.y = mLast.y + val;
+                                // draw the line
+                                addLine(mLast, mCurr);
+                                mLast.x = mCurr.x;
+                                mLast.y = mCurr.y;
+                                // if we are in curve mode, reinitialize the
+                                // swallower
+                                if (mMode == 2)
+                                    mSwallow = 4;
+                            }
                         }
-                        // if it's the initial y, save it... can't draw a line
-                        // yet, because we have 1 endpoint
-                        else if (mState == -1) {
-                            mState = 0;
-                            mLast.y = val;
-                            mFirst.y = val;
-                        }
-                        // if it's an X value, save it
-                        else if (mState == 0) {
-                            if (absolute)
-                                mCurr.x = val;
-                            else
-                                mCurr.x = mLast.x + val;
-                            mState = 1;
-                        }
-                        // if it's a Y value, save it and draw a line
-                        else if (mState == 1) {
-                            mState = 0;
-                            if (absolute)
-                                mCurr.y = val;
-                            else
-                                mCurr.y = mLast.y + val;
-                            // draw the line
-                            addLine(mLast, mCurr);
-                            mLast.x = mCurr.x;
-                            mLast.y = mCurr.y;
-                            // if we are in curve mode, reinitialize the
-                            // swallower
-                            if (mMode == 2)
-                                mSwallow = 4;
+                        // ignore errors...
+                        catch (NumberFormatException nfs) {
+                            Util.message("SVG Error", "error parsing SVG file");
+                            nfs.printStackTrace();
                         }
                     }
-                    // ignore errors...
-                    catch (NumberFormatException nfs) {
-                        Util.message("SVG Error", "error parsing SVG file");
-                        nfs.printStackTrace();
-                    }
-                }
+                    break;
             }
         }
     }
@@ -354,11 +309,8 @@ public class Svg {
     }
 
     /**
-     * Internal method used by the SVG parser to draw a line. This is a bit of a
-     * hack, in that we create a simple Box2d Edge, and then we make an
-     * invisible actor that we connect to the Edge, so that LOL collision
-     * detection works correctly. There are no images being displayed, and this
-     * is not a proper "Obstacle"
+     * Internal method used by the SVG parser to draw a line. We actually just draw a really
+     * skinny Obstacle and rotate it
      *
      * @param x1 X coordinate of first endpoint
      * @param y1 Y coordinate of first endpoint
@@ -370,27 +322,12 @@ public class Svg {
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
         float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-        mBodyDef.position.set(centerX, centerY);
-        mBodyDef.angle = 0;
-        Body b = Lol.sGame.mCurrentLevel.mWorld.createBody(mBodyDef);
-        EdgeShape line = new EdgeShape();
 
-        // set the line position as an offset from center, rotate it, and
-        // connect a fixture
-        line.set(-len / 2, 0, len / 2, 0);
-        mFixture.shape = line;
-        b.createFixture(mFixture);
-        mFixture.shape.dispose(); // i.e., line.dispose()
-        b.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
-
-        // connect it to an invisible actor, so that collision callbacks
-        // will work (i.e., for inAir)
-        SVGActor invis = new SVGActor("", len, .1f);
-        invis.mBody = b;
-        b.setUserData(invis);
-        // NB: we probably don't need to put the invisible actor on the screen,
-        // since we don't overload render()... this is invisible.
-        Lol.sGame.mCurrentLevel.addActor(invis, 0);
+        // Make an obstacle and rotate it
+        Obstacle o = Obstacle.makeAsBox(x1, y1, len, .1f, "red.png");
+        o.mBody.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
+        // let the game code modify this line segment
+        mActorCallback.handle(o);
     }
 
     /**
@@ -427,17 +364,39 @@ public class Svg {
      */
 
     /**
-     * When we draw a line, we must make it an actor or else hero collisions
-     * with the SVG won't enable it to re-jump. This class is a very lightweight
-     * actor that serves our need.
+     * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
+     * as a bunch of Obstacles. Note that not all Inkscape drawings will work as
+     * expected... if you need more power than this provides, you'll have to
+     * modify Svg.java
+     *
+     * @param svgName    Name of the svg file to load. It should be in the assets
+     *                   folder
+     * @param stretchX   Stretch the drawing in the X dimension by this percentage
+     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
+     * @param xposeX     Shift the drawing in the X dimension. Note that shifting
+     *                   occurs after stretching
+     * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
+     *                   occurs after stretching
+     * @param ac         A callback for customizing each (obstacle) line segment of the SVG
      */
-    class SVGActor extends Actor {
-        SVGActor(String imgName, float width, float height) {
-            super(imgName, width, height);
-        }
+    public static void importLineDrawing(String svgName, float stretchX, float stretchY,
+                                         float xposeX, float xposeY, ActorCallback ac) {
+        // Create an SVG object to hold all the parameters, then use it to parse
+        // the file
+        Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
+        s.parse(svgName);
+    }
 
-        @Override
-        void onCollide(Actor other, Contact contact) {
-        }
+    /**
+     * ActorCallback exposes a function that takes an actor and can modify it.  We use
+     * ActorCallback so that the programmer can arbitrarily modify the line segments of an SVG
+     * after creating them
+     */
+    public interface ActorCallback {
+        /**
+         * Do something with the provided actor
+         * @param actor The actor to modify
+         */
+        void handle(Actor actor);
     }
 }
