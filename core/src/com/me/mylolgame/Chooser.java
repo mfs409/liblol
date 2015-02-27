@@ -295,6 +295,7 @@ public class Chooser implements ScreenManager {
             // we have 92 levels, so just draw a few buttons for now...
             drawLevelButton(8.5f, 16, 5, 5, 91);
             drawLevelButton(15f, 16, 5, 5, 92);
+            drawLevelButton(21.5f, 16, 5, 5, 93);
 
             // draw the navigation buttons
             drawPrevButton(0, 9.5f, 5, 5, 6);

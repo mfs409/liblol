@@ -3565,9 +3565,12 @@ public class Levels implements ScreenManager {
             }
 
             // here's a weak attempt at snow
-            Effect e = Effect.makeParticleSystem("snow.txt", -2, 8, 35);
+            Effect e = Effect.makeParticleSystem("snow.txt", 2, 15, 40);
             e.setRepeat(true);
-
+            e = Effect.makeParticleSystem("snow.txt", 2, 55, 40);
+            e.setRepeat(true);
+            e = Effect.makeParticleSystem("snow.txt", 2, 85, 40);
+            e.setRepeat(true);
             // the trick for getting one PauseScene's dismissal to result in another PauseScene
             // drawing right away is to use the PauseScene CallbackButton facility.  When the first
             // PauseScene is touched, we dismiss it and immediately draw another PauseScene
@@ -3599,6 +3602,57 @@ public class Levels implements ScreenManager {
 
             Control.addZoomOutButton(0, 0, 480, 640, "", 8);
             Control.addZoomInButton(480, 0, 480, 640, "", .25f);
+        }
+
+        // Show how to make an "infinite" level
+        else if (whichLevel == 93) {
+            // set up a standard side scroller with tilt, but make it really really long:
+            Level.configure(300000, 32);
+            Physics.configure(0, -10);
+            PreScene.get().addText("Press to make\nthe hero go up", 255, 255, 255, "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 300000, 32, "red.png", 0, 0, 0);
+
+            // make a hero
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Level.setCameraChase(h);
+            h.setAbsoluteVelocity(10, 0, false);
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0);
+
+            // touching the screen makes the hero go upwards
+            Control.addUpButton(0, 0, 960, 640, "", 20, h);
+
+            // set up our background, with a few layers
+            Background.setColor(23, 180, 255);
+            Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
+            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
+
+            // we win by collecting 10 goodies...
+            Score.setVictoryGoodies(10, 0, 0, 0);
+            Display.addGoodieCount(1, 0, " goodies", 15, 600, "arial.ttf", 255, 255, 255, 20);
+
+            // now set up an obstacle and attach a callback to it
+            //
+            // Note that the obstacle needs to be final or we can't access it within the callback
+            final Obstacle trigger = Obstacle.makeAsBox(30, 0, 1, 32, "");
+            LolCallback lc = new LolCallback(){
+                /**
+                 * Each time the hero hits the obstacle, we'll run this code to draw a new enemy
+                 * and a new obstacle on the screen.  We'll randomize their placement just a bit.
+                 * Also move the obstacle forward, so we can hit it again.
+                 */
+                public void onEvent() {
+                    // make a random enemy and a random goodie.  Put them in X coordinates relative to the trigger
+                    Enemy.makeAsCircle(trigger.getXPosition() + 40 + Util.getRandom(10), Util.getRandom(30), 2, 2, "redball.png");
+                    Goodie.makeAsCircle(trigger.getXPosition() + 50 + Util.getRandom(10), Util.getRandom(30), 2, 2, "blueball.png");
+                    // move the trigger so we can hit it again
+                    trigger.setPosition(trigger.getXPosition() + 50, trigger.getYPosition());
+                }
+            };
+            trigger.setHeroCollisionCallback(0,0,0,0,0,lc);
+            // No transfer of momeuntum when the hero collides with the trigger
+            trigger.setCollisionsEnabled(false);
         }
     }
 }

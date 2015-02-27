@@ -545,6 +545,15 @@ public abstract class Actor implements Renderable {
     }
 
     /**
+     * Change the position of an Actor
+     * @param x The new X position
+     * @param y The new Y position
+     */
+    public void setPosition(float x, float y) {
+        mBody.setTransform(x+mSize.x/2, y+mSize.y/2, mBody.getAngle());
+    }
+
+    /**
      * Returns the width of this actor
      *
      * @return the actor's width
