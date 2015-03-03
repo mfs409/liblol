@@ -1030,8 +1030,10 @@ public class Levels implements ScreenManager {
 
         /*
          * This level shows that we can draw on the screen to create obstacles.
-         * In truth, you'll probably want to change the code for this a lot, but
-         * at least you'll know where to start!
+         *
+         * This is also our first exposure to "callbacks".  A "callback" is a way of providing code
+         * that runs in response to some event.  We use a callback to customize the obstacles that
+         * are drawn to the screen in response to scribbles.
          */
         else if (whichLevel == 29) {
             Level.configure(48, 32);
@@ -1045,9 +1047,22 @@ public class Levels implements ScreenManager {
             Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // turn on 'scribble mode'. Be sure to play with the last two
-            // parameters
-            Level.setScribbleMode("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
+            // turn on 'scribble mode'... this says "draw a purple ball that is 1.5x1.5 at the
+            // location where the scribble happened, but only do it if we haven't drawn anything in
+            // 10 milliseconds."  It also says "when an obstacle is drawn, do some stuff to the
+            // obstacle".  If you don't want any of this functionality, you can replace the whole
+            // "new LolCallback..." region of code with "null".
+            Level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback(){
+                @Override
+                public void onEvent() {
+                    // each time we draw an obstacle, it will be visible to this code as the
+                    // callback's "attached Actor".  We'll change its elasticity, make it disappear
+                    // after 10 seconds, and make it so that the obstacles aren't stationary
+                    mAttachedActor.setPhysics(0, 2, 0);
+                    mAttachedActor.setDisappearDelay(10, true);
+                    mAttachedActor.setCanFall();
+                }
+            });
         }
 
         /*

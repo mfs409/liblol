@@ -386,22 +386,18 @@ public class Level extends ScreenAdapter {
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
      *
-     * @param imgName    The name of the image to use for scribbling
-     * @param duration   How long the scribble stays on screen before disappearing
-     * @param width      Width of the individual components of the scribble
-     * @param height     Height of the individual components of the scribble
-     * @param density    Density of each scribble component
-     * @param elasticity Elasticity of the scribble
-     * @param friction   Friction of the scribble
-     * @param moveable   Can the individual items that are drawn move on account of
-     *                   collisions?
-     * @param interval   Time (in milliseconds) that must transpire between scribble
-     *                   events... use this to avoid outrageously high rates of
-     *                   scribbling
+     * @param imgName          The name of the image to use for scribbling
+     * @param width            Width of the individual components of the scribble
+     * @param height           Height of the individual components of the scribble
+     * @param interval         Time (in milliseconds) that must transpire between scribble
+     *                         events... use this to avoid outrageously high rates of
+     *                         scribbling
+     * @param onCreateCallback A callback to run in order to modify the scribble behavior.
+     *                         The obstacle that is drawn in the scribble will be the
+     *                         "AttachedActor" of the callback.
      */
-    public static void setScribbleMode(final String imgName, final float duration, final float width,
-                                       final float height, final float density, final float elasticity, final float friction,
-                                       final boolean moveable, final int interval) {
+    public static void setScribbleMode(final String imgName, final float width,
+                                       final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
         Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
@@ -434,19 +430,11 @@ public class Level extends ScreenAdapter {
                 // make a circular obstacle
                 final Obstacle o = Obstacle.makeAsCircle(touchLoc.x - width / 2, touchLoc.y - height / 2, width,
                         height, imgName);
-                o.setPhysics(density, elasticity, friction);
-                if (moveable)
-                    o.mBody.setType(BodyType.DynamicBody);
-
-                // possibly set a timer to remove the scribble
-                if (duration > 0) {
-                    Timer.schedule(new Task() {
-                        @Override
-                        public void run() {
-                            o.remove(false);
-                        }
-                    }, duration);
+                if (onCreateCallback != null) {
+                    onCreateCallback.mAttachedActor = o;
+                    onCreateCallback.onEvent();
                 }
+
                 return true;
             }
         });
