@@ -115,6 +115,26 @@ public class Goodie extends Actor {
     }
 
     /**
+     * Draw a goodie with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The goodie, so that it can be further modified
+     */
+    public static Goodie makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Goodie g = new Goodie(width, height, imgName);
+        g.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
+        g.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        return g;
+    }
+
+    /**
      * Internal method: Goodie collision is always handled by the other actor
      * involved in the collision, so we leave this method blank
      *

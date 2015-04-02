@@ -108,6 +108,24 @@ public class Enemy extends Actor {
         Lol.sGame.mCurrentLevel.addActor(e, 0);
         return e;
     }
+    /**
+     * Draw an enemy with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The enemy, so that it can be further modified
+     */
+    public static Enemy makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Enemy e = new Enemy(width, height, imgName);
+        e.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        return e;
+    }
 
     /**
      * Make an enemy that has an underlying circular shape.

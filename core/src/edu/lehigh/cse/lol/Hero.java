@@ -182,6 +182,25 @@ public class Hero extends Actor {
     }
 
     /**
+     * Draw a hero with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The hero, so that it can be further modified
+     */
+    public static Hero makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Hero h = new Hero(width, height, imgName);
+        h.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        return h;
+    }
+
+    /**
      * We can't just use the basic Actor renderer, because we might need to
      * adjust a one-off animation (invincibility or throw) first
      *
