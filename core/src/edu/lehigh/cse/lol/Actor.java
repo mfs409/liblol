@@ -1561,6 +1561,16 @@ public abstract class Actor implements Renderable {
     }
 
     /**
+     * Modify an existing distance joint by changing the distance between the actors
+     * 
+     * @param newDist The new distance between the actors involved in the joint
+     */
+    public void setDistance(float newDist) {
+    	DistanceJoint dj = (DistanceJoint) mDistJoint;
+    	dj.setLength(newDist);
+    }
+    
+    /**
      * In some cases, we need to force an actor to have a kinematic body type
      */
     public void setKinematic() {
