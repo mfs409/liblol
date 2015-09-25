@@ -653,7 +653,7 @@ public class Level extends ScreenAdapter {
         mGameCam.update();
 
         // draw parallax backgrounds
-        mBackground.renderLayers(mSpriteBatch);
+        mBackground.renderLayers(mSpriteBatch, delta);
 
         // Render the actors in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);

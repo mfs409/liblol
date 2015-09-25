@@ -91,6 +91,25 @@ public class Background {
     }
 
     /**
+     * Add a picture that may repeat in the X dimension, and which moves automatically
+     *
+     * @param xSpeed  Speed, in pixels per second
+     * @param imgName The name of the image file to use as the background
+     * @param yOffset The default is to draw the image at y=0. This field allows the
+     *                picture to be moved up or down.
+     * @param width   The width of the image being used as a background layer
+     * @param height  The height of the image being used as a background layer
+     */
+    static public void addHorizontalAutoLayer(float xSpeed, String imgName, float yOffset, float width,
+                                              float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, 0, Media.getImage(imgName)[0], 0, yOffset
+                * Physics.PIXEL_METER_RATIO, width, height);
+        pl.mAutoX = true;
+        pl.mXRepeat = xSpeed != 0;
+        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+    }
+
+    /**
      * Add a picture that may repeat in the Y dimension
      *
      * @param xSpeed  Speed that the picture seems to move in the X direction. "1"
@@ -119,7 +138,7 @@ public class Background {
      *
      * @param sb The SpriteBatch that is being used to do the drawing.
      */
-    void renderLayers(SpriteBatch sb) {
+    void renderLayers(SpriteBatch sb, float elapsed) {
         // center camera on mGameCam's camera
         float x = Lol.sGame.mCurrentLevel.mGameCam.position.x;
         float y = Lol.sGame.mCurrentLevel.mGameCam.position.y;
@@ -132,8 +151,30 @@ public class Background {
             sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam.calculateParallaxMatrix(pl.mXSpeed
                     * Physics.PIXEL_METER_RATIO, pl.mYSpeed * Physics.PIXEL_METER_RATIO));
             sb.begin();
+            // handle auto layers
+        	if (pl.mAutoX) {
+        		// hack for changing the projection matrix
+        		sb.end();
+                sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam.calculateParallaxMatrix(0, 0));
+                sb.begin();
+        		// update position, based on elapsed time
+        		pl.mLastX += pl.mXSpeed * elapsed;
+        		if (pl.mLastX > 960)
+        			pl.mLastX = 0;
+        		if (pl.mLastX < -960)
+        			pl.mLastX = 0;
+        		// figure out the starting point for drawing
+        		float startPoint = pl.mLastX;
+        		while (startPoint > -960)
+        			startPoint -= pl.mWidth;
+        		// start drawing
+        		while (startPoint < 960) {
+        			sb.draw(pl.mImage, startPoint, pl.mYOffset, pl.mWidth, pl.mHeight);
+        			startPoint += pl.mWidth;
+        		}
+        	}
             // Figure out what to draw for layers that repeat in the x dimension
-            if (pl.mXRepeat) {
+        	else if (pl.mXRepeat) {
                 // get the camera center, translate to pixels, and scale by
                 // speed
                 float startX = x * Physics.PIXEL_METER_RATIO * pl.mXSpeed;
