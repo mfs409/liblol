@@ -38,6 +38,7 @@ import edu.lehigh.cse.lol.Display;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Facts;
+import edu.lehigh.cse.lol.Foreground;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
 import edu.lehigh.cse.lol.Level;
@@ -3619,7 +3620,7 @@ public class Levels implements ScreenManager {
             Control.addZoomInButton(480, 0, 480, 640, "", .25f);
         }
 
-        // Show how to make an "infinite" level
+        // Show how to make an "infinite" level, and add a foreground layer
         else if (whichLevel == 93) {
             // set up a standard side scroller with tilt, but make it really really long:
             Level.configure(300000, 32);
@@ -3640,7 +3641,7 @@ public class Levels implements ScreenManager {
             // set up our background, with a few layers
             Background.setColor(23, 180, 255);
             Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Foreground.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
             Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
 
             // we win by collecting 10 goodies...

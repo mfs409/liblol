@@ -123,6 +123,10 @@ public class Level extends ScreenAdapter {
      */
     Background mBackground = new Background();
     /**
+     * The set of Parallax foregrounds
+     */
+    Foreground mForeground = new Foreground();
+    /**
      * The scene to show when the level is created (if any)
      */
     PreScene mPreScene;
@@ -180,7 +184,7 @@ public class Level extends ScreenAdapter {
      */
     OrthographicCamera mGameCam;
     /**
-     * This camera is for drawing parallax backgrounds that go behind the world
+     * This camera is for drawing parallax backgrounds that go in front of or behind the world
      */
     ParallaxCamera mBgCam;
 
@@ -663,6 +667,10 @@ public class Level extends ScreenAdapter {
                 r.render(mSpriteBatch, delta);
         mSpriteBatch.end();
 
+        // draw parallax foregrounds
+        mForeground.renderLayers(mSpriteBatch, delta);
+
+        
         // DEBUG: draw outlines of physics actors
         if (Lol.sGame.mShowDebugBoxes)
             mDebugRender.render(mWorld, mGameCam.combined);

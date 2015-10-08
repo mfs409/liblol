@@ -35,36 +35,16 @@ import java.util.ArrayList;
 import edu.lehigh.cse.lol.internals.ParallaxLayer;
 
 /**
- * The Background class provides a way to declare images that go in the
- * background of the game, and which automatically pan and repeat. Note that if
- * you wish to have a background image that does not pan and repeat, you should
+ * The Foreground class provides a way to declare images that go in the
+ * foreground of the game, and which automatically pan and repeat. Note that if
+ * you wish to have a foreground image that does not pan and repeat, you should
  * use Util.drawPicture.
  */
-public class Background {
+public class Foreground {
     /**
      * All the background layers to show for the current level
      */
     private final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
-    /**
-     * The color that should be shown behind everything
-     */
-    Color mColor = new Color(1, 1, 1, 1);
-
-    /**
-     * Set the background color for the current level
-     *
-     * @param red
-     *            The amount of redness (0-255)
-     * @param green
-     *            The amount of greenness (0-255)
-     * @param blue
-     *            The amount of blueness (0-255)
-     */
-    static public void setColor(int red, int green, int blue) {
-        Lol.sGame.mCurrentLevel.mBackground.mColor.r = ((float) red) / 255;
-        Lol.sGame.mCurrentLevel.mBackground.mColor.g = ((float) green) / 255;
-        Lol.sGame.mCurrentLevel.mBackground.mColor.b = ((float) blue) / 255;
-    }
 
     /*
      * PUBLIC INTERFACE
@@ -82,14 +62,14 @@ public class Background {
      *            is the same speed as the hero; "0" is not at all; ".5f" is at
      *            half the hero's speed
      * @param imgName
-     *            The name of the image file to use as the background
+     *            The name of the image file to use as the foreground
      * @param yOffset
      *            The default is to draw the image at y=0. This field allows the
      *            picture to be moved up or down.
      * @param width
-     *            The width of the image being used as a background layer
+     *            The width of the image being used as a foreground layer
      * @param height
-     *            The height of the image being used as a background layer
+     *            The height of the image being used as a foreground layer
      */
     static public void addHorizontalLayer(float xSpeed, float ySpeed,
             String imgName, float yOffset, float width, float height) {
@@ -97,7 +77,7 @@ public class Background {
                 Media.getImage(imgName)[0], 0, yOffset
                         * Physics.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -107,14 +87,14 @@ public class Background {
      * @param xSpeed
      *            Speed, in pixels per second
      * @param imgName
-     *            The name of the image file to use as the background
+     *            The name of the image file to use as the foreground
      * @param yOffset
      *            The default is to draw the image at y=0. This field allows the
      *            picture to be moved up or down.
      * @param width
-     *            The width of the image being used as a background layer
+     *            The width of the image being used as a foreground layer
      * @param height
-     *            The height of the image being used as a background layer
+     *            The height of the image being used as a foreground layer
      */
     static public void addHorizontalAutoLayer(float xSpeed, String imgName,
             float yOffset, float width, float height) {
@@ -123,14 +103,14 @@ public class Background {
                         * Physics.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
     }
 
     /**
      * Add a picture that may repeat in the Y dimension
      *
      * @param xSpeed
-     *            Speed that the picture seems to move in the X direction. "1"
+     *            Speed that the picture seems to move in the Y direction. "1"
      *            is the same speed as the hero; "0" is not at all; ".5f" is at
      *            half the hero's speed
      * @param ySpeed
@@ -138,14 +118,14 @@ public class Background {
      *            is the same speed as the hero; "0" is not at all; ".5f" is at
      *            half the hero's speed
      * @param imgName
-     *            The name of the image file to use as the background
+     *            The name of the image file to use as the foreground
      * @param xOffset
      *            The default is to draw the image at x=0. This field allows the
      *            picture to be moved left or right.
      * @param width
-     *            The width of the image being used as a background layer
+     *            The width of the image being used as a foreground layer
      * @param height
-     *            The height of the image being used as a background layer
+     *            The height of the image being used as a foreground layer
      */
     static public void addVerticalLayer(float xSpeed, float ySpeed,
             String imgName, float xOffset, float width, float height) {
@@ -153,7 +133,7 @@ public class Background {
                 Media.getImage(imgName)[0],
                 xOffset * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
     }
 
     /**
