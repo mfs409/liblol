@@ -79,6 +79,16 @@ public class ParallaxLayer {
     public float mHeight;
 
     /**
+     * Does the image move in X without concern for the hero location?
+     */
+    public boolean mAutoX = false;
+
+    /**
+     * For tracking previous mAuto movement
+     */
+    public float mLastX = 0;
+    
+    /**
      * Simple constructor... just set the fields
      *
      * @param xSpeed  Speed that the layer moves in the X dimension

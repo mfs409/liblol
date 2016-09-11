@@ -125,8 +125,7 @@ public class Physics {
                 if (!(a instanceof Actor) || !(b instanceof Actor))
                     return;
 
-                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, SVG,
-                // Destination
+                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
                 //
                 // Of those, Hero, Enemy, and Projectile are the only ones with
                 // a non-empty onCollide

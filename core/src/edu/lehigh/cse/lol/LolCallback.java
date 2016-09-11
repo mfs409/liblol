@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.math.Vector3;
+
 /**
  * LolCallback provides an easy way to describe code that should run in response
  * to special events, such as timers, screen presses, or collisions between
@@ -56,6 +58,21 @@ public abstract class LolCallback implements Cloneable {
      * For collision events, this is the other actor involved in the collision
      */
     public Actor mCollideActor;
+
+    /**
+     * When a callback runs in response to a screen touch, we may need to know the world coordinates of the down-press
+     */
+    public Vector3 mDownLocation;
+
+    /**
+     * When a callback runs in response to a screen touch, we may need to know the world coordinates of the up-press
+     */
+    public Vector3 mUpLocation;
+
+    /**
+     * When a callback runs in response to a screen touch, we may need to know the world coordinates of the press as it moves.
+     */
+    public Vector3 mMoveLocation;
 
     /**
      * Make a copy of the current LolCallback

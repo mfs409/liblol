@@ -545,6 +545,15 @@ public abstract class Actor implements Renderable {
     }
 
     /**
+     * Change the position of an Actor
+     * @param x The new X position
+     * @param y The new Y position
+     */
+    public void setPosition(float x, float y) {
+        mBody.setTransform(x+mSize.x/2, y+mSize.y/2, mBody.getAngle());
+    }
+
+    /**
      * Returns the width of this actor
      *
      * @return the actor's width
@@ -1551,6 +1560,16 @@ public abstract class Actor implements Renderable {
         mDistJoint = Lol.sGame.mCurrentLevel.mWorld.createJoint(mDistJointDef);
     }
 
+    /**
+     * Modify an existing distance joint by changing the distance between the actors
+     * 
+     * @param newDist The new distance between the actors involved in the joint
+     */
+    public void setDistance(float newDist) {
+    	DistanceJoint dj = (DistanceJoint) mDistJoint;
+    	dj.setLength(newDist);
+    }
+    
     /**
      * In some cases, we need to force an actor to have a kinematic body type
      */

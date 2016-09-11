@@ -35,8 +35,10 @@ import edu.lehigh.cse.lol.Background;
 import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Display;
+import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Facts;
+import edu.lehigh.cse.lol.Foreground;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
 import edu.lehigh.cse.lol.Level;
@@ -1029,8 +1031,10 @@ public class Levels implements ScreenManager {
 
         /*
          * This level shows that we can draw on the screen to create obstacles.
-         * In truth, you'll probably want to change the code for this a lot, but
-         * at least you'll know where to start!
+         *
+         * This is also our first exposure to "callbacks".  A "callback" is a way of providing code
+         * that runs in response to some event.  We use a callback to customize the obstacles that
+         * are drawn to the screen in response to scribbles.
          */
         else if (whichLevel == 29) {
             Level.configure(48, 32);
@@ -1044,9 +1048,22 @@ public class Levels implements ScreenManager {
             Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
 
-            // turn on 'scribble mode'. Be sure to play with the last two
-            // parameters
-            Level.setScribbleMode("purpleball.png", 3, 1.5f, 1.5f, 0, 0, 0, true, 10);
+            // turn on 'scribble mode'... this says "draw a purple ball that is 1.5x1.5 at the
+            // location where the scribble happened, but only do it if we haven't drawn anything in
+            // 10 milliseconds."  It also says "when an obstacle is drawn, do some stuff to the
+            // obstacle".  If you don't want any of this functionality, you can replace the whole
+            // "new LolCallback..." region of code with "null".
+            Level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback(){
+                @Override
+                public void onEvent() {
+                    // each time we draw an obstacle, it will be visible to this code as the
+                    // callback's "attached Actor".  We'll change its elasticity, make it disappear
+                    // after 10 seconds, and make it so that the obstacles aren't stationary
+                    mAttachedActor.setPhysics(0, 2, 0);
+                    mAttachedActor.setDisappearDelay(10, true);
+                    mAttachedActor.setCanFall();
+                }
+            });
         }
 
         /*
@@ -1151,6 +1168,7 @@ public class Levels implements ScreenManager {
                         Facts.putGameFact("HighScore32", Score.getDistance());
                 }
             };
+
             Level.setWinCallback(sc);
             Level.setLoseCallback(sc);
         }
@@ -1414,10 +1432,17 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            Svg.importLineDrawing("shape.svg", 1, 0, 0, 2f, .5f, 25f, 15f);
+            Svg.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new Svg.ActorCallback() {
+                @Override
+                public void handle(Actor line) {
+                    // This code is run each time a line of the SVG is drawn.  When we get a line,
+                    // we'll give it some density and friction.  Remember that the line is
+                    // actually a rotated obstacle
+                    line.setPhysics(1, 0, .1f);
+                }
+            });
 
-            // notice that we can only get to the destination by jumping from
-            // *on top of* the obstacle
+            // provide a destination
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
         }
@@ -2686,7 +2711,6 @@ public class Levels implements ScreenManager {
                     // resize the hero, and change its image
                     mCollideActor.resize(mCollideActor.getXPosition(), mCollideActor.getYPosition(), 5, 5);
                     mCollideActor.setImage("stars.png", 0);
-
                 }
             });
         }
@@ -3530,19 +3554,57 @@ public class Levels implements ScreenManager {
 
             Destination.makeAsBox(47, 0, .1f, 32, "");
             Score.setVictoryDestination(1);
-        } else if (whichLevel == 92) {
-            Level.configure(48, 32);
-            Physics.configure(0, -10);
+        }
 
+        /**
+         * Demonstrate how we can chain pausescenes together, and also show how to use particle
+         * effects
+         */
+        else if (whichLevel == 92) {
+            // start with a basic tilt-based side-scroller
+            Level.configure(3 * 48, 32);
+            Physics.configure(0, -10);
+            Tilt.enable(10, 0);
+            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            h.setPhysics(.1f, 0, 0.6f);
+            h.setMoveByTilting();
+            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            Score.setVictoryDestination(1);
+            Level.setCameraChase(h);
+
+            // put some flame effects on a black background
+            Background.setColor(0, 0, 0);
+            for (int i = 5; i < 150; i += 15) {
+                Effect e = Effect.makeParticleSystem("flame.txt", -2, i, 5);
+                e.setRepeat(true);
+            }
+
+            // here's a weak attempt at snow
+            Effect e = Effect.makeParticleSystem("snow.txt", 2, 15, 40);
+            e.setRepeat(true);
+            e = Effect.makeParticleSystem("snow.txt", 2, 55, 40);
+            e.setRepeat(true);
+            e = Effect.makeParticleSystem("snow.txt", 2, 85, 40);
+            e.setRepeat(true);
+            // the trick for getting one PauseScene's dismissal to result in another PauseScene
+            // drawing right away is to use the PauseScene CallbackButton facility.  When the first
+            // PauseScene is touched, we dismiss it and immediately draw another PauseScene
+
+            // set up a simple PauseScene
             PauseScene.get().reset();
             PauseScene.get().addText("test", 255, 255, 255, "arial.ttf", 32);
+            // this is the code to run when the *second* pausescene is touched.  Making it "final"
+            // means that we can refer to it inside of the other callback
             final LolCallback sc2 = new LolCallback() {
                 public void onEvent() {
                     PauseScene.get().dismiss();
                 }
             };
+            // this is the code to run when the *first* pausescene is touched
             LolCallback sc1 = new LolCallback() {
                 public void onEvent() {
+                    // clear the pausescene, draw another one
                     PauseScene.get().dismiss();
                     PauseScene.get().reset();
                     PauseScene.get().addText("test2", 255, 255, 255, "arial.ttf", 32);
@@ -3550,8 +3612,63 @@ public class Levels implements ScreenManager {
                     PauseScene.get().show();
                 }
             };
+            // set the callback for the first pausescene, and show it
             PauseScene.get().addCallbackButton(0, 0, 960, 640, sc1);
             PauseScene.get().show();
+
+            Control.addZoomOutButton(0, 0, 480, 640, "", 8);
+            Control.addZoomInButton(480, 0, 480, 640, "", .25f);
+        }
+
+        // Show how to make an "infinite" level, and add a foreground layer
+        else if (whichLevel == 93) {
+            // set up a standard side scroller with tilt, but make it really really long:
+            Level.configure(300000, 32);
+            Physics.configure(0, -10);
+            PreScene.get().addText("Press to make\nthe hero go up", 255, 255, 255, "arial.ttf", 32);
+            Util.drawBoundingBox(0, 0, 300000, 32, "red.png", 0, 0, 0);
+
+            // make a hero
+            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Level.setCameraChase(h);
+            h.setAbsoluteVelocity(10, 0, false);
+            h.disableRotation();
+            h.setPhysics(.1f, 0, 0);
+
+            // touching the screen makes the hero go upwards
+            Control.addUpButton(0, 0, 960, 640, "", 20, h);
+
+            // set up our background, with a few layers
+            Background.setColor(23, 180, 255);
+            Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
+            Foreground.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
+
+            // we win by collecting 10 goodies...
+            Score.setVictoryGoodies(10, 0, 0, 0);
+            Display.addGoodieCount(1, 0, " goodies", 15, 600, "arial.ttf", 255, 255, 255, 20);
+
+            // now set up an obstacle and attach a callback to it
+            //
+            // Note that the obstacle needs to be final or we can't access it within the callback
+            final Obstacle trigger = Obstacle.makeAsBox(30, 0, 1, 32, "");
+            LolCallback lc = new LolCallback(){
+                /**
+                 * Each time the hero hits the obstacle, we'll run this code to draw a new enemy
+                 * and a new obstacle on the screen.  We'll randomize their placement just a bit.
+                 * Also move the obstacle forward, so we can hit it again.
+                 */
+                public void onEvent() {
+                    // make a random enemy and a random goodie.  Put them in X coordinates relative to the trigger
+                    Enemy.makeAsCircle(trigger.getXPosition() + 40 + Util.getRandom(10), Util.getRandom(30), 2, 2, "redball.png");
+                    Goodie.makeAsCircle(trigger.getXPosition() + 50 + Util.getRandom(10), Util.getRandom(30), 2, 2, "blueball.png");
+                    // move the trigger so we can hit it again
+                    trigger.setPosition(trigger.getXPosition() + 50, trigger.getYPosition());
+                }
+            };
+            trigger.setHeroCollisionCallback(0,0,0,0,0,lc);
+            // No transfer of momeuntum when the hero collides with the trigger
+            trigger.setCollisionsEnabled(false);
         }
     }
 }

@@ -99,12 +99,14 @@ public class Media {
         //
         // NB: if this crashes, the user will get a reasonably good error
         // message
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
-        FreeTypeFontParameter fp = new FreeTypeFontParameter();
-        fp.size = fontSize;
-        fp.characters = FreeTypeFontGenerator.DEFAULT_CHARS;
-        fp.flip = false;
-        f = generator.generateFont(fp);
+        parameter.size = fontSize;
+        generator.scaleForPixelHeight(fontSize);
+        parameter.minFilter = Texture.TextureFilter.Linear;
+        parameter.magFilter = Texture.TextureFilter.Linear;
+
+        f = generator.generateFont(parameter);
         generator.dispose();
         Lol.sGame.mMedia.mFonts.put(key, f);
         return f;

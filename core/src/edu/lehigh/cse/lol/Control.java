@@ -1052,6 +1052,90 @@ public class Control {
     }
 
     /**
+     * Add a control with callbacks for down, up, and pan
+     *
+     * @param x
+     *            The X coordinate of the bottom left corner (in pixels)
+     * @param y
+     *            The Y coordinate of the bottom left corner (in pixels)
+     * @param width
+     *            The width of the image
+     * @param height
+     *            The height of the image
+     * @param imgName
+     *            The name of the image to display. Use "" for an invisible
+     *            button
+     * @param upCB
+     *            The callback to run when the Control is released
+     * @param dnCB
+     *            The callback to run when the Control is pressed
+     * @param mvCB
+     *            The callback to run when there is a finger move (pan) on the
+     *            Control
+     */
+    public static Control addPanCallbackControl(int x, int y, int width, int height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
+        final Control c = new Control(imgName, x, y, width, height);
+        // Pan only consists of pan-stop and pan events. That means we can't
+        // capture a down-press or up-press that isn't also involved in a move.
+        // To overcome this limitation, we'll make this BOTH a pan control and a
+        // toggle control
+        c.mGestureAction = new GestureAction() {
+            /**
+             * Toggle action: either call the "up" callback or the "down" callback
+             */
+            @Override
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
+                // up event
+                if (isUp) {
+                    upCB.mUpLocation = touchVec.cpy();
+                    upCB.onEvent();
+                    mHolding = false;
+                }
+                // down event
+                else {
+                    mHolding = true;
+                    dnCB.mDownLocation = touchVec.cpy();
+                    dnCB.onEvent();
+                }
+                // toggle state
+                mHolding = !isUp;
+                return true;
+            }
+            /**
+             * Finger move action: call the "pan" callback
+             */
+            @Override
+            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+                // force a down event, if we didn't get one
+                if (!mHolding) {
+                    toggle(false, touchVec);
+                    return true;
+                }
+                // pan event
+                mvCB.mMoveLocation = touchVec.cpy();
+                mvCB.onEvent();
+                return true;
+            }
+            /**
+             * Pan stop doesn't always trigger an up, so force one if necessary
+             */
+            @Override
+            public boolean onPanStop(Vector3 touchVec) {
+                // force an up event?
+                if (mHolding) {
+                    toggle(true, touchVec);
+                    return true;
+                }
+                return false;
+            }
+        };
+        Lol.sGame.mCurrentLevel.mControls.add(c);
+        Lol.sGame.mCurrentLevel.mPanControls.add(c);
+        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        return c;
+    }
+
+    /**
      * Render the control
      *
      * @param sb The SpriteBatch to use to draw the image
