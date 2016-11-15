@@ -100,6 +100,15 @@ public class Physics {
     }
 
     /**
+     * Change the gravity in a running level
+     * @param newXGravity The new X gravity
+     * @param newYGravity The new Y gravity
+     */
+    public static void resetGravity(float newXGravity, float newYGravity) {
+        Lol.sGame.mCurrentLevel.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
+    }
+
+    /**
      * Configure physics for the current level
      *
      * @param defaultXGravity The default force moving actors to the left (negative) or
