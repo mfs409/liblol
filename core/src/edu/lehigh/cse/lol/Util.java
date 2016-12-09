@@ -29,6 +29,7 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -41,6 +42,11 @@ import edu.lehigh.cse.lol.internals.Renderable;
  * few simple wrappers that we give to the game developer
  */
 public class Util {
+    /**
+     * Use this for determining bounds of text boxes
+     */
+    static private GlyphLayout glyphLayout = new GlyphLayout();
+
     /**
      * A random number generator... We provide this so that new game developers
      * don't create lots of Random()s throughout their code
@@ -93,7 +99,8 @@ public class Util {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
+                glyphLayout.setText(bf, message);
+                bf.draw(sb, message, x, y + glyphLayout.height);
             }
         };
     }
@@ -113,13 +120,14 @@ public class Util {
     public static Renderable makeText(final String message, final int red, final int green, final int blue,
                                       String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
-        final float x = Lol.sGame.mWidth / 2 - bf.getMultiLineBounds(message).width / 2;
-        final float y = Lol.sGame.mHeight / 2 + bf.getMultiLineBounds(message).height / 2;
+        glyphLayout.setText(bf, message);
+        final float x = Lol.sGame.mWidth / 2 - glyphLayout.width / 2;
+        final float y = Lol.sGame.mHeight / 2 + glyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.drawMultiLine(sb, message, x, y);
+                bf.draw(sb, message, x, y);
             }
         };
     }
@@ -222,9 +230,10 @@ public class Util {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-                bf.drawMultiLine(sb, text, x, y + bf.getMultiLineBounds(text).height);
-                bf.setScale(1);
+                bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+                glyphLayout.setText(bf, text);
+                bf.draw(sb, text, x, y + glyphLayout.height);
+                bf.getData().setScale(1);
             }
         };
         Lol.sGame.mCurrentLevel.addActor(r, zIndex);
@@ -252,19 +261,20 @@ public class Util {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         // figure out the image dimensions
-        bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-        final float w = bf.getMultiLineBounds(text).width;
-        final float h = bf.getMultiLineBounds(text).height;
-        bf.setScale(1);
+        bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+        glyphLayout.setText(bf, text);
+        final float w = glyphLayout.width;
+        final float h = glyphLayout.height;
+        bf.getData().setScale(1);
 
         // describe how to render it
         Renderable r = new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.setScale(1 / Physics.PIXEL_METER_RATIO);
-                bf.drawMultiLine(sb, text, centerX - w / 2, centerY + h / 2);
-                bf.setScale(1);
+                bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+                bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
+                bf.getData().setScale(1);
             }
         };
         Lol.sGame.mCurrentLevel.addActor(r, zIndex);

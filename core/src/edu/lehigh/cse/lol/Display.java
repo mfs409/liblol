@@ -29,6 +29,7 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
@@ -38,6 +39,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * class encapsulates all of the displayable text.
  */
 public class Display {
+    /**
+     * Use this for determining bounds of text boxes
+     */
+    static private GlyphLayout glyphLayout = new GlyphLayout();
+
     /**
      * What color should we use to draw text
      */
@@ -76,7 +82,8 @@ public class Display {
      * @param sb      The SpriteBatch used to render the text
      */
     static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
-        bf.drawMultiLine(sb, message, x, y + bf.getMultiLineBounds(message).height);
+        glyphLayout.setText(bf, message);
+        bf.draw(sb, message, x, y + glyphLayout.height);
     }
 
     /**

@@ -107,6 +107,7 @@ public class Media {
         parameter.magFilter = Texture.TextureFilter.Linear;
 
         f = generator.generateFont(parameter);
+        f.setUseIntegerPositions(false); // when we switch to HTML builds, this helps
         generator.dispose();
         Lol.sGame.mMedia.mFonts.put(key, f);
         return f;
@@ -121,7 +122,7 @@ public class Media {
     public static Sound getSound(String soundName) {
         Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving sound '" + soundName + "'");
+            Util.message("ERROR", "Error retrieving sound '" + soundName + "'");
         return ret;
     }
 
@@ -134,7 +135,7 @@ public class Media {
     static Music getMusic(String musicName) {
         Music ret = Lol.sGame.mMedia.mTunes.get(musicName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving music '" + musicName + "'");
+            Util.message("ERROR", "Error retrieving music '" + musicName + "'");
         return ret;
     }
 
@@ -148,7 +149,7 @@ public class Media {
     public static TextureRegion[] getImage(String imgName) {
         TextureRegion[] ret = Lol.sGame.mMedia.mImages.get(imgName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving image '" + imgName + "'");
+            Util.message("ERROR", "Error retrieving image '" + imgName + "'");
         return ret;
     }
 
@@ -168,7 +169,7 @@ public class Media {
 
     /**
      * Register an image file, so that it can be used later. Images should be
-     * .png files. Note that images with internal animations (i.e., gifs) do not
+     * .png files. Note that images with internal animations (i.e., GIFs) do not
      * work correctly. You should use cell-based animation instead.
      *
      * @param imgName the name of the image file (assumed to be in the "assets"
@@ -188,7 +189,7 @@ public class Media {
      * difference between regular images and animatable images is that
      * animatable images should be thought of as having multiple columns and
      * rows, which allow cell-based animation. Images should be .png files. Note
-     * that images with internal animations (i.e., gifs) do not work correctly.
+     * that images with internal animations (i.e., GIFs) do not work correctly.
      * You should use cell-based animation instead.
      *
      * @param imgName the name of the image file (assumed to be in the "assets"
