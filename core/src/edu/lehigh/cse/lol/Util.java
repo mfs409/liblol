@@ -68,8 +68,7 @@ public class Util {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
-        TextureRegion[] trs = Media.getImage(imgName);
-        final TextureRegion tr = (trs != null) ? trs[0] : null;
+        final TextureRegion tr = Media.getImage(imgName);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {

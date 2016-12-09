@@ -74,7 +74,7 @@ public class Foreground {
     static public void addHorizontalLayer(float xSpeed, float ySpeed,
             String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName)[0], 0, yOffset
+                Media.getImage(imgName), 0, yOffset
                         * Physics.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
@@ -99,7 +99,7 @@ public class Foreground {
     static public void addHorizontalAutoLayer(float xSpeed, String imgName,
             float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
-                Media.getImage(imgName)[0], 0, yOffset
+                Media.getImage(imgName), 0, yOffset
                         * Physics.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
@@ -130,7 +130,7 @@ public class Foreground {
     static public void addVerticalLayer(float xSpeed, float ySpeed,
             String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName)[0],
+                Media.getImage(imgName),
                 xOffset * Physics.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);

@@ -1111,12 +1111,9 @@ public abstract class Actor implements Renderable {
      * Change the image being used to display the actor
      *
      * @param imgName The name of the new image file to use
-     * @param index   The index to use, in the case that the image was registered as
-     *                animatable. When in doubt, use 0.
      */
-    public void setImage(String imgName, int index) {
+    public void setImage(String imgName) {
         mAnimator.updateImage(imgName);
-        mAnimator.setIndex(index);
     }
 
     /**

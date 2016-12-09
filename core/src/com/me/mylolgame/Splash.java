@@ -91,9 +91,9 @@ public class Splash implements ScreenManager {
         // figure out which image to use for the obstacle based on the current
         // volume state
         if (Lol.getVolume()) {
-            o.setImage("audio_off.png", 0);
+            o.setImage("audio_off.png");
         } else {
-            o.setImage("audio_on.png", 0);
+            o.setImage("audio_on.png");
         }
         // when the obstacle is touched, change the mute and then update the
         // picture for the obstacle
@@ -101,9 +101,9 @@ public class Splash implements ScreenManager {
             public void onEvent() {
                 Lol.toggleMute();
                 if (Lol.getVolume()) {
-                    mAttachedActor.setImage("audio_off.png", 0);
+                    mAttachedActor.setImage("audio_off.png");
                 } else {
-                    mAttachedActor.setImage("audio_on.png", 0);
+                    mAttachedActor.setImage("audio_on.png");
                 }
             }
         });

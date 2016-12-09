@@ -83,9 +83,9 @@ public class Control {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
-        TextureRegion[] trs = Media.getImage(imgName);
-        if (trs != null)
-            mImage = trs[0];
+        TextureRegion tr = Media.getImage(imgName);
+        if (tr != null)
+            mImage = tr;
 
         // set up the touchable range for the image
         mRange = new Rectangle(x, y, width, height);
@@ -726,14 +726,8 @@ public class Control {
             public boolean onTap(Vector3 vv) {
                 callback.onEvent();
                 c.mIsTouchable = false;
-                TextureRegion[] trs = Media.getImage(inactiveImgName);
-                if (trs != null) {
-                    c.mImage = trs[0];
-                    Util.message("issue", c.mImage + "");
-                } else {
-                    c.mImage = null;
-                    Util.message("issue", "null image");
-                }
+                TextureRegion tr = Media.getImage(inactiveImgName);
+                c.mImage = tr;
                 return true;
             }
         };

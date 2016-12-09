@@ -107,11 +107,40 @@ public class MyGame extends Lol {
         Media.registerImage("back.png");
 
         // load animated images (a.k.a. Sprite Sheets)
-        Media.registerAnimatableImage("stars.png", 8, 1);
-        Media.registerAnimatableImage("stars_flipped.png", 8, 1);
-        Media.registerAnimatableImage("flystar.png", 2, 1);
-        Media.registerAnimatableImage("starburst.png", 4, 1);
-        Media.registerAnimatableImage("colorstar.png", 8, 1);
+        Media.registerImage("legstar1.png");
+        Media.registerImage("legstar2.png");
+        Media.registerImage("legstar3.png");
+        Media.registerImage("legstar4.png");
+        Media.registerImage("legstar5.png");
+        Media.registerImage("legstar6.png");
+        Media.registerImage("legstar7.png");
+        Media.registerImage("legstar8.png");
+        
+        Media.registerImage("fliplegstar1.png");
+        Media.registerImage("fliplegstar2.png");
+        Media.registerImage("fliplegstar3.png");
+        Media.registerImage("fliplegstar4.png");
+        Media.registerImage("fliplegstar5.png");
+        Media.registerImage("fliplegstar6.png");
+        Media.registerImage("fliplegstar7.png");
+        Media.registerImage("fliplegstar8.png");
+        
+        Media.registerImage("flystar1.png");
+        Media.registerImage("flystar2.png");
+        
+        Media.registerImage("starburst1.png");
+        Media.registerImage("starburst2.png");
+        Media.registerImage("starburst3.png");
+        Media.registerImage("starburst4.png");
+        
+        Media.registerImage("colorstar1.png");
+        Media.registerImage("colorstar2.png");
+        Media.registerImage("colorstar3.png");
+        Media.registerImage("colorstar4.png");
+        Media.registerImage("colorstar5.png");
+        Media.registerImage("colorstar6.png");
+        Media.registerImage("colorstar7.png");
+        Media.registerImage("colorstar8.png");
 
         // load sounds
         Media.registerSound("hipitch.ogg");

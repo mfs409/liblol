@@ -1301,8 +1301,8 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // this lets the hero flip its image when it moves backwards
-            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 0));
-            h.setDefaultReverseAnimation(new Animation("stars_flipped.png", 200, true, 7, 7));
+            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
+            h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
 
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Score.setVictoryDestination(1);
@@ -1882,7 +1882,7 @@ public class Levels implements ScreenManager {
             // image, and we show each for 200 milliseconds. This is the "easy"
             // animation mechanism, where every cell is shown for the same
             // amount of time
-            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 1, 2, 3));
+            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar2.png", "legstar3.png", "legstar4.png"));
         }
 
         /*
@@ -1913,10 +1913,10 @@ public class Levels implements ScreenManager {
 
             // this is the more complex form of animation... we show the
             // different cells for different lengths of time
-            h.setDefaultAnimation(new Animation("stars.png", 4, true).to(0, 150).to(1, 200).to(2, 300).to(3, 350));
+            h.setDefaultAnimation(new Animation(4, true).to("legstar1.png", 150).to("legstar2.png", 200).to("legstar3.png", 300).to("legstar4.png", 350));
             // we can use the complex form to express the simpler animation, of
             // course
-            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
+            h.setJumpAnimation(new Animation(4, true).to("legstar4.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
             // create a goodie that has a disappearance animation. When the
             // goodie is ready to disappear, we'll remove it, and then we'll run
@@ -1924,9 +1924,9 @@ public class Levels implements ScreenManager {
             // size we want, but we need to offset it from the (defunct)
             // goodie's position. Note, too, that the final cell is blank, so
             // that we don't leave a residue on the screen.
-            Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "stars.png");
-            g.setDisappearAnimation(new Animation("starburst.png", 4, false).to(2, 200).to(1, 200).to(0, 200)
-                    .to(3, 200), 1, 0, 5, 5);
+            Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "starburst3.png");
+            g.setDisappearAnimation(new Animation(4, false).to("starburst3.png", 200).to("starburst2.png", 200).to("starburst1.png", 200)
+                    .to("starburst4.png", 200), 1, 0, 5, 5);
         }
 
         /*
@@ -1951,12 +1951,12 @@ public class Levels implements ScreenManager {
             h.setMoveByTilting();
 
             // set up an animation when the hero throws:
-            h.setThrowAnimation(new Animation("colorstar.png", 2, false).to(3, 100).to(4, 500));
+            h.setThrowAnimation(new Animation(2, false).to("colorstar4.png", 100).to("colorstar5.png", 500));
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
             ProjectilePool.configure(100, 1, 1, "flystar.png", 1, 0, true);
-            ProjectilePool.setAnimation(new Animation("flystar.png", 100, true, 0, 1));
+            ProjectilePool.setAnimation(new Animation(100, true, "flystar1.png", "flystar2.png"));
         }
 
         /*
@@ -1979,9 +1979,8 @@ public class Levels implements ScreenManager {
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation("colorstar.png", 4, true).to(0, 300).to(1, 300).to(2, 300).to(3, 300));
-            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100)
-                    .to(7, 100));
+            h.setDefaultAnimation(new Animation(4, true).to("colorstar1.png", 300).to("colorstar2.png", 300).to("colorstar3.png", 300).to("colorstar4.png", 300));
+            h.setInvincibleAnimation(new Animation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
@@ -2038,8 +2037,8 @@ public class Levels implements ScreenManager {
             Hero h = Hero.makeAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
             h.addVelocity(15, 0, false);
-            h.setCrawlAnimation(new Animation("stars.png", 4, true).to(0, 100).to(1, 300).to(2, 300).to(3, 100));
-            h.setJumpAnimation(new Animation("stars.png", 4, true).to(4, 200).to(5, 200).to(6, 200).to(7, 200));
+            h.setCrawlAnimation(new Animation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
+            h.setJumpAnimation(new Animation(4, true).to("legstar5.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
             // enable hero jumping and crawling
             h.setJumpImpulses(0, 15);
@@ -2106,7 +2105,7 @@ public class Levels implements ScreenManager {
                     int s = ((Hero) mAttachedActor).getStrength();
                     // set the hero's image index to (s-1), i.e., one of the
                     // indices in the range 0..7, depending on strength
-                    mAttachedActor.setImage("colorstar.png", s - 1);
+                    mAttachedActor.setImage("colorstar"+s+".png");
 
                 }
             });
@@ -2607,8 +2606,7 @@ public class Levels implements ScreenManager {
             Hero h = Hero.makeAsCircle(12, 12, 4, 4, "greenball.png");
             h.setStrength(3);
             h.setMoveByTilting();
-            h.setInvincibleAnimation(new Animation("colorstar.png", 4, true).to(4, 100).to(5, 100).to(6, 100)
-                    .to(7, 100));
+            h.setInvincibleAnimation(new Animation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
 
             // a goodie, so we can do defeat by invincibility
             Goodie g1 = Goodie.makeAsCircle(20, 29, 2, 3, "purpleball.png");
@@ -2710,7 +2708,7 @@ public class Levels implements ScreenManager {
                     mAttachedActor.remove(true);
                     // resize the hero, and change its image
                     mCollideActor.resize(mCollideActor.getXPosition(), mCollideActor.getYPosition(), 5, 5);
-                    mCollideActor.setImage("stars.png", 0);
+                    mCollideActor.setImage("legstar1.png");
                 }
             });
         }
@@ -2865,8 +2863,8 @@ public class Levels implements ScreenManager {
             // change its direction of travel. The second "true" means the hero
             // will stop immediately when we release our finger.
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
-            h.setDefaultAnimation(new Animation("stars.png", 200, true, 0, 0));
-            h.setDefaultReverseAnimation(new Animation("stars_flipped.png", 200, true, 7, 7));
+            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
+            h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
             h.setPokePath(4, false);
 
             Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
@@ -3369,7 +3367,7 @@ public class Levels implements ScreenManager {
                 public void onEvent() {
                     // NB: the setStopCallback call sets the callback's
                     // attachedSprite to the hero.
-                    mAttachedActor.setImage("red.png", 0);
+                    mAttachedActor.setImage("red.png");
                 }
             });
 
@@ -3384,7 +3382,7 @@ public class Levels implements ScreenManager {
                 }
             };
             rotatorSC.mAttachedActor = h;
-            Control.addRotator(215, 135, 50, 50, "stars.png", 2, rotatorSC);
+            Control.addRotator(215, 135, 50, 50, "legstar1.png", 2, rotatorSC);
             LolCallback barSC = new LolCallback() {
                 public void onEvent() {
                     // vertical bar... make the entity move

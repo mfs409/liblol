@@ -89,17 +89,10 @@ public class AnimationDriver {
      * @param imgName The name of the image file to use
      */
     public void updateImage(String imgName) {
-        mImages = Media.getImage(imgName);
+        if (mImages == null)
+            mImages = new TextureRegion[1];
+        mImages[0] = Media.getImage(imgName);
         mImageIndex = 0;
-    }
-
-    /**
-     * Change the index of the default image to display
-     *
-     * @param i The index to use
-     */
-    public void setIndex(int i) {
-        mImageIndex = i;
     }
 
     /**
@@ -126,18 +119,18 @@ public class AnimationDriver {
         long millis = (long) (1000 * mCurrentAnimationTime);
         // are we still in this frame?
         if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
         // are we on the last frame, with no loop? If so, stay where we
         // are...
         else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
         // else advance, reset, go
         else {
             mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
             mCurrentAnimationTime = 0;
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
     }
 }

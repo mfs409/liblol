@@ -62,7 +62,7 @@ public class Media {
     /**
      * Store the images used by this game
      */
-    private final TreeMap<String, TextureRegion[]> mImages = new TreeMap<>();
+    private final TreeMap<String, TextureRegion> mImages = new TreeMap<>();
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
@@ -146,8 +146,8 @@ public class Media {
      * @param imgName Name of the image file to retrieve
      * @return a TextureRegion object that can be used to create Actors
      */
-    public static TextureRegion[] getImage(String imgName) {
-        TextureRegion[] ret = Lol.sGame.mMedia.mImages.get(imgName);
+    public static TextureRegion getImage(String imgName) {
+        TextureRegion ret = Lol.sGame.mMedia.mImages.get(imgName);
         if (ret == null)
             Util.message("ERROR", "Error retrieving image '" + imgName + "'");
         return ret;
@@ -179,42 +179,8 @@ public class Media {
      */
     static public void registerImage(String imgName) {
         // Create an array with one entry
-        TextureRegion[] tr = new TextureRegion[1];
-        tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
+        TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
         Lol.sGame.mMedia.mImages.put(imgName, tr);
-    }
-
-    /**
-     * Register an animatable image file, so that it can be used later. The
-     * difference between regular images and animatable images is that
-     * animatable images should be thought of as having multiple columns and
-     * rows, which allow cell-based animation. Images should be .png files. Note
-     * that images with internal animations (i.e., GIFs) do not work correctly.
-     * You should use cell-based animation instead.
-     *
-     * @param imgName the name of the image file (assumed to be in the "assets"
-     *                folder). This should be of the form "image.png", and should be
-     *                of type "png"
-     * @param columns The number of columns that comprise this image file
-     * @param rows    The number of rows that comprise this image file
-     */
-    static public void registerAnimatableImage(String imgName, int columns, int rows) {
-        // Load the file as a texture
-        Texture t = new Texture(Gdx.files.internal(imgName));
-        // carve the image into cells of equal width and height
-        int width = t.getWidth() / columns;
-        int height = t.getHeight() / rows;
-        TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
-        // put all entries into a 1-D array
-        TextureRegion[] trs = new TextureRegion[columns * rows];
-        int index = 0;
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                trs[index] = trgrid[i][j];
-                index++;
-            }
-        }
-        Lol.sGame.mMedia.mImages.put(imgName, trs);
     }
 
     /**
