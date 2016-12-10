@@ -563,7 +563,7 @@ public class Hero extends Actor {
      */
     public void setThrowAnimation(Animation a) {
         mThrowAnimation = a;
-        // compute the length of the throw sequence, so that we can get our
+        // compute the length of the throw sequence, so that we can getLoseScene our
         // timer right for restoring the default animation
         mThrowAnimateTotalLength = 0;
         for (long l : a.mDurations)

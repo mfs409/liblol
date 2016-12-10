@@ -39,102 +39,14 @@ import edu.lehigh.cse.lol.internals.ParallaxLayer;
  * foreground of the game, and which automatically pan and repeat. Note that if
  * you wish to have a foreground image that does not pan and repeat, you should
  * use Util.drawPicture.
+ *
+ * TODO: merge this with Background... they're much simpler now...
  */
 public class Foreground {
     /**
      * All the background layers to show for the current level
      */
-    private final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Add a picture that may repeat in the X dimension
-     *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the X direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
-     */
-    static public void addHorizontalLayer(float xSpeed, float ySpeed,
-            String imgName, float yOffset, float width, float height) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName), 0, yOffset
-                        * Level.PIXEL_METER_RATIO, width, height);
-        pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
-    }
-
-    /**
-     * Add a picture that may repeat in the X dimension, and which moves
-     * automatically
-     *
-     * @param xSpeed
-     *            Speed, in pixels per second
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
-     */
-    static public void addHorizontalAutoLayer(float xSpeed, String imgName,
-            float yOffset, float width, float height) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
-                Media.getImage(imgName), 0, yOffset
-                        * Level.PIXEL_METER_RATIO, width, height);
-        pl.mAutoX = true;
-        pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
-    }
-
-    /**
-     * Add a picture that may repeat in the Y dimension
-     *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param xOffset
-     *            The default is to draw the image at x=0. This field allows the
-     *            picture to be moved left or right.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
-     */
-    static public void addVerticalLayer(float xSpeed, float ySpeed,
-            String imgName, float xOffset, float width, float height) {
-        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName),
-                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
-        pl.mYRepeat = ySpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
-    }
+    final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
 
     /**
      * This method, called from the render loop, is responsible for drawing all
@@ -184,7 +96,7 @@ public class Foreground {
             }
             // Figure out what to draw for layers that repeat in the x dimension
             else if (pl.mXRepeat) {
-                // get the camera center, translate to pixels, and scale by
+                // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
                 float startX = x * Level.PIXEL_METER_RATIO * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
@@ -208,7 +120,7 @@ public class Foreground {
             }
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
-                // get the camera center, translate, and scale
+                // getLoseScene the camera center, translate, and scale
                 float startY = y * Level.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + Lol.sGame.mCurrentLevel.mBgCam.zoom)

@@ -89,11 +89,11 @@ import edu.lehigh.cse.lol.internals.Renderable;
 public class Level extends ScreenAdapter {
 
     /**
-     * Store string/integer pairs that get reset at the end of every level
+     * Store string/integer pairs that getLoseScene reset at the end of every level
      */
     final TreeMap<String, Integer> mLevelFacts;
     /**
-     * Store Actors, so that we can get to them in callbacks
+     * Store Actors, so that we can getLoseScene to them in callbacks
      */
     final TreeMap<String, Actor> mLevelActors;
     /**
@@ -183,7 +183,7 @@ public class Level extends ScreenAdapter {
      */
     ArrayList<Control> mToggleControls = new ArrayList<>();
     /**
-     * Events that get processed on the next render, then discarded
+     * Events that getLoseScene processed on the next render, then discarded
      */
     ArrayList<LolAction> mOneTimeEvents = new ArrayList<>();
     /**
@@ -192,7 +192,7 @@ public class Level extends ScreenAdapter {
      */
     LolAction mEndGameEvent;
     /**
-     * Events that get processed on every render
+     * Events that getLoseScene processed on every render
      */
     ArrayList<LolAction> mRepeatEvents = new ArrayList<>();
     /**
@@ -249,7 +249,7 @@ public class Level extends ScreenAdapter {
      */
     private boolean mMusicPlaying;
     /**
-     * This callback is used to get a touched actor from the physics world
+     * This callback is used to getLoseScene a touched actor from the physics world
      */
     private QueryCallback mTouchCallback;
 
@@ -339,7 +339,7 @@ public class Level extends ScreenAdapter {
     public static void configureCamera(int width, int height) {
         Lol.sGame.mCurrentLevel.setCamera(width, height);
 
-        // TODO: we can move this once we get rid of the static sGame.mCurrentLevel field
+        // TODO: we can move this once we getLoseScene rid of the static sGame.mCurrentLevel field
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
@@ -751,7 +751,7 @@ public class Level extends ScreenAdapter {
         @Override
         public boolean tap(float x, float y, int count, int button) {
             // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't get passed to the Scene
+            // return true, so that the event doesn't getLoseScene passed to the Scene
             if (mWinScene != null && mWinScene.mVisible) {
                 mWinScene.onTap(x, y);
                 return true;
@@ -1281,7 +1281,7 @@ public class Level extends ScreenAdapter {
             if (mHeroesDefeated == mHeroesCreated) {
                 // possibly change the end-of-level text
                 if (!e.mOnDefeatHeroText.equals(""))
-                    LoseScene.get().setDefaultText(e.mOnDefeatHeroText);
+                    getLoseScene().setDefaultText(e.mOnDefeatHeroText);
                 endLevel(false);
             }
         }
@@ -1485,7 +1485,7 @@ public class Level extends ScreenAdapter {
              */
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
-                // get the bodies, make sure both are actors
+                // getLoseScene the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
                 if (!(a instanceof Actor) || !(b instanceof Actor))
@@ -1581,7 +1581,7 @@ public class Level extends ScreenAdapter {
                 || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
                 || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
             // create distance and weld joints... somehow, the combination is
-            // needed to get this to work. Note that this function runs during
+            // needed to getLoseScene this to work. Note that this function runs during
             // the box2d step, so we need to make the joint in a callback that
             // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
@@ -1808,7 +1808,7 @@ public class Level extends ScreenAdapter {
                 if (Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining > 0) {
                     Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
                 } else {
-                    LoseScene.get().setDefaultText(text);
+                    getLoseScene().setDefaultText(text);
                     Lol.sGame.mCurrentLevel.mScore.endLevel(false);
                 }
             }
@@ -1877,7 +1877,7 @@ public class Level extends ScreenAdapter {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining > 0)
-                    // get elapsed time for this level
+                    // getLoseScene elapsed time for this level
                     Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining, mFont, sb);
                 else
                     Lol.sGame.mCurrentLevel.mScore.endLevel(true);
@@ -2192,7 +2192,7 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 vv) {
-                PauseScene.get().show();
+                getPauseScene().show();
                 return true;
             }
         };
@@ -3180,7 +3180,7 @@ public class Level extends ScreenAdapter {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                // force a down event, if we didn't get one
+                // force a down event, if we didn't getLoseScene one
                 if (!mHolding) {
                     toggle(false, touchVec);
                     return true;
@@ -3446,5 +3446,156 @@ public class Level extends ScreenAdapter {
         // start emitting particles
         pe.start();
         return e;
+    }
+
+    /**
+     * Add a picture that may repeat in the X dimension
+     *
+     * @param xSpeed
+     *            Speed that the picture seems to move in the X direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param ySpeed
+     *            Speed that the picture seems to move in the Y direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param imgName
+     *            The name of the image file to use as the foreground
+     * @param yOffset
+     *            The default is to draw the image at y=0. This field allows the
+     *            picture to be moved up or down.
+     * @param width
+     *            The width of the image being used as a foreground layer
+     * @param height
+     *            The height of the image being used as a foreground layer
+     */
+    static public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
+                                                    String imgName, float yOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
+                Media.getImage(imgName), 0, yOffset
+                * Level.PIXEL_METER_RATIO, width, height);
+        pl.mXRepeat = xSpeed != 0;
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+    }
+
+    /**
+     * Add a picture that may repeat in the X dimension, and which moves
+     * automatically
+     *
+     * @param xSpeed
+     *            Speed, in pixels per second
+     * @param imgName
+     *            The name of the image file to use as the foreground
+     * @param yOffset
+     *            The default is to draw the image at y=0. This field allows the
+     *            picture to be moved up or down.
+     * @param width
+     *            The width of the image being used as a foreground layer
+     * @param height
+     *            The height of the image being used as a foreground layer
+     */
+    static public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
+                                                        float yOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
+                Media.getImage(imgName), 0, yOffset
+                * Level.PIXEL_METER_RATIO, width, height);
+        pl.mAutoX = true;
+        pl.mXRepeat = xSpeed != 0;
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+    }
+
+    /**
+     * Add a picture that may repeat in the Y dimension
+     *
+     * @param xSpeed
+     *            Speed that the picture seems to move in the Y direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param ySpeed
+     *            Speed that the picture seems to move in the Y direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param imgName
+     *            The name of the image file to use as the foreground
+     * @param xOffset
+     *            The default is to draw the image at x=0. This field allows the
+     *            picture to be moved left or right.
+     * @param width
+     *            The width of the image being used as a foreground layer
+     * @param height
+     *            The height of the image being used as a foreground layer
+     */
+    static public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
+                                                  String imgName, float xOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
+                Media.getImage(imgName),
+                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
+        pl.mYRepeat = ySpeed != 0;
+        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+    }
+
+    /**
+     * Get the LoseScene that is configured for the current level, or create a
+     * blank one if none exists.
+     *
+     * @return The current LoseScene
+     */
+    public static LoseScene getLoseScene() {
+        LoseScene scene = Lol.sGame.mCurrentLevel.mLoseScene;
+        if (scene != null)
+            return scene;
+        scene = new LoseScene();
+        Lol.sGame.mCurrentLevel.mLoseScene = scene;
+        return scene;
+    }
+
+    /**
+     * Get the PreScene that is configured for the current level, or create a
+     * blank one if none exists.
+     *
+     * @return The current PreScene
+     */
+    public static PreScene getPreScene() {
+        PreScene scene = Lol.sGame.mCurrentLevel.mPreScene;
+        if (scene != null)
+            return scene;
+        scene = new PreScene();
+        // immediately make the scene visible
+        scene.mVisible = true;
+        Lol.sGame.mCurrentLevel.mPreScene = scene;
+        // NB: disable the timer so the game doesn't start playing in the
+        // background
+        scene.suspendClock();
+        return scene;
+    }
+
+    /**
+     * Get the PauseScene that is configured for the current level, or create a
+     * blank one if none exists.
+     *
+     * @return The current PauseScene
+     */
+    public static PauseScene getPauseScene() {
+        PauseScene scene = Lol.sGame.mCurrentLevel.mPauseScene;
+        if (scene != null)
+            return scene;
+        scene = new PauseScene();
+        Lol.sGame.mCurrentLevel.mPauseScene = scene;
+        return scene;
+    }
+
+    /**
+     * Get the WinScene that is configured for the current level, or create a
+     * blank one if none exists.
+     *
+     * @return The current WinScene
+     */
+    public static WinScene getWinScene() {
+        WinScene scene = Lol.sGame.mCurrentLevel.mWinScene;
+        if (scene != null)
+            return scene;
+        scene = new WinScene();
+        Lol.sGame.mCurrentLevel.mWinScene = scene;
+        return scene;
     }
 }

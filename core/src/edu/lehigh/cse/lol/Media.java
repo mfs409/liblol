@@ -97,7 +97,7 @@ public class Media {
 
         // Generate the font, save it, and return it
         //
-        // NB: if this crashes, the user will get a reasonably good error
+        // NB: if this crashes, the user will getLoseScene a reasonably good error
         // message
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));

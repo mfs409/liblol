@@ -86,7 +86,7 @@ abstract public class QuickScene {
     /**
      * Pause the timer when this screen is shown
      */
-    protected void suspendClock() {
+    public void suspendClock() {
         // pause the timer
         Timer.instance().stop();
         mDisplayTime = System.currentTimeMillis();

@@ -1056,7 +1056,7 @@ public abstract class Actor implements Renderable {
     }
 
     /**
-     * Save an animation sequence for showing when we get rid of a actor
+     * Save an animation sequence for showing when we getLoseScene rid of a actor
      *
      * @param a       The animation to display
      * @param offsetX We can offset the animation from the bottom left of the actor

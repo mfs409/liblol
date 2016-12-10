@@ -49,21 +49,6 @@ public class WinScene extends QuickScene {
     }
 
     /**
-     * Get the WinScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current WinScene
-     */
-    public static WinScene get() {
-        WinScene scene = Lol.sGame.mCurrentLevel.mWinScene;
-        if (scene != null)
-            return scene;
-        scene = new WinScene();
-        Lol.sGame.mCurrentLevel.mWinScene = scene;
-        return scene;
-    }
-
-    /**
      * When the level is won, we call this, which will show the WinScene unless
      * it is disabled
      */
@@ -81,7 +66,7 @@ public class WinScene extends QuickScene {
         // don't compute it until right here... also, play music
         if (mSound != null)
             mSound.play(Level.getGameFact("volume", 1));
-        get().addText(mWinText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
+        Level.getWinScene().addText(mWinText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
     }
 
     /*

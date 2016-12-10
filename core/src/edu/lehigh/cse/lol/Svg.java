@@ -134,7 +134,7 @@ public class Svg {
      *                  translate directive
      */
     private void processTransform(String attribute) {
-        // if we get a valid "translate" attribute, split it into two floats and
+        // if we getLoseScene a valid "translate" attribute, split it into two floats and
         // save them
         if (attribute.startsWith("translate(")) {
             String x2 = attribute.replace("translate(", "");
@@ -208,7 +208,7 @@ public class Svg {
                     if (mSwallow > 0) {
                         mSwallow--;
                     }
-                    // get the next point
+                    // getLoseScene the next point
                     else {
                         try {
                             // convert next point to float
@@ -272,7 +272,7 @@ public class Svg {
      * be in pixels.
      *
      * The second challenge is that SVGs appear to have a "down is plus" Y axis,
-     * whereas our system has a "down is minus" Y axis. To get around this, we
+     * whereas our system has a "down is minus" Y axis. To getLoseScene around this, we
      * reflect every Y coordinate over the horizontal line that intersects with
      * the first point drawn.
      *
@@ -341,14 +341,14 @@ public class Svg {
         XmlReader r = new XmlReader();
         try {
             Element root = r.parse(Gdx.files.internal(svgName));
-            // get the <g> tags
+            // getLoseScene the <g> tags
             Array<Element> gs = root.getChildrenByName("g");
             for (Element g : gs) {
                 // Get the g's transform attribute
                 String xform = g.getAttribute("transform", "");
                 if (!xform.equals(""))
                     processTransform(xform);
-                // get each g's paths
+                // getLoseScene each g's paths
                 Array<Element> paths = g.getChildrenByName("path");
                 for (Element p : paths)
                     processD(p.getAttribute("d"));

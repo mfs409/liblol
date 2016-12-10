@@ -35,7 +35,7 @@ import com.badlogic.gdx.math.Vector3;
  * actors.
  *
  * In the interest of simplicity, we use some public fields instead of getters
- * and setters. This also lets us get away with using the default constructor.
+ * and setters. This also lets us getLoseScene away with using the default constructor.
  */
 public abstract class LolCallback implements Cloneable {
     /**

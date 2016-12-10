@@ -285,7 +285,7 @@ public class ProjectilePool {
         // is there an available projectile?
         if (mPool[mNextIndex].mVisible)
             return;
-        // get the next projectile, reset sensor, set image
+        // getLoseScene the next projectile, reset sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
@@ -335,7 +335,7 @@ public class ProjectilePool {
         // is there an available projectile?
         if (mPool[mNextIndex].mVisible)
             return;
-        // get the next projectile, set sensor, set image
+        // getLoseScene the next projectile, set sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);

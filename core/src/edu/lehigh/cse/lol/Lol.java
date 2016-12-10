@@ -61,7 +61,7 @@ public abstract class Lol extends Game {
      */
     public static Lol sGame;
     /**
-     * Store string/integer pairs that get reset whenever we restart the program
+     * Store string/integer pairs that getLoseScene reset whenever we restart the program
      */
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
     /**
@@ -90,7 +90,7 @@ public abstract class Lol extends Game {
     /*
      * GAME CONFIGURATION VARIABLES
      *
-     * These get set in MyGame.java
+     * These getLoseScene set in MyGame.java
      */
     /**
      * The total number of levels. This is only useful for knowing what to do
@@ -193,7 +193,7 @@ public abstract class Lol extends Game {
      * The constructor just creates a media object and calls configureGravity, so that
      * all of our globals will be set. Doing it this early lets us access the
      * configuration from within the LWJGL (Desktop) main class. That, in turn,
-     * lets us get the screen size correct (see the desktop project's Java
+     * lets us getLoseScene the screen size correct (see the desktop project's Java
      * file).
      */
     public Lol() {
@@ -420,7 +420,7 @@ public abstract class Lol extends Game {
         // It appears that GDX manages all textures for images and fonts, as
         // well as all sounds and music files. That
         // being the case, the only thing we need to be careful about is that we
-        // get rid of any references to fonts that
+        // getLoseScene rid of any references to fonts that
         // might be hanging around
         Media.onDispose();
     }

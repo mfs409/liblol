@@ -108,7 +108,7 @@ public class Control {
     }
 
     /**
-     * Disable the control, so that it doesn't get displayed
+     * Disable the control, so that it doesn't getLoseScene displayed
      */
     public void setInactive() {
         mIsActive = false;

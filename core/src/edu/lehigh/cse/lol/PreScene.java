@@ -38,25 +38,6 @@ import edu.lehigh.cse.lol.internals.QuickScene;
  */
 public class PreScene extends QuickScene {
 
-    /**
-     * Get the PreScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current PreScene
-     */
-    public static PreScene get() {
-        PreScene scene = Lol.sGame.mCurrentLevel.mPreScene;
-        if (scene != null)
-            return scene;
-        scene = new PreScene();
-        // immediately make the scene visible
-        scene.mVisible = true;
-        Lol.sGame.mCurrentLevel.mPreScene = scene;
-        // NB: disable the timer so the game doesn't start playing in the
-        // background
-        scene.suspendClock();
-        return scene;
-    }
 
     /*
      * PUBLIC INTERFACE

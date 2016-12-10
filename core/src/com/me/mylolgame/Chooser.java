@@ -178,7 +178,7 @@ public class Chooser implements ScreenManager {
         // screen 2: show levels 16-->30
         //
         // NB: this time, we'll use three loops to create the three rows. By
-        // using some variables in the loops, we get the same effect as the
+        // using some variables in the loops, we getLoseScene the same effect as the
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
         else if (which == 2) {

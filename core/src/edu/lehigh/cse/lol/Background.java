@@ -99,7 +99,7 @@ public class Background {
             }
             // Figure out what to draw for layers that repeat in the x dimension
             else if (pl.mXRepeat) {
-                // get the camera center, translate to pixels, and scale by
+                // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
                 float startX = x * Level.PIXEL_METER_RATIO * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
@@ -123,7 +123,7 @@ public class Background {
             }
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
-                // get the camera center, translate, and scale
+                // getLoseScene the camera center, translate, and scale
                 float startY = y * Level.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + Lol.sGame.mCurrentLevel.mBgCam.zoom)

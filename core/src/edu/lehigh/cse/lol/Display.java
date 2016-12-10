@@ -71,7 +71,7 @@ public class Display {
     }
 
     /**
-     * Render the text. Since each control needs to get its text at the time it
+     * Render the text. Since each control needs to getLoseScene its text at the time it
      * is rendered, we don't provide a default implementation.
      *
      * @param sb The SpriteBatch to use to draw the image

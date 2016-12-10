@@ -48,20 +48,7 @@ public class LoseScene extends QuickScene {
         mLoseText = Lol.sGame.mDefaultLoseText;
     }
 
-    /**
-     * Get the LoseScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current LoseScene
-     */
-    public static LoseScene get() {
-        LoseScene scene = Lol.sGame.mCurrentLevel.mLoseScene;
-        if (scene != null)
-            return scene;
-        scene = new LoseScene();
-        Lol.sGame.mCurrentLevel.mLoseScene = scene;
-        return scene;
-    }
+
 
     /**
      * When the level is lost, we call this, which will show the LoseScene

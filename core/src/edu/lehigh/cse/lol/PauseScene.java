@@ -37,20 +37,6 @@ import edu.lehigh.cse.lol.internals.QuickScene;
  */
 public class PauseScene extends QuickScene {
 
-    /**
-     * Get the PauseScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current PauseScene
-     */
-    public static PauseScene get() {
-        PauseScene scene = Lol.sGame.mCurrentLevel.mPauseScene;
-        if (scene != null)
-            return scene;
-        scene = new PauseScene();
-        Lol.sGame.mCurrentLevel.mPauseScene = scene;
-        return scene;
-    }
 
     /**
      * Clear everything off of the level's pause scene, so it can be reused

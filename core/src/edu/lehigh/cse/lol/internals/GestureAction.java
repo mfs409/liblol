@@ -35,7 +35,7 @@ import com.badlogic.gdx.math.Vector3;
  * be attached to actors, Controls, or to the Level itself, to specify a handler
  * for certain events.
  *
- * Note: typically, one will override certain methods of this class to get the
+ * Note: typically, one will override certain methods of this class to getLoseScene the
  * desired behavior
  */
 public class GestureAction {

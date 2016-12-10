@@ -46,7 +46,7 @@ public class Goodie extends Actor {
     int[] mScore = new int[4];
 
     /**
-     * How much strength does the hero get by collecting this goodie
+     * How much strength does the hero getLoseScene by collecting this goodie
      */
     int mStrengthBoost = 0;
 
