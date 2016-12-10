@@ -190,7 +190,7 @@ public abstract class Lol extends Game {
      */
 
     /**
-     * The constructor just creates a media object and calls configure, so that
+     * The constructor just creates a media object and calls configureGravity, so that
      * all of our globals will be set. Doing it this early lets us access the
      * configuration from within the LWJGL (Desktop) main class. That, in turn,
      * lets us get the screen size correct (see the desktop project's Java
@@ -229,7 +229,7 @@ public abstract class Lol extends Game {
             }
             return;
         }
-        // the chooser is not disabled... save the choice of level, configure
+        // the chooser is not disabled... save the choice of level, configureGravity
         // it, and show it.
         sGame.mMode = CHOOSER;
         sGame.mModeStates[CHOOSER] = whichChooser;
@@ -394,7 +394,7 @@ public abstract class Lol extends Game {
         mMedia = new Media();
         loadResources();
 
-        // configure the volume
+        // configureGravity the volume
         if (Facts.getGameFact("volume", 1) == 1)
             Facts.putGameFact("volume", 1);
 

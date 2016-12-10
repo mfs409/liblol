@@ -32,12 +32,11 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
-import edu.lehigh.cse.lol.Physics;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Util;
 
 /**
- * Splash encapsulates the code that will be run to configure the opening screen
+ * Splash encapsulates the code that will be run to configureGravity the opening screen
  * of the game. Typically this has buttons for playing, getting help, and
  * quitting.
  */
@@ -51,7 +50,7 @@ public class Splash implements ScreenManager {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
         Level.configure(48, 32);
-        Physics.configure(0, 0);
+        Level.configureGravity(0, 0);
 
         // draw the background. Note that "Play", "Help", and "Quit" are part of
         // this background image.

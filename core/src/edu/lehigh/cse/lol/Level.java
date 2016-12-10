@@ -27,7 +27,9 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
@@ -40,11 +42,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -242,9 +254,9 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO)
+        if (width < Lol.sGame.mWidth / Level.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mHeight / Physics.PIXEL_METER_RATIO)
+        if (height < Lol.sGame.mHeight / Level.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game height is less than 1/10 of the screen height");
     }
 
@@ -275,10 +287,10 @@ public class Level extends ScreenAdapter {
         setCamera(width, height);
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO, Lol.sGame.mHeight
-                / Physics.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mWidth / Physics.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
-                / Physics.PIXEL_METER_RATIO / 2, 0);
+        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Level.PIXEL_METER_RATIO, Lol.sGame.mHeight
+                / Level.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mWidth / Level.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
+                / Level.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
@@ -316,7 +328,7 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Create a new empty level, and configure its camera
+     * Create a new empty level, and configureGravity its camera
      *
      * @param width  width of the camera
      * @param height height of the camera
@@ -526,19 +538,19 @@ public class Level extends ScreenAdapter {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mWidth * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mHeight * mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -1092,7 +1104,7 @@ public class Level extends ScreenAdapter {
      * defeat all enemies before more are are created.
      */
     static public void setVictoryEnemyCount() {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
         Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = -1;
     }
 
@@ -1102,7 +1114,7 @@ public class Level extends ScreenAdapter {
      * @param howMany The number of enemies that must be defeated to win the level
      */
     static public void setVictoryEnemyCount(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
         Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = howMany;
     }
 
@@ -1119,7 +1131,7 @@ public class Level extends ScreenAdapter {
      *           level
      */
     static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = Score.VictoryType.GOODIECOUNT;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.GOODIECOUNT;
         Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[0] = v1;
         Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[1] = v2;
         Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[2] = v3;
@@ -1133,7 +1145,7 @@ public class Level extends ScreenAdapter {
      * @param howMany Number of heroes that must reach destinations
      */
     static public void setVictoryDestination(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = Score.VictoryType.DESTINATION;
+        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.DESTINATION;
         Lol.sGame.mCurrentLevel.mScore.mVictoryHeroCount = howMany;
     }
 
@@ -1189,7 +1201,581 @@ public class Level extends ScreenAdapter {
 
 
 
+    /**
+     * Score encapsulates the data used by a Level to track the player's progress.
+     * There are four things tracked: the number of heroes created and destroyed,
+     * the number of enemies created and destroyed, the number of heroes at
+     * destinations, and the number of (each type of) goodie that has been
+     * collected. Apart from storing the counts, this class provides a public
+     * interface for manipulating the goodie counts, and a set of internal
+     * convenience methods for updating values and checking for win/lose. It also
+     * manages the mode of the level (i.e., what must be done to finish the level...
+     * collecting goodies, reaching a destination, etc).
+     */
+     class Score {
+        /**
+         * This is the number of goodies that must be collected, if we're in
+         * GOODIECOUNT mode
+         */
+        final int[] mVictoryGoodieCount = new int[4];
+        /**
+         * Track the number of heroes that have been created
+         */
+        int mHeroesCreated = 0;
+        /**
+         * Count of the goodies that have been collected in this level
+         */
+        int[] mGoodiesCollected = new int[]{0, 0, 0, 0};
+        /**
+         * Count the number of enemies that have been created
+         */
+        int mEnemiesCreated = 0;
+        /**
+         * Count the enemies that have been defeated
+         */
+        int mEnemiesDefeated = 0;
+        /**
+         * Track if the level has been lost (true) or the game is still being played
+         * (false)
+         */
+        boolean mGameOver;
+        /**
+         * In levels that have a lose-on-timer feature, we store the timer here, so
+         * that we can extend the time left to complete a game
+         */
+        float mCountDownRemaining;
+        /**
+         * This is the same as CountDownRemaining, but for levels where the hero
+         * wins by lasting until time runs out.
+         */
+        float mWinCountRemaining;
+        /**
+         * This is a stopwatch, for levels where we count how long the game has been
+         * running
+         */
+        float mStopWatchProgress;
+        /**
+         * This is how far the hero has traveled
+         */
+        int mDistance;
+        /**
+         * Track the number of heroes that have been removed/defeated
+         */
+        int mHeroesDefeated = 0;
+        /**
+         * Number of heroes who have arrived at any destination yet
+         */
+        int mDestinationArrivals = 0;
+        /**
+         * Describes how a level is won.
+         */
+        VictoryType mVictoryType = VictoryType.DESTINATION;
+        /**
+         * This is the number of heroes who must reach destinations, if we're in
+         * DESTINATION mode
+         */
+        int mVictoryHeroCount;
+        /**
+         * This is the number of enemies that must be defeated, if we're in
+         * ENEMYCOUNT mode. -1 means "all of them"
+         */
+        int mVictoryEnemyCount;
 
 
+        /**
+         * Use this to inform the level that a hero has been defeated
+         *
+         * @param e The enemy who defeated the hero
+         */
+        void defeatHero(Enemy e) {
+            mHeroesDefeated++;
+            if (mHeroesDefeated == mHeroesCreated) {
+                // possibly change the end-of-level text
+                if (!e.mOnDefeatHeroText.equals(""))
+                    LoseScene.get().setDefaultText(e.mOnDefeatHeroText);
+                endLevel(false);
+            }
+        }
+
+        /**
+         * Use this to inform the level that a goodie has been collected by a hero
+         *
+         * @param g The goodie that was collected
+         */
+        void onGoodieCollected(Goodie g) {
+            // Update goodie counts
+            for (int i = 0; i < 4; ++i)
+                mGoodiesCollected[i] += g.mScore[i];
+
+            // possibly win the level, but only if we win on goodie count and all
+            // four counts are high enough
+            if (mVictoryType != VictoryType.GOODIECOUNT)
+                return;
+            boolean match = true;
+            for (int i = 0; i < 4; ++i)
+                match &= mVictoryGoodieCount[i] <= mGoodiesCollected[i];
+            if (match)
+                endLevel(true);
+        }
+
+        /**
+         * Use this to inform the level that a hero has reached a destination
+         */
+        void onDestinationArrive() {
+            // check if the level is complete
+            mDestinationArrivals++;
+            if ((mVictoryType == VictoryType.DESTINATION) && (mDestinationArrivals >= mVictoryHeroCount))
+                endLevel(true);
+        }
+
+        /**
+         * Internal method for handling whenever an enemy is defeated
+         */
+        void onDefeatEnemy() {
+            // update the count of defeated enemies
+            mEnemiesDefeated++;
+
+            // if we win by defeating enemies, see if we've defeated enough of them:
+            boolean win = false;
+            if (mVictoryType == VictoryType.ENEMYCOUNT) {
+                // -1 means "defeat all enemies"
+                if (mVictoryEnemyCount == -1)
+                    win = mEnemiesDefeated == mEnemiesCreated;
+                else
+                    win = mEnemiesDefeated >= mVictoryEnemyCount;
+            }
+            if (win)
+                endLevel(true);
+        }
+
+        /**
+         * When a level ends, we run this code to shut it down, print a message, and
+         * then let the user resume play
+         *
+         * @param win true if the level was won, false otherwise
+         */
+        void endLevel(final boolean win) {
+            if (Lol.sGame.mCurrentLevel.mEndGameEvent == null)
+                Lol.sGame.mCurrentLevel.mEndGameEvent = new LolAction() {
+                    @Override
+                    public void go() {
+                        // Safeguard: only call this method once per level
+                        if (mGameOver)
+                            return;
+                        mGameOver = true;
+
+                        // Run the level-complete callback
+                        if (win && Lol.sGame.mCurrentLevel.mWinCallback != null)
+                            Lol.sGame.mCurrentLevel.mWinCallback.onEvent();
+                        else if (!win && Lol.sGame.mCurrentLevel.mLoseCallback != null)
+                            Lol.sGame.mCurrentLevel.mLoseCallback.onEvent();
+
+                        // if we won, unlock the next level
+                        if (win && Facts.getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
+                            Facts.putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
+
+                        // drop everything from the hud
+                        Lol.sGame.mCurrentLevel.mControls.clear();
+                        Lol.sGame.mCurrentLevel.mDisplays.clear();
+
+                        // clear any pending timers
+                        Timer.instance().clear();
+
+                        // display the PostScene, which provides a pause before we
+                        // retry/start the next level
+                        if (win)
+                            Lol.sGame.mCurrentLevel.mWinScene.show();
+                        else
+                            Lol.sGame.mCurrentLevel.mLoseScene.show();
+                    }
+                };
+        }
+
+    }
+
+    /**
+     * These are the ways you can complete a level: you can reach the
+     * destination, you can collect enough stuff, or you can reach a certain
+     * number of enemies defeated Technically, there's also 'survive for x
+     * seconds', but that doesn't need special support
+     */
+    enum VictoryType {
+        DESTINATION, GOODIECOUNT, ENEMYCOUNT
+    }
+
+    /**
+     * Change the gravity in a running level
+     * @param newXGravity The new X gravity
+     * @param newYGravity The new Y gravity
+     */
+    public static void resetGravity(float newXGravity, float newYGravity) {
+        Lol.sGame.mCurrentLevel.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
+    }
+
+    /**
+     * Configure physics for the current level
+     *
+     * @param defaultXGravity The default force moving actors to the left (negative) or
+     *                        right (positive)... Usually zero
+     * @param defaultYGravity The default force pushing actors down (negative) or up
+     *                        (positive)... Usually zero or -10
+     */
+    public static void configureGravity(float defaultXGravity, float defaultYGravity) {
+        // create a world with gravity
+        Lol.sGame.mCurrentLevel.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+
+        // set up the collision handlers
+        Lol.sGame.mCurrentLevel.mWorld.setContactListener(new ContactListener() {
+            /**
+             * When two bodies start to collide, we can use this to forward to
+             * our onCollide methods
+             */
+            @Override
+            public void beginContact(final Contact contact) {
+                // Get the bodies, make sure both are actors
+                Object a = contact.getFixtureA().getBody().getUserData();
+                Object b = contact.getFixtureB().getBody().getUserData();
+                if (!(a instanceof Actor) || !(b instanceof Actor))
+                    return;
+
+                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
+                //
+                // Of those, Hero, Enemy, and Projectile are the only ones with
+                // a non-empty onCollide
+                final Actor c0;
+                final Actor c1;
+                if (a instanceof Hero) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Hero) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else if (a instanceof Enemy) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Enemy) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else if (a instanceof Projectile) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Projectile) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else {
+                    return;
+                }
+
+                // Schedule an event to run as soon as the physics world
+                // finishes its step.
+                //
+                // NB: this is called from render, while world is updating...
+                // you can't modify the world or its actors until the update
+                // finishes, so we have to schedule collision-based updates to
+                // run after the world update.
+                Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
+                    @Override
+                    public void go() {
+                        c0.onCollide(c1, contact);
+                    }
+                });
+            }
+
+            /**
+             * We ignore endcontact
+             */
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            /**
+             * Presolve is a hook for disabling certain collisions. We use it
+             * for collision immunity, sticky obstacles, and one-way walls
+             */
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+                // get the bodies, make sure both are actors
+                Object a = contact.getFixtureA().getBody().getUserData();
+                Object b = contact.getFixtureB().getBody().getUserData();
+                if (!(a instanceof Actor) || !(b instanceof Actor))
+                    return;
+                Actor gfoA = (Actor) a;
+                Actor gfoB = (Actor) b;
+
+                // handle sticky obstacles... only do something if at least one
+                // actor is a sticky actor
+                if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
+                    handleSticky(gfoA, gfoB, contact);
+                    return;
+                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2] || gfoB.mIsSticky[3]) {
+                    handleSticky(gfoB, gfoA, contact);
+                    return;
+                }
+
+                // if the actors have the same passthrough ID, and it's
+                // not zero, then disable the contact
+                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
+                    contact.setEnabled(false);
+                    return;
+                }
+
+                // is either one-sided? If not, we're done
+                Actor onesided = null;
+                Actor other;
+                if (gfoA.mIsOneSided > -1) {
+                    onesided = gfoA;
+                    other = gfoB;
+                } else if (gfoB.mIsOneSided > -1) {
+                    onesided = gfoB;
+                    other = gfoA;
+                } else {
+                    return;
+                }
+
+                // if we're here, see if we should be disabling a one-sided
+                // obstacle collision
+                WorldManifold worldManiFold = contact.getWorldManifold();
+                int numPoints = worldManiFold.getNumberOfContactPoints();
+                for (int i = 0; i < numPoints; i++) {
+                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
+                    // disable based on the value of isOneSided and the vector
+                    // between the actors
+                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
+                        contact.setEnabled(false);
+                }
+            }
+
+            /**
+             * We ignore postsolve
+             */
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
+    }
+
+    /**
+     * This ratio means that every 20 pixels on the screen will correspond to a
+     * meter. Note that 'pixels' are defined in terms of what a programmer's
+     * configuration() says, not the actual screen size, because the
+     * configuration gets scaled to screen dimensions. The default is 960x640.
+     */
+    static final float PIXEL_METER_RATIO = 20;
+
+    /**
+     * When a hero collides with a "sticky" obstacle, this is the code we run to
+     * figure out what to do
+     *
+     * @param sticky  The sticky actor... it should always be an obstacle for now
+     * @param other   The other actor... it should always be a hero for now
+     * @param contact A description of the contact event
+     */
+    static void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+        // don't create a joint if we've already got one
+        if (other.mDJoint != null)
+            return;
+        // don't create a joint if we're supposed to wait
+        if (System.currentTimeMillis() < other.mStickyDelay)
+            return;
+        // handle sticky obstacles... only do something if we're hitting the
+        // obstacle from the correct direction
+        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
+                || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
+                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
+                || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
+            // create distance and weld joints... somehow, the combination is
+            // needed to get this to work. Note that this function runs during
+            // the box2d step, so we need to make the joint in a callback that
+            // runs later
+            final Vector2 v = contact.getWorldManifold().getPoints()[0];
+            Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
+                @Override
+                public void go() {
+                    other.mBody.setLinearVelocity(0, 0);
+                    DistanceJointDef d = new DistanceJointDef();
+                    d.initialize(sticky.mBody, other.mBody, v, v);
+                    d.collideConnected = true;
+                    other.mDJoint = (DistanceJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(d);
+                    WeldJointDef w = new WeldJointDef();
+                    w.initialize(sticky.mBody, other.mBody, v);
+                    w.collideConnected = true;
+                    other.mWJoint = (WeldJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(w);
+                }
+            });
+        }
+    }
+
+    /**
+     * Turn on accelerometer support so that tilt can control actors in this
+     * level
+     *
+     * @param xGravityMax Max X force that the accelerometer can produce
+     * @param yGravityMax Max Y force that the accelerometer can produce
+     */
+    public static void enableTilt(float xGravityMax, float yGravityMax) {
+        Lol.sGame.mCurrentLevel.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+    }
+
+    /**
+     * Turn off accelerometer support so that tilt stops controlling actors in this
+     * level
+     */
+    public static void disableTilt() {
+        Lol.sGame.mCurrentLevel.mTilt.mGravityMax = null;
+    }
+
+    /**
+     * This method lets us change the behavior of tilt, so that instead of
+     * applying a force, we directly set the velocity of objects using the
+     * accelerometer data.
+     *
+     * @param toggle This should usually be false. Setting it to true means that
+     *               tilt does not cause forces upon objects, but instead the tilt
+     *               of the phone directly sets velocities
+     */
+    public static void setTiltAsVelocity(boolean toggle) {
+        Lol.sGame.mCurrentLevel.mTilt.mTiltVelocityOverride = toggle;
+    }
+
+    /**
+     * Use this to make the accelerometer more or less responsive, by
+     * multiplying accelerometer values by a constant.
+     *
+     * @param multiplier The constant that should be multiplied by the accelerometer
+     *                   data. This can be a fraction, like 0.5f, to make the
+     *                   accelerometer less sensitive
+     */
+    public static void setGravityMultiplier(float multiplier) {
+        Lol.sGame.mCurrentLevel.mTilt.mMultiplier = multiplier;
+    }
+
+    /**
+     * Tilt provides a mechanism for moving actors on the screen. To use tilt, you
+     * must enableTilt it for a level, and also indicate that some actors move via
+     * tilting. Tilt has two flavors: tilt can cause gravitational effects, where a
+     * sustained tilt causes acceleration (this is the default), or it can cause
+     * actors to move with a fixed velocity. Be careful when using tilt. Different
+     * phones' accelerometers vary in terms of sensitivity. It is possible to set
+     * multipliers and/or caps on the effect of Tilt, but these may not suffice to
+     * make your game playable and enjoyable.
+     */
+    class Tilt {
+        /**
+         * List of actors that change behavior based on tilt
+         */
+        ArrayList<Actor> mAccelActors = new ArrayList<>();
+        /**
+         * Magnitude of the maximum gravity the accelerometer can create
+         */
+        Vector2 mGravityMax;
+        /**
+         * Track if we have an override for gravity to be translated into velocity
+         */
+        boolean mTiltVelocityOverride;
+        /**
+         * A multiplier to make gravity change faster or slower than the
+         * accelerometer default
+         */
+        float mMultiplier = 1;
+
+
+        /**
+         * The main render loop calls this to determine what to do when there is a
+         * phone tilt
+         */
+        void handleTilt() {
+            if (mGravityMax == null)
+                return;
+
+            // these temps are for storing the accelerometer forces we measure
+            float xGravity = 0;
+            float yGravity = 0;
+
+            // if we're on a phone, read from the accelerometer device, taking into
+            // account the rotation of the device
+            Application.ApplicationType appType = Gdx.app.getType();
+            if (appType == Application.ApplicationType.Android || appType == Application.ApplicationType.iOS) {
+                float rot = Gdx.input.getRotation();
+                if (rot == 0) {
+                    xGravity = -Gdx.input.getAccelerometerX();
+                    yGravity = -Gdx.input.getAccelerometerY();
+                } else if (rot == 90) {
+                    xGravity = Gdx.input.getAccelerometerY();
+                    yGravity = -Gdx.input.getAccelerometerX();
+                } else if (rot == 180) {
+                    xGravity = Gdx.input.getAccelerometerX();
+                    yGravity = Gdx.input.getAccelerometerY();
+                } else if (rot == 270) {
+                    xGravity = -Gdx.input.getAccelerometerY();
+                    yGravity = Gdx.input.getAccelerometerX();
+                }
+            }
+            // if we're on a computer, we simulate tilt with the arrow keys
+            else {
+                if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT))
+                    xGravity = -15f;
+                else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT))
+                    xGravity = 15f;
+                else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_UP))
+                    yGravity = 15f;
+                else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN))
+                    yGravity = -15f;
+            }
+
+            // Apply the gravity multiplier
+            xGravity *= mMultiplier;
+            yGravity *= mMultiplier;
+
+            // ensure x is within the -GravityMax.x : GravityMax.x range
+            xGravity = (xGravity > Level.PIXEL_METER_RATIO * mGravityMax.x) ? Level.PIXEL_METER_RATIO * mGravityMax.x
+                    : xGravity;
+            xGravity = (xGravity < Level.PIXEL_METER_RATIO * -mGravityMax.x) ? Level.PIXEL_METER_RATIO * -mGravityMax.x
+                    : xGravity;
+
+            // ensure y is within the -GravityMax.y : GravityMax.y range
+            yGravity = (yGravity > Level.PIXEL_METER_RATIO * mGravityMax.y) ? Level.PIXEL_METER_RATIO * mGravityMax.y
+                    : yGravity;
+            yGravity = (yGravity < Level.PIXEL_METER_RATIO * -mGravityMax.y) ? Level.PIXEL_METER_RATIO * -mGravityMax.y
+                    : yGravity;
+
+            // If we're in 'velocity' mode, apply the accelerometer reading to each
+            // actor as a fixed velocity
+            if (mTiltVelocityOverride) {
+                // if X is clipped to zero, set each actor's Y velocity, leave X
+                // unchanged
+                if (mGravityMax.x == 0) {
+                    for (Actor gfo : mAccelActors)
+                        if (gfo.mBody.isActive())
+                            gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
+                }
+                // if Y is clipped to zero, set each actor's X velocity, leave Y
+                // unchanged
+                else if (mGravityMax.y == 0) {
+                    for (Actor gfo : mAccelActors)
+                        if (gfo.mBody.isActive())
+                            gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
+                }
+                // otherwise we set X and Y velocity
+                else {
+                    for (Actor gfo : mAccelActors)
+                        if (gfo.mBody.isActive())
+                            gfo.updateVelocity(xGravity, yGravity);
+                }
+            }
+            // when not in velocity mode, apply the accelerometer reading to each
+            // actor as a force
+            else {
+                for (Actor gfo : mAccelActors)
+                    if (gfo.mBody.isActive())
+                        gfo.mBody.applyForceToCenter(xGravity, yGravity, true);
+            }
+        }
+    }
 
 }

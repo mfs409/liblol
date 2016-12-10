@@ -32,7 +32,6 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
-import edu.lehigh.cse.lol.Physics;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Util;
 
@@ -144,7 +143,7 @@ public class Chooser implements ScreenManager {
         // variables.
         if (which == 1) {
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
 
             // set up background and music
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -185,7 +184,7 @@ public class Chooser implements ScreenManager {
         // easy to understand.
         else if (which == 2) {
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
 
             // set up background and music
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -226,7 +225,7 @@ public class Chooser implements ScreenManager {
         // just a few more lines than one row.
         else if (which == 3) {
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
 
             // set up background and music
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -259,7 +258,7 @@ public class Chooser implements ScreenManager {
         else if (which < 7) {
             // set-up
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             Level.setMusic("tune.ogg");
 
@@ -286,7 +285,7 @@ public class Chooser implements ScreenManager {
         // We'll just do it by hand.
         else if (which == 7) {
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
 
             // set up background and music
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);

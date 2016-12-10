@@ -94,7 +94,7 @@ public class Control {
 
     /**
      * Add a button that pauses the game (via a single tap) by causing a
-     * PauseScene to be displayed. Note that you must configure a PauseScene, or
+     * PauseScene to be displayed. Note that you must configureGravity a PauseScene, or
      * pressing this button will cause your game to crash.
      *
      * @param x       The X coordinate of the bottom left corner (in pixels)
@@ -793,23 +793,23 @@ public class Control {
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
                 if (x > Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
-                        / Physics.PIXEL_METER_RATIO / 2)
+                        / Level.PIXEL_METER_RATIO / 2)
                     x = Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
-                            / Physics.PIXEL_METER_RATIO / 2;
+                            / Level.PIXEL_METER_RATIO / 2;
                 if (y > Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
-                        / Physics.PIXEL_METER_RATIO / 2)
+                        / Level.PIXEL_METER_RATIO / 2)
                     y = Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
-                            / Physics.PIXEL_METER_RATIO / 2;
+                            / Level.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
                 // values
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Physics.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
                 Lol.sGame.mCurrentLevel.mGameCam.position.set(x, y, 0);

@@ -33,7 +33,6 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
-import edu.lehigh.cse.lol.Physics;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Util;
 
@@ -53,7 +52,7 @@ public class Help implements ScreenManager {
         if (which == 1) {
             // set up a basic screen
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
             Background.setColor(255, 255, 255);
 
             // put some information on the screen
@@ -90,7 +89,7 @@ public class Help implements ScreenManager {
         // have more than one help scene.
         else if (which == 2) {
             Level.configure(48, 32);
-            Physics.configure(0, 0);
+            Level.configureGravity(0, 0);
             Background.setColor(255, 255, 0);
 
             // for now, just print a message

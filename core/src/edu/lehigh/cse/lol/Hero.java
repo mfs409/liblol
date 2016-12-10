@@ -425,7 +425,7 @@ public class Hero extends Actor {
             o.mHeroCollision.go(this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more
-        // jumps. Note that sensors should not enable
+        // jumps. Note that sensors should not enableTilt
         // jumps for the hero.
         if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor() && !o.mNoJumpReenable)
             stopJump();

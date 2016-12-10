@@ -61,7 +61,7 @@ public class Obstacle extends Actor {
     CollisionCallback mProjectileCollision;
 
     /**
-     * Indicate that this obstacle does not re-enable jumping for the hero
+     * Indicate that this obstacle does not re-enableTilt jumping for the hero
      */
     boolean mNoJumpReenable;
 

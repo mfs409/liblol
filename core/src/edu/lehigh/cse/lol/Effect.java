@@ -103,7 +103,7 @@ public class Effect implements Renderable {
 
     /**
      * Indicate whether the effect is active right now or not
-     * @param enabled True to enable the effect, false otherwise
+     * @param enabled True to enableTilt the effect, false otherwise
      */
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;

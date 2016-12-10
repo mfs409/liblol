@@ -75,7 +75,7 @@ public class Foreground {
             String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
-                        * Physics.PIXEL_METER_RATIO, width, height);
+                        * Level.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
     }
@@ -100,7 +100,7 @@ public class Foreground {
             float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
-                        * Physics.PIXEL_METER_RATIO, width, height);
+                        * Level.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
@@ -131,7 +131,7 @@ public class Foreground {
             String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
-                xOffset * Physics.PIXEL_METER_RATIO, 0, width, height);
+                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
     }
@@ -155,8 +155,8 @@ public class Foreground {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam
                     .calculateParallaxMatrix(pl.mXSpeed
-                            * Physics.PIXEL_METER_RATIO, pl.mYSpeed
-                            * Physics.PIXEL_METER_RATIO));
+                            * Level.PIXEL_METER_RATIO, pl.mYSpeed
+                            * Level.PIXEL_METER_RATIO));
             sb.begin();
             // handle auto layers
             if (pl.mAutoX) {
@@ -186,7 +186,7 @@ public class Foreground {
             else if (pl.mXRepeat) {
                 // get the camera center, translate to pixels, and scale by
                 // speed
-                float startX = x * Physics.PIXEL_METER_RATIO * pl.mXSpeed;
+                float startX = x * Level.PIXEL_METER_RATIO * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
@@ -209,7 +209,7 @@ public class Foreground {
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
                 // get the camera center, translate, and scale
-                float startY = y * Physics.PIXEL_METER_RATIO * pl.mYSpeed;
+                float startY = y * Level.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + Lol.sGame.mCurrentLevel.mBgCam.zoom)
                         * Lol.sGame.mHeight;

@@ -229,7 +229,7 @@ public class Util {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
                 glyphLayout.setText(bf, text);
                 bf.draw(sb, text, x, y + glyphLayout.height);
                 bf.getData().setScale(1);
@@ -260,7 +260,7 @@ public class Util {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         // figure out the image dimensions
-        bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
         glyphLayout.setText(bf, text);
         final float w = glyphLayout.width;
         final float h = glyphLayout.height;
@@ -271,7 +271,7 @@ public class Util {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Physics.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.getData().setScale(1);
             }
