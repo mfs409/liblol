@@ -47,6 +47,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -419,7 +420,7 @@ public class Level extends ScreenAdapter {
      *                         The obstacle that is drawn in the scribble will be the
      *                         "AttachedActor" of the callback.
      */
-    public static void setScribbleMode(final String imgName, final float width,
+    public void setScribbleMode(final String imgName, final float width,
                                        final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
@@ -451,7 +452,7 @@ public class Level extends ScreenAdapter {
                 mLastTime = now;
 
                 // make a circular obstacle
-                final Obstacle o = Obstacle.makeAsCircle(touchLoc.x - width / 2, touchLoc.y - height / 2, width,
+                final Obstacle o = makeObstacleAsCircle(touchLoc.x - width / 2, touchLoc.y - height / 2, width,
                         height, imgName);
                 if (onCreateCallback != null) {
                     onCreateCallback.mAttachedActor = o;
@@ -3597,5 +3598,469 @@ public class Level extends ScreenAdapter {
         scene = new WinScene();
         Lol.sGame.mCurrentLevel.mWinScene = scene;
         return scene;
+    }
+
+    /**
+     * Make an enemy that has an underlying rectangular shape.
+     *
+     * @param x       The X coordinate of the bottom left corner
+     * @param y       The Y coordinate of the bottom right corner
+     * @param width   The width of the enemy
+     * @param height  The height of the enemy
+     * @param imgName The name of the image to display
+     * @return The enemy, so that it can be modified further
+     */
+    public Enemy makeEnemyAsBox(float x, float y, float width, float height, String imgName) {
+        Enemy e = new Enemy(this, width, height, imgName);
+        e.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        return e;
+    }
+    /**
+     * Draw an enemy with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The enemy, so that it can be further modified
+     */
+    public  Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Enemy e = new Enemy(this, width, height, imgName);
+        e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        return e;
+    }
+
+    /**
+     * Make an enemy that has an underlying circular shape.
+     *
+     * @param x       The X coordinate of the bottom left corner
+     * @param y       The Y coordinate of the bottom right corner
+     * @param width   The width of the enemy
+     * @param height  The height of the enemy
+     * @param imgName The name of the image to display
+     * @return The enemy, so that it can be modified further
+     */
+    public Enemy makeEnemyAsCircle(float x, float y, float width, float height, String imgName) {
+        float radius = Math.max(width, height);
+        Enemy e = new Enemy(this, radius, radius, imgName);
+        e.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        return e;
+    }
+
+    /**
+     * Make a destination that has an underlying rectangular shape.
+     *
+     * @param x       The X coordinate of the bottom left corner
+     * @param y       The Y coordinate of the bottom right corner
+     * @param width   The width of the destination
+     * @param height  The height of the destination
+     * @param imgName The name of the image to display
+     * @return The destination, so that it can be modified further
+     */
+    public  Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
+        Destination d = new Destination(this, width, height, imgName);
+        d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        d.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        return d;
+    }
+
+    /**
+     * Draw a destination with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The destination, so that it can be further modified
+     */
+    public Destination makeDestinationAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Destination d = new Destination(this, width, height, imgName);
+        d.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        d.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        return d;
+    }
+
+    /**
+     * Make a destination that has an underlying circular shape.
+     *
+     * @param x       The X coordinate of the bottom left corner
+     * @param y       The Y coordinate of the bottom right corner
+     * @param width   The width of the destination
+     * @param height  The height of the destination
+     * @param imgName The name of the image to display
+     * @return The destination, so that it can be modified further
+     */
+    public  Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
+        float radius = Math.max(width, height);
+        Destination d = new Destination(this, radius, radius, imgName);
+        d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        d.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        return d;
+    }
+
+    /**
+     * Draw an obstacle with an underlying box shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @return The obstacle, so that it can be further modified
+     */
+    public  Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
+        Obstacle o = new Obstacle(this, width, height, imgName);
+        o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        return o;
+    }
+
+    /**
+     * Draw an obstacle with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The obstacle, so that it can be further modified
+     */
+    public  Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Obstacle o = new Obstacle(this, width, height, imgName);
+        o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        return o;
+    }
+
+    /**
+     * Draw an obstacle with an underlying circle shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @return The obstacle, so that it can be further modified
+     */
+    public  Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
+        float radius = Math.max(width, height);
+        Obstacle o = new Obstacle(this, width, height, imgName);
+        o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        return o;
+    }
+
+    /**
+     * Draw a goodie with an underlying box shape, and a default score of
+     * [1,0,0,0]
+     *
+     * @param x       X coordinate of bottom left corner
+     * @param y       Y coordinate of bottom left corner
+     * @param width   Width of the image
+     * @param height  Height of the image
+     * @param imgName Name of image file to use
+     * @return The goodie, so that it can be further modified
+     */
+    public  Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
+        Goodie g = new Goodie(this, width, height, imgName);
+        g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        g.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        return g;
+    }
+
+    /**
+     * Draw a goodie with an underlying circle shape, and a default score of
+     * [1,0,0,0]
+     *
+     * @param x       X coordinate of bottom left corner
+     * @param y       Y coordinate of bottom left corner
+     * @param width   Width of the image
+     * @param height  Height of the image
+     * @param imgName Name of image file to use
+     * @return The goodie, so that it can be further modified
+     */
+    public Goodie makeGoodieAsCircle(float x, float y, float width, float height, String imgName) {
+        float radius = Math.max(width, height);
+        Goodie g = new Goodie(this, width, height, imgName);
+        g.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        g.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        return g;
+    }
+
+    /**
+     * Draw a goodie with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The goodie, so that it can be further modified
+     */
+    public  Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Goodie g = new Goodie(this, width, height, imgName);
+        g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        g.setCollisionsEnabled(false);
+        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        return g;
+    }
+
+    /**
+     * Make a Hero with an underlying rectangular shape
+     *
+     * @param x       X coordinate of the hero
+     * @param y       Y coordinate of the hero
+     * @param width   width of the hero
+     * @param height  height of the hero
+     * @param imgName File name of the default image to display
+     * @return The hero that was created
+     */
+    public Hero makeHeroAsBox(float x, float y, float width, float height, String imgName) {
+        Hero h = new Hero(this, width, height, imgName);
+        h.setBoxPhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        return h;
+    }
+
+    /**
+     * Make a Hero with an underlying circular shape
+     *
+     * @param x       X coordinate of the hero
+     * @param y       Y coordinate of the hero
+     * @param width   width of the hero
+     * @param height  height of the hero
+     * @param imgName File name of the default image to display
+     * @return The hero that was created
+     */
+    public Hero makeHeroAsCircle(float x, float y, float width, float height, String imgName) {
+        float radius = Math.max(width, height);
+        Hero h = new Hero(this, width, height, imgName);
+        h.setCirclePhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y, radius / 2);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        return h;
+    }
+
+    /**
+     * Draw a hero with an underlying polygon shape
+     *
+     * @param x       X coordinate of the bottom left corner
+     * @param y       Y coordinate of the bottom left corner
+     * @param width   Width of the obstacle
+     * @param height  Height of the obstacle
+     * @param imgName Name of image file to use
+     * @param verts   Up to 16 coordinates representing the vertexes of this
+     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
+     * @return The hero, so that it can be further modified
+     */
+    public  Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+        Hero h = new Hero(this, width, height, imgName);
+        h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        return h;
+    }
+
+    /**
+     * Specify a limit on how far away from the Hero a projectile can go.
+     * Without this, projectiles could keep on traveling forever.
+     *
+     * @param distance Maximum distance from the hero that a projectile can travel
+     */
+    public  void setProjectileRange(float distance) {
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+            p.mRange = distance;
+    }
+
+    /**
+     * Indicate that projectiles should feel the effects of gravity. Otherwise,
+     * they will be (more or less) immune to gravitational forces.
+     */
+    public  void setProjectileGravityOn() {
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+            p.mBody.setGravityScale(1);
+    }
+
+    /**
+     * Specify the image file from which to randomly choose projectile images
+     *
+     * @param imgName The file to use when picking images
+     *
+     * TODO: this is broken now that we removed Animatable images
+     */
+    public  void setProjectileImageSource(String imgName) {
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+            p.mAnimator.updateImage(imgName);
+        Lol.sGame.mCurrentLevel.mProjectilePool.mRandomizeImages = true;
+    }
+
+    /**
+     * The "directional projectile" mechanism might lead to the projectiles
+     * moving too fast. This will cause the speed to be multiplied by a factor
+     *
+     * @param factor The value to multiply against the projectile speed.
+     */
+    public  void setProjectileVectorDampeningFactor(float factor) {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mDirectionalDamp = factor;
+    }
+
+    /**
+     * Indicate that all projectiles should participate in collisions, rather
+     * than disappearing when they collide with other actors
+     */
+    public  void enableCollisionsForProjectiles() {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mSensorProjectiles = false;
+    }
+
+    /**
+     * Indicate that projectiles thrown with the "directional" mechanism should
+     * have a fixed velocity
+     *
+     * @param velocity The magnitude of the velocity for projectiles
+     */
+    public  void setFixedVectorThrowVelocityForProjectiles(float velocity) {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mEnableFixedVectorVelocity = true;
+        Lol.sGame.mCurrentLevel.mProjectilePool.mFixedVectorVelocity = velocity;
+    }
+
+    /**
+     * Indicate that projectiles thrown via the "directional" mechanism should
+     * be rotated to face in their direction or movement
+     */
+    public  void setRotateVectorThrowForProjectiles() {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mRotateVectorThrow = true;
+    }
+
+    /**
+     * Indicate that when two projectiles collide, they should both remain on
+     * screen
+     */
+    public  void setCollisionOkForProjectiles() {
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+            p.mDisappearOnCollide = false;
+    }
+
+    /**
+     * Describe the behavior of projectiles in a scene. You must call this if
+     * you intend to use projectiles in your scene.
+     *
+     * @param size     number of projectiles that can be thrown at once
+     * @param width    width of a projectile
+     * @param height   height of a projectile
+     * @param imgName  image to use for projectiles
+     * @param strength specifies the amount of damage that a projectile does to an
+     *                 enemy
+     * @param zIndex   The z plane on which the projectiles should be drawn
+     * @param isCircle Should projectiles have an underlying circle or box shape?
+     */
+    public void configureProjectiles(int size, float width, float height, String imgName, int strength, int zIndex,
+                                            boolean isCircle) {
+        Lol.sGame.mCurrentLevel.mProjectilePool = new ProjectilePool(this, size, width, height, imgName, strength, zIndex,
+                isCircle);
+    }
+
+    /**
+     * Set a limit on the total number of projectiles that can be thrown
+     *
+     * @param number How many projectiles are available
+     */
+    public  void setNumberOfProjectiles(int number) {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining = number;
+    }
+
+    /**
+     * Specify a sound to play when the projectile is thrown
+     *
+     * @param soundName Name of the sound file to play
+     */
+    public  void setThrowSound(String soundName) {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mThrowSound = Media.getSound(soundName);
+    }
+
+    /**
+     * Specify the sound to play when a projectile disappears
+     *
+     * @param soundName the name of the sound file to play
+     */
+    public  void setProjectileDisappearSound(String soundName) {
+        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
+    }
+
+    /**
+     * Specify how projectiles should be animated
+     *
+     * @param a The animation object to use for each projectile that is thrown
+     */
+    public  void setProjectileAnimation(Animation a) {
+        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+            p.setDefaultAnimation(a);
+    }
+
+    /**
+     * Draw a box on the scene Note: the box is actually four narrow rectangles
+     *
+     * @param x0         X coordinate of top left corner
+     * @param y0         Y coordinate of top left corner
+     * @param x1         X coordinate of bottom right corner
+     * @param y1         Y coordinate of bottom right corner
+     * @param imgName    name of the image file to use when drawing the rectangles
+     * @param density    Density of the rectangle. When in doubt, use 1
+     * @param elasticity Elasticity of the rectangle. When in doubt, use 0
+     * @param friction   Friction of the rectangle. When in doubt, use 1
+     */
+     public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName, float density,
+                                       float elasticity, float friction) {
+        // draw four rectangles and we're good
+        Obstacle bottom = makeObstacleAsBox(x0 - 1, y0 - 1, Math.abs(x0 - x1) + 2, 1, imgName);
+        bottom.setPhysics(density, elasticity, friction);
+
+        Obstacle top = makeObstacleAsBox(x0 - 1, y1, Math.abs(x0 - x1) + 2, 1, imgName);
+        top.setPhysics(density, elasticity, friction);
+
+        Obstacle left = makeObstacleAsBox(x0 - 1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
+        left.setPhysics(density, elasticity, friction);
+
+        Obstacle right = makeObstacleAsBox(x1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
+        right.setPhysics(density, elasticity, friction);
+    }
+
+    /**
+     * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
+     * as a bunch of Obstacles. Note that not all Inkscape drawings will work as
+     * expected... if you need more power than this provides, you'll have to
+     * modify Svg.java
+     *
+     * @param svgName    Name of the svg file to load. It should be in the assets
+     *                   folder
+     * @param stretchX   Stretch the drawing in the X dimension by this percentage
+     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
+     * @param xposeX     Shift the drawing in the X dimension. Note that shifting
+     *                   occurs after stretching
+     * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
+     *                   occurs after stretching
+     * @param ac         A callback for customizing each (obstacle) line segment of the SVG
+     */
+    public  void importLineDrawing(String svgName, float stretchX, float stretchY,
+                                         float xposeX, float xposeY, Svg.ActorCallback ac) {
+        // Create an SVG object to hold all the parameters, then use it to parse
+        // the file
+        Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
+        s.parse(this, svgName);
     }
 }

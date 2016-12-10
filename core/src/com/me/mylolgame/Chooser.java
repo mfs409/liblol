@@ -53,12 +53,12 @@ public class Chooser implements ScreenManager {
      * @param height height of the button
      * @param whichLevel  which level to play when the button is tapped
      */
-    static void drawLevelButton(float x, float y, float width, float height, final int whichLevel) {
+    static void drawLevelButton(Level level, float x, float y, float width, float height, final int whichLevel) {
         // figure out the last unlocked level
         int unlocked = Level.getGameFact("unlocked", 1);
 
         // for each button, start by drawing an obstacle
-        Obstacle tile = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");
+        Obstacle tile = level.makeObstacleAsBox(x, y, width, height, "leveltile.png");
 
         // if this level is unlocked, or if we are in unlocked mode, then attach
         // a callback and print the level number with a touchCallback, and then
@@ -86,8 +86,8 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    static void drawPrevButton(float x, float y, float width, float height, final int chooserLevel) {
-        Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "leftarrow.png");
+    static void drawPrevButton(Level level, float x, float y, float width, float height, final int chooserLevel) {
+        Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "leftarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(chooserLevel);
@@ -104,8 +104,8 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    static void drawNextButton(float x, float y, float width, float height, final int chooserLevel) {
-        Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "rightarrow.png");
+    static void drawNextButton(Level level, float x, float y, float width, float height, final int chooserLevel) {
+        Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "rightarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(chooserLevel);
@@ -121,8 +121,8 @@ public class Chooser implements ScreenManager {
      * @param width  width of the button
      * @param height height of the button
      */
-    static void drawSplashButton(float x, float y, float width, float height) {
-        Obstacle prev = Obstacle.makeAsBox(x, y, width, height, "backarrow.png");
+    static void drawSplashButton(Level level, float x, float y, float width, float height) {
+        Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "backarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 Lol.doSplash();
@@ -152,27 +152,27 @@ public class Chooser implements ScreenManager {
             // put text on top of it. Our buttons are 5x5, we have 1.5 meters
             // between buttons, there's an 8.5 meter border on the left and
             // right, and there's an 11 meter border on the top
-            drawLevelButton(8.5f, 16, 5, 5, 1);
-            drawLevelButton(15f, 16, 5, 5, 2);
-            drawLevelButton(21.5f, 16, 5, 5, 3);
-            drawLevelButton(28f, 16, 5, 5, 4);
-            drawLevelButton(34.5f, 16, 5, 5, 5);
+            drawLevelButton(level, 8.5f, 16, 5, 5, 1);
+            drawLevelButton(level, 15f, 16, 5, 5, 2);
+            drawLevelButton(level, 21.5f, 16, 5, 5, 3);
+            drawLevelButton(level, 28f, 16, 5, 5, 4);
+            drawLevelButton(level, 34.5f, 16, 5, 5, 5);
 
-            drawLevelButton(8.5f, 9.5f, 5, 5, 6);
-            drawLevelButton(15f, 9.5f, 5, 5, 7);
-            drawLevelButton(21.5f, 9.5f, 5, 5, 8);
-            drawLevelButton(28f, 9.5f, 5, 5, 9);
-            drawLevelButton(34.5f, 9.5f, 5, 5, 10);
+            drawLevelButton(level, 8.5f, 9.5f, 5, 5, 6);
+            drawLevelButton(level, 15f, 9.5f, 5, 5, 7);
+            drawLevelButton(level, 21.5f, 9.5f, 5, 5, 8);
+            drawLevelButton(level, 28f, 9.5f, 5, 5, 9);
+            drawLevelButton(level, 34.5f, 9.5f, 5, 5, 10);
 
-            drawLevelButton(8.5f, 3f, 5, 5, 11);
-            drawLevelButton(15f, 3f, 5, 5, 12);
-            drawLevelButton(21.5f, 3f, 5, 5, 13);
-            drawLevelButton(28f, 3f, 5, 5, 14);
-            drawLevelButton(34.5f, 3f, 5, 5, 15);
+            drawLevelButton(level, 8.5f, 3f, 5, 5, 11);
+            drawLevelButton(level, 15f, 3f, 5, 5, 12);
+            drawLevelButton(level, 21.5f, 3f, 5, 5, 13);
+            drawLevelButton(level, 28f, 3f, 5, 5, 14);
+            drawLevelButton(level, 34.5f, 3f, 5, 5, 15);
 
             // draw the navigation buttons
-            drawNextButton(43, 9.5f, 5, 5, 2);
-            drawSplashButton(0, 0, 5, 5);
+            drawNextButton(level, 43, 9.5f, 5, 5, 2);
+            drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // screen 2: show levels 16-->30
@@ -193,29 +193,29 @@ public class Chooser implements ScreenManager {
             float x = 8.5f;
             int l = 16;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 16, 5, 5, l);
+                drawLevelButton(level, x, 16, 5, 5, l);
                 l++;
                 x += 6.5f;
             }
 
             x = 8.5f;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 9.5f, 5, 5, l);
+                drawLevelButton(level, x, 9.5f, 5, 5, l);
                 l++;
                 x += 6.5f;
             }
 
             x = 8.5f;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 3, 5, 5, l);
+                drawLevelButton(level, x, 3, 5, 5, l);
                 l++;
                 x += 6.5f;
             }
 
             // draw the navigation buttons
-            drawPrevButton(0, 9.5f, 5, 5, 1);
-            drawNextButton(43, 9.5f, 5, 5, 3);
-            drawSplashButton(0, 0, 5, 5);
+            drawPrevButton(level, 0, 9.5f, 5, 5, 1);
+            drawNextButton(level, 43, 9.5f, 5, 5, 3);
+            drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // screen 3: show levels 31-->45
@@ -236,7 +236,7 @@ public class Chooser implements ScreenManager {
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
-                    drawLevelButton(x, y, 5, 5, l);
+                    drawLevelButton(level, x, y, 5, 5, l);
                     l++;
                     x += 6.5f;
                 }
@@ -244,9 +244,9 @@ public class Chooser implements ScreenManager {
             }
 
             // draw the navigation buttons
-            drawPrevButton(0, 9.5f, 5, 5, 2);
-            drawNextButton(43, 9.5f, 5, 5, 4);
-            drawSplashButton(0, 0, 5, 5);
+            drawPrevButton(level, 0, 9.5f, 5, 5, 2);
+            drawNextButton(level, 43, 9.5f, 5, 5, 4);
+            drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // let's be a little more advanced... we can do all of these with the
@@ -267,7 +267,7 @@ public class Chooser implements ScreenManager {
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
-                    drawLevelButton(x, y, 5, 5, l);
+                    drawLevelButton(level, x, y, 5, 5, l);
                     l++;
                     x += 6.5f;
                 }
@@ -275,9 +275,9 @@ public class Chooser implements ScreenManager {
             }
 
             // navigation buttons
-            drawPrevButton(0, 9.5f, 5, 5, which - 1);
-            drawNextButton(43, 9.5f, 5, 5, which + 1);
-            drawSplashButton(0, 0, 5, 5);
+            drawPrevButton(level, 0, 9.5f, 5, 5, which - 1);
+            drawNextButton(level, 43, 9.5f, 5, 5, which + 1);
+            drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // The final case is the 7th screen, which just shows levels 91 and 92.
@@ -291,13 +291,13 @@ public class Chooser implements ScreenManager {
             Level.setMusic("tune.ogg");
 
             // we have 92 levels, so just draw a few buttons for now...
-            drawLevelButton(8.5f, 16, 5, 5, 91);
-            drawLevelButton(15f, 16, 5, 5, 92);
-            drawLevelButton(21.5f, 16, 5, 5, 93);
+            drawLevelButton(level, 8.5f, 16, 5, 5, 91);
+            drawLevelButton(level, 15f, 16, 5, 5, 92);
+            drawLevelButton(level, 21.5f, 16, 5, 5, 93);
 
             // draw the navigation buttons
-            drawPrevButton(0, 9.5f, 5, 5, 6);
-            drawSplashButton(0, 0, 5, 5);
+            drawPrevButton(level, 0, 9.5f, 5, 5, 6);
+            drawSplashButton(level, 0, 0, 5, 5);
         }
     }
 }

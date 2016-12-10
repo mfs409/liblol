@@ -61,7 +61,7 @@ public class Levels implements ScreenManager {
         /*
          * In this level, all we have is a hero (the green ball) who needs to
          * make it to the destination (a mustard colored ball). The game is
-         * configured to use tilt to control the hero.
+         * configured to use tilt to control the level.
          */
         if (whichLevel == 1) {
             // set the screen to 48 meters wide by 32 meters high... this is
@@ -85,13 +85,13 @@ public class Levels implements ScreenManager {
             // tilting the phone. "greenball.png" must be registered in
             // the registerMedia() method, which is also in this file. It must
             // also be in your android game's assets folder.
-            Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
 
             // draw a circular destination, and indicate that the level is won
-            // when the hero reaches the destination. "mustardball.png" must be
+            // when the hero reaches the level. "mustardball.png" must be
             // registered in registerMedia()
-            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 26, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
         }
 
@@ -104,13 +104,13 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 17, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 26, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // add a bounding box so the hero can't fall off the screen
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
             // change the text that we display when the level is won
             level.getWinScene().setDefaultWinText("Good job!");
@@ -134,9 +134,9 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // give the hero some density and friction, so that it can roll when
@@ -147,7 +147,7 @@ public class Levels implements ScreenManager {
             // the bounding box now also has nonzero density, elasticity, and
             // friction... you should check out what happens if the friction
             // stays at 0.
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // Let's draw our message in the center of the screen this time
             level.getPreScene().addText("Reach the destination\nto win this level.", 255, 255, 255, "arial.ttf", 32);
@@ -166,23 +166,23 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // now let's draw two heroes who can both move by tilting, and
             // who both have density and friction. Note that we lower the
             // density, so they move faster
-            Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h1 = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
-            Hero h2 = Hero.makeAsCircle(14, 7, 3, 3, "greenball.png");
+            Hero h2 = level.makeHeroAsCircle(14, 7, 3, 3, "greenball.png");
             h2.setPhysics(.1f, 0, 0.6f);
             h2.setMoveByTilting();
 
             // notice that now we will make two destinations, each of which
             // defaults to only holding ONE hero, but we still need to getLoseScene two
             // heroes to destinations in order to complete the level
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
-            Destination.makeAsCircle(29, 26, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 26, 2, 2, "mustardball.png");
             Level.setVictoryDestination(2);
 
             // Let's show msg1.png instead of text. Note that we had to
@@ -193,25 +193,25 @@ public class Levels implements ScreenManager {
 
         /*
          * This level demonstrates that we can have many heroes that can reach
-         * the same destination. It also shows our first sound effect
+         * the same level. It also shows our first sound effect
          */
         else if (whichLevel == 5) {
             // standard stuff...
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h1 = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
-            Hero h2 = Hero.makeAsCircle(14, 7, 3, 3, "greenball.png");
+            Hero h2 = level.makeHeroAsCircle(14, 7, 3, 3, "greenball.png");
             h2.setPhysics(.1f, 0, 0.6f);
             h2.setMoveByTilting();
             level.getPreScene().addText("All heroes must\nreach the destination", 255, 255, 255, "arial.ttf", 32);
 
             // now let's make a destination, but indicate that it can hold TWO
             // heroes
-            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setHeroCount(2);
 
             // let's also say that whenever a hero reaches the destination, a
@@ -232,10 +232,10 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             level.getPreScene().addText("A different way\nto use tilt.", 255, 255, 255, "arial.ttf", 32);
 
@@ -251,16 +251,16 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             // Notice that we changed the font size and color
             level.getPreScene().addText("Avoid the enemy and\nreach the destination", 25, 255, 255, "arial.ttf", 20);
 
             // draw an enemy... we don't need to give it physics for now...
-            Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
 
             // turn off the win and lose scenes... whether the player wins or
             // loses, we'll just start the appropriate level. Be sure to test
@@ -278,10 +278,10 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 27, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             level.getPreScene().addText("Avoid the enemy and\nreach the destination", 255, 255, 255, "arial.ttf", 20);
 
@@ -289,7 +289,7 @@ public class Levels implements ScreenManager {
             level.getPreScene().addText("(the enemy is red)", 5, 5, 50, 200, 122, "arial.ttf", 10);
 
             // draw an enemy
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
 
             // attach a path to the enemy. It starts at (25, 25) and moves to
             // (25, 2). This means it has *2* points on its route. Notice that
@@ -310,16 +310,16 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             level.getPreScene()
                     .addText("Avoid the enemy and\nreach the destination", 50, 50, 255, 255, 255, "arial.ttf", 20);
 
             // draw an enemy that can move
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             // This time, we add a third point, which is the same as the
             // starting point. This will give us a nicer sort of movement. Also
             // note the diagonal movement.
@@ -336,19 +336,19 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(0.1f, 0, 0.6f);
             h.setMoveByTilting();
             level.getPreScene().addImage("msg2.png", 0, 0, 960, 640);
 
             // let's make the destination rotate:
-            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setRotationSpeed(1);
             Level.setVictoryDestination(1);
 
             // draw an enemy who moves via tilt
-            Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            Enemy e3 = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e3.setPhysics(1.0f, 0.3f, 0.6f);
             e3.setMoveByTilting();
 
@@ -374,17 +374,17 @@ public class Levels implements ScreenManager {
             Level.configureCamera(400, 300);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 400, 300, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 400, 300, "red.png", 0, 0, 0);
 
             // put the hero and destination far apart
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(329, 281, 10, 10, "mustardball.png");
+            level.makeDestinationAsCircle(329, 281, 10, 10, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // We want to be sure that no matter what, the player can see the
-            // hero. We achieve this by having the camera follow the hero:
+            // level. We achieve this by having the camera follow the hero:
             Level.setCameraChase(h);
 
             // add zoom buttons. We are using blank images, which means that the
@@ -409,13 +409,13 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // add a hero and destination
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // let's draw an obstacle whose underlying shape is a box, but whose
@@ -423,21 +423,21 @@ public class Levels implements ScreenManager {
             // an invisible corner on this obstacle. When debug rendering is
             // turned on (in Config.java), you'll be able to see the true shape
             // of the obstacle.
-            Obstacle o1 = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o1 = level.makeObstacleAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o1.setPhysics(1, 0, 1);
 
             // now let's draw an obstacle whose shape and picture are both
             // circles. The hero rolls around this nicely.
-            Obstacle o2 = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o2 = level.makeObstacleAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
             o2.setPhysics(1, 0, 1);
 
             // draw a wall using circle physics and a stretched rectangular
             // picture. This wall will do really funny things
-            Obstacle o3 = Obstacle.makeAsCircle(20, 25, 6, 0.5f, "red.png");
+            Obstacle o3 = level.makeObstacleAsCircle(20, 25, 6, 0.5f, "red.png");
             o3.setPhysics(1, 0, 1);
 
             // draw a rectangular wall the right way, as a box
-            Obstacle o4 = Obstacle.makeAsBox(34, 2, 0.5f, 20, "red.png");
+            Obstacle o4 = level.makeObstacleAsBox(34, 2, 0.5f, 20, "red.png");
             o4.setPhysics(1, 0, 1);
 
             level.getPreScene().addText("An obstacle's appearance may\nnot match its physics", 255, 255, 255, "arial.ttf",
@@ -454,17 +454,17 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene().addText("These obstacles have\ndifferent physics\nparameters", 255, 255, 255, "arial.ttf",
                     32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             // Colliding the hero with these obstacles can have interesting
             // effects
-            Obstacle o1 = Obstacle.makeAsCircle(0, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o1 = level.makeObstacleAsCircle(0, 0, 3.5f, 3.5f, "purpleball.png");
             o1.setPhysics(0, 100, 0);
-            Obstacle o2 = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o2 = level.makeObstacleAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
             o2.setPhysics(10, 0, 100);
         }
 
@@ -472,14 +472,14 @@ public class Levels implements ScreenManager {
          * This level introduces goodies. Goodies are something that we collect.
          * We can make the collection of goodies lead to changes in the behavior
          * of the game, and in this example, the collection of goodies "enables"
-         * a destination.
+         * a level.
          */
         else if (whichLevel == 14) {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             level.getPreScene().addText("You must collect\ntwo blue balls", 255, 255, 255, "arial.ttf", 32);
@@ -492,13 +492,13 @@ public class Levels implements ScreenManager {
             //
             // Note that LibLOL allows goodies to have one of 4 "types". By
             // default, collecting a goodie increases the "type 1" score by 1.
-            Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(0, 15, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(0, 30, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(0, 15, 2, 2, "blueball.png");
 
-            // here we create a destination. Note that we now set its activation
+            // here we create a level. Note that we now set its activation
             // score to 2, so that you must collect two goodies before the
             // destination will "work"
-            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             // we must provide an activation score for each of the 4 types of
             // goodies
@@ -520,25 +520,25 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Every entity can move...", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(44, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(44, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             // make a destination that moves, and that requires one goodie to be
             // collected before it works
-            Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             d.setActivationScore(1, 0, 0, 0);
             d.setRoute(new Route(3).to(29, 6).to(29, 26).to(29, 6), 4, true);
             Level.setVictoryDestination(1);
 
             // make an obstacle that moves
-            Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o = level.makeObstacleAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
             o.setRoute(new Route(3).to(0, 0).to(10, 10).to(0, 0), 2, true);
 
             // make a goodie that moves
-            Goodie g = Goodie.makeAsCircle(5, 5, 2, 2, "blueball.png");
+            Goodie g = level.makeGoodieAsCircle(5, 5, 2, 2, "blueball.png");
             g.setRoute(new Route(5).to(5, 5).to(5, 25).to(25, 25).to(9, 9).to(5, 5), 10, true);
 
             // draw a goodie counter in light blue (60, 70, 255) with a 12-point
@@ -556,17 +556,17 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Collect all\nblue balls\nto win", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 20, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 20, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             // draw 5 goodies
-            Goodie.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(5.5f, 1.5f, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(10.5f, 2.5f, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(15.5f, 3.5f, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(20.5f, 4.5f, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(.5f, .5f, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(5.5f, 1.5f, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(10.5f, 2.5f, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(15.5f, 3.5f, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(20.5f, 4.5f, 2, 2, "blueball.png");
 
             // indicate that we win by collecting enough goodies
             Level.setVictoryGoodies(5, 0, 0, 0);
@@ -598,11 +598,11 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Obstacles as zoom\nstrips, friction pads\nand repellers", 255, 255, 255,
                     "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // add a stopwatch... note that there are two ways to add a
@@ -625,17 +625,17 @@ public class Levels implements ScreenManager {
             // this obstacle's dampening factor means that on collision, the
             // hero's velocity is multiplied by -1... he bounces off at an
             // angle.
-            Obstacle o = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
             o.setPad(-1);
 
-            // this obstacle accelerates the hero... it's like a turbo booster
-            o = Obstacle.makeAsCircle(20, 10, 3.5f, 3.5f, "purpleball.png");
+            // this obstacle accelerates the level... it's like a turbo booster
+            o = level.makeObstacleAsCircle(20, 10, 3.5f, 3.5f, "purpleball.png");
             o.setPad(5);
 
             // this obstacle slows the hero down... it's like running on
             // sandpaper. Note that the hero only slows down on initial
             // collision, not while going under it.
-            o = Obstacle.makeAsBox(30, 10, 3.5f, 3.5f, "purpleball.png");
+            o = level.makeObstacleAsBox(30, 10, 3.5f, 3.5f, "purpleball.png");
             o.setRotationSpeed(2);
             o.setPad(0.2f);
         }
@@ -652,15 +652,15 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The hero can defeat \nup to two enemies...", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // draw a hero and give it strength of 10. The default is for
             // enemies to have "2" units of damage, and heroes to have "1" unit
             // of strength, so that any collision defeats the hero without
             // removing the enemy.
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             h.setStrength(10);
@@ -669,7 +669,7 @@ public class Levels implements ScreenManager {
             level.addStrengthMeter(" Strength", 220, 280, h);
 
             // our first enemy stands still:
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             e.setDamage(4);
@@ -677,14 +677,14 @@ public class Levels implements ScreenManager {
             e.setDefeatHeroText("How did you hit me?");
 
             // our second enemy moves along a path
-            e = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            e = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRoute(new Route(3).to(35, 25).to(15, 25).to(35, 25), 10, true);
             e.setDamage(4);
             e.setDefeatHeroText("Stay out of my way");
 
             // our third enemy moves with tilt, which makes it hardest to avoid
-            e = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            e = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e.setPhysics(.1f, 0.3f, 0.6f);
             e.setMoveByTilting();
             e.setDamage(4);
@@ -703,21 +703,21 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("You have 10 seconds\nto defeat the enemies", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // give the hero enough strength that this will work...
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setStrength(10);
             h.setMoveByTilting();
 
             // draw a few enemies, and change their "damage" (the amount by
             // which they decrease the hero's strength)
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             e.setDamage(4);
-            e = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            e = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e.setPhysics(.1f, 0.3f, 0.6f);
             e.setMoveByTilting();
             e.setDamage(4);
@@ -740,25 +740,25 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Collect blue balls\nto increse strength", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // our default hero only has "1" strength
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             // our default enemy has "2" damage
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             e.setDisappearSound("slowdown.ogg");
 
             // a second enemy
-            e = Enemy.makeAsCircle(35, 15, 2, 2, "redball.png");
+            e = level.makeEnemyAsCircle(35, 15, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
 
             // this goodie gives an extra "5" strength:
-            Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
+            Goodie g = level.makeGoodieAsCircle(0, 30, 2, 2, "blueball.png");
             g.setStrengthBoost(5);
             g.setDisappearSound("woowoowoo.ogg");
 
@@ -780,27 +780,27 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 255, 255, 255,
                     "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             // draw a few enemies, and make them rotate
             for (int i = 0; i < 5; ++i) {
-                Enemy e = Enemy.makeAsCircle(5 * i + 1, 25, 2, 2, "redball.png");
+                Enemy e = level.makeEnemyAsCircle(5 * i + 1, 25, 2, 2, "redball.png");
                 e.setPhysics(1.0f, 0.3f, 0.6f);
                 e.setRotationSpeed(1);
             }
 
             // this goodie makes us invincible
-            Goodie g = Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
+            Goodie g = level.makeGoodieAsCircle(30, 30, 2, 2, "blueball.png");
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
 
-            // we'll still say you win by reaching the destination. Defeating
+            // we'll still say you win by reaching the level. Defeating
             // enemies is just for fun...
-            Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // display a goodie count for type-1 goodies
@@ -822,24 +822,24 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Collect 'the right' \nblue balls to\nactivate destination", 255, 255, 255,
                     "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
             d.setActivationScore(7, 0, 0, 0);
             Level.setVictoryDestination(1);
 
             // create some goodies with special scores. Note that we're still
             // only dealing with type-1 scores
-            Goodie g1 = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
+            Goodie g1 = level.makeGoodieAsCircle(0, 30, 2, 2, "blueball.png");
             g1.setScore(-2, 0, 0, 0);
-            Goodie g2 = Goodie.makeAsCircle(0, 15, 2, 2, "blueball.png");
+            Goodie g2 = level.makeGoodieAsCircle(0, 15, 2, 2, "blueball.png");
             g2.setScore(7, 0, 0, 0);
 
             // create some regular goodies
-            Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
-            Goodie.makeAsCircle(35, 30, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(30, 30, 2, 2, "blueball.png");
+            level.makeGoodieAsCircle(35, 30, 2, 2, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
             level.addGoodieCount(1, 0, " Progress", 220, 280, "arial.ttf", 60, 70, 255, 12);
@@ -856,25 +856,25 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene()
                     .addText("Rotating oblong obstacles\nand draggable obstacles", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // draw obstacles that we can drag
-            Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o = level.makeObstacleAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
             o.setCanDrag(true);
-            Obstacle o2 = Obstacle.makeAsBox(7, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o2 = level.makeObstacleAsBox(7, 0, 3.5f, 3.5f, "purpleball.png");
             o2.setPhysics(0, 100, 0);
             o2.setCanDrag(true);
 
             // draw an obstacle that is oblong (due to its width and height) and
             // that is rotated. Note that this should be a box, or it will not
             // have the right underlying shape.
-            o = Obstacle.makeAsBox(12, 12, 3.5f, .5f, "purpleball.png");
+            o = level.makeObstacleAsBox(12, 12, 3.5f, .5f, "purpleball.png");
             o.setRotation(45);
         }
 
@@ -887,7 +887,7 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             level.getPreScene().addText("Touch the obstacle\nto select, then" + "\ntouch to move it", 255, 255, 255,
                     "arial.ttf", 32);
 
@@ -897,14 +897,14 @@ public class Levels implements ScreenManager {
             // will appear to go "under" the picture.
             Util.drawPicture(0, 0, 48, 32, "greenball.png", 0);
 
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a pokeable obstacle
-            Obstacle o = Obstacle.makeAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o = level.makeObstacleAsBox(0, 0, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(0, 100, 0);
             // '250' is a number of milliseconds. Two presses within 250
             // milliseconds will cause this obstacle to disappear, forever. Make
@@ -921,15 +921,15 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The enemy will chase you", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create an enemy who chases the hero
-            Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            Enemy e3 = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e3.setPhysics(.1f, 0.3f, 0.6f);
             e3.setChaseSpeed(8, h, true, true);
 
@@ -941,7 +941,7 @@ public class Levels implements ScreenManager {
             // We can change the z-index of anything... let's move the enemy to
             // -2. Since we do this after drawing the picture, it will still be
             // drawn on top of the picture, but we should also be able to see it
-            // go under the destination.
+            // go under the level.
             e3.setZIndex(-2);
         }
 
@@ -955,16 +955,16 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Touch the purple ball \nor collide with it", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up our obstacle so that collision and touch make it play
             // sounds
-            Obstacle o = Obstacle.makeAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(10, 10, 3.5f, 3.5f, "purpleball.png");
             o.setPhysics(1, 0, 1);
             o.setTouchSound("lowpitch.ogg");
             o.setCollideSound("hipitch.ogg", 2000);
@@ -981,12 +981,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 60, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(29, 60, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setRotationByDirection();
             h.setMoveByTilting();
@@ -1004,15 +1004,15 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Reach the destination\nto win the game.", 255, 255, 255, "arial.ttf", 20);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(21.5f, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(21.5f, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // this enemy starts from off-screen
-            Enemy e = Enemy.makeAsCircle(1, -20, 44, 44, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(1, -20, 44, 44, "redball.png");
             e.setDefeatHeroText("Ha Ha Ha");
             e.setRoute(new Route(3).to(1, -90).to(1, 26).to(1, -20), 30, true);
         }
@@ -1029,11 +1029,11 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Draw on the screen\nto make obstacles appear", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(21.5f, 29, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(21.5f, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(21.5f, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(21.5f, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // turn on 'scribble mode'... this says "draw a purple ball that is 1.5x1.5 at the
@@ -1041,7 +1041,7 @@ public class Levels implements ScreenManager {
             // 10 milliseconds."  It also says "when an obstacle is drawn, do some stuff to the
             // obstacle".  If you don't want any of this functionality, you can replace the whole
             // "new LolCallback..." region of code with "null".
-            Level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback() {
+            level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback() {
                 @Override
                 public void onEvent() {
                     // each time we draw an obstacle, it will be visible to this code as the
@@ -1065,17 +1065,17 @@ public class Levels implements ScreenManager {
             // create a level with a constant force downward in the Y dimension
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.makeDestinationAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create a hero who we can flick
-            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(4, 27, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setFlickable(1f);
             h.disableRotation();
 
-            Obstacle o = Obstacle.makeAsCircle(8, 27, 3, 3, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(8, 27, 3, 3, "purpleball.png");
             o.setFlickable(.5f);
         }
 
@@ -1096,11 +1096,11 @@ public class Levels implements ScreenManager {
             // turn on tilt, but only in the X dimension
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Side scroller / tilt demo", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             Level.setCameraChase(h);
         }
@@ -1117,11 +1117,11 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Side scroller / tilt demo", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 30 * 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 30 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(30 * 48 - 5, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(30 * 48 - 5, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             Level.setCameraChase(h);
 
@@ -1136,7 +1136,7 @@ public class Levels implements ScreenManager {
 
             // make an obstacle that hovers in a fixed place. Note that hovering
             // and zoom do not work together nicely.
-            Obstacle o = Obstacle.makeAsCircle(10, 10, 5, 5, "blueball.png");
+            Obstacle o = level.makeObstacleAsCircle(10, 10, 5, 5, "blueball.png");
             o.setHover(100, 100);
 
             // Add a meter to show how far the hero has traveled
@@ -1171,12 +1171,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Level.setCameraChase(h);
@@ -1209,15 +1209,15 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press anywhere to jump", 255, 255, 255, "arial.ttf", 32);
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // note: the bounding box does not have friction, and neither does
             // the hero
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 0, 0, 0);
 
             // make a hero, and ensure that it doesn't rotate
-            Hero h = Hero.makeAsCircle(2, 0, 3, 7, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
             // give the hero a fixed velocity
@@ -1240,7 +1240,7 @@ public class Levels implements ScreenManager {
             // that if the hero misses the destination, it hits the enemy and we
             // can start over. Of course, we could just do the destination like
             // this instead, but this is more fun...
-            Enemy.makeAsBox(130, 0, .5f, 32, "");
+            level.makeEnemyAsBox(130, 0, .5f, 32, "");
         }
 
         /*
@@ -1254,8 +1254,8 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 38);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Multi-jump is enabled", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 38, "red.png", 1, 0, 0);
-            Hero h = Hero.makeAsBox(2, 0, 3, 7, "greenball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 38, "red.png", 1, 0, 0);
+            Hero h = level.makeHeroAsBox(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
             h.addVelocity(5, 0, false);
@@ -1269,8 +1269,8 @@ public class Levels implements ScreenManager {
             Level.setBackgroundColor(23, 180, 255);
             Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
             level.addJumpButton(0, 0, 960, 640, "", h);
-            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
-            Enemy.makeAsBox(130, 0, .5f, 38, "");
+            level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
+            level.makeEnemyAsBox(130, 0, .5f, 38, "");
             Level.setVictoryDestination(1);
         }
 
@@ -1282,8 +1282,8 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 0);
             level.getPreScene().addText("Press screen borders\nto move the hero", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 0, 3, 3, "stars.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = level.makeHeroAsCircle(2, 0, 3, 3, "stars.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
@@ -1292,7 +1292,7 @@ public class Levels implements ScreenManager {
             h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
             h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
 
-            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             Level.setBackgroundColor(23, 180, 255);
@@ -1300,7 +1300,7 @@ public class Levels implements ScreenManager {
 
             // let's draw an enemy, just in case anyone wants to try to go to
             // the top left corner
-            Enemy.makeAsCircle(3, 27, 3, 3, "redball.png");
+            level.makeEnemyAsCircle(3, 27, 3, 3, "redball.png");
 
             // draw some buttons for moving the hero
             level.addLeftButton(0, 100, 100, 440, "", 15, h);
@@ -1319,14 +1319,14 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             level.getPreScene().addText("Press screen borders\nto move up and down", 255, 255, 255, "arial.ttf", 32);
             // The box and hero should not have friction
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             Level.setBackgroundColor(23, 180, 255);
             Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
             h.addVelocity(10, 0, false);
@@ -1334,8 +1334,8 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // draw an enemy to avoid, and one at the end
-            Enemy.makeAsCircle(53, 28, 3, 3, "redball.png");
-            Enemy.makeAsBox(130, 0, .5f, 32, "");
+            level.makeEnemyAsCircle(53, 28, 3, 3, "redball.png");
+            level.makeEnemyAsBox(130, 0, .5f, 32, "");
 
             // draw the up/down controls
             level.addDownButton(100, 0, 760, 100, "", 15, h);
@@ -1351,10 +1351,10 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press the screen\nto crawl", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
-            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
+            level.makeDestinationAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
-            Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
+            Hero h = level.makeHeroAsBox(2, 1, 3, 7, "greenball.png");
             h.setPhysics(.1f, 0, 0);
             h.addVelocity(5, 0, false);
             Level.setCameraChase(h);
@@ -1363,7 +1363,7 @@ public class Levels implements ScreenManager {
 
             // make an enemy who we can defeat by colliding with it while
             // crawling
-            Enemy e = Enemy.makeAsCircle(110, 1, 5, 5, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(110, 1, 5, 5, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setDefeatByCrawl();
         }
@@ -1378,10 +1378,10 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
             Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
-            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero who doesn't start moving until it is touched
@@ -1389,7 +1389,7 @@ public class Levels implements ScreenManager {
             // note that this hero is a box, and the hero is "norotate". You
             // will probably getLoseScene strange behaviors if you choose any other
             // options
-            Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
+            Hero h = level.makeHeroAsBox(2, 1, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
             h.setTouchAndGo(10, 0);
@@ -1409,10 +1409,10 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 0);
             Level.setTiltAsVelocity(true);
             level.getPreScene().addText("Obstacles can\nbe drawn from SVG\nfiles", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
 
             // make a hero who can jump
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setJumpImpulses(0, 20);
             h.setTouchToJump();
@@ -1420,7 +1420,7 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            Svg.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new Svg.ActorCallback() {
+            level.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new Svg.ActorCallback() {
                 @Override
                 public void handle(Actor line) {
                     // This code is run each time a line of the SVG is drawn.  When we getLoseScene a line,
@@ -1431,7 +1431,7 @@ public class Levels implements ScreenManager {
             });
 
             // provide a destination
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
         }
 
@@ -1444,30 +1444,30 @@ public class Levels implements ScreenManager {
             Level.configureCamera(10 * 48, 32);
             Level.configureGravity(0, 0);
             level.getPreScene().addText("Speed boosters and reducers", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 10 * 480, 32, "", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 10 * 480, 32, "", 1, 0, 1);
 
-            Hero h = Hero.makeAsCircle(2, 0, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 0, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.addVelocity(10, 0, false);
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(450, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(450, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             Level.setBackgroundColor(23, 180, 255);
             Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // place a speed-up obstacle that lasts for 2 seconds
-            Obstacle o1 = Obstacle.makeAsCircle(40, 1, 4, 4, "purpleball.png");
+            Obstacle o1 = level.makeObstacleAsCircle(40, 1, 4, 4, "purpleball.png");
             o1.setSpeedBoost(20, 0, 2);
 
             // place a slow-down obstacle that lasts for 3 seconds
-            Obstacle o2 = Obstacle.makeAsCircle(120, 1, 4, 6, "purpleball.png");
+            Obstacle o2 = level.makeObstacleAsCircle(120, 1, 4, 6, "purpleball.png");
             o2.setSpeedBoost(-9, 0, 3);
 
             // place a permanent +3 speedup obstacle... the -1 means "forever"
-            Obstacle o3 = Obstacle.makeAsCircle(240, 1, 4, 4, "purpleball.png");
+            Obstacle o3 = level.makeObstacleAsCircle(240, 1, 4, 4, "purpleball.png");
             o3.setSpeedBoost(20, 0, -1);
         }
 
@@ -1481,14 +1481,14 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(0, 10);
             level.getPreScene().addText("Vertical scroller demo", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 48, 4 * 32, "red.png", 1, 0, 1);
 
-            Hero h = Hero.makeAsCircle(2, 120, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 120, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Destination.makeAsBox(0, 2, 48, 1, "mustardball.png");
+            level.makeDestinationAsBox(0, 2, 48, 1, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up vertical scrolling backgrounds
@@ -1500,7 +1500,7 @@ public class Levels implements ScreenManager {
 
         /*
          * the next few levels demonstrate support for throwing projectiles. In
-         * this level, we throw projectiles by touching the hero. Here, the
+         * this level, we throw projectiles by touching the level. Here, the
          * projectile always goes in the same direction
          */
         else if (whichLevel == 43) {
@@ -1508,23 +1508,23 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Press the hero\nto make it throw\nprojectiles", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create a hero, and indicate that touching it makes it throw
             // projectiles
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             // when the hero is touched, a projectile will
-            // fly straight up, out of the top of the hero.
+            // fly straight up, out of the top of the level.
             h.setTouchToThrow(h, 1.5f, 3, 0, 10);
             h.setMoveByTilting();
 
             // configureGravity a pool of projectiles. We say that there can be no more
             // than 3 projectiles in flight at any time.
-            ProjectilePool.configure(3, 1, 1, "greyball.png", 1, 0, true);
+            level.configureProjectiles(3, 1, 1, "greyball.png", 1, 0, true);
         }
 
         /*
@@ -1540,18 +1540,18 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press anywhere\nto throw a gray\nball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 30, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 30, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a pool of projectiles, but now once the projectiles travel
             // more than 25 meters, they disappear
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
-            ProjectilePool.setRange(25);
+            level.configureProjectiles(100, 1, 1, "greyball.png", 1, 0, true);
+            level.setProjectileRange(25);
 
             // add a button for throwing projectiles. Notice that this butotn
             // keeps throwing as long as it is held, but we've capped it to
@@ -1568,25 +1568,25 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             level.getPreScene().addText("Defeat all enemies\nto win", 255, 255, 255, "arial.ttf", 32);
 
-            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 27, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             // set up our projectiles... note that now projectiles each do 2
             // units of damage
-            ProjectilePool.configure(3, .4f, .1f, "greyball.png", 2, 0, true);
+            level.configureProjectiles(3, .4f, .1f, "greyball.png", 2, 0, true);
 
             // draw a few enemies... note that they have different amounts of
             // damage, so it takes different numbers of projectiles to defeat
             // them.
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             for (int i = 1; i < 20; i += 5) {
-                Enemy ee = Enemy.makeAsCircle(i, i + 5, 2, 2, "redball.png");
+                Enemy ee = level.makeEnemyAsCircle(i, i + 5, 2, 2, "redball.png");
                 ee.setPhysics(1.0f, 0.3f, 0.6f);
                 ee.setDamage(i);
             }
@@ -1606,15 +1606,15 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions...
@@ -1624,9 +1624,9 @@ public class Levels implements ScreenManager {
             // set up our pool of projectiles. The main challenge here is that
             // the farther from the hero we press, the faster the projectile
             // goes, so we multiply the velocity by .8 to slow it down a bit
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
-            ProjectilePool.setProjectileVectorDampeningFactor(.8f);
-            ProjectilePool.setRange(30);
+            level.configureProjectiles(100, 1, 1, "greyball.png", 1, 0, true);
+            level.setProjectileVectorDampeningFactor(.8f);
+            level.setProjectileRange(30);
         }
 
         /*
@@ -1639,15 +1639,15 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(0, 0, 0.6f);
             h.setMoveByTilting();
             Level.setCameraChase(h);
 
-            Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // we use a "single throw" button so that holding doesn't throw more
@@ -1660,20 +1660,20 @@ public class Levels implements ScreenManager {
             // thing is moveable. This is a step toward our goal of being able
             // to bounce a basketball off of a backboard, but it's not quite
             // enough...
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
-            ProjectilePool.setProjectileVectorDampeningFactor(.8f);
-            ProjectilePool.setRange(40);
-            ProjectilePool.setProjectileGravityOn();
-            ProjectilePool.enableCollisionsForProjectiles();
+            level.configureProjectiles(100, 1, 1, "greyball.png", 1, 0, true);
+            level.setProjectileVectorDampeningFactor(.8f);
+            level.setProjectileRange(40);
+            level.setProjectileGravityOn();
+            level.enableCollisionsForProjectiles();
 
             // This next line is interesting... it lets projectiles collide with
             // each other without disappearing
-            ProjectilePool.setCollisionOk();
+            level.setCollisionOkForProjectiles();
 
             // Draw an obstacle... this is like our backboard, but we're putting
             // it in a spot that's more useful for testing than for playing a
             // game
-            Obstacle o = Obstacle.makeAsBox(10, 20, 2, 2, "red.png");
+            Obstacle o = level.makeObstacleAsBox(10, 20, 2, 2, "red.png");
 
             // now comes the tricky part... we want to make it so that when the
             // ball hits the obstacle (the backboard), it doesn't disappear. The
@@ -1710,21 +1710,21 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Throw balls at \nthe enemies before\nthey reproduce", 255, 255, 255, "arial.ttf",
                     32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setTouchToThrow(h, 2, -.5f, 0, 10);
             h.setMoveByTilting();
 
             // configureGravity a pool of projectiles... now we have a sound that plays
             // when a projectile is thrown, and another for when it disappears
-            ProjectilePool.configure(100, .5f, .5f, "greyball.png", 1, 0, true);
-            ProjectilePool.setThrowSound("fwapfwap.ogg");
-            ProjectilePool.setProjectileDisappearSound("slowdown.ogg");
+            level.configureProjectiles(100, .5f, .5f, "greyball.png", 1, 0, true);
+            level.setThrowSound("fwapfwap.ogg");
+            level.setProjectileDisappearSound("slowdown.ogg");
 
             // draw an enemy that makes a sound when it disappears
-            Enemy e = Enemy.makeAsCircle(23, 20, 1, 1, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(23, 20, 1, 1, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
 
             // This is tricky. We want to make the enemy reproduce. To that end,
@@ -1746,14 +1746,14 @@ public class Levels implements ScreenManager {
                     // only reproduce the enemy if it is visible
                     if (mAttachedActor.getVisible()) {
                         // make an enemy to the left of and above attachedSprite
-                        Enemy left = Enemy.makeAsCircle(mAttachedActor.getXPosition() - 2 * mIntVal,
+                        Enemy left = level.makeEnemyAsCircle(mAttachedActor.getXPosition() - 2 * mIntVal,
                                 mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
                                 mAttachedActor.getHeight(), "redball.png");
                         left.setDisappearSound("lowpitch.ogg");
 
                         // make an enemy to the right of and above
                         // attachedSprite
-                        Enemy right = Enemy.makeAsCircle(mAttachedActor.getXPosition() + 2 * mIntVal,
+                        Enemy right = level.makeEnemyAsCircle(mAttachedActor.getXPosition() + 2 * mIntVal,
                                 mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
                                 mAttachedActor.getHeight(), "redball.png");
                         right.setDisappearSound("lowpitch.ogg");
@@ -1806,17 +1806,17 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("These enemies are\nreally tricky", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(29, 29, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 29, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make our initial enemy
-            Enemy e = Enemy.makeAsCircle(23, 2, 1, 1, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(23, 2, 1, 1, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setMoveByTilting();
 
@@ -1827,7 +1827,7 @@ public class Levels implements ScreenManager {
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     // Make the new enemy
-                    Enemy e2 = Enemy.makeAsCircle(mAttachedActor.getXPosition(), mAttachedActor.getYPosition(),
+                    Enemy e2 = level.makeEnemyAsCircle(mAttachedActor.getXPosition(), mAttachedActor.getYPosition(),
                             mAttachedActor.getWidth(), mAttachedActor.getHeight(), "redball.png");
                     e2.setPhysics(1.0f, 0.3f, 0.6f);
                     e2.setMoveByTilting();
@@ -1856,13 +1856,13 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Animations", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // this hero will be animated:
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
@@ -1881,17 +1881,17 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
             Level.setBackgroundColor(23, 180, 255);
             Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero, and give it two animations: one for when it is in
             // the air, and another for the rest of the time.
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setJumpImpulses(0, 20);
@@ -1912,7 +1912,7 @@ public class Levels implements ScreenManager {
             // size we want, but we need to offset it from the (defunct)
             // goodie's position. Note, too, that the final cell is blank, so
             // that we don't leave a residue on the screen.
-            Goodie g = Goodie.makeAsCircle(15, 9, 5, 5, "starburst3.png");
+            Goodie g = level.makeGoodieAsCircle(15, 9, 5, 5, "starburst3.png");
             g.setDisappearAnimation(new Animation(4, false).to("starburst3.png", 200).to("starburst2.png", 200).to("starburst1.png", 200)
                     .to("starburst4.png", 200), 1, 0, 5, 5);
         }
@@ -1927,13 +1927,13 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Press the hero\nto make it\nthrow a ball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up our hero
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "colorstar.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "colorstar.png");
             h.setPhysics(1, 0, 0.6f);
             h.setTouchToThrow(h, 0, -.5f, 0, 10);
             h.setMoveByTilting();
@@ -1943,8 +1943,8 @@ public class Levels implements ScreenManager {
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
-            ProjectilePool.configure(100, 1, 1, "flystar.png", 1, 0, true);
-            ProjectilePool.setAnimation(new Animation(100, true, "flystar1.png", "flystar2.png"));
+            level.configureProjectiles(100, 1, 1, "flystar.png", 1, 0, true);
+            level.setProjectileAnimation(new Animation(100, true, "flystar1.png", "flystar2.png"));
         }
 
         /*
@@ -1958,13 +1958,13 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, 255, 255, 255,
                     "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make an animated hero, and give it an invincibility animation
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "colorstar.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             h.setDefaultAnimation(new Animation(4, true).to("colorstar1.png", 300).to("colorstar2.png", 300).to("colorstar3.png", 300).to("colorstar4.png", 300));
@@ -1972,7 +1972,7 @@ public class Levels implements ScreenManager {
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
-                Enemy e = Enemy.makeAsCircle(5 * i + 1, 25, 2, 2, "redball.png");
+                Enemy e = level.makeEnemyAsCircle(5 * i + 1, 25, 2, 2, "redball.png");
                 e.setPhysics(1.0f, 0.3f, 0.6f);
                 e.setRotationSpeed(1);
                 e.setDamage(4);
@@ -1988,13 +1988,13 @@ public class Levels implements ScreenManager {
                     e.setResistInvincibility();
             }
             // neat trick: this enemy does zero damage, but slows the hero down.
-            Enemy e = Enemy.makeAsCircle(30, 20, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(30, 20, 2, 2, "redball.png");
             e.setPhysics(10, 0.3f, 0.6f);
             e.setMoveByTilting();
             e.setDamage(0);
 
             // add a goodie that makes the hero invincible
-            Goodie g = Goodie.makeAsCircle(30, 30, 2, 2, "blueball.png");
+            Goodie g = level.makeGoodieAsCircle(30, 30, 2, 2, "blueball.png");
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
@@ -2015,14 +2015,14 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.",
                     255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
 
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero with fixed velocity, and give it crawl and jump
             // animations
-            Hero h = Hero.makeAsBox(2, 1, 3, 7, "stars.png");
+            Hero h = level.makeHeroAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
             h.addVelocity(15, 0, false);
             h.setCrawlAnimation(new Animation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
@@ -2035,7 +2035,7 @@ public class Levels implements ScreenManager {
 
             // add an enemy we can defeat via crawling, just for fun. It should
             // be defeated even by a "jump crawl"
-            Enemy e = Enemy.makeAsCircle(110, 1, 5, 5, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(110, 1, 5, 5, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setDefeatByCrawl();
 
@@ -2058,29 +2058,29 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // Since colorstar.png has 8 frames, and we're displaying frame 0 as
             // "health == 0", let's add 7 more goodies, each of which adds 1 to
             // the hero's strength.
             for (int i = 0; i < 7; ++i) {
-                Goodie g = Goodie.makeAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
+                Goodie g = level.makeGoodieAsCircle(5 + 2 * i, 5 + 2 * i, 2, 2, "blueball.png");
                 g.setStrengthBoost(1);
             }
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make 8 enemies, each with strength == 1. This means we can lose
             // the level, and that we can test moving our strength all the way
             // up to 7, and all the way back down to 0.
             for (int i = 0; i < 8; ++i) {
-                Enemy e = Enemy.makeAsCircle(5 + 2 * i, 1 + 2 * i, 2, 2, "redball.png");
+                Enemy e = level.makeEnemyAsCircle(5 + 2 * i, 1 + 2 * i, 2, 2, "redball.png");
                 e.setDamage(1);
             }
 
             // Note: colorstar.png has 8 cells...
-            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "colorstar.png");
+            Hero h = level.makeHeroAsCircle(4, 27, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
@@ -2111,9 +2111,9 @@ public class Levels implements ScreenManager {
             // increase the speed at which tilt affects velocity
             Level.setGravityMultiplier(3);
             level.getPreScene().addText("You can defeat\ntwo enemies with\nthe blue ball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
 
@@ -2122,7 +2122,7 @@ public class Levels implements ScreenManager {
             level.addDefeatedCount(2, " Enemies Defeated", 20, 20, "arial.ttf", 255, 0, 0, 10);
 
             // make a moveable obstacle that can defeat enemies
-            Obstacle o = Obstacle.makeAsCircle(10, 2, 4, 4, "blueball.png");
+            Obstacle o = level.makeObstacleAsCircle(10, 2, 4, 4, "blueball.png");
             o.setPhysics(.1f, 0, 0.6f);
             o.setMoveByTilting();
             // this says that we don't need to collect any goodies before this
@@ -2144,7 +2144,7 @@ public class Levels implements ScreenManager {
 
             // make a small obstacle that can also defeat enemies, but doesn't
             // disappear
-            Obstacle o2 = Obstacle.makeAsCircle(.5f, .5f, 2, 2, "blueball.png");
+            Obstacle o2 = level.makeObstacleAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
             o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
@@ -2154,15 +2154,15 @@ public class Levels implements ScreenManager {
             });
 
             // make four enemies
-            Enemy e = Enemy.makeAsCircle(40, 2, 4, 4, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(40, 2, 4, 4, "redball.png");
             e.setPhysics(1, 0, 0.6f);
             e.setMoveByTilting();
-            Enemy e1 = Enemy.makeAsCircle(30, 2, 4, 4, "redball.png");
+            Enemy e1 = level.makeEnemyAsCircle(30, 2, 4, 4, "redball.png");
             e1.setPhysics(1, 0, 0.6f);
-            Enemy e2 = Enemy.makeAsCircle(40, 22, 2, 2, "redball.png");
+            Enemy e2 = level.makeEnemyAsCircle(40, 22, 2, 2, "redball.png");
             e2.setPhysics(1, 0, 0.6f);
             e2.setMoveByTilting();
-            Enemy e3 = Enemy.makeAsCircle(40, 12, 4, 4, "redball.png");
+            Enemy e3 = level.makeEnemyAsCircle(40, 12, 4, 4, "redball.png");
             e3.setPhysics(1, 0, 0.6f);
             e3.setMoveByTilting();
 
@@ -2178,7 +2178,7 @@ public class Levels implements ScreenManager {
         }
 
         /*
-         * this level shows an odd way of moving the hero. There's friction on
+         * this level shows an odd way of moving the level. There's friction on
          * the floor, so it can only move by tilting while the hero is in the
          * air
          */
@@ -2188,14 +2188,14 @@ public class Levels implements ScreenManager {
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
             // note: the floor has friction
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a box hero with friction... it won't roll on the floor, so
             // it's stuck!
-            Hero h = Hero.makeAsBox(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsBox(2, 2, 3, 3, "stars.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 5);
             h.setMoveByTilting();
@@ -2220,50 +2220,50 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(4, 5, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 5, 3, 3, "greenball.png");
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
 
             // make an obstacle that causes the hero to throw Projectiles when
             // touched
-            Obstacle o = Obstacle.makeAsCircle(43, 27, 5, 5, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(43, 27, 5, 5, "purpleball.png");
             o.setCollisionsEnabled(false);
             o.setTouchToThrow(h, 1.5f, 1.5f, 0, 15);
 
             // set up our projectiles
-            ProjectilePool.configure(3, 1, 1, "colorstar.png", 2, 0, true);
-            ProjectilePool.setNumberOfProjectiles(20);
+            level.configureProjectiles(3, 1, 1, "colorstar.png", 2, 0, true);
+            level.setNumberOfProjectiles(20);
             // there are only 20... throw them carefully
 
             // Allow the projectile image to be chosen randomly from a sprite
             // sheet
-            ProjectilePool.setImageSource("colorstar.png");
+            level.setProjectileImageSource("colorstar.png");
 
             // show how many shots are left
             level.addProjectileCount(" projectiles left", 5, 300, "arial.ttf", 255, 0, 255, 12);
 
             // draw a bunch of enemies to defeat
-            Enemy e = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setRotationSpeed(1);
             for (int i = 1; i < 20; i += 5)
-                Enemy.makeAsCircle(i, i + 8, 2, 2, "redball.png");
+                level.makeEnemyAsCircle(i, i + 8, 2, 2, "redball.png");
 
             // draw a few obstacles that shrink over time, to show that circles
             // and boxes work, we can shrink the X and Y rates independently,
             // and we can opt to center things as they shrink or grow
-            Obstacle floor = Obstacle.makeAsBox(2, 3, 42, 3, "red.png");
+            Obstacle floor = level.makeObstacleAsBox(2, 3, 42, 3, "red.png");
             floor.setShrinkOverTime(1, 1, true);
 
-            Obstacle roof = Obstacle.makeAsBox(24, 30, 1, 1, "red.png");
+            Obstacle roof = level.makeObstacleAsBox(24, 30, 1, 1, "red.png");
             roof.setShrinkOverTime(-1, 0, false);
 
-            Obstacle ball1 = Obstacle.makeAsCircle(40, 8, 8, 8, "purpleball.png");
+            Obstacle ball1 = level.makeObstacleAsCircle(40, 8, 8, 8, "purpleball.png");
             ball1.setShrinkOverTime(1, 2, true);
 
-            Obstacle ball2 = Obstacle.makeAsCircle(40, 16, 8, 8, "purpleball.png");
+            Obstacle ball2 = level.makeObstacleAsCircle(40, 16, 8, 8, "purpleball.png");
             ball2.setShrinkOverTime(2, 1, false);
 
             Level.setVictoryEnemyCount(5);
@@ -2278,7 +2278,7 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             level.getPreScene().addText("Press to rotate the hero", 255, 255, 255, "arial.ttf", 32);
 
@@ -2286,11 +2286,11 @@ public class Levels implements ScreenManager {
             // the hero
             // jumps... you'll have to hit the side wall and jump again to reach
             // it!
-            Destination.makeAsCircle(46, 8, 2.5f, 2.5f, "mustardball.png");
+            level.makeDestinationAsCircle(46, 8, 2.5f, 2.5f, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make the hero jumpable, so that we can see it spin in the air
-            Hero h = Hero.makeAsCircle(4, 27, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(4, 27, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             h.setJumpImpulses(0, 10);
@@ -2309,19 +2309,19 @@ public class Levels implements ScreenManager {
             // make a simple level
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
-            Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
+            level.makeDestinationAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // make a hero who is always moving... note there is no friction,
             // anywhere, and the hero is elastic... it won't ever stop...
-            Hero h = Hero.makeAsCircle(4, 4, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 4, 3, 3, "greenball.png");
             h.setPhysics(0, 1, .1f);
             h.addVelocity(0, 10, false);
 
             // make an obstacle and then connect it to some controls
-            Obstacle o = Obstacle.makeAsBox(2, 30.9f, 4, 1, "red.png");
+            Obstacle o = level.makeObstacleAsBox(2, 30.9f, 4, 1, "red.png");
             o.setPhysics(100, 1, .1f);
             level.addLeftButton(0, 0, 480, 640, "", 5, o);
             level.addRightButton(480, 0, 480, 640, "", 5, o);
@@ -2337,23 +2337,23 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Things will appear \nand disappear...", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create an enemy that will quietly disappear after 2 seconds
-            Enemy e1 = Enemy.makeAsCircle(25, 25, 2, 2, "redball.png");
+            Enemy e1 = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
             e1.setPhysics(1.0f, 0.3f, 0.6f);
             e1.setRotationSpeed(1);
             e1.setDisappearDelay(2, true);
 
             // create an enemy that will appear after 3 seconds
-            Enemy e2 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+            Enemy e2 = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
             e2.setPhysics(1.0f, 0.3f, 0.6f);
             e2.setRoute(new Route(3).to(35, 25).to(15, 25).to(35, 25), 3, true);
             e2.setAppearDelay(3);
@@ -2370,9 +2370,9 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             level.getPreScene().addText("There's nothing to\ndo... yet", 255, 255, 255, "arial.ttf", 20);
@@ -2390,7 +2390,7 @@ public class Levels implements ScreenManager {
                     level.getPauseScene().addText("Ooh... a draggable enemy", 255, 255, 0, "arial.ttf", 12);
                     level.getPauseScene().show();
                     // make a draggable enemy
-                    Enemy e3 = Enemy.makeAsCircle(35, 25, 2, 2, "redball.png");
+                    Enemy e3 = level.makeEnemyAsCircle(35, 25, 2, 2, "redball.png");
                     e3.setPhysics(1.0f, 0.3f, 0.6f);
                     e3.setCanDrag(true);
                 }
@@ -2405,7 +2405,7 @@ public class Levels implements ScreenManager {
                     level.getPauseScene().addText("Touch the enemy and it will go away", 255, 0, 255, "arial.ttf", 12);
                     level.getPauseScene().show();
                     // add an enemy that is touch-to-defeat
-                    Enemy e4 = Enemy.makeAsCircle(35, 5, 2, 2, "redball.png");
+                    Enemy e4 = level.makeEnemyAsCircle(35, 5, 2, 2, "redball.png");
                     e4.setPhysics(1.0f, 0.3f, 0.6f);
                     e4.setDisappearOnTouch();
                 }
@@ -2421,14 +2421,14 @@ public class Levels implements ScreenManager {
                     level.getPauseScene().reset();
                     level.getPauseScene().addText("Now you can see the rest of the level", 255, 255, 0, "arial.ttf", 12);
                     level.getPauseScene().show();
-                    Destination d = Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+                    Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
                     d.addVelocity(-.5f, -1, false);
 
-                    Enemy e5 = Enemy.makeAsCircle(35, 15, 2, 2, "redball.png");
+                    Enemy e5 = level.makeEnemyAsCircle(35, 15, 2, 2, "redball.png");
                     e5.setPhysics(1.0f, 0.3f, 0.6f);
                     e5.addVelocity(4, 4, false);
 
-                    Goodie gg = Goodie.makeAsCircle(10, 10, 2, 2, "blueball.png");
+                    Goodie gg = level.makeGoodieAsCircle(10, 10, 2, 2, "blueball.png");
                     gg.addVelocity(5, 5, false);
                 }
             });
@@ -2442,7 +2442,7 @@ public class Levels implements ScreenManager {
                     // that field inside of the timer code, we can ensure that
                     // each execution of the timer is slightly different, even
                     // if the game state hasn't changed.
-                    Obstacle.makeAsCircle(mIntVal % 48, mIntVal / 48, 1, 1, "purpleball.png");
+                    level.makeObstacleAsCircle(mIntVal % 48, mIntVal / 48, 1, 1, "purpleball.png");
                     mIntVal++;
                 }
             });
@@ -2462,9 +2462,9 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Keep going right!", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 29, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
             Level.setCameraChase(h);
@@ -2476,7 +2476,7 @@ public class Levels implements ScreenManager {
             // the next part of the level appears, via onHeroCollideCallback().
             // Note, too, that it disappears when the hero hits it, so we can
             // play a sound if we want...
-            Obstacle o = Obstacle.makeAsBox(30, 0, 1, 32, "purpleball.png");
+            Obstacle o = level.makeObstacleAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // the callback id is 0, there is no delay, and no goodies are
             // needed before it works
@@ -2485,10 +2485,10 @@ public class Levels implements ScreenManager {
                     // getLoseScene rid of the obstacle we just collided with
                     mAttachedActor.remove(false);
                     // make a goodie
-                    Goodie.makeAsCircle(45, 1, 2, 2, "blueball.png");
+                    level.makeGoodieAsCircle(45, 1, 2, 2, "blueball.png");
                     // make an obstacle that is a callback, but that doesn't
                     // work until the goodie count is 1
-                    Obstacle oo = Obstacle.makeAsBox(60, 0, 1, 32, "purpleball.png");
+                    Obstacle oo = level.makeObstacleAsBox(60, 0, 1, 32, "purpleball.png");
 
                     // we're going to chain a bunch of callbacks together, and
                     // the best way to do that is to make a single callback that
@@ -2499,18 +2499,18 @@ public class Levels implements ScreenManager {
                             // The second callback works the same way
                             if (mIntVal == 0) {
                                 mAttachedActor.remove(false);
-                                Goodie.makeAsCircle(75, 21, 2, 2, "blueball.png");
+                                level.makeGoodieAsCircle(75, 21, 2, 2, "blueball.png");
 
-                                Obstacle oo = Obstacle.makeAsBox(90, 0, 1, 32, "purpleball.png");
+                                Obstacle oo = level.makeObstacleAsBox(90, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(2, 0, 0, 0, 0, this);
                                 mIntVal = 1;
                             }
                             // same for the third callback
                             else if (mIntVal == 1) {
                                 mAttachedActor.remove(false);
-                                Goodie.makeAsCircle(105, 1, 2, 2, "blueball.png");
+                                level.makeGoodieAsCircle(105, 1, 2, 2, "blueball.png");
 
-                                Obstacle oo = Obstacle.makeAsBox(120, 0, 1, 32, "purpleball.png");
+                                Obstacle oo = level.makeObstacleAsBox(120, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(3, 0, 0, 0, 0, this);
                                 mIntVal = 2;
                             }
@@ -2521,7 +2521,7 @@ public class Levels implements ScreenManager {
                                 // PauseScene
                                 level.getPauseScene().addText("The destination is\nnow available", 255, 255, 255,
                                         "arial.ttf", 32);
-                                Destination.makeAsCircle(120, 20, 2, 2, "mustardball.png");
+                                level.makeDestinationAsCircle(120, 20, 2, 2, "mustardball.png");
                             }
 
                         }
@@ -2542,21 +2542,21 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Activate and then \ntouch the obstacle", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            // make a destination... notice that it needs a lot more goodies
+            // make a level... notice that it needs a lot more goodies
             // than are on the screen...
-            Destination d = Destination.makeAsCircle(29, 1, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
             d.setActivationScore(3, 0, 0, 0);
             Level.setVictoryDestination(1);
 
             // draw an obstacle, make it a touch callback, and then draw the
             // goodie we need to getLoseScene in order to activate the obstacle
-            Obstacle o = Obstacle.makeAsCircle(10, 5, 3, 3, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
             o.setTouchCallback(1, 0, 0, 0, true, new LolCallback() {
@@ -2566,12 +2566,12 @@ public class Levels implements ScreenManager {
                     // final frame looks like an open treasure chest.
                     mAttachedActor.remove(false);
                     for (int i = 0; i < 3; ++i)
-                        Goodie.makeAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
+                        level.makeGoodieAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
                 }
             });
             o.setDisappearSound("hipitch.ogg");
 
-            Goodie g = Goodie.makeAsCircle(0, 30, 2, 2, "blueball.png");
+            Goodie g = level.makeGoodieAsCircle(0, 30, 2, 2, "blueball.png");
             g.setDisappearSound("lowpitch.ogg");
         }
 
@@ -2587,27 +2587,27 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
             // give the hero strength, so that we can use him to defeat an enemy
             // as a test of enemy callbacks
-            Hero h = Hero.makeAsCircle(12, 12, 4, 4, "greenball.png");
+            Hero h = level.makeHeroAsCircle(12, 12, 4, 4, "greenball.png");
             h.setStrength(3);
             h.setMoveByTilting();
             h.setInvincibleAnimation(new Animation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
 
             // a goodie, so we can do defeat by invincibility
-            Goodie g1 = Goodie.makeAsCircle(20, 29, 2, 3, "purpleball.png");
+            Goodie g1 = level.makeGoodieAsCircle(20, 29, 2, 3, "purpleball.png");
             g1.setInvincibilityDuration(15);
 
             // enableTilt throwing projectiles, so that we can test enemy callbacks
             // again
             h.setTouchToThrow(h, 4, 2, 30, 0);
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
+            level.configureProjectiles(100, 1, 1, "greyball.png", 1, 0, true);
 
             // add an obstacle that has an enemy collision callback, so it can
             // defeat enemies
-            Obstacle o = Obstacle.makeAsCircle(30, 10, 5, 5, "blueball.png");
+            Obstacle o = level.makeObstacleAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
             o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
@@ -2632,24 +2632,24 @@ public class Levels implements ScreenManager {
                     // as a reward... picking in the range 0-46,0-30 ensures
                     // that with width and height of 2, the goodie stays on
                     // screen
-                    Goodie.makeAsCircle(Util.getRandom(46), Util.getRandom(30), 2, 2, "blueball.png");
+                    level.makeGoodieAsCircle(Util.getRandom(46), Util.getRandom(30), 2, 2, "blueball.png");
                 }
             };
-            Enemy e1 = Enemy.makeAsCircle(5, 5, 1, 1, "redball.png");
+            Enemy e1 = level.makeEnemyAsCircle(5, 5, 1, 1, "redball.png");
             e1.setDefeatCallback(sc);
 
-            Enemy e2 = Enemy.makeAsCircle(5, 5, 2, 2, "redball.png");
+            Enemy e2 = level.makeEnemyAsCircle(5, 5, 2, 2, "redball.png");
             e2.setDefeatCallback(sc);
             e2.setInfoText("weak");
 
-            Enemy e3 = Enemy.makeAsCircle(40, 3, 1, 1, "redball.png");
+            Enemy e3 = level.makeEnemyAsCircle(40, 3, 1, 1, "redball.png");
             e3.setDefeatCallback(sc);
 
-            Enemy e4 = Enemy.makeAsCircle(25, 25, 1, 1, "redball.png");
+            Enemy e4 = level.makeEnemyAsCircle(25, 25, 1, 1, "redball.png");
             e4.setDefeatCallback(sc);
             e4.setDisappearOnTouch();
 
-            Enemy e5 = Enemy.makeAsCircle(25, 29, 1, 1, "redball.png");
+            Enemy e5 = level.makeEnemyAsCircle(25, 29, 1, 1, "redball.png");
             e5.setDefeatCallback(sc);
 
             // win by defeating enemies
@@ -2667,22 +2667,22 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Only stars can reach\nthe destination", 255, 255, 255, "arial.ttf", 20);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 29, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 29, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
             level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", 60, 70, 255, 12);
 
             // the destination won't work until some goodies are collected...
-            Destination d = Destination.makeAsBox(46, 2, 2, 2, "colorstar.png");
+            Destination d = level.makeDestinationAsBox(46, 2, 2, 2, "colorstar.png");
             d.setActivationScore(4, 1, 3, 0);
             Level.setVictoryDestination(1);
 
             // Colliding with this star will make the hero into a star... see
             // onHeroCollideCallback for details
-            Obstacle o = Obstacle.makeAsBox(30, 0, 3, 3, "stars.png");
+            Obstacle o = level.makeObstacleAsBox(30, 0, 3, 3, "stars.png");
             o.setPhysics(1, 0, 1);
             o.setHeroCollisionCallback(0, 0, 0, 0, 1, new LolCallback() {
                 public void onEvent() {
@@ -2710,7 +2710,7 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // Here's a simple pause button and pause scene
             level.getPauseScene().addText("Game Paused", 255, 255, 255, "arial.ttf", 32);
@@ -2720,19 +2720,19 @@ public class Levels implements ScreenManager {
             // directions. Note that this is going to look like an "asteroids"
             // game, with a hero covering the bottom of the screen, so that
             // anything that falls to the bottom counts against the player
-            Hero h = Hero.makeAsBox(1, 0, 46, 1, "greenball.png");
+            Hero h = level.makeHeroAsBox(1, 0, 46, 1, "greenball.png");
             level.addDirectionalThrowButton(0, 0, 960, 640, "", h, 100, 0, 1);
 
             // set up our pool of projectiles, then set them to have a fixed
             // velocity when using the vector throw mechanism
-            ProjectilePool.configure(100, 1, 1, "greyball.png", 1, 0, true);
-            ProjectilePool.setRange(50);
-            ProjectilePool.setFixedVectorThrowVelocity(5);
+            level.configureProjectiles(100, 1, 1, "greyball.png", 1, 0, true);
+            level.setProjectileRange(50);
+            level.setFixedVectorThrowVelocityForProjectiles(5);
 
             // we're going to win by "surviving" for 25 seconds... with no
             // enemies, that shouldn't be too hard
             level.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
-            // just to play it safe, let's say that we win on destination...
+            // just to play it safe, let's say that we win on level...
             // this ensures that collecting goodies or defeating enemies won't
             // accidentally cause us to win. Of course, with no destination,
             // there's no way to win now, except surviving.
@@ -2749,17 +2749,17 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Flick the hero into the destination", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsBox(21, 23, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsBox(21, 23, 3, 3, "greenball.png");
             h.setHover(21, 23);
             h.setFlickable(0.7f);
 
             // place an enemy, let it fall
-            Enemy e = Enemy.makeAsCircle(31, 25, 3, 3, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(31, 25, 3, 3, "redball.png");
             e.setCanFall();
 
-            Destination.makeAsCircle(25, 25, 5, 5, "mustardball.png");
+            level.makeDestinationAsCircle(25, 25, 5, 5, "mustardball.png");
             Level.setVictoryDestination(1);
         }
 
@@ -2776,12 +2776,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.5f, 0, 0.6f);
             h.setMoveByTilting();
             h.setTouchToJump();
@@ -2789,10 +2789,10 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // hero can jump while on this obstacle
-            Obstacle.makeAsBox(10, 3, 10, 1, "red.png");
+            level.makeObstacleAsBox(10, 3, 10, 1, "red.png");
 
             // hero can't jump while on this obstacle
-            Obstacle o = Obstacle.makeAsBox(40, 3, 10, 1, "red.png");
+            Obstacle o = level.makeObstacleAsBox(40, 3, 10, 1, "red.png");
             o.setReJump(false);
         }
 
@@ -2807,24 +2807,24 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("You can walk through the wall", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(42, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // These obstacles chase the hero, but only in one dimension
-            Obstacle e = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
+            Obstacle e = level.makeObstacleAsCircle(0, 0, 1, 1, "red.png");
             e.setChaseSpeed(15, h, false, true);
             e.setCollisionsEnabled(true);
-            Obstacle e2 = Obstacle.makeAsCircle(0, 0, 1, 1, "red.png");
+            Obstacle e2 = level.makeObstacleAsCircle(0, 0, 1, 1, "red.png");
             e2.setChaseSpeed(15, h, true, false);
             e2.setCollisionsEnabled(true);
 
             // Here's a wall, and a movable round obstacle
-            Obstacle o = Obstacle.makeAsBox(40, 1, .5f, 20, "red.png");
-            Obstacle o2 = Obstacle.makeAsCircle(8, 8, 2, 2, "blueball.png");
+            Obstacle o = level.makeObstacleAsBox(40, 1, .5f, 20, "red.png");
+            Obstacle o2 = level.makeObstacleAsCircle(8, 8, 2, 2, "blueball.png");
             o2.setMoveByTilting();
 
             // The hero can pass through this wall, because both have the same
@@ -2841,7 +2841,7 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             level.getPreScene().addText("Poke the hero, then\n where you want it\nto go.", 255, 255, 255, "arial.ttf", 32);
 
             // This hero moves via poking. the "false" means that we don't have
@@ -2850,12 +2850,12 @@ public class Levels implements ScreenManager {
             // first "true" means that as we drag our finger, the hero will
             // change its direction of travel. The second "true" means the hero
             // will stop immediately when we release our finger.
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "stars.png");
             h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
             h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
             h.setPokePath(4, false);
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // sometimes a control needs to have a large touchable area, but a
@@ -2875,8 +2875,8 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press screen borders\nto move the hero", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
@@ -2884,18 +2884,18 @@ public class Levels implements ScreenManager {
             h.setPhysics(2, 0, .5f);
 
             // create a destination
-            Destination.makeAsCircle(20, 15, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(20, 15, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // This obstacle is sticky on top... Jump onto it and watch what
             // happens
-            Obstacle o = Obstacle.makeAsBox(10, 5, 8, .5f, "red.png");
+            Obstacle o = level.makeObstacleAsBox(10, 5, 8, .5f, "red.png");
             o.setRoute(new Route(5).to(10, 5).to(5, 15).to(10, 25).to(15, 15).to(10, 5), 5, true);
             o.setPhysics(100, 0, .1f);
             o.setSticky(true, false, false, false);
 
             // This obstacle is not sticky... it's not nearly as much fun
-            Obstacle o2 = Obstacle.makeAsBox(30, 5, 8, .5f, "red.png");
+            Obstacle o2 = level.makeObstacleAsBox(30, 5, 8, .5f, "red.png");
             o2.setRoute(new Route(5).to(30, 5).to(25, 15).to(30, 25).to(45, 15).to(30, 5), 5, true);
             o2.setPhysics(100, 0, 1f);
 
@@ -2914,14 +2914,14 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Press anywhere\nto shoot a laserbeam", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(42, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // draw a button for throwing projectiles in many directions. It
@@ -2931,19 +2931,19 @@ public class Levels implements ScreenManager {
 
             // set up a pool of projectiles with fixed velocity, and with
             // rotation
-            ProjectilePool.configure(100, .1f, 3, "red.png", 1, 0, false);
-            ProjectilePool.setFixedVectorThrowVelocity(10);
-            ProjectilePool.setRotateVectorThrow();
+            level.configureProjectiles(100, .1f, 3, "red.png", 1, 0, false);
+            level.setFixedVectorThrowVelocityForProjectiles(10);
+            level.setRotateVectorThrowForProjectiles();
 
             // create a box that is easy to fall into, but hard to getLoseScene out of,
             // by making its sides each "one-sided"
-            Obstacle bottom = Obstacle.makeAsBox(10, 10, 10, .2f, "red.png");
+            Obstacle bottom = level.makeObstacleAsBox(10, 10, 10, .2f, "red.png");
             bottom.setOneSided(2);
-            Obstacle left = Obstacle.makeAsBox(10, 10, .2f, 10, "red.png");
+            Obstacle left = level.makeObstacleAsBox(10, 10, .2f, 10, "red.png");
             left.setOneSided(1);
-            Obstacle right = Obstacle.makeAsBox(20, 10, .2f, 10, "red.png");
+            Obstacle right = level.makeObstacleAsBox(20, 10, .2f, 10, "red.png");
             right.setOneSided(3);
-            Obstacle top = Obstacle.makeAsBox(10, 25, 10, .2f, "red.png");
+            Obstacle top = level.makeObstacleAsBox(10, 25, 10, .2f, "red.png");
             top.setOneSided(0);
         }
 
@@ -2955,13 +2955,13 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Green, Red, and Grey\nballs are goodies", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
 
             // the destination requires lots of goodies of different types
-            Destination d = Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(42, 31, 2, 2, "mustardball.png");
             d.setActivationScore(1, 1, 3, 0);
             Level.setVictoryDestination(1);
 
@@ -2973,17 +2973,17 @@ public class Levels implements ScreenManager {
 
             // draw the goodies
             for (int i = 0; i < 3; ++i) {
-                Goodie b = Goodie.makeAsCircle(10 * i, 30, 2, 2, "blueball.png");
+                Goodie b = level.makeGoodieAsCircle(10 * i, 30, 2, 2, "blueball.png");
                 b.setScore(1, 0, 0, 0);
-                Goodie g = Goodie.makeAsCircle(10 * i + 2.5f, 30, 1, 1, "greenball.png");
+                Goodie g = level.makeGoodieAsCircle(10 * i + 2.5f, 30, 1, 1, "greenball.png");
                 g.setScore(0, 1, 0, 0);
-                Goodie r = Goodie.makeAsCircle(10 * i + 6, 30, 1, 1, "redball.png");
+                Goodie r = level.makeGoodieAsCircle(10 * i + 6, 30, 1, 1, "redball.png");
                 r.setScore(0, 0, 1, 0);
             }
 
             // When the hero collides with this obstacle, we'll increase the
             // time remaining. See onHeroCollideCallback()
-            Obstacle o = Obstacle.makeAsBox(40, 0, 5, 200, "red.png");
+            Obstacle o = level.makeObstacleAsBox(40, 0, 5, 200, "red.png");
             o.setHeroCollisionCallback(1, 1, 1, 0, 0, new LolCallback() {
                 public void onEvent() {
                     // add 15 seconds to the timer
@@ -3003,21 +3003,21 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("You can walk through the wall", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setMoveByTilting();
             h.setPassThrough(7); // make sure obstacle has same value
 
             // the destination requires lots of goodies of different types
-            Destination.makeAsCircle(42, 31, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(42, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // the enemy chases the hero, but can't getLoseScene through the wall
-            Enemy e = Enemy.makeAsCircle(42, 1, 5, 4, "red.png");
+            Enemy e = level.makeEnemyAsCircle(42, 1, 5, 4, "red.png");
             e.setChaseSpeed(1, h, true, true);
 
-            Obstacle o = Obstacle.makeAsBox(40, 1, .5f, 20, "red.png");
+            Obstacle o = level.makeObstacleAsBox(40, 1, .5f, 20, "red.png");
             o.setPassThrough(7);
         }
 
@@ -3029,12 +3029,12 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 10);
             level.getPreScene().addText("Press anywhere to speed up", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
 
-            Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Hero h = Hero.makeAsBox(2, 25, 3, 7, "greenball.png");
+            Hero h = level.makeHeroAsBox(2, 25, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
             // give the hero a fixed velocity
@@ -3061,12 +3061,12 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press anywhere to start moving", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
 
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Hero h = Hero.makeAsBox(2, 1, 3, 7, "greenball.png");
+            Hero h = level.makeHeroAsBox(2, 1, 3, 7, "greenball.png");
             h.setCameraOffset(15, 0);
             Level.setCameraChase(h);
 
@@ -3088,20 +3088,20 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("One-sided + Callbacks", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
             h.setMoveByTilting();
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
 
-            Destination.makeAsCircle(42, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(42, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create a platform that we can jump through from above
-            Obstacle platform = Obstacle.makeAsBox(10, 5, 10, .2f, "red.png");
+            Obstacle platform = level.makeObstacleAsBox(10, 5, 10, .2f, "red.png");
             platform.setOneSided(2);
             // Set a callback, then re-enableTilt the platform's collision effect.
             // Be sure to check onHeroCollideCallback
@@ -3120,21 +3120,21 @@ public class Levels implements ScreenManager {
         /*
          * This level fleshes out some more poke-to-move stuff. Now we'll say
          * that once a hero starts moving, the player must re-poke the hero
-         * before it can be given a new destination. Also, the hero will keep
+         * before it can be given a new level. Also, the hero will keep
          * moving after the screen is released. We will also show the Fact
          * interface.
          */
         else if (whichLevel == 79) {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             level.getPreScene().addText("Poke the hero, then\n where you want it\nto go.", 255, 255, 255, "arial.ttf", 32);
 
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setMoveByTilting();
             h.setFingerChase(4, false, true);
 
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // A callback control is a way to run arbitrary code whenever the
@@ -3179,16 +3179,16 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Testing Gravity Defy?", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0.6f);
             h.setMoveByTilting();
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
 
-            Destination d = Destination.makeAsCircle(42, 14, 2, 2, "mustardball.png");
+            Destination d = level.makeDestinationAsCircle(42, 14, 2, 2, "mustardball.png");
             // note: it must not be immune to physics (third parameter true), or
             // it will pass through the bounding box, but we do want it to move
             // and not fall downward
@@ -3205,17 +3205,17 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Testing Polygons", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setMoveByTilting();
 
-            Destination.makeAsCircle(42, 14, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(42, 14, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // create a polygon obstacle
-            Obstacle o = Obstacle.makeAsPolygon(10, 10, 2, 5, "blueball.png", -1, 2, -1, 0, 0, -3, 1, 0, 1, 1);
+            Obstacle o = level.makeObstacleAsPolygon(10, 10, 2, 5, "blueball.png", -1, 2, -1, 0, 0, -3, 1, 0, 1, 1);
             o.setShrinkOverTime(1, 1, true);
         }
 
@@ -3229,12 +3229,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             level.getPreScene().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a simple jumping hero
-            Hero h = Hero.makeAsBox(5, 0, 2, 6, "greenball.png");
+            Hero h = level.makeHeroAsBox(5, 0, 2, 6, "greenball.png");
             h.setJumpImpulses(0, 15);
             h.setTouchToJump();
             h.setMoveByTilting();
@@ -3243,7 +3243,7 @@ public class Levels implements ScreenManager {
             // This enemy can be defeated by jumping. Note that the hero's
             // bottom must be higher than the enemy's middle point, or the jump
             // won't defeat the enemy.
-            Enemy e = Enemy.makeAsCircle(15, 0, 5, 5, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(15, 0, 5, 5, "redball.png");
             e.setDefeatByJump();
         }
 
@@ -3255,20 +3255,20 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Avoid revolving obstacles", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
 
-            Hero h = Hero.makeAsCircle(5, 0, 2, 6, "greenball.png");
+            Hero h = level.makeHeroAsCircle(5, 0, 2, 6, "greenball.png");
             h.setMoveByTilting();
 
             // Note: you must give density to the revolving part...
-            Obstacle revolving = Obstacle.makeAsBox(20, 10, 2, 8, "red.png");
+            Obstacle revolving = level.makeObstacleAsBox(20, 10, 2, 8, "red.png");
             revolving.setPhysics(1, 0, 0);
-            Obstacle anchor = Obstacle.makeAsBox(20, 19, 2, 2, "blueball.png");
+            Obstacle anchor = level.makeObstacleAsBox(20, 19, 2, 2, "blueball.png");
 
             revolving.setRevoluteJoint(anchor, 0, 0, 0, 6);
             revolving.setRevoluteJointLimits(1.7f, -1.7f);
             revolving.setRevoluteJointMotor(4, Float.POSITIVE_INFINITY);
-            Destination.makeAsCircle(40, 30, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(40, 30, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
         }
 
@@ -3281,12 +3281,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 60, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(29, 60, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setRotationByDirection();
             h.setMoveByTilting();
@@ -3310,12 +3310,12 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 60, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 4 * 48, 2 * 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(29, 60, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "stars.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "stars.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setRotationByDirection();
             h.setMoveByTilting();
@@ -3340,12 +3340,12 @@ public class Levels implements ScreenManager {
             // set up a screen
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 30, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(29, 30, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             Level.setCameraChase(h);
             h.setDamping(1);
@@ -3354,7 +3354,7 @@ public class Levels implements ScreenManager {
             h.setStopCallback(new LolCallback() {
                 public void onEvent() {
                     // NB: the setStopCallback call sets the callback's
-                    // attachedSprite to the hero.
+                    // attachedSprite to the level.
                     mAttachedActor.setImage("red.png");
                 }
             });
@@ -3395,15 +3395,15 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
-            Destination.makeAsCircle(29, 30, 2, 2, "mustardball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            level.makeDestinationAsCircle(29, 30, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // set up a hero and fuse an obstacle to it
-            Hero h = Hero.makeAsCircle(4, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(4, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Obstacle o = Obstacle.makeAsCircle(1, 1, 1, 1, "blueball.png");
+            Obstacle o = level.makeObstacleAsCircle(1, 1, 1, 1, "blueball.png");
             o.setCanFall();
             h.setWeldJoint(o, 3, 0, 0, 0, 45);
         }
@@ -3416,16 +3416,16 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             level.getPreScene().addText("Interactive Pause Scenes\n(click the red square)", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
-            Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // Demonstrate the ability to chase while keeping existing velocity
             // in one direction
-            Obstacle o = Obstacle.makeAsCircle(15, 15, 2, 2, "purpleball.png");
+            Obstacle o = level.makeObstacleAsCircle(15, 15, 2, 2, "purpleball.png");
             o.setAbsoluteVelocity(5, 1, false);
             o.setChaseFixedMagnitude(h, 3, 0, false, true);
 
@@ -3454,29 +3454,29 @@ public class Levels implements ScreenManager {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             // now let's draw two heroes who can both move by tilting, and
             // who both have density and friction. Note that we lower the
             // density, so they move faster
-            Hero h1 = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
+            Hero h1 = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h1.setPhysics(.1f, 0, 0.6f);
             h1.setMoveByTilting();
             h1.setJumpImpulses(0, 10);
             h1.setTouchToJump();
             h1.setMustSurvive();
-            Hero h2 = Hero.makeAsBox(0, 0, 48, .1f, "");
+            Hero h2 = level.makeHeroAsBox(0, 0, 48, .1f, "");
             h2.setMustSurvive();
             h1.setPassThrough(1);
             h2.setPassThrough(1);
 
-            Enemy e1 = Enemy.makeAsCircle(29, 29, 1, 1, "redball.png");
+            Enemy e1 = level.makeEnemyAsCircle(29, 29, 1, 1, "redball.png");
             e1.setAbsoluteVelocity(0, -1, true);
 
             // notice that now we will make two destinations, each of which
             // defaults to only holding ONE hero, but we still need to getLoseScene two
             // heroes to destinations in order to complete the level
-            Destination.makeAsCircle(29, 6, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
         }
 
         /*
@@ -3486,17 +3486,17 @@ public class Levels implements ScreenManager {
         else if (whichLevel == 90) {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 5);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 5);
             level.getPreScene().addText("Keep pressing until\na hero makes it to\nthe destination", 255, 255, 255,
                     "arial.ttf", 32);
 
             for (int i = 0; i < 10; ++i) {
-                Hero h = Hero.makeAsBox(4 * i + 2, 0.1f, 2, 2, "greenball.png");
+                Hero h = level.makeHeroAsBox(4 * i + 2, 0.1f, 2, 2, "greenball.png");
                 h.setPhysics(1, 1, 5);
                 level.putLevelActor("" + i, h);
             }
 
-            Destination.makeAsCircle(29, 16, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(29, 16, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
             // A callback control is a way to run arbitrary code whenever the
@@ -3520,15 +3520,15 @@ public class Levels implements ScreenManager {
         else if (whichLevel == 91) {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
-            Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
 
-            Hero truck = Hero.makeAsBox(3, 3, 4, 1.5f, "red.png");
+            Hero truck = level.makeHeroAsBox(3, 3, 4, 1.5f, "red.png");
             truck.setPhysics(1, 0, 0);
-            Obstacle head = Obstacle.makeAsCircle(4.5f, 4, 1, 1, "blueball.png");
+            Obstacle head = level.makeObstacleAsCircle(4.5f, 4, 1, 1, "blueball.png");
             head.setPhysics(1, 0, 0);
-            Obstacle backWheel = Obstacle.makeAsCircle(3, 2, 1.5f, 1.5f, "blueball.png");
+            Obstacle backWheel = level.makeObstacleAsCircle(3, 2, 1.5f, 1.5f, "blueball.png");
             backWheel.setPhysics(3, 0, 1);
-            Obstacle frontWheel = Obstacle.makeAsCircle(5.5f, 2, 1.5f, 1.5f, "blueball.png");
+            Obstacle frontWheel = level.makeObstacleAsCircle(5.5f, 2, 1.5f, 1.5f, "blueball.png");
             frontWheel.setPhysics(3, 0, 1);
 
             backWheel.setRevoluteJoint(truck, -1.5f, -1, 0, 0);
@@ -3540,7 +3540,7 @@ public class Levels implements ScreenManager {
             // demo
             head.setDistanceJoint(truck, 0, 1, 0, 0);
 
-            Destination.makeAsBox(47, 0, .1f, 32, "");
+            level.makeDestinationAsBox(47, 0, .1f, 32, "");
             Level.setVictoryDestination(1);
         }
 
@@ -3553,11 +3553,11 @@ public class Levels implements ScreenManager {
             Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
-            Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            level.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
+            level.makeDestinationAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
             Level.setCameraChase(h);
 
@@ -3614,10 +3614,10 @@ public class Levels implements ScreenManager {
             Level.configureCamera(300000, 32);
             Level.configureGravity(0, -10);
             level.getPreScene().addText("Press to make\nthe hero go up", 255, 255, 255, "arial.ttf", 32);
-            Util.drawBoundingBox(0, 0, 300000, 32, "red.png", 0, 0, 0);
+            level.drawBoundingBox(0, 0, 300000, 32, "red.png", 0, 0, 0);
 
             // make a hero
-            Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
+            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             Level.setCameraChase(h);
             h.setAbsoluteVelocity(10, 0, false);
             h.disableRotation();
@@ -3639,7 +3639,7 @@ public class Levels implements ScreenManager {
             // now set up an obstacle and attach a callback to it
             //
             // Note that the obstacle needs to be final or we can't access it within the callback
-            final Obstacle trigger = Obstacle.makeAsBox(30, 0, 1, 32, "");
+            final Obstacle trigger = level.makeObstacleAsBox(30, 0, 1, 32, "");
             LolCallback lc = new LolCallback() {
                 /**
                  * Each time the hero hits the obstacle, we'll run this code to draw a new enemy
@@ -3648,8 +3648,8 @@ public class Levels implements ScreenManager {
                  */
                 public void onEvent() {
                     // make a random enemy and a random goodie.  Put them in X coordinates relative to the trigger
-                    Enemy.makeAsCircle(trigger.getXPosition() + 40 + Util.getRandom(10), Util.getRandom(30), 2, 2, "redball.png");
-                    Goodie.makeAsCircle(trigger.getXPosition() + 50 + Util.getRandom(10), Util.getRandom(30), 2, 2, "blueball.png");
+                    level.makeEnemyAsCircle(trigger.getXPosition() + 40 + Util.getRandom(10), Util.getRandom(30), 2, 2, "redball.png");
+                    level.makeGoodieAsCircle(trigger.getXPosition() + 50 + Util.getRandom(10), Util.getRandom(30), 2, 2, "blueball.png");
                     // move the trigger so we can hit it again
                     trigger.setPosition(trigger.getXPosition() + 50, trigger.getYPosition());
                 }

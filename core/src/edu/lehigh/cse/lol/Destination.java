@@ -65,71 +65,10 @@ public class Destination extends Actor {
      * @param height  Height of this destination
      * @param imgName Name of the image to display
      */
-    protected Destination(float width, float height, String imgName) {
-        super(imgName, width, height);
+    protected Destination(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
-    }
-
-    /**
-     * Make a destination that has an underlying rectangular shape.
-     *
-     * @param x       The X coordinate of the bottom left corner
-     * @param y       The Y coordinate of the bottom right corner
-     * @param width   The width of the destination
-     * @param height  The height of the destination
-     * @param imgName The name of the image to display
-     * @return The destination, so that it can be modified further
-     */
-    public static Destination makeAsBox(float x, float y, float width, float height, String imgName) {
-        Destination d = new Destination(width, height, imgName);
-        d.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
-        return d;
-    }
-
-    /**
-     * Draw a destination with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The destination, so that it can be further modified
-     */
-    public static Destination makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Destination d = new Destination(width, height, imgName);
-        d.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
-        return d;
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Make a destination that has an underlying circular shape.
-     *
-     * @param x       The X coordinate of the bottom left corner
-     * @param y       The Y coordinate of the bottom right corner
-     * @param width   The width of the destination
-     * @param height  The height of the destination
-     * @param imgName The name of the image to display
-     * @return The destination, so that it can be modified further
-     */
-    public static Destination makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Destination d = new Destination(radius, radius, imgName);
-        d.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
-        return d;
     }
 
     /**

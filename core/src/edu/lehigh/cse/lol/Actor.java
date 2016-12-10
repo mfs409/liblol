@@ -67,6 +67,11 @@ import edu.lehigh.cse.lol.internals.RouteDriver;
  */
 public abstract class Actor implements Renderable {
     /**
+     * The level in which this Actor exists
+     */
+    Level mLevel;
+
+    /**
      * Animation support: the offset for placing the disappearance animation
      * relative to the disappearing actor
      */
@@ -227,7 +232,8 @@ public abstract class Actor implements Renderable {
      * @param width   The width
      * @param height  The height
      */
-    Actor(String imgName, float width, float height) {
+    Actor(Level level, String imgName, float width, float height) {
+        mLevel = level;
         mAnimator = new AnimationDriver(imgName);
         mSize.x = width;
         mSize.y = height;
@@ -638,7 +644,7 @@ public abstract class Actor implements Renderable {
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
-            Obstacle o = Obstacle.makeAsBox(x, y, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
+            Obstacle o = mLevel.makeObstacleAsBox(x, y, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
             o.mBody.setActive(false);
             o.setDefaultAnimation(mDisappearAnimation);
         }

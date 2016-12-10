@@ -141,63 +141,9 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    protected Hero(float width, float height, String imgName) {
-        super(imgName, width, height);
+    protected Hero(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
         Lol.sGame.mCurrentLevel.mScore.mHeroesCreated++;
-    }
-
-    /**
-     * Make a Hero with an underlying rectangular shape
-     *
-     * @param x       X coordinate of the hero
-     * @param y       Y coordinate of the hero
-     * @param width   width of the hero
-     * @param height  height of the hero
-     * @param imgName File name of the default image to display
-     * @return The hero that was created
-     */
-    public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
-        Hero h = new Hero(width, height, imgName);
-        h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
-    }
-
-    /**
-     * Make a Hero with an underlying circular shape
-     *
-     * @param x       X coordinate of the hero
-     * @param y       Y coordinate of the hero
-     * @param width   width of the hero
-     * @param height  height of the hero
-     * @param imgName File name of the default image to display
-     * @return The hero that was created
-     */
-    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
-    }
-
-    /**
-     * Draw a hero with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The hero, so that it can be further modified
-     */
-    public static Hero makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Hero h = new Hero(width, height, imgName);
-        h.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
     }
 
     /**

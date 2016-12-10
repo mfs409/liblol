@@ -158,33 +158,6 @@ public class Util {
         return sGenerator.nextInt(max);
     }
 
-    /**
-     * Draw a box on the scene Note: the box is actually four narrow rectangles
-     *
-     * @param x0         X coordinate of top left corner
-     * @param y0         Y coordinate of top left corner
-     * @param x1         X coordinate of bottom right corner
-     * @param y1         Y coordinate of bottom right corner
-     * @param imgName    name of the image file to use when drawing the rectangles
-     * @param density    Density of the rectangle. When in doubt, use 1
-     * @param elasticity Elasticity of the rectangle. When in doubt, use 0
-     * @param friction   Friction of the rectangle. When in doubt, use 1
-     */
-    static public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName, float density,
-                                       float elasticity, float friction) {
-        // draw four rectangles and we're good
-        Obstacle bottom = Obstacle.makeAsBox(x0 - 1, y0 - 1, Math.abs(x0 - x1) + 2, 1, imgName);
-        bottom.setPhysics(density, elasticity, friction);
-
-        Obstacle top = Obstacle.makeAsBox(x0 - 1, y1, Math.abs(x0 - x1) + 2, 1, imgName);
-        top.setPhysics(density, elasticity, friction);
-
-        Obstacle left = Obstacle.makeAsBox(x0 - 1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
-        left.setPhysics(density, elasticity, friction);
-
-        Obstacle right = Obstacle.makeAsBox(x1, y0 - 1, 1, Math.abs(y0 - y1) + 2, imgName);
-        right.setPhysics(density, elasticity, friction);
-    }
 
     /**
      * Draw a picture on the current level

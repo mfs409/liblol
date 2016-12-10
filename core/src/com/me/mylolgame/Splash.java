@@ -27,7 +27,6 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
@@ -86,7 +85,7 @@ public class Splash implements ScreenManager {
         });
 
         // Mute button is a tad tricky... we'll do it as an obstacle
-        Obstacle o = Obstacle.makeAsBox(45, 0, 2.5f, 2.5f, "");
+        Obstacle o = level.makeObstacleAsBox(45, 0, 2.5f, 2.5f, "");
         // figure out which image to use for the obstacle based on the current
         // volume state
         if (Lol.getVolume()) {
