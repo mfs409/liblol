@@ -38,6 +38,9 @@ import edu.lehigh.cse.lol.internals.QuickScene;
  */
 public class PreScene extends QuickScene {
 
+    public PreScene(Level level) {
+        super(level);
+    }
 
     /*
      * PUBLIC INTERFACE

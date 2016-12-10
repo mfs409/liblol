@@ -37,12 +37,15 @@ import edu.lehigh.cse.lol.internals.QuickScene;
  */
 public class PauseScene extends QuickScene {
 
+    PauseScene(Level level) {
+        super(level);
+    }
 
     /**
      * Clear everything off of the level's pause scene, so it can be reused
      */
     public void reset() {
-        Lol.sGame.mCurrentLevel.mPauseScene = new PauseScene();
+        mLevel.mPauseScene = new PauseScene(mLevel);
     }
 
     /**
@@ -53,7 +56,7 @@ public class PauseScene extends QuickScene {
         mVisible = true;
         mDisplayTime = System.currentTimeMillis();
         if (mSound != null)
-            mSound.play(Level.getGameFact("volume", 1));
+            mSound.play(mLevel.getGameFact("volume", 1));
     }
 
     /**

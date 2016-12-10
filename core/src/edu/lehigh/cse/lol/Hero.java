@@ -143,7 +143,7 @@ public class Hero extends Actor {
      */
     protected Hero(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
-        Lol.sGame.mCurrentLevel.mScore.mHeroesCreated++;
+        mLevel.mScore.mHeroesCreated++;
     }
 
     /**
@@ -193,7 +193,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(Level.getGameFact("volume", 1));
+            mJumpSound.play(mLevel.getGameFact("volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -282,14 +282,14 @@ public class Hero extends Actor {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
+            match &= mLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && mVisible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Level.getGameFact("volume", 1));
-            Lol.sGame.mCurrentLevel.mScore.onDestinationArrive();
+                d.mArrivalSound.play(mLevel.getGameFact("volume", 1));
+            mLevel.mScore.onDestinationArrive();
         }
     }
 
@@ -303,9 +303,9 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
+            mLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+                mLevel.mScore.endLevel(false);
             return;
         }
         // handle hero invincibility
@@ -327,9 +327,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
+            mLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+                mLevel.mScore.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -391,7 +391,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        Lol.sGame.mCurrentLevel.mScore.onGoodieCollected(g);
+        mLevel.mScore.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);

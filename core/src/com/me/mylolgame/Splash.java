@@ -45,18 +45,18 @@ public class Splash implements ScreenManager {
      * There is usually only one splash screen. However, the ScreenManager
      * interface requires display() to take a parameter.  We ignore it.
      */
-    public void display(int which, Level level) {
+    public void display(int which, final Level level) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
-        Level.configureCamera(48, 32);
-        Level.configureGravity(0, 0);
+        level.configureCamera(48, 32);
+        level.configureGravity(0, 0);
 
         // draw the background. Note that "Play", "Help", and "Quit" are part of
         // this background image.
-        Util.drawPicture(0, 0, 48, 32, "splash.png", 0);
+        level.drawPicture(0, 0, 48, 32, "splash.png", 0);
 
         // start the music
-        Level.setMusic("tune.ogg");
+        level.setMusic("tune.ogg");
 
         // This is the Play button... it switches to the first screen of the
         // level chooser. You could jump straight to the first level by using
@@ -88,7 +88,7 @@ public class Splash implements ScreenManager {
         Obstacle o = level.makeObstacleAsBox(45, 0, 2.5f, 2.5f, "");
         // figure out which image to use for the obstacle based on the current
         // volume state
-        if (Lol.getVolume()) {
+        if (level.getVolume()) {
             o.setImage("audio_off.png");
         } else {
             o.setImage("audio_on.png");
@@ -97,8 +97,8 @@ public class Splash implements ScreenManager {
         // picture for the obstacle
         o.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
-                Lol.toggleMute();
-                if (Lol.getVolume()) {
+                level.toggleMute();
+                if (level.getVolume()) {
                     mAttachedActor.setImage("audio_off.png");
                 } else {
                     mAttachedActor.setImage("audio_on.png");

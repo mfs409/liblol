@@ -40,12 +40,26 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
+import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Media;
 import edu.lehigh.cse.lol.Util;
 
 abstract public class QuickScene {
+    /**
+     * The level to which this is attached
+     */
+    public Level mLevel;
+
+    /**
+     * Construct a QuickScene by giving it a level
+     * @param level
+     */
+    public QuickScene(Level level) {
+        mLevel = level;
+    }
+
     /**
      * The text and pictures to display
      */
@@ -106,8 +120,8 @@ abstract public class QuickScene {
         // clear screen and draw images/text via HudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Lol.sGame.mCurrentLevel.mHudCam.update();
-        sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
+        mLevel.mHudCam.update();
+        sb.setProjectionMatrix(mLevel.mHudCam.combined);
         sb.begin();
         for (Renderable r : mSprites)
             r.render(sb, 0);
@@ -115,7 +129,7 @@ abstract public class QuickScene {
 
         // DEBUG: show where the buttons' boxes are
         if (Lol.sGame.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
+            mShapeRender.setProjectionMatrix(mLevel.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
             for (Button b : mButtons)
@@ -136,7 +150,7 @@ abstract public class QuickScene {
             return;
 
         // check for taps to the buttons
-        Lol.sGame.mCurrentLevel.mHudCam.unproject(mTmpVec.set(x, y, 0));
+        mLevel.mHudCam.unproject(mTmpVec.set(x, y, 0));
         for (Button b : mButtons) {
             if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
                 dismiss();
@@ -148,7 +162,7 @@ abstract public class QuickScene {
         // hide the scene only if it's click-to-clear
         if (mClickToClear) {
             dismiss();
-            Lol.sGame.mCurrentLevel.liftAllButtons(mTmpVec);
+            mLevel.liftAllButtons(mTmpVec);
         }
     }
 

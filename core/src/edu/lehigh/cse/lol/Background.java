@@ -58,17 +58,17 @@ public class Background {
      * @param sb
      *            The SpriteBatch that is being used to do the drawing.
      */
-    void renderLayers(SpriteBatch sb, float elapsed) {
+    void renderLayers(Level level, SpriteBatch sb, float elapsed) {
         // center camera on mGameCam's camera
-        float x = Lol.sGame.mCurrentLevel.mGameCam.position.x;
-        float y = Lol.sGame.mCurrentLevel.mGameCam.position.y;
-        Lol.sGame.mCurrentLevel.mBgCam.position.set(x, y, 0);
-        Lol.sGame.mCurrentLevel.mBgCam.update();
+        float x = level.mGameCam.position.x;
+        float y = level.mGameCam.position.y;
+        level.mBgCam.position.set(x, y, 0);
+        level.mBgCam.update();
 
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
-            sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam
+            sb.setProjectionMatrix(level.mBgCam
                     .calculateParallaxMatrix(pl.mXSpeed
                             * Level.PIXEL_METER_RATIO, pl.mYSpeed
                             * Level.PIXEL_METER_RATIO));
@@ -77,7 +77,7 @@ public class Background {
             if (pl.mAutoX) {
                 // hack for changing the projection matrix
                 sb.end();
-                sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mBgCam
+                sb.setProjectionMatrix(level.mBgCam
                         .calculateParallaxMatrix(0, 0));
                 sb.begin();
                 // update position, based on elapsed time
@@ -106,7 +106,7 @@ public class Background {
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
-                screensBefore += Lol.sGame.mCurrentLevel.mBgCam.zoom;
+                screensBefore += level.mBgCam.zoom;
                 startX -= (screensBefore * Lol.sGame.mWidth);
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
@@ -114,7 +114,7 @@ public class Background {
                 // draw picture repeatedly until we've drawn enough to cover the
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
-                float limit = 2 + 2 * Lol.sGame.mCurrentLevel.mBgCam.zoom;
+                float limit = 2 + 2 * level.mBgCam.zoom;
                 while (currX < startX + limit * Lol.sGame.mWidth) {
                     sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
@@ -126,13 +126,13 @@ public class Background {
                 // getLoseScene the camera center, translate, and scale
                 float startY = y * Level.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + Lol.sGame.mCurrentLevel.mBgCam.zoom)
+                startY -= (1.5f + level.mBgCam.zoom)
                         * Lol.sGame.mHeight;
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
-                float limit = 2 + 2 * Lol.sGame.mCurrentLevel.mBgCam.zoom;
+                float limit = 2 + 2 * level.mBgCam.zoom;
                 while (currY < startY + limit * Lol.sGame.mHeight) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();

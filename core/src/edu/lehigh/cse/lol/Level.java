@@ -38,6 +38,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -150,11 +151,11 @@ public class Level extends ScreenAdapter {
     /**
      * The scene to show when the level is won
      */
-    WinScene mWinScene = new WinScene();
+    WinScene mWinScene = new WinScene(this);
     /**
      * The scene to show when the level is lost
      */
-    LoseScene mLoseScene = new LoseScene();
+    LoseScene mLoseScene = new LoseScene(this);
     /**
      * The scene to show when the level is paused (if any)
      */
@@ -337,15 +338,15 @@ public class Level extends ScreenAdapter {
      * @param width  width of the camera
      * @param height height of the camera
      */
-    public static void configureCamera(int width, int height) {
-        Lol.sGame.mCurrentLevel.setCamera(width, height);
+    public  void configureCamera(int width, int height) {
+        setCamera(width, height);
 
         // TODO: we can move this once we getLoseScene rid of the static sGame.mCurrentLevel field
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (Lol.sGame.mShowDebugBoxes)
-            Lol.sGame.mCurrentLevel.addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
+            addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
                     Lol.sGame.mDefaultFontBlue, 12);
 
     }
@@ -356,8 +357,8 @@ public class Level extends ScreenAdapter {
      *
      * @param actor The actor the camera should chase
      */
-    public static void setCameraChase(Actor actor) {
-        Lol.sGame.mCurrentLevel.mChaseActor = actor;
+    public  void setCameraChase(Actor actor) {
+        mChaseActor = actor;
     }
 
     /**
@@ -365,8 +366,8 @@ public class Level extends ScreenAdapter {
      *
      * @param musicName Name of the Music file to play
      */
-    public static void setMusic(String musicName) {
-        Lol.sGame.mCurrentLevel.mMusic = Media.getMusic(musicName);
+    public  void setMusic(String musicName) {
+        mMusic = Media.getMusic(musicName);
     }
 
     /**
@@ -376,11 +377,11 @@ public class Level extends ScreenAdapter {
      * @param howLong  How long to wait before the timer code runs
      * @param callback The code to run
      */
-    public static void setTimerCallback(float howLong, final LolCallback callback) {
+    public void setTimerCallback(float howLong, final LolCallback callback) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Lol.sGame.mCurrentLevel.mScore.mGameOver)
+                if (!mScore.mGameOver)
                     callback.onEvent();
             }
         }, howLong);
@@ -393,11 +394,11 @@ public class Level extends ScreenAdapter {
      * @param interval The time between subsequent executions of the code
      * @param callback The code to run
      */
-    public static void setTimerCallback(float howLong, float interval, final LolCallback callback) {
+    public void setTimerCallback(float howLong, float interval, final LolCallback callback) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                if (!Lol.sGame.mCurrentLevel.mScore.mGameOver)
+                if (!mScore.mGameOver)
                     callback.onEvent();
             }
         }, howLong, interval);
@@ -424,7 +425,7 @@ public class Level extends ScreenAdapter {
                                        final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        Lol.sGame.mCurrentLevel.mGestureResponders.add(new GestureAction() {
+        mGestureResponders.add(new GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -469,9 +470,9 @@ public class Level extends ScreenAdapter {
      *
      * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
-    public static void setZoom(float zoom) {
-        Lol.sGame.mCurrentLevel.mGameCam.zoom = zoom;
-        Lol.sGame.mCurrentLevel.mBgCam.zoom = zoom;
+    public  void setZoom(float zoom) {
+        mGameCam.zoom = zoom;
+        mBgCam.zoom = zoom;
     }
 
     /**
@@ -479,8 +480,8 @@ public class Level extends ScreenAdapter {
      *
      * @param callback The code to run
      */
-    public static void setWinCallback(LolCallback callback) {
-        Lol.sGame.mCurrentLevel.mWinCallback = callback;
+    public  void setWinCallback(LolCallback callback) {
+        mWinCallback = callback;
     }
 
     /**
@@ -488,8 +489,8 @@ public class Level extends ScreenAdapter {
      *
      * @param callback The code to run
      */
-    public static void setLoseCallback(LolCallback callback) {
-        Lol.sGame.mCurrentLevel.mLoseCallback = callback;
+    public  void setLoseCallback(LolCallback callback) {
+        mLoseCallback = callback;
     }
 
     /*
@@ -644,7 +645,7 @@ public class Level extends ScreenAdapter {
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
-        Lol.sGame.mCurrentLevel.mTilt.handleTilt();
+        mTilt.handleTilt();
 
         // Advance the physics world by 1/45 of a second.
         //
@@ -678,7 +679,7 @@ public class Level extends ScreenAdapter {
         mGameCam.update();
 
         // draw parallax backgrounds
-        mBackground.renderLayers(mSpriteBatch, delta);
+        mBackground.renderLayers(this, mSpriteBatch, delta);
 
         // Render the actors in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(mGameCam.combined);
@@ -689,7 +690,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // draw parallax foregrounds
-        mForeground.renderLayers(mSpriteBatch, delta);
+        mForeground.renderLayers(this, mSpriteBatch, delta);
 
 
         // DEBUG: draw outlines of physics actors
@@ -803,7 +804,7 @@ public class Level extends ScreenAdapter {
         public boolean fling(float velocityX, float velocityY, int button) {
             // we only fling at the whole-level layer
             mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
+            for (GestureAction ga : mGestureResponders) {
                 if (ga.onFling(mTouchVec))
                     return true;
             }
@@ -832,7 +833,7 @@ public class Level extends ScreenAdapter {
 
             // did we pan the level?
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders) {
+            for (GestureAction ga :mGestureResponders) {
                 if (ga.onPan(mTouchVec, deltaX, deltaY))
                     return true;
             }
@@ -861,7 +862,7 @@ public class Level extends ScreenAdapter {
 
             // handle panstop on level
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : Lol.sGame.mCurrentLevel.mGestureResponders)
+            for (GestureAction ga : mGestureResponders)
                 if (ga.onPanStop(mTouchVec))
                     return true;
             return false;
@@ -985,32 +986,32 @@ public class Level extends ScreenAdapter {
      * Manually increment the number of goodies of type 1 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected1() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0]++;
+    public  void incrementGoodiesCollected1() {
+        mScore.mGoodiesCollected[0]++;
     }
 
     /**
      * Manually increment the number of goodies of type 2 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected2() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1]++;
+    public  void incrementGoodiesCollected2() {
+        mScore.mGoodiesCollected[1]++;
     }
 
     /**
      * Manually increment the number of goodies of type 3 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected3() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2]++;
+    public  void incrementGoodiesCollected3() {
+        mScore.mGoodiesCollected[2]++;
     }
 
     /**
      * Manually increment the number of goodies of type 4 that have been
      * collected.
      */
-    public static void incrementGoodiesCollected4() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3]++;
+    public  void incrementGoodiesCollected4() {
+        mScore.mGoodiesCollected[3]++;
     }
 
     /**
@@ -1018,8 +1019,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected1() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0];
+    public  int getGoodiesCollected1() {
+        return mScore.mGoodiesCollected[0];
     }
 
     /**
@@ -1027,8 +1028,8 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public static void setGoodiesCollected1(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0] = value;
+    public  void setGoodiesCollected1(int value) {
+        mScore.mGoodiesCollected[0] = value;
     }
 
     /*
@@ -1040,8 +1041,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected2() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1];
+    public  int getGoodiesCollected2() {
+        return mScore.mGoodiesCollected[1];
     }
 
     /**
@@ -1049,8 +1050,8 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public static void setGoodiesCollected2(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1] = value;
+    public  void setGoodiesCollected2(int value) {
+        mScore.mGoodiesCollected[1] = value;
     }
 
     /**
@@ -1058,8 +1059,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected3() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2];
+    public  int getGoodiesCollected3() {
+        return mScore.mGoodiesCollected[2];
     }
 
     /**
@@ -1067,8 +1068,8 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public static void setGoodiesCollected3(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2] = value;
+    public  void setGoodiesCollected3(int value) {
+        mScore.mGoodiesCollected[2] = value;
     }
 
     /**
@@ -1076,8 +1077,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public static int getGoodiesCollected4() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3];
+    public  int getGoodiesCollected4() {
+        return mScore.mGoodiesCollected[3];
     }
 
     /**
@@ -1085,8 +1086,8 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public static void setGoodiesCollected4(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3] = value;
+    public  void setGoodiesCollected4(int value) {
+        mScore.mGoodiesCollected[3] = value;
     }
 
     /**
@@ -1094,9 +1095,9 @@ public class Level extends ScreenAdapter {
      * is useful if the number of enemies isn't known, or if the goal is to
      * defeat all enemies before more are are created.
      */
-    static public void setVictoryEnemyCount() {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = -1;
+     public void setVictoryEnemyCount() {
+        mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        mScore.mVictoryEnemyCount = -1;
     }
 
     /**
@@ -1104,9 +1105,9 @@ public class Level extends ScreenAdapter {
      *
      * @param howMany The number of enemies that must be defeated to win the level
      */
-    static public void setVictoryEnemyCount(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = howMany;
+     public void setVictoryEnemyCount(int howMany) {
+        mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        mScore.mVictoryEnemyCount = howMany;
     }
 
     /**
@@ -1121,12 +1122,12 @@ public class Level extends ScreenAdapter {
      * @param v4 Number of type-4 goodies that must be collected to win the
      *           level
      */
-    static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.GOODIECOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[0] = v1;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[1] = v2;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[2] = v3;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[3] = v4;
+     public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
+        mScore.mVictoryType = VictoryType.GOODIECOUNT;
+        mScore.mVictoryGoodieCount[0] = v1;
+        mScore.mVictoryGoodieCount[1] = v2;
+        mScore.mVictoryGoodieCount[2] = v3;
+        mScore.mVictoryGoodieCount[3] = v4;
     }
 
     /**
@@ -1135,9 +1136,9 @@ public class Level extends ScreenAdapter {
      *
      * @param howMany Number of heroes that must reach destinations
      */
-    static public void setVictoryDestination(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.DESTINATION;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryHeroCount = howMany;
+     public void setVictoryDestination(int howMany) {
+        mScore.mVictoryType = VictoryType.DESTINATION;
+        mScore.mVictoryHeroCount = howMany;
     }
 
     /**
@@ -1145,29 +1146,29 @@ public class Level extends ScreenAdapter {
      *
      * @param delta The amount of time to add before the timer expires
      */
-    public static void updateTimerExpiration(float delta) {
-        Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining += delta;
+    public  void updateTimerExpiration(float delta) {
+        mScore.mCountDownRemaining += delta;
     }
 
     /**
      * Report the total distance the hero has traveled
      */
-    public static int getDistance() {
-        return Lol.sGame.mCurrentLevel.mScore.mDistance;
+    public  int getDistance() {
+        return mScore.mDistance;
     }
 
     /**
      * Report the stopwatch value
      */
-    public static int getStopwatch() {
-        return (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress;
+    public  int getStopwatch() {
+        return (int)mScore.mStopWatchProgress;
     }
 
     /**
      * Report the number of enemies that have been defeated
      */
-    public static int getEnemiesDefeated() {
-        return Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated;
+    public  int getEnemiesDefeated() {
+        return mScore.mEnemiesDefeated;
     }
 
     /**
@@ -1176,8 +1177,8 @@ public class Level extends ScreenAdapter {
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
-    public static void winLevel() {
-        Lol.sGame.mCurrentLevel.mScore.endLevel(true);
+    public  void winLevel() {
+        mScore.endLevel(true);
     }
 
     /**
@@ -1186,8 +1187,8 @@ public class Level extends ScreenAdapter {
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
-    public static void loseLevel() {
-        Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+    public  void loseLevel() {
+        mScore.endLevel(false);
     }
 
 
@@ -1345,8 +1346,8 @@ public class Level extends ScreenAdapter {
          * @param win true if the level was won, false otherwise
          */
         void endLevel(final boolean win) {
-            if (Lol.sGame.mCurrentLevel.mEndGameEvent == null)
-                Lol.sGame.mCurrentLevel.mEndGameEvent = new LolAction() {
+            if (mEndGameEvent == null)
+                mEndGameEvent = new LolAction() {
                     @Override
                     public void go() {
                         // Safeguard: only call this method once per level
@@ -1355,18 +1356,18 @@ public class Level extends ScreenAdapter {
                         mGameOver = true;
 
                         // Run the level-complete callback
-                        if (win && Lol.sGame.mCurrentLevel.mWinCallback != null)
-                            Lol.sGame.mCurrentLevel.mWinCallback.onEvent();
-                        else if (!win && Lol.sGame.mCurrentLevel.mLoseCallback != null)
-                            Lol.sGame.mCurrentLevel.mLoseCallback.onEvent();
+                        if (win && mWinCallback != null)
+                            mWinCallback.onEvent();
+                        else if (!win && mLoseCallback != null)
+                            mLoseCallback.onEvent();
 
                         // if we won, unlock the next level
                         if (win && getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
                             putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
 
                         // drop everything from the hud
-                        Lol.sGame.mCurrentLevel.mControls.clear();
-                        Lol.sGame.mCurrentLevel.mDisplays.clear();
+                        mControls.clear();
+                        mDisplays.clear();
 
                         // clear any pending timers
                         Timer.instance().clear();
@@ -1374,9 +1375,9 @@ public class Level extends ScreenAdapter {
                         // display the PostScene, which provides a pause before we
                         // retry/start the next level
                         if (win)
-                            Lol.sGame.mCurrentLevel.mWinScene.show();
+                            mWinScene.show();
                         else
-                            Lol.sGame.mCurrentLevel.mLoseScene.show();
+                            mLoseScene.show();
                     }
                 };
         }
@@ -1398,8 +1399,8 @@ public class Level extends ScreenAdapter {
      * @param newXGravity The new X gravity
      * @param newYGravity The new Y gravity
      */
-    public static void resetGravity(float newXGravity, float newYGravity) {
-        Lol.sGame.mCurrentLevel.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
+    public  void resetGravity(float newXGravity, float newYGravity) {
+        mWorld.setGravity(new Vector2(newXGravity, newYGravity));
     }
 
     /**
@@ -1412,12 +1413,12 @@ public class Level extends ScreenAdapter {
      * @param defaultYGravity The default force pushing actors down (negative) or up
      *                        (positive)... Usually zero or -10
      */
-    public static void configureGravity(float defaultXGravity, float defaultYGravity) {
+    public  void configureGravity(float defaultXGravity, float defaultYGravity) {
         // create a world with gravity
-        Lol.sGame.mCurrentLevel.mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
+        mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
         // set up the collision handlers
-        Lol.sGame.mCurrentLevel.mWorld.setContactListener(new ContactListener() {
+        mWorld.setContactListener(new ContactListener() {
             /**
              * When two bodies start to collide, we can use this to forward to
              * our onCollide methods
@@ -1465,7 +1466,7 @@ public class Level extends ScreenAdapter {
                 // you can't modify the world or its actors until the update
                 // finishes, so we have to schedule collision-based updates to
                 // run after the world update.
-                Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
+                mOneTimeEvents.add(new LolAction() {
                     @Override
                     public void go() {
                         c0.onCollide(c1, contact);
@@ -1568,7 +1569,7 @@ public class Level extends ScreenAdapter {
      * @param other   The other actor... it should always be a hero for now
      * @param contact A description of the contact event
      */
-    static void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+     void handleSticky(final Actor sticky, final Actor other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -1586,18 +1587,18 @@ public class Level extends ScreenAdapter {
             // the box2d step, so we need to make the joint in a callback that
             // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            Lol.sGame.mCurrentLevel.mOneTimeEvents.add(new LolAction() {
+            mOneTimeEvents.add(new LolAction() {
                 @Override
                 public void go() {
                     other.mBody.setLinearVelocity(0, 0);
                     DistanceJointDef d = new DistanceJointDef();
                     d.initialize(sticky.mBody, other.mBody, v, v);
                     d.collideConnected = true;
-                    other.mDJoint = (DistanceJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(d);
+                    other.mDJoint = (DistanceJoint) mWorld.createJoint(d);
                     WeldJointDef w = new WeldJointDef();
                     w.initialize(sticky.mBody, other.mBody, v);
                     w.collideConnected = true;
-                    other.mWJoint = (WeldJoint) Lol.sGame.mCurrentLevel.mWorld.createJoint(w);
+                    other.mWJoint = (WeldJoint)mWorld.createJoint(w);
                 }
             });
         }
@@ -1610,16 +1611,16 @@ public class Level extends ScreenAdapter {
      * @param xGravityMax Max X force that the accelerometer can produce
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
-    public static void enableTilt(float xGravityMax, float yGravityMax) {
-        Lol.sGame.mCurrentLevel.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+    public  void enableTilt(float xGravityMax, float yGravityMax) {
+        mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
      * Turn off accelerometer support so that tilt stops controlling actors in this
      * level
      */
-    public static void disableTilt() {
-        Lol.sGame.mCurrentLevel.mTilt.mGravityMax = null;
+    public  void disableTilt() {
+        mTilt.mGravityMax = null;
     }
 
     /**
@@ -1631,8 +1632,8 @@ public class Level extends ScreenAdapter {
      *               tilt does not cause forces upon objects, but instead the tilt
      *               of the phone directly sets velocities
      */
-    public static void setTiltAsVelocity(boolean toggle) {
-        Lol.sGame.mCurrentLevel.mTilt.mTiltVelocityOverride = toggle;
+    public  void setTiltAsVelocity(boolean toggle) {
+        mTilt.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -1643,8 +1644,8 @@ public class Level extends ScreenAdapter {
      *                   data. This can be a fraction, like 0.5f, to make the
      *                   accelerometer less sensitive
      */
-    public static void setGravityMultiplier(float multiplier) {
-        Lol.sGame.mCurrentLevel.mTilt.mMultiplier = multiplier;
+    public  void setGravityMultiplier(float multiplier) {
+        mTilt.mMultiplier = multiplier;
     }
 
     /**
@@ -1800,21 +1801,21 @@ public class Level extends ScreenAdapter {
      */
     public Display addCountdown(final float timeout, final String text, final int x, final int y,
                                 String fontName, final int red, final int green, final int blue, int size) {
-        Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining = timeout;
+        mScore.mCountDownRemaining = timeout;
         Display d = new Display(this, red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
-                if (Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining > 0) {
-                    Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
+                mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
+                if (mScore.mCountDownRemaining > 0) {
+                    Util.drawTextTransposed(x, y, "" + (int) mScore.mCountDownRemaining, mFont, sb);
                 } else {
                     getLoseScene().setDefaultText(text);
-                    Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+                    mScore.endLevel(false);
                 }
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -1839,7 +1840,7 @@ public class Level extends ScreenAdapter {
                 Util.drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -1871,20 +1872,20 @@ public class Level extends ScreenAdapter {
      */
     public Display addWinCountdown(final float timeout, final int x, final int y, String fontName,
                                    final int red, final int green, final int blue, int size) {
-        Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining = timeout;
+        mScore.mWinCountRemaining = timeout;
         Display d = new Display(this, red, green, blue, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-                if (Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining > 0)
+                mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+                if (mScore.mWinCountRemaining > 0)
                     // getLoseScene elapsed time for this level
-                    Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining, mFont, sb);
+                    Util.drawTextTransposed(x, y, "" + (int) mScore.mWinCountRemaining, mFont, sb);
                 else
-                    Lol.sGame.mCurrentLevel.mScore.endLevel(true);
+                    mScore.endLevel(true);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -1912,11 +1913,11 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix,
+                Util.drawTextTransposed(x, y, "" +mScore.mGoodiesCollected[type - 1] + suffix,
                         mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -1957,10 +1958,10 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated + suffix, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + mScore.mEnemiesDefeated + suffix, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -1993,11 +1994,11 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress, mFont, sb);
+                mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+                Util.drawTextTransposed(x, y, "" + (int)mScore.mStopWatchProgress, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2038,7 +2039,7 @@ public class Level extends ScreenAdapter {
                 Util.drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2061,11 +2062,11 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Lol.sGame.mCurrentLevel.mScore.mDistance = (int) actor.getXPosition();
-                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mDistance + text, mFont, sb);
+                mScore.mDistance = (int) actor.getXPosition();
+                Util.drawTextTransposed(x, y, "" +mScore.mDistance + text, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2087,11 +2088,11 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text,
+                Util.drawTextTransposed(x, y, "" +mProjectilePool.mProjectilesRemaining + text,
                         mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2118,7 +2119,7 @@ public class Level extends ScreenAdapter {
                 Util.drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2145,7 +2146,7 @@ public class Level extends ScreenAdapter {
                 Util.drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2172,7 +2173,7 @@ public class Level extends ScreenAdapter {
                 Util.drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
-        Lol.sGame.mCurrentLevel.mDisplays.add(d);
+        mDisplays.add(d);
         return d;
     }
 
@@ -2197,8 +2198,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2243,9 +2244,9 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -2355,9 +2356,9 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -2400,9 +2401,9 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding) {
@@ -2443,8 +2444,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        mControls.add(c);
+        mToggleControls.add(c);
         return c;
     }
 
@@ -2468,8 +2469,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2504,9 +2505,9 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -2515,7 +2516,7 @@ public class Level extends ScreenAdapter {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                        mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                     }
                 }
             }
@@ -2549,12 +2550,12 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 vv) {
-                Lol.sGame.mCurrentLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2608,12 +2609,12 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
+        mControls.add(c);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mPanControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mToggleControls.add(c);
+        mPanControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -2622,7 +2623,7 @@ public class Level extends ScreenAdapter {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                        mProjectilePool.throwAt(h.mBody.getPosition().x,
                                 h.mBody.getPosition().y, v.x, v.y, h, offsetX, offsetY);
                     }
                 }
@@ -2655,13 +2656,13 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.mCurrentLevel.mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
+                mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
                         touchVec.x, touchVec.y, h, offsetX, offsetY);
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2682,16 +2683,16 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float curzoom =mGameCam.zoom;
                 if (curzoom < maxZoom) {
-                    Lol.sGame.mCurrentLevel.mGameCam.zoom *= 2;
-                    Lol.sGame.mCurrentLevel.mBgCam.zoom *= 2;
+                    mGameCam.zoom *= 2;
+                    mBgCam.zoom *= 2;
                 }
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2711,16 +2712,16 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float curzoom =mGameCam.zoom;
                 if (curzoom > minZoom) {
-                    Lol.sGame.mCurrentLevel.mGameCam.zoom /= 2;
-                    Lol.sGame.mCurrentLevel.mBgCam.zoom /= 2;
+                    mGameCam.zoom /= 2;
+                    mBgCam.zoom /= 2;
                 }
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2745,9 +2746,9 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
-        Lol.sGame.mCurrentLevel.mRepeatEvents.add(new LolAction() {
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (c.mGestureAction.mHolding)
@@ -2779,8 +2780,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2811,8 +2812,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -2843,7 +2844,7 @@ public class Level extends ScreenAdapter {
              */
             @Override
             public boolean onPanStop(Vector3 touchVec) {
-                Level.setCameraChase(oldChaseactor);
+                setCameraChase(oldChaseactor);
                 oldChaseactor = null;
                 return true;
             }
@@ -2862,23 +2863,23 @@ public class Level extends ScreenAdapter {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                if (Lol.sGame.mCurrentLevel.mChaseActor != null) {
-                    oldChaseactor = Lol.sGame.mCurrentLevel.mChaseActor;
-                    Lol.sGame.mCurrentLevel.mChaseActor = null;
+                if (mChaseActor != null) {
+                    oldChaseactor =mChaseActor;
+                    mChaseActor = null;
                 }
-                float x = Lol.sGame.mCurrentLevel.mGameCam.position.x - deltaX * .1f
-                        * Lol.sGame.mCurrentLevel.mGameCam.zoom;
-                float y = Lol.sGame.mCurrentLevel.mGameCam.position.y + deltaY * .1f
-                        * Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                float x =mGameCam.position.x - deltaX * .1f
+                        *mGameCam.zoom;
+                float y =mGameCam.position.y + deltaY * .1f
+                        *mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
+                if (x >mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
                         / Level.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mCurrentLevel.mCamBoundX - Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom
+                    x =mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
                             / Level.PIXEL_METER_RATIO / 2;
-                if (y > Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
+                if (y >mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
                         / Level.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mCurrentLevel.mCamBoundY - Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom
+                    y =mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
                             / Level.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -2886,17 +2887,17 @@ public class Level extends ScreenAdapter {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight * Lol.sGame.mCurrentLevel.mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mWidth *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
-                Lol.sGame.mCurrentLevel.mGameCam.position.set(x, y, 0);
+                mGameCam.position.set(x, y, 0);
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mPanControls.add(c);
+        mPanControls.add(c);
         return c;
     }
 
@@ -2925,7 +2926,7 @@ public class Level extends ScreenAdapter {
              *            The x/y/z coordinates of the touch
              */
             public boolean onDown(Vector3 touchVec) {
-                lastZoom = Lol.sGame.mCurrentLevel.mGameCam.zoom;
+                lastZoom =mGameCam.zoom;
                 return true;
             }
 
@@ -2942,11 +2943,11 @@ public class Level extends ScreenAdapter {
                 float ratio = initialDistance / distance;
                 float newZoom = lastZoom * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
-                    Lol.sGame.mCurrentLevel.mGameCam.zoom = newZoom;
+                    mGameCam.zoom = newZoom;
                 return false;
             }
         };
-        Lol.sGame.mCurrentLevel.mZoomControls.add(c);
+        mZoomControls.add(c);
         return c;
     }
 
@@ -3044,8 +3045,8 @@ public class Level extends ScreenAdapter {
             }
         };
         // add to hud
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -3103,8 +3104,8 @@ public class Level extends ScreenAdapter {
                 return true;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mTapControls.add(c);
+        mControls.add(c);
+        mTapControls.add(c);
         return c;
     }
 
@@ -3121,7 +3122,7 @@ public class Level extends ScreenAdapter {
     public Control addImage(int x, int y, int width, int height, String imgName) {
         Control c = new Control(this, imgName, x, y, width, height);
         c.mIsTouchable = false;
-        Lol.sGame.mCurrentLevel.mControls.add(c);
+        mControls.add(c);
         return c;
     }
 
@@ -3205,9 +3206,9 @@ public class Level extends ScreenAdapter {
                 return false;
             }
         };
-        Lol.sGame.mCurrentLevel.mControls.add(c);
-        Lol.sGame.mCurrentLevel.mPanControls.add(c);
-        Lol.sGame.mCurrentLevel.mToggleControls.add(c);
+        mControls.add(c);
+        mPanControls.add(c);
+        mToggleControls.add(c);
         return c;
     }
 
@@ -3219,8 +3220,8 @@ public class Level extends ScreenAdapter {
      * @param defaultVal The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public static int getLevelFact(String factName, int defaultVal) {
-        Integer i = Lol.sGame.mCurrentLevel.mLevelFacts.get(factName);
+    public  int getLevelFact(String factName, int defaultVal) {
+        Integer i =mLevelFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -3235,8 +3236,8 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public static void putLevelFact(String factName, int factValue) {
-        Lol.sGame.mCurrentLevel.mLevelFacts.put(factName, factValue);
+    public  void putLevelFact(String factName, int factValue) {
+        mLevelFacts.put(factName, factValue);
     }
 
     /**
@@ -3247,7 +3248,7 @@ public class Level extends ScreenAdapter {
      * @param defaultVal The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public static int getSessionFact(String factName, int defaultVal) {
+    public  int getSessionFact(String factName, int defaultVal) {
         Integer i = Lol.sGame.mSessionFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
@@ -3263,7 +3264,7 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public static void putSessionFact(String factName, int factValue) {
+    public  void putSessionFact(String factName, int factValue) {
         Lol.sGame.mSessionFacts.put(factName, factValue);
     }
 
@@ -3275,9 +3276,8 @@ public class Level extends ScreenAdapter {
      * @param defaultVal The value to return if the fact does not exist
      * @return The integer value corresponding to the last value stored
      */
-    public static int getGameFact(String factName, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
-        return prefs.getInteger(factName, defaultVal);
+    public int getGameFact(String factName, int defaultVal) {
+        return Util.getGameFact(factName, defaultVal);
     }
 
     /**
@@ -3287,10 +3287,8 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public static void putGameFact(String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
-        prefs.putInteger(factName, factValue);
-        prefs.flush();
+    public  void putGameFact(String factName, int factValue) {
+        Util.putGameFact(factName, factValue);
     }
 
     /**
@@ -3300,8 +3298,8 @@ public class Level extends ScreenAdapter {
      * @param actorName The name used to store the Actor
      * @return The last Actor stored with this name
      */
-    public static Actor getLevelActor(String actorName) {
-        Actor actor = Lol.sGame.mCurrentLevel.mLevelActors.get(actorName);
+    public  Actor getLevelActor(String actorName) {
+        Actor actor =mLevelActors.get(actorName);
         if (actor == null) {
             Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -3316,8 +3314,8 @@ public class Level extends ScreenAdapter {
      * @param actorName The name for the Actor being saved
      * @param actor     The Actor that is the fact being saved
      */
-    public static void putLevelActor(String actorName, Actor actor) {
-        Lol.sGame.mCurrentLevel.mLevelActors.put(actorName, actor);
+    public  void putLevelActor(String actorName, Actor actor) {
+        mLevelActors.put(actorName, actor);
     }
 
     /**
@@ -3330,10 +3328,10 @@ public class Level extends ScreenAdapter {
      * @param blue
      *            The amount of blueness (0-255)
      */
-    static public void setBackgroundColor(int red, int green, int blue) {
-        Lol.sGame.mCurrentLevel.mBackground.mColor.r = ((float) red) / 255;
-        Lol.sGame.mCurrentLevel.mBackground.mColor.g = ((float) green) / 255;
-        Lol.sGame.mCurrentLevel.mBackground.mColor.b = ((float) blue) / 255;
+     public void setBackgroundColor(int red, int green, int blue) {
+        mBackground.mColor.r = ((float) red) / 255;
+        mBackground.mColor.g = ((float) green) / 255;
+        mBackground.mColor.b = ((float) blue) / 255;
     }
 
     /**
@@ -3357,13 +3355,13 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a background layer
      */
-    static public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
+     public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
                                                     String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
                 * Level.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -3382,14 +3380,14 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a background layer
      */
-    static public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
+     public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
                                                         float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
                 * Level.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -3413,13 +3411,13 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a background layer
      */
-    static public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
+     public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
                                                   String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
                 xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -3430,7 +3428,7 @@ public class Level extends ScreenAdapter {
      * @parm x The x coordinate of the starting point of the particle system
      * @parm y The y coordinate of the starting point of the particle system
      */
-    public static Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
+    public  Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
         Effect e = new Effect();
 
         // create the particle effect system.
@@ -3442,7 +3440,7 @@ public class Level extends ScreenAdapter {
         pe.getEmitters().first().setPosition(x, y);
 
         // NB: we pretend effects are Actors, so that we can have them in front of or behind Actors
-        Lol.sGame.mCurrentLevel.addActor(e, zIndex);
+        addActor(e, zIndex);
 
         // start emitting particles
         pe.start();
@@ -3470,13 +3468,13 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a foreground layer
      */
-    static public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
+     public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
                                                     String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
                 * Level.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -3495,14 +3493,14 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a foreground layer
      */
-    static public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
+     public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
                                                         float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
                 * Level.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -3526,13 +3524,13 @@ public class Level extends ScreenAdapter {
      * @param height
      *            The height of the image being used as a foreground layer
      */
-    static public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
+     public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
                                                   String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
                 xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        Lol.sGame.mCurrentLevel.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -3541,12 +3539,12 @@ public class Level extends ScreenAdapter {
      *
      * @return The current LoseScene
      */
-    public static LoseScene getLoseScene() {
-        LoseScene scene = Lol.sGame.mCurrentLevel.mLoseScene;
+    public  LoseScene getLoseScene() {
+        LoseScene scene =mLoseScene;
         if (scene != null)
             return scene;
-        scene = new LoseScene();
-        Lol.sGame.mCurrentLevel.mLoseScene = scene;
+        scene = new LoseScene(this);
+        mLoseScene = scene;
         return scene;
     }
 
@@ -3556,14 +3554,14 @@ public class Level extends ScreenAdapter {
      *
      * @return The current PreScene
      */
-    public static PreScene getPreScene() {
-        PreScene scene = Lol.sGame.mCurrentLevel.mPreScene;
+    public  PreScene getPreScene() {
+        PreScene scene =mPreScene;
         if (scene != null)
             return scene;
-        scene = new PreScene();
+        scene = new PreScene(this);
         // immediately make the scene visible
         scene.mVisible = true;
-        Lol.sGame.mCurrentLevel.mPreScene = scene;
+        mPreScene = scene;
         // NB: disable the timer so the game doesn't start playing in the
         // background
         scene.suspendClock();
@@ -3576,12 +3574,12 @@ public class Level extends ScreenAdapter {
      *
      * @return The current PauseScene
      */
-    public static PauseScene getPauseScene() {
-        PauseScene scene = Lol.sGame.mCurrentLevel.mPauseScene;
+    public  PauseScene getPauseScene() {
+        PauseScene scene =mPauseScene;
         if (scene != null)
             return scene;
-        scene = new PauseScene();
-        Lol.sGame.mCurrentLevel.mPauseScene = scene;
+        scene = new PauseScene(this);
+        mPauseScene = scene;
         return scene;
     }
 
@@ -3591,12 +3589,12 @@ public class Level extends ScreenAdapter {
      *
      * @return The current WinScene
      */
-    public static WinScene getWinScene() {
-        WinScene scene = Lol.sGame.mCurrentLevel.mWinScene;
+    public  WinScene getWinScene() {
+        WinScene scene =mWinScene;
         if (scene != null)
             return scene;
-        scene = new WinScene();
-        Lol.sGame.mCurrentLevel.mWinScene = scene;
+        scene = new WinScene(this);
+        mWinScene = scene;
         return scene;
     }
 
@@ -3613,7 +3611,7 @@ public class Level extends ScreenAdapter {
     public Enemy makeEnemyAsBox(float x, float y, float width, float height, String imgName) {
         Enemy e = new Enemy(this, width, height, imgName);
         e.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        addActor(e, 0);
         return e;
     }
     /**
@@ -3631,7 +3629,7 @@ public class Level extends ScreenAdapter {
     public  Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Enemy e = new Enemy(this, width, height, imgName);
         e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        addActor(e, 0);
         return e;
     }
 
@@ -3649,7 +3647,7 @@ public class Level extends ScreenAdapter {
         float radius = Math.max(width, height);
         Enemy e = new Enemy(this, radius, radius, imgName);
         e.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
+        addActor(e, 0);
         return e;
     }
 
@@ -3667,7 +3665,7 @@ public class Level extends ScreenAdapter {
         Destination d = new Destination(this, width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        addActor(d, 0);
         return d;
     }
 
@@ -3687,7 +3685,7 @@ public class Level extends ScreenAdapter {
         Destination d = new Destination(this, width, height, imgName);
         d.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        addActor(d, 0);
         return d;
     }
 
@@ -3706,7 +3704,7 @@ public class Level extends ScreenAdapter {
         Destination d = new Destination(this, radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(d, 0);
+        addActor(d, 0);
         return d;
     }
 
@@ -3723,7 +3721,7 @@ public class Level extends ScreenAdapter {
     public  Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        addActor(o, 0);
         return o;
     }
 
@@ -3742,7 +3740,7 @@ public class Level extends ScreenAdapter {
     public  Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        addActor(o, 0);
         return o;
     }
 
@@ -3760,7 +3758,7 @@ public class Level extends ScreenAdapter {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
+        addActor(o, 0);
         return o;
     }
 
@@ -3779,7 +3777,7 @@ public class Level extends ScreenAdapter {
         Goodie g = new Goodie(this, width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        addActor(g, 0);
         return g;
     }
 
@@ -3799,7 +3797,7 @@ public class Level extends ScreenAdapter {
         Goodie g = new Goodie(this, width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        addActor(g, 0);
         return g;
     }
 
@@ -3819,7 +3817,7 @@ public class Level extends ScreenAdapter {
         Goodie g = new Goodie(this, width, height, imgName);
         g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
+        addActor(g, 0);
         return g;
     }
 
@@ -3836,7 +3834,7 @@ public class Level extends ScreenAdapter {
     public Hero makeHeroAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(this, width, height, imgName);
         h.setBoxPhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        addActor(h, 0);
         return h;
     }
 
@@ -3854,7 +3852,7 @@ public class Level extends ScreenAdapter {
         float radius = Math.max(width, height);
         Hero h = new Hero(this, width, height, imgName);
         h.setCirclePhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        addActor(h, 0);
         return h;
     }
 
@@ -3873,7 +3871,7 @@ public class Level extends ScreenAdapter {
     public  Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Hero h = new Hero(this, width, height, imgName);
         h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
+        addActor(h, 0);
         return h;
     }
 
@@ -3884,7 +3882,7 @@ public class Level extends ScreenAdapter {
      * @param distance Maximum distance from the hero that a projectile can travel
      */
     public  void setProjectileRange(float distance) {
-        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+        for (Projectile p :mProjectilePool.mPool)
             p.mRange = distance;
     }
 
@@ -3893,7 +3891,7 @@ public class Level extends ScreenAdapter {
      * they will be (more or less) immune to gravitational forces.
      */
     public  void setProjectileGravityOn() {
-        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+        for (Projectile p :mProjectilePool.mPool)
             p.mBody.setGravityScale(1);
     }
 
@@ -3905,9 +3903,9 @@ public class Level extends ScreenAdapter {
      * TODO: this is broken now that we removed Animatable images
      */
     public  void setProjectileImageSource(String imgName) {
-        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+        for (Projectile p :mProjectilePool.mPool)
             p.mAnimator.updateImage(imgName);
-        Lol.sGame.mCurrentLevel.mProjectilePool.mRandomizeImages = true;
+        mProjectilePool.mRandomizeImages = true;
     }
 
     /**
@@ -3917,7 +3915,7 @@ public class Level extends ScreenAdapter {
      * @param factor The value to multiply against the projectile speed.
      */
     public  void setProjectileVectorDampeningFactor(float factor) {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mDirectionalDamp = factor;
+        mProjectilePool.mDirectionalDamp = factor;
     }
 
     /**
@@ -3925,7 +3923,7 @@ public class Level extends ScreenAdapter {
      * than disappearing when they collide with other actors
      */
     public  void enableCollisionsForProjectiles() {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mSensorProjectiles = false;
+        mProjectilePool.mSensorProjectiles = false;
     }
 
     /**
@@ -3935,8 +3933,8 @@ public class Level extends ScreenAdapter {
      * @param velocity The magnitude of the velocity for projectiles
      */
     public  void setFixedVectorThrowVelocityForProjectiles(float velocity) {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mEnableFixedVectorVelocity = true;
-        Lol.sGame.mCurrentLevel.mProjectilePool.mFixedVectorVelocity = velocity;
+        mProjectilePool.mEnableFixedVectorVelocity = true;
+        mProjectilePool.mFixedVectorVelocity = velocity;
     }
 
     /**
@@ -3944,7 +3942,7 @@ public class Level extends ScreenAdapter {
      * be rotated to face in their direction or movement
      */
     public  void setRotateVectorThrowForProjectiles() {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mRotateVectorThrow = true;
+        mProjectilePool.mRotateVectorThrow = true;
     }
 
     /**
@@ -3952,7 +3950,7 @@ public class Level extends ScreenAdapter {
      * screen
      */
     public  void setCollisionOkForProjectiles() {
-        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+        for (Projectile p :mProjectilePool.mPool)
             p.mDisappearOnCollide = false;
     }
 
@@ -3971,7 +3969,7 @@ public class Level extends ScreenAdapter {
      */
     public void configureProjectiles(int size, float width, float height, String imgName, int strength, int zIndex,
                                             boolean isCircle) {
-        Lol.sGame.mCurrentLevel.mProjectilePool = new ProjectilePool(this, size, width, height, imgName, strength, zIndex,
+        mProjectilePool = new ProjectilePool(this, size, width, height, imgName, strength, zIndex,
                 isCircle);
     }
 
@@ -3981,7 +3979,7 @@ public class Level extends ScreenAdapter {
      * @param number How many projectiles are available
      */
     public  void setNumberOfProjectiles(int number) {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining = number;
+        mProjectilePool.mProjectilesRemaining = number;
     }
 
     /**
@@ -3990,7 +3988,7 @@ public class Level extends ScreenAdapter {
      * @param soundName Name of the sound file to play
      */
     public  void setThrowSound(String soundName) {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mThrowSound = Media.getSound(soundName);
+        mProjectilePool.mThrowSound = Media.getSound(soundName);
     }
 
     /**
@@ -3999,7 +3997,7 @@ public class Level extends ScreenAdapter {
      * @param soundName the name of the sound file to play
      */
     public  void setProjectileDisappearSound(String soundName) {
-        Lol.sGame.mCurrentLevel.mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
+        mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
     }
 
     /**
@@ -4008,7 +4006,7 @@ public class Level extends ScreenAdapter {
      * @param a The animation object to use for each projectile that is thrown
      */
     public  void setProjectileAnimation(Animation a) {
-        for (Projectile p : Lol.sGame.mCurrentLevel.mProjectilePool.mPool)
+        for (Projectile p :mProjectilePool.mPool)
             p.setDefaultAnimation(a);
     }
 
@@ -4062,5 +4060,122 @@ public class Level extends ScreenAdapter {
         // the file
         Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
         s.parse(this, svgName);
+    }
+
+    /**
+     * Use this to manage the state of Mute
+     */
+    public  void toggleMute() {
+        // volume is either 1 or 0
+        if (getGameFact("volume", 1) == 1) {
+            // set volume to 0, set image to 'unmute'
+            putGameFact("volume", 0);
+        } else {
+            // set volume to 1, set image to 'mute'
+            putGameFact("volume", 1);
+        }
+        // update all music
+        Media.resetMusicVolume();
+    }
+
+    /**
+     * Use this to determine if the game is muted or not. True corresponds to
+     * not muted, false corresponds to muted.
+     */
+    public  boolean getVolume() {
+        return getGameFact("volume", 1) == 1;
+    }
+
+    /**
+     * Draw a picture on the current level
+     *
+     * Note: the order in which this is called relative to other actors will
+     * determine whether they go under or over this picture.
+     *
+     * @param x       X coordinate of bottom left corner
+     * @param y       Y coordinate of bottom left corner
+     * @param width   Width of the picture
+     * @param height  Height of this picture
+     * @param imgName Name of the picture to display
+     * @param zIndex  The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     *                and 2. By default, everything goes to plane 0
+     */
+    public  void drawPicture(final float x, final float y, final float width, final float height,
+                                   final String imgName, int zIndex) {
+        addActor(Util.makePicture(x, y, width, height, imgName), zIndex);
+    }
+
+    /**
+     * Draw some text on the current level
+     *
+     * Note: the order in which this is called relative to other actors will
+     * determine whether they go under or over this text.
+     *
+     * @param x        X coordinate of bottom left corner of the text
+     * @param y        Y coordinate of bottom left corner of the text
+     * @param text     The text to display
+     * @param red      The red component of the color (0-255)
+     * @param green    The green component of the color (0-255)
+     * @param blue     The blue component of the color (0-255)
+     * @param fontName The name of the font file to use
+     * @param size     The font size to use
+     * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     *                 and 2. By default, everything goes to plane 0
+     */
+    public  void drawText(final float x, final float y, final String text, final int red, final int green,
+                                final int blue, String fontName, int size, int zIndex) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+        Renderable r = new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+                Util.glyphLayout.setText(bf, text);
+                bf.draw(sb, text, x, y + Util.glyphLayout.height);
+                bf.getData().setScale(1);
+            }
+        };
+        addActor(r, zIndex);
+    }
+
+    /**
+     * Draw some text on the current level, centered on a point.
+     *
+     * Note: the order in which this is called relative to other actors will
+     * determine whether they go under or over this text.
+     *
+     * @param centerX  X coordinate of center of the text
+     * @param centerY  Y coordinate of center of the text
+     * @param text     The text to display
+     * @param red      The red component of the color (0-255)
+     * @param green    The green component of the color (0-255)
+     * @param blue     The blue component of the color (0-255)
+     * @param fontName The name of the font file to use
+     * @param size     The font size to use
+     * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
+     *                 and 2. By default, everything goes to plane 0
+     */
+     public void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
+                                        final int green, final int blue, String fontName, int size, int zIndex) {
+        final BitmapFont bf = Media.getFont(fontName, size);
+
+        // figure out the image dimensions
+        bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+        Util.glyphLayout.setText(bf, text);
+        final float w = Util.glyphLayout.width;
+        final float h = Util.glyphLayout.height;
+        bf.getData().setScale(1);
+
+        // describe how to render it
+        Renderable r = new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+                bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
+                bf.getData().setScale(1);
+            }
+        };
+        addActor(r, zIndex);
     }
 }

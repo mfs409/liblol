@@ -89,7 +89,7 @@ public class Enemy extends Actor {
      */
     protected Enemy(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
-        Lol.sGame.mCurrentLevel.mScore.mEnemiesCreated++;
+        mLevel.mScore.mEnemiesCreated++;
     }
 
     /**
@@ -184,7 +184,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            Lol.sGame.mCurrentLevel.mScore.onDefeatEnemy();
+            mLevel.mScore.onDefeatEnemy();
 
         // handle defeat callbacks
         if (mDefeatCallback != null)

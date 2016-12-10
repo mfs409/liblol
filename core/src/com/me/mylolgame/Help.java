@@ -49,31 +49,31 @@ public class Help implements ScreenManager {
         // different entities in the game
         if (which == 1) {
             // set up a basic screen
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
-            Level.setBackgroundColor(255, 255, 255);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
+            level.setBackgroundColor(255, 255, 255);
 
             // put some information on the screen
-            Util.drawText(5, 26, "The levels of this game\ndemonstrate LOL features", 0, 0, 0, "arial.ttf", 40, 0);
+            level.drawText(5, 26, "The levels of this game\ndemonstrate LOL features", 0, 0, 0, "arial.ttf", 40, 0);
 
             // draw a legend, using obstacles and text
             level.makeObstacleAsBox(5, 20, 3, 3, "greenball.png");
-            Util.drawText(9, 21, "You control the hero", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 21, "You control the hero", 0, 0, 0, "arial.ttf", 24, 0);
 
             level.makeObstacleAsBox(5, 16, 3, 3, "blueball.png");
-            Util.drawText(9, 17, "Collect these goodies", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 17, "Collect these goodies", 0, 0, 0, "arial.ttf", 24, 0);
 
             level.makeObstacleAsBox(5, 12, 3, 3, "redball.png");
-            Util.drawText(9, 13, "Avoid or defeat enemies", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 13, "Avoid or defeat enemies", 0, 0, 0, "arial.ttf", 24, 0);
 
             level.makeObstacleAsBox(5, 8, 3, 3, "mustardball.png");
-            Util.drawText(9, 9, "Reach the destination", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 9, "Reach the destination", 0, 0, 0, "arial.ttf", 24, 0);
 
             level.makeObstacleAsBox(5, 4, 3, 3, "purpleball.png");
-            Util.drawText(9, 5, "These are walls", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 5, "These are walls", 0, 0, 0, "arial.ttf", 24, 0);
 
             level.makeObstacleAsBox(5, 0, 3, 3, "greyball.png");
-            Util.drawText(9, 1, "Throw projectiles", 0, 0, 0, "arial.ttf", 24, 0);
+            level.drawText(9, 1, "Throw projectiles", 0, 0, 0, "arial.ttf", 24, 0);
 
             // set up a control to go to the next level on screen press
             level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
@@ -86,12 +86,12 @@ public class Help implements ScreenManager {
         // Our second help scene is just here to show that it is possible to
         // have more than one help scene.
         else if (which == 2) {
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
-            Level.setBackgroundColor(255, 255, 0);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
+            level.setBackgroundColor(255, 255, 0);
 
             // for now, just print a message
-            Util.drawText(10, 15, "Be sure to read the code\n" + "while you play, so you can see\n"
+            level.drawText(10, 15, "Be sure to read the code\n" + "while you play, so you can see\n"
                     + "how everything works", 55, 110, 165, "arial.ttf", 14, 0);
 
             // set up a control to go to the splash screen on screen press

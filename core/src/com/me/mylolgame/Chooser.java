@@ -55,7 +55,7 @@ public class Chooser implements ScreenManager {
      */
     static void drawLevelButton(Level level, float x, float y, float width, float height, final int whichLevel) {
         // figure out the last unlocked level
-        int unlocked = Level.getGameFact("unlocked", 1);
+        int unlocked = level.getGameFact("unlocked", 1);
 
         // for each button, start by drawing an obstacle
         Obstacle tile = level.makeObstacleAsBox(x, y, width, height, "leveltile.png");
@@ -69,11 +69,11 @@ public class Chooser implements ScreenManager {
                     Lol.doLevel(whichLevel);
                 }
             });
-            Util.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, 255, 255, 255, "arial.ttf", 56, 0);
+            level.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, 255, 255, 255, "arial.ttf", 56, 0);
         }
         // otherwise, just print an X
         else {
-            Util.drawTextCentered(x + width / 2, y + height / 2, "X", 255, 255, 255, "arial.ttf", 56, 0);
+            level.drawTextCentered(x + width / 2, y + height / 2, "X", 255, 255, 255, "arial.ttf", 56, 0);
         }
     }
 
@@ -141,12 +141,12 @@ public class Chooser implements ScreenManager {
         // we draw each button with its own line of code, and we don't use any
         // variables.
         if (which == 1) {
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
 
             // set up background and music
-            Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
-            Level.setMusic("tune.ogg");
+            level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
+            level.setMusic("tune.ogg");
 
             // for each button, draw an obstacle with a touchCallback, and then
             // put text on top of it. Our buttons are 5x5, we have 1.5 meters
@@ -182,12 +182,12 @@ public class Chooser implements ScreenManager {
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
         else if (which == 2) {
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
 
             // set up background and music
-            Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
-            Level.setMusic("tune.ogg");
+            level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
+            level.setMusic("tune.ogg");
 
             // let's use a loop to do each row
             float x = 8.5f;
@@ -223,12 +223,12 @@ public class Chooser implements ScreenManager {
         // NB: now we use a nested pair of loops, and we can do three rows in
         // just a few more lines than one row.
         else if (which == 3) {
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
 
             // set up background and music
-            Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
-            Level.setMusic("tune.ogg");
+            level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
+            level.setMusic("tune.ogg");
 
             // let's use a loop to do each row and each column
             float y = 16;
@@ -256,10 +256,10 @@ public class Chooser implements ScreenManager {
         // screen 6: show levels 75-->90
         else if (which < 7) {
             // set-up
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
-            Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
-            Level.setMusic("tune.ogg");
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
+            level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
+            level.setMusic("tune.ogg");
 
             // levels
             float y = 16;
@@ -283,12 +283,12 @@ public class Chooser implements ScreenManager {
         // The final case is the 7th screen, which just shows levels 91 and 92.
         // We'll just do it by hand.
         else if (which == 7) {
-            Level.configureCamera(48, 32);
-            Level.configureGravity(0, 0);
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
 
             // set up background and music
-            Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
-            Level.setMusic("tune.ogg");
+            level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
+            level.setMusic("tune.ogg");
 
             // we have 92 levels, so just draw a few buttons for now...
             drawLevelButton(level, 8.5f, 16, 5, 5, 91);

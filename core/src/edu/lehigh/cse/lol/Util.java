@@ -28,6 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -45,7 +46,7 @@ public class Util {
     /**
      * Use this for determining bounds of text boxes
      */
-    static private GlyphLayout glyphLayout = new GlyphLayout();
+    static GlyphLayout glyphLayout = new GlyphLayout();
 
     /**
      * A random number generator... We provide this so that new game developers
@@ -160,99 +161,6 @@ public class Util {
 
 
     /**
-     * Draw a picture on the current level
-     *
-     * Note: the order in which this is called relative to other actors will
-     * determine whether they go under or over this picture.
-     *
-     * @param x       X coordinate of bottom left corner
-     * @param y       Y coordinate of bottom left corner
-     * @param width   Width of the picture
-     * @param height  Height of this picture
-     * @param imgName Name of the picture to display
-     * @param zIndex  The z index of the image. There are 5 planes: -2, -2, 0, 1,
-     *                and 2. By default, everything goes to plane 0
-     */
-    public static void drawPicture(final float x, final float y, final float width, final float height,
-                                   final String imgName, int zIndex) {
-        Lol.sGame.mCurrentLevel.addActor(Util.makePicture(x, y, width, height, imgName), zIndex);
-    }
-
-    /**
-     * Draw some text on the current level
-     *
-     * Note: the order in which this is called relative to other actors will
-     * determine whether they go under or over this text.
-     *
-     * @param x        X coordinate of bottom left corner of the text
-     * @param y        Y coordinate of bottom left corner of the text
-     * @param text     The text to display
-     * @param red      The red component of the color (0-255)
-     * @param green    The green component of the color (0-255)
-     * @param blue     The blue component of the color (0-255)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use
-     * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
-     *                 and 2. By default, everything goes to plane 0
-     */
-    public static void drawText(final float x, final float y, final String text, final int red, final int green,
-                                final int blue, String fontName, int size, int zIndex) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-        Renderable r = new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
-                glyphLayout.setText(bf, text);
-                bf.draw(sb, text, x, y + glyphLayout.height);
-                bf.getData().setScale(1);
-            }
-        };
-        Lol.sGame.mCurrentLevel.addActor(r, zIndex);
-    }
-
-    /**
-     * Draw some text on the current level, centered on a point.
-     *
-     * Note: the order in which this is called relative to other actors will
-     * determine whether they go under or over this text.
-     *
-     * @param centerX  X coordinate of center of the text
-     * @param centerY  Y coordinate of center of the text
-     * @param text     The text to display
-     * @param red      The red component of the color (0-255)
-     * @param green    The green component of the color (0-255)
-     * @param blue     The blue component of the color (0-255)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use
-     * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
-     *                 and 2. By default, everything goes to plane 0
-     */
-    public static void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
-                                        final int green, final int blue, String fontName, int size, int zIndex) {
-        final BitmapFont bf = Media.getFont(fontName, size);
-
-        // figure out the image dimensions
-        bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
-        glyphLayout.setText(bf, text);
-        final float w = glyphLayout.width;
-        final float h = glyphLayout.height;
-        bf.getData().setScale(1);
-
-        // describe how to render it
-        Renderable r = new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
-                bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
-                bf.getData().setScale(1);
-            }
-        };
-        Lol.sGame.mCurrentLevel.addActor(r, zIndex);
-    }
-
-    /**
      * A helper method to draw text nicely. In GDX, we draw everything by giving
      * the bottom left corner, except text, which takes the top left corner.
      * This function handles the conversion, so that we can use bottom-left.
@@ -266,6 +174,33 @@ public class Util {
     static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
         glyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + glyphLayout.height);
+    }
+
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The value to return if the fact does not exist
+     * @return The integer value corresponding to the last value stored
+     */
+     static int getGameFact(String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        return prefs.getInteger(factName, defaultVal);
+    }
+
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+      static void putGameFact(String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        prefs.putInteger(factName, factValue);
+        prefs.flush();
     }
 
 }

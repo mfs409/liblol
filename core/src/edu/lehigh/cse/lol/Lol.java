@@ -64,10 +64,7 @@ public abstract class Lol extends Game {
      * Store string/integer pairs that getLoseScene reset whenever we restart the program
      */
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
-    /**
-     * The current level being shown
-     */
-    public Level mCurrentLevel;
+
     /**
      * The default screen width (note: it will be stretched appropriately on a
      * phone)
@@ -208,9 +205,9 @@ public abstract class Lol extends Game {
         for (int i = 0; i < 5; ++i)
             sGame.mModeStates[i] = 1;
         sGame.mMode = SPLASH;
-        Lol.sGame.mCurrentLevel = new Level();
-        sGame.mSplash.display(0, Lol.sGame.mCurrentLevel);
-        sGame.setScreen(sGame.mCurrentLevel);
+        Level l = new Level();
+        sGame.mSplash.display(0, l);
+        sGame.setScreen(l);
     }
 
     /**
@@ -234,9 +231,9 @@ public abstract class Lol extends Game {
         // it, and show it.
         sGame.mMode = CHOOSER;
         sGame.mModeStates[CHOOSER] = whichChooser;
-        Lol.sGame.mCurrentLevel = new Level();
-        sGame.mChooser.display(whichChooser, Lol.sGame.mCurrentLevel);
-        sGame.setScreen(sGame.mCurrentLevel);
+        Level l = new Level();
+        sGame.mChooser.display(whichChooser, l);
+        sGame.setScreen(l);
     }
 
     /**
@@ -247,9 +244,9 @@ public abstract class Lol extends Game {
     public static void doLevel(int which) {
         sGame.mModeStates[PLAY] = which;
         sGame.mMode = PLAY;
-        Lol.sGame.mCurrentLevel = new Level();
-        sGame.mLevels.display(which, Lol.sGame.mCurrentLevel);
-        sGame.setScreen(sGame.mCurrentLevel);
+        Level l = new Level();
+        sGame.mLevels.display(which, l);
+        sGame.setScreen(l);
     }
 
     /*
@@ -264,9 +261,9 @@ public abstract class Lol extends Game {
     public static void doHelp(int which) {
         sGame.mModeStates[HELP] = which;
         sGame.mMode = HELP;
-        Lol.sGame.mCurrentLevel = new Level();
-        sGame.mHelp.display(which, Lol.sGame.mCurrentLevel);
-        sGame.setScreen(sGame.mCurrentLevel);
+        Level l = new Level();
+        sGame.mHelp.display(which, l);
+        sGame.setScreen(l);
     }
 
     /**
@@ -277,9 +274,9 @@ public abstract class Lol extends Game {
     public static void doStore(int which) {
         sGame.mModeStates[STORE] = which;
         sGame.mMode = STORE;
-        Lol.sGame.mCurrentLevel = new Level();
-        sGame.mStore.display(which, Lol.sGame.mCurrentLevel);
-        sGame.setScreen(sGame.mCurrentLevel);
+        Level l = new Level();
+        sGame.mStore.display(which, l);
+        sGame.setScreen(l);
     }
 
     /**
@@ -294,29 +291,6 @@ public abstract class Lol extends Game {
      * PUBLIC INTERFACE
      */
 
-    /**
-     * Use this to manage the state of Mute
-     */
-    public static void toggleMute() {
-        // volume is either 1 or 0
-        if (Level.getGameFact("volume", 1) == 1) {
-            // set volume to 0, set image to 'unmute'
-            Level.putGameFact("volume", 0);
-        } else {
-            // set volume to 1, set image to 'mute'
-            Level.putGameFact("volume", 1);
-        }
-        // update all music
-        Media.resetMusicVolume();
-    }
-
-    /**
-     * Use this to determine if the game is muted or not. True corresponds to
-     * not muted, false corresponds to muted.
-     */
-    public static boolean getVolume() {
-        return Level.getGameFact("volume", 1) == 1;
-    }
 
     /**
      * Report whether all levels should be treated as unlocked. This is useful
@@ -399,9 +373,10 @@ public abstract class Lol extends Game {
         mMedia = new Media();
         loadResources();
 
-        // configureGravity the volume
-        if (Level.getGameFact("volume", 1) == 1)
-            Level.putGameFact("volume", 1);
+        // configure the volume
+        Level l = new Level();
+        if (Util.getGameFact("volume", 1) == 1)
+            Util.putGameFact("volume", 1);
 
         // show the splash screen
         doSplash();

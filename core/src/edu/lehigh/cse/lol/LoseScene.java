@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -44,11 +44,10 @@ public class LoseScene extends QuickScene {
     /**
      * Construct by setting the default lose text
      */
-    public LoseScene() {
+    public LoseScene(Level level) {
+        super(level);
         mLoseText = Lol.sGame.mDefaultLoseText;
     }
-
-
 
     /**
      * When the level is lost, we call this, which will show the LoseScene
@@ -67,7 +66,7 @@ public class LoseScene extends QuickScene {
         // The default text to display can change at the last second, so we
         // don't compute it until right here... also, play music
         if (mSound != null)
-            mSound.play(Level.getGameFact("volume", 1));
+            mSound.play(mLevel.getGameFact("volume", 1));
         addText(mLoseText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
     }
 
@@ -82,10 +81,7 @@ public class LoseScene extends QuickScene {
         mVisible = false;
 
         // we turn off music here, so that music plays during the PostScene
-        Lol.sGame.mCurrentLevel.stopMusic();
-
-        // remove the previous level
-        Lol.sGame.mCurrentLevel = null;
+        mLevel.stopMusic();
 
         // repeat the level
         Lol.doLevel(Lol.sGame.mModeStates[Lol.PLAY]);

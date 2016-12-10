@@ -29,7 +29,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -38,7 +37,7 @@ import edu.lehigh.cse.lol.internals.CollisionCallback;
 
 /**
  * Obstacles are usually walls, except they can move, and can be used to run all
- * sorts of abritrary code that changes the game, or the behavior of the things
+ * sorts of arbitrary code that changes the game, or the behavior of the things
  * that collide with them. It's best to think of them as being both "a wall" and
  * "a catch-all for any behavior that we don't have anywhere else".
  */
@@ -106,7 +105,7 @@ public class Obstacle extends Actor {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play(Level.getGameFact("volume", 1));
+        mCollideSound.play(mLevel.getGameFact("volume", 1));
     }
 
     /**
@@ -228,7 +227,7 @@ public class Obstacle extends Actor {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                        match &= counts[i] <= mLevel.mScore.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
@@ -280,7 +279,7 @@ public class Obstacle extends Actor {
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                    match &= enemyCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
@@ -326,7 +325,7 @@ public class Obstacle extends Actor {
             public void go(Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                    match &= projectileCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     callback.mAttachedActor = Obstacle.this;
                     callback.mCollideActor = ps;
