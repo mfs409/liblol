@@ -70,8 +70,8 @@ public class Background {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(level.mBgCam
                     .calculateParallaxMatrix(pl.mXSpeed
-                            * Level.PIXEL_METER_RATIO, pl.mYSpeed
-                            * Level.PIXEL_METER_RATIO));
+                            * Lol.PIXEL_METER_RATIO, pl.mYSpeed
+                            * Lol.PIXEL_METER_RATIO));
             sb.begin();
             // handle auto layers
             if (pl.mAutoX) {
@@ -101,7 +101,7 @@ public class Background {
             else if (pl.mXRepeat) {
                 // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
-                float startX = x * Level.PIXEL_METER_RATIO * pl.mXSpeed;
+                float startX = x * Lol.PIXEL_METER_RATIO * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
@@ -124,7 +124,7 @@ public class Background {
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
                 // getLoseScene the camera center, translate, and scale
-                float startY = y * Level.PIXEL_METER_RATIO * pl.mYSpeed;
+                float startY = y * Lol.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + level.mBgCam.zoom)
                         * Lol.sGame.mHeight;

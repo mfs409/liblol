@@ -262,9 +262,9 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mWidth / Level.PIXEL_METER_RATIO)
+        if (width < Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mHeight / Level.PIXEL_METER_RATIO)
+        if (height < Lol.sGame.mHeight / Lol.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game height is less than 1/10 of the screen height");
     }
 
@@ -289,13 +289,13 @@ public class Level extends ScreenAdapter {
         mLevelActors = new TreeMap<>();
 
         // save the camera bounds
-        setCamera((int) (Lol.sGame.mWidth / PIXEL_METER_RATIO), (int) (Lol.sGame.mHeight / PIXEL_METER_RATIO));
+        setCamera((int) (Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO), (int) (Lol.sGame.mHeight / Lol.PIXEL_METER_RATIO));
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Level.PIXEL_METER_RATIO, Lol.sGame.mHeight
-                / Level.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mWidth / Level.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
-                / Level.PIXEL_METER_RATIO / 2, 0);
+        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO, Lol.sGame.mHeight
+                / Lol.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
+                / Lol.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
@@ -545,19 +545,19 @@ public class Level extends ScreenAdapter {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mWidth * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mHeight * mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -1556,14 +1556,6 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * This ratio means that every 20 pixels on the screen will correspond to a
-     * meter. Note that 'pixels' are defined in terms of what a programmer's
-     * configuration() says, not the actual screen size, because the
-     * configuration gets scaled to screen dimensions. The default is 960x640.
-     */
-    static final float PIXEL_METER_RATIO = 20;
-
-    /**
      * When a hero collides with a "sticky" obstacle, this is the code we run to
      * figure out what to do
      *
@@ -1728,15 +1720,15 @@ public class Level extends ScreenAdapter {
             yGravity *= mMultiplier;
 
             // ensure x is within the -GravityMax.x : GravityMax.x range
-            xGravity = (xGravity > Level.PIXEL_METER_RATIO * mGravityMax.x) ? Level.PIXEL_METER_RATIO * mGravityMax.x
+            xGravity = (xGravity > Lol.PIXEL_METER_RATIO * mGravityMax.x) ? Lol.PIXEL_METER_RATIO * mGravityMax.x
                     : xGravity;
-            xGravity = (xGravity < Level.PIXEL_METER_RATIO * -mGravityMax.x) ? Level.PIXEL_METER_RATIO * -mGravityMax.x
+            xGravity = (xGravity < Lol.PIXEL_METER_RATIO * -mGravityMax.x) ? Lol.PIXEL_METER_RATIO * -mGravityMax.x
                     : xGravity;
 
             // ensure y is within the -GravityMax.y : GravityMax.y range
-            yGravity = (yGravity > Level.PIXEL_METER_RATIO * mGravityMax.y) ? Level.PIXEL_METER_RATIO * mGravityMax.y
+            yGravity = (yGravity > Lol.PIXEL_METER_RATIO * mGravityMax.y) ? Lol.PIXEL_METER_RATIO * mGravityMax.y
                     : yGravity;
-            yGravity = (yGravity < Level.PIXEL_METER_RATIO * -mGravityMax.y) ? Level.PIXEL_METER_RATIO * -mGravityMax.y
+            yGravity = (yGravity < Lol.PIXEL_METER_RATIO * -mGravityMax.y) ? Lol.PIXEL_METER_RATIO * -mGravityMax.y
                     : yGravity;
 
             // If we're in 'velocity' mode, apply the accelerometer reading to each
@@ -2876,23 +2868,23 @@ public class Level extends ScreenAdapter {
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
                 if (x >mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
-                        / Level.PIXEL_METER_RATIO / 2)
+                        / Lol.PIXEL_METER_RATIO / 2)
                     x =mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
-                            / Level.PIXEL_METER_RATIO / 2;
+                            / Lol.PIXEL_METER_RATIO / 2;
                 if (y >mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
-                        / Level.PIXEL_METER_RATIO / 2)
+                        / Lol.PIXEL_METER_RATIO / 2)
                     y =mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
-                            / Level.PIXEL_METER_RATIO / 2;
+                            / Lol.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
                 // values
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight *mGameCam.zoom / Level.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mWidth *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
                 mGameCam.position.set(x, y, 0);
@@ -3361,7 +3353,7 @@ public class Level extends ScreenAdapter {
                                                     String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
-                * Level.PIXEL_METER_RATIO, width, height);
+                * Lol.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         mBackground.mLayers.add(pl);
     }
@@ -3386,7 +3378,7 @@ public class Level extends ScreenAdapter {
                                                         float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
-                * Level.PIXEL_METER_RATIO, width, height);
+                * Lol.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mBackground.mLayers.add(pl);
@@ -3417,7 +3409,7 @@ public class Level extends ScreenAdapter {
                                                   String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
-                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
+                xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mBackground.mLayers.add(pl);
     }
@@ -3474,7 +3466,7 @@ public class Level extends ScreenAdapter {
                                                     String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
-                * Level.PIXEL_METER_RATIO, width, height);
+                * Lol.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         mForeground.mLayers.add(pl);
     }
@@ -3499,7 +3491,7 @@ public class Level extends ScreenAdapter {
                                                         float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
-                * Level.PIXEL_METER_RATIO, width, height);
+                * Lol.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mForeground.mLayers.add(pl);
@@ -3530,7 +3522,7 @@ public class Level extends ScreenAdapter {
                                                   String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
-                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
+                xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mForeground.mLayers.add(pl);
     }
@@ -4131,7 +4123,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
                 Util.glyphLayout.setText(bf, text);
                 bf.draw(sb, text, x, y + Util.glyphLayout.height);
                 bf.getData().setScale(1);
@@ -4162,7 +4154,7 @@ public class Level extends ScreenAdapter {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         // figure out the image dimensions
-        bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
         Util.glyphLayout.setText(bf, text);
         final float w = Util.glyphLayout.width;
         final float h = Util.glyphLayout.height;
@@ -4173,7 +4165,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Level.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.getData().setScale(1);
             }
