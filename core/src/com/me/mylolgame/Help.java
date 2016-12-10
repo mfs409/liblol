@@ -78,7 +78,7 @@ public class Help implements ScreenManager {
             Util.drawText(9, 1, "Throw projectiles", 0, 0, 0, "arial.ttf", 24, 0);
 
             // set up a control to go to the next level on screen press
-            Control.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
+            level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     Lol.doHelp(2);
                 }
@@ -97,7 +97,7 @@ public class Help implements ScreenManager {
                     + "how everything works", 55, 110, 165, "arial.ttf", 14, 0);
 
             // set up a control to go to the splash screen on screen press
-            Control.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
+            level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     Lol.doSplash();
                 }

@@ -64,7 +64,7 @@ public class Splash implements ScreenManager {
         // "doLevel(1)", but check the configuration in MyLolGame... there's a
         // field you should change if you don't want the 'back' button to go
         // from that level to the chooser.
-        Control.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
+        level.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
             public void onEvent() {
                 Lol.doChooser(1);
             }
@@ -72,14 +72,14 @@ public class Splash implements ScreenManager {
 
         // This is the Help button... it switches to the first screen of the
         // help system
-        Control.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
+        level.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
             public void onEvent() {
                 Lol.doHelp(1);
             }
         });
 
         // This is the Quit button
-        Control.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
+        level.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
             public void onEvent() {
                 Lol.doQuit();
             }
