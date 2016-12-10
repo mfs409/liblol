@@ -1805,7 +1805,7 @@ public class Level extends ScreenAdapter {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining > 0) {
-                    drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
+                    Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining, mFont, sb);
                 } else {
                     LoseScene.get().setDefaultText(text);
                     Lol.sGame.mCurrentLevel.mScore.endLevel(false);
@@ -1834,7 +1834,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
+                Util.drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -1877,7 +1877,7 @@ public class Level extends ScreenAdapter {
                 Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining > 0)
                     // get elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining, mFont, sb);
+                    Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mWinCountRemaining, mFont, sb);
                 else
                     Lol.sGame.mCurrentLevel.mScore.endLevel(true);
             }
@@ -1910,7 +1910,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix,
+                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[type - 1] + suffix,
                         mFont, sb);
             }
         };
@@ -1955,7 +1955,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated + suffix, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -1992,7 +1992,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2033,7 +2033,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2060,7 +2060,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 Lol.sGame.mCurrentLevel.mScore.mDistance = (int) actor.getXPosition();
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mDistance + text, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mScore.mDistance + text, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2085,7 +2085,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text,
+                Util.drawTextTransposed(x, y, "" + Lol.sGame.mCurrentLevel.mProjectilePool.mProjectilesRemaining + text,
                         mFont, sb);
             }
         };
@@ -2113,7 +2113,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
+                Util.drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2140,7 +2140,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
+                Util.drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2167,7 +2167,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
+                Util.drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);

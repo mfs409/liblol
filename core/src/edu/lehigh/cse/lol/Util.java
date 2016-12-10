@@ -278,4 +278,21 @@ public class Util {
         };
         Lol.sGame.mCurrentLevel.addActor(r, zIndex);
     }
+
+    /**
+     * A helper method to draw text nicely. In GDX, we draw everything by giving
+     * the bottom left corner, except text, which takes the top left corner.
+     * This function handles the conversion, so that we can use bottom-left.
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param message The text to display
+     * @param bf      The BitmapFont object to use for the text's font
+     * @param sb      The SpriteBatch used to render the text
+     */
+    static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+        glyphLayout.setText(bf, message);
+        bf.draw(sb, message, x, y + glyphLayout.height);
+    }
+
 }
