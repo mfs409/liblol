@@ -68,6 +68,7 @@ import java.util.TreeMap;
 import edu.lehigh.cse.lol.internals.GestureAction;
 import edu.lehigh.cse.lol.internals.LolAction;
 import edu.lehigh.cse.lol.internals.ParallaxCamera;
+import edu.lehigh.cse.lol.internals.ParallaxLayer;
 import edu.lehigh.cse.lol.internals.Renderable;
 
 /**
@@ -3317,4 +3318,105 @@ public class Level extends ScreenAdapter {
         Lol.sGame.mCurrentLevel.mLevelActors.put(actorName, actor);
     }
 
+    /**
+     * Set the background color for the current level
+     *
+     * @param red
+     *            The amount of redness (0-255)
+     * @param green
+     *            The amount of greenness (0-255)
+     * @param blue
+     *            The amount of blueness (0-255)
+     */
+    static public void setBackgroundColor(int red, int green, int blue) {
+        Lol.sGame.mCurrentLevel.mBackground.mColor.r = ((float) red) / 255;
+        Lol.sGame.mCurrentLevel.mBackground.mColor.g = ((float) green) / 255;
+        Lol.sGame.mCurrentLevel.mBackground.mColor.b = ((float) blue) / 255;
+    }
+
+    /**
+     * Add a picture that may repeat in the X dimension
+     *
+     * @param xSpeed
+     *            Speed that the picture seems to move in the X direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param ySpeed
+     *            Speed that the picture seems to move in the Y direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param imgName
+     *            The name of the image file to use as the background
+     * @param yOffset
+     *            The default is to draw the image at y=0. This field allows the
+     *            picture to be moved up or down.
+     * @param width
+     *            The width of the image being used as a background layer
+     * @param height
+     *            The height of the image being used as a background layer
+     */
+    static public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
+                                                    String imgName, float yOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
+                Media.getImage(imgName), 0, yOffset
+                * Level.PIXEL_METER_RATIO, width, height);
+        pl.mXRepeat = xSpeed != 0;
+        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+    }
+
+    /**
+     * Add a picture that may repeat in the X dimension, and which moves
+     * automatically
+     *
+     * @param xSpeed
+     *            Speed, in pixels per second
+     * @param imgName
+     *            The name of the image file to use as the background
+     * @param yOffset
+     *            The default is to draw the image at y=0. This field allows the
+     *            picture to be moved up or down.
+     * @param width
+     *            The width of the image being used as a background layer
+     * @param height
+     *            The height of the image being used as a background layer
+     */
+    static public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
+                                                        float yOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
+                Media.getImage(imgName), 0, yOffset
+                * Level.PIXEL_METER_RATIO, width, height);
+        pl.mAutoX = true;
+        pl.mXRepeat = xSpeed != 0;
+        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+    }
+
+    /**
+     * Add a picture that may repeat in the Y dimension
+     *
+     * @param xSpeed
+     *            Speed that the picture seems to move in the X direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param ySpeed
+     *            Speed that the picture seems to move in the Y direction. "1"
+     *            is the same speed as the hero; "0" is not at all; ".5f" is at
+     *            half the hero's speed
+     * @param imgName
+     *            The name of the image file to use as the background
+     * @param xOffset
+     *            The default is to draw the image at x=0. This field allows the
+     *            picture to be moved left or right.
+     * @param width
+     *            The width of the image being used as a background layer
+     * @param height
+     *            The height of the image being used as a background layer
+     */
+    static public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
+                                                  String imgName, float xOffset, float width, float height) {
+        ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
+                Media.getImage(imgName),
+                xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
+        pl.mYRepeat = ySpeed != 0;
+        Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+    }
 }

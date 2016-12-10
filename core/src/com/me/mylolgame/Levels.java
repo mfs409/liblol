@@ -1132,13 +1132,13 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // now paint the background blue
-            Background.setColor(23, 180, 255);
+            Level.setBackgroundColor(23, 180, 255);
 
             // put in a picture that scrolls at half the speed of the hero in
             // the x direction. Note that background "layers" are all drawn
             // *before* anything that is drawn with a z index... so the
             // background will be behind the hero
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // make an obstacle that hovers in a fixed place. Note that hovering
             // and zoom do not work together nicely.
@@ -1194,13 +1194,13 @@ public class Levels implements ScreenManager {
             h.setJumpSound("fwapfwap.ogg");
 
             // set up our background again, but add a few more layers
-            Background.setColor(23, 180, 255);
+            Level.setBackgroundColor(23, 180, 255);
             // this layer has a scroll factor of 0... it won't move
-            Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
+            Level.addHorizontalBackgroundLayer(0, 1, "back.png", 0, 960, 640);
             // this layer moves at half the speed of the hero
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 480, 320);
             // this layer is faster than the hero
-            Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
+            Level.addHorizontalBackgroundLayer(1.25f, 1, "front.png", 20, 454, 80);
         }
 
         /*
@@ -1235,8 +1235,8 @@ public class Levels implements ScreenManager {
             h.setJumpImpulses(0, 10);
             Level.setCameraChase(h);
             // set up the background
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // draw a jump button that covers the whole screen
             level.addJumpButton(0, 0, 960, 640, "", h);
@@ -1272,8 +1272,8 @@ public class Levels implements ScreenManager {
             h.setJumpImpulses(0, 6);
 
             // this is all the same as before, to include the invisible enemy
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
             level.addJumpButton(0, 0, 960, 640, "", h);
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Enemy.makeAsBox(130, 0, .5f, 38, "");
@@ -1301,8 +1301,8 @@ public class Levels implements ScreenManager {
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // let's draw an enemy, just in case anyone wants to try to go to
             // the top left corner
@@ -1329,8 +1329,8 @@ public class Levels implements ScreenManager {
             Destination.makeAsCircle(120, 31, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Hero h = Hero.makeAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
@@ -1385,7 +1385,7 @@ public class Levels implements ScreenManager {
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Destination.makeAsCircle(120, 0, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
@@ -1461,8 +1461,8 @@ public class Levels implements ScreenManager {
             Destination.makeAsCircle(450, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
 
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // place a speed-up obstacle that lasts for 2 seconds
             Obstacle o1 = Obstacle.makeAsCircle(40, 1, 4, 4, "purpleball.png");
@@ -1498,10 +1498,10 @@ public class Levels implements ScreenManager {
             Level.setVictoryDestination(1);
 
             // set up vertical scrolling backgrounds
-            Background.setColor(255, 0, 255);
-            Background.addVerticalLayer(1, 0, "back.png", 0, 960, 640);
-            Background.addVerticalLayer(1, .5f, "mid.png", 0, 960, 640);
-            Background.addVerticalLayer(1, 1, "front.png", 0, 454, 80);
+            Level.setBackgroundColor(255, 0, 255);
+            Level.addVerticalBackgroundLayer(1, 0, "back.png", 0, 960, 640);
+            Level.addVerticalBackgroundLayer(1, .5f, "mid.png", 0, 960, 640);
+            Level.addVerticalBackgroundLayer(1, 1, "front.png", 0, 454, 80);
         }
 
         /*
@@ -1889,8 +1889,8 @@ public class Levels implements ScreenManager {
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
 
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
             Level.setVictoryDestination(1);
@@ -2212,8 +2212,8 @@ public class Levels implements ScreenManager {
             h.setJumpImpulses(0, 15);
 
             // draw a background
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
         }
 
         /*
@@ -3050,8 +3050,8 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // set up the background
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero velocity
@@ -3076,8 +3076,8 @@ public class Levels implements ScreenManager {
             h.setCameraOffset(15, 0);
             Level.setCameraChase(h);
 
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(.5f, 1, "mid.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // This control has a dampening effect, so that on release, the hero
             // slowly stops
@@ -3568,7 +3568,7 @@ public class Levels implements ScreenManager {
             Level.setCameraChase(h);
 
             // put some flame effects on a black background
-            Background.setColor(0, 0, 0);
+            Level.setBackgroundColor(0, 0, 0);
             for (int i = 5; i < 150; i += 15) {
                 Effect e = Effect.makeParticleSystem("flame.txt", -2, i, 5);
                 e.setRepeat(true);
@@ -3633,10 +3633,10 @@ public class Levels implements ScreenManager {
             level.addUpButton(0, 0, 960, 640, "", 20, h);
 
             // set up our background, with a few layers
-            Background.setColor(23, 180, 255);
-            Background.addHorizontalLayer(0, 1, "back.png", 0, 960, 640);
+            Level.setBackgroundColor(23, 180, 255);
+            Level.addHorizontalBackgroundLayer(0, 1, "back.png", 0, 960, 640);
             Foreground.addHorizontalLayer(.5f, 1, "mid.png", 0, 480, 320);
-            Background.addHorizontalLayer(1.25f, 1, "front.png", 20, 454, 80);
+            Level.addHorizontalBackgroundLayer(1.25f, 1, "front.png", 20, 454, 80);
 
             // we win by collecting 10 goodies...
             Level.setVictoryGoodies(10, 0, 0, 0);

@@ -28,7 +28,6 @@
 package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.Background;
-import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
@@ -53,7 +52,7 @@ public class Help implements ScreenManager {
             // set up a basic screen
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
-            Background.setColor(255, 255, 255);
+            Level.setBackgroundColor(255, 255, 255);
 
             // put some information on the screen
             Util.drawText(5, 26, "The levels of this game\ndemonstrate LOL features", 0, 0, 0, "arial.ttf", 40, 0);
@@ -90,7 +89,7 @@ public class Help implements ScreenManager {
         else if (which == 2) {
             Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
-            Background.setColor(255, 255, 0);
+            Level.setBackgroundColor(255, 255, 0);
 
             // for now, just print a message
             Util.drawText(10, 15, "Be sure to read the code\n" + "while you play, so you can see\n"
