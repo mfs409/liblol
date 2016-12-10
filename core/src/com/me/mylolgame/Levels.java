@@ -3570,16 +3570,16 @@ public class Levels implements ScreenManager {
             // put some flame effects on a black background
             Level.setBackgroundColor(0, 0, 0);
             for (int i = 5; i < 150; i += 15) {
-                Effect e = Effect.makeParticleSystem("flame.txt", -2, i, 5);
+                Effect e = level.makeParticleSystem("flame.txt", -2, i, 5);
                 e.setRepeat(true);
             }
 
             // here's a weak attempt at snow
-            Effect e = Effect.makeParticleSystem("snow.txt", 2, 15, 40);
+            Effect e = level.makeParticleSystem("snow.txt", 2, 15, 40);
             e.setRepeat(true);
-            e = Effect.makeParticleSystem("snow.txt", 2, 55, 40);
+            e = level.makeParticleSystem("snow.txt", 2, 55, 40);
             e.setRepeat(true);
-            e = Effect.makeParticleSystem("snow.txt", 2, 85, 40);
+            e = level.makeParticleSystem("snow.txt", 2, 85, 40);
             e.setRepeat(true);
             // the trick for getting one PauseScene's dismissal to result in another PauseScene
             // drawing right away is to use the PauseScene CallbackButton facility.  When the first

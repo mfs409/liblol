@@ -38,6 +38,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -3418,5 +3419,32 @@ public class Level extends ScreenAdapter {
                 xOffset * Level.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         Lol.sGame.mCurrentLevel.mBackground.mLayers.add(pl);
+    }
+
+    /**
+     * Create a particle effect system
+     *
+     * @param filename The file holding the particle definition
+     * @param zIndex   The z index of the particle system.
+     * @parm x The x coordinate of the starting point of the particle system
+     * @parm y The y coordinate of the starting point of the particle system
+     */
+    public static Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
+        Effect e = new Effect();
+
+        // create the particle effect system.
+        ParticleEffect pe = new ParticleEffect();
+        pe.load(Gdx.files.internal(filename), Gdx.files.internal(""));
+        e.mParticleEffect = pe;
+
+        // update the effect's coordinates to reflect world coordinates
+        pe.getEmitters().first().setPosition(x, y);
+
+        // NB: we pretend effects are Actors, so that we can have them in front of or behind Actors
+        Lol.sGame.mCurrentLevel.addActor(e, zIndex);
+
+        // start emitting particles
+        pe.start();
+        return e;
     }
 }
