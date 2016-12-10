@@ -80,7 +80,7 @@ public class WinScene extends QuickScene {
         // The default text to display can change at the last second, so we
         // don't compute it until right here... also, play music
         if (mSound != null)
-            mSound.play(Facts.getGameFact("volume", 1));
+            mSound.play(Level.getGameFact("volume", 1));
         get().addText(mWinText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
     }
 

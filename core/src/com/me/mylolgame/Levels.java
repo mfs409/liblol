@@ -32,12 +32,9 @@ import com.badlogic.gdx.math.Vector2;
 import edu.lehigh.cse.lol.Actor;
 import edu.lehigh.cse.lol.Animation;
 import edu.lehigh.cse.lol.Background;
-import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
-import edu.lehigh.cse.lol.Display;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
-import edu.lehigh.cse.lol.Facts;
 import edu.lehigh.cse.lol.Foreground;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
@@ -1152,7 +1149,7 @@ public class Levels implements ScreenManager {
             level.addDistanceMeter(" m", 5, 300, "arial.ttf", 255, 0, 255, 16, h);
 
             // Add some text about the previous best score.
-            Util.drawText(30, 30, "best: " + Facts.getGameFact("HighScore32", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
+            Util.drawText(30, 30, "best: " + level.getGameFact("HighScore32", 0) + "M", 0, 0, 0, "arial.ttf", 12, 0);
 
             // when this level ends, we save the best score. Once the
             // score is saved, it is saved permanently on the phone, though
@@ -1160,9 +1157,9 @@ public class Levels implements ScreenManager {
             // that we save the score whether we win or lose.
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
-                    int oldBest = Facts.getGameFact("HighScore32", 0);
+                    int oldBest = Level.getGameFact("HighScore32", 0);
                     if (oldBest < Level.getDistance())
-                        Facts.putGameFact("HighScore32", Level.getDistance());
+                        Level.putGameFact("HighScore32", Level.getDistance());
                 }
             };
 
@@ -3164,17 +3161,17 @@ public class Levels implements ScreenManager {
             level.addGameFact("game test", 240, 120, "arial.ttf", 0, 0, 0, 12, "-", ".");
             level.addCallbackControl(40, 90, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putLevelFact("level test", 1 + Facts.getLevelFact("level test", -1));
+                    Level.putLevelFact("level test", 1 + Level.getLevelFact("level test", -1));
                 }
             });
             level.addCallbackControl(40, 140, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putSessionFact("session test", 1 + Facts.getSessionFact("session test", -1));
+                    Level.putSessionFact("session test", 1 + Level.getSessionFact("session test", -1));
                 }
             });
             level.addCallbackControl(40, 190, 40, 40, "red.png", new LolCallback() {
                 public void onEvent() {
-                    Facts.putGameFact("game test", 1 + Facts.getGameFact("game test", -1));
+                    Level.putGameFact("game test", 1 + Level.getGameFact("game test", -1));
                 }
             });
         }
@@ -3375,7 +3372,7 @@ public class Levels implements ScreenManager {
                     // rotator... save the rotation and rotate the hero
                     mAttachedActor.setRotation(mFloatVal * (float) Math.PI / 180);
                     // multiply float val by 100 to preserve some decimal places
-                    Facts.putLevelFact("rotation", (int) (100 * mFloatVal));
+                    Level.putLevelFact("rotation", (int) (100 * mFloatVal));
                 }
             };
             rotatorSC.mAttachedActor = h;
@@ -3383,7 +3380,7 @@ public class Levels implements ScreenManager {
             LolCallback barSC = new LolCallback() {
                 public void onEvent() {
                     // vertical bar... make the entity move
-                    int rotation = Facts.getLevelFact("rotation", 0) / 100;
+                    int rotation = Level.getLevelFact("rotation", 0) / 100;
                     // create a unit vector
                     Vector2 v = new Vector2(1, 0);
                     v.scl(mFloatVal);
@@ -3502,7 +3499,7 @@ public class Levels implements ScreenManager {
             for (int i = 0; i < 10; ++i) {
                 Hero h = Hero.makeAsBox(4 * i + 2, 0.1f, 2, 2, "greenball.png");
                 h.setPhysics(1, 1, 5);
-                Facts.putLevelActor("" + i, h);
+                level.putLevelActor("" + i, h);
             }
 
             Destination.makeAsCircle(29, 16, 2, 2, "mustardball.png");
@@ -3514,7 +3511,7 @@ public class Levels implements ScreenManager {
             level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
                     for (int i = 0; i < 10; ++i) {
-                        Actor p = Facts.getLevelActor("" + i);
+                        Actor p = Level.getLevelActor("" + i);
                         if (p != null) {
                             p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
                         }

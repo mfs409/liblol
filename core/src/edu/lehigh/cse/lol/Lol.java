@@ -299,12 +299,12 @@ public abstract class Lol extends Game {
      */
     public static void toggleMute() {
         // volume is either 1 or 0
-        if (Facts.getGameFact("volume", 1) == 1) {
+        if (Level.getGameFact("volume", 1) == 1) {
             // set volume to 0, set image to 'unmute'
-            Facts.putGameFact("volume", 0);
+            Level.putGameFact("volume", 0);
         } else {
             // set volume to 1, set image to 'mute'
-            Facts.putGameFact("volume", 1);
+            Level.putGameFact("volume", 1);
         }
         // update all music
         Media.resetMusicVolume();
@@ -315,7 +315,7 @@ public abstract class Lol extends Game {
      * not muted, false corresponds to muted.
      */
     public static boolean getVolume() {
-        return Facts.getGameFact("volume", 1) == 1;
+        return Level.getGameFact("volume", 1) == 1;
     }
 
     /**
@@ -400,8 +400,8 @@ public abstract class Lol extends Game {
         loadResources();
 
         // configureGravity the volume
-        if (Facts.getGameFact("volume", 1) == 1)
-            Facts.putGameFact("volume", 1);
+        if (Level.getGameFact("volume", 1) == 1)
+            Level.putGameFact("volume", 1);
 
         // show the splash screen
         doSplash();

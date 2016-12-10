@@ -67,7 +67,7 @@ public class PauseScene extends QuickScene {
         mVisible = true;
         mDisplayTime = System.currentTimeMillis();
         if (mSound != null)
-            mSound.play(Facts.getGameFact("volume", 1));
+            mSound.play(Level.getGameFact("volume", 1));
     }
 
     /**

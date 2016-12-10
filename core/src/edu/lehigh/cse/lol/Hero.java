@@ -247,7 +247,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(Facts.getGameFact("volume", 1));
+            mJumpSound.play(Level.getGameFact("volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -342,7 +342,7 @@ public class Hero extends Actor {
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Facts.getGameFact("volume", 1));
+                d.mArrivalSound.play(Level.getGameFact("volume", 1));
             Lol.sGame.mCurrentLevel.mScore.onDestinationArrive();
         }
     }

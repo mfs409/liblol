@@ -32,6 +32,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -1357,8 +1358,8 @@ public class Level extends ScreenAdapter {
                             Lol.sGame.mCurrentLevel.mLoseCallback.onEvent();
 
                         // if we won, unlock the next level
-                        if (win && Facts.getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
-                            Facts.putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
+                        if (win && getGameFact("unlocked", 1) <= Lol.sGame.mModeStates[Lol.PLAY])
+                            putGameFact("unlocked", Lol.sGame.mModeStates[Lol.PLAY] + 1);
 
                         // drop everything from the hud
                         Lol.sGame.mCurrentLevel.mControls.clear();
@@ -2111,7 +2112,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getLevelFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2138,7 +2139,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getSessionFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -2165,7 +2166,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + Facts.getGameFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
         Lol.sGame.mCurrentLevel.mDisplays.add(d);
@@ -3205,6 +3206,115 @@ public class Level extends ScreenAdapter {
         Lol.sGame.mCurrentLevel.mPanControls.add(c);
         Lol.sGame.mCurrentLevel.mToggleControls.add(c);
         return c;
+    }
+
+    /**
+     * Look up a fact that was stored for the current level. If no such fact
+     * exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The default value to use if the fact cannot be found
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getLevelFact(String factName, int defaultVal) {
+        Integer i = Lol.sGame.mCurrentLevel.mLevelFacts.get(factName);
+        if (i == null) {
+            Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
+            return defaultVal;
+        }
+        return i;
+    }
+
+    /**
+     * Save a fact about the current level. If the factName has already been
+     * used for this level, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+    public static void putLevelFact(String factName, int factValue) {
+        Lol.sGame.mCurrentLevel.mLevelFacts.put(factName, factValue);
+    }
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, -1 will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The default value to use if the fact cannot be found
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getSessionFact(String factName, int defaultVal) {
+        Integer i = Lol.sGame.mSessionFacts.get(factName);
+        if (i == null) {
+            Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
+            return defaultVal;
+        }
+        return i;
+    }
+
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+    public static void putSessionFact(String factName, int factValue) {
+        Lol.sGame.mSessionFacts.put(factName, factValue);
+    }
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The value to return if the fact does not exist
+     * @return The integer value corresponding to the last value stored
+     */
+    public static int getGameFact(String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        return prefs.getInteger(factName, defaultVal);
+    }
+
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+    public static void putGameFact(String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        prefs.putInteger(factName, factValue);
+        prefs.flush();
+    }
+
+    /**
+     * Look up an Actor that was stored for the current level. If no such Actor
+     * exists, null will be returned.
+     *
+     * @param actorName The name used to store the Actor
+     * @return The last Actor stored with this name
+     */
+    public static Actor getLevelActor(String actorName) {
+        Actor actor = Lol.sGame.mCurrentLevel.mLevelActors.get(actorName);
+        if (actor == null) {
+            Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
+            return null;
+        }
+        return actor;
+    }
+
+    /**
+     * Save a Actor from the current level. If the actorName has already been
+     * used for this level, the new value will overwrite the old.
+     *
+     * @param actorName The name for the Actor being saved
+     * @param actor     The Actor that is the fact being saved
+     */
+    public static void putLevelActor(String actorName, Actor actor) {
+        Lol.sGame.mCurrentLevel.mLevelActors.put(actorName, actor);
     }
 
 }

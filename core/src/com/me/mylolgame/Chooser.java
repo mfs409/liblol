@@ -27,7 +27,6 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.Facts;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
@@ -52,11 +51,11 @@ public class Chooser implements ScreenManager {
      * @param y      Y coordinate of the bottom left corner of the button
      * @param width  width of the button
      * @param height height of the button
-     * @param level  which level to play when the button is tapped
+     * @param whichLevel  which level to play when the button is tapped
      */
-    static void drawLevelButton(float x, float y, float width, float height, final int level) {
+    static void drawLevelButton(float x, float y, float width, float height, final int whichLevel) {
         // figure out the last unlocked level
-        int unlocked = Facts.getGameFact("unlocked", 1);
+        int unlocked = Level.getGameFact("unlocked", 1);
 
         // for each button, start by drawing an obstacle
         Obstacle tile = Obstacle.makeAsBox(x, y, width, height, "leveltile.png");
@@ -64,13 +63,13 @@ public class Chooser implements ScreenManager {
         // if this level is unlocked, or if we are in unlocked mode, then attach
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
-        if (level <= unlocked || Lol.getUnlockMode()) {
+        if (whichLevel <= unlocked || Lol.getUnlockMode()) {
             tile.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
                 public void onEvent() {
-                    Lol.doLevel(level);
+                    Lol.doLevel(whichLevel);
                 }
             });
-            Util.drawTextCentered(x + width / 2, y + height / 2, "" + level, 255, 255, 255, "arial.ttf", 56, 0);
+            Util.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, 255, 255, 255, "arial.ttf", 56, 0);
         }
         // otherwise, just print an X
         else {

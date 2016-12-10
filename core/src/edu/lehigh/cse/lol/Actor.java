@@ -273,7 +273,7 @@ public abstract class Actor implements Renderable {
      */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
-            mTouchSound.play(Facts.getGameFact("volume", 1));
+            mTouchSound.play(Level.getGameFact("volume", 1));
         if (mGestureResponder != null) {
             mGestureResponder.onTap(touchVec);
             return true;
@@ -630,7 +630,7 @@ public abstract class Actor implements Renderable {
 
         // play a sound when we remove this actor?
         if (mDisappearSound != null && !quiet)
-            mDisappearSound.play(Facts.getGameFact("volume", 1));
+            mDisappearSound.play(Level.getGameFact("volume", 1));
 
         // This is a bit of a hack... to do a disappear animation after we've
         // removed the actor, we draw an obstacle, so that we have a clean hook
