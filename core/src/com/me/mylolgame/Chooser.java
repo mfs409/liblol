@@ -135,14 +135,14 @@ public class Chooser implements ScreenManager {
      * Describe how to draw each level of the chooser. Our chooser will have 15
      * levels per screen, so we need 7 screens.
      */
-    public void display(int which) {
+    public void display(int which, Level level) {
         // screen 1: show 1-->15
         //
         // NB: in this screen, we assume you haven't done much programming, so
         // we draw each button with its own line of code, and we don't use any
         // variables.
         if (which == 1) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
 
             // set up background and music
@@ -183,7 +183,7 @@ public class Chooser implements ScreenManager {
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
         else if (which == 2) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
 
             // set up background and music
@@ -192,24 +192,24 @@ public class Chooser implements ScreenManager {
 
             // let's use a loop to do each row
             float x = 8.5f;
-            int level = 16;
+            int l = 16;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 16, 5, 5, level);
-                level++;
+                drawLevelButton(x, 16, 5, 5, l);
+                l++;
                 x += 6.5f;
             }
 
             x = 8.5f;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 9.5f, 5, 5, level);
-                level++;
+                drawLevelButton(x, 9.5f, 5, 5, l);
+                l++;
                 x += 6.5f;
             }
 
             x = 8.5f;
             for (int i = 0; i < 5; ++i) {
-                drawLevelButton(x, 3, 5, 5, level);
-                level++;
+                drawLevelButton(x, 3, 5, 5, l);
+                l++;
                 x += 6.5f;
             }
 
@@ -224,7 +224,7 @@ public class Chooser implements ScreenManager {
         // NB: now we use a nested pair of loops, and we can do three rows in
         // just a few more lines than one row.
         else if (which == 3) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
 
             // set up background and music
@@ -233,12 +233,12 @@ public class Chooser implements ScreenManager {
 
             // let's use a loop to do each row and each column
             float y = 16;
-            int level = 31;
+            int l = 31;
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
-                    drawLevelButton(x, y, 5, 5, level);
-                    level++;
+                    drawLevelButton(x, y, 5, 5, l);
+                    l++;
                     x += 6.5f;
                 }
                 y -= 6.5f;
@@ -257,19 +257,19 @@ public class Chooser implements ScreenManager {
         // screen 6: show levels 75-->90
         else if (which < 7) {
             // set-up
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Util.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             Level.setMusic("tune.ogg");
 
             // levels
             float y = 16;
-            int level = (which - 1) * 15 + 1;
+            int l = (which - 1) * 15 + 1;
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
-                    drawLevelButton(x, y, 5, 5, level);
-                    level++;
+                    drawLevelButton(x, y, 5, 5, l);
+                    l++;
                     x += 6.5f;
                 }
                 y -= 6.5f;
@@ -284,7 +284,7 @@ public class Chooser implements ScreenManager {
         // The final case is the 7th screen, which just shows levels 91 and 92.
         // We'll just do it by hand.
         else if (which == 7) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
 
             // set up background and music

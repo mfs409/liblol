@@ -208,7 +208,8 @@ public abstract class Lol extends Game {
         for (int i = 0; i < 5; ++i)
             sGame.mModeStates[i] = 1;
         sGame.mMode = SPLASH;
-        sGame.mSplash.display(0);
+        Lol.sGame.mCurrentLevel = new Level();
+        sGame.mSplash.display(0, Lol.sGame.mCurrentLevel);
         sGame.setScreen(sGame.mCurrentLevel);
     }
 
@@ -233,7 +234,8 @@ public abstract class Lol extends Game {
         // it, and show it.
         sGame.mMode = CHOOSER;
         sGame.mModeStates[CHOOSER] = whichChooser;
-        sGame.mChooser.display(whichChooser);
+        Lol.sGame.mCurrentLevel = new Level();
+        sGame.mChooser.display(whichChooser, Lol.sGame.mCurrentLevel);
         sGame.setScreen(sGame.mCurrentLevel);
     }
 
@@ -245,7 +247,8 @@ public abstract class Lol extends Game {
     public static void doLevel(int which) {
         sGame.mModeStates[PLAY] = which;
         sGame.mMode = PLAY;
-        sGame.mLevels.display(which);
+        Lol.sGame.mCurrentLevel = new Level();
+        sGame.mLevels.display(which, Lol.sGame.mCurrentLevel);
         sGame.setScreen(sGame.mCurrentLevel);
     }
 
@@ -261,7 +264,8 @@ public abstract class Lol extends Game {
     public static void doHelp(int which) {
         sGame.mModeStates[HELP] = which;
         sGame.mMode = HELP;
-        sGame.mHelp.display(which);
+        Lol.sGame.mCurrentLevel = new Level();
+        sGame.mHelp.display(which, Lol.sGame.mCurrentLevel);
         sGame.setScreen(sGame.mCurrentLevel);
     }
 
@@ -273,7 +277,8 @@ public abstract class Lol extends Game {
     public static void doStore(int which) {
         sGame.mModeStates[STORE] = which;
         sGame.mMode = STORE;
-        sGame.mStore.display(which);
+        Lol.sGame.mCurrentLevel = new Level();
+        sGame.mStore.display(which, Lol.sGame.mCurrentLevel);
         sGame.setScreen(sGame.mCurrentLevel);
     }
 

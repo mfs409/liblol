@@ -46,12 +46,12 @@ public class Help implements ScreenManager {
     /**
      * Describe how to draw each level of help. Our help will have 2 screens
      */
-    public void display(int which) {
+    public void display(int which, Level level) {
         // Our first scene describes the color coding that we use for the
         // different entities in the game
         if (which == 1) {
             // set up a basic screen
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Background.setColor(255, 255, 255);
 
@@ -88,7 +88,7 @@ public class Help implements ScreenManager {
         // Our second help scene is just here to show that it is possible to
         // have more than one help scene.
         else if (which == 2) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Background.setColor(255, 255, 0);
 

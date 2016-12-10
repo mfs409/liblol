@@ -46,10 +46,10 @@ public class Splash implements ScreenManager {
      * There is usually only one splash screen. However, the ScreenManager
      * interface requires display() to take a parameter.  We ignore it.
      */
-    public void display(int which) {
+    public void display(int which, Level level) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
-        Level.configure(48, 32);
+        Level.configureCamera(48, 32);
         Level.configureGravity(0, 0);
 
         // draw the background. Note that "Play", "Help", and "Quit" are part of

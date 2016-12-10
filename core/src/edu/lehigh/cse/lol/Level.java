@@ -263,11 +263,8 @@ public class Level extends ScreenAdapter {
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
-     *
-     * @param width  The width of the level, in meters
-     * @param height The height of the level, in meters
      */
-    Level(int width, int height) {
+    Level() {
         // clear any timers
         Timer.instance().clear();
 
@@ -284,7 +281,7 @@ public class Level extends ScreenAdapter {
         mLevelActors = new TreeMap<>();
 
         // save the camera bounds
-        setCamera(width, height);
+        setCamera((int)(Lol.sGame.mWidth/PIXEL_METER_RATIO), (int)(Lol.sGame.mHeight/PIXEL_METER_RATIO));
 
         // set up the game camera, with 0,0 in the bottom left
         mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Level.PIXEL_METER_RATIO, Lol.sGame.mHeight
@@ -328,15 +325,17 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Create a new empty level, and configureGravity its camera
+     * Configure the camera bounds for a level
+     *
+     * TODO: set upper and lower bounds, instead of assuming a lower bound of (0, 0)
      *
      * @param width  width of the camera
      * @param height height of the camera
      */
-    public static void configure(int width, int height) {
-        Lol.sGame.mCurrentLevel = new Level(width, height);
+    public static void configureCamera(int width, int height) {
         Lol.sGame.mCurrentLevel.setCamera(width, height);
 
+        // TODO: we can move this once we get rid of the static sGame.mCurrentLevel field
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...

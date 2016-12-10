@@ -66,7 +66,7 @@ public class Levels implements ScreenManager {
      * We currently have 92 levels, each of which is described in part of the
      * following function.
      */
-    public void display(int whichLevel) {
+    public void display(int whichLevel, Level level) {
         /*
          * In this level, all we have is a hero (the green ball) who needs to
          * make it to the destination (a mustard colored ball). The game is
@@ -81,7 +81,7 @@ public class Levels implements ScreenManager {
             // need to get bigger.
             //
             // Level.configureGravity MUST BE THE FIRST LINE WHEN DRAWING A LEVEL!!!
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             // there is no default gravitational force
             Level.configureGravity(0, 0);
 
@@ -110,7 +110,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 2) {
             // start by setting everything up just like in level 1
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Hero h = Hero.makeAsCircle(4, 17, 3, 3, "greenball.png");
@@ -140,7 +140,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 3) {
             // These lines should be familiar after the last two levels
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Hero h = Hero.makeAsCircle(4, 7, 3, 3, "greenball.png");
@@ -172,7 +172,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 4) {
             // standard stuff...
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -206,7 +206,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 5) {
             // standard stuff...
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -238,7 +238,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 6) {
             // standard stuff...
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -257,7 +257,7 @@ public class Levels implements ScreenManager {
          * to lose a level
          */
         else if (whichLevel == 7) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -284,7 +284,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 8) {
             // configureGravity a basic level, just like the start of level 2:
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -316,7 +316,7 @@ public class Levels implements ScreenManager {
          * This level explores a bit more of what we can do with paths.
          */
         else if (whichLevel == 9) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -342,7 +342,7 @@ public class Levels implements ScreenManager {
          * kinds of sounds
          */
         else if (whichLevel == 10) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -380,7 +380,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 11) {
             // make the level really big
-            Level.configure(400, 300);
+            Level.configureCamera(400, 300);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 400, 300, "red.png", 0, 0, 0);
@@ -415,7 +415,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 12) {
             // configureGravity a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -458,7 +458,7 @@ public class Levels implements ScreenManager {
          * friction and elasticity can do interesting things.
          */
         else if (whichLevel == 13) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("These obstacles have\ndifferent physics\nparameters", 255, 255, 255, "arial.ttf",
@@ -484,7 +484,7 @@ public class Levels implements ScreenManager {
          * a destination.
          */
         else if (whichLevel == 14) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -525,7 +525,7 @@ public class Levels implements ScreenManager {
          * too.
          */
         else if (whichLevel == 15) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Every entity can move...", 255, 255, 255, "arial.ttf", 32);
@@ -561,7 +561,7 @@ public class Levels implements ScreenManager {
          * we can set a time limit for the level, and we can pause the game.
          */
         else if (whichLevel == 16) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Collect all\nblue balls\nto win", 255, 255, 255, "arial.ttf", 32);
@@ -602,7 +602,7 @@ public class Levels implements ScreenManager {
          * any meaning, but they are nice to have anyway...
          */
         else if (whichLevel == 17) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Obstacles as zoom\nstrips, friction pads\nand repellers", 255, 255, 255,
@@ -657,7 +657,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 18) {
             // set up a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The hero can defeat \nup to two enemies...", 255, 255, 255, "arial.ttf", 32);
@@ -708,7 +708,7 @@ public class Levels implements ScreenManager {
          * This level shows that we can win a level by defeating all enemies
          */
         else if (whichLevel == 19) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("You have 10 seconds\nto defeat the enemies", 255, 255, 255, "arial.ttf", 32);
@@ -745,7 +745,7 @@ public class Levels implements ScreenManager {
          * all enemies.
          */
         else if (whichLevel == 20) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Collect blue balls\nto increse strength", 255, 255, 255, "arial.ttf", 32);
@@ -784,7 +784,7 @@ public class Levels implements ScreenManager {
          * goodie makes the hero invincible for a little while...
          */
         else if (whichLevel == 21) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 255, 255, 255,
@@ -826,7 +826,7 @@ public class Levels implements ScreenManager {
          * count for negative points.
          */
         else if (whichLevel == 22) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Collect 'the right' \nblue balls to\nactivate destination", 255, 255, 255,
@@ -860,7 +860,7 @@ public class Levels implements ScreenManager {
          * be useful for having angled walls in a maze
          */
         else if (whichLevel == 23) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get()
@@ -893,7 +893,7 @@ public class Levels implements ScreenManager {
          * the obstacle to that location. Double-tapping an obstacle removes it.
          */
         else if (whichLevel == 24) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -926,7 +926,7 @@ public class Levels implements ScreenManager {
          * In this level, the enemy chases the hero
          */
         else if (whichLevel == 25) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The enemy will chase you", 255, 255, 255, "arial.ttf", 32);
@@ -960,7 +960,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 26) {
             // set up a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Touch the purple ball \nor collide with it", 255, 255, 255, "arial.ttf", 32);
@@ -986,7 +986,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 27) {
             // set up a big screen
-            Level.configure(4 * 48, 2 * 32);
+            Level.configureCamera(4 * 48, 2 * 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
@@ -1009,7 +1009,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 28) {
             // set up a regular level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Reach the destination\nto win the game.", 255, 255, 255, "arial.ttf", 20);
@@ -1034,7 +1034,7 @@ public class Levels implements ScreenManager {
          * are drawn to the screen in response to scribbles.
          */
         else if (whichLevel == 29) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Draw on the screen\nto make obstacles appear", 255, 255, 255, "arial.ttf", 32);
@@ -1072,7 +1072,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 30) {
             // create a level with a constant force downward in the Y dimension
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
             Destination.makeAsCircle(30, 10, 2.5f, 2.5f, "mustardball.png");
@@ -1100,7 +1100,7 @@ public class Levels implements ScreenManager {
         else if (whichLevel == 31) {
             // make a long level but not a tall level, and provide a constant
             // downward force:
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             // turn on tilt, but only in the X dimension
             Level.enableTilt(10, 0);
@@ -1122,7 +1122,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 32) {
             // start by repeating the previous level:
-            Level.configure(30 * 48, 32);
+            Level.configureCamera(30 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Side scroller / tilt demo", 255, 255, 255, "arial.ttf", 32);
@@ -1176,7 +1176,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 33) {
             // set up a standard side scroller with tilt:
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
@@ -1215,7 +1215,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 34) {
             // set up a side scroller, but don't turn on tilt
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press anywhere to jump", 255, 255, 255, "arial.ttf", 32);
             Destination.makeAsCircle(120, 1, 2, 2, "mustardball.png");
@@ -1260,7 +1260,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 35) {
             // Note: we can go above the trees
-            Level.configure(3 * 48, 38);
+            Level.configureCamera(3 * 48, 38);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Multi-jump is enabled", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 38, "red.png", 1, 0, 0);
@@ -1288,7 +1288,7 @@ public class Levels implements ScreenManager {
          * the screen
          */
         else if (whichLevel == 36) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 0);
             PreScene.get().addText("Press screen borders\nto move the hero", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
@@ -1324,7 +1324,7 @@ public class Levels implements ScreenManager {
          * movement.
          */
         else if (whichLevel == 37) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 0);
             PreScene.get().addText("Press screen borders\nto move up and down", 255, 255, 255, "arial.ttf", 32);
             // The box and hero should not have friction
@@ -1357,7 +1357,7 @@ public class Levels implements ScreenManager {
          * it to make the hero defeat certain enemies via crawl.
          */
         else if (whichLevel == 38) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press the screen\nto crawl", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, .3f, 0);
@@ -1384,7 +1384,7 @@ public class Levels implements ScreenManager {
          * the hero moving.
          */
         else if (whichLevel == 39) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press the hero\nto start moving\n", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
@@ -1413,7 +1413,7 @@ public class Levels implements ScreenManager {
          * level
          */
         else if (whichLevel == 40) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             Level.setTiltAsVelocity(true);
@@ -1450,7 +1450,7 @@ public class Levels implements ScreenManager {
          * a collision between a hero and an obstacle to achieve this effect.
          */
         else if (whichLevel == 41) {
-            Level.configure(10 * 48, 32);
+            Level.configureCamera(10 * 48, 32);
             Level.configureGravity(0, 0);
             PreScene.get().addText("Speed boosters and reducers", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 10 * 480, 32, "", 1, 0, 1);
@@ -1486,7 +1486,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 42) {
             // set up a level where tilt only makes the hero move up and down
-            Level.configure(48, 4 * 32);
+            Level.configureCamera(48, 4 * 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(0, 10);
             PreScene.get().addText("Vertical scroller demo", 255, 255, 255, "arial.ttf", 32);
@@ -1513,7 +1513,7 @@ public class Levels implements ScreenManager {
          * projectile always goes in the same direction
          */
         else if (whichLevel == 43) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Press the hero\nto make it throw\nprojectiles", 255, 255, 255, "arial.ttf", 32);
@@ -1545,7 +1545,7 @@ public class Levels implements ScreenManager {
          * the HUD for throwing projectiles
          */
         else if (whichLevel == 44) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press anywhere\nto throw a gray\nball", 255, 255, 255, "arial.ttf", 32);
@@ -1574,7 +1574,7 @@ public class Levels implements ScreenManager {
          * projectiles at them
          */
         else if (whichLevel == 45) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -1611,7 +1611,7 @@ public class Levels implements ScreenManager {
          * This level shows how to throw projectiles in a variety of directions.
          */
         else if (whichLevel == 46) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
@@ -1644,7 +1644,7 @@ public class Levels implements ScreenManager {
          * basketball-style games.
          */
         else if (whichLevel == 47) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
@@ -1714,7 +1714,7 @@ public class Levels implements ScreenManager {
          * from within the code that runs when the timer expires.
          */
         else if (whichLevel == 48) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Throw balls at \nthe enemies before\nthey reproduce", 255, 255, 255, "arial.ttf",
@@ -1811,7 +1811,7 @@ public class Levels implements ScreenManager {
          * careful... it is possible to make a lot of enemies, really quickly
          */
         else if (whichLevel == 49) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("These enemies are\nreally tricky", 255, 255, 255, "arial.ttf", 32);
@@ -1861,7 +1861,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 50) {
             // set up a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Animations", 255, 255, 255, "arial.ttf", 32);
@@ -1886,7 +1886,7 @@ public class Levels implements ScreenManager {
          * this level introduces jumping animations and disappearance animations
          */
         else if (whichLevel == 51) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
@@ -1932,7 +1932,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 52) {
             // set up a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Press the hero\nto make it\nthrow a ball", 255, 255, 255, "arial.ttf", 32);
@@ -1962,7 +1962,7 @@ public class Levels implements ScreenManager {
          * that can even damage the hero while it is invincible.
          */
         else if (whichLevel == 53) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, 255, 255, 255,
@@ -2020,7 +2020,7 @@ public class Levels implements ScreenManager {
          * we can "crawl" in the air while jumping.
          */
         else if (whichLevel == 54) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press the left side of\nthe screen to crawl\n" + "or the right side\nto jump.",
                     255, 255, 255, "arial.ttf", 32);
@@ -2064,7 +2064,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 55) {
             // set up a basic level with a bunch of goodies
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2114,7 +2114,7 @@ public class Levels implements ScreenManager {
          * enemies
          */
         else if (whichLevel == 56) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             // increase the speed at which tilt affects velocity
@@ -2192,7 +2192,7 @@ public class Levels implements ScreenManager {
          * air
          */
         else if (whichLevel == 57) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
@@ -2226,7 +2226,7 @@ public class Levels implements ScreenManager {
          * negative value.
          */
         else if (whichLevel == 58) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2284,7 +2284,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 59) {
             // make a simple level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2316,7 +2316,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 60) {
             // make a simple level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
@@ -2342,7 +2342,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 61) {
             // set up a basic level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Things will appear \nand disappear...", 255, 255, 255, "arial.ttf", 32);
@@ -2376,7 +2376,7 @@ public class Levels implements ScreenManager {
          * the rest of this level works.
          */
         else if (whichLevel == 62) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2467,7 +2467,7 @@ public class Levels implements ScreenManager {
          * effect. Be sure to look at onCollideCallback for more details.
          */
         else if (whichLevel == 63) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Keep going right!", 255, 255, 255, "arial.ttf", 32);
@@ -2547,7 +2547,7 @@ public class Levels implements ScreenManager {
          * details
          */
         else if (whichLevel == 64) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Activate and then \ntouch the obstacle", 255, 255, 255, "arial.ttf", 32);
@@ -2593,7 +2593,7 @@ public class Levels implements ScreenManager {
          * every time...
          */
         else if (whichLevel == 65) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
@@ -2672,7 +2672,7 @@ public class Levels implements ScreenManager {
          * activate the destination on an obstacle collision
          */
         else if (whichLevel == 66) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Only stars can reach\nthe destination", 255, 255, 255, "arial.ttf", 20);
@@ -2716,7 +2716,7 @@ public class Levels implements ScreenManager {
          * fixed velocity
          */
         else if (whichLevel == 67) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press anywhere\nto throw a ball", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2755,7 +2755,7 @@ public class Levels implements ScreenManager {
          * can fall due to gravity.
          */
         else if (whichLevel == 68) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Flick the hero into the destination", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -2781,7 +2781,7 @@ public class Levels implements ScreenManager {
          * hero doesn't have jump re-enabled upon a collision.
          */
         else if (whichLevel == 69) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
@@ -2812,7 +2812,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 70) {
             // set up a simple level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("You can walk through the wall", 255, 255, 255, "arial.ttf", 32);
@@ -2847,7 +2847,7 @@ public class Levels implements ScreenManager {
          * movement to the destination, instead of an immediate jump.
          */
         else if (whichLevel == 71) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
@@ -2881,7 +2881,7 @@ public class Levels implements ScreenManager {
          * downward.
          */
         else if (whichLevel == 72) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press screen borders\nto move the hero", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
@@ -2919,7 +2919,7 @@ public class Levels implements ScreenManager {
          * shows how to do walls that can be passed through in one direction.
          */
         else if (whichLevel == 73) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Press anywhere\nto shoot a laserbeam", 255, 255, 255, "arial.ttf", 32);
@@ -2960,7 +2960,7 @@ public class Levels implements ScreenManager {
          * This level shows how to use multiple types of goodie scores
          */
         else if (whichLevel == 74) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Green, Red, and Grey\nballs are goodies", 255, 255, 255, "arial.ttf", 32);
@@ -3008,7 +3008,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 75) {
             // set up a simple level
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("You can walk through the wall", 255, 255, 255, "arial.ttf", 32);
@@ -3035,7 +3035,7 @@ public class Levels implements ScreenManager {
          * and decreases it upon release
          */
         else if (whichLevel == 76) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, 10);
             PreScene.get().addText("Press anywhere to speed up", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
@@ -3067,7 +3067,7 @@ public class Levels implements ScreenManager {
          * get that effect.
          */
         else if (whichLevel == 77) {
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press anywhere to start moving", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 0);
@@ -3093,7 +3093,7 @@ public class Levels implements ScreenManager {
          * interacts.
          */
         else if (whichLevel == 78) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("One-sided + Callbacks", 255, 255, 255, "arial.ttf", 32);
@@ -3134,7 +3134,7 @@ public class Levels implements ScreenManager {
          * interface.
          */
         else if (whichLevel == 79) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
             PreScene.get().addText("Poke the hero, then\n where you want it\nto go.", 255, 255, 255, "arial.ttf", 32);
@@ -3184,7 +3184,7 @@ public class Levels implements ScreenManager {
          * gravity.
          */
         else if (whichLevel == 80) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Testing Gravity Defy?", 255, 255, 255, "arial.ttf", 32);
@@ -3210,7 +3210,7 @@ public class Levels implements ScreenManager {
          * Test to show that we can have obstacles with a polygon shape
          */
         else if (whichLevel == 81) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Testing Polygons", 255, 255, 255, "arial.ttf", 32);
@@ -3234,7 +3234,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 82) {
             // set up a standard side scroller with tilt:
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             PreScene.get().addText("Press the hero to\nmake it jump", 255, 255, 255, "arial.ttf", 32);
@@ -3260,7 +3260,7 @@ public class Levels implements ScreenManager {
          * Demonstrate the ability to set up paddles that rotate back and forth
          */
         else if (whichLevel == 83) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Avoid revolving obstacles", 255, 255, 255, "arial.ttf", 32);
@@ -3286,7 +3286,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 84) {
             // set up a big screen
-            Level.configure(4 * 48, 2 * 32);
+            Level.configureCamera(4 * 48, 2 * 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
@@ -3315,7 +3315,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 85) {
             // set up a big screen
-            Level.configure(4 * 48, 2 * 32);
+            Level.configureCamera(4 * 48, 2 * 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("The star rotates in\nthe direction of movement", 255, 255, 255, "arial.ttf", 32);
@@ -3347,7 +3347,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 86) {
             // set up a screen
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
             Destination.makeAsCircle(29, 30, 2, 2, "mustardball.png");
@@ -3401,7 +3401,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 87) {
             // set up a screen
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
@@ -3421,7 +3421,7 @@ public class Levels implements ScreenManager {
          * Demonstrate that we can have callback buttons on PauseScenes
          */
         else if (whichLevel == 88) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, 0);
             Level.enableTilt(10, 10);
             PreScene.get().addText("Interactive Pause Scenes\n(click the red square)", 255, 255, 255, "arial.ttf", 32);
@@ -3460,7 +3460,7 @@ public class Levels implements ScreenManager {
          * Use multiple heroes to combine positive and negative results
          */
         else if (whichLevel == 89) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
@@ -3493,7 +3493,7 @@ public class Levels implements ScreenManager {
          * a callback
          */
         else if (whichLevel == 90) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 5);
             PreScene.get().addText("Keep pressing until\na hero makes it to\nthe destination", 255, 255, 255,
@@ -3527,7 +3527,7 @@ public class Levels implements ScreenManager {
          * Demo a truck, using distance and revolute joints
          */
         else if (whichLevel == 91) {
-            Level.configure(48, 32);
+            Level.configureCamera(48, 32);
             Level.configureGravity(0, -10);
             Util.drawBoundingBox(0, 0, 48, 32, "red.png", 1, 0, 1);
 
@@ -3559,7 +3559,7 @@ public class Levels implements ScreenManager {
          */
         else if (whichLevel == 92) {
             // start with a basic tilt-based side-scroller
-            Level.configure(3 * 48, 32);
+            Level.configureCamera(3 * 48, 32);
             Level.configureGravity(0, -10);
             Level.enableTilt(10, 0);
             Util.drawBoundingBox(0, 0, 3 * 48, 32, "red.png", 1, 0, 1);
@@ -3620,7 +3620,7 @@ public class Levels implements ScreenManager {
         // Show how to make an "infinite" level, and add a foreground layer
         else if (whichLevel == 93) {
             // set up a standard side scroller with tilt, but make it really really long:
-            Level.configure(300000, 32);
+            Level.configureCamera(300000, 32);
             Level.configureGravity(0, -10);
             PreScene.get().addText("Press to make\nthe hero go up", 255, 255, 255, "arial.ttf", 32);
             Util.drawBoundingBox(0, 0, 300000, 32, "red.png", 0, 0, 0);

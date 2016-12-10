@@ -27,6 +27,7 @@
 
 package com.me.mylolgame;
 
+import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.ScreenManager;
 
 /**
@@ -45,7 +46,7 @@ public class Store implements ScreenManager {
      *
      * @param which The store screen to draw.
      */
-    public void display(int which) {
+    public void display(int which, Level level) {
         // If the store has multiple screens, use Lol.doStore(int) as the
         // callback on buttons for navigating among store screens
     }
