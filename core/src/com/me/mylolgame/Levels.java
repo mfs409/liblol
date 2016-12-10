@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -1050,7 +1050,7 @@ public class Levels implements ScreenManager {
             // 10 milliseconds."  It also says "when an obstacle is drawn, do some stuff to the
             // obstacle".  If you don't want any of this functionality, you can replace the whole
             // "new LolCallback..." region of code with "null".
-            Level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback(){
+            Level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback() {
                 @Override
                 public void onEvent() {
                     // each time we draw an obstacle, it will be visible to this code as the
@@ -2102,7 +2102,7 @@ public class Levels implements ScreenManager {
                     int s = ((Hero) mAttachedActor).getStrength();
                     // set the hero's image index to (s-1), i.e., one of the
                     // indices in the range 0..7, depending on strength
-                    mAttachedActor.setImage("colorstar"+s+".png");
+                    mAttachedActor.setImage("colorstar" + s + ".png");
 
                 }
             });
@@ -3515,7 +3515,9 @@ public class Levels implements ScreenManager {
                 public void onEvent() {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = Facts.getLevelActor("" + i);
-                        p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
+                        if (p != null) {
+                            p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
+                        }
                     }
                 }
             });
@@ -3647,7 +3649,7 @@ public class Levels implements ScreenManager {
             //
             // Note that the obstacle needs to be final or we can't access it within the callback
             final Obstacle trigger = Obstacle.makeAsBox(30, 0, 1, 32, "");
-            LolCallback lc = new LolCallback(){
+            LolCallback lc = new LolCallback() {
                 /**
                  * Each time the hero hits the obstacle, we'll run this code to draw a new enemy
                  * and a new obstacle on the screen.  We'll randomize their placement just a bit.
@@ -3661,7 +3663,7 @@ public class Levels implements ScreenManager {
                     trigger.setPosition(trigger.getXPosition() + 50, trigger.getYPosition());
                 }
             };
-            trigger.setHeroCollisionCallback(0,0,0,0,0,lc);
+            trigger.setHeroCollisionCallback(0, 0, 0, 0, 0, lc);
             // No transfer of momeuntum when the hero collides with the trigger
             trigger.setCollisionsEnabled(false);
         }
