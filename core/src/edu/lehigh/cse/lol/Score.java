@@ -47,7 +47,7 @@ public class Score {
      * This is the number of goodies that must be collected, if we're in
      * GOODIECOUNT mode
      */
-    private final int[] mVictoryGoodieCount = new int[4];
+    final int[] mVictoryGoodieCount = new int[4];
     /**
      * Track the number of heroes that have been created
      */
@@ -91,234 +91,26 @@ public class Score {
     /**
      * Track the number of heroes that have been removed/defeated
      */
-    private int mHeroesDefeated = 0;
+     int mHeroesDefeated = 0;
     /**
      * Number of heroes who have arrived at any destination yet
      */
-    private int mDestinationArrivals = 0;
+     int mDestinationArrivals = 0;
     /**
      * Describes how a level is won.
      */
-    private VictoryType mVictoryType = VictoryType.DESTINATION;
+    VictoryType mVictoryType = VictoryType.DESTINATION;
     /**
      * This is the number of heroes who must reach destinations, if we're in
      * DESTINATION mode
      */
-    private int mVictoryHeroCount;
+     int mVictoryHeroCount;
     /**
      * This is the number of enemies that must be defeated, if we're in
      * ENEMYCOUNT mode. -1 means "all of them"
      */
-    private int mVictoryEnemyCount;
+     int mVictoryEnemyCount;
 
-    /**
-     * Manually increment the number of goodies of type 1 that have been
-     * collected.
-     */
-    public static void incrementGoodiesCollected1() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0]++;
-    }
-
-    /**
-     * Manually increment the number of goodies of type 2 that have been
-     * collected.
-     */
-    public static void incrementGoodiesCollected2() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1]++;
-    }
-
-    /**
-     * Manually increment the number of goodies of type 3 that have been
-     * collected.
-     */
-    public static void incrementGoodiesCollected3() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2]++;
-    }
-
-    /**
-     * Manually increment the number of goodies of type 4 that have been
-     * collected.
-     */
-    public static void incrementGoodiesCollected4() {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3]++;
-    }
-
-    /**
-     * Getter for number of goodies of type 1 that have been collected.
-     *
-     * @return The number of goodies collected.
-     */
-    public static int getGoodiesCollected1() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0];
-    }
-
-    /**
-     * Manually set the number of goodies of type 1 that have been collected.
-     *
-     * @param value The new value
-     */
-    public static void setGoodiesCollected1(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[0] = value;
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Getter for number of goodies of type 2 that have been collected.
-     *
-     * @return The number of goodies collected.
-     */
-    public static int getGoodiesCollected2() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1];
-    }
-
-    /**
-     * Manually set the number of goodies of type 2 that have been collected.
-     *
-     * @param value The new value
-     */
-    public static void setGoodiesCollected2(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[1] = value;
-    }
-
-    /**
-     * Getter for number of goodies of type 3 that have been collected.
-     *
-     * @return The number of goodies collected.
-     */
-    public static int getGoodiesCollected3() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2];
-    }
-
-    /**
-     * Manually set the number of goodies of type 3 that have been collected.
-     *
-     * @param value The new value
-     */
-    public static void setGoodiesCollected3(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[2] = value;
-    }
-
-    /**
-     * Getter for number of goodies of type 4 that have been collected.
-     *
-     * @return The number of goodies collected.
-     */
-    public static int getGoodiesCollected4() {
-        return Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3];
-    }
-
-    /**
-     * Manually set the number of goodies of type 4 that have been collected.
-     *
-     * @param value The new value
-     */
-    public static void setGoodiesCollected4(int value) {
-        Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[3] = value;
-    }
-
-    /**
-     * Indicate that the level is won by defeating all the enemies. This version
-     * is useful if the number of enemies isn't known, or if the goal is to
-     * defeat all enemies before more are are created.
-     */
-    static public void setVictoryEnemyCount() {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = -1;
-    }
-
-    /**
-     * Indicate that the level is won by defeating a certain number of enemies
-     *
-     * @param howMany The number of enemies that must be defeated to win the level
-     */
-    static public void setVictoryEnemyCount(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.ENEMYCOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryEnemyCount = howMany;
-    }
-
-    /**
-     * Indicate that the level is won by collecting enough goodies
-     *
-     * @param v1 Number of type-1 goodies that must be collected to win the
-     *           level
-     * @param v2 Number of type-2 goodies that must be collected to win the
-     *           level
-     * @param v3 Number of type-3 goodies that must be collected to win the
-     *           level
-     * @param v4 Number of type-4 goodies that must be collected to win the
-     *           level
-     */
-    static public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.GOODIECOUNT;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[0] = v1;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[1] = v2;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[2] = v3;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryGoodieCount[3] = v4;
-    }
-
-    /**
-     * Indicate that the level is won by having a certain number of heroes reach
-     * destinations
-     *
-     * @param howMany Number of heroes that must reach destinations
-     */
-    static public void setVictoryDestination(int howMany) {
-        Lol.sGame.mCurrentLevel.mScore.mVictoryType = VictoryType.DESTINATION;
-        Lol.sGame.mCurrentLevel.mScore.mVictoryHeroCount = howMany;
-    }
-
-    /**
-     * Change the amount of time left in a countdown timer
-     *
-     * @param delta The amount of time to add before the timer expires
-     */
-    public static void updateTimerExpiration(float delta) {
-        Lol.sGame.mCurrentLevel.mScore.mCountDownRemaining += delta;
-    }
-
-    /**
-     * Report the total distance the hero has traveled
-     */
-    public static int getDistance() {
-        return Lol.sGame.mCurrentLevel.mScore.mDistance;
-    }
-
-    /**
-     * Report the stopwatch value
-     */
-    public static int getStopwatch() {
-        return (int) Lol.sGame.mCurrentLevel.mScore.mStopWatchProgress;
-    }
-
-    /**
-     * Report the number of enemies that have been defeated
-     */
-    public static int getEnemiesDefeated() {
-        return Lol.sGame.mCurrentLevel.mScore.mEnemiesDefeated;
-    }
-
-    /**
-     * Force the level to end in victory
-     *
-     * This is useful in callbacks, where we might want to immediately end the
-     * game
-     */
-    public static void winLevel() {
-        Lol.sGame.mCurrentLevel.mScore.endLevel(true);
-    }
-
-    /**
-     * Force the level to end in defeat
-     *
-     * This is useful in callbacks, where we might want to immediately end the
-     * game
-     */
-    public static void loseLevel() {
-        Lol.sGame.mCurrentLevel.mScore.endLevel(false);
-    }
 
     /**
      * Use this to inform the level that a hero has been defeated
