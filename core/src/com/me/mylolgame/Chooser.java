@@ -32,7 +32,6 @@ import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
-import edu.lehigh.cse.lol.Util;
 
 /**
  * Chooser draws the level chooser screens. Our chooser code is pretty

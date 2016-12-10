@@ -33,6 +33,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
+import edu.lehigh.cse.lol.internals.Util;
 
 /**
  * A Lol object is the outermost container for all of the functionality of the
@@ -89,7 +90,7 @@ public abstract class Lol extends Game {
     /*
      * GAME CONFIGURATION VARIABLES
      *
-     * These getLoseScene set in MyGame.java
+     * These are set in MyGame.java
      */
     /**
      * The total number of levels. This is only useful for knowing what to do
@@ -107,7 +108,7 @@ public abstract class Lol extends Game {
     /**
      * A per-game string, to use for storing information on an Android device
      */
-    protected String mStorageKey;
+    public String mStorageKey;
     /**
      * Default font face
      */

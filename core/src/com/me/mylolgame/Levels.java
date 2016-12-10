@@ -39,11 +39,10 @@ import edu.lehigh.cse.lol.Hero;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
-import edu.lehigh.cse.lol.ProjectilePool;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Svg;
-import edu.lehigh.cse.lol.Util;
+import edu.lehigh.cse.lol.internals.Util;
 
 /**
  * Levels is where all of the code goes for describing the different levels of
@@ -2632,7 +2631,7 @@ public class Levels implements ScreenManager {
                     // as a reward... picking in the range 0-46,0-30 ensures
                     // that with width and height of 2, the goodie stays on
                     // screen
-                    level.makeGoodieAsCircle(Util.getRandom(46), Util.getRandom(30), 2, 2, "blueball.png");
+                    level.makeGoodieAsCircle(level.getRandom(46), level.getRandom(30), 2, 2, "blueball.png");
                 }
             };
             Enemy e1 = level.makeEnemyAsCircle(5, 5, 1, 1, "redball.png");
@@ -3507,7 +3506,7 @@ public class Levels implements ScreenManager {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = level.getLevelActor("" + i);
                         if (p != null) {
-                            p.setAbsoluteVelocity(5 - Util.getRandom(10), 10, false);
+                            p.setAbsoluteVelocity(5 - level.getRandom(10), 10, false);
                         }
                     }
                 }
@@ -3648,8 +3647,8 @@ public class Levels implements ScreenManager {
                  */
                 public void onEvent() {
                     // make a random enemy and a random goodie.  Put them in X coordinates relative to the trigger
-                    level.makeEnemyAsCircle(trigger.getXPosition() + 40 + Util.getRandom(10), Util.getRandom(30), 2, 2, "redball.png");
-                    level.makeGoodieAsCircle(trigger.getXPosition() + 50 + Util.getRandom(10), Util.getRandom(30), 2, 2, "blueball.png");
+                    level.makeEnemyAsCircle(trigger.getXPosition() + 40 + level.getRandom(10), level.getRandom(30), 2, 2, "redball.png");
+                    level.makeGoodieAsCircle(trigger.getXPosition() + 50 + level.getRandom(10), level.getRandom(30), 2, 2, "blueball.png");
                     // move the trigger so we can hit it again
                     trigger.setPosition(trigger.getXPosition() + 50, trigger.getYPosition());
                 }

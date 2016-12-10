@@ -74,6 +74,7 @@ import edu.lehigh.cse.lol.internals.LolAction;
 import edu.lehigh.cse.lol.internals.ParallaxCamera;
 import edu.lehigh.cse.lol.internals.ParallaxLayer;
 import edu.lehigh.cse.lol.internals.Renderable;
+import edu.lehigh.cse.lol.internals.Util;
 
 /**
  * A Level is an interactive portion of the game. Levels can be infinite, or
@@ -4186,7 +4187,7 @@ public class Level extends ScreenAdapter {
      * @param max The largest number returned will be one less than max
      * @return a random integer
      */
-    public  int getRandom(int max) {
+    public int getRandom(int max) {
         return sGenerator.nextInt(max);
     }
 

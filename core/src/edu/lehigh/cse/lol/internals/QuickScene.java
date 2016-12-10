@@ -44,7 +44,6 @@ import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Media;
-import edu.lehigh.cse.lol.Util;
 
 abstract public class QuickScene {
     /**

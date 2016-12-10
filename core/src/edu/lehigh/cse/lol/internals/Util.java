@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol;
+package edu.lehigh.cse.lol.internals;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -36,6 +36,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.Random;
 
+import edu.lehigh.cse.lol.Lol;
+import edu.lehigh.cse.lol.Media;
 import edu.lehigh.cse.lol.internals.Renderable;
 
 /**
@@ -46,8 +48,7 @@ public class Util {
     /**
      * Use this for determining bounds of text boxes
      */
-    static GlyphLayout glyphLayout = new GlyphLayout();
-
+    public static GlyphLayout glyphLayout = new GlyphLayout();
 
     /**
      * Create a Renderable that consists of an image
@@ -59,7 +60,7 @@ public class Util {
      * @param imgName The file name for the image, or ""
      * @return A Renderable of the image
      */
-    static Renderable makePicture(final float x, final float y, final float width, final float height,
+    public static Renderable makePicture(final float x, final float y, final float width, final float height,
                                          String imgName) {
         // set up the image to display
         //
@@ -135,7 +136,7 @@ public class Util {
      * @param tag  The message tag
      * @param text The message text
      */
-    static void message(String tag, String text) {
+    public static void message(String tag, String text) {
         if (Lol.sGame.mShowDebugBoxes)
             Gdx.app.log(tag, text);
     }
@@ -151,7 +152,7 @@ public class Util {
      * @param bf      The BitmapFont object to use for the text's font
      * @param sb      The SpriteBatch used to render the text
      */
-    static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+    public static void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
         glyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + glyphLayout.height);
     }
@@ -165,7 +166,7 @@ public class Util {
      * @param defaultVal The value to return if the fact does not exist
      * @return The integer value corresponding to the last value stored
      */
-     static int getGameFact(String factName, int defaultVal) {
+     public static int getGameFact(String factName, int defaultVal) {
         Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
         return prefs.getInteger(factName, defaultVal);
     }
@@ -177,7 +178,7 @@ public class Util {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-      static void putGameFact(String factName, int factValue) {
+      public static void putGameFact(String factName, int factValue) {
         Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
         prefs.putInteger(factName, factValue);
         prefs.flush();

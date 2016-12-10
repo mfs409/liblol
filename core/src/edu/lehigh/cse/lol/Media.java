@@ -37,6 +37,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 import java.util.TreeMap;
+import edu.lehigh.cse.lol.internals.Util;
 
 /**
  * The MediaFactory provides a mechanism for registering all of our images,
@@ -82,7 +83,7 @@ public class Media {
      * @param fontSize     The size to display
      * @return A font object that can be used to render text
      */
-    static BitmapFont getFont(String fontFileName, int fontSize) {
+    public static BitmapFont getFont(String fontFileName, int fontSize) {
         // we store fonts as their filename appended with their size
         String key = fontFileName + "--" + fontSize;
 
@@ -119,7 +120,7 @@ public class Media {
      * @param soundName Name of the sound file to retrieve
      * @return a Sound object that can be used for sound effects
      */
-    static Sound getSound(String soundName) {
+    public static Sound getSound(String soundName) {
         Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
         if (ret == null)
             Util.message("ERROR", "Error retrieving sound '" + soundName + "'");
@@ -146,7 +147,7 @@ public class Media {
      * @param imgName Name of the image file to retrieve
      * @return a TextureRegion object that can be used to create Actors
      */
-    static TextureRegion getImage(String imgName) {
+    public static TextureRegion getImage(String imgName) {
         TextureRegion ret = Lol.sGame.mMedia.mImages.get(imgName);
         if (ret == null)
             Util.message("ERROR", "Error retrieving image '" + imgName + "'");

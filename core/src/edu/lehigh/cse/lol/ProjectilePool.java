@@ -159,7 +159,7 @@ public class ProjectilePool {
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
-            b.mAnimator.pickRandomIndex();
+            b.mAnimator.pickRandomIndex(mLevel);
 
         // calculate offset for starting position of projectile, put it on
         // screen
@@ -209,7 +209,7 @@ public class ProjectilePool {
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
-            b.mAnimator.pickRandomIndex();
+            b.mAnimator.pickRandomIndex(mLevel);
 
         // calculate offset for starting position of projectile, put it on
         // screen

@@ -32,7 +32,6 @@ import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
-import edu.lehigh.cse.lol.Util;
 
 /**
  * Splash encapsulates the code that will be run to configureGravity the opening screen

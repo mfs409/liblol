@@ -30,8 +30,8 @@ package edu.lehigh.cse.lol.internals;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import edu.lehigh.cse.lol.Animation;
+import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Media;
-import edu.lehigh.cse.lol.Util;
 
 /**
  * AnimationDriver is an internal class that actors can use to figure out which
@@ -98,8 +98,8 @@ public class AnimationDriver {
     /**
      * Request a random index from the mImages array to pick an image to display
      */
-    public void pickRandomIndex() {
-        mImageIndex = Util.getRandom(mImages.length);
+    public void pickRandomIndex(Level level) {
+        mImageIndex = level.getRandom(mImages.length);
     }
 
     /**
