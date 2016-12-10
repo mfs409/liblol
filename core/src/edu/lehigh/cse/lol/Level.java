@@ -86,7 +86,7 @@ import edu.lehigh.cse.lol.internals.Util;
  * used to display everything that appears on the screen. It is also responsible
  * for keeping track of everything on the screen (Actors, Controls, and
  * Displays), so we can draw the game correctly.
- *
+ * <p/>
  * Note that everything in Lol is a level... the splash screen, the choosers,
  * the help, and the game levels themselves.
  */
@@ -334,13 +334,13 @@ public class Level extends ScreenAdapter {
 
     /**
      * Configure the camera bounds for a level
-     *
+     * <p/>
      * TODO: set upper and lower bounds, instead of assuming a lower bound of (0, 0)
      *
      * @param width  width of the camera
      * @param height height of the camera
      */
-    public  void configureCamera(int width, int height) {
+    public void configureCamera(int width, int height) {
         setCamera(width, height);
 
         // TODO: we can move this once we getLoseScene rid of the static sGame.mCurrentLevel field
@@ -359,7 +359,7 @@ public class Level extends ScreenAdapter {
      *
      * @param actor The actor the camera should chase
      */
-    public  void setCameraChase(Actor actor) {
+    public void setCameraChase(Actor actor) {
         mChaseActor = actor;
     }
 
@@ -368,7 +368,7 @@ public class Level extends ScreenAdapter {
      *
      * @param musicName Name of the Music file to play
      */
-    public  void setMusic(String musicName) {
+    public void setMusic(String musicName) {
         mMusic = Media.getMusic(musicName);
     }
 
@@ -408,7 +408,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Turn on scribble mode, so that scene touch events draw circular objects
-     *
+     * <p/>
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
@@ -424,7 +424,7 @@ public class Level extends ScreenAdapter {
      *                         "AttachedActor" of the callback.
      */
     public void setScribbleMode(final String imgName, final float width,
-                                       final float height, final int interval, final LolCallback onCreateCallback) {
+                                final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
         mGestureResponders.add(new GestureAction() {
@@ -472,7 +472,7 @@ public class Level extends ScreenAdapter {
      *
      * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
-    public  void setZoom(float zoom) {
+    public void setZoom(float zoom) {
         mGameCam.zoom = zoom;
         mBgCam.zoom = zoom;
     }
@@ -482,7 +482,7 @@ public class Level extends ScreenAdapter {
      *
      * @param callback The code to run
      */
-    public  void setWinCallback(LolCallback callback) {
+    public void setWinCallback(LolCallback callback) {
         mWinCallback = callback;
     }
 
@@ -491,7 +491,7 @@ public class Level extends ScreenAdapter {
      *
      * @param callback The code to run
      */
-    public  void setLoseCallback(LolCallback callback) {
+    public void setLoseCallback(LolCallback callback) {
         mLoseCallback = callback;
     }
 
@@ -835,7 +835,7 @@ public class Level extends ScreenAdapter {
 
             // did we pan the level?
             mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga :mGestureResponders) {
+            for (GestureAction ga : mGestureResponders) {
                 if (ga.onPan(mTouchVec, deltaX, deltaY))
                     return true;
             }
@@ -988,7 +988,7 @@ public class Level extends ScreenAdapter {
      * Manually increment the number of goodies of type 1 that have been
      * collected.
      */
-    public  void incrementGoodiesCollected1() {
+    public void incrementGoodiesCollected1() {
         mScore.mGoodiesCollected[0]++;
     }
 
@@ -996,7 +996,7 @@ public class Level extends ScreenAdapter {
      * Manually increment the number of goodies of type 2 that have been
      * collected.
      */
-    public  void incrementGoodiesCollected2() {
+    public void incrementGoodiesCollected2() {
         mScore.mGoodiesCollected[1]++;
     }
 
@@ -1004,7 +1004,7 @@ public class Level extends ScreenAdapter {
      * Manually increment the number of goodies of type 3 that have been
      * collected.
      */
-    public  void incrementGoodiesCollected3() {
+    public void incrementGoodiesCollected3() {
         mScore.mGoodiesCollected[2]++;
     }
 
@@ -1012,7 +1012,7 @@ public class Level extends ScreenAdapter {
      * Manually increment the number of goodies of type 4 that have been
      * collected.
      */
-    public  void incrementGoodiesCollected4() {
+    public void incrementGoodiesCollected4() {
         mScore.mGoodiesCollected[3]++;
     }
 
@@ -1021,7 +1021,7 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public  int getGoodiesCollected1() {
+    public int getGoodiesCollected1() {
         return mScore.mGoodiesCollected[0];
     }
 
@@ -1030,7 +1030,7 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public  void setGoodiesCollected1(int value) {
+    public void setGoodiesCollected1(int value) {
         mScore.mGoodiesCollected[0] = value;
     }
 
@@ -1043,7 +1043,7 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public  int getGoodiesCollected2() {
+    public int getGoodiesCollected2() {
         return mScore.mGoodiesCollected[1];
     }
 
@@ -1052,7 +1052,7 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public  void setGoodiesCollected2(int value) {
+    public void setGoodiesCollected2(int value) {
         mScore.mGoodiesCollected[1] = value;
     }
 
@@ -1061,7 +1061,7 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public  int getGoodiesCollected3() {
+    public int getGoodiesCollected3() {
         return mScore.mGoodiesCollected[2];
     }
 
@@ -1070,7 +1070,7 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public  void setGoodiesCollected3(int value) {
+    public void setGoodiesCollected3(int value) {
         mScore.mGoodiesCollected[2] = value;
     }
 
@@ -1079,7 +1079,7 @@ public class Level extends ScreenAdapter {
      *
      * @return The number of goodies collected.
      */
-    public  int getGoodiesCollected4() {
+    public int getGoodiesCollected4() {
         return mScore.mGoodiesCollected[3];
     }
 
@@ -1088,7 +1088,7 @@ public class Level extends ScreenAdapter {
      *
      * @param value The new value
      */
-    public  void setGoodiesCollected4(int value) {
+    public void setGoodiesCollected4(int value) {
         mScore.mGoodiesCollected[3] = value;
     }
 
@@ -1097,7 +1097,7 @@ public class Level extends ScreenAdapter {
      * is useful if the number of enemies isn't known, or if the goal is to
      * defeat all enemies before more are are created.
      */
-     public void setVictoryEnemyCount() {
+    public void setVictoryEnemyCount() {
         mScore.mVictoryType = VictoryType.ENEMYCOUNT;
         mScore.mVictoryEnemyCount = -1;
     }
@@ -1107,7 +1107,7 @@ public class Level extends ScreenAdapter {
      *
      * @param howMany The number of enemies that must be defeated to win the level
      */
-     public void setVictoryEnemyCount(int howMany) {
+    public void setVictoryEnemyCount(int howMany) {
         mScore.mVictoryType = VictoryType.ENEMYCOUNT;
         mScore.mVictoryEnemyCount = howMany;
     }
@@ -1124,7 +1124,7 @@ public class Level extends ScreenAdapter {
      * @param v4 Number of type-4 goodies that must be collected to win the
      *           level
      */
-     public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
+    public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
         mScore.mVictoryType = VictoryType.GOODIECOUNT;
         mScore.mVictoryGoodieCount[0] = v1;
         mScore.mVictoryGoodieCount[1] = v2;
@@ -1138,7 +1138,7 @@ public class Level extends ScreenAdapter {
      *
      * @param howMany Number of heroes that must reach destinations
      */
-     public void setVictoryDestination(int howMany) {
+    public void setVictoryDestination(int howMany) {
         mScore.mVictoryType = VictoryType.DESTINATION;
         mScore.mVictoryHeroCount = howMany;
     }
@@ -1148,48 +1148,48 @@ public class Level extends ScreenAdapter {
      *
      * @param delta The amount of time to add before the timer expires
      */
-    public  void updateTimerExpiration(float delta) {
+    public void updateTimerExpiration(float delta) {
         mScore.mCountDownRemaining += delta;
     }
 
     /**
      * Report the total distance the hero has traveled
      */
-    public  int getDistance() {
+    public int getDistance() {
         return mScore.mDistance;
     }
 
     /**
      * Report the stopwatch value
      */
-    public  int getStopwatch() {
-        return (int)mScore.mStopWatchProgress;
+    public int getStopwatch() {
+        return (int) mScore.mStopWatchProgress;
     }
 
     /**
      * Report the number of enemies that have been defeated
      */
-    public  int getEnemiesDefeated() {
+    public int getEnemiesDefeated() {
         return mScore.mEnemiesDefeated;
     }
 
     /**
      * Force the level to end in victory
-     *
+     * <p/>
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
-    public  void winLevel() {
+    public void winLevel() {
         mScore.endLevel(true);
     }
 
     /**
      * Force the level to end in defeat
-     *
+     * <p/>
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
-    public  void loseLevel() {
+    public void loseLevel() {
         mScore.endLevel(false);
     }
 
@@ -1398,16 +1398,17 @@ public class Level extends ScreenAdapter {
 
     /**
      * Change the gravity in a running level
+     *
      * @param newXGravity The new X gravity
      * @param newYGravity The new Y gravity
      */
-    public  void resetGravity(float newXGravity, float newYGravity) {
+    public void resetGravity(float newXGravity, float newYGravity) {
         mWorld.setGravity(new Vector2(newXGravity, newYGravity));
     }
 
     /**
      * Configure physics for the current level
-     *
+     * <p/>
      * TODO: once we remove the static Level, we can make this happen with (0,0) in the ctor
      *
      * @param defaultXGravity The default force moving actors to the left (negative) or
@@ -1415,7 +1416,7 @@ public class Level extends ScreenAdapter {
      * @param defaultYGravity The default force pushing actors down (negative) or up
      *                        (positive)... Usually zero or -10
      */
-    public  void configureGravity(float defaultXGravity, float defaultYGravity) {
+    public void configureGravity(float defaultXGravity, float defaultYGravity) {
         // create a world with gravity
         mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
 
@@ -1563,7 +1564,7 @@ public class Level extends ScreenAdapter {
      * @param other   The other actor... it should always be a hero for now
      * @param contact A description of the contact event
      */
-     void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+    void handleSticky(final Actor sticky, final Actor other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -1592,7 +1593,7 @@ public class Level extends ScreenAdapter {
                     WeldJointDef w = new WeldJointDef();
                     w.initialize(sticky.mBody, other.mBody, v);
                     w.collideConnected = true;
-                    other.mWJoint = (WeldJoint)mWorld.createJoint(w);
+                    other.mWJoint = (WeldJoint) mWorld.createJoint(w);
                 }
             });
         }
@@ -1605,7 +1606,7 @@ public class Level extends ScreenAdapter {
      * @param xGravityMax Max X force that the accelerometer can produce
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
-    public  void enableTilt(float xGravityMax, float yGravityMax) {
+    public void enableTilt(float xGravityMax, float yGravityMax) {
         mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
@@ -1613,7 +1614,7 @@ public class Level extends ScreenAdapter {
      * Turn off accelerometer support so that tilt stops controlling actors in this
      * level
      */
-    public  void disableTilt() {
+    public void disableTilt() {
         mTilt.mGravityMax = null;
     }
 
@@ -1626,7 +1627,7 @@ public class Level extends ScreenAdapter {
      *               tilt does not cause forces upon objects, but instead the tilt
      *               of the phone directly sets velocities
      */
-    public  void setTiltAsVelocity(boolean toggle) {
+    public void setTiltAsVelocity(boolean toggle) {
         mTilt.mTiltVelocityOverride = toggle;
     }
 
@@ -1638,7 +1639,7 @@ public class Level extends ScreenAdapter {
      *                   data. This can be a fraction, like 0.5f, to make the
      *                   accelerometer less sensitive
      */
-    public  void setGravityMultiplier(float multiplier) {
+    public void setGravityMultiplier(float multiplier) {
         mTilt.mMultiplier = multiplier;
     }
 
@@ -1766,6 +1767,103 @@ public class Level extends ScreenAdapter {
     }
 
     /**
+     * TextProducer creates text programatically... it is the foundation for displaying text that
+     * changes
+     */
+    public interface TextProducer {
+        /**
+         * Generate some text
+         *
+         * @return The text to display on the screen.
+         */
+        String makeText();
+    }
+
+    /**
+     * Generate text indicating the current FPS
+     */
+    public final TextProducer DisplayFPS = new TextProducer() {
+        @Override
+        public String makeText() {
+            return "fps: " + Gdx.graphics.getFramesPerSecond();
+        }
+    };
+
+    /**
+     * Place some text on the screen.  The text will be generated by tp, which is called on every screen render
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * @param fontName The name of the font to use
+     * @param red The redness of the text
+     * @param green The greenness of the text
+     * @param blue The blueness of the text
+     * @param size The font size
+     * @param tp The TextProducer
+     * @return The display, so that it can be controlled further if needed
+     */
+    public Display addDisplay(final int x, final int y, String fontName, final int red, final int green, final int blue, int size, final TextProducer tp) {
+        Display d = new Display(this, red, green, blue, fontName, size) {
+            @Override
+            void render(SpriteBatch sb) {
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                String txt = tp.makeText();
+                Util.drawTextTransposed(x, y, txt, mFont, sb);
+            }
+        };
+        mDisplays.add(d);
+        return d;
+    }
+
+    /**
+     * Print the frames per second. We use this in debug mode, but some people
+     * like to show it all the time.
+     *
+     * @param x        The X coordinate of the bottom left corner (in pixels)
+     * @param y        The Y coordinate of the bottom left corner (in pixels)
+     * @param fontName The name of the font file to use
+     * @param red      The red portion of text color (0-255)
+     * @param green    The green portion of text color (0-255)
+     * @param blue     The blue portion of text color (0-255)
+     * @param size     The font size to use (20 is usually a good value)
+     */
+    public Display addFPS(final int x, final int y, String fontName, final int red, final int green,
+                          final int blue, int size) {
+        return addDisplay(x, y, fontName, red, green, blue, size, DisplayFPS);
+    }
+
+    /**
+     * Add a count of the current number of goodies of the specified type, with
+     * extra features for describing the appearance of the font
+     *
+     * @param type     The type of goodie to show (1-4)
+     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
+     *                 instead of just XX
+     * @param text     The text to display after the number of goodies
+     * @param x        The X coordinate of the bottom left corner (in pixels)
+     * @param y        The Y coordinate of the bottom left corner (in pixels)
+     * @param fontName The name of the font file to use
+     * @param red      The red portion of text color (0-255)
+     * @param green    The green portion of text color (0-255)
+     * @param blue     The blue portion of text color (0-255)
+     * @param size     The font size to use (20 is usually a good value)
+     */
+    public Display addGoodieCount(final int type, int max, final String text, final int x, final int y,
+                                  String fontName, final int red, final int green, final int blue, int size) {
+        // The suffix to display after the goodie count:
+        final String suffix = (max > 0) ? "/" + max + text : text;
+        Display d = new Display(this, red, green, blue, fontName, size) {
+            @Override
+            void render(SpriteBatch sb) {
+                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                Util.drawTextTransposed(x, y, "" + mScore.mGoodiesCollected[type - 1] + suffix,
+                        mFont, sb);
+            }
+        };
+        mDisplays.add(d);
+        return d;
+    }
+
+    /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * defeat
      *
@@ -1814,31 +1912,6 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Print the frames per second. We use this in debug mode, but some people
-     * like to show it all the time.
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addFPS(final int x, final int y, String fontName, final int red, final int green,
-                          final int blue, int size) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "fps: " + Gdx.graphics.getFramesPerSecond(), mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
-    }
-
-    /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * victory
      *
@@ -1877,38 +1950,6 @@ public class Level extends ScreenAdapter {
                     Util.drawTextTransposed(x, y, "" + (int) mScore.mWinCountRemaining, mFont, sb);
                 else
                     mScore.endLevel(true);
-            }
-        };
-        mDisplays.add(d);
-        return d;
-    }
-
-    /**
-     * Add a count of the current number of goodies of the specified type, with
-     * extra features for describing the appearance of the font
-     *
-     * @param type     The type of goodie to show (1-4)
-     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
-     *                 instead of just XX
-     * @param text     The text to display after the number of goodies
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addGoodieCount(final int type, int max, final String text, final int x, final int y,
-                                  String fontName, final int red, final int green, final int blue, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + text : text;
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" +mScore.mGoodiesCollected[type - 1] + suffix,
-                        mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -1989,7 +2030,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                Util.drawTextTransposed(x, y, "" + (int)mScore.mStopWatchProgress, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + (int) mScore.mStopWatchProgress, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2057,7 +2098,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 mScore.mDistance = (int) actor.getXPosition();
-                Util.drawTextTransposed(x, y, "" +mScore.mDistance + text, mFont, sb);
+                Util.drawTextTransposed(x, y, "" + mScore.mDistance + text, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2082,7 +2123,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" +mProjectilePool.mProjectilesRemaining + text,
+                Util.drawTextTransposed(x, y, "" + mProjectilePool.mProjectilesRemaining + text,
                         mFont, sb);
             }
         };
@@ -2557,7 +2598,7 @@ public class Level extends ScreenAdapter {
      * The default behavior for throwing is to throw in a straight line. If we
      * instead desire that the projectiles have some sort of aiming to them, we
      * need to use this method, which throws toward where the screen was pressed
-     *
+     * <p/>
      * Note: you probably want to use an invisible button that covers the
      * screen...
      *
@@ -2677,7 +2718,7 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom =mGameCam.zoom;
+                float curzoom = mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     mGameCam.zoom *= 2;
                     mBgCam.zoom *= 2;
@@ -2706,7 +2747,7 @@ public class Level extends ScreenAdapter {
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom =mGameCam.zoom;
+                float curzoom = mGameCam.zoom;
                 if (curzoom > minZoom) {
                     mGameCam.zoom /= 2;
                     mBgCam.zoom /= 2;
@@ -2858,22 +2899,22 @@ public class Level extends ScreenAdapter {
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
                 if (mChaseActor != null) {
-                    oldChaseactor =mChaseActor;
+                    oldChaseactor = mChaseActor;
                     mChaseActor = null;
                 }
-                float x =mGameCam.position.x - deltaX * .1f
-                        *mGameCam.zoom;
-                float y =mGameCam.position.y + deltaY * .1f
-                        *mGameCam.zoom;
+                float x = mGameCam.position.x - deltaX * .1f
+                        * mGameCam.zoom;
+                float y = mGameCam.position.y + deltaY * .1f
+                        * mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x >mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
+                if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom
                         / Lol.PIXEL_METER_RATIO / 2)
-                    x =mCamBoundX - Lol.sGame.mWidth *mGameCam.zoom
+                    x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom
                             / Lol.PIXEL_METER_RATIO / 2;
-                if (y >mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
+                if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom
                         / Lol.PIXEL_METER_RATIO / 2)
-                    y =mCamBoundY - Lol.sGame.mHeight *mGameCam.zoom
+                    y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom
                             / Lol.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -2881,10 +2922,10 @@ public class Level extends ScreenAdapter {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight *mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
                 mGameCam.position.set(x, y, 0);
@@ -2920,7 +2961,7 @@ public class Level extends ScreenAdapter {
              *            The x/y/z coordinates of the touch
              */
             public boolean onDown(Vector3 touchVec) {
-                lastZoom =mGameCam.zoom;
+                lastZoom = mGameCam.zoom;
                 return true;
             }
 
@@ -3123,24 +3164,16 @@ public class Level extends ScreenAdapter {
     /**
      * Add a control with callbacks for down, up, and pan
      *
-     * @param x
-     *            The X coordinate of the bottom left corner (in pixels)
-     * @param y
-     *            The Y coordinate of the bottom left corner (in pixels)
-     * @param width
-     *            The width of the image
-     * @param height
-     *            The height of the image
-     * @param imgName
-     *            The name of the image to display. Use "" for an invisible
-     *            button
-     * @param upCB
-     *            The callback to run when the Control is released
-     * @param dnCB
-     *            The callback to run when the Control is pressed
-     * @param mvCB
-     *            The callback to run when there is a finger move (pan) on the
-     *            Control
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param upCB    The callback to run when the Control is released
+     * @param dnCB    The callback to run when the Control is pressed
+     * @param mvCB    The callback to run when there is a finger move (pan) on the
+     *                Control
      */
     public Control addPanCallbackControl(int x, int y, int width, int height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
         final Control c = new Control(this, imgName, x, y, width, height);
@@ -3214,8 +3247,8 @@ public class Level extends ScreenAdapter {
      * @param defaultVal The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public  int getLevelFact(String factName, int defaultVal) {
-        Integer i =mLevelFacts.get(factName);
+    public int getLevelFact(String factName, int defaultVal) {
+        Integer i = mLevelFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -3230,7 +3263,7 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public  void putLevelFact(String factName, int factValue) {
+    public void putLevelFact(String factName, int factValue) {
         mLevelFacts.put(factName, factValue);
     }
 
@@ -3242,7 +3275,7 @@ public class Level extends ScreenAdapter {
      * @param defaultVal The default value to use if the fact cannot be found
      * @return The integer value corresponding to the last value stored
      */
-    public  int getSessionFact(String factName, int defaultVal) {
+    public int getSessionFact(String factName, int defaultVal) {
         Integer i = Lol.sGame.mSessionFacts.get(factName);
         if (i == null) {
             Util.message("ERROR", "Error retreiving level fact '" + factName + "'");
@@ -3258,7 +3291,7 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public  void putSessionFact(String factName, int factValue) {
+    public void putSessionFact(String factName, int factValue) {
         Lol.sGame.mSessionFacts.put(factName, factValue);
     }
 
@@ -3281,7 +3314,7 @@ public class Level extends ScreenAdapter {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-    public  void putGameFact(String factName, int factValue) {
+    public void putGameFact(String factName, int factValue) {
         Util.putGameFact(factName, factValue);
     }
 
@@ -3292,8 +3325,8 @@ public class Level extends ScreenAdapter {
      * @param actorName The name used to store the Actor
      * @return The last Actor stored with this name
      */
-    public  Actor getLevelActor(String actorName) {
-        Actor actor =mLevelActors.get(actorName);
+    public Actor getLevelActor(String actorName) {
+        Actor actor = mLevelActors.get(actorName);
         if (actor == null) {
             Util.message("ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -3308,21 +3341,18 @@ public class Level extends ScreenAdapter {
      * @param actorName The name for the Actor being saved
      * @param actor     The Actor that is the fact being saved
      */
-    public  void putLevelActor(String actorName, Actor actor) {
+    public void putLevelActor(String actorName, Actor actor) {
         mLevelActors.put(actorName, actor);
     }
 
     /**
      * Set the background color for the current level
      *
-     * @param red
-     *            The amount of redness (0-255)
-     * @param green
-     *            The amount of greenness (0-255)
-     * @param blue
-     *            The amount of blueness (0-255)
+     * @param red   The amount of redness (0-255)
+     * @param green The amount of greenness (0-255)
+     * @param blue  The amount of blueness (0-255)
      */
-     public void setBackgroundColor(int red, int green, int blue) {
+    public void setBackgroundColor(int red, int green, int blue) {
         mBackground.mColor.r = ((float) red) / 255;
         mBackground.mColor.g = ((float) green) / 255;
         mBackground.mColor.b = ((float) blue) / 255;
@@ -3331,26 +3361,20 @@ public class Level extends ScreenAdapter {
     /**
      * Add a picture that may repeat in the X dimension
      *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the X direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the background
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a background layer
-     * @param height
-     *            The height of the image being used as a background layer
+     * @param xSpeed  Speed that the picture seems to move in the X direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param ySpeed  Speed that the picture seems to move in the Y direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param imgName The name of the image file to use as the background
+     * @param yOffset The default is to draw the image at y=0. This field allows the
+     *                picture to be moved up or down.
+     * @param width   The width of the image being used as a background layer
+     * @param height  The height of the image being used as a background layer
      */
-     public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
-                                                    String imgName, float yOffset, float width, float height) {
+    public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
+                                             String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
                 * Lol.PIXEL_METER_RATIO, width, height);
@@ -3362,20 +3386,15 @@ public class Level extends ScreenAdapter {
      * Add a picture that may repeat in the X dimension, and which moves
      * automatically
      *
-     * @param xSpeed
-     *            Speed, in pixels per second
-     * @param imgName
-     *            The name of the image file to use as the background
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a background layer
-     * @param height
-     *            The height of the image being used as a background layer
+     * @param xSpeed  Speed, in pixels per second
+     * @param imgName The name of the image file to use as the background
+     * @param yOffset The default is to draw the image at y=0. This field allows the
+     *                picture to be moved up or down.
+     * @param width   The width of the image being used as a background layer
+     * @param height  The height of the image being used as a background layer
      */
-     public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
-                                                        float yOffset, float width, float height) {
+    public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
+                                                 float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
                 * Lol.PIXEL_METER_RATIO, width, height);
@@ -3387,26 +3406,20 @@ public class Level extends ScreenAdapter {
     /**
      * Add a picture that may repeat in the Y dimension
      *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the X direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the background
-     * @param xOffset
-     *            The default is to draw the image at x=0. This field allows the
-     *            picture to be moved left or right.
-     * @param width
-     *            The width of the image being used as a background layer
-     * @param height
-     *            The height of the image being used as a background layer
+     * @param xSpeed  Speed that the picture seems to move in the X direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param ySpeed  Speed that the picture seems to move in the Y direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param imgName The name of the image file to use as the background
+     * @param xOffset The default is to draw the image at x=0. This field allows the
+     *                picture to be moved left or right.
+     * @param width   The width of the image being used as a background layer
+     * @param height  The height of the image being used as a background layer
      */
-     public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
-                                                  String imgName, float xOffset, float width, float height) {
+    public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
+                                           String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
                 xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
@@ -3422,7 +3435,7 @@ public class Level extends ScreenAdapter {
      * @parm x The x coordinate of the starting point of the particle system
      * @parm y The y coordinate of the starting point of the particle system
      */
-    public  Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
+    public Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
         Effect e = new Effect();
 
         // create the particle effect system.
@@ -3444,26 +3457,20 @@ public class Level extends ScreenAdapter {
     /**
      * Add a picture that may repeat in the X dimension
      *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the X direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
+     * @param xSpeed  Speed that the picture seems to move in the X direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param ySpeed  Speed that the picture seems to move in the Y direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param imgName The name of the image file to use as the foreground
+     * @param yOffset The default is to draw the image at y=0. This field allows the
+     *                picture to be moved up or down.
+     * @param width   The width of the image being used as a foreground layer
+     * @param height  The height of the image being used as a foreground layer
      */
-     public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
-                                                    String imgName, float yOffset, float width, float height) {
+    public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
+                                             String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName), 0, yOffset
                 * Lol.PIXEL_METER_RATIO, width, height);
@@ -3475,20 +3482,15 @@ public class Level extends ScreenAdapter {
      * Add a picture that may repeat in the X dimension, and which moves
      * automatically
      *
-     * @param xSpeed
-     *            Speed, in pixels per second
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param yOffset
-     *            The default is to draw the image at y=0. This field allows the
-     *            picture to be moved up or down.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
+     * @param xSpeed  Speed, in pixels per second
+     * @param imgName The name of the image file to use as the foreground
+     * @param yOffset The default is to draw the image at y=0. This field allows the
+     *                picture to be moved up or down.
+     * @param width   The width of the image being used as a foreground layer
+     * @param height  The height of the image being used as a foreground layer
      */
-     public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
-                                                        float yOffset, float width, float height) {
+    public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
+                                                 float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 Media.getImage(imgName), 0, yOffset
                 * Lol.PIXEL_METER_RATIO, width, height);
@@ -3500,26 +3502,20 @@ public class Level extends ScreenAdapter {
     /**
      * Add a picture that may repeat in the Y dimension
      *
-     * @param xSpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param ySpeed
-     *            Speed that the picture seems to move in the Y direction. "1"
-     *            is the same speed as the hero; "0" is not at all; ".5f" is at
-     *            half the hero's speed
-     * @param imgName
-     *            The name of the image file to use as the foreground
-     * @param xOffset
-     *            The default is to draw the image at x=0. This field allows the
-     *            picture to be moved left or right.
-     * @param width
-     *            The width of the image being used as a foreground layer
-     * @param height
-     *            The height of the image being used as a foreground layer
+     * @param xSpeed  Speed that the picture seems to move in the Y direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param ySpeed  Speed that the picture seems to move in the Y direction. "1"
+     *                is the same speed as the hero; "0" is not at all; ".5f" is at
+     *                half the hero's speed
+     * @param imgName The name of the image file to use as the foreground
+     * @param xOffset The default is to draw the image at x=0. This field allows the
+     *                picture to be moved left or right.
+     * @param width   The width of the image being used as a foreground layer
+     * @param height  The height of the image being used as a foreground layer
      */
-     public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
-                                                  String imgName, float xOffset, float width, float height) {
+    public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
+                                           String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 Media.getImage(imgName),
                 xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
@@ -3533,8 +3529,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The current LoseScene
      */
-    public  LoseScene getLoseScene() {
-        LoseScene scene =mLoseScene;
+    public LoseScene getLoseScene() {
+        LoseScene scene = mLoseScene;
         if (scene != null)
             return scene;
         scene = new LoseScene(this);
@@ -3548,8 +3544,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The current PreScene
      */
-    public  PreScene getPreScene() {
-        PreScene scene =mPreScene;
+    public PreScene getPreScene() {
+        PreScene scene = mPreScene;
         if (scene != null)
             return scene;
         scene = new PreScene(this);
@@ -3568,8 +3564,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The current PauseScene
      */
-    public  PauseScene getPauseScene() {
-        PauseScene scene =mPauseScene;
+    public PauseScene getPauseScene() {
+        PauseScene scene = mPauseScene;
         if (scene != null)
             return scene;
         scene = new PauseScene(this);
@@ -3583,8 +3579,8 @@ public class Level extends ScreenAdapter {
      *
      * @return The current WinScene
      */
-    public  WinScene getWinScene() {
-        WinScene scene =mWinScene;
+    public WinScene getWinScene() {
+        WinScene scene = mWinScene;
         if (scene != null)
             return scene;
         scene = new WinScene(this);
@@ -3608,6 +3604,7 @@ public class Level extends ScreenAdapter {
         addActor(e, 0);
         return e;
     }
+
     /**
      * Draw an enemy with an underlying polygon shape
      *
@@ -3620,7 +3617,7 @@ public class Level extends ScreenAdapter {
      *                polygon, listed as x0,y0,x1,y1,x2,y2,...
      * @return The enemy, so that it can be further modified
      */
-    public  Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+    public Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Enemy e = new Enemy(this, width, height, imgName);
         e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         addActor(e, 0);
@@ -3655,7 +3652,7 @@ public class Level extends ScreenAdapter {
      * @param imgName The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public  Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
+    public Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
         Destination d = new Destination(this, width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         d.setCollisionsEnabled(false);
@@ -3693,7 +3690,7 @@ public class Level extends ScreenAdapter {
      * @param imgName The name of the image to display
      * @return The destination, so that it can be modified further
      */
-    public  Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
+    public Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Destination d = new Destination(this, radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
@@ -3712,7 +3709,7 @@ public class Level extends ScreenAdapter {
      * @param imgName Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
-    public  Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
+    public Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         addActor(o, 0);
@@ -3731,7 +3728,7 @@ public class Level extends ScreenAdapter {
      *                polygon, listed as x0,y0,x1,y1,x2,y2,...
      * @return The obstacle, so that it can be further modified
      */
-    public  Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+    public Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         addActor(o, 0);
@@ -3748,7 +3745,7 @@ public class Level extends ScreenAdapter {
      * @param imgName Name of image file to use
      * @return The obstacle, so that it can be further modified
      */
-    public  Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
+    public Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(this, width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
@@ -3767,7 +3764,7 @@ public class Level extends ScreenAdapter {
      * @param imgName Name of image file to use
      * @return The goodie, so that it can be further modified
      */
-    public  Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
+    public Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
         Goodie g = new Goodie(this, width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         g.setCollisionsEnabled(false);
@@ -3807,7 +3804,7 @@ public class Level extends ScreenAdapter {
      *                polygon, listed as x0,y0,x1,y1,x2,y2,...
      * @return The goodie, so that it can be further modified
      */
-    public  Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+    public Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Goodie g = new Goodie(this, width, height, imgName);
         g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         g.setCollisionsEnabled(false);
@@ -3862,7 +3859,7 @@ public class Level extends ScreenAdapter {
      *                polygon, listed as x0,y0,x1,y1,x2,y2,...
      * @return The hero, so that it can be further modified
      */
-    public  Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
+    public Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Hero h = new Hero(this, width, height, imgName);
         h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         addActor(h, 0);
@@ -3875,8 +3872,8 @@ public class Level extends ScreenAdapter {
      *
      * @param distance Maximum distance from the hero that a projectile can travel
      */
-    public  void setProjectileRange(float distance) {
-        for (Projectile p :mProjectilePool.mPool)
+    public void setProjectileRange(float distance) {
+        for (Projectile p : mProjectilePool.mPool)
             p.mRange = distance;
     }
 
@@ -3884,8 +3881,8 @@ public class Level extends ScreenAdapter {
      * Indicate that projectiles should feel the effects of gravity. Otherwise,
      * they will be (more or less) immune to gravitational forces.
      */
-    public  void setProjectileGravityOn() {
-        for (Projectile p :mProjectilePool.mPool)
+    public void setProjectileGravityOn() {
+        for (Projectile p : mProjectilePool.mPool)
             p.mBody.setGravityScale(1);
     }
 
@@ -3893,11 +3890,11 @@ public class Level extends ScreenAdapter {
      * Specify the image file from which to randomly choose projectile images
      *
      * @param imgName The file to use when picking images
-     *
-     * TODO: this is broken now that we removed Animatable images
+     *                <p/>
+     *                TODO: this is broken now that we removed Animatable images
      */
-    public  void setProjectileImageSource(String imgName) {
-        for (Projectile p :mProjectilePool.mPool)
+    public void setProjectileImageSource(String imgName) {
+        for (Projectile p : mProjectilePool.mPool)
             p.mAnimator.updateImage(imgName);
         mProjectilePool.mRandomizeImages = true;
     }
@@ -3908,7 +3905,7 @@ public class Level extends ScreenAdapter {
      *
      * @param factor The value to multiply against the projectile speed.
      */
-    public  void setProjectileVectorDampeningFactor(float factor) {
+    public void setProjectileVectorDampeningFactor(float factor) {
         mProjectilePool.mDirectionalDamp = factor;
     }
 
@@ -3916,7 +3913,7 @@ public class Level extends ScreenAdapter {
      * Indicate that all projectiles should participate in collisions, rather
      * than disappearing when they collide with other actors
      */
-    public  void enableCollisionsForProjectiles() {
+    public void enableCollisionsForProjectiles() {
         mProjectilePool.mSensorProjectiles = false;
     }
 
@@ -3926,7 +3923,7 @@ public class Level extends ScreenAdapter {
      *
      * @param velocity The magnitude of the velocity for projectiles
      */
-    public  void setFixedVectorThrowVelocityForProjectiles(float velocity) {
+    public void setFixedVectorThrowVelocityForProjectiles(float velocity) {
         mProjectilePool.mEnableFixedVectorVelocity = true;
         mProjectilePool.mFixedVectorVelocity = velocity;
     }
@@ -3935,7 +3932,7 @@ public class Level extends ScreenAdapter {
      * Indicate that projectiles thrown via the "directional" mechanism should
      * be rotated to face in their direction or movement
      */
-    public  void setRotateVectorThrowForProjectiles() {
+    public void setRotateVectorThrowForProjectiles() {
         mProjectilePool.mRotateVectorThrow = true;
     }
 
@@ -3943,8 +3940,8 @@ public class Level extends ScreenAdapter {
      * Indicate that when two projectiles collide, they should both remain on
      * screen
      */
-    public  void setCollisionOkForProjectiles() {
-        for (Projectile p :mProjectilePool.mPool)
+    public void setCollisionOkForProjectiles() {
+        for (Projectile p : mProjectilePool.mPool)
             p.mDisappearOnCollide = false;
     }
 
@@ -3962,7 +3959,7 @@ public class Level extends ScreenAdapter {
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
     public void configureProjectiles(int size, float width, float height, String imgName, int strength, int zIndex,
-                                            boolean isCircle) {
+                                     boolean isCircle) {
         mProjectilePool = new ProjectilePool(this, size, width, height, imgName, strength, zIndex,
                 isCircle);
     }
@@ -3972,7 +3969,7 @@ public class Level extends ScreenAdapter {
      *
      * @param number How many projectiles are available
      */
-    public  void setNumberOfProjectiles(int number) {
+    public void setNumberOfProjectiles(int number) {
         mProjectilePool.mProjectilesRemaining = number;
     }
 
@@ -3981,7 +3978,7 @@ public class Level extends ScreenAdapter {
      *
      * @param soundName Name of the sound file to play
      */
-    public  void setThrowSound(String soundName) {
+    public void setThrowSound(String soundName) {
         mProjectilePool.mThrowSound = Media.getSound(soundName);
     }
 
@@ -3990,7 +3987,7 @@ public class Level extends ScreenAdapter {
      *
      * @param soundName the name of the sound file to play
      */
-    public  void setProjectileDisappearSound(String soundName) {
+    public void setProjectileDisappearSound(String soundName) {
         mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
     }
 
@@ -3999,8 +3996,8 @@ public class Level extends ScreenAdapter {
      *
      * @param a The animation object to use for each projectile that is thrown
      */
-    public  void setProjectileAnimation(Animation a) {
-        for (Projectile p :mProjectilePool.mPool)
+    public void setProjectileAnimation(Animation a) {
+        for (Projectile p : mProjectilePool.mPool)
             p.setDefaultAnimation(a);
     }
 
@@ -4016,8 +4013,8 @@ public class Level extends ScreenAdapter {
      * @param elasticity Elasticity of the rectangle. When in doubt, use 0
      * @param friction   Friction of the rectangle. When in doubt, use 1
      */
-     public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName, float density,
-                                       float elasticity, float friction) {
+    public void drawBoundingBox(float x0, float y0, float x1, float y1, String imgName, float density,
+                                float elasticity, float friction) {
         // draw four rectangles and we're good
         Obstacle bottom = makeObstacleAsBox(x0 - 1, y0 - 1, Math.abs(x0 - x1) + 2, 1, imgName);
         bottom.setPhysics(density, elasticity, friction);
@@ -4038,18 +4035,18 @@ public class Level extends ScreenAdapter {
      * expected... if you need more power than this provides, you'll have to
      * modify Svg.java
      *
-     * @param svgName    Name of the svg file to load. It should be in the assets
-     *                   folder
-     * @param stretchX   Stretch the drawing in the X dimension by this percentage
-     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX     Shift the drawing in the X dimension. Note that shifting
-     *                   occurs after stretching
-     * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
-     *                   occurs after stretching
-     * @param ac         A callback for customizing each (obstacle) line segment of the SVG
+     * @param svgName  Name of the svg file to load. It should be in the assets
+     *                 folder
+     * @param stretchX Stretch the drawing in the X dimension by this percentage
+     * @param stretchY Stretch the drawing in the Y dimension by this percentage
+     * @param xposeX   Shift the drawing in the X dimension. Note that shifting
+     *                 occurs after stretching
+     * @param xposeY   Shift the drawing in the Y dimension. Note that shifting
+     *                 occurs after stretching
+     * @param ac       A callback for customizing each (obstacle) line segment of the SVG
      */
-    public  void importLineDrawing(String svgName, float stretchX, float stretchY,
-                                         float xposeX, float xposeY, Svg.ActorCallback ac) {
+    public void importLineDrawing(String svgName, float stretchX, float stretchY,
+                                  float xposeX, float xposeY, Svg.ActorCallback ac) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
         Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
@@ -4059,7 +4056,7 @@ public class Level extends ScreenAdapter {
     /**
      * Use this to manage the state of Mute
      */
-    public  void toggleMute() {
+    public void toggleMute() {
         // volume is either 1 or 0
         if (getGameFact("volume", 1) == 1) {
             // set volume to 0, set image to 'unmute'
@@ -4076,13 +4073,13 @@ public class Level extends ScreenAdapter {
      * Use this to determine if the game is muted or not. True corresponds to
      * not muted, false corresponds to muted.
      */
-    public  boolean getVolume() {
+    public boolean getVolume() {
         return getGameFact("volume", 1) == 1;
     }
 
     /**
      * Draw a picture on the current level
-     *
+     * <p/>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this picture.
      *
@@ -4094,14 +4091,14 @@ public class Level extends ScreenAdapter {
      * @param zIndex  The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                and 2. By default, everything goes to plane 0
      */
-    public  void drawPicture(final float x, final float y, final float width, final float height,
-                                   final String imgName, int zIndex) {
+    public void drawPicture(final float x, final float y, final float width, final float height,
+                            final String imgName, int zIndex) {
         addActor(Util.makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
      * Draw some text on the current level
-     *
+     * <p/>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *
@@ -4116,8 +4113,8 @@ public class Level extends ScreenAdapter {
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public  void drawText(final float x, final float y, final String text, final int red, final int green,
-                                final int blue, String fontName, int size, int zIndex) {
+    public void drawText(final float x, final float y, final String text, final int red, final int green,
+                         final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
         Renderable r = new Renderable() {
             @Override
@@ -4134,7 +4131,7 @@ public class Level extends ScreenAdapter {
 
     /**
      * Draw some text on the current level, centered on a point.
-     *
+     * <p/>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *
@@ -4149,8 +4146,8 @@ public class Level extends ScreenAdapter {
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-     public void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
-                                        final int green, final int blue, String fontName, int size, int zIndex) {
+    public void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
+                                 final int green, final int blue, String fontName, int size, int zIndex) {
         final BitmapFont bf = Media.getFont(fontName, size);
 
         // figure out the image dimensions
