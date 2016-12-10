@@ -119,7 +119,7 @@ public class Media {
      * @param soundName Name of the sound file to retrieve
      * @return a Sound object that can be used for sound effects
      */
-    public static Sound getSound(String soundName) {
+    static Sound getSound(String soundName) {
         Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
         if (ret == null)
             Util.message("ERROR", "Error retrieving sound '" + soundName + "'");
@@ -146,7 +146,7 @@ public class Media {
      * @param imgName Name of the image file to retrieve
      * @return a TextureRegion object that can be used to create Actors
      */
-    public static TextureRegion getImage(String imgName) {
+    static TextureRegion getImage(String imgName) {
         TextureRegion ret = Lol.sGame.mMedia.mImages.get(imgName);
         if (ret == null)
             Util.message("ERROR", "Error retrieving image '" + imgName + "'");
@@ -162,10 +162,6 @@ public class Media {
             m.setVolume(Util.getGameFact("volume", 1));
         }
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
 
     /**
      * Register an image file, so that it can be used later. Images should be

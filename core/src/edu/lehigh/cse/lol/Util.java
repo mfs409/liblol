@@ -48,11 +48,6 @@ public class Util {
      */
     static GlyphLayout glyphLayout = new GlyphLayout();
 
-    /**
-     * A random number generator... We provide this so that new game developers
-     * don't create lots of Random()s throughout their code
-     */
-    private static Random sGenerator = new Random();
 
     /**
      * Create a Renderable that consists of an image
@@ -64,7 +59,7 @@ public class Util {
      * @param imgName The file name for the image, or ""
      * @return A Renderable of the image
      */
-    public static Renderable makePicture(final float x, final float y, final float width, final float height,
+    static Renderable makePicture(final float x, final float y, final float width, final float height,
                                          String imgName) {
         // set up the image to display
         //
@@ -92,7 +87,7 @@ public class Util {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    public static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
+    static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
                                       final int blue, String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         return new Renderable() {
@@ -117,7 +112,7 @@ public class Util {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    public static Renderable makeText(final String message, final int red, final int green, final int blue,
+    static Renderable makeText(final String message, final int red, final int green, final int blue,
                                       String fontName, int size) {
         final BitmapFont bf = Media.getFont(fontName, size);
         glyphLayout.setText(bf, message);
@@ -144,21 +139,6 @@ public class Util {
         if (Lol.sGame.mShowDebugBoxes)
             Gdx.app.log(tag, text);
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Generate a random number x such that 0 &lt;= x &lt; max
-     *
-     * @param max The largest number returned will be one less than max
-     * @return a random integer
-     */
-    public static int getRandom(int max) {
-        return sGenerator.nextInt(max);
-    }
-
 
     /**
      * A helper method to draw text nicely. In GDX, we draw everything by giving

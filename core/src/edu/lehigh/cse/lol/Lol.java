@@ -55,11 +55,13 @@ public abstract class Lol extends Game {
     static final int CHOOSER = 2;
     static final int STORE = 3;
     static final int PLAY = 4;
+
     /**
      * A reference to the game object... Since the interfaces are mostly static,
      * we need an instance of a Lol object that the static methods can call.
      */
     public static Lol sGame;
+
     /**
      * Store string/integer pairs that getLoseScene reset whenever we restart the program
      */

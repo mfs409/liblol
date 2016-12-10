@@ -66,6 +66,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.TreeMap;
 
 import edu.lehigh.cse.lol.internals.GestureAction;
@@ -4178,4 +4179,21 @@ public class Level extends ScreenAdapter {
         };
         addActor(r, zIndex);
     }
+
+    /**
+     * Generate a random number x such that 0 &lt;= x &lt; max
+     *
+     * @param max The largest number returned will be one less than max
+     * @return a random integer
+     */
+    public  int getRandom(int max) {
+        return sGenerator.nextInt(max);
+    }
+
+    /**
+     * A random number generator... We provide this so that new game developers
+     * don't create lots of Random()s throughout their code
+     */
+    static Random sGenerator = new Random();
+
 }
