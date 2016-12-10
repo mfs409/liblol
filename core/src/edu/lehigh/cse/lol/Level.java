@@ -2224,18 +2224,39 @@ public class Level extends ScreenAdapter {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public Control addPauseButton(int x, int y, int width, int height, String imgName) {
+    public Control addTapControl(int x, int y, int width, int height, String imgName, final LolAction action) {
         Control c = new Control(this, imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 vv) {
-                getPauseScene().show();
+                action.go();
                 return true;
             }
         };
         mControls.add(c);
         mTapControls.add(c);
         return c;
+    }
+
+    /**
+     * Add a button that pauses the game (via a single tap) by causing a
+     * PauseScene to be displayed. Note that you must configureGravity a PauseScene, or
+     * pressing this button will cause your game to crash.
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     */
+    public Control addPauseButton(int x, int y, int width, int height, String imgName) {
+        return addTapControl(x, y, width, height, imgName, new LolAction() {
+            @Override
+            public void go() {
+                getPauseScene().show();
+            }
+        });
     }
 
     /**
