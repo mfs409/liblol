@@ -64,7 +64,7 @@ public class Splash implements ScreenManager {
         // from that level to the chooser.
         level.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
             public void onEvent() {
-                Lol.doChooser(1);
+                level.doChooser(1);
             }
         });
 
@@ -72,14 +72,14 @@ public class Splash implements ScreenManager {
         // help system
         level.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
             public void onEvent() {
-                Lol.doHelp(1);
+                level.doHelp(1);
             }
         });
 
         // This is the Quit button
         level.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
             public void onEvent() {
-                Lol.doQuit();
+                level.doQuit();
             }
         });
 

@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import edu.lehigh.cse.lol.Animation;
 import edu.lehigh.cse.lol.Level;
+import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.Media;
 
 /**
@@ -48,7 +49,7 @@ public class AnimationDriver {
      */
     TextureRegion[] mImages;
     /**
-     * The index to display from mImages for the case where there is no active
+     * The index to display from mImageNames for the case where there is no active
      * animation. This is useful for animateByGoodieCount.
      */
     int mImageIndex;
@@ -91,12 +92,12 @@ public class AnimationDriver {
     public void updateImage(String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
-        mImages[0] = Media.getImage(imgName);
+        mImages[0] = Lol.sGame.mMedia.getImage(imgName);
         mImageIndex = 0;
     }
 
     /**
-     * Request a random index from the mImages array to pick an image to display
+     * Request a random index from the mImageNames array to pick an image to display
      */
     public void pickRandomIndex(Level level) {
         mImageIndex = level.getRandom(mImages.length);

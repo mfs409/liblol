@@ -498,7 +498,7 @@ public class Hero extends Actor {
      * @param soundName The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
-        mJumpSound = Media.getSound(soundName);
+        mJumpSound = Lol.sGame.mMedia.getSound(soundName);
     }
 
     /**

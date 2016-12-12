@@ -42,7 +42,7 @@ public class Help implements ScreenManager {
     /**
      * Describe how to draw each level of help. Our help will have 2 screens
      */
-    public void display(int which, Level level) {
+    public void display(int which, final Level level) {
         // Our first scene describes the color coding that we use for the
         // different entities in the game
         if (which == 1) {
@@ -76,7 +76,7 @@ public class Help implements ScreenManager {
             // set up a control to go to the next level on screen press
             level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
-                    Lol.doHelp(2);
+                    level.doHelp(2);
                 }
             });
         }
@@ -95,7 +95,7 @@ public class Help implements ScreenManager {
             // set up a control to go to the splash screen on screen press
             level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
                 public void onEvent() {
-                    Lol.doSplash();
+                    level.doSplash();
                 }
             });
         }

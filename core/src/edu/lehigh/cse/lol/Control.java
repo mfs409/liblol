@@ -88,7 +88,7 @@ public class Control {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
-        TextureRegion tr = Media.getImage(imgName);
+        TextureRegion tr = Lol.sGame.mMedia.getImage(imgName);
         if (tr != null)
             mImage = tr;
 

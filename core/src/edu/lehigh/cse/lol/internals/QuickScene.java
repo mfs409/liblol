@@ -127,7 +127,7 @@ abstract public class QuickScene {
         sb.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (Lol.sGame.mShowDebugBoxes) {
+        if (Lol.sGame.mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mLevel.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -177,7 +177,7 @@ abstract public class QuickScene {
      * @param soundName Name of the sound file to play
      */
     public void setSound(String soundName) {
-        mSound = Media.getSound(soundName);
+        mSound = Lol.sGame.mMedia.getSound(soundName);
     }
 
     /*
@@ -283,20 +283,20 @@ abstract public class QuickScene {
         mClickToClear = false;
     }
 
+}
+
+/**
+ * When we draw clickable buttons on the screen, this is how we know where
+ * the buttons are and what to do when they are clicked
+ */
+class Button {
     /**
-     * When we draw clickable buttons on the screen, this is how we know where
-     * the buttons are and what to do when they are clicked
+     * The region that can be clicked
      */
-    public static class Button {
-        /**
-         * The region that can be clicked
-         */
-        public Rectangle mRect;
+    public Rectangle mRect;
 
-        /**
-         * The Callback to run when this button is pressed
-         */
-        public LolCallback mCallback;
-    }
-
+    /**
+     * The Callback to run when this button is pressed
+     */
+    public LolCallback mCallback;
 }

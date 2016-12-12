@@ -104,7 +104,7 @@ public class Animation {
         mNextCell = imgNames.length;
         for (int i = 0; i < mNextCell; ++i) {
             mDurations[i] = timePerFrame;
-            mCells[i] = Media.getImage(imgNames[i]);
+            mCells[i] = Lol.sGame.mMedia.getImage(imgNames[i]);
         }
     }
 
@@ -116,7 +116,7 @@ public class Animation {
      * @return the Animation, so that we can chain calls to "to()"
      */
     public Animation to(String imgName, long duration) {
-        mCells[mNextCell] = Media.getImage(imgName);
+        mCells[mNextCell] = Lol.sGame.mMedia.getImage(imgName);
         mDurations[mNextCell] = duration;
         mNextCell++;
         return this;

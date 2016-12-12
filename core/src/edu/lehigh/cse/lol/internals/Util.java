@@ -65,7 +65,7 @@ public class Util {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
-        final TextureRegion tr = Media.getImage(imgName);
+        final TextureRegion tr = Lol.sGame.mMedia.getImage(imgName);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -90,7 +90,7 @@ public class Util {
      */
     static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
                                       final int blue, String fontName, int size) {
-        final BitmapFont bf = Media.getFont(fontName, size);
+        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -115,10 +115,10 @@ public class Util {
      */
     static Renderable makeText(final String message, final int red, final int green, final int blue,
                                       String fontName, int size) {
-        final BitmapFont bf = Media.getFont(fontName, size);
+        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
         glyphLayout.setText(bf, message);
-        final float x = Lol.sGame.mWidth / 2 - glyphLayout.width / 2;
-        final float y = Lol.sGame.mHeight / 2 + glyphLayout.height / 2;
+        final float x = Lol.sGame.mConfig.mWidth / 2 - glyphLayout.width / 2;
+        final float y = Lol.sGame.mConfig.mHeight / 2 + glyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -137,7 +137,7 @@ public class Util {
      * @param text The message text
      */
     public static void message(String tag, String text) {
-        if (Lol.sGame.mShowDebugBoxes)
+        if (Lol.sGame.mConfig.mShowDebugBoxes)
             Gdx.app.log(tag, text);
     }
 
@@ -167,7 +167,7 @@ public class Util {
      * @return The integer value corresponding to the last value stored
      */
      public static int getGameFact(String factName, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.mStorageKey);
         return prefs.getInteger(factName, defaultVal);
     }
 
@@ -179,7 +179,7 @@ public class Util {
      * @param factValue The integer value that is the fact being saved
      */
       public static void putGameFact(String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mStorageKey);
+        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.mStorageKey);
         prefs.putInteger(factName, factValue);
         prefs.flush();
     }

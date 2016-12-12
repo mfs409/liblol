@@ -4,7 +4,9 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.me.mylolgame.MyGame;
+import com.me.mylolgame.MyConfig;
+
+import edu.lehigh.cse.lol.Lol;
 
 public class AndroidLauncher extends AndroidApplication {
     @Override
@@ -12,6 +14,6 @@ public class AndroidLauncher extends AndroidApplication {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useAccelerometer = true;
-        initialize(new MyGame(), config);
+        initialize(new Lol(new MyConfig()), config);
     }
 }

@@ -46,7 +46,9 @@ import edu.lehigh.cse.lol.internals.Util;
  * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
  * that they can do the real work.
  */
-public abstract class Lol extends Game {
+public class Lol extends Game {
+
+    public Config mConfig;
 
     /**
      * Modes of the game: we can be showing the main splash screen, the help
@@ -57,15 +59,6 @@ public abstract class Lol extends Game {
     static final int CHOOSER = 2;
     static final int STORE = 3;
     static final int PLAY = 4;
-
-    /**
-     * This ratio means that every 20 pixels on the screen will correspond to a
-     * meter. Note that 'pixels' are defined in terms of what a programmer's
-     * configuration() says, not the actual screen size, because the
-     * configuration gets scaled to screen dimensions. The default is 960x640.
-     */
-    static final float PIXEL_METER_RATIO = 20;
-
 
     /**
      * A reference to the game object... Since the interfaces are mostly static,
@@ -79,102 +72,10 @@ public abstract class Lol extends Game {
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
 
     /**
-     * The default screen width (note: it will be stretched appropriately on a
-     * phone)
-     */
-    public int mWidth;
-    /**
-     * The default screen height (note: it will be stretched appropriately on a
-     * phone)
-     */
-    public int mHeight;
-    /**
-     * This is a debug feature, to help see the physics behind every Actor
-     */
-    public boolean mShowDebugBoxes;
-    /**
-     * Title of the game (for desktop mode)
-     */
-    public String mGameTitle;
-
-    /*
-     * GAME CONFIGURATION VARIABLES
-     *
-     * These are set in MyGame.java
-     */
-    /**
-     * The total number of levels. This is only useful for knowing what to do
-     * when the last level is completed.
-     */
-    protected int mNumLevels;
-    /**
-     * Should the phone vibrate on certain events?
-     */
-    protected boolean mEnableVibration;
-    /**
-     * Should all levels be unlocked?
-     */
-    protected boolean mUnlockAllLevels;
-    /**
-     * A per-game string, to use for storing information on an Android device
-     */
-    public String mStorageKey;
-    /**
-     * Default font face
-     */
-    protected String mDefaultFontFace;
-    /**
-     * Default font size
-     */
-    protected int mDefaultFontSize;
-    /**
-     * Red component of default font color
-     */
-    protected int mDefaultFontRed;
-    /**
-     * Green component of default font color
-     */
-    protected int mDefaultFontGreen;
-    /**
-     * Blue component of default font color
-     */
-    protected int mDefaultFontBlue;
-    /**
-     * Default text to display when a level is won
-     */
-    protected String mDefaultWinText;
-    /**
-     * Default text to display when a level is lost
-     */
-    protected String mDefaultLoseText;
-    /**
-     * Should the level chooser be activated?
-     */
-    protected boolean mEnableChooser;
-    /**
-     * The levels of the game are drawn by this object
-     */
-    protected ScreenManager mLevels;
-    /**
-     * The chooser is drawn by this object
-     */
-    protected ScreenManager mChooser;
-    /**
-     * The help screens are drawn by this object
-     */
-    protected ScreenManager mHelp;
-    /**
-     * The splash screen is drawn by this object
-     */
-    protected ScreenManager mSplash;
-    /**
-     * The store is drawn by this object
-     */
-    protected ScreenManager mStore;
-    /**
      * The current mode of the program (from among the above choices)
      */
     int mMode;
+
     /**
      * The mode state is used to represent the current level within a mode
      * (i.e., 3rd help screen, or 5th page of the store). Tracking state
@@ -182,6 +83,7 @@ public abstract class Lol extends Game {
      * easier.
      */
     int mModeStates[] = new int[5];
+
     /**
      * This variable lets us track whether the user pressed 'back' on an
      * android, or 'escape' on the desktop. We are using polling, so we swallow
@@ -190,10 +92,11 @@ public abstract class Lol extends Game {
      * each screen to revert.
      */
     boolean mKeyDown;
+
     /**
      * Store all the images, sounds, and fonts for the game
      */
-    Media mMedia;
+    public Media mMedia;
 
     /*
      * INTERNAL METHODS
@@ -206,111 +109,8 @@ public abstract class Lol extends Game {
      * lets us getLoseScene the screen size correct (see the desktop project's Java
      * file).
      */
-    public Lol() {
-        configure();
-    }
-
-    /**
-     * Use this to load the splash screen
-     */
-    public static void doSplash() {
-        // reset state of all screens
-        for (int i = 0; i < 5; ++i)
-            sGame.mModeStates[i] = 1;
-        sGame.mMode = SPLASH;
-        Level l = new Level();
-        sGame.mSplash.display(0, l);
-        sGame.setScreen(l);
-    }
-
-    /**
-     * Use this to load the level-chooser screen. Note that when the chooser is
-     * disabled, we jump straight to level 1.
-     *
-     * @param whichChooser The chooser screen to create
-     */
-    public static void doChooser(int whichChooser) {
-        // if chooser disabled, then we either called this from splash, or from
-        // a game level
-        if (!sGame.mEnableChooser) {
-            if (sGame.mMode == PLAY) {
-                doSplash();
-            } else {
-                doLevel(sGame.mModeStates[PLAY]);
-            }
-            return;
-        }
-        // the chooser is not disabled... save the choice of level, configureGravity
-        // it, and show it.
-        sGame.mMode = CHOOSER;
-        sGame.mModeStates[CHOOSER] = whichChooser;
-        Level l = new Level();
-        sGame.mChooser.display(whichChooser, l);
-        sGame.setScreen(l);
-    }
-
-    /**
-     * Use this to load a playable level.
-     *
-     * @param which The index of the level to load
-     */
-    public static void doLevel(int which) {
-        sGame.mModeStates[PLAY] = which;
-        sGame.mMode = PLAY;
-        Level l = new Level();
-        sGame.mLevels.display(which, l);
-        sGame.setScreen(l);
-    }
-
-    /*
-     * APPLICATIONLISTENER (GAME) OVERRIDES
-     */
-
-    /**
-     * Use this to load a help level.
-     *
-     * @param which The index of the help level to load
-     */
-    public static void doHelp(int which) {
-        sGame.mModeStates[HELP] = which;
-        sGame.mMode = HELP;
-        Level l = new Level();
-        sGame.mHelp.display(which, l);
-        sGame.setScreen(l);
-    }
-
-    /**
-     * Use this to load a screen of the store.
-     *
-     * @param which The index of the help level to load
-     */
-    public static void doStore(int which) {
-        sGame.mModeStates[STORE] = which;
-        sGame.mMode = STORE;
-        Level l = new Level();
-        sGame.mStore.display(which, l);
-        sGame.setScreen(l);
-    }
-
-    /**
-     * Use this to quit the game
-     */
-    public static void doQuit() {
-        sGame.getScreen().dispose();
-        Gdx.app.exit();
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-
-    /**
-     * Report whether all levels should be treated as unlocked. This is useful
-     * in Chooser, where we might need to prevent some levels from being played.
-     */
-    public static boolean getUnlockMode() {
-        return sGame.mUnlockAllLevels;
+    public Lol(Config config) {
+        mConfig = config;
     }
 
     /**
@@ -321,7 +121,7 @@ public abstract class Lol extends Game {
      * @param millis The amount of time to vibrate
      */
     void vibrate(int millis) {
-        if (mEnableVibration)
+        if (mConfig.mEnableVibration)
             Gdx.input.vibrate(millis);
     }
 
@@ -358,11 +158,11 @@ public abstract class Lol extends Game {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
-            doSplash();
+            ((Level)getScreen()).doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            doChooser(sGame.mModeStates[CHOOSER]);
+            ((Level)getScreen()).doChooser(sGame.mModeStates[CHOOSER]);
         }
     }
 
@@ -383,8 +183,7 @@ public abstract class Lol extends Game {
         Gdx.input.setCatchBackKey(true);
 
         // Load Resources
-        mMedia = new Media();
-        loadResources();
+        mMedia = new Media(mConfig);
 
         // configure the volume
         Level l = new Level();
@@ -392,7 +191,7 @@ public abstract class Lol extends Game {
             Util.putGameFact("volume", 1);
 
         // show the splash screen
-        doSplash();
+        l.doSplash();
     }
 
     /**
@@ -410,7 +209,7 @@ public abstract class Lol extends Game {
         // being the case, the only thing we need to be careful about is that we
         // getLoseScene rid of any references to fonts that
         // might be hanging around
-        Media.onDispose();
+        Lol.sGame.mMedia.onDispose();
     }
 
     /**
@@ -424,14 +223,4 @@ public abstract class Lol extends Game {
         // Draw the current scene
         super.render();
     }
-
-    /**
-     * Register any sound or image files to be used by the game
-     */
-    abstract public void loadResources();
-
-    /**
-     * Set up all the global configuration options for the game
-     */
-    abstract public void configure();
 }

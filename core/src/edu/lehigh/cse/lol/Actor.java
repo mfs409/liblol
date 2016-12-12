@@ -854,7 +854,7 @@ public abstract class Actor implements Renderable {
      * @param sound The name of the sound file to play
      */
     public void setTouchSound(String sound) {
-        mTouchSound = Media.getSound(sound);
+        mTouchSound = Lol.sGame.mMedia.getSound(sound);
     }
 
     /**
@@ -1265,7 +1265,7 @@ public abstract class Actor implements Renderable {
      * @param soundName Name of the sound file
      */
     public void setDisappearSound(String soundName) {
-        mDisappearSound = Media.getSound(soundName);
+        mDisappearSound = Lol.sGame.mMedia.getSound(soundName);
     }
 
     /**

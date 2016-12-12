@@ -32,7 +32,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -262,9 +261,9 @@ public class Level extends ScreenAdapter {
         mCamBoundY = height;
 
         // warn on strange dimensions
-        if (width < Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO)
+        if (width < Lol.sGame.mConfig.mWidth / Lol.sGame.mConfig.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < Lol.sGame.mHeight / Lol.PIXEL_METER_RATIO)
+        if (height < Lol.sGame.mConfig.mHeight / Lol.sGame.mConfig.PIXEL_METER_RATIO)
             Util.message("Warning", "Your game height is less than 1/10 of the screen height");
     }
 
@@ -289,18 +288,18 @@ public class Level extends ScreenAdapter {
         mLevelActors = new TreeMap<>();
 
         // save the camera bounds
-        setCamera((int) (Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO), (int) (Lol.sGame.mHeight / Lol.PIXEL_METER_RATIO));
+        setCamera((int) (Lol.sGame.mConfig.mWidth / Lol.sGame.mConfig.PIXEL_METER_RATIO), (int) (Lol.sGame.mConfig.mHeight / Lol.sGame.mConfig.PIXEL_METER_RATIO));
 
         // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO, Lol.sGame.mHeight
-                / Lol.PIXEL_METER_RATIO);
-        mGameCam.position.set(Lol.sGame.mWidth / Lol.PIXEL_METER_RATIO / 2, Lol.sGame.mHeight
-                / Lol.PIXEL_METER_RATIO / 2, 0);
+        mGameCam = new OrthographicCamera(Lol.sGame.mConfig.mWidth / Lol.sGame.mConfig.PIXEL_METER_RATIO, Lol.sGame.mConfig.mHeight
+                / Lol.sGame.mConfig.PIXEL_METER_RATIO);
+        mGameCam.position.set(Lol.sGame.mConfig.mWidth / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2, Lol.sGame.mConfig.mHeight
+                / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2, 0);
         mGameCam.zoom = 1;
 
         // set up the heads-up display camera
-        int camWidth = Lol.sGame.mWidth;
-        int camHeight = Lol.sGame.mHeight;
+        int camWidth = Lol.sGame.mConfig.mWidth;
+        int camHeight = Lol.sGame.mConfig.mHeight;
         mHudCam = new OrthographicCamera(camWidth, camHeight);
         mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
 
@@ -347,9 +346,9 @@ public class Level extends ScreenAdapter {
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
-        if (Lol.sGame.mShowDebugBoxes)
-            addFPS(800, 15, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                    Lol.sGame.mDefaultFontBlue, 12);
+        if (Lol.sGame.mConfig.mShowDebugBoxes)
+            addFPS(800, 15, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed, Lol.sGame.mConfig.mDefaultFontGreen,
+                    Lol.sGame.mConfig.mDefaultFontBlue, 12);
 
     }
 
@@ -369,7 +368,7 @@ public class Level extends ScreenAdapter {
      * @param musicName Name of the Music file to play
      */
     public void setMusic(String musicName) {
-        mMusic = Media.getMusic(musicName);
+        mMusic = Lol.sGame.mMedia.getMusic(musicName);
     }
 
     /**
@@ -545,19 +544,19 @@ public class Level extends ScreenAdapter {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+        if (x > mCamBoundX - Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+            x = mCamBoundX - Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
+        if (y > mCamBoundY - Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+            y = mCamBoundY - Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-            x = Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
-        if (y < Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-            y = Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+        if (x < Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+            x = Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
+        if (y < Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+            y = Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
 
         // update the camera position
         mGameCam.position.set(x, y, 0);
@@ -616,7 +615,7 @@ public class Level extends ScreenAdapter {
     public void render(float delta) {
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
-        if (Lol.sGame.mShowDebugBoxes) {
+        if (Lol.sGame.mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
                 mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 Util.message("Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
@@ -696,7 +695,7 @@ public class Level extends ScreenAdapter {
 
 
         // DEBUG: draw outlines of physics actors
-        if (Lol.sGame.mShowDebugBoxes)
+        if (Lol.sGame.mConfig.mShowDebugBoxes)
             mDebugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
@@ -711,7 +710,7 @@ public class Level extends ScreenAdapter {
         mSpriteBatch.end();
 
         // DEBUG: render Controls' outlines
-        if (Lol.sGame.mShowDebugBoxes) {
+        if (Lol.sGame.mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -1721,15 +1720,15 @@ public class Level extends ScreenAdapter {
             yGravity *= mMultiplier;
 
             // ensure x is within the -GravityMax.x : GravityMax.x range
-            xGravity = (xGravity > Lol.PIXEL_METER_RATIO * mGravityMax.x) ? Lol.PIXEL_METER_RATIO * mGravityMax.x
+            xGravity = (xGravity > Lol.sGame.mConfig.PIXEL_METER_RATIO * mGravityMax.x) ? Lol.sGame.mConfig.PIXEL_METER_RATIO * mGravityMax.x
                     : xGravity;
-            xGravity = (xGravity < Lol.PIXEL_METER_RATIO * -mGravityMax.x) ? Lol.PIXEL_METER_RATIO * -mGravityMax.x
+            xGravity = (xGravity < Lol.sGame.mConfig.PIXEL_METER_RATIO * -mGravityMax.x) ? Lol.sGame.mConfig.PIXEL_METER_RATIO * -mGravityMax.x
                     : xGravity;
 
             // ensure y is within the -GravityMax.y : GravityMax.y range
-            yGravity = (yGravity > Lol.PIXEL_METER_RATIO * mGravityMax.y) ? Lol.PIXEL_METER_RATIO * mGravityMax.y
+            yGravity = (yGravity > Lol.sGame.mConfig.PIXEL_METER_RATIO * mGravityMax.y) ? Lol.sGame.mConfig.PIXEL_METER_RATIO * mGravityMax.y
                     : yGravity;
-            yGravity = (yGravity < Lol.PIXEL_METER_RATIO * -mGravityMax.y) ? Lol.PIXEL_METER_RATIO * -mGravityMax.y
+            yGravity = (yGravity < Lol.sGame.mConfig.PIXEL_METER_RATIO * -mGravityMax.y) ? Lol.sGame.mConfig.PIXEL_METER_RATIO * -mGravityMax.y
                     : yGravity;
 
             // If we're in 'velocity' mode, apply the accelerometer reading to each
@@ -1873,8 +1872,8 @@ public class Level extends ScreenAdapter {
      * @param y       The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addCountdown(float timeout, String text, int x, int y) {
-        return addCountdown(timeout, text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addCountdown(timeout, text, x, y, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed,
+                Lol.sGame.mConfig.mDefaultFontGreen, Lol.sGame.mConfig.mDefaultFontBlue, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /**
@@ -1920,8 +1919,8 @@ public class Level extends ScreenAdapter {
      * @param y       The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addWinCountdown(timeout, x, y, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed,
+                Lol.sGame.mConfig.mDefaultFontGreen, Lol.sGame.mConfig.mDefaultFontBlue, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /**
@@ -1966,8 +1965,8 @@ public class Level extends ScreenAdapter {
      * @param y    The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addDefeatedCount(max, text, x, y, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed,
+                Lol.sGame.mConfig.mDefaultFontGreen, Lol.sGame.mConfig.mDefaultFontBlue, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /**
@@ -2007,8 +2006,8 @@ public class Level extends ScreenAdapter {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addStopwatch(int x, int y) {
-        return addStopwatch(x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed, Lol.sGame.mDefaultFontGreen,
-                Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize);
+        return addStopwatch(x, y, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed, Lol.sGame.mConfig.mDefaultFontGreen,
+                Lol.sGame.mConfig.mDefaultFontBlue, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /**
@@ -2047,8 +2046,8 @@ public class Level extends ScreenAdapter {
      */
     public Display addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontRed,
-                Lol.sGame.mDefaultFontGreen, Lol.sGame.mDefaultFontBlue, Lol.sGame.mDefaultFontSize, h);
+        return addStrengthMeter(text, x, y, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontRed,
+                Lol.sGame.mConfig.mDefaultFontGreen, Lol.sGame.mConfig.mDefaultFontBlue, Lol.sGame.mConfig.mDefaultFontSize, h);
     }
 
     /**
@@ -2863,7 +2862,7 @@ public class Level extends ScreenAdapter {
             public boolean onTap(Vector3 vv) {
                 callback.onEvent();
                 c.mIsTouchable = false;
-                TextureRegion tr = Media.getImage(inactiveImgName);
+                TextureRegion tr = Lol.sGame.mMedia.getImage(inactiveImgName);
                 c.mImage = tr;
                 return true;
             }
@@ -2929,24 +2928,24 @@ public class Level extends ScreenAdapter {
                         * mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom
-                        / Lol.PIXEL_METER_RATIO / 2)
-                    x = mCamBoundX - Lol.sGame.mWidth * mGameCam.zoom
-                            / Lol.PIXEL_METER_RATIO / 2;
-                if (y > mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom
-                        / Lol.PIXEL_METER_RATIO / 2)
-                    y = mCamBoundY - Lol.sGame.mHeight * mGameCam.zoom
-                            / Lol.PIXEL_METER_RATIO / 2;
+                if (x > mCamBoundX - Lol.sGame.mConfig.mWidth * mGameCam.zoom
+                        / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+                    x = mCamBoundX - Lol.sGame.mConfig.mWidth * mGameCam.zoom
+                            / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
+                if (y > mCamBoundY - Lol.sGame.mConfig.mHeight * mGameCam.zoom
+                        / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+                    y = mCamBoundY - Lol.sGame.mConfig.mHeight * mGameCam.zoom
+                            / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
                 // values
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-                    x = Lol.sGame.mWidth * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
-                if (y < Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2)
-                    y = Lol.sGame.mHeight * mGameCam.zoom / Lol.PIXEL_METER_RATIO / 2;
+                if (x < Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+                    x = Lol.sGame.mConfig.mWidth * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
+                if (y < Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2)
+                    y = Lol.sGame.mConfig.mHeight * mGameCam.zoom / Lol.sGame.mConfig.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
                 mGameCam.position.set(x, y, 0);
@@ -3397,8 +3396,8 @@ public class Level extends ScreenAdapter {
     public void addHorizontalBackgroundLayer(float xSpeed, float ySpeed,
                                              String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName), 0, yOffset
-                * Lol.PIXEL_METER_RATIO, width, height);
+                Lol.sGame.mMedia.getImage(imgName), 0, yOffset
+                * Lol.sGame.mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         mBackground.mLayers.add(pl);
     }
@@ -3417,8 +3416,8 @@ public class Level extends ScreenAdapter {
     public void addHorizontalAutoBackgroundLayer(float xSpeed, String imgName,
                                                  float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
-                Media.getImage(imgName), 0, yOffset
-                * Lol.PIXEL_METER_RATIO, width, height);
+                Lol.sGame.mMedia.getImage(imgName), 0, yOffset
+                * Lol.sGame.mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mBackground.mLayers.add(pl);
@@ -3442,8 +3441,8 @@ public class Level extends ScreenAdapter {
     public void addVerticalBackgroundLayer(float xSpeed, float ySpeed,
                                            String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName),
-                xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
+                Lol.sGame.mMedia.getImage(imgName),
+                xOffset * Lol.sGame.mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mBackground.mLayers.add(pl);
     }
@@ -3493,8 +3492,8 @@ public class Level extends ScreenAdapter {
     public void addHorizontalForegroundLayer(float xSpeed, float ySpeed,
                                              String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName), 0, yOffset
-                * Lol.PIXEL_METER_RATIO, width, height);
+                Lol.sGame.mMedia.getImage(imgName), 0, yOffset
+                * Lol.sGame.mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
         mForeground.mLayers.add(pl);
     }
@@ -3513,8 +3512,8 @@ public class Level extends ScreenAdapter {
     public void addHorizontalAutoForegroundLayer(float xSpeed, String imgName,
                                                  float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
-                Media.getImage(imgName), 0, yOffset
-                * Lol.PIXEL_METER_RATIO, width, height);
+                Lol.sGame.mMedia.getImage(imgName), 0, yOffset
+                * Lol.sGame.mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mForeground.mLayers.add(pl);
@@ -3538,8 +3537,8 @@ public class Level extends ScreenAdapter {
     public void addVerticalForegroundLayer(float xSpeed, float ySpeed,
                                            String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
-                Media.getImage(imgName),
-                xOffset * Lol.PIXEL_METER_RATIO, 0, width, height);
+                Lol.sGame.mMedia.getImage(imgName),
+                xOffset * Lol.sGame.mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mForeground.mLayers.add(pl);
     }
@@ -4000,7 +3999,7 @@ public class Level extends ScreenAdapter {
      * @param soundName Name of the sound file to play
      */
     public void setThrowSound(String soundName) {
-        mProjectilePool.mThrowSound = Media.getSound(soundName);
+        mProjectilePool.mThrowSound = Lol.sGame.mMedia.getSound(soundName);
     }
 
     /**
@@ -4009,7 +4008,7 @@ public class Level extends ScreenAdapter {
      * @param soundName the name of the sound file to play
      */
     public void setProjectileDisappearSound(String soundName) {
-        mProjectilePool.mProjectileDisappearSound = Media.getSound(soundName);
+        mProjectilePool.mProjectileDisappearSound = Lol.sGame.mMedia.getSound(soundName);
     }
 
     /**
@@ -4087,7 +4086,7 @@ public class Level extends ScreenAdapter {
             putGameFact("volume", 1);
         }
         // update all music
-        Media.resetMusicVolume();
+        Lol.sGame.mMedia.resetMusicVolume();
     }
 
     /**
@@ -4136,12 +4135,12 @@ public class Level extends ScreenAdapter {
      */
     public void drawText(final float x, final float y, final String text, final int red, final int green,
                          final int blue, String fontName, int size, int zIndex) {
-        final BitmapFont bf = Media.getFont(fontName, size);
+        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
         Renderable r = new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Lol.sGame.mConfig.PIXEL_METER_RATIO);
                 Util.glyphLayout.setText(bf, text);
                 bf.draw(sb, text, x, y + Util.glyphLayout.height);
                 bf.getData().setScale(1);
@@ -4169,10 +4168,10 @@ public class Level extends ScreenAdapter {
      */
     public void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
                                  final int green, final int blue, String fontName, int size, int zIndex) {
-        final BitmapFont bf = Media.getFont(fontName, size);
+        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
 
         // figure out the image dimensions
-        bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / Lol.sGame.mConfig.PIXEL_METER_RATIO);
         Util.glyphLayout.setText(bf, text);
         final float w = Util.glyphLayout.width;
         final float h = Util.glyphLayout.height;
@@ -4183,7 +4182,7 @@ public class Level extends ScreenAdapter {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
-                bf.getData().setScale(1 / Lol.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / Lol.sGame.mConfig.PIXEL_METER_RATIO);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.getData().setScale(1);
             }
@@ -4206,5 +4205,101 @@ public class Level extends ScreenAdapter {
      * don't create lots of Random()s throughout their code
      */
     static Random sGenerator = new Random();
+
+    /**
+     * Report whether all levels should be treated as unlocked. This is useful
+     * in Chooser, where we might need to prevent some levels from being played.
+     */
+    public boolean getUnlockMode() {
+        return Lol.sGame.mConfig.mUnlockAllLevels;
+    }
+
+
+
+    /**
+     * Use this to load the splash screen
+     */
+    public void doSplash() {
+        // reset state of all screens
+        for (int i = 0; i < 5; ++i)
+            Lol.sGame.mModeStates[i] = 1;
+        Lol.sGame.mMode = Lol.SPLASH;
+        Level l = new Level();
+        Lol.sGame.mConfig.mSplash.display(0, l);
+        Lol.sGame.setScreen(l);
+    }
+
+    /**
+     * Use this to load the level-chooser screen. Note that when the chooser is
+     * disabled, we jump straight to level 1.
+     *
+     * @param whichChooser The chooser screen to create
+     */
+    public  void doChooser(int whichChooser) {
+        // if chooser disabled, then we either called this from splash, or from
+        // a game level
+        if (!Lol.sGame.mConfig.mEnableChooser) {
+            if (Lol.sGame.mMode == Lol.PLAY) {
+                doSplash();
+            } else {
+                doLevel(Lol.sGame.mModeStates[Lol.PLAY]);
+            }
+            return;
+        }
+        // the chooser is not disabled... save the choice of level, configureGravity
+        // it, and show it.
+        Lol.sGame.mMode = Lol.CHOOSER;
+        Lol.sGame.mModeStates[Lol.CHOOSER] = whichChooser;
+        Level l = new Level();
+        Lol.sGame.mConfig.mChooser.display(whichChooser, l);
+        Lol.sGame.setScreen(l);
+    }
+
+    /**
+     * Use this to load a playable level.
+     *
+     * @param which The index of the level to load
+     */
+    public  void doLevel(int which) {
+        Lol.sGame.mModeStates[Lol.PLAY] = which;
+        Lol.sGame.mMode = Lol.PLAY;
+        Level l = new Level();
+        Lol.sGame.mConfig.mLevels.display(which, l);
+        Lol.sGame.setScreen(l);
+    }
+
+    /**
+     * Use this to load a help level.
+     *
+     * @param which The index of the help level to load
+     */
+    public  void doHelp(int which) {
+        Lol.sGame.mModeStates[Lol.HELP] = which;
+        Lol.sGame.mMode = Lol.HELP;
+        Level l = new Level();
+        Lol.sGame.mConfig.mHelp.display(which, l);
+        Lol.sGame.setScreen(l);
+    }
+
+    /**
+     * Use this to load a screen of the store.
+     *
+     * @param which The index of the help level to load
+     */
+    public  void doStore(int which) {
+        Lol.sGame.mModeStates[Lol.STORE] = which;
+        Lol.sGame.mMode = Lol.STORE;
+        Level l = new Level();
+        Lol.sGame.mConfig.mStore.display(which, l);
+        Lol.sGame.setScreen(l);
+    }
+
+    /**
+     * Use this to quit the game
+     */
+    public  void doQuit() {
+        Lol.sGame.getScreen().dispose();
+        Gdx.app.exit();
+    }
 
 }

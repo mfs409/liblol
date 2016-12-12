@@ -46,7 +46,7 @@ public class WinScene extends QuickScene {
      */
     public WinScene(Level level) {
         super(level);
-        mWinText = Lol.sGame.mDefaultWinText;
+        mWinText = Lol.sGame.mConfig.mDefaultWinText;
     }
 
     /**
@@ -67,7 +67,7 @@ public class WinScene extends QuickScene {
         // don't compute it until right here... also, play music
         if (mSound != null)
             mSound.play(mLevel.getGameFact("volume", 1));
-        addText(mWinText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
+        addText(mWinText, 255, 255, 255, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /*
@@ -85,11 +85,11 @@ public class WinScene extends QuickScene {
         mLevel.stopMusic();
 
         // go to next level (or chooser)
-        if (Lol.sGame.mModeStates[Lol.PLAY] == Lol.sGame.mNumLevels) {
-            Lol.doChooser(1);
+        if (Lol.sGame.mModeStates[Lol.PLAY] == Lol.sGame.mConfig.mNumLevels) {
+            mLevel.doChooser(1);
         } else {
             Lol.sGame.mModeStates[Lol.PLAY]++;
-            Lol.doLevel(Lol.sGame.mModeStates[Lol.PLAY]);
+            mLevel.doLevel(Lol.sGame.mModeStates[Lol.PLAY]);
         }
     }
 

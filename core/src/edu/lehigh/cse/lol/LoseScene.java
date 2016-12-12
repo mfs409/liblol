@@ -46,7 +46,7 @@ public class LoseScene extends QuickScene {
      */
     public LoseScene(Level level) {
         super(level);
-        mLoseText = Lol.sGame.mDefaultLoseText;
+        mLoseText = Lol.sGame.mConfig.mDefaultLoseText;
     }
 
     /**
@@ -67,7 +67,7 @@ public class LoseScene extends QuickScene {
         // don't compute it until right here... also, play music
         if (mSound != null)
             mSound.play(mLevel.getGameFact("volume", 1));
-        addText(mLoseText, 255, 255, 255, Lol.sGame.mDefaultFontFace, Lol.sGame.mDefaultFontSize);
+        addText(mLoseText, 255, 255, 255, Lol.sGame.mConfig.mDefaultFontFace, Lol.sGame.mConfig.mDefaultFontSize);
     }
 
     /*
@@ -84,7 +84,7 @@ public class LoseScene extends QuickScene {
         mLevel.stopMusic();
 
         // repeat the level
-        Lol.doLevel(Lol.sGame.mModeStates[Lol.PLAY]);
+        mLevel.doLevel(Lol.sGame.mModeStates[Lol.PLAY]);
     }
 
     /**
