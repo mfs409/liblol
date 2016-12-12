@@ -190,7 +190,7 @@ abstract class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(mLevel, text, red, green, blue, fontName, size));
+        mSprites.add(mLevel.makeText(text, red, green, blue, fontName, size));
     }
 
     /**
@@ -206,7 +206,7 @@ abstract class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(mLevel, x, y, text, red, green, blue, fontName, size));
+        mSprites.add(mLevel.makeText(x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -226,7 +226,7 @@ abstract class QuickScene {
      * @param height  Height of the image
      */
     public void addImage(String imgName, int x, int y, int width, int height) {
-        mSprites.add(Util.makePicture(mLevel, x, y, width, height, imgName));
+        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -250,7 +250,7 @@ abstract class QuickScene {
             }
         };
         mButtons.add(b);
-        mSprites.add(Util.makePicture(mLevel, x, y, width, height, imgName));
+        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
     }
 
     /**

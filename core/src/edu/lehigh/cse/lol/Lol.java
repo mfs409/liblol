@@ -30,6 +30,7 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
@@ -38,7 +39,7 @@ import java.util.TreeMap;
  * A Lol object is the outermost container for all of the functionality of the
  * game. It implements ApplicationListener (through Game), which provides hooks
  * for GDX to render the game, stop it, resume it, etc.
- *
+ * <p/>
  * Lol is not responsible for doing anything significant. It keeps track of
  * which screen is currently in use, and forwards (through Game) to that screen.
  * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
@@ -112,8 +113,8 @@ public class Lol extends Game {
      *
      * @param millis The amount of time to vibrate
      */
-    void vibrate(int millis) {
-        if (mConfig.mEnableVibration)
+    static void vibrate(Config config, int millis) {
+        if (config.mEnableVibration)
             Gdx.input.vibrate(millis);
     }
 
@@ -150,11 +151,11 @@ public class Lol extends Game {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
-            ((Level)getScreen()).doSplash();
+            ((Level) getScreen()).doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            ((Level)getScreen()).doChooser(mModeStates[CHOOSER]);
+            ((Level) getScreen()).doChooser(mModeStates[CHOOSER]);
         }
     }
 
@@ -176,8 +177,8 @@ public class Lol extends Game {
 
         // configure the volume
         Level l = new Level(mConfig, mMedia, this);
-        if (Util.getGameFact(mConfig, "volume", 1) == 1)
-            Util.putGameFact(mConfig, "volume", 1);
+        if (getGameFact(mConfig, "volume", 1) == 1)
+            putGameFact(mConfig, "volume", 1);
 
         // show the splash screen
         l.doSplash();
@@ -212,4 +213,44 @@ public class Lol extends Game {
         // Draw the current scene
         super.render();
     }
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The value to return if the fact does not exist
+     * @return The integer value corresponding to the last value stored
+     */
+    static int getGameFact(Config config, String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        return prefs.getInteger(factName, defaultVal);
+    }
+
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+    static void putGameFact(Config config, String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        prefs.putInteger(factName, factValue);
+        prefs.flush();
+    }
+
+    /**
+     * Instead of using Gdx.app.log directly, and potentially writing a lot of
+     * debug info in a production setting, we use this to only dump to the log
+     * when debug mode is on
+     *
+     * @param tag  The message tag
+     * @param text The message text
+     */
+    static void message(Config config, String tag, String text) {
+        if (config.mShowDebugBoxes)
+            Gdx.app.log(tag, text);
+    }
+
 }

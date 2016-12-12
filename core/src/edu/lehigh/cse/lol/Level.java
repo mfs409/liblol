@@ -38,6 +38,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -258,9 +259,9 @@ public class Level extends ScreenAdapter {
 
         // warn on strange dimensions
         if (width < mConfig.mWidth / mConfig.PIXEL_METER_RATIO)
-            Util.message(mConfig, "Warning", "Your game width is less than 1/10 of the screen width");
+            Lol.message(mConfig, "Warning", "Your game width is less than 1/10 of the screen width");
         if (height < mConfig.mHeight / mConfig.PIXEL_METER_RATIO)
-            Util.message(mConfig, "Warning", "Your game height is less than 1/10 of the screen height");
+            Lol.message(mConfig, "Warning", "Your game height is less than 1/10 of the screen height");
     }
 
     /**
@@ -621,9 +622,9 @@ public class Level extends ScreenAdapter {
         if (mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
                 mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Util.message(mConfig, "Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                Lol.message(mConfig, "Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
                 mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Util.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
 
             }
         }
@@ -1810,7 +1811,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 String txt = tp.makeText();
-                Util.drawTextTransposed(x, y, txt, mFont, sb);
+                drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -1858,7 +1859,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + mScore.mGoodiesCollected[type - 1] + suffix,
+                drawTextTransposed(x, y, "" + mScore.mGoodiesCollected[type - 1] + suffix,
                         mFont, sb);
             }
         };
@@ -1903,7 +1904,7 @@ public class Level extends ScreenAdapter {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 mScore.mCountDownRemaining -= Gdx.graphics.getDeltaTime();
                 if (mScore.mCountDownRemaining > 0) {
-                    Util.drawTextTransposed(x, y, "" + (int) mScore.mCountDownRemaining, mFont, sb);
+                    drawTextTransposed(x, y, "" + (int) mScore.mCountDownRemaining, mFont, sb);
                 } else {
                     getLoseScene().setDefaultText(text);
                     mScore.endLevel(false);
@@ -1950,7 +1951,7 @@ public class Level extends ScreenAdapter {
                 mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
                 if (mScore.mWinCountRemaining > 0)
                     // getLoseScene elapsed time for this level
-                    Util.drawTextTransposed(x, y, "" + (int) mScore.mWinCountRemaining, mFont, sb);
+                    drawTextTransposed(x, y, "" + (int) mScore.mWinCountRemaining, mFont, sb);
                 else
                     mScore.endLevel(true);
             }
@@ -1996,7 +1997,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + mScore.mEnemiesDefeated + suffix, mFont, sb);
+                drawTextTransposed(x, y, "" + mScore.mEnemiesDefeated + suffix, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2033,7 +2034,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                Util.drawTextTransposed(x, y, "" + (int) mScore.mStopWatchProgress, mFont, sb);
+                drawTextTransposed(x, y, "" + (int) mScore.mStopWatchProgress, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2074,7 +2075,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
+                drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2101,7 +2102,7 @@ public class Level extends ScreenAdapter {
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
                 mScore.mDistance = (int) actor.getXPosition();
-                Util.drawTextTransposed(x, y, "" + mScore.mDistance + text, mFont, sb);
+                drawTextTransposed(x, y, "" + mScore.mDistance + text, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2126,7 +2127,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, "" + mProjectilePool.mProjectilesRemaining + text,
+                drawTextTransposed(x, y, "" + mProjectilePool.mProjectilesRemaining + text,
                         mFont, sb);
             }
         };
@@ -2154,7 +2155,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2181,7 +2182,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -2208,7 +2209,7 @@ public class Level extends ScreenAdapter {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                Util.drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
+                drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
             }
         };
         mDisplays.add(d);
@@ -3274,7 +3275,7 @@ public class Level extends ScreenAdapter {
     public int getLevelFact(String factName, int defaultVal) {
         Integer i = mLevelFacts.get(factName);
         if (i == null) {
-            Util.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
+            Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
         }
         return i;
@@ -3302,7 +3303,7 @@ public class Level extends ScreenAdapter {
     public int getSessionFact(String factName, int defaultVal) {
         Integer i = mGame.mSessionFacts.get(factName);
         if (i == null) {
-            Util.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
+            Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
         }
         return i;
@@ -3328,7 +3329,7 @@ public class Level extends ScreenAdapter {
      * @return The integer value corresponding to the last value stored
      */
     public int getGameFact(String factName, int defaultVal) {
-        return Util.getGameFact(this.mConfig, factName, defaultVal);
+        return Lol.getGameFact(mConfig, factName, defaultVal);
     }
 
     /**
@@ -3339,7 +3340,7 @@ public class Level extends ScreenAdapter {
      * @param factValue The integer value that is the fact being saved
      */
     public void putGameFact(String factName, int factValue) {
-        Util.putGameFact(this.mConfig, factName, factValue);
+        Lol.putGameFact(mConfig, factName, factValue);
     }
 
     /**
@@ -3352,7 +3353,7 @@ public class Level extends ScreenAdapter {
     public Actor getLevelActor(String actorName) {
         Actor actor = mLevelActors.get(actorName);
         if (actor == null) {
-            Util.message(mConfig, "ERROR", "Error retreiving level fact '" + actorName + "'");
+            Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
         }
         return actor;
@@ -4117,7 +4118,7 @@ public class Level extends ScreenAdapter {
      */
     public void drawPicture(final float x, final float y, final float width, final float height,
                             final String imgName, int zIndex) {
-        addActor(Util.makePicture(this, x, y, width, height, imgName), zIndex);
+        addActor(makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
@@ -4145,8 +4146,8 @@ public class Level extends ScreenAdapter {
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
                 bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-                Util.glyphLayout.setText(bf, text);
-                bf.draw(sb, text, x, y + Util.glyphLayout.height);
+                glyphLayout.setText(bf, text);
+                bf.draw(sb, text, x, y + glyphLayout.height);
                 bf.getData().setScale(1);
             }
         };
@@ -4176,9 +4177,9 @@ public class Level extends ScreenAdapter {
 
         // figure out the image dimensions
         bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-        Util.glyphLayout.setText(bf, text);
-        final float w = Util.glyphLayout.width;
-        final float h = Util.glyphLayout.height;
+        glyphLayout.setText(bf, text);
+        final float w = glyphLayout.width;
+        final float h = glyphLayout.height;
         bf.getData().setScale(1);
 
         // describe how to render it
@@ -4311,5 +4312,105 @@ public class Level extends ScreenAdapter {
 
     public Animation makeAnimation(int timePerFrame, boolean repeat, String... imgNames) {
         return new Animation(this.mMedia, timePerFrame, repeat, imgNames);
+    }
+
+    /**
+     * Use this for determining bounds of text boxes
+     */
+    public static GlyphLayout glyphLayout = new GlyphLayout();
+
+    /**
+     * Create a Renderable that consists of an image
+     *
+     * @param x       The X coordinate of the bottom left corner, in pixels
+     * @param y       The Y coordinate of the bottom left corner, in pixels
+     * @param width   The image width, in pixels
+     * @param height  The image height, in pixels
+     * @param imgName The file name for the image, or ""
+     * @return A Renderable of the image
+     */
+    Renderable makePicture(final float x, final float y, final float width, final float height,
+                                         String imgName) {
+        // set up the image to display
+        //
+        // NB: this will fail gracefully (no crash) for invalid file names
+        final TextureRegion tr = mMedia.getImage(imgName);
+        return new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                if (tr != null)
+                    sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
+            }
+        };
+    }
+
+    /**
+     * Create a Renderable that consists of some text to draw
+     *
+     * @param x        The X coordinate of the bottom left corner, in pixels
+     * @param y        The Y coordinate of the bottom left corner, in pixels
+     * @param message  The text to display... note that it can't change on the fly
+     * @param red      The red component of the font color (0-255)
+     * @param green    The green component of the font color (0-255)
+     * @param blue     The blue component of the font color (0-255)
+     * @param fontName The font to use
+     * @param size     The font size
+     * @return A Renderable of the text
+     */
+     Renderable makeText(final int x, final int y, final String message, final int red, final int green,
+                               final int blue, String fontName, int size) {
+        final BitmapFont bf = mMedia.getFont(fontName, size);
+        return new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                glyphLayout.setText(bf, message);
+                bf.draw(sb, message, x, y + glyphLayout.height);
+            }
+        };
+    }
+
+    /**
+     * Create a Renderable that consists of some text to draw. The text will be
+     * centered vertically and horizontally on the screen
+     *
+     * @param message  The text to display... note that it can't change on the fly
+     * @param red      The red component of the font color (0-255)
+     * @param green    The green component of the font color (0-255)
+     * @param blue     The blue component of the font color (0-255)
+     * @param fontName The font to use
+     * @param size     The font size
+     * @return A Renderable of the text
+     */
+    Renderable makeText(final String message, final int red, final int green, final int blue,
+                               String fontName, int size) {
+        final BitmapFont bf = mMedia.getFont(fontName, size);
+        glyphLayout.setText(bf, message);
+        final float x = mConfig.mWidth / 2 - glyphLayout.width / 2;
+        final float y = mConfig.mHeight / 2 + glyphLayout.height / 2;
+        return new Renderable() {
+            @Override
+            public void render(SpriteBatch sb, float elapsed) {
+                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.draw(sb, message, x, y);
+            }
+        };
+    }
+
+
+    /**
+     * A helper method to draw text nicely. In GDX, we draw everything by giving
+     * the bottom left corner, except text, which takes the top left corner.
+     * This function handles the conversion, so that we can use bottom-left.
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param message The text to display
+     * @param bf      The BitmapFont object to use for the text's font
+     * @param sb      The SpriteBatch used to render the text
+     */
+     void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+        glyphLayout.setText(bf, message);
+        bf.draw(sb, message, x, y + glyphLayout.height);
     }
 }

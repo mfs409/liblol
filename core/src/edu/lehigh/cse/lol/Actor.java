@@ -344,7 +344,7 @@ public abstract class Actor implements Renderable {
         for (int i = 0; i < vertices.length; i += 2)
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
         // print some debug info, since vertices are tricky
-        for (Vector2 vert : verts) Util.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
+        for (Vector2 vert : verts) Lol.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
         shape.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
@@ -871,7 +871,7 @@ public abstract class Actor implements Renderable {
             public boolean onTap(Vector3 tapLocation) {
                 if (!mEnabled)
                     return false;
-                mLevel.mGame.vibrate(100);
+                Lol.vibrate(mLevel.mConfig, 100);
                 long time = System.currentTimeMillis();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
@@ -893,7 +893,7 @@ public abstract class Actor implements Renderable {
                     public boolean onTap(Vector3 tapLocation) {
                         if (!mEnabled || !mVisible)
                             return false;
-                        mLevel.mGame.vibrate(100);
+                        Lol.vibrate(mLevel.mConfig, 100);
                         // move the object
                         mBody.setTransform(tapLocation.x, tapLocation.y, mBody.getAngle());
                         // clear the Level responder
@@ -948,7 +948,7 @@ public abstract class Actor implements Renderable {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                mLevel.mGame.vibrate(5);
+                Lol.vibrate(mLevel.mConfig, 5);
                 mLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
@@ -988,7 +988,7 @@ public abstract class Actor implements Renderable {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                mLevel.mGame.vibrate(5);
+                Lol.vibrate(mLevel.mConfig, 5);
                 mLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 

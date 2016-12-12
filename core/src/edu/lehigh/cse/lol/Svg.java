@@ -145,7 +145,7 @@ public class Svg {
                 mSvgTranslate.x = Float.valueOf(points[0]);
                 mSvgTranslate.y = Float.valueOf(points[1]);
             } catch (NumberFormatException nfs) {
-                Util.message(level.mConfig, "svg error", "transform error");
+                Lol.message(level.mConfig, "svg error", "transform error");
             }
         }
     }
@@ -253,7 +253,7 @@ public class Svg {
                         }
                         // ignore errors...
                         catch (NumberFormatException nfs) {
-                            Util.message(level.mConfig, "SVG Error", "error parsing SVG file");
+                            Lol.message(level.mConfig, "SVG Error", "error parsing SVG file");
                             nfs.printStackTrace();
                         }
                     }
@@ -354,7 +354,7 @@ public class Svg {
                     processD(level, p.getAttribute("d"));
             }
         } catch (IOException e) {
-            Util.message(level.mConfig, "SVG Error", "error parsing SVG file");
+            Lol.message(level.mConfig, "SVG Error", "error parsing SVG file");
             e.printStackTrace();
         }
     }

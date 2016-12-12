@@ -122,7 +122,7 @@ public class Media {
     public  Sound getSound(String soundName) {
         Sound ret = mSounds.get(soundName);
         if (ret == null)
-            Util.message(mConfig, "ERROR", "Error retrieving sound '" + soundName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving sound '" + soundName + "'");
         return ret;
     }
 
@@ -135,7 +135,7 @@ public class Media {
      Music getMusic(String musicName) {
         Music ret = mTunes.get(musicName);
         if (ret == null)
-            Util.message(mConfig, "ERROR", "Error retrieving music '" + musicName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving music '" + musicName + "'");
         return ret;
     }
 
@@ -149,7 +149,7 @@ public class Media {
     public  TextureRegion getImage(String imgName) {
         TextureRegion ret = mImages.get(imgName);
         if (ret == null)
-            Util.message(mConfig, "ERROR", "Error retrieving image '" + imgName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving image '" + imgName + "'");
         return ret;
     }
 
@@ -159,7 +159,7 @@ public class Media {
      */
      void resetMusicVolume() {
         for (Music m : mTunes.values()) {
-            m.setVolume(Util.getGameFact(mConfig, "volume", 1));
+            m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
         }
     }
 
@@ -193,7 +193,7 @@ public class Media {
      public void registerMusic(String musicName, boolean loop) {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
-        m.setVolume(Util.getGameFact(mConfig, "volume", 1));
+        m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
         mTunes.put(musicName, m);
     }
 
