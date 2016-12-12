@@ -61,12 +61,6 @@ public class Lol extends Game {
     static final int PLAY = 4;
 
     /**
-     * A reference to the game object... Since the interfaces are mostly static,
-     * we need an instance of a Lol object that the static methods can call.
-     */
-    public static Lol sGame;
-
-    /**
      * Store string/integer pairs that getLoseScene reset whenever we restart the program
      */
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
@@ -162,7 +156,7 @@ public class Lol extends Game {
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            ((Level)getScreen()).doChooser(sGame.mModeStates[CHOOSER]);
+            ((Level)getScreen()).doChooser(mModeStates[CHOOSER]);
         }
     }
 
@@ -172,9 +166,6 @@ public class Lol extends Game {
      */
     @Override
     public void create() {
-        // save instance
-        sGame = this;
-
         // set current mode states
         for (int i = 0; i < 5; ++i)
             mModeStates[i] = 1;
@@ -186,9 +177,9 @@ public class Lol extends Game {
         mMedia = new Media(mConfig);
 
         // configure the volume
-        Level l = new Level();
-        if (Util.getGameFact("volume", 1) == 1)
-            Util.putGameFact("volume", 1);
+        Level l = new Level(mConfig, mMedia, this);
+        if (Util.getGameFact(mConfig, "volume", 1) == 1)
+            Util.putGameFact(mConfig, "volume", 1);
 
         // show the splash screen
         l.doSplash();
@@ -209,7 +200,7 @@ public class Lol extends Game {
         // being the case, the only thing we need to be careful about is that we
         // getLoseScene rid of any references to fonts that
         // might be hanging around
-        Lol.sGame.mMedia.onDispose();
+        mMedia.onDispose();
     }
 
     /**

@@ -115,6 +115,6 @@ public class Destination extends Actor {
      * @param soundName The name of the sound file that should play
      */
     public void setArrivalSound(String soundName) {
-        mArrivalSound = Lol.sGame.mMedia.getSound(soundName);
+        mArrivalSound = mLevel.mMedia.getSound(soundName);
     }
 }

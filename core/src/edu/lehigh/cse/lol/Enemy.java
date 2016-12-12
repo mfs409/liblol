@@ -223,7 +223,7 @@ public class Enemy extends Actor {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.vibrate(100);
+                mLevel.mGame.vibrate(100);
                 defeat(true);
                 mGestureResponder = null;
                 return true;

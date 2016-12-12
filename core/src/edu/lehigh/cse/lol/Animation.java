@@ -45,6 +45,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * parameters to define the entire animation in equal-duration pieces.
  */
 public class Animation {
+    Media mMedia;
     /**
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
@@ -80,7 +81,8 @@ public class Animation {
      * @param repeat        Either true or false, depending on whether the animation
      *                      should repeat
      */
-    public Animation(int sequenceCount, boolean repeat) {
+    Animation(Media media, int sequenceCount, boolean repeat) {
+        mMedia = media;
         mCells = new TextureRegion[sequenceCount];
         mDurations = new long[sequenceCount];
         mLoop = repeat;
@@ -97,14 +99,15 @@ public class Animation {
      * @param imgNames     The names of the images that should each be shown for
      *                     timePerFrame milliseconds
      */
-    public Animation(int timePerFrame, boolean repeat, String... imgNames) {
+    Animation(Media media, int timePerFrame, boolean repeat, String... imgNames) {
+        mMedia = media;
         mCells = new TextureRegion[imgNames.length];
         mDurations = new long[imgNames.length];
         mLoop = repeat;
         mNextCell = imgNames.length;
         for (int i = 0; i < mNextCell; ++i) {
             mDurations[i] = timePerFrame;
-            mCells[i] = Lol.sGame.mMedia.getImage(imgNames[i]);
+            mCells[i] = mMedia.getImage(imgNames[i]);
         }
     }
 
@@ -116,7 +119,7 @@ public class Animation {
      * @return the Animation, so that we can chain calls to "to()"
      */
     public Animation to(String imgName, long duration) {
-        mCells[mNextCell] = Lol.sGame.mMedia.getImage(imgName);
+        mCells[mNextCell] = mMedia.getImage(imgName);
         mDurations[mNextCell] = duration;
         mNextCell++;
         return this;

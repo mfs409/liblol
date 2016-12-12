@@ -30,7 +30,6 @@ package com.me.mylolgame;
 import com.badlogic.gdx.math.Vector2;
 
 import edu.lehigh.cse.lol.Actor;
-import edu.lehigh.cse.lol.Animation;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
@@ -42,7 +41,6 @@ import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Svg;
-import edu.lehigh.cse.lol.internals.Util;
 
 /**
  * Levels is where all of the code goes for describing the different levels of
@@ -53,7 +51,7 @@ import edu.lehigh.cse.lol.internals.Util;
 public class Levels implements ScreenManager {
 
     /**
-     * We currently have 92 levels, each of which is described in part of the
+     * We currently have 93 levels, each of which is described in part of the
      * following function.
      */
     public void display(int whichLevel, final Level level) {
@@ -1288,8 +1286,8 @@ public class Levels implements ScreenManager {
             level.setCameraChase(h);
 
             // this lets the hero flip its image when it moves backwards
-            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
-            h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
+            h.setDefaultAnimation(level.makeAnimation(200, true, "legstar1.png", "legstar1.png"));
+            h.setDefaultReverseAnimation(level.makeAnimation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
 
             level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
             level.setVictoryDestination(1);
@@ -1869,7 +1867,7 @@ public class Levels implements ScreenManager {
             // image, and we show each for 200 milliseconds. This is the "easy"
             // animation mechanism, where every cell is shown for the same
             // amount of time
-            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar2.png", "legstar3.png", "legstar4.png"));
+            h.setDefaultAnimation(level.makeAnimation(200, true, "legstar1.png", "legstar2.png", "legstar3.png", "legstar4.png"));
         }
 
         /*
@@ -1900,10 +1898,10 @@ public class Levels implements ScreenManager {
 
             // this is the more complex form of animation... we show the
             // different cells for different lengths of time
-            h.setDefaultAnimation(new Animation(4, true).to("legstar1.png", 150).to("legstar2.png", 200).to("legstar3.png", 300).to("legstar4.png", 350));
+            h.setDefaultAnimation(level.makeAnimation(4, true).to("legstar1.png", 150).to("legstar2.png", 200).to("legstar3.png", 300).to("legstar4.png", 350));
             // we can use the complex form to express the simpler animation, of
             // course
-            h.setJumpAnimation(new Animation(4, true).to("legstar4.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
+            h.setJumpAnimation(level.makeAnimation(4, true).to("legstar4.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
             // create a goodie that has a disappearance animation. When the
             // goodie is ready to disappear, we'll remove it, and then we'll run
@@ -1912,7 +1910,7 @@ public class Levels implements ScreenManager {
             // goodie's position. Note, too, that the final cell is blank, so
             // that we don't leave a residue on the screen.
             Goodie g = level.makeGoodieAsCircle(15, 9, 5, 5, "starburst3.png");
-            g.setDisappearAnimation(new Animation(4, false).to("starburst3.png", 200).to("starburst2.png", 200).to("starburst1.png", 200)
+            g.setDisappearAnimation(level.makeAnimation(4, false).to("starburst3.png", 200).to("starburst2.png", 200).to("starburst1.png", 200)
                     .to("starburst4.png", 200), 1, 0, 5, 5);
         }
 
@@ -1938,12 +1936,12 @@ public class Levels implements ScreenManager {
             h.setMoveByTilting();
 
             // set up an animation when the hero throws:
-            h.setThrowAnimation(new Animation(2, false).to("colorstar4.png", 100).to("colorstar5.png", 500));
+            h.setThrowAnimation(level.makeAnimation(2, false).to("colorstar4.png", 100).to("colorstar5.png", 500));
 
             // make a projectile pool and give an animation pattern for the
             // projectiles
             level.configureProjectiles(100, 1, 1, "flystar.png", 1, 0, true);
-            level.setProjectileAnimation(new Animation(100, true, "flystar1.png", "flystar2.png"));
+            level.setProjectileAnimation(level.makeAnimation(100, true, "flystar1.png", "flystar2.png"));
         }
 
         /*
@@ -1966,8 +1964,8 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "colorstar.png");
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
-            h.setDefaultAnimation(new Animation(4, true).to("colorstar1.png", 300).to("colorstar2.png", 300).to("colorstar3.png", 300).to("colorstar4.png", 300));
-            h.setInvincibleAnimation(new Animation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
+            h.setDefaultAnimation(level.makeAnimation(4, true).to("colorstar1.png", 300).to("colorstar2.png", 300).to("colorstar3.png", 300).to("colorstar4.png", 300));
+            h.setInvincibleAnimation(level.makeAnimation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
 
             // make some enemies
             for (int i = 0; i < 5; ++i) {
@@ -2024,8 +2022,8 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsBox(2, 1, 3, 7, "stars.png");
             h.setPhysics(1, 0, 0);
             h.addVelocity(15, 0, false);
-            h.setCrawlAnimation(new Animation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
-            h.setJumpAnimation(new Animation(4, true).to("legstar5.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
+            h.setCrawlAnimation(level.makeAnimation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
+            h.setJumpAnimation(level.makeAnimation(4, true).to("legstar5.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
             // enableTilt hero jumping and crawling
             h.setJumpImpulses(0, 15);
@@ -2593,7 +2591,7 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsCircle(12, 12, 4, 4, "greenball.png");
             h.setStrength(3);
             h.setMoveByTilting();
-            h.setInvincibleAnimation(new Animation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
+            h.setInvincibleAnimation(level.makeAnimation(4, true).to("colorstar5.png", 100).to("colorstar6.png", 100).to("colorstar7.png", 100).to("colorstar8.png", 100));
 
             // a goodie, so we can do defeat by invincibility
             Goodie g1 = level.makeGoodieAsCircle(20, 29, 2, 3, "purpleball.png");
@@ -2850,8 +2848,8 @@ public class Levels implements ScreenManager {
             // change its direction of travel. The second "true" means the hero
             // will stop immediately when we release our finger.
             Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "stars.png");
-            h.setDefaultAnimation(new Animation(200, true, "legstar1.png", "legstar1.png"));
-            h.setDefaultReverseAnimation(new Animation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
+            h.setDefaultAnimation(level.makeAnimation(200, true, "legstar1.png", "legstar1.png"));
+            h.setDefaultReverseAnimation(level.makeAnimation(200, true, "fliplegstar8.png", "fliplegstar8.png"));
             h.setPokePath(4, false);
 
             level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");

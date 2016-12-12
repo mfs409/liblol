@@ -344,7 +344,7 @@ public class Obstacle extends Actor {
      *              milliseconds
      */
     public void setCollideSound(String sound, long delay) {
-        mCollideSound = Lol.sGame.mMedia.getSound(sound);
+        mCollideSound = mLevel.mMedia.getSound(sound);
         mCollideSoundDelay = delay * 1000000;
     }
 }

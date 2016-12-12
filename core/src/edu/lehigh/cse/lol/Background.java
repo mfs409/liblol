@@ -70,8 +70,8 @@ public class Background {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(level.mBgCam
                     .calculateParallaxMatrix(pl.mXSpeed
-                            * Lol.sGame.mConfig.PIXEL_METER_RATIO, pl.mYSpeed
-                            * Lol.sGame.mConfig.PIXEL_METER_RATIO));
+                            * level.mConfig.PIXEL_METER_RATIO, pl.mYSpeed
+                            * level.mConfig.PIXEL_METER_RATIO));
             sb.begin();
             // handle auto layers
             if (pl.mAutoX) {
@@ -82,16 +82,16 @@ public class Background {
                 sb.begin();
                 // update position, based on elapsed time
                 pl.mLastX += pl.mXSpeed * elapsed;
-                if (pl.mLastX > Lol.sGame.mConfig.mWidth)
+                if (pl.mLastX > level.mConfig.mWidth)
                     pl.mLastX = 0;
-                if (pl.mLastX < -Lol.sGame.mConfig.mWidth)
+                if (pl.mLastX < -level.mConfig.mWidth)
                     pl.mLastX = 0;
                 // figure out the starting point for drawing
                 float startPoint = pl.mLastX;
-                while (startPoint > -Lol.sGame.mConfig.mWidth)
+                while (startPoint > -level.mConfig.mWidth)
                     startPoint -= pl.mWidth;
                 // start drawing
-                while (startPoint < Lol.sGame.mConfig.mWidth) {
+                while (startPoint < level.mConfig.mWidth) {
                     sb.draw(pl.mImage, startPoint, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
                     startPoint += pl.mWidth;
@@ -101,13 +101,13 @@ public class Background {
             else if (pl.mXRepeat) {
                 // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
-                float startX = x * Lol.sGame.mConfig.PIXEL_METER_RATIO * pl.mXSpeed;
+                float startX = x * level.mConfig.PIXEL_METER_RATIO * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
                 screensBefore += level.mBgCam.zoom;
-                startX -= (screensBefore * Lol.sGame.mConfig.mWidth);
+                startX -= (screensBefore * level.mConfig.mWidth);
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
                 float currX = startX;
@@ -115,7 +115,7 @@ public class Background {
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
                 float limit = 2 + 2 * level.mBgCam.zoom;
-                while (currX < startX + limit * Lol.sGame.mConfig.mWidth) {
+                while (currX < startX + limit * level.mConfig.mWidth) {
                     sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
                     currX += pl.mImage.getRegionWidth();
@@ -124,16 +124,16 @@ public class Background {
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
                 // getLoseScene the camera center, translate, and scale
-                float startY = y * Lol.sGame.mConfig.PIXEL_METER_RATIO * pl.mYSpeed;
+                float startY = y * level.mConfig.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + level.mBgCam.zoom)
-                        * Lol.sGame.mConfig.mHeight;
+                        * level.mConfig.mHeight;
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
                 float limit = 2 + 2 * level.mBgCam.zoom;
-                while (currY < startY + limit * Lol.sGame.mConfig.mHeight) {
+                while (currY < startY + limit * level.mConfig.mHeight) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
                 }

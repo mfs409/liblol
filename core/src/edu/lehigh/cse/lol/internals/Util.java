@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -34,11 +34,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import java.util.Random;
-
-import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.Media;
-import edu.lehigh.cse.lol.internals.Renderable;
+import edu.lehigh.cse.lol.Config;
+import edu.lehigh.cse.lol.Level;
 
 /**
  * The Util class stores a few helper functions that we use inside of LOL, and a
@@ -60,12 +57,12 @@ public class Util {
      * @param imgName The file name for the image, or ""
      * @return A Renderable of the image
      */
-    public static Renderable makePicture(final float x, final float y, final float width, final float height,
+    public static Renderable makePicture(Level level, final float x, final float y, final float width, final float height,
                                          String imgName) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
-        final TextureRegion tr = Lol.sGame.mMedia.getImage(imgName);
+        final TextureRegion tr = level.mMedia.getImage(imgName);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -88,9 +85,9 @@ public class Util {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final int x, final int y, final String message, final int red, final int green,
-                                      final int blue, String fontName, int size) {
-        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
+    static Renderable makeText(Level level, final int x, final int y, final String message, final int red, final int green,
+                               final int blue, String fontName, int size) {
+        final BitmapFont bf = level.mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -113,12 +110,12 @@ public class Util {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    static Renderable makeText(final String message, final int red, final int green, final int blue,
-                                      String fontName, int size) {
-        final BitmapFont bf = Lol.sGame.mMedia.getFont(fontName, size);
+    static Renderable makeText(Level level, final String message, final int red, final int green, final int blue,
+                               String fontName, int size) {
+        final BitmapFont bf = level.mMedia.getFont(fontName, size);
         glyphLayout.setText(bf, message);
-        final float x = Lol.sGame.mConfig.mWidth / 2 - glyphLayout.width / 2;
-        final float y = Lol.sGame.mConfig.mHeight / 2 + glyphLayout.height / 2;
+        final float x = level.mConfig.mWidth / 2 - glyphLayout.width / 2;
+        final float y = level.mConfig.mHeight / 2 + glyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -136,8 +133,8 @@ public class Util {
      * @param tag  The message tag
      * @param text The message text
      */
-    public static void message(String tag, String text) {
-        if (Lol.sGame.mConfig.mShowDebugBoxes)
+    public static void message(Config config, String tag, String text) {
+        if (config.mShowDebugBoxes)
             Gdx.app.log(tag, text);
     }
 
@@ -166,8 +163,8 @@ public class Util {
      * @param defaultVal The value to return if the fact does not exist
      * @return The integer value corresponding to the last value stored
      */
-     public static int getGameFact(String factName, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.mStorageKey);
+    public static int getGameFact(Config config, String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
         return prefs.getInteger(factName, defaultVal);
     }
 
@@ -178,8 +175,8 @@ public class Util {
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
-      public static void putGameFact(String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(Lol.sGame.mConfig.mStorageKey);
+    public static void putGameFact(Config config, String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
         prefs.putInteger(factName, factValue);
         prefs.flush();
     }

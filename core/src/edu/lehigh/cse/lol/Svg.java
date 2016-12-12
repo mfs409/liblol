@@ -135,7 +135,7 @@ public class Svg {
      * @param attribute The attribute being processed... we hope it's a valid
      *                  translate directive
      */
-    private void processTransform(String attribute) {
+    private void processTransform(Level level, String attribute) {
         // if we getLoseScene a valid "translate" attribute, split it into two floats and
         // save them
         if (attribute.startsWith("translate(")) {
@@ -147,7 +147,7 @@ public class Svg {
                 mSvgTranslate.x = Float.valueOf(points[0]);
                 mSvgTranslate.y = Float.valueOf(points[1]);
             } catch (NumberFormatException nfs) {
-                Util.message("svg error", "transform error");
+                Util.message(level.mConfig, "svg error", "transform error");
             }
         }
     }
@@ -255,7 +255,7 @@ public class Svg {
                         }
                         // ignore errors...
                         catch (NumberFormatException nfs) {
-                            Util.message("SVG Error", "error parsing SVG file");
+                            Util.message(level.mConfig, "SVG Error", "error parsing SVG file");
                             nfs.printStackTrace();
                         }
                     }
@@ -293,10 +293,10 @@ public class Svg {
         y1 = mFirst.y - y1;
         y2 = mFirst.y - y2;
         // convert the coords to meters
-        x1 /= Lol.sGame.mConfig.PIXEL_METER_RATIO;
-        y1 /= Lol.sGame.mConfig.PIXEL_METER_RATIO;
-        x2 /= Lol.sGame.mConfig.PIXEL_METER_RATIO;
-        y2 /= Lol.sGame.mConfig.PIXEL_METER_RATIO;
+        x1 /= level.mConfig.PIXEL_METER_RATIO;
+        y1 /= level.mConfig.PIXEL_METER_RATIO;
+        x2 /= level.mConfig.PIXEL_METER_RATIO;
+        y2 /= level.mConfig.PIXEL_METER_RATIO;
         // multiply the coords by the stretch
         x1 *= mUserStretch.x;
         y1 *= mUserStretch.y;
@@ -349,14 +349,14 @@ public class Svg {
                 // Get the g's transform attribute
                 String xform = g.getAttribute("transform", "");
                 if (!xform.equals(""))
-                    processTransform(xform);
+                    processTransform(level, xform);
                 // getLoseScene each g's paths
                 Array<Element> paths = g.getChildrenByName("path");
                 for (Element p : paths)
                     processD(level, p.getAttribute("d"));
             }
         } catch (IOException e) {
-            Util.message("SVG Error", "error parsing SVG file");
+            Util.message(level.mConfig, "SVG Error", "error parsing SVG file");
             e.printStackTrace();
         }
     }

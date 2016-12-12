@@ -127,7 +127,7 @@ abstract public class QuickScene {
         sb.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (Lol.sGame.mConfig.mShowDebugBoxes) {
+        if (mLevel.mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mLevel.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -177,7 +177,7 @@ abstract public class QuickScene {
      * @param soundName Name of the sound file to play
      */
     public void setSound(String soundName) {
-        mSound = Lol.sGame.mMedia.getSound(soundName);
+        mSound = mLevel.mMedia.getSound(soundName);
     }
 
     /*
@@ -195,7 +195,7 @@ abstract public class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+        mSprites.add(Util.makeText(mLevel, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -211,7 +211,7 @@ abstract public class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+        mSprites.add(Util.makeText(mLevel, x, y, text, red, green, blue, fontName, size));
     }
 
     /**
@@ -231,7 +231,7 @@ abstract public class QuickScene {
      * @param height  Height of the image
      */
     public void addImage(String imgName, int x, int y, int width, int height) {
-        mSprites.add(Util.makePicture(x, y, width, height, imgName));
+        mSprites.add(Util.makePicture(mLevel, x, y, width, height, imgName));
     }
 
     /**
@@ -251,11 +251,11 @@ abstract public class QuickScene {
             @Override
             public void onEvent() {
                 mVisible = false;
-                Lol.sGame.handleBack();
+                mLevel.mGame.handleBack();
             }
         };
         mButtons.add(b);
-        mSprites.add(Util.makePicture(x, y, width, height, imgName));
+        mSprites.add(Util.makePicture(mLevel, x, y, width, height, imgName));
     }
 
     /**

@@ -69,8 +69,8 @@ public class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public AnimationDriver(String imgName) {
-        updateImage(imgName);
+    public AnimationDriver(Level level, String imgName) {
+        updateImage(level, imgName);
     }
 
     /**
@@ -89,10 +89,10 @@ public class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public void updateImage(String imgName) {
+    public void updateImage(Level level, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
-        mImages[0] = Lol.sGame.mMedia.getImage(imgName);
+        mImages[0] = level.mMedia.getImage(imgName);
         mImageIndex = 0;
     }
 

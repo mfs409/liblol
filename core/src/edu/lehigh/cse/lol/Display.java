@@ -67,7 +67,7 @@ public class Display {
         mColor.r = ((float) red) / 256;
         mColor.g = ((float) green) / 256;
         mColor.b = ((float) blue) / 256;
-        mFont = Lol.sGame.mMedia.getFont(fontName, fontSize);
+        mFont = level.mMedia.getFont(fontName, fontSize);
     }
 
     /**

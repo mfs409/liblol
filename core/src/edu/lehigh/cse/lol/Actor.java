@@ -235,7 +235,7 @@ public abstract class Actor implements Renderable {
      */
     Actor(Level level, String imgName, float width, float height) {
         mLevel = level;
-        mAnimator = new AnimationDriver(imgName);
+        mAnimator = new AnimationDriver(mLevel, imgName);
         mSize.x = width;
         mSize.y = height;
     }
@@ -351,7 +351,7 @@ public abstract class Actor implements Renderable {
         for (int i = 0; i < vertices.length; i += 2)
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
         // print some debug info, since vertices are tricky
-        for (Vector2 vert : verts) Util.message("vert", "at " + vert.x + "," + vert.y);
+        for (Vector2 vert : verts) Util.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
         shape.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
@@ -854,7 +854,7 @@ public abstract class Actor implements Renderable {
      * @param sound The name of the sound file to play
      */
     public void setTouchSound(String sound) {
-        mTouchSound = Lol.sGame.mMedia.getSound(sound);
+        mTouchSound = mLevel.mMedia.getSound(sound);
     }
 
     /**
@@ -878,7 +878,7 @@ public abstract class Actor implements Renderable {
             public boolean onTap(Vector3 tapLocation) {
                 if (!mEnabled)
                     return false;
-                Lol.sGame.vibrate(100);
+                mLevel.mGame.vibrate(100);
                 long time = System.currentTimeMillis();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
@@ -900,7 +900,7 @@ public abstract class Actor implements Renderable {
                     public boolean onTap(Vector3 tapLocation) {
                         if (!mEnabled || !mVisible)
                             return false;
-                        Lol.sGame.vibrate(100);
+                        mLevel.mGame.vibrate(100);
                         // move the object
                         mBody.setTransform(tapLocation.x, tapLocation.y, mBody.getAngle());
                         // clear the Level responder
@@ -955,7 +955,7 @@ public abstract class Actor implements Renderable {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.vibrate(5);
+                mLevel.mGame.vibrate(5);
                 mLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
@@ -995,7 +995,7 @@ public abstract class Actor implements Renderable {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.vibrate(5);
+                mLevel.mGame.vibrate(5);
                 mLevel.mGestureResponders.add(new GestureAction() {
                     boolean mEnabled = true;
 
@@ -1120,7 +1120,7 @@ public abstract class Actor implements Renderable {
      * @param imgName The name of the new image file to use
      */
     public void setImage(String imgName) {
-        mAnimator.updateImage(imgName);
+        mAnimator.updateImage(mLevel, imgName);
     }
 
     /**
@@ -1265,7 +1265,7 @@ public abstract class Actor implements Renderable {
      * @param soundName Name of the sound file
      */
     public void setDisappearSound(String soundName) {
-        mDisappearSound = Lol.sGame.mMedia.getSound(soundName);
+        mDisappearSound = mLevel.mMedia.getSound(soundName);
     }
 
     /**
