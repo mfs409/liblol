@@ -34,8 +34,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.internals.GestureAction;
-
 /**
  * The Hero is the focal point of a game. While it is technically possible to
  * have many heroes, or invisible heroes that exist just so that the player has

@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector3;
 
@@ -38,7 +38,7 @@ import com.badlogic.gdx.math.Vector3;
  * Note: typically, one will override certain methods of this class to getLoseScene the
  * desired behavior
  */
-public class GestureAction {
+class GestureAction {
     /**
      * We offer a HOLD/RELEASE gesture. This flag tells us if we're in a hold
      * event.

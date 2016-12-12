@@ -25,15 +25,21 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
- * Wrapper for actions that we generate and then want handled during the render
- * loop
+ * This interface allows items that can be displayed on the screen to describe
+ * how they ought to be displayed. This allows us, for example, to let a text
+ * item describe how its display value should change over time.
  */
-public interface LolAction {
+interface Renderable {
     /**
-     * The go() method encapsulates the code that should be run
+     * Render something to the screen
+     *
+     * @param sb      The SpriteBatch to use for rendering
+     * @param elapsed The time since the last render
      */
-    void go();
+    void render(SpriteBatch sb, float elapsed);
 }

@@ -50,13 +50,6 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.internals.AnimationDriver;
-import edu.lehigh.cse.lol.internals.GestureAction;
-import edu.lehigh.cse.lol.internals.LolAction;
-import edu.lehigh.cse.lol.internals.Renderable;
-import edu.lehigh.cse.lol.internals.RouteDriver;
-import edu.lehigh.cse.lol.internals.Util;
-
 /**
  * Actor is the base class upon which every game actor is built. Every actor has
  * a physics representation (rectangle, circle, or convex polygon). Actors

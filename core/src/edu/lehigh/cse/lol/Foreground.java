@@ -31,8 +31,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 
-import edu.lehigh.cse.lol.internals.ParallaxLayer;
-
 /**
  * The Foreground class provides a way to declare images that go in the
  * foreground of the game, and which automatically pan and repeat. Note that if

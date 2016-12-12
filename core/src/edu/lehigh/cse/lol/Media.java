@@ -38,8 +38,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 
 import java.util.TreeMap;
 
-import edu.lehigh.cse.lol.internals.Util;
-
 /**
  * The MediaFactory provides a mechanism for registering all of our images,
  * sounds, and fonts Strictly speaking, we can re-create fonts on the fly

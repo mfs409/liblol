@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import edu.lehigh.cse.lol.internals.Renderable;
-
 /**
  * Effects provide a way of describing visual artifacts on the screen
  * that do not have a physics aspect, but which otherwise fit into the

@@ -25,24 +25,15 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
-
-import com.badlogic.gdx.physics.box2d.Contact;
-
-import edu.lehigh.cse.lol.Actor;
+package edu.lehigh.cse.lol;
 
 /**
- * When an Actor collides with another Actor, and that collision is intended to
- * cause some custom code to run, we use this interface
+ * Wrapper for actions that we generate and then want handled during the render
+ * loop
  */
-public interface CollisionCallback {
+interface LolAction {
     /**
-     * Respond to a collision with a actor. Note that one of the collision
-     * actors is not named; it should be clear from the context in which this
-     * was constructed.
-     *
-     * @param actor   The actor involved in the collision
-     * @param contact A description of the contact, in case it is useful
+     * The go() method encapsulates the code that should be run
      */
-    void go(final Actor actor, Contact contact);
+    void go();
 }

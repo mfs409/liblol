@@ -27,8 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * WinScene provides a way to display text and images after a level is won,
  * before gameplay resumes. A WinScene can include arbitrary text and pictures.

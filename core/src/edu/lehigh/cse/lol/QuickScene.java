@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -40,12 +40,7 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
-import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.LolCallback;
-import edu.lehigh.cse.lol.Media;
-
-abstract public class QuickScene {
+abstract class QuickScene {
     /**
      * The level to which this is attached
      */

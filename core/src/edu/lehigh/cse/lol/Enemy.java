@@ -28,11 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
-
-import edu.lehigh.cse.lol.internals.CollisionCallback;
-import edu.lehigh.cse.lol.internals.GestureAction;
 
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be

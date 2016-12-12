@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -34,14 +34,11 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import edu.lehigh.cse.lol.Config;
-import edu.lehigh.cse.lol.Level;
-
 /**
  * The Util class stores a few helper functions that we use inside of LOL, and a
  * few simple wrappers that we give to the game developer
  */
-public class Util {
+class Util {
     /**
      * Use this for determining bounds of text boxes
      */

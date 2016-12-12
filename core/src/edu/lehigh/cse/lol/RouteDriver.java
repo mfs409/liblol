@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -36,7 +36,7 @@ import edu.lehigh.cse.lol.Route;
  * RouteDriver is an internal class, used by LOL to determine placement for an
  * Actor whose motion is controlled by a Route.
  */
-public class RouteDriver {
+class RouteDriver {
 
     /**
      * The route that is being applied

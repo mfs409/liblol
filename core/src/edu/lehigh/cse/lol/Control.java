@@ -30,11 +30,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-
-import edu.lehigh.cse.lol.internals.GestureAction;
-import edu.lehigh.cse.lol.internals.LolAction;
 
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying

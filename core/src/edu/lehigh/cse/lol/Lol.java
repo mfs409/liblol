@@ -34,8 +34,6 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
 
-import edu.lehigh.cse.lol.internals.Util;
-
 /**
  * A Lol object is the outermost container for all of the functionality of the
  * game. It implements ApplicationListener (through Game), which provides hooks

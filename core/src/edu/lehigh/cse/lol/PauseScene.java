@@ -29,8 +29,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.utils.Timer;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * PauseScene provides a way to suspend gameplay briefly and display information
  * to the player. A PauseScene can include arbitrary text and pictures.

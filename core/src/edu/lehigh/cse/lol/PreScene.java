@@ -30,8 +30,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * PreScene provides a way to put a pop-up on the screen before a level begins.
  * A PreScene can include arbitrary text and pictures.

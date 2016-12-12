@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -38,7 +38,7 @@ import edu.lehigh.cse.lol.Media;
  * AnimationDriver is an internal class that actors can use to figure out which
  * frame of an animation to show next
  */
-public class AnimationDriver {
+class AnimationDriver {
     /**
      * The currently running animation
      */

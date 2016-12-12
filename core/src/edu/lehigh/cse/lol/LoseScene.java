@@ -27,8 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * LoseScene provides a way to display text and images after a level is lost,
  * before gameplay resumes. A LoseScene can include arbitrary text and pictures.

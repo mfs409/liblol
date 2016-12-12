@@ -25,21 +25,24 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Contact;
+
+import edu.lehigh.cse.lol.Actor;
 
 /**
- * This interface allows items that can be displayed on the screen to describe
- * how they ought to be displayed. This allows us, for example, to let a text
- * item describe how its display value should change over time.
+ * When an Actor collides with another Actor, and that collision is intended to
+ * cause some custom code to run, we use this interface
  */
-public interface Renderable {
+interface CollisionCallback {
     /**
-     * Render something to the screen
+     * Respond to a collision with a actor. Note that one of the collision
+     * actors is not named; it should be clear from the context in which this
+     * was constructed.
      *
-     * @param sb      The SpriteBatch to use for rendering
-     * @param elapsed The time since the last render
+     * @param actor   The actor involved in the collision
+     * @param contact A description of the contact, in case it is useful
      */
-    void render(SpriteBatch sb, float elapsed);
+    void go(final Actor actor, Contact contact);
 }

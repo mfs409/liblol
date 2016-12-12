@@ -33,8 +33,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.internals.CollisionCallback;
-
 /**
  * Obstacles are usually walls, except they can move, and can be used to run all
  * sorts of arbitrary code that changes the game, or the behavior of the things
