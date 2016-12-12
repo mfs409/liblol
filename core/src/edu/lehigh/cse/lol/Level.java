@@ -672,11 +672,24 @@ public class Level extends ScreenAdapter {
         if (mScore.mLoseCountDownRemaining != -100) {
             mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
             if (mScore.mLoseCountDownRemaining < 0) {
-                getLoseScene().setDefaultText(mScore.mLoseCountDownText);
+                if (mScore.mLoseCountDownText != "")
+                    getLoseScene().setDefaultText(mScore.mLoseCountDownText);
                 mScore.endLevel(false);
             }
         }
-            // check for end of game
+        if (mScore.mWinCountRemaining != -100) {
+            mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+            if (mScore.mWinCountRemaining < 0) {
+                if (mScore.mWinCountText != "")
+                    getWinScene().setDefaultWinText(mScore.mWinCountText);
+                mScore.endLevel(true);
+            }
+        }
+        if (mScore.mStopWatchProgress != -100) {
+            mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+        }
+
+        // check for end of game
         if (mEndGameEvent != null)
             mEndGameEvent.go();
 
@@ -1173,6 +1186,9 @@ public class Level extends ScreenAdapter {
      * Report the stopwatch value
      */
     public int getStopwatch() {
+        // Inactive stopwatch should return 0
+        if (mScore.mStopWatchProgress == -100)
+            return 0;
         return (int) mScore.mStopWatchProgress;
     }
 
@@ -1245,7 +1261,7 @@ public class Level extends ScreenAdapter {
         /**
          * In levels that have a lose-on-timer feature, we store the timer here, so
          * that we can extend the time left to complete a game
-         *
+         * <p/>
          * NB: -1 indicates the timer is not active
          */
         float mLoseCountDownRemaining = -100;
@@ -1258,12 +1274,16 @@ public class Level extends ScreenAdapter {
          * This is the same as CountDownRemaining, but for levels where the hero
          * wins by lasting until time runs out.
          */
-        float mWinCountRemaining;
+        float mWinCountRemaining = -100;
+        /**
+         * Text to ddisplay when a Win Countdown completes
+         */
+        String mWinCountText = "";
         /**
          * This is a stopwatch, for levels where we count how long the game has been
          * running
          */
-        float mStopWatchProgress;
+        float mStopWatchProgress = -100;
         /**
          * This is how far the hero has traveled
          */
@@ -1842,14 +1862,132 @@ public class Level extends ScreenAdapter {
     };
 
     /**
-     * Generate text indicating the current count of Type 4 Goodies
+     * Generate text indicating the time until the level is lost
      */
     public final TextProducer DisplayLoseCountdown = new TextProducer() {
         @Override
         public String makeText() {
-            return     "" + (int) mScore.mLoseCountDownRemaining;
+            return "" + (int) mScore.mLoseCountDownRemaining;
         }
     };
+
+    /**
+     * Generate text indicating the time until the level is won
+     */
+    public final TextProducer DisplayWinCountdown = new TextProducer() {
+        @Override
+        public String makeText() {
+            return "" + (int) mScore.mWinCountRemaining;
+        }
+    };
+
+    /**
+     * Generate text indicating the number of defeated enemies
+     */
+    public final TextProducer DisplayEnemiesDefeated = new TextProducer() {
+        @Override
+        public String makeText() {
+            return "" + mScore.mEnemiesDefeated;
+        }
+    };
+
+    /**
+     * Generate text indicating the value of the stopwatch
+     */
+    public final TextProducer DisplayStopwatch = new TextProducer() {
+        @Override
+        public String makeText() {
+            return "" + (int) mScore.mStopWatchProgress;
+        }
+    };
+
+    /**
+     * Generate text indicating the remaining projectiles
+     */
+    public final TextProducer DisplayRemainingProjectiles = new TextProducer() {
+        @Override
+        public String makeText() {
+            return "" + mProjectilePool.mProjectilesRemaining;
+        }
+    };
+
+    /**
+     * Generate text indicating the strength of a hero
+     *
+     * @param h The hero whose strength is to be displayed
+     * @return A TextProducer, which can be passed to addDisplay
+     */
+    public TextProducer DisplayStrength(final Hero h) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                return "" + h.getStrength();
+            }
+        };
+    }
+
+    /**
+     * Generate text indicating the value of a Level fact
+     *
+     * @param key The key to use to get the Level fact
+     * @return A TextProducer, which can be passed to addDisplay
+     */
+    public TextProducer DisplayLevelFact(final String key) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                return "" + getLevelFact(key, -1);
+            }
+        };
+    }
+
+    /**
+     * Generate text indicating the value of a Session fact
+     *
+     * @param key The key to use to get the Session fact
+     * @return A TextProducer, which can be passed to addDisplay
+     */
+    public TextProducer DisplaySessionFact(final String key) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                return "" + getSessionFact(key, -1);
+            }
+        };
+    }
+
+    /**
+     * Generate text indicating the value of a Game fact
+     *
+     * @param key The key to use to get the Game fact
+     * @return A TextProducer, which can be passed to addDisplay
+     */
+    public TextProducer DisplayGameFact(final String key) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                return "" + getGameFact(key, -1);
+            }
+        };
+    }
+
+    /**
+     * Generate text indicating the distance that an actor has travelled.
+     * <p/>
+     * Note: This distance will also become the Distance Score for the level.
+     *
+     * @param actor The actor whose distance is being monitored
+     * @return A TextProducer, which can be passed to addDisplay
+     */
+    public TextProducer DisplayDistance(final Actor actor) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                mScore.mDistance = (int) actor.getXPosition();
+                return "" + mScore.mDistance;
+            }
+        };
+    }
 
     /**
      * Place some text on the screen.  The text will be generated by tp, which is called on every screen render
@@ -1928,10 +2066,11 @@ public class Level extends ScreenAdapter {
     /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * defeat
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     *
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
-    public Display addCountdown(int x, int y) {
+    public Display addLoseCountdown(int x, int y) {
         return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
                 mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize, "", "", DisplayLoseCountdown);
     }
@@ -1948,15 +2087,16 @@ public class Level extends ScreenAdapter {
      * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addCountdown(final int x, final int y, String fontName, final int red, final int green, final int blue, int size) {
+    public Display addLoseCountdown(final int x, final int y, String fontName, final int red, final int green, final int blue, int size) {
         return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayLoseCountdown);
     }
 
     /**
      * Indicate that the level will end in defeat if it is not completed in a given amount of time.
+     *
      * @param timeout The amount of time until the level will end in defeat
-     * @param text The text to display when the level ends in defeat
-     * TODO: make second parameter a callback?
+     * @param text    The text to display when the level ends in defeat
+     *                TODO: make second parameter a callback?
      */
     public void setLoseCountdown(float timeout, String text) {
         // Once the Lose CountDown is not -100, it will start counting down
@@ -1965,23 +2105,33 @@ public class Level extends ScreenAdapter {
     }
 
     /**
+     * Indicate that the level will end in victory if the hero survives for a given amount of time
+     *
+     * @param timeout The amount of time until the level will end in victory
+     * @param text    The text to display when the level ends in victory
+     */
+    public void setWinCountdown(float timeout, String text) {
+        // Once the Win CountDown is not -100, it will start counting down
+        this.mScore.mWinCountRemaining = timeout;
+        this.mScore.mWinCountText = text;
+    }
+
+    /**
      * Add a countdown timer to the screen. When time is up, the level ends in
      * victory
      *
-     * @param timeout Starting value of the timer
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param x The X coordinate of the bottom left corner (in pixels)
+     * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addWinCountdown(float timeout, int x, int y) {
-        return addWinCountdown(timeout, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
-                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize);
+        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
+                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize, "", "", DisplayWinCountdown);
     }
 
     /**
      * Add a countdown timer to the screen, with extra features for describing
      * the appearance of the font. When time is up, the level ends in victory
      *
-     * @param timeout  Starting value of the timer
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
@@ -1990,23 +2140,8 @@ public class Level extends ScreenAdapter {
      * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addWinCountdown(final float timeout, final int x, final int y, String fontName,
-                                   final int red, final int green, final int blue, int size) {
-        mScore.mWinCountRemaining = timeout;
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-                if (mScore.mWinCountRemaining > 0)
-                    // getLoseScene elapsed time for this level
-                    drawTextTransposed(x, y, "" + (int) mScore.mWinCountRemaining, mFont, sb);
-                else
-                    mScore.endLevel(true);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+    public Display addWinCountdown(final int x, final int y, String fontName, final int red, final int green, final int blue, int size) {
+        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayWinCountdown);
     }
 
     /**
@@ -2042,15 +2177,7 @@ public class Level extends ScreenAdapter {
                                     final int red, final int green, final int blue, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + text : text;
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + mScore.mEnemiesDefeated + suffix, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayEnemiesDefeated);
     }
 
     /**
@@ -2078,16 +2205,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addStopwatch(final int x, final int y, String fontName, final int red, final int green,
                                 final int blue, int size) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-                drawTextTransposed(x, y, "" + (int) mScore.mStopWatchProgress, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayStopwatch);
     }
 
     /**
@@ -2120,15 +2238,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addStrengthMeter(final String text, final int x, final int y, String fontName, final int red,
                                     final int green, final int blue, int size, final Hero h) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + h.getStrength() + text, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayStrength(h));
     }
 
     /**
@@ -2146,16 +2256,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addDistanceMeter(final String text, final int x, final int y, String fontName, final int red,
                                     final int green, final int blue, int size, final Actor actor) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                mScore.mDistance = (int) actor.getXPosition();
-                drawTextTransposed(x, y, "" + mScore.mDistance + text, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayDistance(actor));
     }
 
     /**
@@ -2172,16 +2273,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addProjectileCount(final String text, final int x, final int y, String fontName,
                                       final int red, final int green, final int blue, int size) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, "" + mProjectilePool.mProjectilesRemaining + text,
-                        mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayRemainingProjectiles);
     }
 
     /**
@@ -2200,15 +2292,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addLevelFact(final String key, final int x, final int y, String fontName, final int red,
                                 final int green, final int blue, int size, final String prefix, final String suffix) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getLevelFact(key, -1) + suffix, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplayLevelFact(key));
     }
 
     /**
@@ -2227,15 +2311,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addSessionFact(final String key, final int x, final int y, String fontName, final int red,
                                   final int green, final int blue, int size, final String prefix, final String suffix) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getSessionFact(key, -1) + suffix, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplaySessionFact(key));
     }
 
     /**
@@ -2254,15 +2330,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addGameFact(final String key, final int x, final int y, String fontName, final int red,
                                final int green, final int blue, int size, final String prefix, final String suffix) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
-            @Override
-            void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
-                drawTextTransposed(x, y, prefix + "" + getGameFact(key, -1) + suffix, mFont, sb);
-            }
-        };
-        mDisplays.add(d);
-        return d;
+        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplayGameFact(key));
     }
 
     /**
@@ -4366,7 +4434,7 @@ public class Level extends ScreenAdapter {
     /**
      * Use this for determining bounds of text boxes
      */
-    public static GlyphLayout glyphLayout = new GlyphLayout();
+    static GlyphLayout glyphLayout = new GlyphLayout();
 
     /**
      * Create a Renderable that consists of an image
@@ -4379,7 +4447,7 @@ public class Level extends ScreenAdapter {
      * @return A Renderable of the image
      */
     Renderable makePicture(final float x, final float y, final float width, final float height,
-                                         String imgName) {
+                           String imgName) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
@@ -4406,8 +4474,8 @@ public class Level extends ScreenAdapter {
      * @param size     The font size
      * @return A Renderable of the text
      */
-     Renderable makeText(final int x, final int y, final String message, final int red, final int green,
-                               final int blue, String fontName, int size) {
+    Renderable makeText(final int x, final int y, final String message, final int red, final int green,
+                        final int blue, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
@@ -4432,7 +4500,7 @@ public class Level extends ScreenAdapter {
      * @return A Renderable of the text
      */
     Renderable makeText(final String message, final int red, final int green, final int blue,
-                               String fontName, int size) {
+                        String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         glyphLayout.setText(bf, message);
         final float x = mConfig.mWidth / 2 - glyphLayout.width / 2;
@@ -4458,7 +4526,7 @@ public class Level extends ScreenAdapter {
      * @param bf      The BitmapFont object to use for the text's font
      * @param sb      The SpriteBatch used to render the text
      */
-     void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+    void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
         glyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + glyphLayout.height);
     }

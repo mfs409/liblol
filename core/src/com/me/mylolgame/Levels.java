@@ -573,7 +573,7 @@ public class Levels implements ScreenManager {
 
             // put a simple countdown on the screen
             level.setLoseCountdown(15, "Time Up!");
-            level.addCountdown(400, 50);
+            level.addLoseCountdown(400, 50);
 
             // let's also add a screen for pausing the game. In a real game,
             // every level should have a button for pausing the game, and the
@@ -722,7 +722,7 @@ public class Levels implements ScreenManager {
 
             // put a countdown on the screen
             level.setLoseCountdown(10, "Time Up!");
-            level.addCountdown(200, 25);
+            level.addLoseCountdown(200, 25);
 
             // indicate that defeating all of the enemies is the way to win this
             // level
@@ -2730,7 +2730,8 @@ public class Levels implements ScreenManager {
 
             // we're going to win by "surviving" for 25 seconds... with no
             // enemies, that shouldn't be too hard
-            level.addWinCountdown(25, 28, 250, "arial.ttf", 192, 192, 192, 16);
+            level.setWinCountdown(25, "You Survived!");
+            level.addWinCountdown(28, 250, "arial.ttf", 192, 192, 192, 16);
             // just to play it safe, let's say that we win on level...
             // this ensures that collecting goodies or defeating enemies won't
             // accidentally cause us to win. Of course, with no destination,
@@ -2969,7 +2970,7 @@ public class Levels implements ScreenManager {
             level.addGoodieCount(3, 0, " red", 10, 170, "arial.ttf", 0, 255, 255, 16);
 
             level.setLoseCountdown(100, "");
-            level.addCountdown(250, 30);
+            level.addLoseCountdown(250, 30);
 
             // draw the goodies
             for (int i = 0; i < 3; ++i) {
