@@ -34,7 +34,7 @@ import com.badlogic.gdx.audio.Sound;
  * can't make individual projectiles, but can configureCamera a pool of projectiles
  * that can then be thrown by a hero.
  */
-public class ProjectilePool {
+ class ProjectilePool {
     /**
      * The level in which this pool exists
      */

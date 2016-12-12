@@ -43,7 +43,7 @@ import java.util.TreeMap;
  * sounds, and fonts Strictly speaking, we can re-create fonts on the fly
  * whenever we need to. Caching them here is an optimization.
  */
-public class Media {
+class Media {
     /**
      * Store the fonts used by this game
      */

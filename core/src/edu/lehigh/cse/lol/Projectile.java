@@ -37,7 +37,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * to remove enemies. Note that there is no public interface to this file.
  * Projectiles should be controlled via ProjectilePool.
  */
-public class Projectile extends Actor {
+class Projectile extends Actor {
     /**
      * This is the initial point of the throw
      */
