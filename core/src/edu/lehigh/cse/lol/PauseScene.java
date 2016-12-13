@@ -35,7 +35,7 @@ import com.badlogic.gdx.utils.Timer;
  */
 public class PauseScene extends QuickScene {
 
-    PauseScene(Level level) {
+    PauseScene(BaseLevel level) {
         super(level);
     }
 

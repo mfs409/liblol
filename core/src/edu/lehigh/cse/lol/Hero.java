@@ -139,7 +139,7 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    protected Hero(Level level, float width, float height, String imgName) {
+    protected Hero(BaseLevel level, float width, float height, String imgName) {
         super(level, imgName, width, height);
         mLevel.mScore.mHeroesCreated++;
     }
@@ -222,6 +222,9 @@ public class Hero extends Actor {
      * crawling
      */
     void crawlOn() {
+        if (mCrawling) {
+            return;
+        }
         mCrawling = true;
         mBody.setTransform(mBody.getPosition(), -3.14159f / 2);
         if (mCrawlAnimation != null)
@@ -232,6 +235,9 @@ public class Hero extends Actor {
      * Take the hero out of crawl mode
      */
     void crawlOff() {
+        if (!mCrawling) {
+            return;
+        }
         mCrawling = false;
         mBody.setTransform(mBody.getPosition(), 0);
         mAnimator.setCurrentAnimation(mDefaultAnimation);

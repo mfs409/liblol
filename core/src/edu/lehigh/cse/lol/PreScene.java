@@ -36,7 +36,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  */
 public class PreScene extends QuickScene {
 
-    public PreScene(Level level) {
+    public PreScene(BaseLevel level) {
         super(level);
     }
 

@@ -69,7 +69,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public AnimationDriver(Level level, String imgName) {
+    public AnimationDriver(BaseLevel level, String imgName) {
         updateImage(level, imgName);
     }
 
@@ -89,7 +89,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public void updateImage(Level level, String imgName) {
+    public void updateImage(BaseLevel level, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
         mImages[0] = level.mMedia.getImage(imgName);
@@ -99,7 +99,7 @@ class AnimationDriver {
     /**
      * Request a random index from the mImageNames array to pick an image to display
      */
-    public void pickRandomIndex(Level level) {
+    public void pickRandomIndex(BaseLevel level) {
         mImageIndex = level.getRandom(mImages.length);
     }
 

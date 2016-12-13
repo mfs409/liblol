@@ -41,7 +41,7 @@ public class Control {
     /**
      * The level where this control is drawn
      */
-    Level mLevel;
+    BaseLevel mLevel;
     /**
      * Should we run code when this Control is touched?
      */
@@ -78,7 +78,7 @@ public class Control {
      * @param width   The width of the Control
      * @param height  The height of the Control
      */
-    Control(Level level, String imgName, int x, int y, int width, int height) {
+    Control(BaseLevel level, String imgName, int x, int y, int width, int height) {
         mLevel = level;
         // set up the image to display
         //

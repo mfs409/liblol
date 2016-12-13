@@ -133,7 +133,7 @@ public class Svg {
      * @param attribute The attribute being processed... we hope it's a valid
      *                  translate directive
      */
-    private void processTransform(Level level, String attribute) {
+    private void processTransform(BaseLevel level, String attribute) {
         // if we getLoseScene a valid "translate" attribute, split it into two floats and
         // save them
         if (attribute.startsWith("translate(")) {
@@ -158,7 +158,7 @@ public class Svg {
      *
      * @param d The string that describes the path
      */
-    private void processD(Level level, String d) {
+    private void processD(BaseLevel level, String d) {
         // split the string into characters and floating point values
         String delims = "[ ,]+";
         String[] points = d.split(delims);
@@ -279,7 +279,7 @@ public class Svg {
      * @param start The point from which the line originates
      * @param stop  The point to which the line extends
      */
-    private void addLine(Level level, Vector2 start, Vector2 stop) {
+    private void addLine(BaseLevel level, Vector2 start, Vector2 stop) {
         // Get the pixel coordinates of the SVG line
         float x1 = start.x, x2 = stop.x, y1 = start.y, y2 = stop.y;
         // apply svg translation, since it is in pixels
@@ -317,7 +317,7 @@ public class Svg {
      * @param x2 X coordinate of second endpoint
      * @param y2 Y coordinate of second endpoint
      */
-    private void drawLine(Level level, float x1, float y1, float x2, float y2) {
+    private void drawLine(BaseLevel level, float x1, float y1, float x2, float y2) {
         // compute center and length
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
@@ -337,7 +337,7 @@ public class Svg {
      *
      * @param svgName The name of the file to parse
      */
-    void parse(Level level, String svgName) {
+    void parse(BaseLevel level, String svgName) {
         XmlReader r = new XmlReader();
         try {
             Element root = r.parse(Gdx.files.internal(svgName));

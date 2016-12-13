@@ -52,7 +52,7 @@ public class Foreground {
      * @param sb
      *            The SpriteBatch that is being used to do the drawing.
      */
-    void renderLayers(Level level, SpriteBatch sb, float elapsed) {
+    void renderLayers(BaseLevel level, SpriteBatch sb, float elapsed) {
         // center camera on mGameCam's camera
         float x = level.mGameCam.position.x;
         float y = level.mGameCam.position.y;

@@ -42,7 +42,7 @@ public class WinScene extends QuickScene {
     /**
      * Construct by setting the default win text
      */
-    public WinScene(Level level) {
+    public WinScene(BaseLevel level) {
         super(level);
         mWinText = level.mConfig.mDefaultWinText;
     }

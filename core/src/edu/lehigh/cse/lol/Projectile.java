@@ -73,7 +73,7 @@ class Projectile extends Actor {
      * @param zIndex   The z plane of the projectile
      * @param isCircle True if it is a circle, false if it is a box
      */
-    Projectile(Level level, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
+    Projectile(BaseLevel level, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
         super(level, imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
