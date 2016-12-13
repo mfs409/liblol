@@ -31,9 +31,10 @@ package edu.lehigh.cse.lol;
  * Wrapper for actions that we generate and then want handled during the render
  * loop
  */
-interface LolAction {
+public abstract class LolAction {
+    public boolean mIsActive = true;
     /**
      * The go() method encapsulates the code that should be run
      */
-    void go();
+    abstract void go();
 }

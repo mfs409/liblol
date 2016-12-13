@@ -665,8 +665,10 @@ public class Level extends ScreenAdapter {
         mOneTimeEvents.clear();
 
         // handle repeat events
-        for (LolAction pe : mRepeatEvents)
-            pe.go();
+        for (LolAction pe : mRepeatEvents) {
+            if (pe.mIsActive)
+                pe.go();
+        }
 
         // Check the countdown timers
         if (mScore.mLoseCountDownRemaining != -100) {
@@ -2381,6 +2383,72 @@ public class Level extends ScreenAdapter {
     }
 
     /**
+     * Add a button that has one behavior while it is being pressed, and another when it is released
+     *
+     * @param x The X coordinate of the bottom left corner
+     * @param y The Y coordinate of the bottom left corner
+     * @param width The width of the image
+     * @param height The height of the image
+     * @param imgName The name of the image to display.  Use "" for an invisible button
+     * @param whileDownAction The action to execute, repeatedly, whenever the button is pressed
+     * @param onUpAction The action to execute once any time the button is released
+     * @return The control, so we can do more with it as needed.
+     */
+    public Control addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
+        // make the control
+        final Control c = new Control(this, imgName, x, y, width, height);
+        // initially the down action is not active
+        whileDownAction.mIsActive = false;
+        // set up the toggle behavior
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
+                if (isUp) {
+                    whileDownAction.mIsActive = false;
+                    onUpAction.go();
+                } else {
+                    whileDownAction.mIsActive = true;
+                }
+                return true;
+            }
+        };
+        // Put the control and events in the appropriate lists
+        mControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(whileDownAction);
+        return c;
+    }
+
+    /**
+     * Add a button that moves the given actor left while the button is being
+     * held
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param rate    Rate at which the actor moves
+     * @param actor   The actor that should move left when the button is pressed
+     */
+    public Control addLeftButton(int x, int y, int width, int height, String imgName, final float rate, final Actor actor) {
+        return addToggleButton(x, y, width, height, imgName, new LolAction(){
+            public void go() {
+                Vector2 v = actor.mBody.getLinearVelocity();
+                v.x = -rate;
+                actor.updateVelocity(v.x, v.y);
+            }
+        }, new LolAction(){
+            public void go() {
+                Vector2 v = actor.mBody.getLinearVelocity();
+                v.x = 0;
+                actor.updateVelocity(v.x, v.y);
+            }
+        });
+    }
+
+    /**
      * Add a button that makes an actor move as long as the button is being held
      * down
      *
@@ -2469,23 +2537,6 @@ public class Level extends ScreenAdapter {
      */
     public Control addUpButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
         return addMoveButton(x, y, width, height, imgName, actor, 0, rate);
-    }
-
-    /**
-     * Add a button that moves the given actor left while the button is being
-     * held
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rate    Rate at which the actor moves
-     * @param actor   The actor that should move left when the button is pressed
-     */
-    public Control addLeftButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
-        return addMoveButton(x, y, width, height, imgName, actor, -rate, 0);
     }
 
     /**
