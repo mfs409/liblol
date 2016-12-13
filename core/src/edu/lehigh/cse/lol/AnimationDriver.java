@@ -29,11 +29,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import edu.lehigh.cse.lol.Animation;
-import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.Media;
-
 /**
  * AnimationDriver is an internal class that actors can use to figure out which
  * frame of an animation to show next
@@ -69,7 +64,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public AnimationDriver(BaseLevel level, String imgName) {
+    public AnimationDriver(Level level, String imgName) {
         updateImage(level, imgName);
     }
 
@@ -89,7 +84,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public void updateImage(BaseLevel level, String imgName) {
+    public void updateImage(Level level, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
         mImages[0] = level.mMedia.getImage(imgName);
@@ -99,7 +94,7 @@ class AnimationDriver {
     /**
      * Request a random index from the mImageNames array to pick an image to display
      */
-    public void pickRandomIndex(BaseLevel level) {
+    public void pickRandomIndex(Level level) {
         mImageIndex = level.getRandom(mImages.length);
     }
 

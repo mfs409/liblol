@@ -139,7 +139,7 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    protected Hero(BaseLevel level, float width, float height, String imgName) {
+    protected Hero(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
         mLevel.mScore.mHeroesCreated++;
     }

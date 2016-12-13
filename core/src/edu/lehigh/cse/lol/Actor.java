@@ -63,7 +63,7 @@ public abstract class Actor implements Renderable {
     /**
      * The level in which this Actor exists
      */
-    BaseLevel mLevel;
+    Level mLevel;
 
     /**
      * Animation support: the offset for placing the disappearance animation
@@ -226,7 +226,7 @@ public abstract class Actor implements Renderable {
      * @param width   The width
      * @param height  The height
      */
-    Actor(BaseLevel level, String imgName, float width, float height) {
+    Actor(Level level, String imgName, float width, float height) {
         mLevel = level;
         mAnimator = new AnimationDriver(mLevel, imgName);
         mSize.x = width;

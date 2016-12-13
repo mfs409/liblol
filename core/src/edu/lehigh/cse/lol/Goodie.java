@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
@@ -63,7 +62,7 @@ public class Goodie extends Actor {
      * @param height  height of this Obstacle
      * @param imgName image to use for this Obstacle
      */
-    protected Goodie(BaseLevel level, float width, float height, String imgName) {
+    protected Goodie(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;

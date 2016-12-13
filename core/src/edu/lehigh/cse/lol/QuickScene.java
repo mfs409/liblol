@@ -44,13 +44,13 @@ abstract class QuickScene {
     /**
      * The level to which this is attached
      */
-    public BaseLevel mLevel;
+    public Level mLevel;
 
     /**
      * Construct a QuickScene by giving it a level
      * @param level
      */
-    public QuickScene(BaseLevel level) {
+    public QuickScene(Level level) {
         mLevel = level;
     }
 

@@ -42,7 +42,7 @@ public class LoseScene extends QuickScene {
     /**
      * Construct by setting the default lose text
      */
-    public LoseScene(BaseLevel level) {
+    public LoseScene(Level level) {
         super(level);
         mLoseText = level.mConfig.mDefaultLoseText;
     }

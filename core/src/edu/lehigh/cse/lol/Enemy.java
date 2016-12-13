@@ -83,7 +83,7 @@ public class Enemy extends Actor {
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(BaseLevel level, float width, float height, String imgName) {
+    protected Enemy(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
         mLevel.mScore.mEnemiesCreated++;
     }

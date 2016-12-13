@@ -39,7 +39,7 @@ public class Display {
     /**
      * The level in which this display is to be drawn
      */
-    BaseLevel mLevel;
+    Level mLevel;
 
     /**
      * What color should we use to draw text
@@ -60,7 +60,7 @@ public class Display {
      * @param fontName The name of the .ttf font file to use
      * @param fontSize The point size of the font
      */
-    Display(BaseLevel level, int red, int green, int blue, String fontName, int fontSize) {
+    Display(Level level, int red, int green, int blue, String fontName, int fontSize) {
         mLevel = level;
         mColor.r = ((float) red) / 256;
         mColor.g = ((float) green) / 256;

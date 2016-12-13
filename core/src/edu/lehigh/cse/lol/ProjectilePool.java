@@ -38,7 +38,7 @@ import com.badlogic.gdx.audio.Sound;
     /**
      * The level in which this pool exists
      */
-    BaseLevel mLevel;
+    Level mLevel;
 
     /**
      * A collection of all the available projectiles
@@ -108,7 +108,7 @@ import com.badlogic.gdx.audio.Sound;
      * @param zIndex   The z plane on which the projectiles should be drawn
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(BaseLevel level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(Level level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         mLevel = level;
         // set up the pool
         mPool = new Projectile[size];

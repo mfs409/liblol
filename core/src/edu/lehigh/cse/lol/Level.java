@@ -40,12 +40,23 @@ import java.util.Random;
 import java.util.TreeMap;
 
 /**
- * BaseLevel stores the internal functionality for a level.
+ * A Level is an interactive portion of the game. Levels can be infinite, or
+ * they can have an end goal. Level has two components. One is the part that is
+ * visible to the game designer, which involves some limited control over the
+ * camera and music, and the ability to request that custom code run after a
+ * fixed amount of time. These timers can also be attached to a specific enemy,
+ * if desired. Internally, Level is responsible for managing a set of cameras
+ * used to display everything that appears on the screen. It is also responsible
+ * for keeping track of everything on the screen (Actors, Controls, and
+ * Displays), so we can draw the game correctly.
+ * <p>
+ * Note that everything in Lol is a level... the splash screen, the choosers,
+ * the help, and the game levels themselves.
  */
-class BaseLevel extends ScreenAdapter {
-     Config mConfig;
-     Media mMedia;
-     Lol mGame;
+public class Level extends ScreenAdapter {
+    Config mConfig;
+    Media mMedia;
+    Lol mGame;
 
     /**
      * Store string/integer pairs that getLoseScene reset at the end of every level
@@ -227,7 +238,7 @@ class BaseLevel extends ScreenAdapter {
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
      */
-    BaseLevel(Config config, Media media, Lol game) {
+    Level(Config config, Media media, Lol game) {
         mConfig = config;
         mMedia = media;
         mGame = game;
@@ -296,7 +307,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Configure the camera bounds for a level
-     * <p/>
+     * <p>
      * TODO: set upper and lower bounds, instead of assuming a lower bound of (0, 0)
      *
      * @param width  width of the camera
@@ -370,7 +381,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Turn on scribble mode, so that scene touch events draw circular objects
-     * <p/>
+     * <p>
      * Note: this code should be thought of as serving to demonstrate, only. If
      * you really wanted to do anything clever with scribbling, you'd certainly
      * want to change this code.
@@ -1162,7 +1173,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Force the level to end in victory
-     * <p/>
+     * <p>
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
@@ -1172,7 +1183,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Force the level to end in defeat
-     * <p/>
+     * <p>
      * This is useful in callbacks, where we might want to immediately end the
      * game
      */
@@ -1222,7 +1233,7 @@ class BaseLevel extends ScreenAdapter {
         /**
          * In levels that have a lose-on-timer feature, we store the timer here, so
          * that we can extend the time left to complete a game
-         * <p/>
+         * <p>
          * NB: -1 indicates the timer is not active
          */
         float mLoseCountDownRemaining = -100;
@@ -1406,7 +1417,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Configure physics for the current level
-     * <p/>
+     * <p>
      * TODO: once we remove the static Level, we can make this happen with (0,0) in the ctor
      *
      * @param defaultXGravity The default force moving actors to the left (negative) or
@@ -1934,7 +1945,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Generate text indicating the distance that an actor has travelled.
-     * <p/>
+     * <p>
      * Note: This distance will also become the Distance Score for the level.
      *
      * @param actor The actor whose distance is being monitored
@@ -2349,13 +2360,13 @@ class BaseLevel extends ScreenAdapter {
     /**
      * Add a button that has one behavior while it is being pressed, and another when it is released
      *
-     * @param x The X coordinate of the bottom left corner
-     * @param y The Y coordinate of the bottom left corner
-     * @param width The width of the image
-     * @param height The height of the image
-     * @param imgName The name of the image to display.  Use "" for an invisible button
+     * @param x               The X coordinate of the bottom left corner
+     * @param y               The Y coordinate of the bottom left corner
+     * @param width           The width of the image
+     * @param height          The height of the image
+     * @param imgName         The name of the image to display.  Use "" for an invisible button
      * @param whileDownAction The action to execute, repeatedly, whenever the button is pressed
-     * @param onUpAction The action to execute once any time the button is released
+     * @param onUpAction      The action to execute once any time the button is released
      * @return The control, so we can do more with it as needed.
      */
     public Control addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
@@ -2385,6 +2396,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Create an action for moving an actor in the X direction.  This action can be used by a Control.
+     *
      * @param actor The actor to move
      * @param xRate The rate at which the actor should move in the X direction (negative values are allowed)
      * @return The action
@@ -2402,6 +2414,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Create an action for moving an actor in the Y direction.  This action can be used by a Control.
+     *
      * @param actor The actor to move
      * @param yRate The rate at which the actor should move in the Y direction (negative values are allowed)
      * @return The action
@@ -2419,6 +2432,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Create an action for moving an actor in the X and Y directions.  This action can be used by a Control.
+     *
      * @param actor The actor to move
      * @param xRate The rate at which the actor should move in the X direction (negative values are allowed)
      * @param yRate The rate at which the actor should move in the Y direction (negative values are allowed)
@@ -2708,7 +2722,7 @@ class BaseLevel extends ScreenAdapter {
      * The default behavior for throwing is to throw in a straight line. If we
      * instead desire that the projectiles have some sort of aiming to them, we
      * need to use this method, which throws toward where the screen was pressed
-     * <p/>
+     * <p>
      * Note: you probably want to use an invisible button that covers the
      * screen...
      *
@@ -4000,7 +4014,7 @@ class BaseLevel extends ScreenAdapter {
      * Specify the image file from which to randomly choose projectile images
      *
      * @param imgName The file to use when picking images
-     *                <p/>
+     *                <p>
      *                TODO: this is broken now that we removed Animatable images
      */
     public void setProjectileImageSource(String imgName) {
@@ -4189,7 +4203,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Draw a picture on the current level
-     * <p/>
+     * <p>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this picture.
      *
@@ -4208,7 +4222,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Draw some text on the current level
-     * <p/>
+     * <p>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *
@@ -4241,7 +4255,7 @@ class BaseLevel extends ScreenAdapter {
 
     /**
      * Draw some text on the current level, centered on a point.
-     * <p/>
+     * <p>
      * Note: the order in which this is called relative to other actors will
      * determine whether they go under or over this text.
      *

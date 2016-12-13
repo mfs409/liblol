@@ -86,7 +86,7 @@ public class Obstacle extends Actor {
      * @param height  height of this Obstacle
      * @param imgName Name of the image file to use
      */
-    protected Obstacle(BaseLevel level, float width, float height, String imgName) {
+    protected Obstacle(Level level, float width, float height, String imgName) {
         super(level, imgName, width, height);
     }
 

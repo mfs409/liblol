@@ -28,7 +28,6 @@
 package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
