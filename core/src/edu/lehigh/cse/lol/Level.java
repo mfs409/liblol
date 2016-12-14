@@ -153,7 +153,7 @@ public class Level extends ScreenAdapter {
      */
     ArrayList<Control> mToggleControls = new ArrayList<>();
     /**
-     * Events that getLoseScene processed on the next render, then discarded
+     * Events that get processed on the next render, then discarded
      */
     ArrayList<LolAction> mOneTimeEvents = new ArrayList<>();
     /**
@@ -162,7 +162,7 @@ public class Level extends ScreenAdapter {
      */
     LolAction mEndGameEvent;
     /**
-     * Events that getLoseScene processed on every render
+     * Events that get processed on every render
      */
     ArrayList<LolAction> mRepeatEvents = new ArrayList<>();
     /**
@@ -321,8 +321,7 @@ public class Level extends ScreenAdapter {
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (mConfig.mShowDebugBoxes)
-            addFPS(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed, mConfig.mDefaultFontGreen,
-                    mConfig.mDefaultFontBlue, 12);
+            addFPS(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12);
 
     }
 
@@ -1967,18 +1966,15 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font to use
-     * @param red      The redness of the text
-     * @param green    The greenness of the text
-     * @param blue     The blueness of the text
      * @param size     The font size
      * @param tp       The TextProducer
      * @return The display, so that it can be controlled further if needed
      */
-    public Display addDisplay(final int x, final int y, String fontName, final int red, final int green, final int blue, int size, final String prefix, final String suffix, final TextProducer tp) {
-        Display d = new Display(this, red, green, blue, fontName, size) {
+    public Display addDisplay(final int x, final int y, String fontName, final String fontColor, int size, final String prefix, final String suffix, final TextProducer tp) {
+        Display d = new Display(this, fontColor, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
-                mFont.setColor(mColor.r, mColor.g, mColor.b, 1);
+                mFont.setColor(mColor);
                 String txt = prefix + tp.makeText() + suffix;
                 drawTextTransposed(x, y, txt, mFont, sb);
             }
@@ -1994,14 +1990,10 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addFPS(final int x, final int y, String fontName, final int red, final int green,
-                          final int blue, int size) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayFPS);
+    public Display addFPS(final int x, final int y, String fontName, final String fontColor, int size) {
+        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayFPS);
     }
 
     /**
@@ -2015,23 +2007,20 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
     public Display addGoodieCount(final int type, int max, final String text, final int x, final int y,
-                                  String fontName, final int red, final int green, final int blue, int size) {
+                                  String fontName, String fontColor, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + text : text;
         if (type == 1)
-            return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayGoodies1);
+            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies1);
         if (type == 2)
-            return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayGoodies2);
+            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies2);
         if (type == 3)
-            return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayGoodies3);
+            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies3);
         if (type == 4)
-            return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayGoodies4);
+            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies4);
         else return null;
     }
 
@@ -2043,8 +2032,7 @@ public class Level extends ScreenAdapter {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addLoseCountdown(int x, int y) {
-        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
-                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize, "", "", DisplayLoseCountdown);
+        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, "", "", DisplayLoseCountdown);
     }
 
     /**
@@ -2054,13 +2042,10 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addLoseCountdown(final int x, final int y, String fontName, final int red, final int green, final int blue, int size) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayLoseCountdown);
+    public Display addLoseCountdown(final int x, final int y, String fontName, String fontColor, int size) {
+        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayLoseCountdown);
     }
 
     /**
@@ -2096,8 +2081,7 @@ public class Level extends ScreenAdapter {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addWinCountdown(float timeout, int x, int y) {
-        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
-                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize, "", "", DisplayWinCountdown);
+        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, "", "", DisplayWinCountdown);
     }
 
     /**
@@ -2107,13 +2091,10 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addWinCountdown(final int x, final int y, String fontName, final int red, final int green, final int blue, int size) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayWinCountdown);
+    public Display addWinCountdown(final int x, final int y, String fontName, String fontColor, int size) {
+        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayWinCountdown);
     }
 
     /**
@@ -2126,8 +2107,7 @@ public class Level extends ScreenAdapter {
      * @param y    The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
-                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize);
+        return addDefeatedCount(max, text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize);
     }
 
     /**
@@ -2140,16 +2120,13 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
     public Display addDefeatedCount(int max, final String text, final int x, final int y, String fontName,
-                                    final int red, final int green, final int blue, int size) {
+                                    String fontColor, int size) {
         // The suffix to display after the goodie count:
         final String suffix = (max > 0) ? "/" + max + text : text;
-        return addDisplay(x, y, fontName, red, green, blue, size, "", suffix, DisplayEnemiesDefeated);
+        return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayEnemiesDefeated);
     }
 
     /**
@@ -2159,8 +2136,7 @@ public class Level extends ScreenAdapter {
      * @param y The Y coordinate of the bottom left corner (in pixels)
      */
     public Display addStopwatch(int x, int y) {
-        return addStopwatch(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed, mConfig.mDefaultFontGreen,
-                mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize);
+        return addStopwatch(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize);
     }
 
     /**
@@ -2170,14 +2146,10 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
-    public Display addStopwatch(final int x, final int y, String fontName, final int red, final int green,
-                                final int blue, int size) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", "", DisplayStopwatch);
+    public Display addStopwatch(final int x, final int y, String fontName, String fontColor, int size) {
+        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayStopwatch);
     }
 
     /**
@@ -2190,8 +2162,7 @@ public class Level extends ScreenAdapter {
      */
     public Display addStrengthMeter(String text, int x, int y, Hero h) {
         // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontRed,
-                mConfig.mDefaultFontGreen, mConfig.mDefaultFontBlue, mConfig.mDefaultFontSize, h);
+        return addStrengthMeter(text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, h);
     }
 
     /**
@@ -2202,15 +2173,11 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      * @param h        The Hero whose strength should be displayed
      */
-    public Display addStrengthMeter(final String text, final int x, final int y, String fontName, final int red,
-                                    final int green, final int blue, int size, final Hero h) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayStrength(h));
+    public Display addStrengthMeter(final String text, final int x, final int y, String fontName, String fontColor, int size, final Hero h) {
+        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayStrength(h));
     }
 
     /**
@@ -2220,15 +2187,11 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      * @param actor    The Actor whose distance should be displayed
      */
-    public Display addDistanceMeter(final String text, final int x, final int y, String fontName, final int red,
-                                    final int green, final int blue, int size, final Actor actor) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayDistance(actor));
+    public Display addDistanceMeter(final String text, final int x, final int y, String fontName, String fontColor, int size, final Actor actor) {
+        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayDistance(actor));
     }
 
     /**
@@ -2238,14 +2201,11 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      */
     public Display addProjectileCount(final String text, final int x, final int y, String fontName,
-                                      final int red, final int green, final int blue, int size) {
-        return addDisplay(x, y, fontName, red, green, blue, size, "", text, DisplayRemainingProjectiles);
+                                      String fontColor, int size) {
+        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayRemainingProjectiles);
     }
 
     /**
@@ -2255,16 +2215,12 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      * @param prefix   Text to put before the fact
      * @param suffix   Text to put after the fact
      */
-    public Display addLevelFact(final String key, final int x, final int y, String fontName, final int red,
-                                final int green, final int blue, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplayLevelFact(key));
+    public Display addLevelFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
+        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplayLevelFact(key));
     }
 
     /**
@@ -2274,16 +2230,12 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      * @param prefix   Text to put before the fact
      * @param suffix   Text to put after the fact
      */
-    public Display addSessionFact(final String key, final int x, final int y, String fontName, final int red,
-                                  final int green, final int blue, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplaySessionFact(key));
+    public Display addSessionFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
+        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplaySessionFact(key));
     }
 
     /**
@@ -2293,16 +2245,12 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner (in pixels)
      * @param y        The Y coordinate of the bottom left corner (in pixels)
      * @param fontName The name of the font file to use
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param size     The font size to use (20 is usually a good value)
      * @param prefix   Text to put before the fact
      * @param suffix   Text to put after the fact
      */
-    public Display addGameFact(final String key, final int x, final int y, String fontName, final int red,
-                               final int green, final int blue, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, red, green, blue, size, prefix, suffix, DisplayGameFact(key));
+    public Display addGameFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
+        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplayGameFact(key));
     }
 
     /**
@@ -3472,14 +3420,10 @@ public class Level extends ScreenAdapter {
     /**
      * Set the background color for the current level
      *
-     * @param red   The amount of redness (0-255)
-     * @param green The amount of greenness (0-255)
-     * @param blue  The amount of blueness (0-255)
+     * @param color The color, formated as #RRGGBB
      */
-    public void setBackgroundColor(int red, int green, int blue) {
-        mBackground.mColor.r = ((float) red) / 255;
-        mBackground.mColor.g = ((float) green) / 255;
-        mBackground.mColor.b = ((float) blue) / 255;
+    public void setBackgroundColor(String color) {
+        mBackground.mColor = Color.valueOf(color);
     }
 
     /**
@@ -4229,21 +4173,17 @@ public class Level extends ScreenAdapter {
      * @param x        X coordinate of bottom left corner of the text
      * @param y        Y coordinate of bottom left corner of the text
      * @param text     The text to display
-     * @param red      The red component of the color (0-255)
-     * @param green    The green component of the color (0-255)
-     * @param blue     The blue component of the color (0-255)
      * @param fontName The name of the font file to use
      * @param size     The font size to use
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public void drawText(final float x, final float y, final String text, final int red, final int green,
-                         final int blue, String fontName, int size, int zIndex) {
+    public void drawText(final float x, final float y, final String text, final String fontColor, String fontName, int size, int zIndex) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         Renderable r = new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.setColor(Color.valueOf(fontColor));
                 bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
                 glyphLayout.setText(bf, text);
                 bf.draw(sb, text, x, y + glyphLayout.height);
@@ -4262,16 +4202,12 @@ public class Level extends ScreenAdapter {
      * @param centerX  X coordinate of center of the text
      * @param centerY  Y coordinate of center of the text
      * @param text     The text to display
-     * @param red      The red component of the color (0-255)
-     * @param green    The green component of the color (0-255)
-     * @param blue     The blue component of the color (0-255)
      * @param fontName The name of the font file to use
      * @param size     The font size to use
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public void drawTextCentered(final float centerX, final float centerY, final String text, final int red,
-                                 final int green, final int blue, String fontName, int size, int zIndex) {
+    public void drawTextCentered(final float centerX, final float centerY, final String text, final String fontColor, String fontName, int size, int zIndex) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
 
         // figure out the image dimensions
@@ -4285,7 +4221,7 @@ public class Level extends ScreenAdapter {
         Renderable r = new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.setColor(Color.valueOf(fontColor));
                 bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.getData().setScale(1);
@@ -4449,20 +4385,16 @@ public class Level extends ScreenAdapter {
      * @param x        The X coordinate of the bottom left corner, in pixels
      * @param y        The Y coordinate of the bottom left corner, in pixels
      * @param message  The text to display... note that it can't change on the fly
-     * @param red      The red component of the font color (0-255)
-     * @param green    The green component of the font color (0-255)
-     * @param blue     The blue component of the font color (0-255)
      * @param fontName The font to use
      * @param size     The font size
      * @return A Renderable of the text
      */
-    Renderable makeText(final int x, final int y, final String message, final int red, final int green,
-                        final int blue, String fontName, int size) {
+    Renderable makeText(final int x, final int y, final String message, final String fontColor, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.setColor(Color.valueOf(fontColor));
                 glyphLayout.setText(bf, message);
                 bf.draw(sb, message, x, y + glyphLayout.height);
             }
@@ -4474,14 +4406,11 @@ public class Level extends ScreenAdapter {
      * centered vertically and horizontally on the screen
      *
      * @param message  The text to display... note that it can't change on the fly
-     * @param red      The red component of the font color (0-255)
-     * @param green    The green component of the font color (0-255)
-     * @param blue     The blue component of the font color (0-255)
      * @param fontName The font to use
      * @param size     The font size
      * @return A Renderable of the text
      */
-    Renderable makeText(final String message, final int red, final int green, final int blue,
+    Renderable makeText(final String message, final String fontColor,
                         String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         glyphLayout.setText(bf, message);
@@ -4490,7 +4419,7 @@ public class Level extends ScreenAdapter {
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(((float) red) / 256, ((float) green) / 256, ((float) blue) / 256, 1);
+                bf.setColor(Color.valueOf(fontColor));
                 bf.draw(sb, message, x, y);
             }
         };

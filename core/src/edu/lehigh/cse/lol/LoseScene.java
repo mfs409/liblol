@@ -65,7 +65,7 @@ public class LoseScene extends QuickScene {
         // don't compute it until right here... also, play music
         if (mSound != null)
             mSound.play(mLevel.getGameFact("volume", 1));
-        addText(mLoseText, 255, 255, 255, mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+        addText(mLoseText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
     }
 
     /*

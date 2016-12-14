@@ -183,14 +183,11 @@ abstract class QuickScene {
      * Add some text to the scene, and center it vertically and horizontally
      *
      * @param text     The text to display
-     * @param red      Redness of the text color
-     * @param green    Greenness of the text color
-     * @param blue     Blueness of the text color
      * @param fontName The font file to use
      * @param size     The size of the text
      */
-    public void addText(String text, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(mLevel.makeText(text, red, green, blue, fontName, size));
+    public void addText(String text, String textColor, String fontName, int size) {
+        mSprites.add(mLevel.makeText(text, textColor, fontName, size));
     }
 
     /**
@@ -199,14 +196,11 @@ abstract class QuickScene {
      * @param text     The text to display
      * @param x        X coordinate of the text
      * @param y        Y coordinate of the text
-     * @param red      Redness of the text color
-     * @param green    Greenness of the text color
-     * @param blue     Blueness of the text color
      * @param fontName The font file to use
      * @param size     The size of the text
      */
-    public void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(mLevel.makeText(x, y, text, red, green, blue, fontName, size));
+    public void addText(String text, int x, int y, String fontColor, String fontName, int size) {
+        mSprites.add(mLevel.makeText(x, y, text, fontColor, fontName, size));
     }
 
     /**

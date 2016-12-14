@@ -67,11 +67,11 @@ public class Chooser implements ScreenManager {
                     level.doLevel(whichLevel);
                 }
             });
-            level.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, 255, 255, 255, "arial.ttf", 56, 0);
+            level.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, "#FFFFFF", "arial.ttf", 56, 0);
         }
         // otherwise, just print an X
         else {
-            level.drawTextCentered(x + width / 2, y + height / 2, "X", 255, 255, 255, "arial.ttf", 56, 0);
+            level.drawTextCentered(x + width / 2, y + height / 2, "X", "#FFFFFF", "arial.ttf", 56, 0);
         }
     }
 

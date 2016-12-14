@@ -54,17 +54,12 @@ public class Display {
     /**
      * The constructor keeps track of the text color, but that's it.
      *
-     * @param red      The red portion of text color (0-255)
-     * @param green    The green portion of text color (0-255)
-     * @param blue     The blue portion of text color (0-255)
      * @param fontName The name of the .ttf font file to use
      * @param fontSize The point size of the font
      */
-    Display(Level level, int red, int green, int blue, String fontName, int fontSize) {
+    Display(Level level, String fontColor, String fontName, int fontSize) {
         mLevel = level;
-        mColor.r = ((float) red) / 256;
-        mColor.g = ((float) green) / 256;
-        mColor.b = ((float) blue) / 256;
+        mColor = Color.valueOf(fontColor);
         mFont = level.mMedia.getFont(fontName, fontSize);
     }
 

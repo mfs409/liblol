@@ -65,7 +65,7 @@ public class WinScene extends QuickScene {
         // don't compute it until right here... also, play music
         if (mSound != null)
             mSound.play(mLevel.getGameFact("volume", 1));
-        addText(mWinText, 255, 255, 255, mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+        addText(mWinText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
     }
 
     /*

@@ -66,19 +66,9 @@ public class Config {
     protected int mDefaultFontSize;
 
     /**
-     * Red component of default font color
+     * Default font color, as #RRGGBB value
      */
-    protected int mDefaultFontRed;
-
-    /**
-     * Green component of default font color
-     */
-    protected int mDefaultFontGreen;
-
-    /**
-     * Blue component of default font color
-     */
-    protected int mDefaultFontBlue;
+    protected String mDefaultFontColor;
 
     /**
      * Default text to display when a level is won
