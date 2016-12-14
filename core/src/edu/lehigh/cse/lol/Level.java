@@ -1282,7 +1282,6 @@ public class Level extends ScreenAdapter {
          */
         int mVictoryEnemyCount;
 
-
         /**
          * Use this to inform the level that a hero has been defeated
          *
@@ -1679,7 +1678,6 @@ public class Level extends ScreenAdapter {
          * accelerometer default
          */
         float mMultiplier = 1;
-
 
         /**
          * The main render loop calls this to determine what to do when there is a
@@ -2290,6 +2288,235 @@ public class Level extends ScreenAdapter {
     };
 
     /**
+     * Create an action that makes a hero jump.  This action can be used as the action taken on a Control tap.
+     *
+     * @param hero The hero who we want to jump
+     * @return The action object
+     */
+    public LolAction JumpAction(final Hero hero) {
+        return new LolAction() {
+            @Override
+            public void go() {
+                hero.jump();
+            }
+        };
+    }
+
+    /**
+     * Create an action that makes a hero throw a projectile
+     *
+     * @param hero      The hero who should throw the projectile
+     * @param offsetX   specifies the x distance between the bottom left of the
+     *                  projectile and the bottom left of the hero throwing the
+     *                  projectile
+     * @param offsetY   specifies the y distance between the bottom left of the
+     *                  projectile and the bottom left of the hero throwing the
+     *                  projectile
+     * @param velocityX The X velocity of the projectile when it is thrown
+     * @param velocityY The Y velocity of the projectile when it is thrown
+     */
+    public LolAction ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
+        return new LolAction() {
+            @Override
+            void go() {
+                mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+            }
+        };
+    }
+
+    /**
+     * Add a button to make a hero jump
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param h       The hero to control
+     */
+    public Control addJumpButton(int x, int y, int width, int height, String imgName, final Hero h) {
+        return addTapControl(x, y, width, height, imgName, JumpAction(h));
+    }
+    /**
+     * Add a button to make the hero throw a projectile, but holding doesn't
+     * make it throw more often
+     *
+     * @param x         The X coordinate of the bottom left corner (in pixels)
+     * @param y         The Y coordinate of the bottom left corner (in pixels)
+     * @param width     The width of the image
+     * @param height    The height of the image
+     * @param imgName   The name of the image to display. Use "" for an invisible
+     *                  button
+     * @param hero      The hero who should throw the projectile
+     * @param offsetX   specifies the x distance between the bottom left of the
+     *                  projectile and the bottom left of the hero throwing the
+     *                  projectile
+     * @param offsetY   specifies the y distance between the bottom left of the
+     *                  projectile and the bottom left of the hero throwing the
+     *                  projectile
+     * @param velocityX The X velocity of the projectile when it is thrown
+     * @param velocityY The Y velocity of the projectile when it is thrown
+     */
+    public Control addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero hero,
+                                        final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
+        return addTapControl(x, y, width, height, imgName, ThrowFixedAction(hero, offsetX, offsetY, velocityX, velocityY));
+    }
+
+    // TODO: update these tapcontrols
+    /**
+     * This is almost exactly like addDirectionalThrowButton. The only
+     * difference is that holding won't cause the hero to throw more projectiles
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param h       The hero who should throw the projectile
+     * @param offsetX specifies the x distance between the bottom left of the
+     *                projectile and the bottom left of the hero throwing the
+     *                projectile
+     * @param offsetY specifies the y distance between the bottom left of the
+     *                projectile and the bottom left of the hero throwing the
+     *                projectile
+     */
+    public Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName,
+                                                   final Hero h, final float offsetX, final float offsetY) {
+        Control c = new Control(this, imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 touchVec) {
+                mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
+                        touchVec.x, touchVec.y, h, offsetX, offsetY);
+                return true;
+            }
+        };
+        mControls.add(c);
+        mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Display a zoom out button. Note that zooming in and out does not work
+     * well with elements that hover on the screen. Use with care.
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param maxZoom Maximum zoom. 8 is usually a good default
+     */
+    public Control addZoomOutButton(int x, int y, int width, int height, String imgName, final float maxZoom) {
+        Control c = new Control(this, imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 worldTouchCoord) {
+                float curzoom = mGameCam.zoom;
+                if (curzoom < maxZoom) {
+                    mGameCam.zoom *= 2;
+                    mBgCam.zoom *= 2;
+                }
+                return true;
+            }
+        };
+        mControls.add(c);
+        mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Display a zoom in button
+     *
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
+     * @param width   The width of the image
+     * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
+     * @param minZoom Minimum zoom. 0.25f is usually a good default
+     */
+    public Control addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom) {
+        Control c = new Control(this, imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 worldTouchCoord) {
+                float curzoom = mGameCam.zoom;
+                if (curzoom > minZoom) {
+                    mGameCam.zoom /= 2;
+                    mBgCam.zoom /= 2;
+                }
+                return true;
+            }
+        };
+        mControls.add(c);
+        mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Add a button to the heads-up display that runs custom code via an
+     * onControlPress callback
+     *
+     * @param x        The X coordinate of the bottom left corner (in pixels)
+     * @param y        The Y coordinate of the bottom left corner (in pixels)
+     * @param width    The width of the image
+     * @param height   The height of the image
+     * @param imgName  The name of the image to display. Use "" for an invisible
+     *                 button
+     * @param callback The code to run when the button is pressed
+     */
+    public Control addCallbackControl(int x, int y, int width, int height, String imgName,
+                                      final LolCallback callback) {
+        Control c = new Control(this, imgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 vv) {
+                callback.onEvent();
+                return true;
+            }
+        };
+        mControls.add(c);
+        mTapControls.add(c);
+        return c;
+    }
+
+    /**
+     * Add a button to the heads-up display that runs custom code via an
+     * onControlPress callback, but the button only works once
+     *
+     * @param x               The X coordinate of the bottom left corner (in pixels)
+     * @param y               The Y coordinate of the bottom left corner (in pixels)
+     * @param width           The width of the image
+     * @param height          The height of the image
+     * @param activeImgName   The name of the image to display before the button is pressed.
+     *                        Use "" for an invisible button
+     * @param inactiveImgName The name of the image to display after the button
+     *                        is pressed.
+     * @param callback        The code to run in response to the control press
+     */
+    public Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
+                                             final String inactiveImgName, final LolCallback callback) {
+        final Control c = new Control(this, activeImgName, x, y, width, height);
+        c.mGestureAction = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 vv) {
+                callback.onEvent();
+                c.mIsTouchable = false;
+                TextureRegion tr = mMedia.getImage(inactiveImgName);
+                c.mImage = tr;
+                return true;
+            }
+        };
+        mControls.add(c);
+        mTapControls.add(c);
+        return c;
+    }
+
+    /**
      * Add a button that pauses the game (via a single tap) by causing a
      * PauseScene to be displayed. Note that you must configureGravity a PauseScene, or
      * pressing this button will cause your game to crash.
@@ -2557,7 +2784,7 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Add a button to make a hero jump
+     * Add a button that rotates the hero
      *
      * @param x       The X coordinate of the bottom left corner (in pixels)
      * @param y       The Y coordinate of the bottom left corner (in pixels)
@@ -2565,19 +2792,27 @@ public class Level extends ScreenAdapter {
      * @param height  The height of the image
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
-     * @param h       The hero to control
+     * @param rate    Amount of rotation to apply to the hero on each press
      */
-    public Control addJumpButton(int x, int y, int width, int height, String imgName, final Hero h) {
-        Control c = new Control(this, imgName, x, y, width, height);
+    public Control addRotateButton(int x, int y, int width, int height, String imgName, final float rate,
+                                   final Hero h) {
+        final Control c = new Control(this, imgName, x, y, width, height);
         c.mGestureAction = new GestureAction() {
             @Override
-            public boolean onTap(Vector3 vv) {
-                h.jump();
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
+                mHolding = !isUp;
                 return true;
             }
         };
         mControls.add(c);
-        mTapControls.add(c);
+        mToggleControls.add(c);
+        mRepeatEvents.add(new LolAction() {
+            @Override
+            public void go() {
+                if (c.mGestureAction.mHolding)
+                    h.increaseRotation(rate);
+            }
+        });
         return c;
     }
 
@@ -2631,40 +2866,6 @@ public class Level extends ScreenAdapter {
         return c;
     }
 
-    /**
-     * Add a button to make the hero throw a projectile, but holding doesn't
-     * make it throw more often
-     *
-     * @param x         The X coordinate of the bottom left corner (in pixels)
-     * @param y         The Y coordinate of the bottom left corner (in pixels)
-     * @param width     The width of the image
-     * @param height    The height of the image
-     * @param imgName   The name of the image to display. Use "" for an invisible
-     *                  button
-     * @param h         The hero who should throw the projectile
-     * @param offsetX   specifies the x distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
-     * @param offsetY   specifies the y distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
-     * @param velocityX The X velocity of the projectile when it is thrown
-     * @param velocityY The Y velocity of the projectile when it is thrown
-     */
-    public Control addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
-                                        final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
 
     /**
      * The default behavior for throwing is to throw in a straight line. If we
@@ -2739,190 +2940,6 @@ public class Level extends ScreenAdapter {
         return c;
     }
 
-    /**
-     * This is almost exactly like addDirectionalThrowButton. The only
-     * difference is that holding won't cause the hero to throw more projectiles
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param h       The hero who should throw the projectile
-     * @param offsetX specifies the x distance between the bottom left of the
-     *                projectile and the bottom left of the hero throwing the
-     *                projectile
-     * @param offsetY specifies the y distance between the bottom left of the
-     *                projectile and the bottom left of the hero throwing the
-     *                projectile
-     */
-    public Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName,
-                                                   final Hero h, final float offsetX, final float offsetY) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
-                mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
-                        touchVec.x, touchVec.y, h, offsetX, offsetY);
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Display a zoom out button. Note that zooming in and out does not work
-     * well with elements that hover on the screen. Use with care.
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param maxZoom Maximum zoom. 8 is usually a good default
-     */
-    public Control addZoomOutButton(int x, int y, int width, int height, String imgName, final float maxZoom) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = mGameCam.zoom;
-                if (curzoom < maxZoom) {
-                    mGameCam.zoom *= 2;
-                    mBgCam.zoom *= 2;
-                }
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Display a zoom in button
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param minZoom Minimum zoom. 0.25f is usually a good default
-     */
-    public Control addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 worldTouchCoord) {
-                float curzoom = mGameCam.zoom;
-                if (curzoom > minZoom) {
-                    mGameCam.zoom /= 2;
-                    mBgCam.zoom /= 2;
-                }
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a button that rotates the hero
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rate    Amount of rotation to apply to the hero on each press
-     */
-    public Control addRotateButton(int x, int y, int width, int height, String imgName, final float rate,
-                                   final Hero h) {
-        final Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
-                mHolding = !isUp;
-                return true;
-            }
-        };
-        mControls.add(c);
-        mToggleControls.add(c);
-        mRepeatEvents.add(new LolAction() {
-            @Override
-            public void go() {
-                if (c.mGestureAction.mHolding)
-                    h.increaseRotation(rate);
-            }
-        });
-        return c;
-    }
-
-    /**
-     * Add a button to the heads-up display that runs custom code via an
-     * onControlPress callback
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param width    The width of the image
-     * @param height   The height of the image
-     * @param imgName  The name of the image to display. Use "" for an invisible
-     *                 button
-     * @param callback The code to run when the button is pressed
-     */
-    public Control addCallbackControl(int x, int y, int width, int height, String imgName,
-                                      final LolCallback callback) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                callback.onEvent();
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a button to the heads-up display that runs custom code via an
-     * onControlPress callback, but the button only works once
-     *
-     * @param x               The X coordinate of the bottom left corner (in pixels)
-     * @param y               The Y coordinate of the bottom left corner (in pixels)
-     * @param width           The width of the image
-     * @param height          The height of the image
-     * @param activeImgName   The name of the image to display before the button is pressed.
-     *                        Use "" for an invisible button
-     * @param inactiveImgName The name of the image to display after the button
-     *                        is pressed.
-     * @param callback        The code to run in response to the control press
-     */
-    public Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
-                                             final String inactiveImgName, final LolCallback callback) {
-        final Control c = new Control(this, activeImgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                callback.onEvent();
-                c.mIsTouchable = false;
-                TextureRegion tr = mMedia.getImage(inactiveImgName);
-                c.mImage = tr;
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
 
     /**
      * Allow panning to view more of the screen than is currently visible
@@ -3158,7 +3175,7 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Add a rotating button that generates a ControlPressactor event and passes
+     * Add a rotating button that generates a ControlPress actor event and passes
      * the rotation to the handler.
      *
      * @param x        The X coordinate of the bottom left corner (in pixels)
