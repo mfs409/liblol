@@ -27,10 +27,13 @@
 
 package com.me.mylolgame;
 
+import com.badlogic.gdx.math.Vector3;
+
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
  * Technically, Help can be anything... even playable levels. In this
@@ -74,8 +77,8 @@ public class Help implements ScreenManager {
             level.drawText(9, 1, "Throw projectiles", "#000000", "arial.ttf", 24, 0);
 
             // set up a control to go to the next level on screen press
-            level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.doHelp(2);
                 }
             });
@@ -93,8 +96,8 @@ public class Help implements ScreenManager {
                     + "how everything works", "#376EA5", "arial.ttf", 14, 0);
 
             // set up a control to go to the splash screen on screen press
-            level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.doSplash();
                 }
             });

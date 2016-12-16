@@ -27,11 +27,13 @@
 
 package com.me.mylolgame;
 
+import com.badlogic.gdx.math.Vector3;
+
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
  * Splash encapsulates the code that will be run to configureGravity the opening screen
@@ -62,23 +64,23 @@ public class Splash implements ScreenManager {
         // "doLevel(1)", but check the configuration in MyLolGame... there's a
         // field you should change if you don't want the 'back' button to go
         // from that level to the chooser.
-        level.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
-            public void onEvent() {
+        level.addTapControl(384, 182, 186, 104, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
                 level.doChooser(1);
             }
         });
 
         // This is the Help button... it switches to the first screen of the
         // help system
-        level.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
-            public void onEvent() {
+        level.addTapControl(96, 186, 160, 80, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
                 level.doHelp(1);
             }
         });
 
         // This is the Quit button
-        level.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
-            public void onEvent() {
+        level.addTapControl(726, 186, 138, 78, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
                 level.doQuit();
             }
         });

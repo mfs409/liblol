@@ -34,6 +34,7 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
+import com.sun.glass.events.TouchEvent;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -321,7 +322,7 @@ public class Level extends ScreenAdapter {
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (mConfig.mShowDebugBoxes)
-            addFPS(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12);
+            addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
 
     }
 
@@ -1786,7 +1787,7 @@ public class Level extends ScreenAdapter {
     public final TextProducer DisplayFPS = new TextProducer() {
         @Override
         public String makeText() {
-            return "fps: " + Gdx.graphics.getFramesPerSecond();
+            return "" + Gdx.graphics.getFramesPerSecond();
         }
     };
 
@@ -1982,71 +1983,6 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Print the frames per second. We use this in debug mode, but some people
-     * like to show it all the time.
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addFPS(final int x, final int y, String fontName, final String fontColor, int size) {
-        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayFPS);
-    }
-
-    /**
-     * Add a count of the current number of goodies of the specified type, with
-     * extra features for describing the appearance of the font
-     *
-     * @param type     The type of goodie to show (1-4)
-     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
-     *                 instead of just XX
-     * @param text     The text to display after the number of goodies
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addGoodieCount(final int type, int max, final String text, final int x, final int y,
-                                  String fontName, String fontColor, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + text : text;
-        if (type == 1)
-            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies1);
-        if (type == 2)
-            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies2);
-        if (type == 3)
-            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies3);
-        if (type == 4)
-            return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayGoodies4);
-        else return null;
-    }
-
-    /**
-     * Add a countdown timer to the screen. When time is up, the level ends in
-     * defeat
-     *
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     */
-    public Display addLoseCountdown(int x, int y) {
-        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, "", "", DisplayLoseCountdown);
-    }
-
-    /**
-     * Add a countdown timer to the screen, with extra features for describing
-     * the appearance of the font. When time is up, the level ends in defeat.
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addLoseCountdown(final int x, final int y, String fontName, String fontColor, int size) {
-        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayLoseCountdown);
-    }
-
-    /**
      * Indicate that the level will end in defeat if it is not completed in a given amount of time.
      *
      * @param timeout The amount of time until the level will end in defeat
@@ -2072,183 +2008,11 @@ public class Level extends ScreenAdapter {
     }
 
     /**
-     * Add a countdown timer to the screen. When time is up, the level ends in
-     * victory
-     *
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
+     * Set the current value of the stopwatch.  Use -100 to disable the stopwatch, otherwise it will start counting immediately.
+     * @param newVal
      */
-    public Display addWinCountdown(float timeout, int x, int y) {
-        return addDisplay(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, "", "", DisplayWinCountdown);
-    }
-
-    /**
-     * Add a countdown timer to the screen, with extra features for describing
-     * the appearance of the font. When time is up, the level ends in victory
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addWinCountdown(final int x, final int y, String fontName, String fontColor, int size) {
-        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayWinCountdown);
-    }
-
-    /**
-     * Add a count of the number of enemies who have been defeated
-     *
-     * @param max  If this is &gt; 0, then the message will be of the form XX/max
-     *             instead of just XX
-     * @param text The text to display after the number of goodies
-     * @param x    The X coordinate of the bottom left corner (in pixels)
-     * @param y    The Y coordinate of the bottom left corner (in pixels)
-     */
-    public Display addDefeatedCount(int max, String text, int x, int y) {
-        return addDefeatedCount(max, text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize);
-    }
-
-    /**
-     * Add a count of the number of enemies who have been defeated, with extra
-     * features for describing the appearance of the font
-     *
-     * @param max      If this is &gt; 0, then the message wil be of the form XX/max
-     *                 instead of just XX
-     * @param text     The text to display after the number of goodies
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addDefeatedCount(int max, final String text, final int x, final int y, String fontName,
-                                    String fontColor, int size) {
-        // The suffix to display after the goodie count:
-        final String suffix = (max > 0) ? "/" + max + text : text;
-        return addDisplay(x, y, fontName, fontColor, size, "", suffix, DisplayEnemiesDefeated);
-    }
-
-    /**
-     * Add a stopwatch for tracking how long a level takes
-     *
-     * @param x The X coordinate of the bottom left corner (in pixels)
-     * @param y The Y coordinate of the bottom left corner (in pixels)
-     */
-    public Display addStopwatch(int x, int y) {
-        return addStopwatch(x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize);
-    }
-
-    /**
-     * Add a stopwatch for tracking how long a level takes, with extra features
-     * for describing the appearance of the font
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addStopwatch(final int x, final int y, String fontName, String fontColor, int size) {
-        return addDisplay(x, y, fontName, fontColor, size, "", "", DisplayStopwatch);
-    }
-
-    /**
-     * Display a strength meter for a specific hero
-     *
-     * @param text The text to display after the remaining strength value
-     * @param x    The X coordinate of the bottom left corner (in pixels)
-     * @param y    The Y coordinate of the bottom left corner (in pixels)
-     * @param h    The Hero whose strength should be displayed
-     */
-    public Display addStrengthMeter(String text, int x, int y, Hero h) {
-        // forward to the more powerful method...
-        return addStrengthMeter(text, x, y, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, mConfig.mDefaultFontSize, h);
-    }
-
-    /**
-     * Display a strength meter for a specific hero, with extra features for
-     * describing the appearance of the font
-     *
-     * @param text     The text to display after the remaining strength value
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     * @param h        The Hero whose strength should be displayed
-     */
-    public Display addStrengthMeter(final String text, final int x, final int y, String fontName, String fontColor, int size, final Hero h) {
-        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayStrength(h));
-    }
-
-    /**
-     * Display a meter showing how far an actor has traveled
-     *
-     * @param text     The text to display after the remaining strength value
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     * @param actor    The Actor whose distance should be displayed
-     */
-    public Display addDistanceMeter(final String text, final int x, final int y, String fontName, String fontColor, int size, final Actor actor) {
-        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayDistance(actor));
-    }
-
-    /**
-     * Display the number of remaining projectiles
-     *
-     * @param text     The text to display after the number of goodies
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     */
-    public Display addProjectileCount(final String text, final int x, final int y, String fontName,
-                                      String fontColor, int size) {
-        return addDisplay(x, y, fontName, fontColor, size, "", text, DisplayRemainingProjectiles);
-    }
-
-    /**
-     * Display text corresponding to a fact saved for the current level
-     *
-     * @param key      The key to look up in the Fact store
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     * @param prefix   Text to put before the fact
-     * @param suffix   Text to put after the fact
-     */
-    public Display addLevelFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplayLevelFact(key));
-    }
-
-    /**
-     * Display text corresponding to a fact saved for the current game session
-     *
-     * @param key      The key to look up in the Fact store
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     * @param prefix   Text to put before the fact
-     * @param suffix   Text to put after the fact
-     */
-    public Display addSessionFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplaySessionFact(key));
-    }
-
-    /**
-     * Display text corresponding to a fact saved for the game
-     *
-     * @param key      The key to look up in the Fact store
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use (20 is usually a good value)
-     * @param prefix   Text to put before the fact
-     * @param suffix   Text to put after the fact
-     */
-    public Display addGameFact(final String key, final int x, final int y, String fontName, String fontColor, int size, final String prefix, final String suffix) {
-        return addDisplay(x, y, fontName, fontColor, size, prefix, suffix, DisplayGameFact(key));
+    public void setStopwatch(float newVal) {
+        this.mScore.mStopWatchProgress = newVal;
     }
 
     /**
@@ -2263,15 +2027,17 @@ public class Level extends ScreenAdapter {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public Control addTapControl(int x, int y, int width, int height, String imgName, final LolAction action) {
+    public Control addTapControl(int x, int y, int width, int height, String imgName, final TouchEventHandler action) {
         Control c = new Control(this, imgName, x, y, width, height);
+        // TODO: can we refactor GestureAction now that we use TouchEventHandlers?
         c.mGestureAction = new GestureAction() {
             @Override
             public boolean onTap(Vector3 vv) {
-                action.go();
+                action.go(vv);
                 return true;
             }
         };
+        action.mAttachedControl = c;
         mControls.add(c);
         mTapControls.add(c);
         return c;
@@ -2280,9 +2046,9 @@ public class Level extends ScreenAdapter {
     /**
      * An action to pause the game.  This action can be used as the action taken on a Control tap.
      */
-    public LolAction PauseAction = new LolAction() {
+    public TouchEventHandler PauseAction = new TouchEventHandler() {
         @Override
-        public void go() {
+        public void go(Vector3 touchLocation) {
             getPauseScene().show();
         }
     };
@@ -2293,10 +2059,10 @@ public class Level extends ScreenAdapter {
      * @param hero The hero who we want to jump
      * @return The action object
      */
-    public LolAction JumpAction(final Hero hero) {
-        return new LolAction() {
+    public TouchEventHandler JumpAction(final Hero hero) {
+        return new TouchEventHandler() {
             @Override
-            public void go() {
+            public void go(Vector3 touchLocation) {
                 hero.jump();
             }
         };
@@ -2315,66 +2081,18 @@ public class Level extends ScreenAdapter {
      * @param velocityX The X velocity of the projectile when it is thrown
      * @param velocityY The Y velocity of the projectile when it is thrown
      */
-    public LolAction ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
-        return new LolAction() {
-            @Override
-            void go() {
+    public TouchEventHandler ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
+        return new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
                 mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
             }
         };
     }
 
     /**
-     * Add a button to make a hero jump
+     * Create an action that makes a hero throw a projectile in a direction that relates to how the screen was touched
      *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param h       The hero to control
-     */
-    public Control addJumpButton(int x, int y, int width, int height, String imgName, final Hero h) {
-        return addTapControl(x, y, width, height, imgName, JumpAction(h));
-    }
-    /**
-     * Add a button to make the hero throw a projectile, but holding doesn't
-     * make it throw more often
-     *
-     * @param x         The X coordinate of the bottom left corner (in pixels)
-     * @param y         The Y coordinate of the bottom left corner (in pixels)
-     * @param width     The width of the image
-     * @param height    The height of the image
-     * @param imgName   The name of the image to display. Use "" for an invisible
-     *                  button
-     * @param hero      The hero who should throw the projectile
-     * @param offsetX   specifies the x distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
-     * @param offsetY   specifies the y distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
-     * @param velocityX The X velocity of the projectile when it is thrown
-     * @param velocityY The Y velocity of the projectile when it is thrown
-     */
-    public Control addSingleThrowButton(int x, int y, int width, int height, String imgName, final Hero hero,
-                                        final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
-        return addTapControl(x, y, width, height, imgName, ThrowFixedAction(hero, offsetX, offsetY, velocityX, velocityY));
-    }
-
-    // TODO: update these tapcontrols
-    /**
-     * This is almost exactly like addDirectionalThrowButton. The only
-     * difference is that holding won't cause the hero to throw more projectiles
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param h       The hero who should throw the projectile
+     * @param hero    The hero who should throw the projectile
      * @param offsetX specifies the x distance between the bottom left of the
      *                projectile and the bottom left of the hero throwing the
      *                projectile
@@ -2382,154 +2100,47 @@ public class Level extends ScreenAdapter {
      *                projectile and the bottom left of the hero throwing the
      *                projectile
      */
-    public Control addDirectionalSingleThrowButton(int x, int y, int width, int height, String imgName,
-                                                   final Hero h, final float offsetX, final float offsetY) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
-                mProjectilePool.throwAt(h.mBody.getPosition().x, h.mBody.getPosition().y,
-                        touchVec.x, touchVec.y, h, offsetX, offsetY);
-                return true;
+    public TouchEventHandler ThrowDirectionalAction(final Hero hero, final float offsetX, final float offsetY) {
+        return new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
+                mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
+                        touchLocation.x, touchLocation.y, hero, offsetX, offsetY);
             }
         };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
     }
 
     /**
-     * Display a zoom out button. Note that zooming in and out does not work
-     * well with elements that hover on the screen. Use with care.
+     * Create an action that makes the screen zoom out
      *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param maxZoom Maximum zoom. 8 is usually a good default
+     * @param maxZoom The maximum zoom factor to allow
      */
-    public Control addZoomOutButton(int x, int y, int width, int height, String imgName, final float maxZoom) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 worldTouchCoord) {
+    public TouchEventHandler ZoomOutAction(final float maxZoom) {
+        return new TouchEventHandler() {
+            public void go(Vector3 eventPosition) {
                 float curzoom = mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     mGameCam.zoom *= 2;
                     mBgCam.zoom *= 2;
                 }
-                return true;
             }
         };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
     }
 
     /**
-     * Display a zoom in button
+     * Create an action that makes the screen zoom in
      *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param minZoom Minimum zoom. 0.25f is usually a good default
+     * @param minZoom The minimum zoom factor to allow
      */
-    public Control addZoomInButton(int x, int y, int width, int height, String imgName, final float minZoom) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 worldTouchCoord) {
+    public TouchEventHandler ZoomInAction(final float minZoom) {
+        return new TouchEventHandler() {
+            public void go(Vector3 eventPosition) {
                 float curzoom = mGameCam.zoom;
                 if (curzoom > minZoom) {
                     mGameCam.zoom /= 2;
                     mBgCam.zoom /= 2;
                 }
-                return true;
             }
         };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a button to the heads-up display that runs custom code via an
-     * onControlPress callback
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param width    The width of the image
-     * @param height   The height of the image
-     * @param imgName  The name of the image to display. Use "" for an invisible
-     *                 button
-     * @param callback The code to run when the button is pressed
-     */
-    public Control addCallbackControl(int x, int y, int width, int height, String imgName,
-                                      final LolCallback callback) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                callback.onEvent();
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a button to the heads-up display that runs custom code via an
-     * onControlPress callback, but the button only works once
-     *
-     * @param x               The X coordinate of the bottom left corner (in pixels)
-     * @param y               The Y coordinate of the bottom left corner (in pixels)
-     * @param width           The width of the image
-     * @param height          The height of the image
-     * @param activeImgName   The name of the image to display before the button is pressed.
-     *                        Use "" for an invisible button
-     * @param inactiveImgName The name of the image to display after the button
-     *                        is pressed.
-     * @param callback        The code to run in response to the control press
-     */
-    public Control addOneTimeCallbackControl(int x, int y, int width, int height, String activeImgName,
-                                             final String inactiveImgName, final LolCallback callback) {
-        final Control c = new Control(this, activeImgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                callback.onEvent();
-                c.mIsTouchable = false;
-                TextureRegion tr = mMedia.getImage(inactiveImgName);
-                c.mImage = tr;
-                return true;
-            }
-        };
-        mControls.add(c);
-        mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a button that pauses the game (via a single tap) by causing a
-     * PauseScene to be displayed. Note that you must configureGravity a PauseScene, or
-     * pressing this button will cause your game to crash.
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     */
-    public Control addPauseButton(int x, int y, int width, int height, String imgName) {
-        return addTapControl(x, y, width, height, imgName, PauseAction);
     }
 
     /**

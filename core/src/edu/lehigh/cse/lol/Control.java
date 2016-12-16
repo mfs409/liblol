@@ -42,8 +42,11 @@ public class Control {
      * The level where this control is drawn
      */
     Level mLevel;
+
     /**
      * Should we run code when this Control is touched?
+     *
+     * TODO: revisit this now that we have somewhat cleaner GestureActions
      */
     boolean mIsTouchable;
 
@@ -92,6 +95,12 @@ public class Control {
         mIsTouchable = true;
     }
 
+    public void setImage(String imgName) {
+        TextureRegion tr = mLevel.mMedia.getImage(imgName);
+        if (tr != null)
+            mImage = tr;
+    }
+
     /**
      * Render the control
      *
@@ -103,7 +112,7 @@ public class Control {
     }
 
     /**
-     * Disable the control, so that it doesn't getLoseScene displayed
+     * Disable the control, so that it doesn't get displayed
      */
     public void setInactive() {
         mIsActive = false;

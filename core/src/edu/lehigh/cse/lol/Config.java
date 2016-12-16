@@ -57,6 +57,8 @@ public class Config {
 
     /**
      * Default font face
+     *
+     * TODO: can we get rid of this?
      */
     protected String mDefaultFontFace;
 

@@ -28,8 +28,10 @@
 package com.me.mylolgame;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import edu.lehigh.cse.lol.Actor;
+import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
@@ -41,6 +43,7 @@ import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Svg;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
  * Levels is where all of the code goes for describing the different levels of
@@ -391,8 +394,8 @@ public class Levels implements ScreenManager {
             // outline of the two rectangles. You could also use images (that
             // you registered, of course), but if you did, you'd either need to
             // make them small, or make them semi-transparent.
-            level.addZoomOutButton(0, 0, 480, 640, "", 8);
-            level.addZoomInButton(480, 0, 480, 640, "", .25f);
+            level.addTapControl(0, 0, 480, 640, "", level.ZoomOutAction(8));
+            level.addTapControl(480, 0, 480, 640, "", level.ZoomInAction(.25f));
 
             level.getPreScene().addText("Press left to zoom out\nright to zoom in", "#FFFFFF", "arial.ttf", 32);
         }
@@ -504,7 +507,7 @@ public class Levels implements ScreenManager {
             // let's put a display on the screen to see how many type-1 goodies
             // we've collected. Since the second parameter is "2", we'll display
             // the count as "X/2 Goodies" instead of "X Goodies"
-            level.addGoodieCount(1, 2, " Goodies", 220, 280, "arial.ttf", "#FF00FF", 20);
+            level.addDisplay(220, 280, "arial.ttf", "#FF00FF", 20, "", "/2 Goodies", level.DisplayGoodies1);
         }
 
         /*
@@ -540,7 +543,7 @@ public class Levels implements ScreenManager {
 
             // draw a goodie counter in light blue (60, 70, 255) with a 12-point
             // font
-            level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Goodies", level.DisplayGoodies1);
         }
 
         /*
@@ -569,18 +572,18 @@ public class Levels implements ScreenManager {
             level.setVictoryGoodies(5, 0, 0, 0);
 
             // put the goodie count on the screen
-            level.addGoodieCount(1, 5, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", "/5 Goodies", level.DisplayGoodies1);
 
             // put a simple countdown on the screen
             level.setLoseCountdown(15, "Time Up!");
-            level.addLoseCountdown(400, 50);
+            level.addDisplay(400, 50, "arial.ttf", "#000000", 32, "", "", level.DisplayLoseCountdown);
 
             // let's also add a screen for pausing the game. In a real game,
             // every level should have a button for pausing the game, and the
             // pause scene should have a button for going back to the main
             // menu... we'll show how to do that later.
             level.getPauseScene().addText("Game Paused", "#FFFFFF", "arial.ttf", 32);
-            level.addPauseButton(0, 300, 20, 20, "red.png");
+            level.addTapControl(0, 300, 20, 20, "red.png", level.PauseAction);
         }
 
         /*
@@ -605,7 +608,8 @@ public class Levels implements ScreenManager {
 
             // add a stopwatch... note that there are two ways to add a
             // stopwatch, the other of which allows for configuring the font
-            level.addStopwatch(50, 50);
+            level.setStopwatch(0);
+            level.addDisplay(50, 50, "arial.ttf", "#000000", 32, "", "", level.DisplayStopwatch);
 
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level. Note that the background image must come
@@ -613,7 +617,7 @@ public class Levels implements ScreenManager {
             level.getPauseScene().addImage("fade.png", 0, 0, 960, 640);
             level.getPauseScene().addText("Game Paused", "#FFFFFF", "arial.ttf", 32);
             level.getPauseScene().addBackButton("greyball.png", 0, 300, 20, 20);
-            level.addPauseButton(0, 300, 20, 20, "red.png");
+            level.addTapControl(0, 300, 20, 20, "red.png", level.PauseAction);
 
             // now draw three obstacles. Note that they have different dampening
             // factors. one important thing to notice is that since we place
@@ -664,7 +668,7 @@ public class Levels implements ScreenManager {
             h.setStrength(10);
 
             // draw a strength meter to show this hero's strength
-            level.addStrengthMeter(" Strength", 220, 280, h);
+            level.addDisplay(220, 280, "arial.ttf", "#000000", 32, "", " Strength", level.DisplayStrength(h));
 
             // our first enemy stands still:
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -722,7 +726,7 @@ public class Levels implements ScreenManager {
 
             // put a countdown on the screen
             level.setLoseCountdown(10, "Time Up!");
-            level.addLoseCountdown(200, 25);
+            level.addDisplay(200, 25, "arial.ttf", "#000000", 32, "", "", level.DisplayLoseCountdown);
 
             // indicate that defeating all of the enemies is the way to win this
             // level
@@ -762,7 +766,7 @@ public class Levels implements ScreenManager {
             g.setDisappearSound("woowoowoo.ogg");
 
             // Display the hero's strength
-            level.addStrengthMeter(" Strength", 220, 280, h);
+            level.addDisplay(220, 280, "arial.ttf", "#000000", 32, "", " Strength", level.DisplayStrength(h));
 
             // win by defeating one enemy
             level.setVictoryEnemyCount(1);
@@ -803,12 +807,12 @@ public class Levels implements ScreenManager {
             level.setVictoryDestination(1);
 
             // display a goodie count for type-1 goodies
-            level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Goodies", level.DisplayGoodies1);
 
             // put a frames-per-second display on the screen. This is going to
             // look funny, because when debug mode is set (in Config.java), a
             // FPS will be shown on every screen anyway
-            level.addFPS(400, 15, "arial.ttf", "#C8C864", 12);
+            level.addDisplay(400, 15, "arial.ttf", "#C8C864", 12, "", " fps", level.DisplayFPS);
         }
 
         /*
@@ -841,7 +845,7 @@ public class Levels implements ScreenManager {
             level.makeGoodieAsCircle(35, 30, 2, 2, "blueball.png");
 
             // print a goodie count to show how the count goes up and down
-            level.addGoodieCount(1, 0, " Progress", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Progress", level.DisplayGoodies1);
         }
 
         /*
@@ -1139,7 +1143,7 @@ public class Levels implements ScreenManager {
             o.setHover(100, 100);
 
             // Add a meter to show how far the hero has traveled
-            level.addDistanceMeter(" m", 5, 300, "arial.ttf", "#FF00FF", 16, h);
+            level.addDisplay(5, 30, "arial.ttf", "#FF00FF", 16, "", " m", level.DisplayDistance(h));
 
             // Add some text about the previous best score.
             level.drawText(30, 30, "best: " + level.getGameFact("HighScore32", 0) + "M", "#000000", "arial.ttf", 12, 0);
@@ -1232,7 +1236,7 @@ public class Levels implements ScreenManager {
             level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
 
             // draw a jump button that covers the whole screen
-            level.addJumpButton(0, 0, 960, 640, "", h);
+            level.addTapControl(0, 0, 960, 640, "", level.JumpAction(h));
 
             // if the hero jumps over the destination, we have a problem. To fix
             // it, let's put an invisible enemy right after the destination, so
@@ -1267,7 +1271,7 @@ public class Levels implements ScreenManager {
             // this is all the same as before, to include the invisible enemy
             level.setBackgroundColor("#17B4FF");
             level.addHorizontalBackgroundLayer(.5f, 1, "mid.png", 0, 960, 640);
-            level.addJumpButton(0, 0, 960, 640, "", h);
+            level.addTapControl(0, 0, 960, 640, "", level.JumpAction(h));
             level.makeDestinationAsCircle(120, 31, 2, 2, "mustardball.png");
             level.makeEnemyAsBox(130, 0, .5f, 38, "");
             level.setVictoryDestination(1);
@@ -1594,7 +1598,7 @@ public class Levels implements ScreenManager {
             level.setVictoryEnemyCount();
 
             // this button only throws one projectile per press...
-            level.addSingleThrowButton(0, 0, 960, 640, "", h, .2f, -.5f, 0, 10);
+            level.addTapControl(0, 0, 960, 640, "", level.ThrowFixedAction(h, .2f, -.5f, 0, 10));
         }
 
         /*
@@ -1651,7 +1655,7 @@ public class Levels implements ScreenManager {
 
             // we use a "single throw" button so that holding doesn't throw more
             // projectiles.
-            level.addDirectionalSingleThrowButton(0, 0, 960, 640, "", h, 1.5f, 1.5f);
+            level.addTapControl(0, 0, 960, 640, "", level.ThrowDirectionalAction(h, 1.5f, 1.5f));
 
             // we turn on projectile gravity, and then we enableTilt collisions for
             // projectiles. This means that when a projectile collides with
@@ -1793,7 +1797,7 @@ public class Levels implements ScreenManager {
             level.setVictoryEnemyCount();
 
             // put a count of defeated enemies on the screen
-            level.addDefeatedCount(0, " Enemies Defeated", 20, 20);
+            level.addDisplay(20, 20, "arial.ttf", "#000000", 32, "", "", level.DisplayEnemiesDefeated);
         }
 
         /*
@@ -1997,7 +2001,7 @@ public class Levels implements ScreenManager {
             g.setInvincibilityDuration(15);
             g.setRoute(new Route(3).to(30, 30).to(10, 10).to(30, 30), 5, true);
             g.setRotationSpeed(0.25f);
-            level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Goodies", level.DisplayGoodies1);
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
@@ -2029,7 +2033,7 @@ public class Levels implements ScreenManager {
 
             // enableTilt hero jumping and crawling
             h.setJumpImpulses(0, 15);
-            level.addJumpButton(0, 0, 480, 640, "", h);
+            level.addTapControl(0, 0, 480, 640, "", level.JumpAction(h));
             level.addCrawlButton(480, 0, 480, 640, "", h);
 
             // add an enemy we can defeat via crawling, just for fun. It should
@@ -2118,7 +2122,7 @@ public class Levels implements ScreenManager {
 
             // put an enemy defeated count on the screen, in red with a small
             // font
-            level.addDefeatedCount(2, " Enemies Defeated", 20, 20, "arial.ttf", "#FF0000", 10);
+            level.addDisplay(20, 20, "arial.ttf", "#FF0000", 10, "", "/2 Enemies Defeated", level.DisplayEnemiesDefeated);
 
             // make a moveable obstacle that can defeat enemies
             Obstacle o = level.makeObstacleAsCircle(10, 2, 4, 4, "blueball.png");
@@ -2241,7 +2245,7 @@ public class Levels implements ScreenManager {
             level.setProjectileImageSource("colorstar.png");
 
             // show how many shots are left
-            level.addProjectileCount(" projectiles left", 5, 300, "arial.ttf", "#FF00FF", 12);
+            level.addDisplay(5, 300, "arial.ttf", "#FF00FF", 12, "", " projectiles left", level.DisplayRemainingProjectiles);
 
             // draw a bunch of enemies to defeat
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -2468,7 +2472,7 @@ public class Levels implements ScreenManager {
             h.setMoveByTilting();
             level.setCameraChase(h);
 
-            level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Goodies", level.DisplayGoodies1);
             level.setVictoryDestination(1);
 
             // this obstacle is a collision callback... when the hero hits it,
@@ -2672,7 +2676,7 @@ public class Levels implements ScreenManager {
             h.setPhysics(.1f, 0, 0.6f);
             h.setMoveByTilting();
 
-            level.addGoodieCount(1, 0, " Goodies", 220, 280, "arial.ttf", "#3C46FF", 12);
+            level.addDisplay(220, 280, "arial.ttf", "#3C46FF", 12, "", " Goodies", level.DisplayGoodies1);
 
             // the destination won't work until some goodies are collected...
             Destination d = level.makeDestinationAsBox(46, 2, 2, 2, "colorstar.png");
@@ -2713,7 +2717,7 @@ public class Levels implements ScreenManager {
 
             // Here's a simple pause button and pause scene
             level.getPauseScene().addText("Game Paused", "#FFFFFF", "arial.ttf", 32);
-            level.addPauseButton(0, 300, 20, 20, "red.png");
+            level.addTapControl(0, 300, 20, 20, "red.png", level.PauseAction);
 
             // draw a hero, and a button for throwing projectiles in many
             // directions. Note that this is going to look like an "asteroids"
@@ -2731,7 +2735,7 @@ public class Levels implements ScreenManager {
             // we're going to win by "surviving" for 25 seconds... with no
             // enemies, that shouldn't be too hard
             level.setWinCountdown(25, "You Survived!");
-            level.addWinCountdown(28, 250, "arial.ttf", "#C0C0C0", 16);
+            level.addDisplay(28, 250, "arial.ttf", "#C0C0C0", 16, "", "", level.DisplayWinCountdown);
             // just to play it safe, let's say that we win on level...
             // this ensures that collecting goodies or defeating enemies won't
             // accidentally cause us to win. Of course, with no destination,
@@ -2965,12 +2969,12 @@ public class Levels implements ScreenManager {
             d.setActivationScore(1, 1, 3, 0);
             level.setVictoryDestination(1);
 
-            level.addGoodieCount(1, 0, " blue", 10, 110, "arial.ttf", "#00FFFF", 16);
-            level.addGoodieCount(2, 0, " green", 10, 140, "arial.ttf", "#00FFFF", 16);
-            level.addGoodieCount(3, 0, " red", 10, 170, "arial.ttf", "#00FFFF", 16);
+            level.addDisplay(10, 110, "arial.ttf", "#00FFFF", 16, "", " blue", level.DisplayGoodies1);
+            level.addDisplay(10, 140, "arial.ttf", "#00FFFF", 16, "", " green", level.DisplayGoodies2);
+            level.addDisplay(10, 170, "arial.ttf", "#00FFFF", 16, "", " red", level.DisplayGoodies3);
 
             level.setLoseCountdown(100, "");
-            level.addLoseCountdown(250, 30);
+            level.addDisplay(250, 30, "arial.ttf", "#000000", 32, "", "", level.DisplayLoseCountdown);
 
             // draw the goodies
             for (int i = 0; i < 3; ++i) {
@@ -3141,8 +3145,8 @@ public class Levels implements ScreenManager {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            level.addCallbackControl(40, 40, 40, 40, "red.png", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(40, 40, 40, 40, "red.png", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.getPauseScene().reset();
                     level.getPauseScene().addText("Current score " + level.getGoodiesCollected1(), "#FFFFFF",
                             "arial.ttf", 20);
@@ -3151,21 +3155,21 @@ public class Levels implements ScreenManager {
                 }
             });
 
-            level.addLevelFact("level test", 240, 40, "arial.ttf", "#000000", 12, "-", ".");
-            level.addSessionFact("session test", 240, 80, "arial.ttf", "#000000", 12, "-", ".");
-            level.addGameFact("game test", 240, 120, "arial.ttf", "#000000", 12, "-", ".");
-            level.addCallbackControl(40, 90, 40, 40, "red.png", new LolCallback() {
-                public void onEvent() {
+            level.addDisplay(240, 40, "arial.ttf", "#000000", 12, "-", ".", level.DisplayLevelFact("level test"));
+            level.addDisplay(240, 80, "arial.ttf", "#000000", 12, "-", ".", level.DisplaySessionFact("session test"));
+            level.addDisplay(240, 120, "arial.ttf", "#000000", 12, "-", ".", level.DisplayGameFact("game test"));
+            level.addTapControl(40, 90, 40, 40, "red.png", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.putLevelFact("level test", 1 + level.getLevelFact("level test", -1));
                 }
             });
-            level.addCallbackControl(40, 140, 40, 40, "red.png", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(40, 140, 40, 40, "red.png", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.putSessionFact("session test", 1 + level.getSessionFact("session test", -1));
                 }
             });
-            level.addCallbackControl(40, 190, 40, 40, "red.png", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(40, 190, 40, 40, "red.png", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     level.putGameFact("game test", 1 + level.getGameFact("game test", -1));
                 }
             });
@@ -3294,8 +3298,8 @@ public class Levels implements ScreenManager {
             level.setCameraChase(h);
 
             // zoom buttons
-            level.addZoomOutButton(0, 0, 480, 640, "", 8);
-            level.addZoomInButton(480, 0, 480, 640, "", .25f);
+            level.addTapControl(0, 0, 480, 640, "", level.ZoomOutAction(8));
+            level.addTapControl(480, 0, 480, 640, "", level.ZoomInAction(.25f));
 
             // turn on panning
             level.addPanControl(0, 0, 960, 640, "");
@@ -3326,10 +3330,15 @@ public class Levels implements ScreenManager {
             level.addPinchZoomControl(0, 0, 960, 640, "", 8, .25f);
 
             // add a one-time callback control
-            level.addOneTimeCallbackControl(40, 40, 40, 40, "blueball.png", "greenball.png", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(40, 40, 40, 40, "blueball.png", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
+                    if (!mIsActive)
+                        return;
+                    mIsActive = false;
                     level.getPauseScene().addText("you can only pause once...", "#FFFFFF", "arial.ttf", 20);
                     level.getPauseScene().show();
+                    Control c;
+                    this.mAttachedControl.setImage("greenball.png");
                 }
             });
         }
@@ -3445,7 +3454,7 @@ public class Levels implements ScreenManager {
                 }
             });
             level.getPauseScene().suppressClearClick();
-            level.addPauseButton(0, 300, 20, 20, "red.png");
+            level.addTapControl(0, 300, 20, 20, "red.png", level.PauseAction);
         }
 
         /*
@@ -3503,8 +3512,8 @@ public class Levels implements ScreenManager {
             // A callback control is a way to run arbitrary code whenever the
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
-            level.addCallbackControl(0, 0, 960, 640, "", new LolCallback() {
-                public void onEvent() {
+            level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
+                public void go(Vector3 touchLocation) {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = level.getLevelActor("" + i);
                         if (p != null) {
@@ -3605,8 +3614,9 @@ public class Levels implements ScreenManager {
             level.getPauseScene().addCallbackButton(0, 0, 960, 640, sc1);
             level.getPauseScene().show();
 
-            level.addZoomOutButton(0, 0, 480, 640, "", 8);
-            level.addZoomInButton(480, 0, 480, 640, "", .25f);
+            level.addTapControl(0, 0, 480, 640, "", level.ZoomOutAction(8));
+            level.addTapControl(480, 0, 480, 640, "", level.ZoomInAction(.25f));
+
         }
 
         // Show how to make an "infinite" level, and add a foreground layer
@@ -3635,7 +3645,7 @@ public class Levels implements ScreenManager {
 
             // we win by collecting 10 goodies...
             level.setVictoryGoodies(10, 0, 0, 0);
-            level.addGoodieCount(1, 0, " goodies", 15, 600, "arial.ttf", "#FFFFFF", 20);
+            level.addDisplay(15, 600, "arial.ttf", "#FFFFFF", 20, "", " goodies", level.DisplayGoodies1);
 
             // now set up an obstacle and attach a callback to it
             //
