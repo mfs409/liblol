@@ -97,6 +97,14 @@ public abstract class Actor implements Renderable {
      * Text that game designer can modify to hold additional information
      */
     String mInfoText = "";
+
+    int mInfoInt;
+    public int getInfoInt() {
+        return mInfoInt;
+    }
+    public void setInfoInt(int newVal) {
+        mInfoInt = newVal;
+    }
     /**
      * Some actors run custom code when they are touched. This is a reference to
      * the code to run.

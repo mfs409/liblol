@@ -30,6 +30,8 @@ package com.me.mylolgame;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
+
 import edu.lehigh.cse.lol.Actor;
 import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
@@ -1727,71 +1729,36 @@ public class Levels implements ScreenManager {
             level.setProjectileDisappearSound("slowdown.ogg");
 
             // draw an enemy that makes a sound when it disappears
-            Enemy e = level.makeEnemyAsCircle(23, 20, 1, 1, "redball.png");
+            Enemy e = level.makeEnemyAsCircle(23, 20, 2, 2, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
 
-            // This is tricky. We want to make the enemy reproduce. To that end,
-            // we're going to set up a Callback that runs in a few seconds. The
-            // tricky things are that (a) we don't want an enemy to reproduce if
-            // the enemy has been defeated; (b) we want to limit the number of
-            // times any enemy reproduces, so that reproductions don't getLoseScene out
-            // of hand; and (c) we want the reproduced enemies to also
-            // reproduce.
-
-            // We're going to make a SimpleCallback object to encapsulate the
-            // code that we want to run. The trick is that SimpleCallback has a
-            // field called "intVal", which is just an integer that we can use
-            // however we want, and it has a field called "attachedSprite",
-            // which is a way of keeping track of the entity (in this case, an
-            // enemy) with which the callback is associated.
+            // This enemy will create mini-enemies until it is defeated
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     // only reproduce the enemy if it is visible
                     if (mAttachedActor.getVisible()) {
-                        // make an enemy to the left of and above attachedSprite
-                        Enemy left = level.makeEnemyAsCircle(mAttachedActor.getXPosition() - 2 * mIntVal,
-                                mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
-                                mAttachedActor.getHeight(), "redball.png");
+                        // make an enemy to the left and up
+                        Enemy left = level.makeEnemyAsCircle(mAttachedActor.getXPosition() - mIntVal,
+                                mAttachedActor.getYPosition() + mIntVal, 1, 1, "redball.png");
                         left.setDisappearSound("lowpitch.ogg");
 
                         // make an enemy to the right of and above
                         // attachedSprite
-                        Enemy right = level.makeEnemyAsCircle(mAttachedActor.getXPosition() + 2 * mIntVal,
-                                mAttachedActor.getYPosition() + 2 * mIntVal, mAttachedActor.getWidth(),
-                                mAttachedActor.getHeight(), "redball.png");
+                        Enemy right = level.makeEnemyAsCircle(mAttachedActor.getXPosition() + mIntVal,
+                                mAttachedActor.getYPosition() + mIntVal, 1, 1, "redball.png");
                         right.setDisappearSound("lowpitch.ogg");
-
-                        // if there are reproductions left, then have
-                        // attachedSprite and its two new children all reproduce
-                        // in 2 seconds
-                        if (mIntVal > 0) {
-                            // first, do the parent
-                            mIntVal--;
-                            // on the next line, 'this' refers to the
-                            // SimpleCallback object
-                            level.setTimerCallback(2, this);
-                            // to do the children, create a new callback for
-                            // each of them. We can 'clone' this SimpleCallback
-                            // and then just change the attachedSprite, so that
-                            // we don't have to re-write this code.
-                            LolCallback l = this.clone();
-                            l.mAttachedActor = left;
-                            level.setTimerCallback(2, l);
-                            LolCallback r = this.clone();
-                            r.mAttachedActor = right;
-                            level.setTimerCallback(2, r);
-                        }
+                        mIntVal++;
                     }
                 }
             };
-            sc.mIntVal = 2;
             sc.mAttachedActor = e;
+            sc.mIntVal = 0;
 
             // request that in 2 seconds, if the enemy is still visible,
             // onTimerCallback() will run, with id == 2. Be sure to look at
             // the onTimerCallback code (below) for more information. Note that
             // there are two versions of the function, and this uses the second!
-            level.setTimerCallback(2, sc);
+            level.setTimerCallback(2, 2, sc);
 
             // win by defeating enemies
             level.setVictoryEnemyCount();
@@ -1823,30 +1790,45 @@ public class Levels implements ScreenManager {
             e.setPhysics(1.0f, 0.3f, 0.6f);
             e.setMoveByTilting();
 
-            // set a timer callback on the enemy. warning: "6" is going to lead
-            // to lots of enemies eventually, and there's no way to defeat them
-            // in this level! Again, be sure to look at onEnemyTimerCallback()
-            // below.
+            // Let's use a little bit of java here.  We will make an ArrayList to store all of the
+            // enemies in the level.  Then, we can access it from the callback below, in order to
+            // make some enemies reproduce
+            final ArrayList<Enemy> enemies = new ArrayList<>();
+            enemies.add(e);
+
+            // set a timer callback on the level, to repeatedly spawn new enemies.
+            // warning: "6" is going to lead to lots of enemies eventually, and there's no
+            // way to defeat them in this level!
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
-                    // Make the new enemy
-                    Enemy e2 = level.makeEnemyAsCircle(mAttachedActor.getXPosition(), mAttachedActor.getYPosition(),
-                            mAttachedActor.getWidth(), mAttachedActor.getHeight(), "redball.png");
-                    e2.setPhysics(1.0f, 0.3f, 0.6f);
-                    e2.setMoveByTilting();
-                    // make more enemies?
-                    if (mIntVal > 0) {
-                        mIntVal--;
-                        level.setTimerCallback(2, this);
-                        LolCallback c2 = this.clone();
-                        c2.mAttachedActor = e2;
-                        level.setTimerCallback(2, c2);
+                    ArrayList<Enemy> newEnemies = new ArrayList<>();
+                    for (Enemy e: enemies) {
+                        // Is the enemy visible / alive?
+                        if (e.getVisible()) {
+                            // If this enemy has remaining reproductions
+                            if (e.getInfoInt() > 0) {
+                                // decrease remaining reproductions
+                                e.setInfoInt(e.getInfoInt() - 1);
+
+                                // reproduce the enemy
+                                Enemy e2 = level.makeEnemyAsCircle(e.getXPosition(), e.getYPosition(),
+                                        e.getWidth(), e.getHeight(), "redball.png");
+                                e2.setPhysics(1.0f, 0.3f, 0.6f);
+                                e2.setMoveByTilting();
+
+                                // set the new enemy's reproductions, save it
+                                e2.setInfoInt(e.getInfoInt());
+                                newEnemies.add(e2);
+                            }
+                        }
                     }
+                    // Add the new enemies to the list
+                    enemies.addAll(newEnemies);
                 }
             };
-            sc.mAttachedActor = e;
-            sc.mIntVal = 6;
-            level.setTimerCallback(2, sc);
+            level.setTimerCallback(2, 2, sc);
+            // request 6 reproductions... that's going to be a lot!
+            e.setInfoInt(6);
         }
 
         /*
