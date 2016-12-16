@@ -54,7 +54,7 @@ import java.util.TreeMap;
  * Note that everything in Lol is a level... the splash screen, the choosers,
  * the help, and the game levels themselves.
  */
-public class Level extends ScreenAdapter {
+public class Level {
     Config mConfig;
     Media mMedia;
     Lol mGame;
@@ -585,7 +585,6 @@ public class Level extends ScreenAdapter {
      *
      * @param delta The time since the last render
      */
-    @Override
     public void render(float delta) {
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
@@ -721,7 +720,6 @@ public class Level extends ScreenAdapter {
     /**
      * Whenever we hide the level, be sure to turn off the music
      */
-    @Override
     public void hide() {
         pauseMusic();
     }
@@ -729,7 +727,6 @@ public class Level extends ScreenAdapter {
     /**
      * Whenever we dispose of the level, be sure to turn off the music
      */
-    @Override
     public void dispose() {
         stopMusic();
     }

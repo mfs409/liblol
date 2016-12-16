@@ -27,10 +27,11 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.Game;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
@@ -45,9 +46,9 @@ import java.util.TreeMap;
  * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
  * that they can do the real work.
  */
-public class Lol extends Game {
+public class Lol implements ApplicationListener {
 
-    public Config mConfig;
+    Config mConfig;
 
     /**
      * Modes of the game: we can be showing the main splash screen, the help
@@ -60,7 +61,7 @@ public class Lol extends Game {
     static final int PLAY = 4;
 
     /**
-     * Store string/integer pairs that getLoseScene reset whenever we restart the program
+     * Store string/integer pairs that get reset whenever we restart the program
      */
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
 
@@ -89,11 +90,7 @@ public class Lol extends Game {
     /**
      * Store all the images, sounds, and fonts for the game
      */
-    public Media mMedia;
-
-    /*
-     * INTERNAL METHODS
-     */
+    Media mMedia;
 
     /**
      * The constructor just creates a media object and calls configureGravity, so that
@@ -140,7 +137,7 @@ public class Lol extends Game {
      * When the back key is pressed, or when we are simulating the back key
      * being pressed (e.g., a back button), this code runs.
      */
-    public void handleBack() {
+    void handleBack() {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit
@@ -190,7 +187,8 @@ public class Lol extends Game {
      */
     @Override
     public void dispose() {
-        super.dispose();
+        if (mScreen != null)
+            mScreen.hide();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -211,7 +209,8 @@ public class Lol extends Game {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        super.render();
+        if (mScreen != null)
+            mScreen.render(Gdx.graphics.getDeltaTime());
     }
 
     /**
@@ -253,4 +252,35 @@ public class Lol extends Game {
             Gdx.app.log(tag, text);
     }
 
+    protected Level mScreen;
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
+    /**
+     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
+     * screen, if any.
+     *
+     * @param level may be {@code null}
+     */
+    void setScreen(Level level) {
+        if (this.mScreen != null) this.mScreen.hide();
+        this.mScreen = level;
+    }
+
+    /**
+     * @return the currently active {@link Screen}.
+     */
+    Level getScreen() {
+        return mScreen;
+    }
 }
