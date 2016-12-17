@@ -83,12 +83,7 @@ public class WinScene extends QuickScene {
         mLevel.stopMusic();
 
         // go to next level (or chooser)
-        if (mLevel.mGame.mModeStates[Lol.PLAY] == mLevel.mGame.mConfig.mNumLevels) {
-            mLevel.doChooser(1);
-        } else {
-            mLevel.mGame.mModeStates[Lol.PLAY]++;
-            mLevel.doLevel(mLevel.mGame.mModeStates[Lol.PLAY]);
-        }
+        mLevel.mGame.advanceLevel();
     }
 
     /**

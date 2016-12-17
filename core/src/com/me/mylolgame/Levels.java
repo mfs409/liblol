@@ -2540,7 +2540,7 @@ public class Levels implements ScreenManager {
             level.setVictoryDestination(1);
 
             // draw an obstacle, make it a touch callback, and then draw the
-            // goodie we need to getLoseScene in order to activate the obstacle
+            // goodie we need to get in order to activate the obstacle
             Obstacle o = level.makeObstacleAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun

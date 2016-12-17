@@ -77,12 +77,7 @@ public class LoseScene extends QuickScene {
      */
     protected void dismiss() {
         mVisible = false;
-
-        // we turn off music here, so that music plays during the PostScene
-        mLevel.stopMusic();
-
-        // repeat the level
-        mLevel.doLevel(mLevel.mGame.mModeStates[Lol.PLAY]);
+        mLevel.mGame.repeatLevel();
     }
 
     /**

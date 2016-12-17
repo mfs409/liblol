@@ -37,46 +37,176 @@ import com.badlogic.gdx.utils.Timer;
 import java.util.TreeMap;
 
 /**
- * A Lol object is the outermost container for all of the functionality of the
- * game. It implements ApplicationListener (through Game), which provides hooks
- * for GDX to render the game, stop it, resume it, etc.
+ * The Lol object is the outermost container for all of the functionality of the
+ * game. It implements ApplicationListener, which provides hooks for rendering the
+ * game, stopping it, resuming it, etc.
  * <p/>
- * Lol is not responsible for doing anything significant. It keeps track of
- * which screen is currently in use, and forwards (through Game) to that screen.
- * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
- * that they can do the real work.
+ * Apart from ApplicationListener duties, the Lol object is responsible for providing an abstracted
+ * interface to some of the hardware (e.g., the back button), loading resources, and managing a
+ * state machine that monitors which type of level is currently being displayed.
  */
 public class Lol implements ApplicationListener {
-
-    Config mConfig;
-
-    /**
-     * Modes of the game: we can be showing the main splash screen, the help
-     * screens, the level chooser, the store, or a playable level
-     */
-    static final int SPLASH = 0;
-    static final int HELP = 1;
-    static final int CHOOSER = 2;
-    static final int STORE = 3;
-    static final int PLAY = 4;
+    // mConfig stores the configuration state of the game.
+    //
+    // NB: ideally, we wouldn't even bother storing it here, but we construct a Lol object much
+    // earlier than we call 'create' on it, and it's not until we call 'create' that we can use
+    // mConfig to load the images and sounds.  Hence, we're stuck having a copy here, even though
+    // we rarely use it.
+    private Config mConfig;
 
     /**
-     * Store string/integer pairs that get reset whenever we restart the program
+     * StateMachine tracks the current state of the game.  The state consists of the type of level
+     * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
+     * currently active, and the actual level object.
      */
+    private class StateMachine {
+        // Modes of the game, for use by the state machine.  We can be showing the main splash screen,
+        // the help screens, the level chooser, the store, or a playable level
+        static final int SPLASH = 0;
+        static final int HELP = 1;
+        static final int CHOOSER = 2;
+        static final int STORE = 3;
+        static final int PLAY = 4;
+
+        // mMode is is for the base state machine.  It tracks the current mode of the program (from
+        // among the above choices)
+        int mMode;
+
+        // mModeStates provides more information about the state of the game.  mMode only lets us know
+        // what state we are in, but mModeStates lets us know which level of that mode is currently
+        // active.  Note that using an array makes it easier for us to use the back button to go from
+        // a level to the chooser, or to move to the next level when we win a level
+        int mModeStates[] = new int[5];
+
+        // mScreen is the Level object that is active, corresponding to the mMode and mModeState fields.
+        // It is the third and final field that comprises the state machine
+        Level mScreen;
+    }
+
+    // mStateMachine is the actual state machine used by the game
+    private StateMachine mStateMachine = new StateMachine();
+
+    /**
+     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
+     * screen, if any.
+     *
+     * @param level may be {@code null}
+     */
+    private void setScreen(Level level) {
+        if (mStateMachine.mScreen != null) {
+            mStateMachine.mScreen.pauseMusic();
+        }
+        mStateMachine.mScreen = level;
+    }
+
+     void unlockNext() {
+        if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
+            putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
+    }
+
+    void advanceLevel() {
+        if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
+            mStateMachine.mScreen.doChooser(1);
+        } else {
+            mStateMachine.mModeStates[StateMachine.PLAY]++;
+            mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+        }
+    }
+
+    void repeatLevel() {
+        mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+    }
+    /**
+     * Use this to load the splash screen
+     */
+     void doSplash() {
+        // reset state of all screens
+        for (int i = 0; i < 5; ++i)
+            mStateMachine.mModeStates[i] = 1;
+        mStateMachine.mMode = StateMachine.SPLASH;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mSplash.display(1, l);
+        setScreen(l);
+    }
+
+    /**
+     * Use this to load the level-chooser screen. Note that when the chooser is
+     * disabled, we jump straight to level 1.
+     *
+     * @param whichChooser The chooser screen to create
+     */
+     void doChooser(int whichChooser) {
+        // if chooser disabled, then we either called this from splash, or from
+        // a game level
+        if (!mConfig.mEnableChooser) {
+            if (mStateMachine.mMode == StateMachine.PLAY) {
+                doSplash();
+            } else {
+                doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+            }
+            return;
+        }
+        // the chooser is not disabled... save the choice of level, configureGravity
+        // it, and show it.
+        mStateMachine.mMode = StateMachine.CHOOSER;
+        mStateMachine.mModeStates[StateMachine.CHOOSER] = whichChooser;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mChooser.display(whichChooser, l);
+        setScreen(l);
+    }
+
+    /**
+     * Use this to load a playable level.
+     *
+     * @param which The index of the level to load
+     */
+     void doLevel(int which) {
+        mStateMachine.mModeStates[StateMachine.PLAY] = which;
+        mStateMachine.mMode = StateMachine.PLAY;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mLevels.display(which, l);
+        setScreen(l);
+    }
+
+    /**
+     * Use this to load a help level.
+     *
+     * @param which The index of the help level to load
+     */
+     void doHelp(int which) {
+        mStateMachine.mModeStates[StateMachine.HELP] = which;
+        mStateMachine.mMode = StateMachine.HELP;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mHelp.display(which, l);
+        setScreen(l);
+    }
+
+    /**
+     * Use this to load a screen of the store.
+     *
+     * @param which The index of the help level to load
+     */
+     void doStore(int which) {
+        mStateMachine.mModeStates[StateMachine.STORE] = which;
+        mStateMachine.mMode = StateMachine.STORE;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mStore.display(which, l);
+        setScreen(l);
+    }
+
+    /**
+     * Use this to quit the game
+     */
+     void doQuit() {
+        mStateMachine.mScreen.stopMusic();
+        Gdx.app.exit();
+    }
+
+
+    // Store string/integer pairs that get reset whenever we restart the program
     final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
 
-    /**
-     * The current mode of the program (from among the above choices)
-     */
-    int mMode;
 
-    /**
-     * The mode state is used to represent the current level within a mode
-     * (i.e., 3rd help screen, or 5th page of the store). Tracking state
-     * separately for each mode makes going between a level and the chooser much
-     * easier.
-     */
-    int mModeStates[] = new int[5];
 
     /**
      * This variable lets us track whether the user pressed 'back' on an
@@ -85,12 +215,12 @@ public class Lol implements ApplicationListener {
      * can't exit all the way out... you must press 'back' repeatedly, once for
      * each screen to revert.
      */
-    boolean mKeyDown;
+    private boolean mKeyDown;
 
     /**
      * Store all the images, sounds, and fonts for the game
      */
-    Media mMedia;
+    private Media mMedia;
 
     /**
      * The constructor just creates a media object and calls configureGravity, so that
@@ -141,18 +271,18 @@ public class Lol implements ApplicationListener {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit
-        if (mMode == SPLASH) {
+        if (mStateMachine.mMode == StateMachine.SPLASH) {
             dispose();
             Gdx.app.exit();
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
-            ((Level) getScreen()).doSplash();
+        else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
+            mStateMachine.mScreen.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            ((Level) getScreen()).doChooser(mModeStates[CHOOSER]);
+            mStateMachine.mScreen.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
         }
     }
 
@@ -164,7 +294,7 @@ public class Lol implements ApplicationListener {
     public void create() {
         // set current mode states
         for (int i = 0; i < 5; ++i)
-            mModeStates[i] = 1;
+            mStateMachine.mModeStates[i] = 1;
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
@@ -187,8 +317,8 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mScreen != null)
-            mScreen.hide();
+        if (mStateMachine.mScreen != null)
+            mStateMachine.mScreen.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -209,8 +339,8 @@ public class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        if (mScreen != null)
-            mScreen.render(Gdx.graphics.getDeltaTime());
+        if (mStateMachine.mScreen != null)
+            mStateMachine.mScreen.render(Gdx.graphics.getDeltaTime());
     }
 
     /**
@@ -252,7 +382,6 @@ public class Lol implements ApplicationListener {
             Gdx.app.log(tag, text);
     }
 
-    protected Level mScreen;
 
     @Override
     public void pause() {
@@ -266,21 +395,4 @@ public class Lol implements ApplicationListener {
     public void resize(int width, int height) {
     }
 
-    /**
-     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
-     * screen, if any.
-     *
-     * @param level may be {@code null}
-     */
-    void setScreen(Level level) {
-        if (this.mScreen != null) this.mScreen.hide();
-        this.mScreen = level;
-    }
-
-    /**
-     * @return the currently active {@link Screen}.
-     */
-    Level getScreen() {
-        return mScreen;
-    }
 }

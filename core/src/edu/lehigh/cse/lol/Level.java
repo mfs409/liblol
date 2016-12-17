@@ -718,20 +718,6 @@ public class Level {
     }
 
     /**
-     * Whenever we hide the level, be sure to turn off the music
-     */
-    public void hide() {
-        pauseMusic();
-    }
-
-    /**
-     * Whenever we dispose of the level, be sure to turn off the music
-     */
-    public void dispose() {
-        stopMusic();
-    }
-
-    /**
      * To properly handle gestures, we need to provide the code to run on each
      * type of gesture we care about.
      */
@@ -1369,8 +1355,8 @@ public class Level {
                             mLoseCallback.onEvent();
 
                         // if we won, unlock the next level
-                        if (win && getGameFact("unlocked", 1) <= mGame.mModeStates[Lol.PLAY])
-                            putGameFact("unlocked", mGame.mModeStates[Lol.PLAY] + 1);
+                        if (win)
+                            mGame.unlockNext();
 
                         // drop everything from the hud
                         mControls.clear();
@@ -3884,13 +3870,7 @@ public class Level {
      * Use this to load the splash screen
      */
     public void doSplash() {
-        // reset state of all screens
-        for (int i = 0; i < 5; ++i)
-            mGame.mModeStates[i] = 1;
-        mGame.mMode = Lol.SPLASH;
-        Level l = new Level(mConfig, mMedia, mGame);
-        mConfig.mSplash.display(0, l);
-        mGame.setScreen(l);
+        mGame.doSplash();
     }
 
     /**
@@ -3900,23 +3880,7 @@ public class Level {
      * @param whichChooser The chooser screen to create
      */
     public void doChooser(int whichChooser) {
-        // if chooser disabled, then we either called this from splash, or from
-        // a game level
-        if (!mConfig.mEnableChooser) {
-            if (mGame.mMode == Lol.PLAY) {
-                doSplash();
-            } else {
-                doLevel(mGame.mModeStates[Lol.PLAY]);
-            }
-            return;
-        }
-        // the chooser is not disabled... save the choice of level, configureGravity
-        // it, and show it.
-        mGame.mMode = Lol.CHOOSER;
-        mGame.mModeStates[Lol.CHOOSER] = whichChooser;
-        Level l = new Level(mConfig, mMedia, mGame);
-        mConfig.mChooser.display(whichChooser, l);
-        mGame.setScreen(l);
+        mGame.doChooser(whichChooser);
     }
 
     /**
@@ -3925,11 +3889,7 @@ public class Level {
      * @param which The index of the level to load
      */
     public void doLevel(int which) {
-        mGame.mModeStates[Lol.PLAY] = which;
-        mGame.mMode = Lol.PLAY;
-        Level l = new Level(mConfig, mMedia, mGame);
-        mConfig.mLevels.display(which, l);
-        mGame.setScreen(l);
+        mGame.doLevel(which);
     }
 
     /**
@@ -3938,11 +3898,7 @@ public class Level {
      * @param which The index of the help level to load
      */
     public void doHelp(int which) {
-        mGame.mModeStates[Lol.HELP] = which;
-        mGame.mMode = Lol.HELP;
-        Level l = new Level(mConfig, mMedia, mGame);
-        mConfig.mHelp.display(which, l);
-        mGame.setScreen(l);
+        mGame.doHelp(which);
     }
 
     /**
@@ -3951,19 +3907,14 @@ public class Level {
      * @param which The index of the help level to load
      */
     public void doStore(int which) {
-        mGame.mModeStates[Lol.STORE] = which;
-        mGame.mMode = Lol.STORE;
-        Level l = new Level(mConfig, mMedia, mGame);
-        mConfig.mStore.display(which, l);
-        mGame.setScreen(l);
+        mGame.doStore(which);
     }
 
     /**
      * Use this to quit the game
      */
     public void doQuit() {
-        dispose();
-        Gdx.app.exit();
+        mGame.doQuit();
     }
 
     public Animation makeAnimation(int sequenceCount, boolean repeat) {
