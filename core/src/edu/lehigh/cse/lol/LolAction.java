@@ -25,15 +25,17 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 /**
  * Wrapper for actions that we generate and then want handled during the render
  * loop
  */
-public interface LolAction {
+abstract class LolAction {
+    // TODO: remove this?
+    public boolean mIsActive = true;
     /**
      * The go() method encapsulates the code that should be run
      */
-    void go();
+    abstract void go();
 }

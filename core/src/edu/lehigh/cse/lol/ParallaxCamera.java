@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
@@ -35,7 +35,7 @@ import com.badlogic.gdx.math.Vector3;
  * A custom camera that can supports parallax... this code is based on code
  * taken from the GDX tests
  */
-public class ParallaxCamera extends OrthographicCamera {
+class ParallaxCamera extends OrthographicCamera {
     /**
      * This matrix helps us compute the view
      */

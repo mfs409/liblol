@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -43,7 +43,7 @@ import java.util.TreeMap;
  * sounds, and fonts Strictly speaking, we can re-create fonts on the fly
  * whenever we need to. Caching them here is an optimization.
  */
-public class Media {
+class Media {
     /**
      * Store the fonts used by this game
      */
@@ -62,7 +62,7 @@ public class Media {
     /**
      * Store the images used by this game
      */
-    private final TreeMap<String, TextureRegion[]> mImages = new TreeMap<>();
+    private final TreeMap<String, TextureRegion> mImages = new TreeMap<>();
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
@@ -70,8 +70,8 @@ public class Media {
      * the collection when the game disposes is satisfactory to avoid visual
      * glitches when the game comes back to the foreground.
      */
-    static void onDispose() {
-        Lol.sGame.mMedia.mFonts.clear();
+     void onDispose() {
+        mFonts.clear();
     }
 
     /**
@@ -82,12 +82,12 @@ public class Media {
      * @param fontSize     The size to display
      * @return A font object that can be used to render text
      */
-    static BitmapFont getFont(String fontFileName, int fontSize) {
+    public  BitmapFont getFont(String fontFileName, int fontSize) {
         // we store fonts as their filename appended with their size
         String key = fontFileName + "--" + fontSize;
 
         // check if we've already got this font, return it if we do
-        BitmapFont f = Lol.sGame.mMedia.mFonts.get(key);
+        BitmapFont f = mFonts.get(key);
         if (f != null) {
             // just to play it safe, make the font white... the caller can
             // change this
@@ -97,7 +97,7 @@ public class Media {
 
         // Generate the font, save it, and return it
         //
-        // NB: if this crashes, the user will get a reasonably good error
+        // NB: if this crashes, the user will getLoseScene a reasonably good error
         // message
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
@@ -107,8 +107,9 @@ public class Media {
         parameter.magFilter = Texture.TextureFilter.Linear;
 
         f = generator.generateFont(parameter);
+        f.setUseIntegerPositions(false); // when we switch to HTML builds, this helps
         generator.dispose();
-        Lol.sGame.mMedia.mFonts.put(key, f);
+        mFonts.put(key, f);
         return f;
     }
 
@@ -118,10 +119,10 @@ public class Media {
      * @param soundName Name of the sound file to retrieve
      * @return a Sound object that can be used for sound effects
      */
-    public static Sound getSound(String soundName) {
-        Sound ret = Lol.sGame.mMedia.mSounds.get(soundName);
+    public  Sound getSound(String soundName) {
+        Sound ret = mSounds.get(soundName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving sound '" + soundName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving sound '" + soundName + "'");
         return ret;
     }
 
@@ -131,10 +132,10 @@ public class Media {
      * @param musicName Name of the music file to retrieve
      * @return a Music object that can be used to play background music
      */
-    static Music getMusic(String musicName) {
-        Music ret = Lol.sGame.mMedia.mTunes.get(musicName);
+     Music getMusic(String musicName) {
+        Music ret = mTunes.get(musicName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving music '" + musicName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving music '" + musicName + "'");
         return ret;
     }
 
@@ -145,10 +146,10 @@ public class Media {
      * @param imgName Name of the image file to retrieve
      * @return a TextureRegion object that can be used to create Actors
      */
-    public static TextureRegion[] getImage(String imgName) {
-        TextureRegion[] ret = Lol.sGame.mMedia.mImages.get(imgName);
+    public  TextureRegion getImage(String imgName) {
+        TextureRegion ret = mImages.get(imgName);
         if (ret == null)
-            Util.message("ERROR", "Error retreiving image '" + imgName + "'");
+            Lol.message(mConfig, "ERROR", "Error retrieving image '" + imgName + "'");
         return ret;
     }
 
@@ -156,19 +157,15 @@ public class Media {
      * On a volume change event, this will change the volume of all music
      * objects
      */
-    static void resetMusicVolume() {
-        for (Music m : Lol.sGame.mMedia.mTunes.values()) {
-            m.setVolume(Facts.getGameFact("volume", 1));
+     void resetMusicVolume() {
+        for (Music m : mTunes.values()) {
+            m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
         }
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
-
     /**
      * Register an image file, so that it can be used later. Images should be
-     * .png files. Note that images with internal animations (i.e., gifs) do not
+     * .png files. Note that images with internal animations (i.e., GIFs) do not
      * work correctly. You should use cell-based animation instead.
      *
      * @param imgName the name of the image file (assumed to be in the "assets"
@@ -176,44 +173,10 @@ public class Media {
      *                of type "png". "jpeg" images work too, but usually look bad in
      *                games
      */
-    static public void registerImage(String imgName) {
+     public void registerImage(String imgName) {
         // Create an array with one entry
-        TextureRegion[] tr = new TextureRegion[1];
-        tr[0] = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
-        Lol.sGame.mMedia.mImages.put(imgName, tr);
-    }
-
-    /**
-     * Register an animatable image file, so that it can be used later. The
-     * difference between regular images and animatable images is that
-     * animatable images should be thought of as having multiple columns and
-     * rows, which allow cell-based animation. Images should be .png files. Note
-     * that images with internal animations (i.e., gifs) do not work correctly.
-     * You should use cell-based animation instead.
-     *
-     * @param imgName the name of the image file (assumed to be in the "assets"
-     *                folder). This should be of the form "image.png", and should be
-     *                of type "png"
-     * @param columns The number of columns that comprise this image file
-     * @param rows    The number of rows that comprise this image file
-     */
-    static public void registerAnimatableImage(String imgName, int columns, int rows) {
-        // Load the file as a texture
-        Texture t = new Texture(Gdx.files.internal(imgName));
-        // carve the image into cells of equal width and height
-        int width = t.getWidth() / columns;
-        int height = t.getHeight() / rows;
-        TextureRegion[][] trgrid = TextureRegion.split(t, width, height);
-        // put all entries into a 1-D array
-        TextureRegion[] trs = new TextureRegion[columns * rows];
-        int index = 0;
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                trs[index] = trgrid[i][j];
-                index++;
-            }
-        }
-        Lol.sGame.mMedia.mImages.put(imgName, trs);
+        TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
+        mImages.put(imgName, tr);
     }
 
     /**
@@ -227,11 +190,11 @@ public class Media {
      * @param loop      either true or false, to indicate whether the song should
      *                  repeat when it reaches the end
      */
-    static public void registerMusic(String musicName, boolean loop) {
+     public void registerMusic(String musicName, boolean loop) {
         Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
         m.setLooping(loop);
-        m.setVolume(Facts.getGameFact("volume", 1));
-        Lol.sGame.mMedia.mTunes.put(musicName, m);
+        m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
+        mTunes.put(musicName, m);
     }
 
     /**
@@ -243,8 +206,23 @@ public class Media {
      *                  folder). This should be of the form "sound.ogg", and should be
      *                  of type "ogg".
      */
-    static public void registerSound(String soundName) {
+    public void registerSound(String soundName) {
         Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
-        Lol.sGame.mMedia.mSounds.put(soundName, s);
+        mSounds.put(soundName, s);
+    }
+
+    Config mConfig;
+
+    Media(Config cfg) {
+        mConfig = cfg;
+        for (String name : cfg.mImageNames) {
+            registerImage(name);
+        }
+        for (String name : cfg.mSoundNames) {
+            registerSound(name);
+        }
+        for (String name : cfg.mMusicNames) {
+            registerMusic(name, true);
+        }
     }
 }

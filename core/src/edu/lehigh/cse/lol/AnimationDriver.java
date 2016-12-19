@@ -25,19 +25,15 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
-import edu.lehigh.cse.lol.Animation;
-import edu.lehigh.cse.lol.Media;
-import edu.lehigh.cse.lol.Util;
 
 /**
  * AnimationDriver is an internal class that actors can use to figure out which
  * frame of an animation to show next
  */
-public class AnimationDriver {
+class AnimationDriver {
     /**
      * The currently running animation
      */
@@ -48,7 +44,7 @@ public class AnimationDriver {
      */
     TextureRegion[] mImages;
     /**
-     * The index to display from mImages for the case where there is no active
+     * The index to display from mImageNames for the case where there is no active
      * animation. This is useful for animateByGoodieCount.
      */
     int mImageIndex;
@@ -68,8 +64,8 @@ public class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public AnimationDriver(String imgName) {
-        updateImage(imgName);
+    public AnimationDriver(Level level, String imgName) {
+        updateImage(level, imgName);
     }
 
     /**
@@ -88,25 +84,18 @@ public class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    public void updateImage(String imgName) {
-        mImages = Media.getImage(imgName);
+    public void updateImage(Level level, String imgName) {
+        if (mImages == null)
+            mImages = new TextureRegion[1];
+        mImages[0] = level.mMedia.getImage(imgName);
         mImageIndex = 0;
     }
 
     /**
-     * Change the index of the default image to display
-     *
-     * @param i The index to use
+     * Request a random index from the mImageNames array to pick an image to display
      */
-    public void setIndex(int i) {
-        mImageIndex = i;
-    }
-
-    /**
-     * Request a random index from the mImages array to pick an image to display
-     */
-    public void pickRandomIndex() {
-        mImageIndex = Util.getRandom(mImages.length);
+    public void pickRandomIndex(Level level) {
+        mImageIndex = level.getRandom(mImages.length);
     }
 
     /**
@@ -126,18 +115,18 @@ public class AnimationDriver {
         long millis = (long) (1000 * mCurrentAnimationTime);
         // are we still in this frame?
         if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
         // are we on the last frame, with no loop? If so, stay where we
         // are...
         else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
         // else advance, reset, go
         else {
             mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
             mCurrentAnimationTime = 0;
-            return mCurrentAnimation.mCells[mCurrentAnimation.mFrames[mCurrentAnimationFrame]];
+            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
         }
     }
 }

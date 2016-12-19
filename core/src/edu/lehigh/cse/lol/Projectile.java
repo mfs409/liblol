@@ -37,7 +37,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * to remove enemies. Note that there is no public interface to this file.
  * Projectiles should be controlled via ProjectilePool.
  */
-public class Projectile extends Actor {
+class Projectile extends Actor {
     /**
      * This is the initial point of the throw
      */
@@ -73,8 +73,8 @@ public class Projectile extends Actor {
      * @param zIndex   The z plane of the projectile
      * @param isCircle True if it is a circle, false if it is a box
      */
-    Projectile(float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
-        super(imgName, width, height);
+    Projectile(Level level, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
+        super(level, imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
             setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
@@ -84,7 +84,7 @@ public class Projectile extends Actor {
         mBody.setGravityScale(0);
         setCollisionsEnabled(false);
         disableRotation();
-        Lol.sGame.mCurrentLevel.addActor(this, zIndex);
+        mLevel.addActor(this, zIndex);
     }
 
     /**

@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
@@ -46,7 +45,7 @@ public class Goodie extends Actor {
     int[] mScore = new int[4];
 
     /**
-     * How much strength does the hero get by collecting this goodie
+     * How much strength does the hero getLoseScene by collecting this goodie
      */
     int mStrengthBoost = 0;
 
@@ -63,75 +62,12 @@ public class Goodie extends Actor {
      * @param height  height of this Obstacle
      * @param imgName image to use for this Obstacle
      */
-    protected Goodie(float width, float height, String imgName) {
-        super(imgName, width, height);
+    protected Goodie(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;
         mScore[2] = 0;
         mScore[3] = 0;
-    }
-
-    /**
-     * Draw a goodie with an underlying box shape, and a default score of
-     * [1,0,0,0]
-     *
-     * @param x       X coordinate of bottom left corner
-     * @param y       Y coordinate of bottom left corner
-     * @param width   Width of the image
-     * @param height  Height of the image
-     * @param imgName Name of image file to use
-     * @return The goodie, so that it can be further modified
-     */
-    public static Goodie makeAsBox(float x, float y, float width, float height, String imgName) {
-        Goodie g = new Goodie(width, height, imgName);
-        g.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
-        return g;
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Draw a goodie with an underlying circle shape, and a default score of
-     * [1,0,0,0]
-     *
-     * @param x       X coordinate of bottom left corner
-     * @param y       Y coordinate of bottom left corner
-     * @param width   Width of the image
-     * @param height  Height of the image
-     * @param imgName Name of image file to use
-     * @return The goodie, so that it can be further modified
-     */
-    public static Goodie makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Goodie g = new Goodie(width, height, imgName);
-        g.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
-        return g;
-    }
-
-    /**
-     * Draw a goodie with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The goodie, so that it can be further modified
-     */
-    public static Goodie makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Goodie g = new Goodie(width, height, imgName);
-        g.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        g.setCollisionsEnabled(false);
-        Lol.sGame.mCurrentLevel.addActor(g, 0);
-        return g;
     }
 
     /**

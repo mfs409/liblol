@@ -29,34 +29,21 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.utils.Timer;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * PauseScene provides a way to suspend gameplay briefly and display information
  * to the player. A PauseScene can include arbitrary text and pictures.
  */
 public class PauseScene extends QuickScene {
 
-    /**
-     * Get the PauseScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current PauseScene
-     */
-    public static PauseScene get() {
-        PauseScene scene = Lol.sGame.mCurrentLevel.mPauseScene;
-        if (scene != null)
-            return scene;
-        scene = new PauseScene();
-        Lol.sGame.mCurrentLevel.mPauseScene = scene;
-        return scene;
+    PauseScene(Level level) {
+        super(level);
     }
 
     /**
      * Clear everything off of the level's pause scene, so it can be reused
      */
     public void reset() {
-        Lol.sGame.mCurrentLevel.mPauseScene = new PauseScene();
+        mLevel.mPauseScene = new PauseScene(mLevel);
     }
 
     /**
@@ -67,7 +54,7 @@ public class PauseScene extends QuickScene {
         mVisible = true;
         mDisplayTime = System.currentTimeMillis();
         if (mSound != null)
-            mSound.play(Facts.getGameFact("volume", 1));
+            mSound.play(mLevel.getGameFact("volume", 1));
     }
 
     /**

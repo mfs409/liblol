@@ -45,6 +45,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * parameters to define the entire animation in equal-duration pieces.
  */
 public class Animation {
+    Media mMedia;
     /**
      * A set of images, generated via registerAnimatableImage, that can be used
      * as frames of an animation.
@@ -54,12 +55,9 @@ public class Animation {
      * Should the animation repeat?
      */
     public final boolean mLoop;
+
     /**
-     * This array holds the indices that should be displayed.
-     */
-    public int[] mFrames;
-    /**
-     * This array holds the durations for which each of the indices should be
+     * This array holds the durations for which each of the images should be
      * displayed
      */
     public long[] mDurations;
@@ -79,14 +77,13 @@ public class Animation {
      * but none will be initialized yet. You will need to use the "to" method to
      * initialize the steps.
      *
-     * @param imgName       The animate-able image that should be used
      * @param sequenceCount The number of frames in the animation
      * @param repeat        Either true or false, depending on whether the animation
      *                      should repeat
      */
-    public Animation(String imgName, int sequenceCount, boolean repeat) {
-        mCells = Media.getImage(imgName);
-        mFrames = new int[sequenceCount];
+    Animation(Media media, int sequenceCount, boolean repeat) {
+        mMedia = media;
+        mCells = new TextureRegion[sequenceCount];
         mDurations = new long[sequenceCount];
         mLoop = repeat;
         mNextCell = 0;
@@ -96,34 +93,33 @@ public class Animation {
      * Create an animation where all of the frames are displayed for the same
      * amount of time
      *
-     * @param imgName      The animate-able image that should be used
      * @param timePerFrame The time in milliseconds that each frame should be shown
      * @param repeat       true or false, depending on whether the animation should
      *                     repeat
-     * @param frameIndices The indices of the image that should each be shown for
+     * @param imgNames     The names of the images that should each be shown for
      *                     timePerFrame milliseconds
      */
-    public Animation(String imgName, int timePerFrame, boolean repeat, int... frameIndices) {
-        mCells = Media.getImage(imgName);
-        mFrames = new int[frameIndices.length];
-        mDurations = new long[frameIndices.length];
+    Animation(Media media, int timePerFrame, boolean repeat, String... imgNames) {
+        mMedia = media;
+        mCells = new TextureRegion[imgNames.length];
+        mDurations = new long[imgNames.length];
         mLoop = repeat;
-        mNextCell = frameIndices.length;
+        mNextCell = imgNames.length;
         for (int i = 0; i < mNextCell; ++i) {
             mDurations[i] = timePerFrame;
-            mFrames[i] = frameIndices[i];
+            mCells[i] = mMedia.getImage(imgNames[i]);
         }
     }
 
     /**
      * Add another step to the animation
      *
-     * @param frame    The index within the image that should be displayed next
+     * @param imgName  The name of the image to display next
      * @param duration The time in milliseconds that this frame should be shown
      * @return the Animation, so that we can chain calls to "to()"
      */
-    public Animation to(int frame, long duration) {
-        mFrames[mNextCell] = frame;
+    public Animation to(String imgName, long duration) {
+        mCells[mNextCell] = mMedia.getImage(imgName);
         mDurations[mNextCell] = duration;
         mNextCell++;
         return this;

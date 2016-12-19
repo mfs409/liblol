@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -29,16 +29,13 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.internals.CollisionCallback;
-
 /**
  * Obstacles are usually walls, except they can move, and can be used to run all
- * sorts of abritrary code that changes the game, or the behavior of the things
+ * sorts of arbitrary code that changes the game, or the behavior of the things
  * that collide with them. It's best to think of them as being both "a wall" and
  * "a catch-all for any behavior that we don't have anywhere else".
  */
@@ -61,7 +58,7 @@ public class Obstacle extends Actor {
     CollisionCallback mProjectileCollision;
 
     /**
-     * Indicate that this obstacle does not re-enable jumping for the hero
+     * Indicate that this obstacle does not re-enableTilt jumping for the hero
      */
     boolean mNoJumpReenable;
 
@@ -89,66 +86,8 @@ public class Obstacle extends Actor {
      * @param height  height of this Obstacle
      * @param imgName Name of the image file to use
      */
-    protected Obstacle(float width, float height, String imgName) {
-        super(imgName, width, height);
-    }
-
-    /**
-     * Draw an obstacle with an underlying box shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @return The obstacle, so that it can be further modified
-     */
-    public static Obstacle makeAsBox(float x, float y, float width, float height, String imgName) {
-        Obstacle o = new Obstacle(width, height, imgName);
-        o.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
-        return o;
-    }
-
-    /**
-     * Draw an obstacle with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The obstacle, so that it can be further modified
-     */
-    public static Obstacle makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Obstacle o = new Obstacle(width, height, imgName);
-        o.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
-        return o;
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Draw an obstacle with an underlying circle shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @return The obstacle, so that it can be further modified
-     */
-    public static Obstacle makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Obstacle o = new Obstacle(width, height, imgName);
-        o.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(o, 0);
-        return o;
+    protected Obstacle(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
     }
 
     /**
@@ -164,12 +103,12 @@ public class Obstacle extends Actor {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play(Facts.getGameFact("volume", 1));
+        mCollideSound.play(mLevel.getGameFact("volume", 1));
     }
 
     /**
      * Called when this Obstacle is the dominant obstacle in a collision
-     *
+     * <p/>
      * Note: This Obstacle is /never/ the dominant obstacle in a collision,
      * since it is #6 or #7
      *
@@ -183,7 +122,7 @@ public class Obstacle extends Actor {
     /**
      * Call this on an Obstacle to make it into a pad that changes the hero's
      * speed when the hero glides over it.
-     *
+     * <p/>
      * These "pads" will multiply the hero's speed by the factor given as a
      * parameter. Factors can be negative to cause a reverse direction, less
      * than 1 to cause a slowdown (friction pads), or greater than 1 to serve as
@@ -286,7 +225,7 @@ public class Obstacle extends Actor {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                        match &= counts[i] <= mLevel.mScore.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
@@ -338,7 +277,7 @@ public class Obstacle extends Actor {
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                    match &= enemyCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
@@ -384,7 +323,7 @@ public class Obstacle extends Actor {
             public void go(Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i];
+                    match &= projectileCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
                 if (match) {
                     callback.mAttachedActor = Obstacle.this;
                     callback.mCollideActor = ps;
@@ -403,7 +342,7 @@ public class Obstacle extends Actor {
      *              milliseconds
      */
     public void setCollideSound(String sound, long delay) {
-        mCollideSound = Media.getSound(sound);
+        mCollideSound = mLevel.mMedia.getSound(sound);
         mCollideSoundDelay = delay * 1000000;
     }
 }

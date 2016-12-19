@@ -27,17 +27,16 @@
 
 package com.me.mylolgame;
 
-import edu.lehigh.cse.lol.Control;
+import com.badlogic.gdx.math.Vector3;
+
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
-import edu.lehigh.cse.lol.Physics;
 import edu.lehigh.cse.lol.ScreenManager;
-import edu.lehigh.cse.lol.Util;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
- * Splash encapsulates the code that will be run to configure the opening screen
+ * Splash encapsulates the code that will be run to configureGravity the opening screen
  * of the game. Typically this has buttons for playing, getting help, and
  * quitting.
  */
@@ -47,63 +46,63 @@ public class Splash implements ScreenManager {
      * There is usually only one splash screen. However, the ScreenManager
      * interface requires display() to take a parameter.  We ignore it.
      */
-    public void display(int which) {
+    public void display(int which, final Level level) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
-        Level.configure(48, 32);
-        Physics.configure(0, 0);
+        level.configureCamera(48, 32);
+        level.configureGravity(0, 0);
 
         // draw the background. Note that "Play", "Help", and "Quit" are part of
         // this background image.
-        Util.drawPicture(0, 0, 48, 32, "splash.png", 0);
+        level.drawPicture(0, 0, 48, 32, "splash.png", 0);
 
         // start the music
-        Level.setMusic("tune.ogg");
+        level.setMusic("tune.ogg");
 
         // This is the Play button... it switches to the first screen of the
         // level chooser. You could jump straight to the first level by using
         // "doLevel(1)", but check the configuration in MyLolGame... there's a
         // field you should change if you don't want the 'back' button to go
         // from that level to the chooser.
-        Control.addCallbackControl(384, 182, 186, 104, "", new LolCallback() {
-            public void onEvent() {
-                Lol.doChooser(1);
+        level.addTapControl(384, 182, 186, 104, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
+                level.doChooser(1);
             }
         });
 
         // This is the Help button... it switches to the first screen of the
         // help system
-        Control.addCallbackControl(96, 186, 160, 80, "", new LolCallback() {
-            public void onEvent() {
-                Lol.doHelp(1);
+        level.addTapControl(96, 186, 160, 80, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
+                level.doHelp(1);
             }
         });
 
         // This is the Quit button
-        Control.addCallbackControl(726, 186, 138, 78, "", new LolCallback() {
-            public void onEvent() {
-                Lol.doQuit();
+        level.addTapControl(726, 186, 138, 78, "", new TouchEventHandler() {
+            public void go(Vector3 touchLocation) {
+                level.doQuit();
             }
         });
 
         // Mute button is a tad tricky... we'll do it as an obstacle
-        Obstacle o = Obstacle.makeAsBox(45, 0, 2.5f, 2.5f, "");
+        Obstacle o = level.makeObstacleAsBox(45, 0, 2.5f, 2.5f, "");
         // figure out which image to use for the obstacle based on the current
         // volume state
-        if (Lol.getVolume()) {
-            o.setImage("audio_off.png", 0);
+        if (level.getVolume()) {
+            o.setImage("audio_off.png");
         } else {
-            o.setImage("audio_on.png", 0);
+            o.setImage("audio_on.png");
         }
         // when the obstacle is touched, change the mute and then update the
         // picture for the obstacle
         o.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
-                Lol.toggleMute();
-                if (Lol.getVolume()) {
-                    mAttachedActor.setImage("audio_off.png", 0);
+                level.toggleMute();
+                if (level.getVolume()) {
+                    mAttachedActor.setImage("audio_off.png");
                 } else {
-                    mAttachedActor.setImage("audio_on.png", 0);
+                    mAttachedActor.setImage("audio_on.png");
                 }
             }
         });

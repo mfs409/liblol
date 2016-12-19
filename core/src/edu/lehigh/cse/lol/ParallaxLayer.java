@@ -25,14 +25,14 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * This object holds the configuration information for a Parallax layer.
  */
-public class ParallaxLayer {
+class ParallaxLayer {
     /**
      * How fast should this layer scroll in the X dimension
      */

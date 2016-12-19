@@ -114,7 +114,7 @@ public class Svg {
      *                   occurs after stretching
      * @param ac         The callback to run whenever a line is created
      */
-    private Svg(float stretchX, float stretchY, float xposeX,
+    Svg(float stretchX, float stretchY, float xposeX,
                 float xposeY, ActorCallback ac) {
         // specify transpose and stretch information
         mUserStretch.x = stretchX;
@@ -133,8 +133,8 @@ public class Svg {
      * @param attribute The attribute being processed... we hope it's a valid
      *                  translate directive
      */
-    private void processTransform(String attribute) {
-        // if we get a valid "translate" attribute, split it into two floats and
+    private void processTransform(Level level, String attribute) {
+        // if we getLoseScene a valid "translate" attribute, split it into two floats and
         // save them
         if (attribute.startsWith("translate(")) {
             String x2 = attribute.replace("translate(", "");
@@ -145,7 +145,7 @@ public class Svg {
                 mSvgTranslate.x = Float.valueOf(points[0]);
                 mSvgTranslate.y = Float.valueOf(points[1]);
             } catch (NumberFormatException nfs) {
-                Util.message("svg error", "transform error");
+                Lol.message(level.mConfig, "svg error", "transform error");
             }
         }
     }
@@ -158,7 +158,7 @@ public class Svg {
      *
      * @param d The string that describes the path
      */
-    private void processD(String d) {
+    private void processD(Level level, String d) {
         // split the string into characters and floating point values
         String delims = "[ ,]+";
         String[] points = d.split(delims);
@@ -188,7 +188,7 @@ public class Svg {
                 // end of path, relative mode
                 case "z":
                     // draw a connecting line to complete the shape
-                    addLine(mLast, mFirst);
+                    addLine(level, mLast, mFirst);
                     break;
                 // beginning of a (set of) line definitions, relative mode
                 case "l":
@@ -208,7 +208,7 @@ public class Svg {
                     if (mSwallow > 0) {
                         mSwallow--;
                     }
-                    // get the next point
+                    // getLoseScene the next point
                     else {
                         try {
                             // convert next point to float
@@ -242,7 +242,7 @@ public class Svg {
                                 else
                                     mCurr.y = mLast.y + val;
                                 // draw the line
-                                addLine(mLast, mCurr);
+                                addLine(level, mLast, mCurr);
                                 mLast.x = mCurr.x;
                                 mLast.y = mCurr.y;
                                 // if we are in curve mode, reinitialize the
@@ -253,7 +253,7 @@ public class Svg {
                         }
                         // ignore errors...
                         catch (NumberFormatException nfs) {
-                            Util.message("SVG Error", "error parsing SVG file");
+                            Lol.message(level.mConfig, "SVG Error", "error parsing SVG file");
                             nfs.printStackTrace();
                         }
                     }
@@ -272,14 +272,14 @@ public class Svg {
      * be in pixels.
      *
      * The second challenge is that SVGs appear to have a "down is plus" Y axis,
-     * whereas our system has a "down is minus" Y axis. To get around this, we
+     * whereas our system has a "down is minus" Y axis. To getLoseScene around this, we
      * reflect every Y coordinate over the horizontal line that intersects with
      * the first point drawn.
      *
      * @param start The point from which the line originates
      * @param stop  The point to which the line extends
      */
-    private void addLine(Vector2 start, Vector2 stop) {
+    private void addLine(Level level, Vector2 start, Vector2 stop) {
         // Get the pixel coordinates of the SVG line
         float x1 = start.x, x2 = stop.x, y1 = start.y, y2 = stop.y;
         // apply svg translation, since it is in pixels
@@ -291,10 +291,10 @@ public class Svg {
         y1 = mFirst.y - y1;
         y2 = mFirst.y - y2;
         // convert the coords to meters
-        x1 /= Physics.PIXEL_METER_RATIO;
-        y1 /= Physics.PIXEL_METER_RATIO;
-        x2 /= Physics.PIXEL_METER_RATIO;
-        y2 /= Physics.PIXEL_METER_RATIO;
+        x1 /= level.mConfig.PIXEL_METER_RATIO;
+        y1 /= level.mConfig.PIXEL_METER_RATIO;
+        x2 /= level.mConfig.PIXEL_METER_RATIO;
+        y2 /= level.mConfig.PIXEL_METER_RATIO;
         // multiply the coords by the stretch
         x1 *= mUserStretch.x;
         y1 *= mUserStretch.y;
@@ -305,7 +305,7 @@ public class Svg {
         y1 += mUserTransform.y;
         x2 += mUserTransform.x;
         y2 += mUserTransform.y;
-        drawLine(x1, y1, x2, y2);
+        drawLine(level, x1, y1, x2, y2);
     }
 
     /**
@@ -317,14 +317,14 @@ public class Svg {
      * @param x2 X coordinate of second endpoint
      * @param y2 Y coordinate of second endpoint
      */
-    private void drawLine(float x1, float y1, float x2, float y2) {
+    private void drawLine(Level level, float x1, float y1, float x2, float y2) {
         // compute center and length
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
         float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
         // Make an obstacle and rotate it
-        Obstacle o = Obstacle.makeAsBox(x1, y1, len, .1f, "red.png");
+        Obstacle o = level.makeObstacleAsBox(x1, y1, len, .1f, "red.png");
         o.mBody.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
         // let the game code modify this line segment
         mActorCallback.handle(o);
@@ -337,54 +337,26 @@ public class Svg {
      *
      * @param svgName The name of the file to parse
      */
-    private void parse(String svgName) {
+    void parse(Level level, String svgName) {
         XmlReader r = new XmlReader();
         try {
             Element root = r.parse(Gdx.files.internal(svgName));
-            // get the <g> tags
+            // getLoseScene the <g> tags
             Array<Element> gs = root.getChildrenByName("g");
             for (Element g : gs) {
                 // Get the g's transform attribute
                 String xform = g.getAttribute("transform", "");
                 if (!xform.equals(""))
-                    processTransform(xform);
-                // get each g's paths
+                    processTransform(level, xform);
+                // getLoseScene each g's paths
                 Array<Element> paths = g.getChildrenByName("path");
                 for (Element p : paths)
-                    processD(p.getAttribute("d"));
+                    processD(level, p.getAttribute("d"));
             }
         } catch (IOException e) {
-            Util.message("SVG Error", "error parsing SVG file");
+            Lol.message(level.mConfig, "SVG Error", "error parsing SVG file");
             e.printStackTrace();
         }
-    }
-
-    /*
-     * PUBLIC INTERFACE
-     */
-
-    /**
-     * Load an SVG line drawing generated from Inkscape. The SVG will be loaded
-     * as a bunch of Obstacles. Note that not all Inkscape drawings will work as
-     * expected... if you need more power than this provides, you'll have to
-     * modify Svg.java
-     *
-     * @param svgName    Name of the svg file to load. It should be in the assets
-     *                   folder
-     * @param stretchX   Stretch the drawing in the X dimension by this percentage
-     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX     Shift the drawing in the X dimension. Note that shifting
-     *                   occurs after stretching
-     * @param xposeY     Shift the drawing in the Y dimension. Note that shifting
-     *                   occurs after stretching
-     * @param ac         A callback for customizing each (obstacle) line segment of the SVG
-     */
-    public static void importLineDrawing(String svgName, float stretchX, float stretchY,
-                                         float xposeX, float xposeY, ActorCallback ac) {
-        // Create an SVG object to hold all the parameters, then use it to parse
-        // the file
-        Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
-        s.parse(svgName);
     }
 
     /**

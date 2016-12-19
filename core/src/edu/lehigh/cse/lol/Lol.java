@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p/>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p/>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,195 +21,112 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p/>
  * For more information, please refer to <http://unlicense.org>
  */
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.Game;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
 
 /**
- * A Lol object is the outermost container for all of the functionality of the
- * game. It implements ApplicationListener (through Game), which provides hooks
- * for GDX to render the game, stop it, resume it, etc.
- *
- * Lol is not responsible for doing anything significant. It keeps track of
- * which screen is currently in use, and forwards (through Game) to that screen.
- * Splash screens, Choosers, Help, and playable Levels each implement Screen, so
- * that they can do the real work.
+ * The Lol object is the outermost container for all of the functionality of the
+ * game. It implements ApplicationListener, which provides hooks for rendering the
+ * game, stopping it, resuming it, etc.
+ * <p/>
+ * Apart from ApplicationListener duties, the Lol object is responsible for providing an abstracted
+ * interface to some of the hardware (e.g., the back button), loading resources, and managing a
+ * state machine that monitors which type of level is currently being displayed.
  */
-public abstract class Lol extends Game {
+public class Lol implements ApplicationListener {
+    // mConfig stores the configuration state of the game.
+    //
+    // NB: ideally, we wouldn't even bother storing it here, but we construct a Lol object much
+    // earlier than we call 'create' on it, and it's not until we call 'create' that we can use
+    // mConfig to load the images and sounds.  Hence, we're stuck having a copy here, even though
+    // we rarely use it.
+    private Config mConfig;
 
     /**
-     * Modes of the game: we can be showing the main splash screen, the help
-     * screens, the level chooser, the store, or a playable level
+     * StateMachine tracks the current state of the game.  The state consists of the type of level
+     * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
+     * currently active, and the actual level object.
      */
-    static final int SPLASH = 0;
-    static final int HELP = 1;
-    static final int CHOOSER = 2;
-    static final int STORE = 3;
-    static final int PLAY = 4;
-    /**
-     * A reference to the game object... Since the interfaces are mostly static,
-     * we need an instance of a Lol object that the static methods can call.
-     */
-    public static Lol sGame;
-    /**
-     * Store string/integer pairs that get reset whenever we restart the program
-     */
-    final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
-    /**
-     * The current level being shown
-     */
-    public Level mCurrentLevel;
-    /**
-     * The default screen width (note: it will be stretched appropriately on a
-     * phone)
-     */
-    public int mWidth;
-    /**
-     * The default screen height (note: it will be stretched appropriately on a
-     * phone)
-     */
-    public int mHeight;
-    /**
-     * This is a debug feature, to help see the physics behind every Actor
-     */
-    public boolean mShowDebugBoxes;
-    /**
-     * Title of the game (for desktop mode)
-     */
-    public String mGameTitle;
+    private class StateMachine {
+        // Modes of the game, for use by the state machine.  We can be showing the main splash screen,
+        // the help screens, the level chooser, the store, or a playable level
+        static final int SPLASH = 0;
+        static final int HELP = 1;
+        static final int CHOOSER = 2;
+        static final int STORE = 3;
+        static final int PLAY = 4;
 
-    /*
-     * GAME CONFIGURATION VARIABLES
-     *
-     * These get set in MyGame.java
-     */
-    /**
-     * The total number of levels. This is only useful for knowing what to do
-     * when the last level is completed.
-     */
-    protected int mNumLevels;
-    /**
-     * Should the phone vibrate on certain events?
-     */
-    protected boolean mEnableVibration;
-    /**
-     * Should all levels be unlocked?
-     */
-    protected boolean mUnlockAllLevels;
-    /**
-     * A per-game string, to use for storing information on an Android device
-     */
-    protected String mStorageKey;
-    /**
-     * Default font face
-     */
-    protected String mDefaultFontFace;
-    /**
-     * Default font size
-     */
-    protected int mDefaultFontSize;
-    /**
-     * Red component of default font color
-     */
-    protected int mDefaultFontRed;
-    /**
-     * Green component of default font color
-     */
-    protected int mDefaultFontGreen;
-    /**
-     * Blue component of default font color
-     */
-    protected int mDefaultFontBlue;
-    /**
-     * Default text to display when a level is won
-     */
-    protected String mDefaultWinText;
-    /**
-     * Default text to display when a level is lost
-     */
-    protected String mDefaultLoseText;
-    /**
-     * Should the level chooser be activated?
-     */
-    protected boolean mEnableChooser;
-    /**
-     * The levels of the game are drawn by this object
-     */
-    protected ScreenManager mLevels;
-    /**
-     * The chooser is drawn by this object
-     */
-    protected ScreenManager mChooser;
-    /**
-     * The help screens are drawn by this object
-     */
-    protected ScreenManager mHelp;
-    /**
-     * The splash screen is drawn by this object
-     */
-    protected ScreenManager mSplash;
-    /**
-     * The store is drawn by this object
-     */
-    protected ScreenManager mStore;
-    /**
-     * The current mode of the program (from among the above choices)
-     */
-    int mMode;
-    /**
-     * The mode state is used to represent the current level within a mode
-     * (i.e., 3rd help screen, or 5th page of the store). Tracking state
-     * separately for each mode makes going between a level and the chooser much
-     * easier.
-     */
-    int mModeStates[] = new int[5];
-    /**
-     * This variable lets us track whether the user pressed 'back' on an
-     * android, or 'escape' on the desktop. We are using polling, so we swallow
-     * presses that aren't preceded by a release. In that manner, holding 'back'
-     * can't exit all the way out... you must press 'back' repeatedly, once for
-     * each screen to revert.
-     */
-    boolean mKeyDown;
-    /**
-     * Store all the images, sounds, and fonts for the game
-     */
-    Media mMedia;
+        // mMode is is for the base state machine.  It tracks the current mode of the program (from
+        // among the above choices)
+        int mMode;
 
-    /*
-     * INTERNAL METHODS
-     */
+        // mModeStates provides more information about the state of the game.  mMode only lets us know
+        // what state we are in, but mModeStates lets us know which level of that mode is currently
+        // active.  Note that using an array makes it easier for us to use the back button to go from
+        // a level to the chooser, or to move to the next level when we win a level
+        int mModeStates[] = new int[5];
 
-    /**
-     * The constructor just creates a media object and calls configure, so that
-     * all of our globals will be set. Doing it this early lets us access the
-     * configuration from within the LWJGL (Desktop) main class. That, in turn,
-     * lets us get the screen size correct (see the desktop project's Java
-     * file).
-     */
-    public Lol() {
-        configure();
+        // mScreen is the Level object that is active, corresponding to the mMode and mModeState fields.
+        // It is the third and final field that comprises the state machine
+        Level mScreen;
     }
 
+    // mStateMachine is the actual state machine used by the game
+    private StateMachine mStateMachine = new StateMachine();
+
+    /**
+     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
+     * screen, if any.
+     *
+     * @param level may be {@code null}
+     */
+    private void setScreen(Level level) {
+        if (mStateMachine.mScreen != null) {
+            mStateMachine.mScreen.pauseMusic();
+        }
+        mStateMachine.mScreen = level;
+    }
+
+     void unlockNext() {
+        if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
+            putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
+    }
+
+    void advanceLevel() {
+        if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
+            mStateMachine.mScreen.doChooser(1);
+        } else {
+            mStateMachine.mModeStates[StateMachine.PLAY]++;
+            mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+        }
+    }
+
+    void repeatLevel() {
+        mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+    }
     /**
      * Use this to load the splash screen
      */
-    public static void doSplash() {
+     void doSplash() {
         // reset state of all screens
         for (int i = 0; i < 5; ++i)
-            sGame.mModeStates[i] = 1;
-        sGame.mMode = SPLASH;
-        sGame.mSplash.display(0);
-        sGame.setScreen(sGame.mCurrentLevel);
+            mStateMachine.mModeStates[i] = 1;
+        mStateMachine.mMode = StateMachine.SPLASH;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mSplash.display(1, l);
+        setScreen(l);
     }
 
     /**
@@ -218,23 +135,24 @@ public abstract class Lol extends Game {
      *
      * @param whichChooser The chooser screen to create
      */
-    public static void doChooser(int whichChooser) {
+     void doChooser(int whichChooser) {
         // if chooser disabled, then we either called this from splash, or from
         // a game level
-        if (!sGame.mEnableChooser) {
-            if (sGame.mMode == PLAY) {
+        if (!mConfig.mEnableChooser) {
+            if (mStateMachine.mMode == StateMachine.PLAY) {
                 doSplash();
             } else {
-                doLevel(sGame.mModeStates[PLAY]);
+                doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
             }
             return;
         }
-        // the chooser is not disabled... save the choice of level, configure
+        // the chooser is not disabled... save the choice of level, configureGravity
         // it, and show it.
-        sGame.mMode = CHOOSER;
-        sGame.mModeStates[CHOOSER] = whichChooser;
-        sGame.mChooser.display(whichChooser);
-        sGame.setScreen(sGame.mCurrentLevel);
+        mStateMachine.mMode = StateMachine.CHOOSER;
+        mStateMachine.mModeStates[StateMachine.CHOOSER] = whichChooser;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mChooser.display(whichChooser, l);
+        setScreen(l);
     }
 
     /**
@@ -242,27 +160,25 @@ public abstract class Lol extends Game {
      *
      * @param which The index of the level to load
      */
-    public static void doLevel(int which) {
-        sGame.mModeStates[PLAY] = which;
-        sGame.mMode = PLAY;
-        sGame.mLevels.display(which);
-        sGame.setScreen(sGame.mCurrentLevel);
+     void doLevel(int which) {
+        mStateMachine.mModeStates[StateMachine.PLAY] = which;
+        mStateMachine.mMode = StateMachine.PLAY;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mLevels.display(which, l);
+        setScreen(l);
     }
-
-    /*
-     * APPLICATIONLISTENER (GAME) OVERRIDES
-     */
 
     /**
      * Use this to load a help level.
      *
      * @param which The index of the help level to load
      */
-    public static void doHelp(int which) {
-        sGame.mModeStates[HELP] = which;
-        sGame.mMode = HELP;
-        sGame.mHelp.display(which);
-        sGame.setScreen(sGame.mCurrentLevel);
+     void doHelp(int which) {
+        mStateMachine.mModeStates[StateMachine.HELP] = which;
+        mStateMachine.mMode = StateMachine.HELP;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mHelp.display(which, l);
+        setScreen(l);
     }
 
     /**
@@ -270,55 +186,51 @@ public abstract class Lol extends Game {
      *
      * @param which The index of the help level to load
      */
-    public static void doStore(int which) {
-        sGame.mModeStates[STORE] = which;
-        sGame.mMode = STORE;
-        sGame.mStore.display(which);
-        sGame.setScreen(sGame.mCurrentLevel);
+     void doStore(int which) {
+        mStateMachine.mModeStates[StateMachine.STORE] = which;
+        mStateMachine.mMode = StateMachine.STORE;
+        Level l = new Level(mConfig, mMedia, this);
+        mConfig.mStore.display(which, l);
+        setScreen(l);
     }
 
     /**
      * Use this to quit the game
      */
-    public static void doQuit() {
-        sGame.getScreen().dispose();
+     void doQuit() {
+        mStateMachine.mScreen.stopMusic();
         Gdx.app.exit();
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
+
+    // Store string/integer pairs that get reset whenever we restart the program
+    final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
+
+
 
     /**
-     * Use this to manage the state of Mute
+     * This variable lets us track whether the user pressed 'back' on an
+     * android, or 'escape' on the desktop. We are using polling, so we swallow
+     * presses that aren't preceded by a release. In that manner, holding 'back'
+     * can't exit all the way out... you must press 'back' repeatedly, once for
+     * each screen to revert.
      */
-    public static void toggleMute() {
-        // volume is either 1 or 0
-        if (Facts.getGameFact("volume", 1) == 1) {
-            // set volume to 0, set image to 'unmute'
-            Facts.putGameFact("volume", 0);
-        } else {
-            // set volume to 1, set image to 'mute'
-            Facts.putGameFact("volume", 1);
-        }
-        // update all music
-        Media.resetMusicVolume();
-    }
+    private boolean mKeyDown;
 
     /**
-     * Use this to determine if the game is muted or not. True corresponds to
-     * not muted, false corresponds to muted.
+     * Store all the images, sounds, and fonts for the game
      */
-    public static boolean getVolume() {
-        return Facts.getGameFact("volume", 1) == 1;
-    }
+    private Media mMedia;
 
     /**
-     * Report whether all levels should be treated as unlocked. This is useful
-     * in Chooser, where we might need to prevent some levels from being played.
+     * The constructor just creates a media object and calls configureGravity, so that
+     * all of our globals will be set. Doing it this early lets us access the
+     * configuration from within the LWJGL (Desktop) main class. That, in turn,
+     * lets us getLoseScene the screen size correct (see the desktop project's Java
+     * file).
      */
-    public static boolean getUnlockMode() {
-        return sGame.mUnlockAllLevels;
+    public Lol(Config config) {
+        mConfig = config;
     }
 
     /**
@@ -328,8 +240,8 @@ public abstract class Lol extends Game {
      *
      * @param millis The amount of time to vibrate
      */
-    void vibrate(int millis) {
-        if (mEnableVibration)
+    static void vibrate(Config config, int millis) {
+        if (config.mEnableVibration)
             Gdx.input.vibrate(millis);
     }
 
@@ -355,22 +267,22 @@ public abstract class Lol extends Game {
      * When the back key is pressed, or when we are simulating the back key
      * being pressed (e.g., a back button), this code runs.
      */
-    public void handleBack() {
+    void handleBack() {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit
-        if (mMode == SPLASH) {
+        if (mStateMachine.mMode == StateMachine.SPLASH) {
             dispose();
             Gdx.app.exit();
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
-            doSplash();
+        else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
+            mStateMachine.mScreen.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            doChooser(sGame.mModeStates[CHOOSER]);
+            mStateMachine.mScreen.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
         }
     }
 
@@ -380,26 +292,23 @@ public abstract class Lol extends Game {
      */
     @Override
     public void create() {
-        // save instance
-        sGame = this;
-
         // set current mode states
         for (int i = 0; i < 5; ++i)
-            mModeStates[i] = 1;
+            mStateMachine.mModeStates[i] = 1;
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
 
         // Load Resources
-        mMedia = new Media();
-        loadResources();
+        mMedia = new Media(mConfig);
 
         // configure the volume
-        if (Facts.getGameFact("volume", 1) == 1)
-            Facts.putGameFact("volume", 1);
+        Level l = new Level(mConfig, mMedia, this);
+        if (getGameFact(mConfig, "volume", 1) == 1)
+            putGameFact(mConfig, "volume", 1);
 
         // show the splash screen
-        doSplash();
+        l.doSplash();
     }
 
     /**
@@ -408,16 +317,17 @@ public abstract class Lol extends Game {
      */
     @Override
     public void dispose() {
-        super.dispose();
+        if (mStateMachine.mScreen != null)
+            mStateMachine.mScreen.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //
         // It appears that GDX manages all textures for images and fonts, as
         // well as all sounds and music files. That
         // being the case, the only thing we need to be careful about is that we
-        // get rid of any references to fonts that
+        // getLoseScene rid of any references to fonts that
         // might be hanging around
-        Media.onDispose();
+        mMedia.onDispose();
     }
 
     /**
@@ -429,16 +339,60 @@ public abstract class Lol extends Game {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        super.render();
+        if (mStateMachine.mScreen != null)
+            mStateMachine.mScreen.render(Gdx.graphics.getDeltaTime());
     }
 
     /**
-     * Register any sound or image files to be used by the game
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The value to return if the fact does not exist
+     * @return The integer value corresponding to the last value stored
      */
-    abstract public void loadResources();
+    static int getGameFact(Config config, String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        return prefs.getInteger(factName, defaultVal);
+    }
 
     /**
-     * Set up all the global configuration options for the game
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
      */
-    abstract public void configure();
+    static void putGameFact(Config config, String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        prefs.putInteger(factName, factValue);
+        prefs.flush();
+    }
+
+    /**
+     * Instead of using Gdx.app.log directly, and potentially writing a lot of
+     * debug info in a production setting, we use this to only dump to the log
+     * when debug mode is on
+     *
+     * @param tag  The message tag
+     * @param text The message text
+     */
+    static void message(Config config, String tag, String text) {
+        if (config.mShowDebugBoxes)
+            Gdx.app.log(tag, text);
+    }
+
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
 }

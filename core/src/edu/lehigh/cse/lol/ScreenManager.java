@@ -39,5 +39,5 @@ public interface ScreenManager {
      * @param which The screen to display. Your code should use an /if/ statement
      *              to decide what screen to display based on the value of /which/
      */
-    void display(int which);
+    void display(int which, Level level);
 }

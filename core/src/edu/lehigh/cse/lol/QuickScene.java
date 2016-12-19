@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package edu.lehigh.cse.lol.internals;
+package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -40,12 +40,20 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
-import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.LolCallback;
-import edu.lehigh.cse.lol.Media;
-import edu.lehigh.cse.lol.Util;
+abstract class QuickScene {
+    /**
+     * The level to which this is attached
+     */
+    public Level mLevel;
 
-abstract public class QuickScene {
+    /**
+     * Construct a QuickScene by giving it a level
+     * @param level
+     */
+    public QuickScene(Level level) {
+        mLevel = level;
+    }
+
     /**
      * The text and pictures to display
      */
@@ -86,7 +94,7 @@ abstract public class QuickScene {
     /**
      * Pause the timer when this screen is shown
      */
-    protected void suspendClock() {
+    public void suspendClock() {
         // pause the timer
         Timer.instance().stop();
         mDisplayTime = System.currentTimeMillis();
@@ -106,16 +114,16 @@ abstract public class QuickScene {
         // clear screen and draw images/text via HudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Lol.sGame.mCurrentLevel.mHudCam.update();
-        sb.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
+        mLevel.mHudCam.update();
+        sb.setProjectionMatrix(mLevel.mHudCam.combined);
         sb.begin();
         for (Renderable r : mSprites)
             r.render(sb, 0);
         sb.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (Lol.sGame.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(Lol.sGame.mCurrentLevel.mHudCam.combined);
+        if (mLevel.mConfig.mShowDebugBoxes) {
+            mShapeRender.setProjectionMatrix(mLevel.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
             for (Button b : mButtons)
@@ -136,7 +144,7 @@ abstract public class QuickScene {
             return;
 
         // check for taps to the buttons
-        Lol.sGame.mCurrentLevel.mHudCam.unproject(mTmpVec.set(x, y, 0));
+        mLevel.mHudCam.unproject(mTmpVec.set(x, y, 0));
         for (Button b : mButtons) {
             if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
                 dismiss();
@@ -148,7 +156,7 @@ abstract public class QuickScene {
         // hide the scene only if it's click-to-clear
         if (mClickToClear) {
             dismiss();
-            Lol.sGame.mCurrentLevel.liftAllButtons(mTmpVec);
+            mLevel.liftAllButtons(mTmpVec);
         }
     }
 
@@ -164,7 +172,7 @@ abstract public class QuickScene {
      * @param soundName Name of the sound file to play
      */
     public void setSound(String soundName) {
-        mSound = Media.getSound(soundName);
+        mSound = mLevel.mMedia.getSound(soundName);
     }
 
     /*
@@ -175,14 +183,11 @@ abstract public class QuickScene {
      * Add some text to the scene, and center it vertically and horizontally
      *
      * @param text     The text to display
-     * @param red      Redness of the text color
-     * @param green    Greenness of the text color
-     * @param blue     Blueness of the text color
      * @param fontName The font file to use
      * @param size     The size of the text
      */
-    public void addText(String text, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(text, red, green, blue, fontName, size));
+    public void addText(String text, String textColor, String fontName, int size) {
+        mSprites.add(mLevel.makeText(text, textColor, fontName, size));
     }
 
     /**
@@ -191,14 +196,11 @@ abstract public class QuickScene {
      * @param text     The text to display
      * @param x        X coordinate of the text
      * @param y        Y coordinate of the text
-     * @param red      Redness of the text color
-     * @param green    Greenness of the text color
-     * @param blue     Blueness of the text color
      * @param fontName The font file to use
      * @param size     The size of the text
      */
-    public void addText(String text, int x, int y, int red, int green, int blue, String fontName, int size) {
-        mSprites.add(Util.makeText(x, y, text, red, green, blue, fontName, size));
+    public void addText(String text, int x, int y, String fontColor, String fontName, int size) {
+        mSprites.add(mLevel.makeText(x, y, text, fontColor, fontName, size));
     }
 
     /**
@@ -218,7 +220,7 @@ abstract public class QuickScene {
      * @param height  Height of the image
      */
     public void addImage(String imgName, int x, int y, int width, int height) {
-        mSprites.add(Util.makePicture(x, y, width, height, imgName));
+        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -238,11 +240,11 @@ abstract public class QuickScene {
             @Override
             public void onEvent() {
                 mVisible = false;
-                Lol.sGame.handleBack();
+                mLevel.mGame.handleBack();
             }
         };
         mButtons.add(b);
-        mSprites.add(Util.makePicture(x, y, width, height, imgName));
+        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -270,20 +272,20 @@ abstract public class QuickScene {
         mClickToClear = false;
     }
 
+}
+
+/**
+ * When we draw clickable buttons on the screen, this is how we know where
+ * the buttons are and what to do when they are clicked
+ */
+class Button {
     /**
-     * When we draw clickable buttons on the screen, this is how we know where
-     * the buttons are and what to do when they are clicked
+     * The region that can be clicked
      */
-    public static class Button {
-        /**
-         * The region that can be clicked
-         */
-        public Rectangle mRect;
+    public Rectangle mRect;
 
-        /**
-         * The Callback to run when this button is pressed
-         */
-        public LolCallback mCallback;
-    }
-
+    /**
+     * The Callback to run when this button is pressed
+     */
+    public LolCallback mCallback;
 }

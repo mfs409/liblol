@@ -28,11 +28,7 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
-
-import edu.lehigh.cse.lol.internals.CollisionCallback;
-import edu.lehigh.cse.lol.internals.GestureAction;
 
 /**
  * Enemies are things to be avoided or defeated by the hero. Every enemy can be
@@ -87,62 +83,9 @@ public class Enemy extends Actor {
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(float width, float height, String imgName) {
-        super(imgName, width, height);
-        Lol.sGame.mCurrentLevel.mScore.mEnemiesCreated++;
-    }
-
-    /**
-     * Make an enemy that has an underlying rectangular shape.
-     *
-     * @param x       The X coordinate of the bottom left corner
-     * @param y       The Y coordinate of the bottom right corner
-     * @param width   The width of the enemy
-     * @param height  The height of the enemy
-     * @param imgName The name of the image to display
-     * @return The enemy, so that it can be modified further
-     */
-    public static Enemy makeAsBox(float x, float y, float width, float height, String imgName) {
-        Enemy e = new Enemy(width, height, imgName);
-        e.setBoxPhysics(0, 0, 0, BodyType.StaticBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
-        return e;
-    }
-    /**
-     * Draw an enemy with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The enemy, so that it can be further modified
-     */
-    public static Enemy makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Enemy e = new Enemy(width, height, imgName);
-        e.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
-        return e;
-    }
-
-    /**
-     * Make an enemy that has an underlying circular shape.
-     *
-     * @param x       The X coordinate of the bottom left corner
-     * @param y       The Y coordinate of the bottom right corner
-     * @param width   The width of the enemy
-     * @param height  The height of the enemy
-     * @param imgName The name of the image to display
-     * @return The enemy, so that it can be modified further
-     */
-    public static Enemy makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Enemy e = new Enemy(radius, radius, imgName);
-        e.setCirclePhysics(0, 0, 0, BodyType.StaticBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(e, 0);
-        return e;
+    protected Enemy(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
+        mLevel.mScore.mEnemiesCreated++;
     }
 
     /**
@@ -237,7 +180,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            Lol.sGame.mCurrentLevel.mScore.onDefeatEnemy();
+            mLevel.mScore.onDefeatEnemy();
 
         // handle defeat callbacks
         if (mDefeatCallback != null)
@@ -276,7 +219,7 @@ public class Enemy extends Actor {
         mGestureResponder = new GestureAction() {
             @Override
             public boolean onTap(Vector3 touchVec) {
-                Lol.sGame.vibrate(100);
+                Lol.vibrate(mLevel.mConfig, 100);
                 defeat(true);
                 mGestureResponder = null;
                 return true;

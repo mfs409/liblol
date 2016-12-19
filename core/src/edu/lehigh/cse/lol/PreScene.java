@@ -30,32 +30,14 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import edu.lehigh.cse.lol.internals.QuickScene;
-
 /**
  * PreScene provides a way to put a pop-up on the screen before a level begins.
  * A PreScene can include arbitrary text and pictures.
  */
 public class PreScene extends QuickScene {
 
-    /**
-     * Get the PreScene that is configured for the current level, or create a
-     * blank one if none exists.
-     *
-     * @return The current PreScene
-     */
-    public static PreScene get() {
-        PreScene scene = Lol.sGame.mCurrentLevel.mPreScene;
-        if (scene != null)
-            return scene;
-        scene = new PreScene();
-        // immediately make the scene visible
-        scene.mVisible = true;
-        Lol.sGame.mCurrentLevel.mPreScene = scene;
-        // NB: disable the timer so the game doesn't start playing in the
-        // background
-        scene.suspendClock();
-        return scene;
+    public PreScene(Level level) {
+        super(level);
     }
 
     /*

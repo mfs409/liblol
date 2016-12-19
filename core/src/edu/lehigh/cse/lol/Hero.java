@@ -34,8 +34,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
-import edu.lehigh.cse.lol.internals.GestureAction;
-
 /**
  * The Hero is the focal point of a game. While it is technically possible to
  * have many heroes, or invisible heroes that exist just so that the player has
@@ -141,63 +139,9 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    protected Hero(float width, float height, String imgName) {
-        super(imgName, width, height);
-        Lol.sGame.mCurrentLevel.mScore.mHeroesCreated++;
-    }
-
-    /**
-     * Make a Hero with an underlying rectangular shape
-     *
-     * @param x       X coordinate of the hero
-     * @param y       Y coordinate of the hero
-     * @param width   width of the hero
-     * @param height  height of the hero
-     * @param imgName File name of the default image to display
-     * @return The hero that was created
-     */
-    public static Hero makeAsBox(float x, float y, float width, float height, String imgName) {
-        Hero h = new Hero(width, height, imgName);
-        h.setBoxPhysics(0, 0, 0, BodyType.DynamicBody, false, x, y);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
-    }
-
-    /**
-     * Make a Hero with an underlying circular shape
-     *
-     * @param x       X coordinate of the hero
-     * @param y       Y coordinate of the hero
-     * @param width   width of the hero
-     * @param height  height of the hero
-     * @param imgName File name of the default image to display
-     * @return The hero that was created
-     */
-    public static Hero makeAsCircle(float x, float y, float width, float height, String imgName) {
-        float radius = Math.max(width, height);
-        Hero h = new Hero(width, height, imgName);
-        h.setCirclePhysics(0, 0, 0, BodyType.DynamicBody, false, x, y, radius / 2);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
-    }
-
-    /**
-     * Draw a hero with an underlying polygon shape
-     *
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the obstacle
-     * @param height  Height of the obstacle
-     * @param imgName Name of image file to use
-     * @param verts   Up to 16 coordinates representing the vertexes of this
-     *                polygon, listed as x0,y0,x1,y1,x2,y2,...
-     * @return The hero, so that it can be further modified
-     */
-    public static Hero makeAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Hero h = new Hero(width, height, imgName);
-        h.setPolygonPhysics(0, 0, 0, BodyType.StaticBody, false, x, y, verts);
-        Lol.sGame.mCurrentLevel.addActor(h, 0);
-        return h;
+    protected Hero(Level level, float width, float height, String imgName) {
+        super(level, imgName, width, height);
+        mLevel.mScore.mHeroesCreated++;
     }
 
     /**
@@ -247,7 +191,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(Facts.getGameFact("volume", 1));
+            mJumpSound.play(mLevel.getGameFact("volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -278,6 +222,9 @@ public class Hero extends Actor {
      * crawling
      */
     void crawlOn() {
+        if (mCrawling) {
+            return;
+        }
         mCrawling = true;
         mBody.setTransform(mBody.getPosition(), -3.14159f / 2);
         if (mCrawlAnimation != null)
@@ -288,6 +235,9 @@ public class Hero extends Actor {
      * Take the hero out of crawl mode
      */
     void crawlOff() {
+        if (!mCrawling) {
+            return;
+        }
         mCrawling = false;
         mBody.setTransform(mBody.getPosition(), 0);
         mAnimator.setCurrentAnimation(mDefaultAnimation);
@@ -336,14 +286,14 @@ public class Hero extends Actor {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= Lol.sGame.mCurrentLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
+            match &= mLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && mVisible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Facts.getGameFact("volume", 1));
-            Lol.sGame.mCurrentLevel.mScore.onDestinationArrive();
+                d.mArrivalSound.play(mLevel.getGameFact("volume", 1));
+            mLevel.mScore.onDestinationArrive();
         }
     }
 
@@ -357,9 +307,9 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
+            mLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+                mLevel.mScore.endLevel(false);
             return;
         }
         // handle hero invincibility
@@ -381,9 +331,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            Lol.sGame.mCurrentLevel.mScore.defeatHero(e);
+            mLevel.mScore.defeatHero(e);
             if (mMustSurvive)
-                Lol.sGame.mCurrentLevel.mScore.endLevel(false);
+                mLevel.mScore.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -425,7 +375,7 @@ public class Hero extends Actor {
             o.mHeroCollision.go(this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more
-        // jumps. Note that sensors should not enable
+        // jumps. Note that sensors should not enableTilt
         // jumps for the hero.
         if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor() && !o.mNoJumpReenable)
             stopJump();
@@ -445,7 +395,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        Lol.sGame.mCurrentLevel.mScore.onGoodieCollected(g);
+        mLevel.mScore.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);
@@ -552,7 +502,7 @@ public class Hero extends Actor {
      * @param soundName The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
-        mJumpSound = Media.getSound(soundName);
+        mJumpSound = mLevel.mMedia.getSound(soundName);
     }
 
     /**
@@ -563,7 +513,7 @@ public class Hero extends Actor {
      */
     public void setThrowAnimation(Animation a) {
         mThrowAnimation = a;
-        // compute the length of the throw sequence, so that we can get our
+        // compute the length of the throw sequence, so that we can getLoseScene our
         // timer right for restoring the default animation
         mThrowAnimateTotalLength = 0;
         for (long l : a.mDurations)
