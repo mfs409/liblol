@@ -78,13 +78,31 @@ public class Lol implements ApplicationListener {
         // a level to the chooser, or to move to the next level when we win a level
         int mModeStates[] = new int[5];
 
-        // mScreen is the Level object that is active, corresponding to the mMode and mModeState fields.
+        // mLevel is the Level object that is active, corresponding to the mMode and mModeState fields.
         // It is the third and final field that comprises the state machine
-        Level mScreen;
+        Level mLevel;
     }
 
     // mStateMachine is the actual state machine used by the game
     private StateMachine mStateMachine = new StateMachine();
+
+    /**
+     * If the level that follows this level has not yet been unlocked, unlock it.
+     *
+     * NB: we only track one value for locking/unlocking, so this actually unlocks all levels up to
+     *     and including the level after the current level.
+     */
+     void unlockNext() {
+        if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
+            putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
+    }
+
+
+
+
+
+
+
 
     /**
      * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
@@ -93,28 +111,25 @@ public class Lol implements ApplicationListener {
      * @param level may be {@code null}
      */
     private void setScreen(Level level) {
-        if (mStateMachine.mScreen != null) {
-            mStateMachine.mScreen.pauseMusic();
+        if (mStateMachine.mLevel != null) {
+            mStateMachine.mLevel.pauseMusic();
         }
-        mStateMachine.mScreen = level;
+        mStateMachine.mLevel = level;
     }
 
-     void unlockNext() {
-        if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
-            putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
-    }
+
 
     void advanceLevel() {
         if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
-            mStateMachine.mScreen.doChooser(1);
+            mStateMachine.mLevel.doChooser(1);
         } else {
             mStateMachine.mModeStates[StateMachine.PLAY]++;
-            mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+            mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
         }
     }
 
     void repeatLevel() {
-        mStateMachine.mScreen.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+        mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
     }
     /**
      * Use this to load the splash screen
@@ -198,9 +213,21 @@ public class Lol implements ApplicationListener {
      * Use this to quit the game
      */
      void doQuit() {
-        mStateMachine.mScreen.stopMusic();
+        mStateMachine.mLevel.stopMusic();
         Gdx.app.exit();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Store string/integer pairs that get reset whenever we restart the program
@@ -278,11 +305,11 @@ public class Lol implements ApplicationListener {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
-            mStateMachine.mScreen.doSplash();
+            mStateMachine.mLevel.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            mStateMachine.mScreen.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
+            mStateMachine.mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
         }
     }
 
@@ -317,8 +344,8 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mStateMachine.mScreen != null)
-            mStateMachine.mScreen.pauseMusic();
+        if (mStateMachine.mLevel != null)
+            mStateMachine.mLevel.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -339,8 +366,8 @@ public class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        if (mStateMachine.mScreen != null)
-            mStateMachine.mScreen.render(Gdx.graphics.getDeltaTime());
+        if (mStateMachine.mLevel != null)
+            mStateMachine.mLevel.render(Gdx.graphics.getDeltaTime());
     }
 
     /**
