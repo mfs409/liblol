@@ -32,6 +32,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
@@ -325,6 +327,9 @@ public class Lol implements ApplicationListener {
     public void create() {
         mStateMachine.init();
 
+        mDebugRender = new Box2DDebugRenderer();
+        mSpriteBatch = new SpriteBatch();
+
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
 
@@ -360,6 +365,16 @@ public class Lol implements ApplicationListener {
     }
 
     /**
+     * The debug renderer, for printing circles and boxes for each actor
+     */
+    private Box2DDebugRenderer mDebugRender;
+
+    /**
+     * The SpriteBatch for drawing all texture regions and fonts
+     */
+    private SpriteBatch mSpriteBatch;
+
+    /**
      * This is an internal method for drawing game levels. User code should
      * never call this.
      */
@@ -369,7 +384,7 @@ public class Lol implements ApplicationListener {
         handleKeyDown();
         // Draw the current scene
         if (mLevel != null)
-            mLevel.render(Gdx.graphics.getDeltaTime());
+            mLevel.render(Gdx.graphics.getDeltaTime(), mDebugRender, mSpriteBatch);
     }
 
     /**

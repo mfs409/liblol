@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -34,7 +32,6 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
-import com.sun.glass.events.TouchEvent;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -55,44 +52,35 @@ import java.util.TreeMap;
  * the help, and the game levels themselves.
  */
 public class Level {
+    /// A reference to the game-wide configuration variables
     Config mConfig;
+
+    /// A reference to the object that stores all of the sounds and images we use in the game
     Media mMedia;
+
+    /// A reference to the game object, so we can access session facts and the state machine
     Lol mGame;
 
-    /**
-     * Store string/integer pairs that getLoseScene reset at the end of every level
-     */
-    final TreeMap<String, Integer> mLevelFacts;
-    /**
-     * Store Actors, so that we can getLoseScene to them in callbacks
-     */
-    final TreeMap<String, Actor> mLevelActors;
-    /**
-     * All the things that can be rendered, in 5 planes. We draw them as planes
-     * -2, -1, 0, 1, 2
-     */
+    /// A map for storing the level facts for the current level
+    private final TreeMap<String, Integer> mLevelFacts;
+
+    /// A map for storing the actors in the current level
+    private final TreeMap<String, Actor> mLevelActors;
+
+    /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
     private final ArrayList<ArrayList<Renderable>> mRenderables = new ArrayList<>(5);
-    /**
-     * The debug renderer, for printing circles and boxes for each actor
-     */
-    private final Box2DDebugRenderer mDebugRender = new Box2DDebugRenderer();
-    /**
-     * The SpriteBatch for drawing all texture regions and fonts
-     */
-    private final SpriteBatch mSpriteBatch = new SpriteBatch();
-    /**
-     * The debug shape renderer, for putting boxes around Controls and Displays
-     */
-    private final ShapeRenderer mShapeRender = new ShapeRenderer();
+
+
+    /// A heads-up display, for writing Display and Control objects
+    ///
+    /// TODO: make private
+    Hud mHud;
+
     /**
      * We use this to avoid garbage collection when converting screen touches to
      * camera coordinates
      */
     private final Vector3 mTouchVec = new Vector3();
-    /**
-     * This camera is for drawing controls that sit above the world
-     */
-    public OrthographicCamera mHudCam;
     /**
      * A reference to the score object, for tracking winning and losing
      */
@@ -129,30 +117,6 @@ public class Level {
      * The scene to show when the level is paused (if any)
      */
     PauseScene mPauseScene;
-    /**
-     * Input Controls
-     */
-    ArrayList<Control> mControls = new ArrayList<>();
-    /**
-     * Output Displays
-     */
-    ArrayList<Display> mDisplays = new ArrayList<>();
-    /**
-     * Controls that have a tap event
-     */
-    ArrayList<Control> mTapControls = new ArrayList<>();
-    /**
-     * Controls that have a pan event
-     */
-    ArrayList<Control> mPanControls = new ArrayList<>();
-    /**
-     * Controls that have a pinch zoom event
-     */
-    ArrayList<Control> mZoomControls = new ArrayList<>();
-    /**
-     * Toggle Controls
-     */
-    ArrayList<Control> mToggleControls = new ArrayList<>();
     /**
      * Events that get processed on the next render, then discarded
      */
@@ -220,7 +184,7 @@ public class Level {
      */
     private boolean mMusicPlaying;
     /**
-     * This callback is used to getLoseScene a touched actor from the physics world
+     * This callback is used to get a touched actor from the physics world
      */
     private QueryCallback mTouchCallback;
 
@@ -275,8 +239,7 @@ public class Level {
         // set up the heads-up display camera
         int camWidth = mConfig.mWidth;
         int camHeight = mConfig.mHeight;
-        mHudCam = new OrthographicCamera(camWidth, camHeight);
-        mHudCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mHud = new Hud(camWidth, camHeight);
 
         // the background camera is like the hudcam
         mBgCam = new ParallaxCamera(camWidth, camHeight);
@@ -317,7 +280,7 @@ public class Level {
     public void configureCamera(int width, int height) {
         setCamera(width, height);
 
-        // TODO: we can move this once we getLoseScene rid of the static sGame.mCurrentLevel field
+        // TODO: we can move this once we get rid of the static sGame.mCurrentLevel field
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
@@ -502,10 +465,6 @@ public class Level {
         }
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
-
     /**
      * If the camera is supposed to follow an actor, this code will handle
      * updating the camera position
@@ -568,11 +527,7 @@ public class Level {
      *                 screen.
      */
     public void liftAllButtons(Vector3 touchVec) {
-        for (Control c : mToggleControls) {
-            if (c.mIsActive && c.mIsTouchable) {
-                c.mGestureAction.toggle(true, touchVec);
-            }
-        }
+        mHud.liftAllButtons(touchVec);
         for (GestureAction ga : mGestureResponders) {
             ga.onPanStop(mTouchVec);
             ga.onUp(mTouchVec);
@@ -585,13 +540,12 @@ public class Level {
      *
      * @param delta The time since the last render
      */
-    public void render(float delta) {
+    public void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
         if (mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
-                mHudCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Lol.message(mConfig, "Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+                mHud.reportTouch(mTouchVec, mConfig);
                 mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
 
@@ -607,13 +561,13 @@ public class Level {
         // Note that these handle their own screen touches...
         //
         // Note that win and lose scenes should come first.
-        if (mWinScene != null && mWinScene.render(mSpriteBatch))
+        if (mWinScene != null && mWinScene.render(sb))
             return;
-        if (mLoseScene != null && mLoseScene.render(mSpriteBatch))
+        if (mLoseScene != null && mLoseScene.render(sb))
             return;
-        if (mPreScene != null && mPreScene.render(mSpriteBatch))
+        if (mPreScene != null && mPreScene.render(sb))
             return;
-        if (mPauseScene != null && mPauseScene.render(mSpriteBatch))
+        if (mPauseScene != null && mPauseScene.render(sb))
             return;
 
         // handle accelerometer stuff... note that accelerometer is effectively
@@ -676,45 +630,26 @@ public class Level {
         mGameCam.update();
 
         // draw parallax backgrounds
-        mBackground.renderLayers(this, mSpriteBatch, delta);
+        mBackground.renderLayers(this, sb, delta);
 
         // Render the actors in order from z=-2 through z=2
-        mSpriteBatch.setProjectionMatrix(mGameCam.combined);
-        mSpriteBatch.begin();
+        sb.setProjectionMatrix(mGameCam.combined);
+        sb.begin();
         for (ArrayList<Renderable> a : mRenderables)
             for (Renderable r : a)
-                r.render(mSpriteBatch, delta);
-        mSpriteBatch.end();
+                r.render(sb, delta);
+        sb.end();
 
         // draw parallax foregrounds
-        mForeground.renderLayers(this, mSpriteBatch, delta);
+        mForeground.renderLayers(this, sb, delta);
 
 
         // DEBUG: draw outlines of physics actors
         if (mConfig.mShowDebugBoxes)
-            mDebugRender.render(mWorld, mGameCam.combined);
+            debugRender.render(mWorld, mGameCam.combined);
 
         // draw Controls
-        mHudCam.update();
-        mSpriteBatch.setProjectionMatrix(mHudCam.combined);
-        mSpriteBatch.begin();
-        for (Control c : mControls)
-            if (c.mIsActive)
-                c.render(mSpriteBatch);
-        for (Display d : mDisplays)
-            d.render(mSpriteBatch);
-        mSpriteBatch.end();
-
-        // DEBUG: render Controls' outlines
-        if (mConfig.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(mHudCam.combined);
-            mShapeRender.begin(ShapeRenderer.ShapeType.Line);
-            mShapeRender.setColor(Color.RED);
-            for (Control pe : mControls)
-                if (pe.mRange != null)
-                    mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
-            mShapeRender.end();
-        }
+        mHud.render(mConfig, sb);
     }
 
     /**
@@ -734,7 +669,7 @@ public class Level {
         @Override
         public boolean tap(float x, float y, int count, int button) {
             // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't getLoseScene passed to the Scene
+            // return true, so that the event doesn't get passed to the Scene
             if (mWinScene != null && mWinScene.mVisible) {
                 mWinScene.onTap(x, y);
                 return true;
@@ -750,14 +685,8 @@ public class Level {
             }
 
             // check if we tapped a control
-            mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Control c : mTapControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onTap(mTouchVec);
-                    return true;
-                }
-            }
+            if (mHud.checkTap(mTouchVec, x, y, mGameCam))
+                return true;
 
             // check if we tapped an actor
             mHitActor = null;
@@ -803,8 +732,8 @@ public class Level {
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
-            mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Control c : mPanControls) {
+            mHud.mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Control c : mHud.mPanControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPan(mTouchVec, deltaX, deltaY);
@@ -832,8 +761,8 @@ public class Level {
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
             // check if we panStopped a control
-            mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Control c : mPanControls) {
+            mHud.mHudCam.unproject(mTouchVec.set(x, y, 0));
+            for (Control c : mHud.mPanControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(x, y, 0));
                     c.mGestureAction.onPanStop(mTouchVec);
@@ -857,7 +786,7 @@ public class Level {
          */
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            for (Control c : mZoomControls) {
+            for (Control c : mHud.mZoomControls) {
                 if (c.mIsTouchable && c.mIsActive) {
                     c.mGestureAction.zoom(initialDistance, distance);
                     return true;
@@ -884,8 +813,8 @@ public class Level {
          */
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
-            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mToggleControls) {
+            mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Control c : mHud.mToggleControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(false, mTouchVec);
@@ -894,7 +823,7 @@ public class Level {
             }
 
             // pass to pinch-zoom?
-            for (Control c : mZoomControls) {
+            for (Control c : mHud.mZoomControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.onDown(mTouchVec);
@@ -932,8 +861,8 @@ public class Level {
          */
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
-            mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mToggleControls) {
+            mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            for (Control c : mHud.mToggleControls) {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(true, mTouchVec);
@@ -1359,8 +1288,7 @@ public class Level {
                             mGame.unlockNext();
 
                         // drop everything from the hud
-                        mControls.clear();
-                        mDisplays.clear();
+                        mHud.reset();
 
                         // clear any pending timers
                         Timer.instance().clear();
@@ -1481,7 +1409,7 @@ public class Level {
              */
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
-                // getLoseScene the bodies, make sure both are actors
+                // get the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
                 if (!(a instanceof Actor) || !(b instanceof Actor))
@@ -1569,7 +1497,7 @@ public class Level {
                 || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
                 || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
             // create distance and weld joints... somehow, the combination is
-            // needed to getLoseScene this to work. Note that this function runs during
+            // needed to get this to work. Note that this function runs during
             // the box2d step, so we need to make the joint in a callback that
             // runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
@@ -1961,7 +1889,7 @@ public class Level {
                 drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
-        mDisplays.add(d);
+        mHud.mDisplays.add(d);
         return d;
     }
 
@@ -2021,8 +1949,8 @@ public class Level {
             }
         };
         action.mAttachedControl = c;
-        mControls.add(c);
-        mTapControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mTapControls.add(c);
         return c;
     }
 
@@ -2157,8 +2085,8 @@ public class Level {
             }
         };
         // Put the control and events in the appropriate lists
-        mControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mToggleControls.add(c);
         mRepeatEvents.add(whileDownAction);
         return c;
     }
@@ -2329,8 +2257,8 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mToggleControls.add(c);
         mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
@@ -2372,8 +2300,8 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mToggleControls.add(c);
         return c;
     }
 
@@ -2398,8 +2326,8 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mToggleControls.add(c);
         mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
@@ -2441,8 +2369,8 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mToggleControls.add(c);
         mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
@@ -2511,11 +2439,11 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
+        mHud.mControls.add(c);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        mToggleControls.add(c);
-        mPanControls.add(c);
+        mHud.mToggleControls.add(c);
+        mHud.mPanControls.add(c);
         mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
@@ -2615,7 +2543,7 @@ public class Level {
                 return true;
             }
         };
-        mPanControls.add(c);
+        mHud.mPanControls.add(c);
         return c;
     }
 
@@ -2665,7 +2593,7 @@ public class Level {
                 return false;
             }
         };
-        mZoomControls.add(c);
+        mHud.mZoomControls.add(c);
         return c;
     }
 
@@ -2763,8 +2691,8 @@ public class Level {
             }
         };
         // add to hud
-        mControls.add(c);
-        mTapControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mTapControls.add(c);
         return c;
     }
 
@@ -2822,8 +2750,8 @@ public class Level {
                 return true;
             }
         };
-        mControls.add(c);
-        mTapControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mTapControls.add(c);
         return c;
     }
 
@@ -2840,7 +2768,7 @@ public class Level {
     public Control addImage(int x, int y, int width, int height, String imgName) {
         Control c = new Control(this, imgName, x, y, width, height);
         c.mIsTouchable = false;
-        mControls.add(c);
+        mHud.mControls.add(c);
         return c;
     }
 
@@ -2892,7 +2820,7 @@ public class Level {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                // force a down event, if we didn't getLoseScene one
+                // force a down event, if we didn't get one
                 if (!mHolding) {
                     toggle(false, touchVec);
                     return true;
@@ -2916,9 +2844,9 @@ public class Level {
                 return false;
             }
         };
-        mControls.add(c);
-        mPanControls.add(c);
-        mToggleControls.add(c);
+        mHud.mControls.add(c);
+        mHud.mPanControls.add(c);
+        mHud.mToggleControls.add(c);
         return c;
     }
 

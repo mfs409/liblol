@@ -121,8 +121,8 @@ abstract class QuickScene {
         // clear screen and draw images/text via HudCam
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        mLevel.mHudCam.update();
-        sb.setProjectionMatrix(mLevel.mHudCam.combined);
+        mLevel.mHud.mHudCam.update();
+        sb.setProjectionMatrix(mLevel.mHud.mHudCam.combined);
         sb.begin();
         for (Renderable r : mSprites)
             r.render(sb, 0);
@@ -130,7 +130,7 @@ abstract class QuickScene {
 
         // DEBUG: show where the buttons' boxes are
         if (mLevel.mConfig.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(mLevel.mHudCam.combined);
+            mShapeRender.setProjectionMatrix(mLevel.mHud.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
             for (Button b : mButtons)
@@ -151,7 +151,7 @@ abstract class QuickScene {
             return;
 
         // check for taps to the buttons
-        mLevel.mHudCam.unproject(mTmpVec.set(x, y, 0));
+        mLevel.mHud.mHudCam.unproject(mTmpVec.set(x, y, 0));
         for (Button b : mButtons) {
             if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
                 dismiss();

@@ -352,7 +352,8 @@ public abstract class Actor implements Renderable {
         for (int i = 0; i < vertices.length; i += 2)
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
         // print some debug info, since vertices are tricky
-        for (Vector2 vert : verts) Lol.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
+        for (Vector2 vert : verts)
+            Lol.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
         shape.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
