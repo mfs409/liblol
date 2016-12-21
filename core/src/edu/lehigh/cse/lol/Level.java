@@ -3111,8 +3111,8 @@ public class Level {
      *
      * @param filename The file holding the particle definition
      * @param zIndex   The z index of the particle system.
-     * @parm x The x coordinate of the starting point of the particle system
-     * @parm y The y coordinate of the starting point of the particle system
+     * @param x The x coordinate of the starting point of the particle system
+     * @param y The y coordinate of the starting point of the particle system
      */
     public Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
         Effect e = new Effect();

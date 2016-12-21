@@ -68,14 +68,10 @@ public class LoseScene extends QuickScene {
         addText(mLoseText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
-
     /**
      * This runs when the LoseScene is cleared, and restarts the level
      */
-    protected void dismiss() {
+    public void dismiss() {
         mVisible = false;
         mLevel.mGame.repeatLevel();
     }

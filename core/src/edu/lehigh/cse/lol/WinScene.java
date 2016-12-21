@@ -76,7 +76,7 @@ public class WinScene extends QuickScene {
      * This runs when the WinScene is cleared, and moves gameplay to the
      * appropriate level
      */
-    protected void dismiss() {
+    public void dismiss() {
         mVisible = false;
 
         // we turn off music here, so that music plays during the PostScene

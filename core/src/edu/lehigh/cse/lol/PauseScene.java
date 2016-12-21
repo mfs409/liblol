@@ -42,14 +42,14 @@ public class PauseScene extends QuickScene {
     /**
      * Clear everything off of the level's pause scene, so it can be reused
      */
-    public void reset() {
+     public void reset() {
         mLevel.mPauseScene = new PauseScene(mLevel);
     }
 
     /**
      * Show the pause screen
      */
-    public void show() {
+     public void show() {
         Timer.instance().stop();
         mVisible = true;
         mDisplayTime = System.currentTimeMillis();
@@ -60,7 +60,7 @@ public class PauseScene extends QuickScene {
     /**
      * Stop showing the PauseScene
      */
-    public void dismiss() {
+     public void dismiss() {
         // clear the pauseScene (be sure to resume timers)
         mVisible = false;
         if (mClickToClear) {

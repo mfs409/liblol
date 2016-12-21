@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -44,57 +44,64 @@ abstract class QuickScene {
     /**
      * The level to which this is attached
      */
-    public Level mLevel;
+    protected Level mLevel;
 
     /**
      * Construct a QuickScene by giving it a level
      * @param level
      */
-    public QuickScene(Level level) {
+    QuickScene(Level level) {
         mLevel = level;
     }
 
     /**
      * The text and pictures to display
      */
-    public final ArrayList<Renderable> mSprites = new ArrayList<>();
+    private final ArrayList<Renderable> mSprites = new ArrayList<>();
+
     /**
      * All buttons on the scene are stored here
      */
-    public final ArrayList<Button> mButtons = new ArrayList<>();
+    private final ArrayList<Button> mButtons = new ArrayList<>();
+
     /**
      * For handling touches
      */
-    public final Vector3 mTmpVec = new Vector3();
+    private final Vector3 mTmpVec = new Vector3();
+
     /**
      * For debug rendering
      */
-    public final ShapeRenderer mShapeRender = new ShapeRenderer();
+    private final ShapeRenderer mShapeRender = new ShapeRenderer();
+
     /**
      * A flag for disabling the scene, so it won't display
      */
-    public boolean mDisable;
+    protected boolean mDisable;
+
     /**
      * Track if the Scene is visible. Initially it is not.
      */
-    public boolean mVisible;
+    boolean mVisible;
     /**
      * Sound to play when the scene is displayed
      */
-    public Sound mSound;
+    protected Sound mSound;
+
     /**
      * Time that the Scene started being shown, so we can update timers
      */
-    public long mDisplayTime;
+    protected long mDisplayTime;
+
     /**
      * True if we must click in order to clear the scene
      */
-    public boolean mClickToClear = true;
+    protected boolean mClickToClear = true;
 
     /**
      * Pause the timer when this screen is shown
      */
-    public void suspendClock() {
+    void suspendClock() {
         // pause the timer
         Timer.instance().stop();
         mDisplayTime = System.currentTimeMillis();
@@ -106,7 +113,7 @@ abstract class QuickScene {
      * @param sb The SpriteBatch used to draw the text and pictures
      * @return true if the PauseScene was drawn, false otherwise
      */
-    public boolean render(SpriteBatch sb) {
+    boolean render(SpriteBatch sb) {
         // if the scene is not visible, do nothing
         if (!mVisible)
             return false;
@@ -138,7 +145,7 @@ abstract class QuickScene {
      * Handler to run when the screen is tapped while the scene is being
      * displayed
      */
-    public void onTap(float x, float y) {
+    void onTap(float x, float y) {
         // ignore if not visible
         if (!mVisible)
             return;
@@ -164,7 +171,7 @@ abstract class QuickScene {
      * This is the code to remove a scene. It is specific to they type of scene
      * being displayed
      */
-    abstract protected void dismiss();
+    abstract public void dismiss();
 
     /**
      * Set the sound to play when the screen is displayed
@@ -174,10 +181,6 @@ abstract class QuickScene {
     public void setSound(String soundName) {
         mSound = mLevel.mMedia.getSound(soundName);
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
 
     /**
      * Add some text to the scene, and center it vertically and horizontally
@@ -271,7 +274,6 @@ abstract class QuickScene {
     public void suppressClearClick() {
         mClickToClear = false;
     }
-
 }
 
 /**

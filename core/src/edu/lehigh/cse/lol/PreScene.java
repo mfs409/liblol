@@ -40,14 +40,10 @@ public class PreScene extends QuickScene {
         super(level);
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
-
     /**
      * Hide the PreScene, and resume any timers.
      */
-    protected void dismiss() {
+    public void dismiss() {
         mVisible = false;
         if (mClickToClear) {
             long showTime = System.currentTimeMillis() - mDisplayTime;

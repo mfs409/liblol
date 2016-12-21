@@ -1574,7 +1574,7 @@ public abstract class Actor implements Renderable {
     	DistanceJoint dj = (DistanceJoint) mDistJoint;
     	dj.setLength(newDist);
     }
-    
+
     /**
      * In some cases, we need to force an actor to have a kinematic body type
      */

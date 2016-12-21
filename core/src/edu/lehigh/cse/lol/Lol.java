@@ -70,21 +70,26 @@ public class Lol implements ApplicationListener {
 
         // mMode is is for the base state machine.  It tracks the current mode of the program (from
         // among the above choices)
-        int mMode;
+        private int mMode;
 
         // mModeStates provides more information about the state of the game.  mMode only lets us know
         // what state we are in, but mModeStates lets us know which level of that mode is currently
         // active.  Note that using an array makes it easier for us to use the back button to go from
         // a level to the chooser, or to move to the next level when we win a level
-        int mModeStates[] = new int[5];
+        private int mModeStates[] = new int[5];
 
-        // mLevel is the Level object that is active, corresponding to the mMode and mModeState fields.
-        // It is the third and final field that comprises the state machine
-        Level mLevel;
+        void init() {
+            // set current mode states
+            for (int i = 0; i < 5; ++i)
+                mModeStates[i] = 1;
+        }
     }
 
     // mStateMachine is the actual state machine used by the game
     private StateMachine mStateMachine = new StateMachine();
+
+    // mLevel is the Level object that is active, in accordance with the state machine.
+    private Level mLevel;
 
     /**
      * If the level that follows this level has not yet been unlocked, unlock it.
@@ -111,25 +116,25 @@ public class Lol implements ApplicationListener {
      * @param level may be {@code null}
      */
     private void setScreen(Level level) {
-        if (mStateMachine.mLevel != null) {
-            mStateMachine.mLevel.pauseMusic();
+        if (mLevel != null) {
+            mLevel.pauseMusic();
         }
-        mStateMachine.mLevel = level;
+        mLevel = level;
     }
 
 
 
     void advanceLevel() {
         if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
-            mStateMachine.mLevel.doChooser(1);
+            mLevel.doChooser(1);
         } else {
             mStateMachine.mModeStates[StateMachine.PLAY]++;
-            mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+            mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
         }
     }
 
     void repeatLevel() {
-        mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+        mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
     }
     /**
      * Use this to load the splash screen
@@ -213,7 +218,7 @@ public class Lol implements ApplicationListener {
      * Use this to quit the game
      */
      void doQuit() {
-        mStateMachine.mLevel.stopMusic();
+        mLevel.stopMusic();
         Gdx.app.exit();
     }
 
@@ -253,8 +258,7 @@ public class Lol implements ApplicationListener {
      * The constructor just creates a media object and calls configureGravity, so that
      * all of our globals will be set. Doing it this early lets us access the
      * configuration from within the LWJGL (Desktop) main class. That, in turn,
-     * lets us getLoseScene the screen size correct (see the desktop project's Java
-     * file).
+     * lets us get the screen size correct (see the desktop project's Java file).
      */
     public Lol(Config config) {
         mConfig = config;
@@ -305,11 +309,11 @@ public class Lol implements ApplicationListener {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
-            mStateMachine.mLevel.doSplash();
+            mLevel.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            mStateMachine.mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
+            mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
         }
     }
 
@@ -319,9 +323,7 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void create() {
-        // set current mode states
-        for (int i = 0; i < 5; ++i)
-            mStateMachine.mModeStates[i] = 1;
+        mStateMachine.init();
 
         // for handling back presses
         Gdx.input.setCatchBackKey(true);
@@ -344,8 +346,8 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mStateMachine.mLevel != null)
-            mStateMachine.mLevel.pauseMusic();
+        if (mLevel != null)
+            mLevel.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -366,8 +368,8 @@ public class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        if (mStateMachine.mLevel != null)
-            mStateMachine.mLevel.render(Gdx.graphics.getDeltaTime());
+        if (mLevel != null)
+            mLevel.render(Gdx.graphics.getDeltaTime());
     }
 
     /**
