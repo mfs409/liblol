@@ -1308,8 +1308,8 @@ public class Levels implements ScreenManager {
             level.makeEnemyAsCircle(3, 27, 3, 3, "redball.png");
 
             // draw some buttons for moving the hero
-            level.addLeftButton(0, 100, 100, 440, "", 15, h);
-            level.addRightButton(860, 100, 100, 440, "", 15, h);
+            level.addToggleButton(0, 100, 100, 440, "", level.makeXMotionAction(h, -15), level.makeXMotionAction(h, 0));
+            level.addToggleButton(860, 100, 100, 440, "", level.makeXMotionAction(h, 15), level.makeXMotionAction(h, 0));
             level.addUpButton(100, 540, 760, 100, "", 15, h);
             level.addDownButton(100, 0, 760, 100, "", 15, h);
         }
@@ -2308,8 +2308,8 @@ public class Levels implements ScreenManager {
             // make an obstacle and then connect it to some controls
             Obstacle o = level.makeObstacleAsBox(2, 30.9f, 4, 1, "red.png");
             o.setPhysics(100, 1, .1f);
-            level.addLeftButton(0, 0, 480, 640, "", 5, o);
-            level.addRightButton(480, 0, 480, 640, "", 5, o);
+            level.addToggleButton(0, 0, 480, 640, "", level.makeXMotionAction(o, -5), level.makeXMotionAction(o, 0));
+            level.addToggleButton(480, 0, 480, 640, "", level.makeXMotionAction(o, 5), level.makeXMotionAction(o, 0));
         }
 
         /*
@@ -2886,8 +2886,8 @@ public class Levels implements ScreenManager {
             o2.setPhysics(100, 0, 1f);
 
             // draw some buttons for moving the hero
-            level.addLeftButton(0, 100, 100, 440, "", 5, h);
-            level.addRightButton(860, 100, 100, 440, "", 5, h);
+            level.addToggleButton(0, 100, 100, 440, "", level.makeXMotionAction(h, -5), level.makeXMotionAction(h, 0));
+            level.addToggleButton(860, 100, 100, 440, "", level.makeXMotionAction(h, 5), level.makeXMotionAction(h, 0));
         }
 
         /*

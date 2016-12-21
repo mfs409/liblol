@@ -2145,23 +2145,6 @@ public class Level {
     }
 
     /**
-     * Add a button that moves the given actor left while the button is being
-     * held
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rate    Rate at which the actor moves
-     * @param actor   The actor that should move left when the button is pressed
-     */
-    public Control addLeftButton(int x, int y, int width, int height, String imgName, final float rate, final Actor actor) {
-        return addToggleButton(x, y, width, height, imgName, makeXMotionAction(actor, -rate), makeXMotionAction(actor, 0));
-    }
-
-    /**
      * Add a button that moves an actor downward while the button is being held
      *
      * @param x       The X coordinate of the bottom left corner (in pixels)
@@ -2191,23 +2174,6 @@ public class Level {
      */
     public Control addUpButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
         return addToggleButton(x, y, width, height, imgName, makeYMotionAction(actor, rate), makeYMotionAction(actor, 0));
-    }
-
-    /**
-     * Add a button that moves the given actor to the right while the button is
-     * being held
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rate    Rate at which the actor moves
-     * @param actor   The actor that should move right when the button is pressed
-     */
-    public Control addRightButton(int x, int y, int width, int height, String imgName, float rate, Actor actor) {
-        return addToggleButton(x, y, width, height, imgName, makeXMotionAction(actor, rate), makeXMotionAction(actor, 0));
     }
 
     /**
