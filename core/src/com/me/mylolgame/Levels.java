@@ -1364,7 +1364,7 @@ public class Levels implements ScreenManager {
             h.addVelocity(5, 0, false);
             level.setCameraChase(h);
             // to enableTilt crawling, we just draw a crawl button on the screen
-            level.addCrawlButton(0, 0, 960, 640, "", h);
+            level.addToggleButton(0, 0, 960, 640, "", level.makeCrawlToggle(h, true), level.makeCrawlToggle(h, false));
 
             // make an enemy who we can defeat by colliding with it while
             // crawling
@@ -1561,7 +1561,7 @@ public class Levels implements ScreenManager {
             // add a button for throwing projectiles. Notice that this butotn
             // keeps throwing as long as it is held, but we've capped it to
             // throw no more than once per 100 milliseconds
-            level.addThrowButton(0, 0, 960, 640, "", h, 100, 3, 1.5f, 30, 0);
+            level.addToggleButton(0, 0, 960, 640, "", level.makeRepeatThrow(h, 100, 3, 1.5f, 30, 0), null);
             level.setCameraChase(h);
         }
 
@@ -2013,10 +2013,10 @@ public class Levels implements ScreenManager {
             h.setCrawlAnimation(level.makeAnimation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
             h.setJumpAnimation(level.makeAnimation(4, true).to("legstar5.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
-            // enableTilt hero jumping and crawling
+            // enable hero jumping and crawling
             h.setJumpImpulses(0, 15);
             level.addTapControl(0, 0, 480, 640, "", level.JumpAction(h));
-            level.addCrawlButton(480, 0, 480, 640, "", h);
+            level.addToggleButton(480, 0, 480, 640, "", level.makeCrawlToggle(h, true), level.makeCrawlToggle(h, false));
 
             // add an enemy we can defeat via crawling, just for fun. It should
             // be defeated even by a "jump crawl"
@@ -2282,13 +2282,13 @@ public class Levels implements ScreenManager {
             h.setTouchToJump();
 
             // add rotation buttons
-            level.addRotateButton(0, 480, 160, 160, "", -.5f, h);
-            level.addRotateButton(760, 480, 160, 160, "", .5f, h);
+            level.addToggleButton(0, 480, 160, 160, "", level.makeRotator(h, -.05f), level.makeRotator(h, -.05f));
+            level.addToggleButton(760, 480, 160, 160, "", level.makeRotator(h, .05f), level.makeRotator(h, .05f));
         }
 
         /**
          * we can attach movement buttons to any moveable entity, so in this
-         * case, we attach it to an obstacle to getLoseScene an arkanoid-like effect.
+         * case, we attach it to an obstacle to get an arkanoid-like effect.
          */
         else if (whichLevel == 60) {
             // make a simple level
@@ -3036,7 +3036,7 @@ public class Levels implements ScreenManager {
 
             // draw a turbo boost button that covers the whole screen... make
             // sure its "up" speeds match the hero velocity
-            level.addTurboButton(0, 0, 960, 640, "", 15, 0, 4, 0, h);
+            level.addToggleButton(0, 0, 960, 640, "", level.makeXYMotionAction(h, 15, 0), level.makeXYMotionAction(h, 4, 0));
         }
 
         /*
@@ -3062,7 +3062,7 @@ public class Levels implements ScreenManager {
 
             // This control has a dampening effect, so that on release, the hero
             // slowly stops
-            level.addDampenedMotionButton(0, 0, 960, 640, "", 10, 0, 4, h);
+            level.addToggleButton(0, 0, 960, 640, "", level.makeXYDampenedMotionAction(h, 10, 0, 0), level.makeXYDampenedMotionAction(h, 10, 0, 1));
         }
 
         /*

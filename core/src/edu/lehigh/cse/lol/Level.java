@@ -1920,6 +1920,7 @@ public class Level {
 
     /**
      * Set the current value of the stopwatch.  Use -100 to disable the stopwatch, otherwise it will start counting immediately.
+     *
      * @param newVal
      */
     public void setStopwatch(float newVal) {
@@ -2077,7 +2078,8 @@ public class Level {
             public boolean toggle(boolean isUp, Vector3 touchVec) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
-                    onUpAction.go();
+                    if (onUpAction != null)
+                        onUpAction.go();
                 } else {
                     whileDownAction.mIsActive = true;
                 }
@@ -2145,143 +2147,63 @@ public class Level {
     }
 
     /**
-     * Add a button that moves the given actor at one speed when it is
-     * depressed, and at another otherwise
+     * Create an action for moving an actor in the X and Y directions, with dampening on release.
+     * This action can be used by a Control.
      *
-     * @param x         The X coordinate of the bottom left corner (in pixels)
-     * @param y         The Y coordinate of the bottom left corner (in pixels)
-     * @param width     The width of the image
-     * @param height    The height of the image
-     * @param imgName   The name of the image to display. Use "" for an invisible
-     *                  button
-     * @param rateDownX Rate (X) at which the actor moves when the button is pressed
-     * @param rateDownY Rate (Y) at which the actor moves when the button is pressed
-     * @param rateUpX   Rate (X) at which the actor moves when the button is not
-     *                  pressed
-     * @param rateUpY   Rate (Y) at which the actor moves when the button is not
-     *                  pressed
-     * @param actor     The actor that the button controls
+     * @param actor     The actor to move
+     * @param xRate     The rate at which the actor should move in the X direction (negative values are allowed)
+     * @param yRate     The rate at which the actor should move in the Y direction (negative values are allowed)
+     * @param dampening The dampening factor
+     * @return The action
      */
-    public Control addTurboButton(int x, int y, int width, int height, String imgName, final int rateDownX,
-                                  final int rateDownY, final int rateUpX, final int rateUpY, final Actor actor) {
-        return addToggleButton(x, y, width, height, imgName, makeXYMotionAction(actor, rateDownX, rateDownY), makeXYMotionAction(actor, rateUpX, rateUpY));
-    }
-
-    /**
-     * Add a button that moves the given actor at one speed, but doesn't
-     * immediately stop the actor when the button is released
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rateX   Rate (X) at which the actor moves when the button is pressed
-     * @param rateY   Rate (Y) at which the actor moves when the button is pressed
-     * @param actor   The actor that the button controls
-     */
-    public Control addDampenedMotionButton(int x, int y, int width, int height, String imgName,
-                                           final float rateX, final float rateY, final float dampening, final Actor actor) {
-        final Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
+    public LolAction makeXYDampenedMotionAction(final Actor actor, final float xRate, final float yRate, final float dampening) {
+        return new LolAction() {
             @Override
-            public boolean toggle(boolean isUp, Vector3 vv) {
-                mHolding = !isUp;
-                return true;
+            void go() {
+                actor.updateVelocity(xRate, yRate);
+                actor.mBody.setLinearDamping(dampening);
             }
         };
-        mHud.mControls.add(c);
-        mHud.mToggleControls.add(c);
-        mRepeatEvents.add(new LolAction() {
-            @Override
-            public void go() {
-                if (c.mGestureAction.mHolding) {
-                    Vector2 v = actor.mBody.getLinearVelocity();
-                    v.x = rateX;
-                    v.y = rateY;
-                    actor.mBody.setLinearDamping(0);
-                    actor.updateVelocity(v.x, v.y);
-                } else {
-                    actor.mBody.setLinearDamping(dampening);
-                }
-            }
-        });
-        return c;
     }
 
     /**
-     * Add a button that puts a hero into crawl mode when depressed, and regular
-     * mode when released
+     * Create an action for making a hero either start or stop crawling
      *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param h       The hero to control
+     * @param hero       The hero to control
+     * @param crawlState True to start crawling, false to stop
+     * @return The action
      */
-    public Control addCrawlButton(int x, int y, int width, int height, String imgName, final Hero h) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
+    public LolAction makeCrawlToggle(final Hero hero, final boolean crawlState) {
+        return new LolAction() {
             @Override
-            public boolean toggle(boolean upPress, Vector3 touchVec) {
-                if (upPress)
-                    h.crawlOff();
+            void go() {
+                if (crawlState)
+                    hero.crawlOn();
                 else
-                    h.crawlOn();
-                return true;
+                    hero.crawlOff();
             }
         };
-        mHud.mControls.add(c);
-        mHud.mToggleControls.add(c);
-        return c;
     }
 
     /**
-     * Add a button that rotates the hero
+     * Create an action for making a hero rotate
      *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param width   The width of the image
-     * @param height  The height of the image
-     * @param imgName The name of the image to display. Use "" for an invisible
-     *                button
-     * @param rate    Amount of rotation to apply to the hero on each press
+     * @param hero The hero to rotate
+     * @param rate Amount of rotation to apply to the hero on each press
      */
-    public Control addRotateButton(int x, int y, int width, int height, String imgName, final float rate,
-                                   final Hero h) {
-        final Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
+    public LolAction makeRotator(final Hero hero, final float rate) {
+        return new LolAction() {
             @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
-                mHolding = !isUp;
-                return true;
+            void go() {
+                hero.increaseRotation(rate);
             }
         };
-        mHud.mControls.add(c);
-        mHud.mToggleControls.add(c);
-        mRepeatEvents.add(new LolAction() {
-            @Override
-            public void go() {
-                if (c.mGestureAction.mHolding)
-                    h.increaseRotation(rate);
-            }
-        });
-        return c;
     }
 
     /**
-     * Add a button to make the hero throw a projectile
+     * Create an action for making a hero throw a projectile
      *
-     * @param x          The X coordinate of the bottom left corner (in pixels)
-     * @param y          The Y coordinate of the bottom left corner (in pixels)
-     * @param width      The width of the image
-     * @param height     The height of the image
-     * @param imgName    The name of the image to display. Use "" for an invisible
-     *                   button
-     * @param h          The hero who should throw the projectile
+     * @param hero       The hero who should throw the projectile
      * @param milliDelay A delay between throws, so that holding doesn't lead to too
      *                   many throws at once
      * @param offsetX    specifies the x distance between the bottom left of the
@@ -2292,36 +2214,22 @@ public class Level {
      *                   projectile
      * @param velocityX  The X velocity of the projectile when it is thrown
      * @param velocityY  The Y velocity of the projectile when it is thrown
+     * @return The action object
      */
-    public Control addThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
-                                  final int milliDelay, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
-        final Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
-                mHolding = !isUp;
-                return true;
-            }
-        };
-        mHud.mControls.add(c);
-        mHud.mToggleControls.add(c);
-        mRepeatEvents.add(new LolAction() {
+    public LolAction makeRepeatThrow(final Hero hero, final int milliDelay, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
+        return new LolAction() {
             long mLastThrow;
 
             @Override
             public void go() {
-                if (c.mGestureAction.mHolding) {
-                    long now = System.currentTimeMillis();
-                    if (mLastThrow + milliDelay < now) {
-                        mLastThrow = now;
-                        mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
-                    }
+                long now = System.currentTimeMillis();
+                if (mLastThrow + milliDelay < now) {
+                    mLastThrow = now;
+                    mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
                 }
             }
-        });
-        return c;
+        };
     }
-
 
     /**
      * The default behavior for throwing is to throw in a straight line. If we
@@ -2973,8 +2881,8 @@ public class Level {
      *
      * @param filename The file holding the particle definition
      * @param zIndex   The z index of the particle system.
-     * @param x The x coordinate of the starting point of the particle system
-     * @param y The y coordinate of the starting point of the particle system
+     * @param x        The x coordinate of the starting point of the particle system
+     * @param y        The y coordinate of the starting point of the particle system
      */
     public Effect makeParticleSystem(String filename, int zIndex, float x, float y) {
         Effect e = new Effect();
