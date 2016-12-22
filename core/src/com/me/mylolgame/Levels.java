@@ -1310,8 +1310,8 @@ public class Levels implements ScreenManager {
             // draw some buttons for moving the hero
             level.addToggleButton(0, 100, 100, 440, "", level.makeXMotionAction(h, -15), level.makeXMotionAction(h, 0));
             level.addToggleButton(860, 100, 100, 440, "", level.makeXMotionAction(h, 15), level.makeXMotionAction(h, 0));
-            level.addUpButton(100, 540, 760, 100, "", 15, h);
-            level.addDownButton(100, 0, 760, 100, "", 15, h);
+            level.addToggleButton(100, 540, 760, 100, "", level.makeYMotionAction(h, 15), level.makeYMotionAction(h, 0));
+            level.addToggleButton(100, 0, 760, 100, "", level.makeYMotionAction(h, -15), level.makeYMotionAction(h, 0));
         }
 
         /*
@@ -1343,8 +1343,8 @@ public class Levels implements ScreenManager {
             level.makeEnemyAsBox(130, 0, .5f, 32, "");
 
             // draw the up/down controls
-            level.addDownButton(100, 0, 760, 100, "", 15, h);
-            level.addUpButton(100, 540, 760, 100, "", 15, h);
+            level.addToggleButton(100, 540, 760, 100, "", level.makeYMotionAction(h, 15), level.makeYMotionAction(h, 0));
+            level.addToggleButton(100, 0, 760, 100, "", level.makeYMotionAction(h, -15), level.makeYMotionAction(h, 0));
         }
 
         /*
@@ -3617,7 +3617,7 @@ public class Levels implements ScreenManager {
             h.setPhysics(.1f, 0, 0);
 
             // touching the screen makes the hero go upwards
-            level.addUpButton(0, 0, 960, 640, "", 20, h);
+            level.addToggleButton(0, 0, 960, 640, "", level.makeYMotionAction(h, 20), level.makeYMotionAction(h, 0));
 
             // set up our background, with a few layers
             level.setBackgroundColor("17B4FF");
