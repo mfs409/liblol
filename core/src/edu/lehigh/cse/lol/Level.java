@@ -70,7 +70,6 @@ public class Level {
     /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
     private final ArrayList<ArrayList<Renderable>> mRenderables = new ArrayList<>(5);
 
-
     /// A heads-up display, for writing Display and Control objects
     ///
     /// TODO: make private
@@ -101,22 +100,19 @@ public class Level {
      * The set of Parallax foregrounds
      */
     Foreground mForeground = new Foreground();
-    /**
-     * The scene to show when the level is created (if any)
-     */
-    PreScene mPreScene;
-    /**
-     * The scene to show when the level is won
-     */
-    WinScene mWinScene;
-    /**
-     * The scene to show when the level is lost
-     */
-    LoseScene mLoseScene;
-    /**
-     * The scene to show when the level is paused (if any)
-     */
-    PauseScene mPauseScene;
+
+    /// The scene to show when the level is created (if any)
+    QuickScene mPreScene;
+
+    /// The scene to show when the level is won
+    QuickScene mWinScene;
+
+    /// The scene to show when the level is lost
+    QuickScene mLoseScene;
+
+    /// The scene to show when the level is paused (if any)
+    QuickScene mPauseScene;
+
     /**
      * Events that get processed on the next render, then discarded
      */
@@ -208,8 +204,8 @@ public class Level {
         mMedia = media;
         mGame = game;
 
-        mWinScene = new WinScene(this);
-        mLoseScene = new LoseScene(this);
+        mWinScene = QuickScene.makeWinScene(this);
+        mLoseScene = QuickScene.makeLoseScene(this);
 
         // clear any timers
         Timer.instance().clear();
@@ -606,7 +602,7 @@ public class Level {
             mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
             if (mScore.mWinCountRemaining < 0) {
                 if (mScore.mWinCountText != "")
-                    getWinScene().setDefaultWinText(mScore.mWinCountText);
+                    getWinScene().setDefaultText(mScore.mWinCountText);
                 mScore.endLevel(true);
             }
         }
@@ -2989,11 +2985,11 @@ public class Level {
      *
      * @return The current LoseScene
      */
-    public LoseScene getLoseScene() {
-        LoseScene scene = mLoseScene;
+    public QuickScene getLoseScene() {
+        QuickScene scene = mLoseScene;
         if (scene != null)
             return scene;
-        scene = new LoseScene(this);
+        scene = QuickScene.makeLoseScene(this);
         mLoseScene = scene;
         return scene;
     }
@@ -3004,11 +3000,11 @@ public class Level {
      *
      * @return The current PreScene
      */
-    public PreScene getPreScene() {
-        PreScene scene = mPreScene;
+    public QuickScene getPreScene() {
+        QuickScene scene = mPreScene;
         if (scene != null)
             return scene;
-        scene = new PreScene(this);
+        scene = QuickScene.makePreScene(this);
         // immediately make the scene visible
         scene.mVisible = true;
         mPreScene = scene;
@@ -3024,11 +3020,11 @@ public class Level {
      *
      * @return The current PauseScene
      */
-    public PauseScene getPauseScene() {
-        PauseScene scene = mPauseScene;
+    public QuickScene getPauseScene() {
+        QuickScene scene = mPauseScene;
         if (scene != null)
             return scene;
-        scene = new PauseScene(this);
+        scene = QuickScene.makePauseScene(this);
         mPauseScene = scene;
         return scene;
     }
@@ -3039,11 +3035,11 @@ public class Level {
      *
      * @return The current WinScene
      */
-    public WinScene getWinScene() {
-        WinScene scene = mWinScene;
+    public QuickScene getWinScene() {
+        QuickScene scene = mWinScene;
         if (scene != null)
             return scene;
-        scene = new WinScene(this);
+        scene = QuickScene.makeWinScene(this);
         mWinScene = scene;
         return scene;
     }

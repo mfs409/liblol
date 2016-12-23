@@ -40,63 +40,60 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
-abstract class QuickScene {
+abstract public class QuickScene {
     /**
-     * The level to which this is attached
+     * When we draw clickable buttons on a QuickScene, this is how we know where
+     * the buttons are and what to do when they are clicked
      */
+    private class QuickSceneButton {
+        /// The region that can be clicked
+        Rectangle mRect;
+
+        /// The callback to run when this button is pressed
+        LolCallback mCallback;
+    }
+
+    /// The level to which this QuickScene is attached
     protected Level mLevel;
+
+    /// The text and pictures to display
+    private final ArrayList<Renderable> mSprites = new ArrayList<>();
+
+    /// All buttons on the scene are stored here
+    private final ArrayList<QuickSceneButton> mButtons = new ArrayList<>();
+
+    /// A local vector for handling touches
+    private final Vector3 mTmpVec = new Vector3();
+
+    /// A debug renderer, for drawing outlines of shapes
+    private final ShapeRenderer mShapeRender = new ShapeRenderer();
+
+    /// A flag for disabling the scene, so we can keep it from displaying
+    protected boolean mDisable;
+
+    /// Track if the Scene is visible. Initially it is not.
+    boolean mVisible;
+
+    /// Sound to play when the scene is displayed
+    protected Sound mSound;
+
+    /// Time that the Scene started being shown, so we can update timers
+    protected long mDisplayTime;
+
+    /// True if we must click in order to clear the scene
+    protected boolean mClickToClear = true;
+
+    /// Some default text that we might want to display
+    protected String mText;
 
     /**
      * Construct a QuickScene by giving it a level
+     *
      * @param level
      */
     QuickScene(Level level) {
         mLevel = level;
     }
-
-    /**
-     * The text and pictures to display
-     */
-    private final ArrayList<Renderable> mSprites = new ArrayList<>();
-
-    /**
-     * All buttons on the scene are stored here
-     */
-    private final ArrayList<Button> mButtons = new ArrayList<>();
-
-    /**
-     * For handling touches
-     */
-    private final Vector3 mTmpVec = new Vector3();
-
-    /**
-     * For debug rendering
-     */
-    private final ShapeRenderer mShapeRender = new ShapeRenderer();
-
-    /**
-     * A flag for disabling the scene, so it won't display
-     */
-    protected boolean mDisable;
-
-    /**
-     * Track if the Scene is visible. Initially it is not.
-     */
-    boolean mVisible;
-    /**
-     * Sound to play when the scene is displayed
-     */
-    protected Sound mSound;
-
-    /**
-     * Time that the Scene started being shown, so we can update timers
-     */
-    protected long mDisplayTime;
-
-    /**
-     * True if we must click in order to clear the scene
-     */
-    protected boolean mClickToClear = true;
 
     /**
      * Pause the timer when this screen is shown
@@ -133,7 +130,7 @@ abstract class QuickScene {
             mShapeRender.setProjectionMatrix(mLevel.mHud.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            for (Button b : mButtons)
+            for (QuickSceneButton b : mButtons)
                 mShapeRender.rect(b.mRect.x, b.mRect.y, b.mRect.width, b.mRect.height);
             mShapeRender.end();
         }
@@ -152,7 +149,7 @@ abstract class QuickScene {
 
         // check for taps to the buttons
         mLevel.mHud.mHudCam.unproject(mTmpVec.set(x, y, 0));
-        for (Button b : mButtons) {
+        for (QuickSceneButton b : mButtons) {
             if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
                 dismiss();
                 b.mCallback.onEvent();
@@ -167,11 +164,6 @@ abstract class QuickScene {
         }
     }
 
-    /**
-     * This is the code to remove a scene. It is specific to they type of scene
-     * being displayed
-     */
-    abstract public void dismiss();
 
     /**
      * Set the sound to play when the screen is displayed
@@ -237,7 +229,7 @@ abstract class QuickScene {
      * @param height  The height of the image
      */
     public void addBackButton(String imgName, int x, int y, int width, int height) {
-        Button b = new Button();
+        QuickSceneButton b = new QuickSceneButton();
         b.mRect = new Rectangle(x, y, width, height);
         b.mCallback = new LolCallback() {
             @Override
@@ -261,7 +253,7 @@ abstract class QuickScene {
      * @param callback The code to run when the button is pressed
      */
     public void addCallbackButton(int x, int y, int width, int height, LolCallback callback) {
-        Button b = new Button();
+        QuickSceneButton b = new QuickSceneButton();
         b.mRect = new Rectangle(x, y, width, height);
         b.mCallback = callback;
         mButtons.add(b);
@@ -274,20 +266,202 @@ abstract class QuickScene {
     public void suppressClearClick() {
         mClickToClear = false;
     }
-}
-
-/**
- * When we draw clickable buttons on the screen, this is how we know where
- * the buttons are and what to do when they are clicked
- */
-class Button {
-    /**
-     * The region that can be clicked
-     */
-    public Rectangle mRect;
 
     /**
-     * The Callback to run when this button is pressed
+     * The default is for a PreScene to show until the user touches it to
+     * dismiss it. To have the PreScene disappear after a fixed time instead,
+     * use this.
+     *
+     * @param duration The time, in seconds, before the PreScene should disappear.
      */
-    public LolCallback mCallback;
+    public void setExpire(float duration) {
+        if (duration > 0) {
+            mClickToClear = false;
+            // resume timers, or this won't work
+            Timer.instance().start();
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            }, duration);
+        }
+    }
+
+    /**
+     * Set the text that should be drawn, centered, when the level is lost
+     *
+     * @param text The text to display. Use "" to disable
+     */
+    public void setDefaultText(String text) {
+        mText = text;
+    }
+
+    /**
+     * Reset a scene, so we can change what is on it.  Only useful for the scenes we show when
+     * pausing the game.
+     */
+    public void reset() {
+        mSprites.clear();
+        mButtons.clear();
+        mDisable = false;
+        mVisible = false;
+        mSound = null;
+        mDisplayTime = 0;
+        mClickToClear = true;
+        mText = "";
+    }
+
+    /**
+     * This is the code to start showing a scene
+     */
+    abstract public void show();
+
+    /**
+     * This is the code to remove a scene. It is specific to they type of scene
+     * being displayed
+     */
+    abstract public void dismiss();
+
+    /**
+     * Create a QuickScene that has the appropriate behaviors for when we are at the end of a
+     * level that has been won
+     *
+     * @param mLevel The current level
+     * @return a QuickScene
+     */
+    static QuickScene makeWinScene(Level mLevel) {
+        QuickScene quickScene = new QuickScene(mLevel) {
+            @Override
+            public void show() {
+                // if WinScene is disabled for this level, just move to the next level
+                if (mDisable) {
+                    dismiss();
+                    return;
+                }
+
+                // make the PostScene visible
+                mVisible = true;
+
+                // The default text to display can change at the last second, so we
+                // don't compute it until right here... also, play music
+                if (mSound != null)
+                    mSound.play(mLevel.getGameFact("volume", 1));
+                addText(mText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+            }
+
+            @Override
+            public void dismiss() {
+                mVisible = false;
+
+                // we turn off music here, so that music plays during the PostScene
+                mLevel.stopMusic();
+
+                // go to next level (or chooser)
+                mLevel.mGame.advanceLevel();
+            }
+        };
+        quickScene.mText = mLevel.mConfig.mDefaultWinText;
+        return quickScene;
+    }
+
+    /**
+     * Create a QuickScene that has the appropriate behaviors for when we are pausing a level
+     *
+     * @param mLevel The current level
+     * @return a QuickScene
+     */
+    static QuickScene makePauseScene(Level mLevel) {
+        QuickScene quickScene = new QuickScene(mLevel) {
+            @Override
+            public void show() {
+                Timer.instance().stop();
+                mVisible = true;
+                mDisplayTime = System.currentTimeMillis();
+                if (mSound != null)
+                    mSound.play(mLevel.getGameFact("volume", 1));
+            }
+
+            /// TODO: this should be in the super method, and then we should add more behaviors.  win and lose scene timers won't work right now.
+            @Override
+            public void dismiss() {
+                // clear the pauseScene (be sure to resume timers)
+                mVisible = false;
+                if (mClickToClear) {
+                    long showTime = System.currentTimeMillis() - mDisplayTime;
+                    Timer.instance().delay(showTime);
+                    Timer.instance().start();
+                }
+            }
+        };
+        return quickScene;
+    }
+
+    /**
+     * Create a QuickScene that has the appropriate behaviors for when we are at the end of a
+     * level that has been lost
+     *
+     * @param mLevel The current level
+     * @return a QuickScene
+     */
+    static QuickScene makeLoseScene(Level mLevel) {
+        QuickScene quickScene = new QuickScene(mLevel) {
+            @Override
+            public void show() {
+                // if LoseScene is disabled for this level, just restart the level
+                if (mDisable) {
+                    dismiss();
+                    return;
+                }
+
+                // make the LoseScene visible
+                mVisible = true;
+
+                // The default text to display can change at the last second, so we
+                // don't compute it until right here... also, play music
+                if (mSound != null)
+                    mSound.play(mLevel.getGameFact("volume", 1));
+                addText(mText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+            }
+
+            @Override
+            public void dismiss() {
+                mVisible = false;
+                mLevel.mGame.repeatLevel();
+            }
+        };
+        quickScene.mText = mLevel.mConfig.mDefaultLoseText;
+        return quickScene;
+    }
+
+    /**
+     * Create a QuickScene that has the appropriate behaviors for when we are about to start a level
+     *
+     * @param mLevel The current level
+     * @return a QuickScene
+     */
+    static QuickScene makePreScene(Level mLevel) {
+        QuickScene quickScene = new QuickScene(mLevel) {
+            /**
+             * Show is a no-op, because the default behavior is good enough
+             */
+            @Override
+            public void show() {
+            }
+
+            /**
+             * To dismiss, we just hide the scene.
+             */
+            @Override
+            public void dismiss() {
+                mVisible = false;
+                if (mClickToClear) {
+                    long showTime = System.currentTimeMillis() - mDisplayTime;
+                    Timer.instance().delay(showTime);
+                    Timer.instance().start();
+                }
+            }
+        };
+        return quickScene;
+    }
 }
