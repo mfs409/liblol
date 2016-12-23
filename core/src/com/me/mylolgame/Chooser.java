@@ -288,10 +288,11 @@ public class Chooser implements ScreenManager {
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             level.setMusic("tune.ogg");
 
-            // we have 92 levels, so just draw a few buttons for now...
+            // we have 94 levels, so just draw a few buttons for now...
             drawLevelButton(level, 8.5f, 16, 5, 5, 91);
             drawLevelButton(level, 15f, 16, 5, 5, 92);
             drawLevelButton(level, 21.5f, 16, 5, 5, 93);
+            drawLevelButton(level, 28f, 16, 5, 5, 94);
 
             // draw the navigation buttons
             drawPrevButton(level, 0, 9.5f, 5, 5, 6);

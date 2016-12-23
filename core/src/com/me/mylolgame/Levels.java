@@ -33,13 +33,13 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
 
 import edu.lehigh.cse.lol.Actor;
-import edu.lehigh.cse.lol.Control;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
 import edu.lehigh.cse.lol.Level;
+import edu.lehigh.cse.lol.LolAction;
 import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Route;
@@ -115,7 +115,7 @@ public class Levels implements ScreenManager {
             level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
 
             // change the text that we display when the level is won
-            level.getWinScene().setDefaultWinText("Good job!");
+            level.getWinScene().setDefaultText("Good job!");
 
             // add a pop-up message that shows for one second at the
             // beginning of the level. The '50, 50' indicates the bottom left
@@ -772,7 +772,7 @@ public class Levels implements ScreenManager {
 
             // win by defeating one enemy
             level.setVictoryEnemyCount(1);
-            level.getWinScene().setDefaultWinText("Good enough...");
+            level.getWinScene().setDefaultText("Good enough...");
         }
 
         /*
@@ -1802,7 +1802,7 @@ public class Levels implements ScreenManager {
             LolCallback sc = new LolCallback() {
                 public void onEvent() {
                     ArrayList<Enemy> newEnemies = new ArrayList<>();
-                    for (Enemy e: enemies) {
+                    for (Enemy e : enemies) {
                         // Is the enemy visible / alive?
                         if (e.getVisible()) {
                             // If this enemy has remaining reproductions
@@ -1988,7 +1988,7 @@ public class Levels implements ScreenManager {
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
             level.getWinScene().addImage("fade.png", 0, 0, 960, 640);
-            level.getWinScene().setDefaultWinText("");
+            level.getWinScene().setDefaultText("");
         }
 
         /*
@@ -3319,7 +3319,6 @@ public class Levels implements ScreenManager {
                     mIsActive = false;
                     level.getPauseScene().addText("you can only pause once...", "#FFFFFF", "arial.ttf", 20);
                     level.getPauseScene().show();
-                    Control c;
                     this.mAttachedControl.setImage("greenball.png");
                 }
             });
@@ -3650,6 +3649,39 @@ public class Levels implements ScreenManager {
             trigger.setHeroCollisionCallback(0, 0, 0, 0, 0, lc);
             // No transfer of momeuntum when the hero collides with the trigger
             trigger.setCollisionsEnabled(false);
+        }
+        // Test of tap and toggle obstacles
+        // TODO: make this a better test
+        else if (whichLevel == 94) {
+            level.configureCamera(48, 32);
+            level.configureGravity(0, 0);
+            level.enableTilt(10, 10);
+            level.drawBoundingBox(0, 0, 48, 32, "red.png", 0, 0, 0);
+            Hero h = level.makeHeroAsCircle(4, 17, 3, 3, "greenball.png");
+            h.setMoveByTilting();
+            level.makeDestinationAsCircle(29, 26, 2, 2, "mustardball.png");
+            level.setVictoryDestination(1);
+
+            Obstacle o = level.makeObstacleAsBox(10, 10, 3, 3, "red.png");
+            o.setToggleCallback(new LolAction() {
+                @Override
+                public void go() {
+                    System.out.println("ooh, yeah, I'm downpressed");
+                }
+            }, new LolAction() {
+                @Override
+                public void go() {
+                    System.out.println("not anymore");
+                }
+            });
+
+            Obstacle o2 = level.makeObstacleAsBox(20, 20, 3, 3, "red.png");
+            o2.setTapCallback(new LolAction() {
+                @Override
+                public void go() {
+                    System.out.println("I was tapped.  yes!");
+                }
+            });
         }
     }
 }

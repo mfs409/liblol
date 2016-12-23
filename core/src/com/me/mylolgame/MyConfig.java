@@ -58,7 +58,7 @@ public class MyConfig extends Config {
         mShowDebugBoxes = true;
 
         // Chooser configuration
-        mNumLevels = 93;
+        mNumLevels = 94;
         mEnableChooser = true;
         mUnlockAllLevels = true;
 
