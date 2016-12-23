@@ -283,8 +283,7 @@ public abstract class Actor implements Renderable {
         if (mTouchSound != null)
             mTouchSound.play(mLevel.getGameFact("volume", 1));
         if (mGestureResponder != null) {
-            mGestureResponder.onTap(touchVec);
-            return true;
+            return mGestureResponder.onTap(touchVec);
         }
         return false;
     }
@@ -755,6 +754,38 @@ public abstract class Actor implements Renderable {
                 return true;
             }
         };
+    }
+
+    // TODO: create a test for this
+    public void setTapCallback(final LolAction action) {
+        mGestureResponder = new GestureAction() {
+            @Override
+            public boolean onTap(Vector3 touchVec) {
+                action.go();
+                return true;
+            }
+        };
+    }
+
+    // TODO: create a test for this
+    public void setToggleCallback(final LolAction whileDownAction, final LolAction onUpAction) {
+        whileDownAction.mIsActive = false;
+
+        // set up the toggle behavior
+        mGestureResponder = new GestureAction() {
+            @Override
+            public boolean toggle(boolean isUp, Vector3 touchVec) {
+                if (isUp) {
+                    whileDownAction.mIsActive = false;
+                    if (onUpAction != null)
+                        onUpAction.go();
+                } else {
+                    whileDownAction.mIsActive = true;
+                }
+                return true;
+            }
+        };
+        mLevel.mRepeatEvents.add(whileDownAction);
     }
 
     /**

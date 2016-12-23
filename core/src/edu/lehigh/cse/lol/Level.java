@@ -811,6 +811,7 @@ public class Level {
          * @param pointer The finger that was used?
          * @param button  The mouse button that was pressed
          */
+        @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
             mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
@@ -841,8 +842,10 @@ public class Level {
             // actors don't respond to DOWN... if it's a down on a
             // actor, we are supposed to remember the most recently
             // touched actor, and that's it
-            if (mHitActor != null)
-                return true;
+            if (mHitActor != null) {
+                if (mHitActor.mGestureResponder != null && mHitActor.mGestureResponder.toggle(false, mTouchVec))
+                    return true;
+            }
 
             // forward to the level's handler
             for (GestureAction ga : mGestureResponders)
@@ -859,6 +862,7 @@ public class Level {
          * @param pointer The finger that was used?
          * @param button  The mouse button that was pressed
          */
+        @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
             mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
@@ -866,6 +870,13 @@ public class Level {
                 if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                     mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
                     c.mGestureAction.toggle(true, mTouchVec);
+                    return true;
+                }
+            }
+            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            if (mHitActor != null) {
+                if (mHitActor.mGestureResponder != null && mHitActor.mGestureResponder.toggle(true, mTouchVec)) {
+                    mHitActor = null;
                     return true;
                 }
             }
@@ -2103,7 +2114,7 @@ public class Level {
     public LolAction makeXMotionAction(final Actor actor, final float xRate) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 Vector2 v = actor.mBody.getLinearVelocity();
                 v.x = xRate;
                 actor.updateVelocity(v.x, v.y);
@@ -2121,7 +2132,7 @@ public class Level {
     public LolAction makeYMotionAction(final Actor actor, final float yRate) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 Vector2 v = actor.mBody.getLinearVelocity();
                 v.y = yRate;
                 actor.updateVelocity(v.x, v.y);
@@ -2140,7 +2151,7 @@ public class Level {
     public LolAction makeXYMotionAction(final Actor actor, final float xRate, final float yRate) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 actor.updateVelocity(xRate, yRate);
             }
         };
@@ -2159,7 +2170,7 @@ public class Level {
     public LolAction makeXYDampenedMotionAction(final Actor actor, final float xRate, final float yRate, final float dampening) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 actor.updateVelocity(xRate, yRate);
                 actor.mBody.setLinearDamping(dampening);
             }
@@ -2176,7 +2187,7 @@ public class Level {
     public LolAction makeCrawlToggle(final Hero hero, final boolean crawlState) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 if (crawlState)
                     hero.crawlOn();
                 else
@@ -2194,7 +2205,7 @@ public class Level {
     public LolAction makeRotator(final Hero hero, final float rate) {
         return new LolAction() {
             @Override
-            void go() {
+            public void go() {
                 hero.increaseRotation(rate);
             }
         };
