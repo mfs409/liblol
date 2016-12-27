@@ -491,15 +491,6 @@ public class Level {
 
 
 
-    /**
-     * These are the ways you can complete a level: you can reach the
-     * destination, you can collect enough stuff, or you can reach a certain
-     * number of enemies defeated Technically, there's also 'survive for x
-     * seconds', but that doesn't need special support
-     */
-    enum VictoryType {
-        DESTINATION, GOODIECOUNT, ENEMYCOUNT
-    }
 
 
 
@@ -783,7 +774,7 @@ public class Level {
      * defeat all enemies before more are are created.
      */
     public void setVictoryEnemyCount() {
-        mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
         mScore.mVictoryEnemyCount = -1;
     }
 
@@ -793,7 +784,7 @@ public class Level {
      * @param howMany The number of enemies that must be defeated to win the level
      */
     public void setVictoryEnemyCount(int howMany) {
-        mScore.mVictoryType = VictoryType.ENEMYCOUNT;
+        mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
         mScore.mVictoryEnemyCount = howMany;
     }
 
@@ -810,7 +801,7 @@ public class Level {
      *           level
      */
     public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        mScore.mVictoryType = VictoryType.GOODIECOUNT;
+        mScore.mVictoryType = Score.VictoryType.GOODIECOUNT;
         mScore.mVictoryGoodieCount[0] = v1;
         mScore.mVictoryGoodieCount[1] = v2;
         mScore.mVictoryGoodieCount[2] = v3;
@@ -824,7 +815,7 @@ public class Level {
      * @param howMany Number of heroes that must reach destinations
      */
     public void setVictoryDestination(int howMany) {
-        mScore.mVictoryType = VictoryType.DESTINATION;
+        mScore.mVictoryType = Score.VictoryType.DESTINATION;
         mScore.mVictoryHeroCount = howMany;
     }
 

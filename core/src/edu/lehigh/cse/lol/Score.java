@@ -81,7 +81,7 @@ class Score {
     /**
      * Describes how a level is won.
      */
-    Level.VictoryType mVictoryType = Level.VictoryType.DESTINATION;
+    VictoryType mVictoryType = VictoryType.DESTINATION;
     /**
      * This is the number of heroes who must reach destinations, if we're in
      * DESTINATION mode
@@ -120,7 +120,7 @@ class Score {
 
         // possibly win the level, but only if we win on goodie count and all
         // four counts are high enough
-        if (mVictoryType != Level.VictoryType.GOODIECOUNT)
+        if (mVictoryType != VictoryType.GOODIECOUNT)
             return;
         boolean match = true;
         for (int i = 0; i < 4; ++i)
@@ -135,7 +135,7 @@ class Score {
     void onDestinationArrive() {
         // check if the level is complete
         mDestinationArrivals++;
-        if ((mVictoryType == Level.VictoryType.DESTINATION) && (mDestinationArrivals >= mVictoryHeroCount))
+        if ((mVictoryType == VictoryType.DESTINATION) && (mDestinationArrivals >= mVictoryHeroCount))
             endLevel(true);
     }
 
@@ -148,7 +148,7 @@ class Score {
 
         // if we win by defeating enemies, see if we've defeated enough of them:
         boolean win = false;
-        if (mVictoryType == Level.VictoryType.ENEMYCOUNT) {
+        if (mVictoryType == VictoryType.ENEMYCOUNT) {
             // -1 means "defeat all enemies"
             if (mVictoryEnemyCount == -1)
                 win = mEnemiesDefeated == mEnemiesCreated;
@@ -216,5 +216,14 @@ class Score {
             };
     }
 
+    /**
+     * These are the ways you can complete a level: you can reach the
+     * destination, you can collect enough stuff, or you can reach a certain
+     * number of enemies defeated Technically, there's also 'survive for x
+     * seconds', but that doesn't need special support
+     */
+    enum VictoryType {
+        DESTINATION, GOODIECOUNT, ENEMYCOUNT
+    }
 }
 
