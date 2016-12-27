@@ -139,8 +139,7 @@ public class Chooser implements ScreenManager {
         // we draw each button with its own line of code, and we don't use any
         // variables.
         if (which == 1) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -180,8 +179,7 @@ public class Chooser implements ScreenManager {
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
         else if (which == 2) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -221,8 +219,7 @@ public class Chooser implements ScreenManager {
         // NB: now we use a nested pair of loops, and we can do three rows in
         // just a few more lines than one row.
         else if (which == 3) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -254,8 +251,7 @@ public class Chooser implements ScreenManager {
         // screen 6: show levels 75-->90
         else if (which < 7) {
             // set-up
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             level.setMusic("tune.ogg");
 
@@ -281,8 +277,7 @@ public class Chooser implements ScreenManager {
         // The final case is the 7th screen, which just shows levels 91 and 92.
         // We'll just do it by hand.
         else if (which == 7) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);

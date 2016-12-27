@@ -49,8 +49,6 @@ public class Splash implements ScreenManager {
     public void display(int which, final Level level) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
-        level.configureCamera(48, 32);
-        level.configureGravity(0, 0);
 
         // draw the background. Note that "Play", "Help", and "Quit" are part of
         // this background image.

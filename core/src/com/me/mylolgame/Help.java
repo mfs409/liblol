@@ -50,8 +50,6 @@ public class Help implements ScreenManager {
         // different entities in the game
         if (which == 1) {
             // set up a basic screen
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
             level.setBackgroundColor("#FFFFFF");
 
             // put some information on the screen
@@ -87,8 +85,6 @@ public class Help implements ScreenManager {
         // Our second help scene is just here to show that it is possible to
         // have more than one help scene.
         else if (which == 2) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
             level.setBackgroundColor("#FFFF00");
 
             // for now, just print a message

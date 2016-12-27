@@ -8,7 +8,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -22,10 +21,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
@@ -51,54 +47,28 @@ import java.util.TreeMap;
  * Note that everything in Lol is a level... the splash screen, the choosers,
  * the help, and the game levels themselves.
  */
-public class Level {
-    /// A reference to the game-wide configuration variables
-    Config mConfig;
-
-    /// A reference to the object that stores all of the sounds and images we use in the game
-    Media mMedia;
-
-    /// A reference to the game object, so we can access session facts and the state machine
-    Lol mGame;
-
+public class Level extends BaseLevel {
     /// A map for storing the level facts for the current level
     private final TreeMap<String, Integer> mLevelFacts;
 
     /// A map for storing the actors in the current level
     private final TreeMap<String, Actor> mLevelActors;
 
-    /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
-    private final ArrayList<ArrayList<Renderable>> mRenderables = new ArrayList<>(5);
-
     /// A heads-up display, for writing Display and Control objects
     ///
     /// TODO: make private
     Hud mHud;
 
-    /**
-     * We use this to avoid garbage collection when converting screen touches to
-     * camera coordinates
-     */
-    private final Vector3 mTouchVec = new Vector3();
-    /**
-     * A reference to the score object, for tracking winning and losing
-     */
+    /// A reference to the score object, for tracking winning and losing
     Score mScore = new Score();
-    /**
-     * A reference to the tilt object, for managing how tilts are handled
-     */
+
+    /// A reference to the tilt object, for managing how tilts are handled
     Tilt mTilt = new Tilt();
-    /**
-     * The physics world in which all actors interact
-     */
-    World mWorld;
-    /**
-     * The set of Parallax backgrounds
-     */
+
+    /// The set of Parallax backgrounds
     Background mBackground = new Background();
-    /**
-     * The set of Parallax foregrounds
-     */
+
+    /// The set of Parallax foregrounds
     Foreground mForeground = new Foreground();
 
     /// The scene to show when the level is created (if any)
@@ -113,102 +83,42 @@ public class Level {
     /// The scene to show when the level is paused (if any)
     QuickScene mPauseScene;
 
-    /**
-     * Events that get processed on the next render, then discarded
-     */
-    ArrayList<LolAction> mOneTimeEvents = new ArrayList<>();
-    /**
-     * When the level is won or lost, this is where we store the event that
-     * needs to run
-     */
+    /// When the level is won or lost, this is where we store the event that needs to run
     LolAction mEndGameEvent;
-    /**
-     * Events that get processed on every render
-     */
-    ArrayList<LolAction> mRepeatEvents = new ArrayList<>();
-    /**
-     * This camera is for drawing actors that exist in the physics world
-     */
-    OrthographicCamera mGameCam;
-    /**
-     * This camera is for drawing parallax backgrounds that go in front of or behind the world
-     */
+
+    /// This camera is for drawing parallax backgrounds that go in front of or behind the world
     ParallaxCamera mBgCam;
 
-    /**
-     * This is the Actor that the camera chases
-     */
+    /// This is the Actor that the camera chases
     Actor mChaseActor;
 
-    /**
-     * The maximum x value of the camera
-     */
-    int mCamBoundX;
-
-    /**
-     * The maximum y value of the camera
-     */
-    int mCamBoundY;
-    /**
-     * When there is a touch of an actor in the physics world, this is how we
-     * find it
-     */
-    Actor mHitActor = null;
-    /**
-     * actors may need to set callbacks to run on a screen touch. If so, they
-     * can use this.
-     */
+    /// Actors may need to set callbacks to run on a screen touch. If so, they can use this.
     ArrayList<GestureAction> mGestureResponders = new ArrayList<>();
-    /**
-     * In levels with a projectile pool, the pool is accessed from here
-     */
+
+    /// In levels with a projectile pool, the pool is accessed from here
     ProjectilePool mProjectilePool;
-    /**
-     * Code to run when a level is won
-     */
+
+    /// Code to run when a level is won
     LolCallback mWinCallback;
-    /**
-     * Code to run when a level is lost
-     */
+
+    /// Code to run when a level is lost
     LolCallback mLoseCallback;
-    /**
-     * The music, if any
-     */
+
+    /// The music, if any
     private Music mMusic;
-    /**
-     * Whether the music is playing or not
-     */
+
+    /// Whether the music is playing or not
     private boolean mMusicPlaying;
-    /**
-     * This callback is used to get a touched actor from the physics world
-     */
-    private QueryCallback mTouchCallback;
-
-    private void setCamera(int width, int height) {
-        mCamBoundX = width;
-        mCamBoundY = height;
-
-        // warn on strange dimensions
-        if (width < mConfig.mWidth / mConfig.PIXEL_METER_RATIO)
-            Lol.message(mConfig, "Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < mConfig.mHeight / mConfig.PIXEL_METER_RATIO)
-            Lol.message(mConfig, "Warning", "Your game height is less than 1/10 of the screen height");
-    }
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
      */
     Level(Config config, Media media, Lol game) {
-        mConfig = config;
-        mMedia = media;
-        mGame = game;
+        super(config, media, game);
 
         mWinScene = QuickScene.makeWinScene(this);
         mLoseScene = QuickScene.makeLoseScene(this);
-
-        // clear any timers
-        Timer.instance().clear();
 
         // Set up listeners for touch events. Gestures are processed before
         // non-gesture touches, and non-gesture touches are only processed when
@@ -222,16 +132,6 @@ public class Level {
         mLevelFacts = new TreeMap<>();
         mLevelActors = new TreeMap<>();
 
-        // save the camera bounds
-        setCamera((int) (mConfig.mWidth / mConfig.PIXEL_METER_RATIO), (int) (mConfig.mHeight / mConfig.PIXEL_METER_RATIO));
-
-        // set up the game camera, with 0,0 in the bottom left
-        mGameCam = new OrthographicCamera(mConfig.mWidth / mConfig.PIXEL_METER_RATIO, mConfig.mHeight
-                / mConfig.PIXEL_METER_RATIO);
-        mGameCam.position.set(mConfig.mWidth / mConfig.PIXEL_METER_RATIO / 2, mConfig.mHeight
-                / mConfig.PIXEL_METER_RATIO / 2, 0);
-        mGameCam.zoom = 1;
-
         // set up the heads-up display camera
         int camWidth = mConfig.mWidth;
         int camHeight = mConfig.mHeight;
@@ -242,47 +142,198 @@ public class Level {
         mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
         mBgCam.zoom = 1;
 
-        // set up the renderables
-        for (int i = 0; i < 5; ++i)
-            mRenderables.add(new ArrayList<Renderable>());
+        // Set up collision handlers for a "real" playable level
+        configureCollisionHandlers();
 
-        // set up the callback for finding out who in the physics world was
-        // touched
-        mTouchCallback = new QueryCallback() {
-            @Override
-            public boolean reportFixture(Fixture fixture) {
-                // if the hit point is inside the fixture of the body we report
-                // it
-                if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    Actor hs = (Actor) fixture.getBody().getUserData();
-                    if (hs.mVisible) {
-                        mHitActor = hs;
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
-    }
-
-    /**
-     * Configure the camera bounds for a level
-     * <p>
-     * TODO: set upper and lower bounds, instead of assuming a lower bound of (0, 0)
-     *
-     * @param width  width of the camera
-     * @param height height of the camera
-     */
-    public void configureCamera(int width, int height) {
-        setCamera(width, height);
-
-        // TODO: we can move this once we get rid of the static sGame.mCurrentLevel field
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (mConfig.mShowDebugBoxes)
             addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
+    }
 
+    /**
+     * Configure physics for the current level
+     */
+    private void configureCollisionHandlers() {
+
+        // set up the collision handlers
+        mWorld.setContactListener(new ContactListener() {
+            /**
+             * When two bodies start to collide, we can use this to forward to
+             * our onCollide methods
+             */
+            @Override
+            public void beginContact(final Contact contact) {
+                // Get the bodies, make sure both are actors
+                Object a = contact.getFixtureA().getBody().getUserData();
+                Object b = contact.getFixtureB().getBody().getUserData();
+                if (!(a instanceof Actor) || !(b instanceof Actor))
+                    return;
+
+                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
+                //
+                // Of those, Hero, Enemy, and Projectile are the only ones with
+                // a non-empty onCollide
+                final Actor c0;
+                final Actor c1;
+                if (a instanceof Hero) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Hero) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else if (a instanceof Enemy) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Enemy) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else if (a instanceof Projectile) {
+                    c0 = (Actor) a;
+                    c1 = (Actor) b;
+                } else if (b instanceof Projectile) {
+                    c0 = (Actor) b;
+                    c1 = (Actor) a;
+                } else {
+                    return;
+                }
+
+                // Schedule an event to run as soon as the physics world
+                // finishes its step.
+                //
+                // NB: this is called from render, while world is updating...
+                // you can't modify the world or its actors until the update
+                // finishes, so we have to schedule collision-based updates to
+                // run after the world update.
+                mOneTimeEvents.add(new LolAction() {
+                    @Override
+                    public void go() {
+                        c0.onCollide(c1, contact);
+                    }
+                });
+            }
+
+            /**
+             * We ignore endcontact
+             */
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            /**
+             * Presolve is a hook for disabling certain collisions. We use it
+             * for collision immunity, sticky obstacles, and one-way walls
+             */
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+                // get the bodies, make sure both are actors
+                Object a = contact.getFixtureA().getBody().getUserData();
+                Object b = contact.getFixtureB().getBody().getUserData();
+                if (!(a instanceof Actor) || !(b instanceof Actor))
+                    return;
+                Actor gfoA = (Actor) a;
+                Actor gfoB = (Actor) b;
+
+                // handle sticky obstacles... only do something if at least one
+                // actor is a sticky actor
+                if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
+                    handleSticky(gfoA, gfoB, contact);
+                    return;
+                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2] || gfoB.mIsSticky[3]) {
+                    handleSticky(gfoB, gfoA, contact);
+                    return;
+                }
+
+                // if the actors have the same passthrough ID, and it's
+                // not zero, then disable the contact
+                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
+                    contact.setEnabled(false);
+                    return;
+                }
+
+                // is either one-sided? If not, we're done
+                Actor onesided = null;
+                Actor other;
+                if (gfoA.mIsOneSided > -1) {
+                    onesided = gfoA;
+                    other = gfoB;
+                } else if (gfoB.mIsOneSided > -1) {
+                    onesided = gfoB;
+                    other = gfoA;
+                } else {
+                    return;
+                }
+
+                // if we're here, see if we should be disabling a one-sided
+                // obstacle collision
+                WorldManifold worldManiFold = contact.getWorldManifold();
+                int numPoints = worldManiFold.getNumberOfContactPoints();
+                for (int i = 0; i < numPoints; i++) {
+                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
+                    // disable based on the value of isOneSided and the vector
+                    // between the actors
+                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
+                        contact.setEnabled(false);
+                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
+                        contact.setEnabled(false);
+                }
+            }
+
+            /**
+             * We ignore postsolve
+             */
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
+    }
+
+    /**
+     * When a hero collides with a "sticky" obstacle, this is the code we run to
+     * figure out what to do
+     *
+     * @param sticky  The sticky actor... it should always be an obstacle for now
+     * @param other   The other actor... it should always be a hero for now
+     * @param contact A description of the contact event
+     */
+    void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+        // don't create a joint if we've already got one
+        if (other.mDJoint != null)
+            return;
+        // don't create a joint if we're supposed to wait
+        if (System.currentTimeMillis() < other.mStickyDelay)
+            return;
+        // handle sticky obstacles... only do something if we're hitting the
+        // obstacle from the correct direction
+        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
+                || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
+                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
+                || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
+            // create distance and weld joints... somehow, the combination is
+            // needed to get this to work. Note that this function runs during
+            // the box2d step, so we need to make the joint in a callback that
+            // runs later
+            final Vector2 v = contact.getWorldManifold().getPoints()[0];
+            mOneTimeEvents.add(new LolAction() {
+                @Override
+                public void go() {
+                    other.mBody.setLinearVelocity(0, 0);
+                    DistanceJointDef d = new DistanceJointDef();
+                    d.initialize(sticky.mBody, other.mBody, v, v);
+                    d.collideConnected = true;
+                    other.mDJoint = (DistanceJoint) mWorld.createJoint(d);
+                    WeldJointDef w = new WeldJointDef();
+                    w.initialize(sticky.mBody, other.mBody, v);
+                    w.collideConnected = true;
+                    other.mWJoint = (WeldJoint) mWorld.createJoint(w);
+                }
+            });
+        }
     }
 
     /**
@@ -371,7 +422,7 @@ public class Level {
              * transpired
              *
              * @param touchLoc
-             * The location of the touch
+             *            The location of the touch
              * @param deltaX
              *            The change in X since last pan
              * @param deltaY
@@ -427,10 +478,6 @@ public class Level {
         mLoseCallback = callback;
     }
 
-    /*
-     * SCREEN (SCREENADAPTER) OVERRIDES
-     */
-
     /**
      * If the level has music attached to it, this starts playing it
      */
@@ -473,10 +520,10 @@ public class Level {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBoundX - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            x = mCamBoundX - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
-        if (y > mCamBoundY - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            y = mCamBoundY - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (x > mCamBound.x - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            x = mCamBound.x - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (y > mCamBound.y - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            y = mCamBound.y - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
@@ -522,7 +569,7 @@ public class Level {
      * @param touchVec The location of the touch that interacted with the pause
      *                 screen.
      */
-    public void liftAllButtons(Vector3 touchVec) {
+    void liftAllButtons(Vector3 touchVec) {
         mHud.liftAllButtons(touchVec);
         for (GestureAction ga : mGestureResponders) {
             ga.onPanStop(mTouchVec);
@@ -536,7 +583,7 @@ public class Level {
      *
      * @param delta The time since the last render
      */
-    public void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
+    void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
         if (mConfig.mShowDebugBoxes) {
@@ -544,7 +591,6 @@ public class Level {
                 mHud.reportTouch(mTouchVec, mConfig);
                 mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
-
             }
         }
 
@@ -571,24 +617,6 @@ public class Level {
         // top, but that's probably not going to produce logical behavior
         mTilt.handleTilt();
 
-        // Advance the physics world by 1/45 of a second.
-        //
-        // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/ instead of 1/45f
-        mWorld.step(1 / 45f, 8, 3);
-
-        // now handle any events that occurred on account of the world movement
-        // or screen touches
-        for (LolAction pe : mOneTimeEvents)
-            pe.go();
-        mOneTimeEvents.clear();
-
-        // handle repeat events
-        for (LolAction pe : mRepeatEvents) {
-            if (pe.mIsActive)
-                pe.go();
-        }
-
         // Check the countdown timers
         if (mScore.mLoseCountDownRemaining != -100) {
             mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
@@ -609,6 +637,8 @@ public class Level {
         if (mScore.mStopWatchProgress != -100) {
             mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
         }
+
+        super.render(delta, debugRender, sb);
 
         // check for end of game
         if (mEndGameEvent != null)
@@ -947,10 +977,6 @@ public class Level {
     public void setGoodiesCollected1(int value) {
         mScore.mGoodiesCollected[0] = value;
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
 
     /**
      * Getter for number of goodies of type 2 that have been collected.
@@ -1332,198 +1358,6 @@ public class Level {
         mWorld.setGravity(new Vector2(newXGravity, newYGravity));
     }
 
-    /**
-     * Configure physics for the current level
-     * <p>
-     * TODO: once we remove the static Level, we can make this happen with (0,0) in the ctor
-     *
-     * @param defaultXGravity The default force moving actors to the left (negative) or
-     *                        right (positive)... Usually zero
-     * @param defaultYGravity The default force pushing actors down (negative) or up
-     *                        (positive)... Usually zero or -10
-     */
-    public void configureGravity(float defaultXGravity, float defaultYGravity) {
-        // create a world with gravity
-        mWorld = new World(new Vector2(defaultXGravity, defaultYGravity), true);
-
-        // set up the collision handlers
-        mWorld.setContactListener(new ContactListener() {
-            /**
-             * When two bodies start to collide, we can use this to forward to
-             * our onCollide methods
-             */
-            @Override
-            public void beginContact(final Contact contact) {
-                // Get the bodies, make sure both are actors
-                Object a = contact.getFixtureA().getBody().getUserData();
-                Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
-                    return;
-
-                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
-                //
-                // Of those, Hero, Enemy, and Projectile are the only ones with
-                // a non-empty onCollide
-                final Actor c0;
-                final Actor c1;
-                if (a instanceof Hero) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Hero) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else if (a instanceof Enemy) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Enemy) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else if (a instanceof Projectile) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Projectile) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else {
-                    return;
-                }
-
-                // Schedule an event to run as soon as the physics world
-                // finishes its step.
-                //
-                // NB: this is called from render, while world is updating...
-                // you can't modify the world or its actors until the update
-                // finishes, so we have to schedule collision-based updates to
-                // run after the world update.
-                mOneTimeEvents.add(new LolAction() {
-                    @Override
-                    public void go() {
-                        c0.onCollide(c1, contact);
-                    }
-                });
-            }
-
-            /**
-             * We ignore endcontact
-             */
-            @Override
-            public void endContact(Contact contact) {
-            }
-
-            /**
-             * Presolve is a hook for disabling certain collisions. We use it
-             * for collision immunity, sticky obstacles, and one-way walls
-             */
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-                // get the bodies, make sure both are actors
-                Object a = contact.getFixtureA().getBody().getUserData();
-                Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
-                    return;
-                Actor gfoA = (Actor) a;
-                Actor gfoB = (Actor) b;
-
-                // handle sticky obstacles... only do something if at least one
-                // actor is a sticky actor
-                if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
-                    handleSticky(gfoA, gfoB, contact);
-                    return;
-                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2] || gfoB.mIsSticky[3]) {
-                    handleSticky(gfoB, gfoA, contact);
-                    return;
-                }
-
-                // if the actors have the same passthrough ID, and it's
-                // not zero, then disable the contact
-                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
-                    contact.setEnabled(false);
-                    return;
-                }
-
-                // is either one-sided? If not, we're done
-                Actor onesided = null;
-                Actor other;
-                if (gfoA.mIsOneSided > -1) {
-                    onesided = gfoA;
-                    other = gfoB;
-                } else if (gfoB.mIsOneSided > -1) {
-                    onesided = gfoB;
-                    other = gfoA;
-                } else {
-                    return;
-                }
-
-                // if we're here, see if we should be disabling a one-sided
-                // obstacle collision
-                WorldManifold worldManiFold = contact.getWorldManifold();
-                int numPoints = worldManiFold.getNumberOfContactPoints();
-                for (int i = 0; i < numPoints; i++) {
-                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
-                    // disable based on the value of isOneSided and the vector
-                    // between the actors
-                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
-                        contact.setEnabled(false);
-                }
-            }
-
-            /**
-             * We ignore postsolve
-             */
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-            }
-        });
-    }
-
-    /**
-     * When a hero collides with a "sticky" obstacle, this is the code we run to
-     * figure out what to do
-     *
-     * @param sticky  The sticky actor... it should always be an obstacle for now
-     * @param other   The other actor... it should always be a hero for now
-     * @param contact A description of the contact event
-     */
-    void handleSticky(final Actor sticky, final Actor other, Contact contact) {
-        // don't create a joint if we've already got one
-        if (other.mDJoint != null)
-            return;
-        // don't create a joint if we're supposed to wait
-        if (System.currentTimeMillis() < other.mStickyDelay)
-            return;
-        // handle sticky obstacles... only do something if we're hitting the
-        // obstacle from the correct direction
-        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
-                || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
-                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
-                || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
-            // create distance and weld joints... somehow, the combination is
-            // needed to get this to work. Note that this function runs during
-            // the box2d step, so we need to make the joint in a callback that
-            // runs later
-            final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            mOneTimeEvents.add(new LolAction() {
-                @Override
-                public void go() {
-                    other.mBody.setLinearVelocity(0, 0);
-                    DistanceJointDef d = new DistanceJointDef();
-                    d.initialize(sticky.mBody, other.mBody, v, v);
-                    d.collideConnected = true;
-                    other.mDJoint = (DistanceJoint) mWorld.createJoint(d);
-                    WeldJointDef w = new WeldJointDef();
-                    w.initialize(sticky.mBody, other.mBody, v);
-                    w.collideConnected = true;
-                    other.mWJoint = (WeldJoint) mWorld.createJoint(w);
-                }
-            });
-        }
-    }
 
     /**
      * Turn on accelerometer support so that tilt can control actors in this
@@ -1936,7 +1770,7 @@ public class Level {
 
     /**
      * Add a button that pauses the game (via a single tap) by causing a
-     * PauseScene to be displayed. Note that you must configureGravity a PauseScene, or
+     * PauseScene to be displayed. Note that you must configure a PauseScene, or
      * pressing this button will cause your game to crash.
      *
      * @param x       The X coordinate of the bottom left corner (in pixels)
@@ -2368,13 +2202,13 @@ public class Level {
                         * mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > mCamBoundX - mConfig.mWidth * mGameCam.zoom
+                if (x > mCamBound.x - mConfig.mWidth * mGameCam.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mCamBoundX - mConfig.mWidth * mGameCam.zoom
+                    x = mCamBound.x - mConfig.mWidth * mGameCam.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
-                if (y > mCamBoundY - mConfig.mHeight * mGameCam.zoom
+                if (y > mCamBound.y - mConfig.mHeight * mGameCam.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mCamBoundY - mConfig.mHeight * mGameCam.zoom
+                    y = mCamBound.y - mConfig.mHeight * mGameCam.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable

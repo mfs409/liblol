@@ -31,7 +31,7 @@ import com.badlogic.gdx.audio.Sound;
 
 /**
  * The ProjectilePool is the public interface to Projectiles. The programmer
- * can't make individual projectiles, but can configureCamera a pool of projectiles
+ * can't make individual projectiles, but can set a pool of projectiles
  * that can then be thrown by a hero.
  */
  class ProjectilePool {
@@ -95,9 +95,8 @@ import com.badlogic.gdx.audio.Sound;
     Sound mProjectileDisappearSound;
 
     /**
-     * Create a pool of projectiles, and configureCamera the way they are thrown. Note
-     * that this is private... in LOL the programmer calls
-     * ProjectilePool.configureCamera, which forwards to this.
+     * Create a pool of projectiles, and set the way they are thrown. Note that this is private...
+     * in LOL the programmer calls ProjectilePool.setCameraBounds, which forwards to this.
      *
      * @param size     number of projectiles that can be thrown at once
      * @param width    width of a projectile
