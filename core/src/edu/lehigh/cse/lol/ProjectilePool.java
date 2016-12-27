@@ -38,7 +38,7 @@ import com.badlogic.gdx.audio.Sound;
     /**
      * The level in which this pool exists
      */
-    Level mLevel;
+    PhysicsWorld mLevel;
 
     /**
      * A collection of all the available projectiles
@@ -107,13 +107,13 @@ import com.badlogic.gdx.audio.Sound;
      * @param zIndex   The z plane on which the projectiles should be drawn
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(Level level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(PhysicsWorld level, Score score, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         mLevel = level;
         // set up the pool
         mPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            mPool[i] = new Projectile(level, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
+            mPool[i] = new Projectile(level, score, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
@@ -171,7 +171,7 @@ import com.badlogic.gdx.audio.Sound;
         b.updateVelocity(velocityX, velocityY);
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play(mLevel.getGameFact("volume", 1));
+            mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }
@@ -247,7 +247,7 @@ import com.badlogic.gdx.audio.Sound;
         // show the projectile, play sound, and animate the hero
         b.mVisible = true;
         if (mThrowSound != null)
-            mThrowSound.play(mLevel.getGameFact("volume", 1));
+            mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }

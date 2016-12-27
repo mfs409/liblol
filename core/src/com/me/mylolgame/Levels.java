@@ -2544,7 +2544,7 @@ public class Levels implements ScreenManager {
             Obstacle o = level.makeObstacleAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
-            o.setTouchCallback(1, 0, 0, 0, true, new LolCallback() {
+            o.setTouchCallback(1, 0, 0, 0, true, level, new LolCallback() {
                 public void onEvent() {
                     // note: we could draw a picture of an open chest in the
                     // obstacle's place, or even use a disappear animation whose

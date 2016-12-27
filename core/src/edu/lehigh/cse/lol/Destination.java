@@ -64,8 +64,8 @@ public class Destination extends Actor {
      * @param height  Height of this destination
      * @param imgName Name of the image to display
      */
-    protected Destination(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
+    protected Destination(PhysicsWorld level, Score score, float width, float height, String imgName) {
+        super(level, score, imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
     }

@@ -61,7 +61,10 @@ import com.badlogic.gdx.utils.Timer.Task;
  */
 public abstract class Actor implements Renderable {
     /// The level in which this Actor exists
-    Level mLevel;
+    final PhysicsWorld mLevel;
+
+    /// The score object for the level in which this Actor exists
+    final Score mScore;
 
     /// Animation support: the offset for placing the disappearance animation relative to the
     // disappearing actor
@@ -218,8 +221,9 @@ public abstract class Actor implements Renderable {
      * @param width   The width
      * @param height  The height
      */
-    Actor(Level level, String imgName, float width, float height) {
+    Actor(PhysicsWorld level, Score score, String imgName, float width, float height) {
         mLevel = level;
+        mScore = score;
         mAnimator = new AnimationDriver(mLevel, imgName);
         mSize.x = width;
         mSize.y = height;
@@ -265,7 +269,7 @@ public abstract class Actor implements Renderable {
      */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
-            mTouchSound.play(mLevel.getGameFact("volume", 1));
+            mTouchSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         if (mGestureResponder != null) {
             return mGestureResponder.onTap(touchVec);
         }
@@ -631,7 +635,7 @@ public abstract class Actor implements Renderable {
 
         // play a sound when we remove this actor?
         if (mDisappearSound != null && !quiet)
-            mDisappearSound.play(mLevel.getGameFact("volume", 1));
+            mDisappearSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
 
         // This is a bit of a hack... to do a disappear animation after we've
         // removed the actor, we draw an obstacle, so that we have a clean hook
@@ -639,7 +643,10 @@ public abstract class Actor implements Renderable {
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
-            Obstacle o = mLevel.makeObstacleAsBox(x, y, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
+            Obstacle o = new Obstacle(mLevel, mScore, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
+            o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+            mLevel.addActor(o, 0);
+
             o.mBody.setActive(false);
             o.setDefaultAnimation(mDisappearAnimation);
         }
@@ -726,7 +733,8 @@ public abstract class Actor implements Renderable {
      * @param callback           The callback to run when the actor is touched
      */
     public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                 int activationGoodies4, final boolean disappear, final LolCallback callback) {
+                                 int activationGoodies4, final boolean disappear, final Level level,
+                                 final LolCallback callback) {
         final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
         // set the code to run on touch
@@ -736,7 +744,7 @@ public abstract class Actor implements Renderable {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= touchCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
+                    match &= touchCallbackActivation[i] <= level.mScore.mGoodiesCollected[i];
                 // if so, run the callback
                 if (match) {
                     if (disappear)

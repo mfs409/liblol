@@ -83,9 +83,8 @@ public class Enemy extends Actor {
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
-        mLevel.mScore.mEnemiesCreated++;
+    protected Enemy(PhysicsWorld level, Score score, float width, float height, String imgName) {
+        super(level, score, imgName, width, height);
     }
 
     /**
@@ -180,7 +179,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            mLevel.onDefeatEnemy();
+            mScore.onDefeatEnemy();
 
         // handle defeat callbacks
         if (mDefeatCallback != null)

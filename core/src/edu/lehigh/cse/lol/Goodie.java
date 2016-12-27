@@ -62,8 +62,8 @@ public class Goodie extends Actor {
      * @param height  height of this Obstacle
      * @param imgName image to use for this Obstacle
      */
-    protected Goodie(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
+    protected Goodie(PhysicsWorld level, Score score, float width, float height, String imgName) {
+        super(level, score, imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;
         mScore[2] = 0;

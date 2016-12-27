@@ -39,7 +39,7 @@ public class Display {
     /**
      * The level in which this display is to be drawn
      */
-    Level mLevel;
+    PhysicsWorld mLevel;
 
     /**
      * What color should we use to draw text
@@ -57,7 +57,7 @@ public class Display {
      * @param fontName The name of the .ttf font file to use
      * @param fontSize The point size of the font
      */
-    Display(Level level, String fontColor, String fontName, int fontSize) {
+    Display(PhysicsWorld level, String fontColor, String fontName, int fontSize) {
         mLevel = level;
         mColor = Color.valueOf(fontColor);
         mFont = level.mMedia.getFont(fontName, fontSize);

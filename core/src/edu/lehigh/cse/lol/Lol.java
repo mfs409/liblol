@@ -90,7 +90,7 @@ public class Lol implements ApplicationListener {
     // mStateMachine is the actual state machine used by the game
     private StateMachine mStateMachine = new StateMachine();
 
-    // mLevel is the Level object that is active, in accordance with the state machine.
+    // mWorld is the Level object that is active, in accordance with the state machine.
     private Level mLevel;
 
     /**
@@ -119,7 +119,7 @@ public class Lol implements ApplicationListener {
      */
     private void setScreen(Level level) {
         if (mLevel != null) {
-            mLevel.pauseMusic();
+            mLevel.mWorld.pauseMusic();
         }
         mLevel = level;
     }
@@ -220,7 +220,7 @@ public class Lol implements ApplicationListener {
      * Use this to quit the game
      */
      void doQuit() {
-        mLevel.stopMusic();
+        mLevel.mWorld.stopMusic();
         Gdx.app.exit();
     }
 
@@ -352,7 +352,7 @@ public class Lol implements ApplicationListener {
     @Override
     public void dispose() {
         if (mLevel != null)
-            mLevel.pauseMusic();
+            mLevel.mWorld.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //

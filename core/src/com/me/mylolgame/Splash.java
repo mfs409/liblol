@@ -94,7 +94,7 @@ public class Splash implements ScreenManager {
         }
         // when the obstacle is touched, change the mute and then update the
         // picture for the obstacle
-        o.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
+        o.setTouchCallback(0, 0, 0, 0, false, level, new LolCallback() {
             public void onEvent() {
                 level.toggleMute();
                 if (level.getVolume()) {

@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -32,10 +31,10 @@ import java.util.Random;
 import java.util.TreeMap;
 
 /**
- * BaseLevel stores the functionality that is common across all of the different renderable,
+ * PhysicsWorld stores the functionality that is common across all of the different renderable,
  * updatable containers that store actors in a physical world.
  */
-class BaseLevel {
+class PhysicsWorld {
     /// A reference to the game object, so we can access session facts and the state machine
     protected final Lol mGame;
 
@@ -115,10 +114,10 @@ class BaseLevel {
 
     /// A random number generator... We provide this so that new game developers don't create lots
     /// of Random()s throughout their code
-    final Random sGenerator = new Random();
+    final Random mGenerator = new Random();
 
     /// Use this for determining bounds of text boxes
-    final GlyphLayout glyphLayout = new GlyphLayout();
+    final GlyphLayout mGlyphLayout = new GlyphLayout();
 
     /**
      * Construct a basic level.  A level has a camera and a phyics world, actors who live in that
@@ -128,7 +127,7 @@ class BaseLevel {
      * @param media  References to all image and sound assets
      * @param game   The game that is being played
      */
-    BaseLevel(Config config, Media media, Lol game) {
+    PhysicsWorld(Config config, Media media, Lol game) {
         // clear any timers
         Timer.instance().clear();
 
@@ -302,16 +301,6 @@ class BaseLevel {
     }
 
     /**
-     * TextProducer creates text programatically... it is the foundation for displaying text that
-     * changes
-     *
-     * TODO: move to its own file?
-     */
-    public interface TextProducer {
-        String makeText();
-    }
-
-    /**
      * Create a Renderable that consists of some text to draw
      *
      * @param x        The X coordinate of the bottom left corner, in pixels
@@ -327,8 +316,8 @@ class BaseLevel {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
-                glyphLayout.setText(bf, message);
-                bf.draw(sb, message, x, y + glyphLayout.height);
+                mGlyphLayout.setText(bf, message);
+                bf.draw(sb, message, x, y + mGlyphLayout.height);
             }
         };
     }
@@ -345,9 +334,9 @@ class BaseLevel {
     Renderable makeText(final String message, final String fontColor,
                         String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
-        glyphLayout.setText(bf, message);
-        final float x = mConfig.mWidth / 2 - glyphLayout.width / 2;
-        final float y = mConfig.mHeight / 2 + glyphLayout.height / 2;
+        mGlyphLayout.setText(bf, message);
+        final float x = mConfig.mWidth / 2 - mGlyphLayout.width / 2;
+        final float y = mConfig.mHeight / 2 + mGlyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
@@ -370,8 +359,8 @@ class BaseLevel {
      * @param sb      The SpriteBatch used to render the text
      */
     void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
-        glyphLayout.setText(bf, message);
-        bf.draw(sb, message, x, y + glyphLayout.height);
+        mGlyphLayout.setText(bf, message);
+        bf.draw(sb, message, x, y + mGlyphLayout.height);
     }
 
     /**

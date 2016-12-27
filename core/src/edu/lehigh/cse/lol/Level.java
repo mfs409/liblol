@@ -31,7 +31,18 @@ import java.util.ArrayList;
  * Note that everything in Lol is a level... the splash screen, the choosers,
  * the help, and the game levels themselves.
  */
-public class Level extends BaseLevel {
+public class Level {
+    /// A reference to the game object, so we can access session facts and the state machine
+    protected final Lol mGame;
+
+    /// A reference to the game-wide configuration variables
+    protected final Config mConfig;
+
+    /// A reference to the object that stores all of the sounds and images we use in the game
+    protected final Media mMedia;
+
+    PhysicsWorld mWorld;
+
     /// A heads-up display, for writing Display and Control objects
     ///
     /// TODO: make private
@@ -40,38 +51,34 @@ public class Level extends BaseLevel {
     /// A reference to the score object, for tracking winning and losing
     ///
     /// TODO: make private
-    Score mScore = new Score();
+    final Score mScore;
 
     /// The scene to show when the level is created (if any)
     private QuickScene mPreScene;
 
     /// The scene to show when the level is won
-    private QuickScene mWinScene;
+     QuickScene mWinScene;
 
     /// The scene to show when the level is lost
-    private QuickScene mLoseScene;
+    QuickScene mLoseScene;
 
     /// The scene to show when the level is paused (if any)
     private QuickScene mPauseScene;
-
-    /// When the level is won or lost, this is where we store the event that needs to run
-    private LolAction mEndGameEvent;
-
-    /// Code to run when a level is won
-    private LolCallback mWinCallback;
-
-    /// Code to run when a level is lost
-    private LolCallback mLoseCallback;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
      */
     Level(Config config, Media media, Lol game) {
-        super(config, media, game);
+        // save game configuration information
+        mGame = game;
+        mConfig = config;
+        mMedia = media;
 
-        mWinScene = QuickScene.makeWinScene(this);
-        mLoseScene = QuickScene.makeLoseScene(this);
+        mWorld = new PhysicsWorld(config, media, game);
+
+        mWinScene = QuickScene.makeWinScene(mWorld);
+        mLoseScene = QuickScene.makeLoseScene(mWorld);
 
         // Set up listeners for touch events. Gestures are processed before
         // non-gesture touches, and non-gesture touches are only processed when
@@ -86,10 +93,13 @@ public class Level extends BaseLevel {
         int camHeight = mConfig.mHeight;
         mHud = new Hud(camWidth, camHeight);
 
+        mScore = new Score(this);
+
+
         // the background camera is like the hudcam
-        mBgCam = new ParallaxCamera(camWidth, camHeight);
-        mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
-        mBgCam.zoom = 1;
+        mWorld.mBgCam = new ParallaxCamera(camWidth, camHeight);
+        mWorld.mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mWorld.mBgCam.zoom = 1;
 
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
@@ -97,6 +107,409 @@ public class Level extends BaseLevel {
         if (mConfig.mShowDebugBoxes)
             addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
     }
+
+    /**
+     * A hack for stopping events when a pause screen is opened
+     *
+     * @param touchVec The location of the touch that interacted with the pause
+     *                 screen.
+     */
+    void liftAllButtons(Vector3 touchVec) {
+        mHud.liftAllButtons(touchVec);
+        for (GestureAction ga : mWorld.mGestureResponders) {
+            ga.onPanStop(mWorld.mTouchVec);
+            ga.onUp(mWorld.mTouchVec);
+        }
+    }
+
+    /**
+     * This code is called every 1/45th of a second to update the game state and
+     * re-draw the screen
+     *
+     * @param delta The time since the last render
+     */
+    void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
+        // in debug mode, any click will report the coordinates of the click...
+        // this is very useful when trying to adjust screen coordinates
+        if (mConfig.mShowDebugBoxes) {
+            if (Gdx.input.justTouched()) {
+                mHud.reportTouch(mWorld.mTouchVec, mConfig);
+                mWorld.mGameCam.unproject(mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Lol.message(mConfig, "World Coordinates", mWorld.mTouchVec.x + ", " + mWorld.mTouchVec.y);
+            }
+        }
+
+        // Make sure the music is playing... Note that we start music before the
+        // PreScene shows
+        mWorld.playMusic();
+
+        // Handle pauses due to pre, pause, or post scenes...
+        //
+        // Note that these handle their own screen touches...
+        //
+        // Note that win and lose scenes should come first.
+        if (mWinScene != null && mWinScene.render(sb, mHud))
+            return;
+        if (mLoseScene != null && mLoseScene.render(sb, mHud))
+            return;
+        if (mPreScene != null && mPreScene.render(sb, mHud))
+            return;
+        if (mPauseScene != null && mPauseScene.render(sb, mHud))
+            return;
+
+        // handle accelerometer stuff... note that accelerometer is effectively
+        // disabled during a popup... we could change that by moving this to the
+        // top, but that's probably not going to produce logical behavior
+        mWorld.handleTilt();
+
+        // Check the countdown timers
+        if (mScore.mLoseCountDownRemaining != -100) {
+            mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
+            if (mScore.mLoseCountDownRemaining < 0) {
+                if (mScore.mLoseCountDownText != "")
+                    getLoseScene().setDefaultText(mScore.mLoseCountDownText);
+                mScore.endLevel(false);
+            }
+        }
+        if (mScore.mWinCountRemaining != -100) {
+            mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+            if (mScore.mWinCountRemaining < 0) {
+                if (mScore.mWinCountText != "")
+                    getWinScene().setDefaultText(mScore.mWinCountText);
+                mScore.endLevel(true);
+            }
+        }
+        if (mScore.mStopWatchProgress != -100) {
+            mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
+        }
+
+        // Advance the physics world by 1/45 of a second.
+        //
+        // NB: in Box2d, This is the recommended rate for phones, though it
+        // seems like we should be using /delta/ instead of 1/45f
+        mWorld.mWorld.step(1 / 45f, 8, 3);
+
+        // now handle any events that occurred on account of the world movement
+        // or screen touches
+        for (LolAction pe : mWorld.mOneTimeEvents)
+            pe.go();
+        mWorld.mOneTimeEvents.clear();
+
+        // handle repeat events
+        for (LolAction pe : mWorld.mRepeatEvents) {
+            if (pe.mIsActive)
+                pe.go();
+        }
+
+        // prepare the main camera... we do it here, so that the parallax code
+        // knows where to draw...
+        mWorld.adjustCamera();
+        mWorld.mGameCam.update();
+
+        // check for end of game
+        if (mScore.mEndGameEvent != null)
+            mScore.mEndGameEvent.go();
+
+        // The world is now static for this time step... we can display it!
+
+        // clear the screen
+        Gdx.gl.glClearColor(mWorld.mBackground.mColor.r, mWorld.mBackground.mColor.g, mWorld.mBackground.mColor.b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // draw parallax backgrounds
+        mWorld.mBackground.renderLayers(mWorld, sb, delta);
+
+        // Render the actors in order from z=-2 through z=2
+        sb.setProjectionMatrix(mWorld.mGameCam.combined);
+        sb.begin();
+        for (ArrayList<Renderable> a : mWorld.mRenderables)
+            for (Renderable r : a)
+                r.render(sb, delta);
+        sb.end();
+
+        // draw parallax foregrounds
+        mWorld.mForeground.renderLayers(mWorld, sb, delta);
+
+
+        // DEBUG: draw outlines of physics actors
+        if (mConfig.mShowDebugBoxes)
+            debugRender.render(mWorld.mWorld, mWorld.mGameCam.combined);
+
+        // draw Controls
+        mHud.render(mConfig, sb);
+    }
+
+    /**
+     * To properly handle gestures, we need to provide the code to run on each
+     * type of gesture we care about.
+     */
+    class LolGestureManager extends GestureDetector.GestureAdapter {
+        /**
+         * When the screen is tapped, this code forwards the tap to the
+         * appropriate GestureAction
+         *
+         * @param x      X coordinate of the tap
+         * @param y      Y coordinate of the tap
+         * @param count  1 for single click, 2 for double-click
+         * @param button The mouse button that was pressed
+         */
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+            // if any pop-up scene is showing, forward the tap to the scene and
+            // return true, so that the event doesn't get passed to the Scene
+            if (mWinScene != null && mWinScene.mVisible) {
+                mWinScene.onTap(x, y, mHud, Level.this);
+                return true;
+            } else if (mLoseScene != null && mLoseScene.mVisible) {
+                mLoseScene.onTap(x, y, mHud, Level.this);
+                return true;
+            } else if (mPreScene != null && mPreScene.mVisible) {
+                mPreScene.onTap(x, y, mHud, Level.this);
+                return true;
+            } else if (mPauseScene != null && mPauseScene.mVisible) {
+                mPauseScene.onTap(x, y, mHud, Level.this);
+                return true;
+            }
+
+            // check if we tapped a control
+            if (mHud.checkTap(mWorld.mTouchVec, x, y, mWorld.mGameCam))
+                return true;
+
+            // check if we tapped an actor
+            mWorld.mHitActor = null;
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+            mWorld.mWorld.QueryAABB(mWorld.mTouchCallback, mWorld.mTouchVec.x - 0.1f, mWorld.mTouchVec.y - 0.1f, mWorld.mTouchVec.x + 0.1f,
+                    mWorld.mTouchVec.y + 0.1f);
+            if (mWorld.mHitActor != null && mWorld.mHitActor.onTap(mWorld.mTouchVec))
+                return true;
+
+            // is this a raw screen tap?
+            for (GestureAction ga : mWorld.mGestureResponders)
+                if (ga.onTap(mWorld.mTouchVec))
+                    return true;
+            return false;
+        }
+
+        /**
+         * Handle fling events
+         *
+         * @param velocityX X velocity of the fling
+         * @param velocityY Y velocity of the fling
+         * @param button    The mouse button that caused the fling
+         */
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            // we only fling at the whole-level layer
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(velocityX, velocityY, 0));
+            for (GestureAction ga : mWorld.mGestureResponders) {
+                if (ga.onFling(mWorld.mTouchVec))
+                    return true;
+            }
+            return false;
+        }
+
+        /**
+         * Handle pan events
+         *
+         * @param x      X coordinate of current touch
+         * @param y      Y coordinate of current touch
+         * @param deltaX change in X
+         * @param deltaY change in Y
+         */
+        @Override
+        public boolean pan(float x, float y, float deltaX, float deltaY) {
+            // check if we panned a control
+            mHud.mHudCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+            for (Control c : mHud.mPanControls) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
+                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+                    c.mGestureAction.onPan(mWorld.mTouchVec, deltaX, deltaY);
+                    return true;
+                }
+            }
+
+            // did we pan the level?
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+            for (GestureAction ga : mWorld.mGestureResponders) {
+                if (ga.onPan(mWorld.mTouchVec, deltaX, deltaY))
+                    return true;
+            }
+            return false;
+        }
+
+        /**
+         * Handle end-of-pan event
+         *
+         * @param x       X coordinate of the tap
+         * @param y       Y coordinate of the tap
+         * @param pointer The finger that was used?
+         * @param button  The mouse button that was pressed
+         */
+        @Override
+        public boolean panStop(float x, float y, int pointer, int button) {
+            // check if we panStopped a control
+            mHud.mHudCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+            for (Control c : mHud.mPanControls) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
+                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+                    c.mGestureAction.onPanStop(mWorld.mTouchVec);
+                    return true;
+                }
+            }
+
+            // handle panstop on level
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
+            for (GestureAction ga : mWorld.mGestureResponders)
+                if (ga.onPanStop(mWorld.mTouchVec))
+                    return true;
+            return false;
+        }
+
+        /**
+         * Handle zoom (i.e., pinch)
+         *
+         * @param initialDistance The distance between fingers when the pinch started
+         * @param distance        The current distance between fingers
+         */
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            for (Control c : mHud.mZoomControls) {
+                if (c.mIsTouchable && c.mIsActive) {
+                    c.mGestureAction.zoom(initialDistance, distance);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Gestures can't cover everything we care about (specifically 'hold this
+     * button' sorts of things, for which longpress is not responsive enough),
+     * so we need a low-level input adapter, too.
+     */
+    class LolInputManager extends InputAdapter {
+
+        /**
+         * Handle when a downward touch happens
+         *
+         * @param screenX X coordinate of the tap
+         * @param screenY Y coordinate of the tap
+         * @param pointer The finger that was used?
+         * @param button  The mouse button that was pressed
+         */
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            // check if we down-pressed a control
+            mHud.mHudCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+            for (Control c : mHud.mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
+                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+                    c.mGestureAction.toggle(false, mWorld.mTouchVec);
+                    return true;
+                }
+            }
+
+            // pass to pinch-zoom?
+            for (Control c : mHud.mZoomControls) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
+                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+                    c.mGestureAction.onDown(mWorld.mTouchVec);
+                    return true;
+                }
+            }
+
+            // check for actor touch, by looking at gameCam coordinates... on
+            // touch, hitActor will change
+            mWorld.mHitActor = null;
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+            mWorld.mWorld.QueryAABB(mWorld.mTouchCallback, mWorld.mTouchVec.x - 0.1f, mWorld.mTouchVec.y - 0.1f, mWorld.mTouchVec.x + 0.1f,
+                    mWorld.mTouchVec.y + 0.1f);
+
+            // actors don't respond to DOWN... if it's a down on a
+            // actor, we are supposed to remember the most recently
+            // touched actor, and that's it
+            if (mWorld.mHitActor != null) {
+                if (mWorld.mHitActor.mGestureResponder != null && mWorld.mHitActor.mGestureResponder.toggle(false, mWorld.mTouchVec))
+                    return true;
+            }
+
+            // forward to the level's handler
+            for (GestureAction ga : mWorld.mGestureResponders)
+                if (ga.onDown(mWorld.mTouchVec))
+                    return true;
+            return false;
+        }
+
+        /**
+         * Handle when a touch is released
+         *
+         * @param screenX X coordinate of the tap
+         * @param screenY Y coordinate of the tap
+         * @param pointer The finger that was used?
+         * @param button  The mouse button that was pressed
+         */
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            // check if we down-pressed a control
+            mHud.mHudCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+            for (Control c : mHud.mToggleControls) {
+                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
+                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+                    c.mGestureAction.toggle(true, mWorld.mTouchVec);
+                    return true;
+                }
+            }
+            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+            if (mWorld.mHitActor != null) {
+                if (mWorld.mHitActor.mGestureResponder != null && mWorld.mHitActor.mGestureResponder.toggle(true, mWorld.mTouchVec)) {
+                    mWorld.mHitActor = null;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Handle dragging
+         *
+         * @param screenX X coordinate of the drag
+         * @param screenY Y coordinate of the drag
+         * @param pointer The finger that was used
+         */
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            if (mWorld.mHitActor != null && mWorld.mHitActor.mGestureResponder != null) {
+                mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
+                return mWorld.mHitActor.mGestureResponder.onDrag(mWorld.mTouchVec);
+            }
+            for (GestureAction ga : mWorld.mGestureResponders)
+                if (ga.onDrag(mWorld.mTouchVec))
+                    return true;
+            return false;
+        }
+    }
+
+
+
+    /**
+     * These are the ways you can complete a level: you can reach the
+     * destination, you can collect enough stuff, or you can reach a certain
+     * number of enemies defeated Technically, there's also 'survive for x
+     * seconds', but that doesn't need special support
+     */
+    enum VictoryType {
+        DESTINATION, GOODIECOUNT, ENEMYCOUNT
+    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Configure the camera bounds for a level
@@ -107,7 +520,7 @@ public class Level extends BaseLevel {
      * @param height height of the camera
      */
     public void setCameraBounds(float width, float height) {
-        mCamBound.set(width, height);
+        mWorld.mCamBound.set(width, height);
 
         // warn on strange dimensions
         if (width < mConfig.mWidth / mConfig.PIXEL_METER_RATIO)
@@ -123,7 +536,7 @@ public class Level extends BaseLevel {
      * @param actor The actor the camera should chase
      */
     public void setCameraChase(Actor actor) {
-        mChaseActor = actor;
+        mWorld.mChaseActor = actor;
     }
 
     /**
@@ -132,7 +545,7 @@ public class Level extends BaseLevel {
      * @param musicName Name of the Music file to play
      */
     public void setMusic(String musicName) {
-        mMusic = mMedia.getMusic(musicName);
+        mWorld.mMusic = mMedia.getMusic(musicName);
     }
 
     /**
@@ -190,7 +603,7 @@ public class Level extends BaseLevel {
                                 final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        mGestureResponders.add(new GestureAction() {
+        mWorld.mGestureResponders.add(new GestureAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -236,8 +649,8 @@ public class Level extends BaseLevel {
      * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
     public void setZoom(float zoom) {
-        mGameCam.zoom = zoom;
-        mBgCam.zoom = zoom;
+        mWorld.mGameCam.zoom = zoom;
+        mWorld.mBgCam.zoom = zoom;
     }
 
     /**
@@ -246,7 +659,7 @@ public class Level extends BaseLevel {
      * @param callback The code to run
      */
     public void setWinCallback(LolCallback callback) {
-        mWinCallback = callback;
+        mScore.mWinCallback = callback;
     }
 
     /**
@@ -255,389 +668,10 @@ public class Level extends BaseLevel {
      * @param callback The code to run
      */
     public void setLoseCallback(LolCallback callback) {
-        mLoseCallback = callback;
+        mScore.mLoseCallback = callback;
     }
 
-    /**
-     * A hack for stopping events when a pause screen is opened
-     *
-     * @param touchVec The location of the touch that interacted with the pause
-     *                 screen.
-     */
-    void liftAllButtons(Vector3 touchVec) {
-        mHud.liftAllButtons(touchVec);
-        for (GestureAction ga : mGestureResponders) {
-            ga.onPanStop(mTouchVec);
-            ga.onUp(mTouchVec);
-        }
-    }
 
-    /**
-     * This code is called every 1/45th of a second to update the game state and
-     * re-draw the screen
-     *
-     * @param delta The time since the last render
-     */
-    void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
-        // in debug mode, any click will report the coordinates of the click...
-        // this is very useful when trying to adjust screen coordinates
-        if (mConfig.mShowDebugBoxes) {
-            if (Gdx.input.justTouched()) {
-                mHud.reportTouch(mTouchVec, mConfig);
-                mGameCam.unproject(mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
-            }
-        }
-
-        // Make sure the music is playing... Note that we start music before the
-        // PreScene shows
-        playMusic();
-
-        // Handle pauses due to pre, pause, or post scenes...
-        //
-        // Note that these handle their own screen touches...
-        //
-        // Note that win and lose scenes should come first.
-        if (mWinScene != null && mWinScene.render(sb))
-            return;
-        if (mLoseScene != null && mLoseScene.render(sb))
-            return;
-        if (mPreScene != null && mPreScene.render(sb))
-            return;
-        if (mPauseScene != null && mPauseScene.render(sb))
-            return;
-
-        // handle accelerometer stuff... note that accelerometer is effectively
-        // disabled during a popup... we could change that by moving this to the
-        // top, but that's probably not going to produce logical behavior
-        handleTilt();
-
-        // Check the countdown timers
-        if (mScore.mLoseCountDownRemaining != -100) {
-            mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
-            if (mScore.mLoseCountDownRemaining < 0) {
-                if (mScore.mLoseCountDownText != "")
-                    getLoseScene().setDefaultText(mScore.mLoseCountDownText);
-                endLevel(false);
-            }
-        }
-        if (mScore.mWinCountRemaining != -100) {
-            mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-            if (mScore.mWinCountRemaining < 0) {
-                if (mScore.mWinCountText != "")
-                    getWinScene().setDefaultText(mScore.mWinCountText);
-                endLevel(true);
-            }
-        }
-        if (mScore.mStopWatchProgress != -100) {
-            mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-        }
-
-        // Advance the physics world by 1/45 of a second.
-        //
-        // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/ instead of 1/45f
-        mWorld.step(1 / 45f, 8, 3);
-
-        // now handle any events that occurred on account of the world movement
-        // or screen touches
-        for (LolAction pe : mOneTimeEvents)
-            pe.go();
-        mOneTimeEvents.clear();
-
-        // handle repeat events
-        for (LolAction pe : mRepeatEvents) {
-            if (pe.mIsActive)
-                pe.go();
-        }
-
-        // prepare the main camera... we do it here, so that the parallax code
-        // knows where to draw...
-        adjustCamera();
-        mGameCam.update();
-
-        // check for end of game
-        if (mEndGameEvent != null)
-            mEndGameEvent.go();
-
-        // The world is now static for this time step... we can display it!
-
-        // clear the screen
-        Gdx.gl.glClearColor(mBackground.mColor.r, mBackground.mColor.g, mBackground.mColor.b, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // draw parallax backgrounds
-        mBackground.renderLayers(this, sb, delta);
-
-        // Render the actors in order from z=-2 through z=2
-        sb.setProjectionMatrix(mGameCam.combined);
-        sb.begin();
-        for (ArrayList<Renderable> a : mRenderables)
-            for (Renderable r : a)
-                r.render(sb, delta);
-        sb.end();
-
-        // draw parallax foregrounds
-        mForeground.renderLayers(this, sb, delta);
-
-
-        // DEBUG: draw outlines of physics actors
-        if (mConfig.mShowDebugBoxes)
-            debugRender.render(mWorld, mGameCam.combined);
-
-        // draw Controls
-        mHud.render(mConfig, sb);
-    }
-
-    /**
-     * To properly handle gestures, we need to provide the code to run on each
-     * type of gesture we care about.
-     */
-    class LolGestureManager extends GestureDetector.GestureAdapter {
-        /**
-         * When the screen is tapped, this code forwards the tap to the
-         * appropriate GestureAction
-         *
-         * @param x      X coordinate of the tap
-         * @param y      Y coordinate of the tap
-         * @param count  1 for single click, 2 for double-click
-         * @param button The mouse button that was pressed
-         */
-        @Override
-        public boolean tap(float x, float y, int count, int button) {
-            // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't get passed to the Scene
-            if (mWinScene != null && mWinScene.mVisible) {
-                mWinScene.onTap(x, y);
-                return true;
-            } else if (mLoseScene != null && mLoseScene.mVisible) {
-                mLoseScene.onTap(x, y);
-                return true;
-            } else if (mPreScene != null && mPreScene.mVisible) {
-                mPreScene.onTap(x, y);
-                return true;
-            } else if (mPauseScene != null && mPauseScene.mVisible) {
-                mPauseScene.onTap(x, y);
-                return true;
-            }
-
-            // check if we tapped a control
-            if (mHud.checkTap(mTouchVec, x, y, mGameCam))
-                return true;
-
-            // check if we tapped an actor
-            mHitActor = null;
-            mGameCam.unproject(mTouchVec.set(x, y, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
-                    mTouchVec.y + 0.1f);
-            if (mHitActor != null && mHitActor.onTap(mTouchVec))
-                return true;
-
-            // is this a raw screen tap?
-            for (GestureAction ga : mGestureResponders)
-                if (ga.onTap(mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle fling events
-         *
-         * @param velocityX X velocity of the fling
-         * @param velocityY Y velocity of the fling
-         * @param button    The mouse button that caused the fling
-         */
-        @Override
-        public boolean fling(float velocityX, float velocityY, int button) {
-            // we only fling at the whole-level layer
-            mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-            for (GestureAction ga : mGestureResponders) {
-                if (ga.onFling(mTouchVec))
-                    return true;
-            }
-            return false;
-        }
-
-        /**
-         * Handle pan events
-         *
-         * @param x      X coordinate of current touch
-         * @param y      Y coordinate of current touch
-         * @param deltaX change in X
-         * @param deltaY change in Y
-         */
-        @Override
-        public boolean pan(float x, float y, float deltaX, float deltaY) {
-            // check if we panned a control
-            mHud.mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Control c : mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPan(mTouchVec, deltaX, deltaY);
-                    return true;
-                }
-            }
-
-            // did we pan the level?
-            mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : mGestureResponders) {
-                if (ga.onPan(mTouchVec, deltaX, deltaY))
-                    return true;
-            }
-            return false;
-        }
-
-        /**
-         * Handle end-of-pan event
-         *
-         * @param x       X coordinate of the tap
-         * @param y       Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean panStop(float x, float y, int pointer, int button) {
-            // check if we panStopped a control
-            mHud.mHudCam.unproject(mTouchVec.set(x, y, 0));
-            for (Control c : mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPanStop(mTouchVec);
-                    return true;
-                }
-            }
-
-            // handle panstop on level
-            mGameCam.unproject(mTouchVec.set(x, y, 0));
-            for (GestureAction ga : mGestureResponders)
-                if (ga.onPanStop(mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle zoom (i.e., pinch)
-         *
-         * @param initialDistance The distance between fingers when the pinch started
-         * @param distance        The current distance between fingers
-         */
-        @Override
-        public boolean zoom(float initialDistance, float distance) {
-            for (Control c : mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive) {
-                    c.mGestureAction.zoom(initialDistance, distance);
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Gestures can't cover everything we care about (specifically 'hold this
-     * button' sorts of things, for which longpress is not responsive enough),
-     * so we need a low-level input adapter, too.
-     */
-    class LolInputManager extends InputAdapter {
-
-        /**
-         * Handle when a downward touch happens
-         *
-         * @param screenX X coordinate of the tap
-         * @param screenY Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            // check if we down-pressed a control
-            mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(false, mTouchVec);
-                    return true;
-                }
-            }
-
-            // pass to pinch-zoom?
-            for (Control c : mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.onDown(mTouchVec);
-                    return true;
-                }
-            }
-
-            // check for actor touch, by looking at gameCam coordinates... on
-            // touch, hitActor will change
-            mHitActor = null;
-            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
-                    mTouchVec.y + 0.1f);
-
-            // actors don't respond to DOWN... if it's a down on a
-            // actor, we are supposed to remember the most recently
-            // touched actor, and that's it
-            if (mHitActor != null) {
-                if (mHitActor.mGestureResponder != null && mHitActor.mGestureResponder.toggle(false, mTouchVec))
-                    return true;
-            }
-
-            // forward to the level's handler
-            for (GestureAction ga : mGestureResponders)
-                if (ga.onDown(mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle when a touch is released
-         *
-         * @param screenX X coordinate of the tap
-         * @param screenY Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            // check if we down-pressed a control
-            mHud.mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                    mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(true, mTouchVec);
-                    return true;
-                }
-            }
-            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            if (mHitActor != null) {
-                if (mHitActor.mGestureResponder != null && mHitActor.mGestureResponder.toggle(true, mTouchVec)) {
-                    mHitActor = null;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Handle dragging
-         *
-         * @param screenX X coordinate of the drag
-         * @param screenY Y coordinate of the drag
-         * @param pointer The finger that was used
-         */
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            if (mHitActor != null && mHitActor.mGestureResponder != null) {
-                mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                return mHitActor.mGestureResponder.onDrag(mTouchVec);
-            }
-            for (GestureAction ga : mGestureResponders)
-                if (ga.onDrag(mTouchVec))
-                    return true;
-            return false;
-        }
-    }
 
     /**
      * Manually increment the number of goodies of type 1 that have been
@@ -834,7 +868,7 @@ public class Level extends BaseLevel {
      * game
      */
     public void winLevel() {
-        endLevel(true);
+        mScore.endLevel(true);
     }
 
     /**
@@ -844,217 +878,7 @@ public class Level extends BaseLevel {
      * game
      */
     public void loseLevel() {
-        endLevel(false);
-    }
-
-    /**
-     * Score encapsulates the data used by a Level to track the player's progress.
-     * There are four things tracked: the number of heroes created and destroyed,
-     * the number of enemies created and destroyed, the number of heroes at
-     * destinations, and the number of (each type of) goodie that has been
-     * collected. Apart from storing the counts, this class provides a public
-     * interface for manipulating the goodie counts, and a set of internal
-     * convenience methods for updating values and checking for win/lose. It also
-     * manages the mode of the level (i.e., what must be done to finish the level...
-     * collecting goodies, reaching a destination, etc).
-     */
-    class Score {
-        /**
-         * This is the number of goodies that must be collected, if we're in
-         * GOODIECOUNT mode
-         */
-        final int[] mVictoryGoodieCount = new int[4];
-        /**
-         * Track the number of heroes that have been created
-         */
-        int mHeroesCreated = 0;
-        /**
-         * Count of the goodies that have been collected in this level
-         */
-        int[] mGoodiesCollected = new int[]{0, 0, 0, 0};
-        /**
-         * Count the number of enemies that have been created
-         */
-        int mEnemiesCreated = 0;
-        /**
-         * Count the enemies that have been defeated
-         */
-        int mEnemiesDefeated = 0;
-        /**
-         * Track if the level has been lost (true) or the game is still being played
-         * (false)
-         */
-        boolean mGameOver;
-        /**
-         * In levels that have a lose-on-timer feature, we store the timer here, so
-         * that we can extend the time left to complete a game
-         * <p>
-         * NB: -1 indicates the timer is not active
-         */
-        float mLoseCountDownRemaining = -100;
-
-        /**
-         * Text to display when a Lose Countdown completes
-         */
-        String mLoseCountDownText = "";
-        /**
-         * This is the same as CountDownRemaining, but for levels where the hero
-         * wins by lasting until time runs out.
-         */
-        float mWinCountRemaining = -100;
-        /**
-         * Text to ddisplay when a Win Countdown completes
-         */
-        String mWinCountText = "";
-        /**
-         * This is a stopwatch, for levels where we count how long the game has been
-         * running
-         */
-        float mStopWatchProgress = -100;
-        /**
-         * This is how far the hero has traveled
-         */
-        int mDistance;
-        /**
-         * Track the number of heroes that have been removed/defeated
-         */
-        int mHeroesDefeated = 0;
-        /**
-         * Number of heroes who have arrived at any destination yet
-         */
-        int mDestinationArrivals = 0;
-        /**
-         * Describes how a level is won.
-         */
-        VictoryType mVictoryType = VictoryType.DESTINATION;
-        /**
-         * This is the number of heroes who must reach destinations, if we're in
-         * DESTINATION mode
-         */
-        int mVictoryHeroCount;
-        /**
-         * This is the number of enemies that must be defeated, if we're in
-         * ENEMYCOUNT mode. -1 means "all of them"
-         */
-        int mVictoryEnemyCount;
-    }
-
-    /**
-     * Use this to inform the level that a hero has been defeated
-     *
-     * @param e The enemy who defeated the hero
-     */
-    void defeatHero(Enemy e) {
-        mScore.mHeroesDefeated++;
-        if (mScore.mHeroesDefeated == mScore.mHeroesCreated) {
-            // possibly change the end-of-level text
-            if (!e.mOnDefeatHeroText.equals(""))
-                getLoseScene().setDefaultText(e.mOnDefeatHeroText);
-            endLevel(false);
-        }
-    }
-
-    /**
-     * Use this to inform the level that a goodie has been collected by a hero
-     *
-     * @param g The goodie that was collected
-     */
-    void onGoodieCollected(Goodie g) {
-        // Update goodie counts
-        for (int i = 0; i < 4; ++i)
-            mScore.mGoodiesCollected[i] += g.mScore[i];
-
-        // possibly win the level, but only if we win on goodie count and all
-        // four counts are high enough
-        if (mScore.mVictoryType != VictoryType.GOODIECOUNT)
-            return;
-        boolean match = true;
-        for (int i = 0; i < 4; ++i)
-            match &= mScore.mVictoryGoodieCount[i] <= mScore.mGoodiesCollected[i];
-        if (match)
-            endLevel(true);
-    }
-
-    /**
-     * Use this to inform the level that a hero has reached a destination
-     */
-    void onDestinationArrive() {
-        // check if the level is complete
-        mScore.mDestinationArrivals++;
-        if ((mScore.mVictoryType == VictoryType.DESTINATION) && (mScore.mDestinationArrivals >= mScore.mVictoryHeroCount))
-            endLevel(true);
-    }
-
-    /**
-     * Internal method for handling whenever an enemy is defeated
-     */
-    void onDefeatEnemy() {
-        // update the count of defeated enemies
-        mScore.mEnemiesDefeated++;
-
-        // if we win by defeating enemies, see if we've defeated enough of them:
-        boolean win = false;
-        if (mScore.mVictoryType == VictoryType.ENEMYCOUNT) {
-            // -1 means "defeat all enemies"
-            if (mScore.mVictoryEnemyCount == -1)
-                win = mScore.mEnemiesDefeated == mScore.mEnemiesCreated;
-            else
-                win = mScore.mEnemiesDefeated >= mScore.mVictoryEnemyCount;
-        }
-        if (win)
-            endLevel(true);
-    }
-
-    /**
-     * When a level ends, we run this code to shut it down, print a message, and
-     * then let the user resume play
-     *
-     * @param win true if the level was won, false otherwise
-     */
-    void endLevel(final boolean win) {
-        if (mEndGameEvent == null)
-            mEndGameEvent = new LolAction() {
-                @Override
-                public void go() {
-                    // Safeguard: only call this method once per level
-                    if (mScore.mGameOver)
-                        return;
-                    mScore.mGameOver = true;
-
-                    // Run the level-complete callback
-                    if (win && mWinCallback != null)
-                        mWinCallback.onEvent();
-                    else if (!win && mLoseCallback != null)
-                        mLoseCallback.onEvent();
-
-                    // if we won, unlock the next level
-                    if (win)
-                        mGame.unlockNext();
-
-                    // drop everything from the hud
-                    mHud.reset();
-
-                    // clear any pending timers
-                    Timer.instance().clear();
-
-                    // display the PostScene, which provides a pause before we
-                    // retry/start the next level
-                    if (win)
-                        mWinScene.show();
-                    else
-                        mLoseScene.show();
-                }
-            };
-    }
-
-    /**
-     * These are the ways you can complete a level: you can reach the
-     * destination, you can collect enough stuff, or you can reach a certain
-     * number of enemies defeated Technically, there's also 'survive for x
-     * seconds', but that doesn't need special support
-     */
-    enum VictoryType {
-        DESTINATION, GOODIECOUNT, ENEMYCOUNT
+        mScore.endLevel(false);
     }
 
     /**
@@ -1064,7 +888,7 @@ public class Level extends BaseLevel {
      * @param newYGravity The new Y gravity
      */
     public void resetGravity(float newXGravity, float newYGravity) {
-        mWorld.setGravity(new Vector2(newXGravity, newYGravity));
+        mWorld.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
     }
 
     /**
@@ -1075,7 +899,7 @@ public class Level extends BaseLevel {
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
     public void enableTilt(float xGravityMax, float yGravityMax) {
-        mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+        mWorld.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
@@ -1083,7 +907,7 @@ public class Level extends BaseLevel {
      * level
      */
     public void disableTilt() {
-        mTilt.mGravityMax = null;
+        mWorld.mTilt.mGravityMax = null;
     }
 
     /**
@@ -1096,7 +920,7 @@ public class Level extends BaseLevel {
      *               of the phone directly sets velocities
      */
     public void setTiltAsVelocity(boolean toggle) {
-        mTilt.mTiltVelocityOverride = toggle;
+        mWorld.mTilt.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -1108,7 +932,7 @@ public class Level extends BaseLevel {
      *                   accelerometer less sensitive
      */
     public void setGravityMultiplier(float multiplier) {
-        mTilt.mMultiplier = multiplier;
+        mWorld.mTilt.mMultiplier = multiplier;
     }
 
     /**
@@ -1207,7 +1031,7 @@ public class Level extends BaseLevel {
     public final TextProducer DisplayRemainingProjectiles = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mProjectilePool.mProjectilesRemaining;
+            return "" + mWorld.mProjectilePool.mProjectilesRemaining;
         }
     };
 
@@ -1300,12 +1124,12 @@ public class Level extends BaseLevel {
      * @return The display, so that it can be controlled further if needed
      */
     public Display addDisplay(final int x, final int y, String fontName, final String fontColor, int size, final String prefix, final String suffix, final TextProducer tp) {
-        Display d = new Display(this, fontColor, fontName, size) {
+        Display d = new Display(mWorld, fontColor, fontName, size) {
             @Override
             void render(SpriteBatch sb) {
                 mFont.setColor(mColor);
                 String txt = prefix + tp.makeText() + suffix;
-                drawTextTransposed(x, y, txt, mFont, sb);
+                mLevel.drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
         mHud.mDisplays.add(d);
@@ -1415,7 +1239,7 @@ public class Level extends BaseLevel {
     public TouchEventHandler ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         return new TouchEventHandler() {
             public void go(Vector3 touchLocation) {
-                mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+                mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
             }
         };
     }
@@ -1434,7 +1258,7 @@ public class Level extends BaseLevel {
     public TouchEventHandler ThrowDirectionalAction(final Hero hero, final float offsetX, final float offsetY) {
         return new TouchEventHandler() {
             public void go(Vector3 touchLocation) {
-                mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
+                mWorld.mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
                         touchLocation.x, touchLocation.y, hero, offsetX, offsetY);
             }
         };
@@ -1448,10 +1272,10 @@ public class Level extends BaseLevel {
     public TouchEventHandler ZoomOutAction(final float maxZoom) {
         return new TouchEventHandler() {
             public void go(Vector3 eventPosition) {
-                float curzoom = mGameCam.zoom;
+                float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom < maxZoom) {
-                    mGameCam.zoom *= 2;
-                    mBgCam.zoom *= 2;
+                    mWorld.mGameCam.zoom *= 2;
+                    mWorld.mBgCam.zoom *= 2;
                 }
             }
         };
@@ -1465,10 +1289,10 @@ public class Level extends BaseLevel {
     public TouchEventHandler ZoomInAction(final float minZoom) {
         return new TouchEventHandler() {
             public void go(Vector3 eventPosition) {
-                float curzoom = mGameCam.zoom;
+                float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom > minZoom) {
-                    mGameCam.zoom /= 2;
-                    mBgCam.zoom /= 2;
+                    mWorld.mGameCam.zoom /= 2;
+                    mWorld.mBgCam.zoom /= 2;
                 }
             }
         };
@@ -1508,7 +1332,7 @@ public class Level extends BaseLevel {
         // Put the control and events in the appropriate lists
         mHud.mControls.add(c);
         mHud.mToggleControls.add(c);
-        mRepeatEvents.add(whileDownAction);
+        mWorld.mRepeatEvents.add(whileDownAction);
         return c;
     }
 
@@ -1644,7 +1468,7 @@ public class Level extends BaseLevel {
                 long now = System.currentTimeMillis();
                 if (mLastThrow + milliDelay < now) {
                     mLastThrow = now;
-                    mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+                    mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
                 }
             }
         };
@@ -1705,7 +1529,7 @@ public class Level extends BaseLevel {
         // direction
         mHud.mToggleControls.add(c);
         mHud.mPanControls.add(c);
-        mRepeatEvents.add(new LolAction() {
+        mWorld.mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -1714,7 +1538,7 @@ public class Level extends BaseLevel {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        mProjectilePool.throwAt(h.mBody.getPosition().x,
+                        mWorld.mProjectilePool.throwAt(h.mBody.getPosition().x,
                                 h.mBody.getPosition().y, v.x, v.y, h, offsetX, offsetY);
                     }
                 }
@@ -1770,23 +1594,23 @@ public class Level extends BaseLevel {
              */
             @Override
             public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                if (mChaseActor != null) {
-                    oldChaseactor = mChaseActor;
-                    mChaseActor = null;
+                if (mWorld.mChaseActor != null) {
+                    oldChaseactor = mWorld.mChaseActor;
+                    mWorld.mChaseActor = null;
                 }
-                float x = mGameCam.position.x - deltaX * .1f
-                        * mGameCam.zoom;
-                float y = mGameCam.position.y + deltaY * .1f
-                        * mGameCam.zoom;
+                float x = mWorld.mGameCam.position.x - deltaX * .1f
+                        * mWorld.mGameCam.zoom;
+                float y = mWorld.mGameCam.position.y + deltaY * .1f
+                        * mWorld.mGameCam.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > mCamBound.x - mConfig.mWidth * mGameCam.zoom
+                if (x > mWorld.mCamBound.x - mConfig.mWidth * mWorld.mGameCam.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mCamBound.x - mConfig.mWidth * mGameCam.zoom
+                    x = mWorld.mCamBound.x - mConfig.mWidth * mWorld.mGameCam.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
-                if (y > mCamBound.y - mConfig.mHeight * mGameCam.zoom
+                if (y > mWorld.mCamBound.y - mConfig.mHeight * mWorld.mGameCam.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mCamBound.y - mConfig.mHeight * mGameCam.zoom
+                    y = mWorld.mCamBound.y - mConfig.mHeight * mWorld.mGameCam.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1794,13 +1618,13 @@ public class Level extends BaseLevel {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
-                if (y < mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (x < mConfig.mWidth * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    x = mConfig.mWidth * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (y < mConfig.mHeight * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    y = mConfig.mHeight * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
-                mGameCam.position.set(x, y, 0);
+                mWorld.mGameCam.position.set(x, y, 0);
                 return true;
             }
         };
@@ -1833,7 +1657,7 @@ public class Level extends BaseLevel {
              *            The x/y/z coordinates of the touch
              */
             public boolean onDown(Vector3 touchVec) {
-                lastZoom = mGameCam.zoom;
+                lastZoom = mWorld.mGameCam.zoom;
                 return true;
             }
 
@@ -1850,7 +1674,7 @@ public class Level extends BaseLevel {
                 float ratio = initialDistance / distance;
                 float newZoom = lastZoom * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
-                    mGameCam.zoom = newZoom;
+                    mWorld.mGameCam.zoom = newZoom;
                 return false;
             }
         };
@@ -2120,7 +1944,7 @@ public class Level extends BaseLevel {
      * @return The integer value corresponding to the last value stored
      */
     public int getLevelFact(String factName, int defaultVal) {
-        Integer i = mLevelFacts.get(factName);
+        Integer i = mWorld.mLevelFacts.get(factName);
         if (i == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -2136,7 +1960,7 @@ public class Level extends BaseLevel {
      * @param factValue The integer value that is the fact being saved
      */
     public void putLevelFact(String factName, int factValue) {
-        mLevelFacts.put(factName, factValue);
+        mWorld.mLevelFacts.put(factName, factValue);
     }
 
     /**
@@ -2198,7 +2022,7 @@ public class Level extends BaseLevel {
      * @return The last Actor stored with this name
      */
     public Actor getLevelActor(String actorName) {
-        Actor actor = mLevelActors.get(actorName);
+        Actor actor = mWorld.mLevelActors.get(actorName);
         if (actor == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -2214,7 +2038,7 @@ public class Level extends BaseLevel {
      * @param actor     The Actor that is the fact being saved
      */
     public void putLevelActor(String actorName, Actor actor) {
-        mLevelActors.put(actorName, actor);
+        mWorld.mLevelActors.put(actorName, actor);
     }
 
     /**
@@ -2223,7 +2047,7 @@ public class Level extends BaseLevel {
      * @param color The color, formated as #RRGGBB
      */
     public void setBackgroundColor(String color) {
-        mBackground.mColor = Color.valueOf(color);
+        mWorld.mBackground.mColor = Color.valueOf(color);
     }
 
     /**
@@ -2247,7 +2071,7 @@ public class Level extends BaseLevel {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mBackground.mLayers.add(pl);
+        mWorld.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -2268,7 +2092,7 @@ public class Level extends BaseLevel {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mBackground.mLayers.add(pl);
+        mWorld.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -2292,7 +2116,7 @@ public class Level extends BaseLevel {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mBackground.mLayers.add(pl);
+        mWorld.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -2315,7 +2139,7 @@ public class Level extends BaseLevel {
         pe.getEmitters().first().setPosition(x, y);
 
         // NB: we pretend effects are Actors, so that we can have them in front of or behind Actors
-        addActor(e, zIndex);
+        mWorld.addActor(e, zIndex);
 
         // start emitting particles
         pe.start();
@@ -2343,7 +2167,7 @@ public class Level extends BaseLevel {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mForeground.mLayers.add(pl);
+        mWorld.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -2364,7 +2188,7 @@ public class Level extends BaseLevel {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mForeground.mLayers.add(pl);
+        mWorld.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -2388,7 +2212,7 @@ public class Level extends BaseLevel {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mForeground.mLayers.add(pl);
+        mWorld.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -2401,7 +2225,7 @@ public class Level extends BaseLevel {
         QuickScene scene = mLoseScene;
         if (scene != null)
             return scene;
-        scene = QuickScene.makeLoseScene(this);
+        scene = QuickScene.makeLoseScene(mWorld);
         mLoseScene = scene;
         return scene;
     }
@@ -2416,7 +2240,7 @@ public class Level extends BaseLevel {
         QuickScene scene = mPreScene;
         if (scene != null)
             return scene;
-        scene = QuickScene.makePreScene(this);
+        scene = QuickScene.makePreScene(mWorld);
         // immediately make the scene visible
         scene.mVisible = true;
         mPreScene = scene;
@@ -2436,7 +2260,7 @@ public class Level extends BaseLevel {
         QuickScene scene = mPauseScene;
         if (scene != null)
             return scene;
-        scene = QuickScene.makePauseScene(this);
+        scene = QuickScene.makePauseScene(mWorld);
         mPauseScene = scene;
         return scene;
     }
@@ -2451,7 +2275,7 @@ public class Level extends BaseLevel {
         QuickScene scene = mWinScene;
         if (scene != null)
             return scene;
-        scene = QuickScene.makeWinScene(this);
+        scene = QuickScene.makeWinScene(mWorld);
         mWinScene = scene;
         return scene;
     }
@@ -2467,9 +2291,10 @@ public class Level extends BaseLevel {
      * @return The enemy, so that it can be modified further
      */
     public Enemy makeEnemyAsBox(float x, float y, float width, float height, String imgName) {
-        Enemy e = new Enemy(this, width, height, imgName);
+        Enemy e = new Enemy(mWorld, mScore, width, height, imgName);
+        mScore.mEnemiesCreated++;
         e.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        addActor(e, 0);
+        mWorld.addActor(e, 0);
         return e;
     }
 
@@ -2486,9 +2311,10 @@ public class Level extends BaseLevel {
      * @return The enemy, so that it can be further modified
      */
     public Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Enemy e = new Enemy(this, width, height, imgName);
+        Enemy e = new Enemy(mWorld, mScore, width, height, imgName);
+        mScore.mEnemiesCreated++;
         e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        addActor(e, 0);
+        mWorld.addActor(e, 0);
         return e;
     }
 
@@ -2504,9 +2330,10 @@ public class Level extends BaseLevel {
      */
     public Enemy makeEnemyAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Enemy e = new Enemy(this, radius, radius, imgName);
+        Enemy e = new Enemy(mWorld, mScore, radius, radius, imgName);
+        mScore.mEnemiesCreated++;
         e.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        addActor(e, 0);
+        mWorld.addActor(e, 0);
         return e;
     }
 
@@ -2521,10 +2348,10 @@ public class Level extends BaseLevel {
      * @return The destination, so that it can be modified further
      */
     public Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
-        Destination d = new Destination(this, width, height, imgName);
+        Destination d = new Destination(mWorld, mScore, width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         d.setCollisionsEnabled(false);
-        addActor(d, 0);
+        mWorld.addActor(d, 0);
         return d;
     }
 
@@ -2541,10 +2368,10 @@ public class Level extends BaseLevel {
      * @return The destination, so that it can be further modified
      */
     public Destination makeDestinationAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Destination d = new Destination(this, width, height, imgName);
+        Destination d = new Destination(mWorld, mScore, width, height, imgName);
         d.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         d.setCollisionsEnabled(false);
-        addActor(d, 0);
+        mWorld.addActor(d, 0);
         return d;
     }
 
@@ -2560,10 +2387,10 @@ public class Level extends BaseLevel {
      */
     public Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Destination d = new Destination(this, radius, radius, imgName);
+        Destination d = new Destination(mWorld, mScore, radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionsEnabled(false);
-        addActor(d, 0);
+        mWorld.addActor(d, 0);
         return d;
     }
 
@@ -2578,9 +2405,9 @@ public class Level extends BaseLevel {
      * @return The obstacle, so that it can be further modified
      */
     public Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
-        Obstacle o = new Obstacle(this, width, height, imgName);
+        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        addActor(o, 0);
+        mWorld.addActor(o, 0);
         return o;
     }
 
@@ -2597,9 +2424,9 @@ public class Level extends BaseLevel {
      * @return The obstacle, so that it can be further modified
      */
     public Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Obstacle o = new Obstacle(this, width, height, imgName);
+        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        addActor(o, 0);
+        mWorld.addActor(o, 0);
         return o;
     }
 
@@ -2615,9 +2442,9 @@ public class Level extends BaseLevel {
      */
     public Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Obstacle o = new Obstacle(this, width, height, imgName);
+        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        addActor(o, 0);
+        mWorld.addActor(o, 0);
         return o;
     }
 
@@ -2633,10 +2460,10 @@ public class Level extends BaseLevel {
      * @return The goodie, so that it can be further modified
      */
     public Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
-        Goodie g = new Goodie(this, width, height, imgName);
+        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         g.setCollisionsEnabled(false);
-        addActor(g, 0);
+        mWorld.addActor(g, 0);
         return g;
     }
 
@@ -2653,10 +2480,10 @@ public class Level extends BaseLevel {
      */
     public Goodie makeGoodieAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Goodie g = new Goodie(this, width, height, imgName);
+        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         g.setCollisionsEnabled(false);
-        addActor(g, 0);
+        mWorld.addActor(g, 0);
         return g;
     }
 
@@ -2673,10 +2500,10 @@ public class Level extends BaseLevel {
      * @return The goodie, so that it can be further modified
      */
     public Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Goodie g = new Goodie(this, width, height, imgName);
+        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
         g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         g.setCollisionsEnabled(false);
-        addActor(g, 0);
+        mWorld.addActor(g, 0);
         return g;
     }
 
@@ -2691,9 +2518,10 @@ public class Level extends BaseLevel {
      * @return The hero that was created
      */
     public Hero makeHeroAsBox(float x, float y, float width, float height, String imgName) {
-        Hero h = new Hero(this, width, height, imgName);
+        Hero h = new Hero(mWorld, mScore, width, height, imgName);
+        mScore.mHeroesCreated++;
         h.setBoxPhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y);
-        addActor(h, 0);
+        mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2709,9 +2537,10 @@ public class Level extends BaseLevel {
      */
     public Hero makeHeroAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Hero h = new Hero(this, width, height, imgName);
+        Hero h = new Hero(mWorld, mScore, width, height, imgName);
+        mScore.mHeroesCreated++;
         h.setCirclePhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y, radius / 2);
-        addActor(h, 0);
+        mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2728,9 +2557,10 @@ public class Level extends BaseLevel {
      * @return The hero, so that it can be further modified
      */
     public Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Hero h = new Hero(this, width, height, imgName);
+        Hero h = new Hero(mWorld, mScore, width, height, imgName);
+        mScore.mHeroesCreated++;
         h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        addActor(h, 0);
+        mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2741,7 +2571,7 @@ public class Level extends BaseLevel {
      * @param distance Maximum distance from the hero that a projectile can travel
      */
     public void setProjectileRange(float distance) {
-        for (Projectile p : mProjectilePool.mPool)
+        for (Projectile p : mWorld.mProjectilePool.mPool)
             p.mRange = distance;
     }
 
@@ -2750,7 +2580,7 @@ public class Level extends BaseLevel {
      * they will be (more or less) immune to gravitational forces.
      */
     public void setProjectileGravityOn() {
-        for (Projectile p : mProjectilePool.mPool)
+        for (Projectile p : mWorld.mProjectilePool.mPool)
             p.mBody.setGravityScale(1);
     }
 
@@ -2762,9 +2592,9 @@ public class Level extends BaseLevel {
      *                TODO: this is broken now that we removed Animatable images
      */
     public void setProjectileImageSource(String imgName) {
-        for (Projectile p : mProjectilePool.mPool)
-            p.mAnimator.updateImage(this, imgName);
-        mProjectilePool.mRandomizeImages = true;
+        for (Projectile p : mWorld.mProjectilePool.mPool)
+            p.mAnimator.updateImage(mWorld, imgName);
+        mWorld.mProjectilePool.mRandomizeImages = true;
     }
 
     /**
@@ -2774,7 +2604,7 @@ public class Level extends BaseLevel {
      * @param factor The value to multiply against the projectile speed.
      */
     public void setProjectileVectorDampeningFactor(float factor) {
-        mProjectilePool.mDirectionalDamp = factor;
+        mWorld.mProjectilePool.mDirectionalDamp = factor;
     }
 
     /**
@@ -2782,7 +2612,7 @@ public class Level extends BaseLevel {
      * than disappearing when they collide with other actors
      */
     public void enableCollisionsForProjectiles() {
-        mProjectilePool.mSensorProjectiles = false;
+        mWorld.mProjectilePool.mSensorProjectiles = false;
     }
 
     /**
@@ -2792,8 +2622,8 @@ public class Level extends BaseLevel {
      * @param velocity The magnitude of the velocity for projectiles
      */
     public void setFixedVectorThrowVelocityForProjectiles(float velocity) {
-        mProjectilePool.mEnableFixedVectorVelocity = true;
-        mProjectilePool.mFixedVectorVelocity = velocity;
+        mWorld.mProjectilePool.mEnableFixedVectorVelocity = true;
+        mWorld.mProjectilePool.mFixedVectorVelocity = velocity;
     }
 
     /**
@@ -2801,7 +2631,7 @@ public class Level extends BaseLevel {
      * be rotated to face in their direction or movement
      */
     public void setRotateVectorThrowForProjectiles() {
-        mProjectilePool.mRotateVectorThrow = true;
+        mWorld.mProjectilePool.mRotateVectorThrow = true;
     }
 
     /**
@@ -2809,7 +2639,7 @@ public class Level extends BaseLevel {
      * screen
      */
     public void setCollisionOkForProjectiles() {
-        for (Projectile p : mProjectilePool.mPool)
+        for (Projectile p : mWorld.mProjectilePool.mPool)
             p.mDisappearOnCollide = false;
     }
 
@@ -2828,7 +2658,7 @@ public class Level extends BaseLevel {
      */
     public void configureProjectiles(int size, float width, float height, String imgName, int strength, int zIndex,
                                      boolean isCircle) {
-        mProjectilePool = new ProjectilePool(this, size, width, height, imgName, strength, zIndex,
+        mWorld.mProjectilePool = new ProjectilePool(mWorld, mScore, size, width, height, imgName, strength, zIndex,
                 isCircle);
     }
 
@@ -2838,7 +2668,7 @@ public class Level extends BaseLevel {
      * @param number How many projectiles are available
      */
     public void setNumberOfProjectiles(int number) {
-        mProjectilePool.mProjectilesRemaining = number;
+        mWorld.mProjectilePool.mProjectilesRemaining = number;
     }
 
     /**
@@ -2847,7 +2677,7 @@ public class Level extends BaseLevel {
      * @param soundName Name of the sound file to play
      */
     public void setThrowSound(String soundName) {
-        mProjectilePool.mThrowSound = mMedia.getSound(soundName);
+        mWorld.mProjectilePool.mThrowSound = mMedia.getSound(soundName);
     }
 
     /**
@@ -2856,7 +2686,7 @@ public class Level extends BaseLevel {
      * @param soundName the name of the sound file to play
      */
     public void setProjectileDisappearSound(String soundName) {
-        mProjectilePool.mProjectileDisappearSound = mMedia.getSound(soundName);
+        mWorld.mProjectilePool.mProjectileDisappearSound = mMedia.getSound(soundName);
     }
 
     /**
@@ -2865,7 +2695,7 @@ public class Level extends BaseLevel {
      * @param a The animation object to use for each projectile that is thrown
      */
     public void setProjectileAnimation(Animation a) {
-        for (Projectile p : mProjectilePool.mPool)
+        for (Projectile p : mWorld.mProjectilePool.mPool)
             p.setDefaultAnimation(a);
     }
 
@@ -2961,7 +2791,7 @@ public class Level extends BaseLevel {
      */
     public void drawPicture(final float x, final float y, final float width, final float height,
                             final String imgName, int zIndex) {
-        addActor(makePicture(x, y, width, height, imgName), zIndex);
+        mWorld.addActor(mWorld.makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
@@ -2985,12 +2815,12 @@ public class Level extends BaseLevel {
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
                 bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-                glyphLayout.setText(bf, text);
-                bf.draw(sb, text, x, y + glyphLayout.height);
+                mWorld.mGlyphLayout.setText(bf, text);
+                bf.draw(sb, text, x, y + mWorld.mGlyphLayout.height);
                 bf.getData().setScale(1);
             }
         };
-        addActor(r, zIndex);
+        mWorld.addActor(r, zIndex);
     }
 
     /**
@@ -3012,9 +2842,9 @@ public class Level extends BaseLevel {
 
         // figure out the image dimensions
         bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-        glyphLayout.setText(bf, text);
-        final float w = glyphLayout.width;
-        final float h = glyphLayout.height;
+        mWorld.mGlyphLayout.setText(bf, text);
+        final float w = mWorld.mGlyphLayout.width;
+        final float h = mWorld.mGlyphLayout.height;
         bf.getData().setScale(1);
 
         // describe how to render it
@@ -3027,7 +2857,7 @@ public class Level extends BaseLevel {
                 bf.getData().setScale(1);
             }
         };
-        addActor(r, zIndex);
+        mWorld.addActor(r, zIndex);
     }
 
     /**
@@ -3037,7 +2867,7 @@ public class Level extends BaseLevel {
      * @return a random integer
      */
     public int getRandom(int max) {
-        return sGenerator.nextInt(max);
+        return mWorld.mGenerator.nextInt(max);
     }
 
     /**
