@@ -293,7 +293,7 @@ public class Hero extends Actor {
             d.mHolding++;
             if (d.mArrivalSound != null)
                 d.mArrivalSound.play(mLevel.getGameFact("volume", 1));
-            mLevel.mScore.onDestinationArrive();
+            mLevel.onDestinationArrive();
         }
     }
 
@@ -307,9 +307,9 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            mLevel.mScore.defeatHero(e);
+            mLevel.defeatHero(e);
             if (mMustSurvive)
-                mLevel.mScore.endLevel(false);
+                mLevel.endLevel(false);
             return;
         }
         // handle hero invincibility
@@ -331,9 +331,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            mLevel.mScore.defeatHero(e);
+            mLevel.defeatHero(e);
             if (mMustSurvive)
-                mLevel.mScore.endLevel(false);
+                mLevel.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -395,7 +395,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        mLevel.mScore.onGoodieCollected(g);
+        mLevel.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);

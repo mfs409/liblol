@@ -18,15 +18,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
@@ -60,49 +51,59 @@ public class Level extends BaseLevel {
     Hud mHud;
 
     /// A reference to the score object, for tracking winning and losing
+    ///
+    /// TODO: make private
     Score mScore = new Score();
 
     /// A reference to the tilt object, for managing how tilts are handled
+    ///
+    /// TODO: make private
     Tilt mTilt = new Tilt();
 
     /// The set of Parallax backgrounds
-    Background mBackground = new Background();
+    private Background mBackground = new Background();
 
     /// The set of Parallax foregrounds
-    Foreground mForeground = new Foreground();
+    private Foreground mForeground = new Foreground();
 
     /// The scene to show when the level is created (if any)
-    QuickScene mPreScene;
+    private QuickScene mPreScene;
 
     /// The scene to show when the level is won
-    QuickScene mWinScene;
+    private QuickScene mWinScene;
 
     /// The scene to show when the level is lost
-    QuickScene mLoseScene;
+    private QuickScene mLoseScene;
 
     /// The scene to show when the level is paused (if any)
-    QuickScene mPauseScene;
+    private QuickScene mPauseScene;
 
     /// When the level is won or lost, this is where we store the event that needs to run
-    LolAction mEndGameEvent;
+    private LolAction mEndGameEvent;
 
     /// This camera is for drawing parallax backgrounds that go in front of or behind the world
+    ///
+    /// TODO: make private
     ParallaxCamera mBgCam;
 
     /// This is the Actor that the camera chases
-    Actor mChaseActor;
+    private Actor mChaseActor;
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use this.
+    ///
+    /// TODO: make private
     ArrayList<GestureAction> mGestureResponders = new ArrayList<>();
 
     /// In levels with a projectile pool, the pool is accessed from here
+    ///
+    /// TODO: make private
     ProjectilePool mProjectilePool;
 
     /// Code to run when a level is won
-    LolCallback mWinCallback;
+    private LolCallback mWinCallback;
 
     /// Code to run when a level is lost
-    LolCallback mLoseCallback;
+    private LolCallback mLoseCallback;
 
     /// The music, if any
     private Music mMusic;
@@ -142,198 +143,11 @@ public class Level extends BaseLevel {
         mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
         mBgCam.zoom = 1;
 
-        // Set up collision handlers for a "real" playable level
-        configureCollisionHandlers();
-
         // When debug mode is on, print the frames per second. This is icky, but
         // we need the singleton to be set before we call this, so we don't
         // actually do it in the constructor...
         if (mConfig.mShowDebugBoxes)
             addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
-    }
-
-    /**
-     * Configure physics for the current level
-     */
-    private void configureCollisionHandlers() {
-
-        // set up the collision handlers
-        mWorld.setContactListener(new ContactListener() {
-            /**
-             * When two bodies start to collide, we can use this to forward to
-             * our onCollide methods
-             */
-            @Override
-            public void beginContact(final Contact contact) {
-                // Get the bodies, make sure both are actors
-                Object a = contact.getFixtureA().getBody().getUserData();
-                Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
-                    return;
-
-                // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
-                //
-                // Of those, Hero, Enemy, and Projectile are the only ones with
-                // a non-empty onCollide
-                final Actor c0;
-                final Actor c1;
-                if (a instanceof Hero) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Hero) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else if (a instanceof Enemy) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Enemy) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else if (a instanceof Projectile) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
-                } else if (b instanceof Projectile) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
-                } else {
-                    return;
-                }
-
-                // Schedule an event to run as soon as the physics world
-                // finishes its step.
-                //
-                // NB: this is called from render, while world is updating...
-                // you can't modify the world or its actors until the update
-                // finishes, so we have to schedule collision-based updates to
-                // run after the world update.
-                mOneTimeEvents.add(new LolAction() {
-                    @Override
-                    public void go() {
-                        c0.onCollide(c1, contact);
-                    }
-                });
-            }
-
-            /**
-             * We ignore endcontact
-             */
-            @Override
-            public void endContact(Contact contact) {
-            }
-
-            /**
-             * Presolve is a hook for disabling certain collisions. We use it
-             * for collision immunity, sticky obstacles, and one-way walls
-             */
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-                // get the bodies, make sure both are actors
-                Object a = contact.getFixtureA().getBody().getUserData();
-                Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
-                    return;
-                Actor gfoA = (Actor) a;
-                Actor gfoB = (Actor) b;
-
-                // handle sticky obstacles... only do something if at least one
-                // actor is a sticky actor
-                if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
-                    handleSticky(gfoA, gfoB, contact);
-                    return;
-                } else if (gfoB.mIsSticky[0] || gfoB.mIsSticky[1] || gfoB.mIsSticky[2] || gfoB.mIsSticky[3]) {
-                    handleSticky(gfoB, gfoA, contact);
-                    return;
-                }
-
-                // if the actors have the same passthrough ID, and it's
-                // not zero, then disable the contact
-                if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
-                    contact.setEnabled(false);
-                    return;
-                }
-
-                // is either one-sided? If not, we're done
-                Actor onesided = null;
-                Actor other;
-                if (gfoA.mIsOneSided > -1) {
-                    onesided = gfoA;
-                    other = gfoB;
-                } else if (gfoB.mIsOneSided > -1) {
-                    onesided = gfoB;
-                    other = gfoA;
-                } else {
-                    return;
-                }
-
-                // if we're here, see if we should be disabling a one-sided
-                // obstacle collision
-                WorldManifold worldManiFold = contact.getWorldManifold();
-                int numPoints = worldManiFold.getNumberOfContactPoints();
-                for (int i = 0; i < numPoints; i++) {
-                    Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
-                    // disable based on the value of isOneSided and the vector
-                    // between the actors
-                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
-                        contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
-                        contact.setEnabled(false);
-                }
-            }
-
-            /**
-             * We ignore postsolve
-             */
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-            }
-        });
-    }
-
-    /**
-     * When a hero collides with a "sticky" obstacle, this is the code we run to
-     * figure out what to do
-     *
-     * @param sticky  The sticky actor... it should always be an obstacle for now
-     * @param other   The other actor... it should always be a hero for now
-     * @param contact A description of the contact event
-     */
-    void handleSticky(final Actor sticky, final Actor other, Contact contact) {
-        // don't create a joint if we've already got one
-        if (other.mDJoint != null)
-            return;
-        // don't create a joint if we're supposed to wait
-        if (System.currentTimeMillis() < other.mStickyDelay)
-            return;
-        // handle sticky obstacles... only do something if we're hitting the
-        // obstacle from the correct direction
-        if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
-                || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
-                || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
-                || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
-            // create distance and weld joints... somehow, the combination is
-            // needed to get this to work. Note that this function runs during
-            // the box2d step, so we need to make the joint in a callback that
-            // runs later
-            final Vector2 v = contact.getWorldManifold().getPoints()[0];
-            mOneTimeEvents.add(new LolAction() {
-                @Override
-                public void go() {
-                    other.mBody.setLinearVelocity(0, 0);
-                    DistanceJointDef d = new DistanceJointDef();
-                    d.initialize(sticky.mBody, other.mBody, v, v);
-                    d.collideConnected = true;
-                    other.mDJoint = (DistanceJoint) mWorld.createJoint(d);
-                    WeldJointDef w = new WeldJointDef();
-                    w.initialize(sticky.mBody, other.mBody, v);
-                    w.collideConnected = true;
-                    other.mWJoint = (WeldJoint) mWorld.createJoint(w);
-                }
-            });
-        }
     }
 
     /**
@@ -623,7 +437,7 @@ public class Level extends BaseLevel {
             if (mScore.mLoseCountDownRemaining < 0) {
                 if (mScore.mLoseCountDownText != "")
                     getLoseScene().setDefaultText(mScore.mLoseCountDownText);
-                mScore.endLevel(false);
+                endLevel(false);
             }
         }
         if (mScore.mWinCountRemaining != -100) {
@@ -631,7 +445,7 @@ public class Level extends BaseLevel {
             if (mScore.mWinCountRemaining < 0) {
                 if (mScore.mWinCountText != "")
                     getWinScene().setDefaultText(mScore.mWinCountText);
-                mScore.endLevel(true);
+                endLevel(true);
             }
         }
         if (mScore.mStopWatchProgress != -100) {
@@ -1123,7 +937,7 @@ public class Level extends BaseLevel {
      * game
      */
     public void winLevel() {
-        mScore.endLevel(true);
+        endLevel(true);
     }
 
     /**
@@ -1133,7 +947,7 @@ public class Level extends BaseLevel {
      * game
      */
     public void loseLevel() {
-        mScore.endLevel(false);
+        endLevel(false);
     }
 
 
@@ -1227,6 +1041,7 @@ public class Level extends BaseLevel {
          * ENEMYCOUNT mode. -1 means "all of them"
          */
         int mVictoryEnemyCount;
+    }
 
         /**
          * Use this to inform the level that a hero has been defeated
@@ -1234,8 +1049,8 @@ public class Level extends BaseLevel {
          * @param e The enemy who defeated the hero
          */
         void defeatHero(Enemy e) {
-            mHeroesDefeated++;
-            if (mHeroesDefeated == mHeroesCreated) {
+            mScore.mHeroesDefeated++;
+            if (mScore.mHeroesDefeated == mScore.mHeroesCreated) {
                 // possibly change the end-of-level text
                 if (!e.mOnDefeatHeroText.equals(""))
                     getLoseScene().setDefaultText(e.mOnDefeatHeroText);
@@ -1251,15 +1066,15 @@ public class Level extends BaseLevel {
         void onGoodieCollected(Goodie g) {
             // Update goodie counts
             for (int i = 0; i < 4; ++i)
-                mGoodiesCollected[i] += g.mScore[i];
+                mScore.mGoodiesCollected[i] += g.mScore[i];
 
             // possibly win the level, but only if we win on goodie count and all
             // four counts are high enough
-            if (mVictoryType != VictoryType.GOODIECOUNT)
+            if (mScore.mVictoryType != VictoryType.GOODIECOUNT)
                 return;
             boolean match = true;
             for (int i = 0; i < 4; ++i)
-                match &= mVictoryGoodieCount[i] <= mGoodiesCollected[i];
+                match &= mScore.mVictoryGoodieCount[i] <= mScore.mGoodiesCollected[i];
             if (match)
                 endLevel(true);
         }
@@ -1269,8 +1084,8 @@ public class Level extends BaseLevel {
          */
         void onDestinationArrive() {
             // check if the level is complete
-            mDestinationArrivals++;
-            if ((mVictoryType == VictoryType.DESTINATION) && (mDestinationArrivals >= mVictoryHeroCount))
+            mScore.mDestinationArrivals++;
+            if ((mScore.mVictoryType == VictoryType.DESTINATION) && (mScore.mDestinationArrivals >= mScore.mVictoryHeroCount))
                 endLevel(true);
         }
 
@@ -1279,16 +1094,16 @@ public class Level extends BaseLevel {
          */
         void onDefeatEnemy() {
             // update the count of defeated enemies
-            mEnemiesDefeated++;
+            mScore.mEnemiesDefeated++;
 
             // if we win by defeating enemies, see if we've defeated enough of them:
             boolean win = false;
-            if (mVictoryType == VictoryType.ENEMYCOUNT) {
+            if (mScore.mVictoryType == VictoryType.ENEMYCOUNT) {
                 // -1 means "defeat all enemies"
-                if (mVictoryEnemyCount == -1)
-                    win = mEnemiesDefeated == mEnemiesCreated;
+                if (mScore.mVictoryEnemyCount == -1)
+                    win = mScore.mEnemiesDefeated == mScore.mEnemiesCreated;
                 else
-                    win = mEnemiesDefeated >= mVictoryEnemyCount;
+                    win = mScore.mEnemiesDefeated >= mScore.mVictoryEnemyCount;
             }
             if (win)
                 endLevel(true);
@@ -1306,9 +1121,9 @@ public class Level extends BaseLevel {
                     @Override
                     public void go() {
                         // Safeguard: only call this method once per level
-                        if (mGameOver)
+                        if (mScore.mGameOver)
                             return;
-                        mGameOver = true;
+                        mScore.mGameOver = true;
 
                         // Run the level-complete callback
                         if (win && mWinCallback != null)
@@ -1335,8 +1150,6 @@ public class Level extends BaseLevel {
                     }
                 };
         }
-
-    }
 
     /**
      * These are the ways you can complete a level: you can reach the

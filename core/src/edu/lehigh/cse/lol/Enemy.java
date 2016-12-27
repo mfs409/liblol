@@ -180,7 +180,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            mLevel.mScore.onDefeatEnemy();
+            mLevel.onDefeatEnemy();
 
         // handle defeat callbacks
         if (mDefeatCallback != null)

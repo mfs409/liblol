@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -55,56 +55,40 @@ import com.badlogic.gdx.utils.Timer.Task;
  * a physics representation (rectangle, circle, or convex polygon). Actors
  * typically have an image associated with them, too, so that they have a visual
  * appearance during gameplay.
- *
+ * <p>
  * A game should rarely deal with Actor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class Actor implements Renderable {
-    /**
-     * The level in which this Actor exists
-     */
+    /// The level in which this Actor exists
     Level mLevel;
 
-    /**
-     * Animation support: the offset for placing the disappearance animation
-     * relative to the disappearing actor
-     */
+    /// Animation support: the offset for placing the disappearance animation relative to the
+    // disappearing actor
     final Vector2 mDisappearAnimateOffset = new Vector2();
-    /**
-     * Physics body for this Actor
-     */
+
+    /// Physics body for this Actor
     public Body mBody;
-    /**
-     * The dimensions of the Actor... x is width, y is height
-     */
+
+    /// The dimensions of the Actor... x is width, y is height
     public Vector2 mSize = new Vector2();
-    /**
-     * Sound to play when this disappears
-     */
+
+    /// Sound to play when the actor disappears
     protected Sound mDisappearSound;
-    /**
-     * Track if the actor is currently being rendered. This is a proxy for
-     * "is important to the rest of the game" and when it is false, we don't run
-     * any updates on the actor
-     */
+
+    /// Track if the actor is currently being rendered. This is a proxy for "is important to the
+    // rest of the game" and when it is false, we don't run any updates on the actor
     boolean mVisible = true;
 
-    /**
-     * The z index of this actor. Valid range is [-2, 2]
-     */
+    /// The z index of this actor. Valid range is [-2, 2]
     int mZIndex = 0;
-    /**
-     * Text that game designer can modify to hold additional information
-     */
+
+    /// Text that game designer can modify to hold additional information about the actor
     String mInfoText = "";
 
+    /// Integer that the game designer can modify to hold additional information about the actor
     int mInfoInt;
-    public int getInfoInt() {
-        return mInfoInt;
-    }
-    public void setInfoInt(int newVal) {
-        mInfoInt = newVal;
-    }
+
     /**
      * Some actors run custom code when they are touched. This is a reference to
      * the code to run.
@@ -484,6 +468,14 @@ public abstract class Actor implements Renderable {
         mInfoText = text;
     }
 
+    public int getInfoInt() {
+        return mInfoInt;
+    }
+
+    public void setInfoInt(int newVal) {
+        mInfoInt = newVal;
+    }
+
     /**
      * Make the camera follow the actor, but without centering the actor on the
      * screen
@@ -554,11 +546,12 @@ public abstract class Actor implements Renderable {
 
     /**
      * Change the position of an Actor
+     *
      * @param x The new X position
      * @param y The new Y position
      */
     public void setPosition(float x, float y) {
-        mBody.setTransform(x+mSize.x/2, y+mSize.y/2, mBody.getAngle());
+        mBody.setTransform(x + mSize.x / 2, y + mSize.y / 2, mBody.getAngle());
     }
 
     /**
@@ -1599,12 +1592,12 @@ public abstract class Actor implements Renderable {
 
     /**
      * Modify an existing distance joint by changing the distance between the actors
-     * 
+     *
      * @param newDist The new distance between the actors involved in the joint
      */
     public void setDistance(float newDist) {
-    	DistanceJoint dj = (DistanceJoint) mDistJoint;
-    	dj.setLength(newDist);
+        DistanceJoint dj = (DistanceJoint) mDistJoint;
+        dj.setLength(newDist);
     }
 
     /**
