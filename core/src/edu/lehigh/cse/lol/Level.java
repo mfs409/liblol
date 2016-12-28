@@ -1,21 +1,14 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Timer;
-
-import java.util.ArrayList;
 
 /**
  * A Level is an interactive portion of the game. Levels can be infinite, or
@@ -41,29 +34,26 @@ public class Level {
     /// A reference to the object that stores all of the sounds and images we use in the game
     protected final Media mMedia;
 
+    /// The physics world in which all actors exist
     PhysicsWorld mWorld;
 
     /// A heads-up display, for writing Display and Control objects
-    ///
-    /// TODO: make private
     Hud mHud;
 
     /// A reference to the score object, for tracking winning and losing
-    ///
-    /// TODO: make private
     final Score mScore;
 
     /// The scene to show when the level is created (if any)
-    private QuickScene mPreScene;
+    QuickScene mPreScene;
 
     /// The scene to show when the level is won
-     QuickScene mWinScene;
+    QuickScene mWinScene;
 
     /// The scene to show when the level is lost
     QuickScene mLoseScene;
 
     /// The scene to show when the level is paused (if any)
-    private QuickScene mPauseScene;
+    QuickScene mPauseScene;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
@@ -79,14 +69,6 @@ public class Level {
 
         mWinScene = QuickScene.makeWinScene(mWorld);
         mLoseScene = QuickScene.makeLoseScene(mWorld);
-
-        // Set up listeners for touch events. Gestures are processed before
-        // non-gesture touches, and non-gesture touches are only processed when
-        // a gesture is not detected.
-        InputMultiplexer mux = new InputMultiplexer();
-        mux.addProcessor(new GestureDetector(new LolGestureManager()));
-        mux.addProcessor(new LolInputManager());
-        Gdx.input.setInputProcessor(mux);
 
         // set up the heads-up display camera
         int camWidth = mConfig.mWidth;
@@ -104,400 +86,6 @@ public class Level {
         if (mConfig.mShowDebugBoxes)
             addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
     }
-
-    /**
-     * A hack for stopping events when a pause screen is opened
-     *
-     * @param touchVec The location of the touch that interacted with the pause
-     *                 screen.
-     */
-    void liftAllButtons(Vector3 touchVec) {
-        mHud.liftAllButtons(touchVec);
-        for (GestureAction ga : mWorld.mGestureResponders) {
-            ga.onPanStop(mWorld.mTouchVec);
-            ga.onUp(mWorld.mTouchVec);
-        }
-    }
-
-    /**
-     * This code is called every 1/45th of a second to update the game state and
-     * re-draw the screen
-     *
-     * @param delta The time since the last render
-     */
-    void render(float delta, Box2DDebugRenderer debugRender, SpriteBatch sb) {
-        // in debug mode, any click will report the coordinates of the click...
-        // this is very useful when trying to adjust screen coordinates
-        if (mConfig.mShowDebugBoxes) {
-            if (Gdx.input.justTouched()) {
-                mHud.reportTouch(mWorld.mTouchVec, mConfig);
-                mWorld.mGameCam.unproject(mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Lol.message(mConfig, "World Coordinates", mWorld.mTouchVec.x + ", " + mWorld.mTouchVec.y);
-            }
-        }
-
-        // Make sure the music is playing... Note that we start music before the
-        // PreScene shows
-        mWorld.playMusic();
-
-        // Handle pauses due to pre, pause, or post scenes...
-        //
-        // Note that these handle their own screen touches...
-        //
-        // Note that win and lose scenes should come first.
-        if (mWinScene != null && mWinScene.render(sb, mHud))
-            return;
-        if (mLoseScene != null && mLoseScene.render(sb, mHud))
-            return;
-        if (mPreScene != null && mPreScene.render(sb, mHud))
-            return;
-        if (mPauseScene != null && mPauseScene.render(sb, mHud))
-            return;
-
-        // handle accelerometer stuff... note that accelerometer is effectively
-        // disabled during a popup... we could change that by moving this to the
-        // top, but that's probably not going to produce logical behavior
-        mWorld.handleTilt();
-
-        // Check the countdown timers
-        if (mScore.mLoseCountDownRemaining != -100) {
-            mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
-            if (mScore.mLoseCountDownRemaining < 0) {
-                if (mScore.mLoseCountDownText != "")
-                    getLoseScene().setDefaultText(mScore.mLoseCountDownText);
-                mScore.endLevel(false);
-            }
-        }
-        if (mScore.mWinCountRemaining != -100) {
-            mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-            if (mScore.mWinCountRemaining < 0) {
-                if (mScore.mWinCountText != "")
-                    getWinScene().setDefaultText(mScore.mWinCountText);
-                mScore.endLevel(true);
-            }
-        }
-        if (mScore.mStopWatchProgress != -100) {
-            mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-        }
-
-        // Advance the physics world by 1/45 of a second.
-        //
-        // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/ instead of 1/45f
-        mWorld.mWorld.step(1 / 45f, 8, 3);
-
-        // now handle any events that occurred on account of the world movement
-        // or screen touches
-        for (LolAction pe : mWorld.mOneTimeEvents)
-            pe.go();
-        mWorld.mOneTimeEvents.clear();
-
-        // handle repeat events
-        for (LolAction pe : mWorld.mRepeatEvents) {
-            if (pe.mIsActive)
-                pe.go();
-        }
-
-        // prepare the main camera... we do it here, so that the parallax code
-        // knows where to draw...
-        mWorld.adjustCamera();
-        mWorld.mGameCam.update();
-
-        // check for end of game
-        if (mScore.mEndGameEvent != null)
-            mScore.mEndGameEvent.go();
-
-        // The world is now static for this time step... we can display it!
-
-        // clear the screen
-        Gdx.gl.glClearColor(mWorld.mBackground.mColor.r, mWorld.mBackground.mColor.g, mWorld.mBackground.mColor.b, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // draw parallax backgrounds
-        mWorld.mBackground.renderLayers(mWorld, sb, delta);
-
-        // Render the actors in order from z=-2 through z=2
-        sb.setProjectionMatrix(mWorld.mGameCam.combined);
-        sb.begin();
-        for (ArrayList<Renderable> a : mWorld.mRenderables)
-            for (Renderable r : a)
-                r.render(sb, delta);
-        sb.end();
-
-        // draw parallax foregrounds
-        mWorld.mForeground.renderLayers(mWorld, sb, delta);
-
-
-        // DEBUG: draw outlines of physics actors
-        if (mConfig.mShowDebugBoxes)
-            debugRender.render(mWorld.mWorld, mWorld.mGameCam.combined);
-
-        // draw Controls
-        mHud.render(mConfig, sb);
-    }
-
-    /**
-     * To properly handle gestures, we need to provide the code to run on each
-     * type of gesture we care about.
-     */
-    class LolGestureManager extends GestureDetector.GestureAdapter {
-        /**
-         * When the screen is tapped, this code forwards the tap to the
-         * appropriate GestureAction
-         *
-         * @param x      X coordinate of the tap
-         * @param y      Y coordinate of the tap
-         * @param count  1 for single click, 2 for double-click
-         * @param button The mouse button that was pressed
-         */
-        @Override
-        public boolean tap(float x, float y, int count, int button) {
-            // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't get passed to the Scene
-            if (mWinScene != null && mWinScene.mVisible) {
-                mWinScene.onTap(x, y, mHud, Level.this);
-                return true;
-            } else if (mLoseScene != null && mLoseScene.mVisible) {
-                mLoseScene.onTap(x, y, mHud, Level.this);
-                return true;
-            } else if (mPreScene != null && mPreScene.mVisible) {
-                mPreScene.onTap(x, y, mHud, Level.this);
-                return true;
-            } else if (mPauseScene != null && mPauseScene.mVisible) {
-                mPauseScene.onTap(x, y, mHud, Level.this);
-                return true;
-            }
-
-            // check if we tapped a control
-            if (mHud.checkTap(mWorld.mTouchVec, x, y, mWorld.mGameCam))
-                return true;
-
-            // check if we tapped an actor
-            mWorld.mHitActor = null;
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-            mWorld.mWorld.QueryAABB(mWorld.mTouchCallback, mWorld.mTouchVec.x - 0.1f, mWorld.mTouchVec.y - 0.1f, mWorld.mTouchVec.x + 0.1f,
-                    mWorld.mTouchVec.y + 0.1f);
-            if (mWorld.mHitActor != null && mWorld.mHitActor.onTap(mWorld.mTouchVec))
-                return true;
-
-            // is this a raw screen tap?
-            for (GestureAction ga : mWorld.mGestureResponders)
-                if (ga.onTap(mWorld.mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle fling events
-         *
-         * @param velocityX X velocity of the fling
-         * @param velocityY Y velocity of the fling
-         * @param button    The mouse button that caused the fling
-         */
-        @Override
-        public boolean fling(float velocityX, float velocityY, int button) {
-            // we only fling at the whole-level layer
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(velocityX, velocityY, 0));
-            for (GestureAction ga : mWorld.mGestureResponders) {
-                if (ga.onFling(mWorld.mTouchVec))
-                    return true;
-            }
-            return false;
-        }
-
-        /**
-         * Handle pan events
-         *
-         * @param x      X coordinate of current touch
-         * @param y      Y coordinate of current touch
-         * @param deltaX change in X
-         * @param deltaY change in Y
-         */
-        @Override
-        public boolean pan(float x, float y, float deltaX, float deltaY) {
-            // check if we panned a control
-            mHud.mHudCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-            for (Control c : mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
-                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPan(mWorld.mTouchVec, deltaX, deltaY);
-                    return true;
-                }
-            }
-
-            // did we pan the level?
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-            for (GestureAction ga : mWorld.mGestureResponders) {
-                if (ga.onPan(mWorld.mTouchVec, deltaX, deltaY))
-                    return true;
-            }
-            return false;
-        }
-
-        /**
-         * Handle end-of-pan event
-         *
-         * @param x       X coordinate of the tap
-         * @param y       Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean panStop(float x, float y, int pointer, int button) {
-            // check if we panStopped a control
-            mHud.mHudCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-            for (Control c : mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
-                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPanStop(mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // handle panstop on level
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(x, y, 0));
-            for (GestureAction ga : mWorld.mGestureResponders)
-                if (ga.onPanStop(mWorld.mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle zoom (i.e., pinch)
-         *
-         * @param initialDistance The distance between fingers when the pinch started
-         * @param distance        The current distance between fingers
-         */
-        @Override
-        public boolean zoom(float initialDistance, float distance) {
-            for (Control c : mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive) {
-                    c.mGestureAction.zoom(initialDistance, distance);
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Gestures can't cover everything we care about (specifically 'hold this
-     * button' sorts of things, for which longpress is not responsive enough),
-     * so we need a low-level input adapter, too.
-     */
-    class LolInputManager extends InputAdapter {
-
-        /**
-         * Handle when a downward touch happens
-         *
-         * @param screenX X coordinate of the tap
-         * @param screenY Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            // check if we down-pressed a control
-            mHud.mHudCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
-                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(false, mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // pass to pinch-zoom?
-            for (Control c : mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
-                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.onDown(mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // check for actor touch, by looking at gameCam coordinates... on
-            // touch, hitActor will change
-            mWorld.mHitActor = null;
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-            mWorld.mWorld.QueryAABB(mWorld.mTouchCallback, mWorld.mTouchVec.x - 0.1f, mWorld.mTouchVec.y - 0.1f, mWorld.mTouchVec.x + 0.1f,
-                    mWorld.mTouchVec.y + 0.1f);
-
-            // actors don't respond to DOWN... if it's a down on a
-            // actor, we are supposed to remember the most recently
-            // touched actor, and that's it
-            if (mWorld.mHitActor != null) {
-                if (mWorld.mHitActor.mGestureResponder != null && mWorld.mHitActor.mGestureResponder.toggle(false, mWorld.mTouchVec))
-                    return true;
-            }
-
-            // forward to the level's handler
-            for (GestureAction ga : mWorld.mGestureResponders)
-                if (ga.onDown(mWorld.mTouchVec))
-                    return true;
-            return false;
-        }
-
-        /**
-         * Handle when a touch is released
-         *
-         * @param screenX X coordinate of the tap
-         * @param screenY Y coordinate of the tap
-         * @param pointer The finger that was used?
-         * @param button  The mouse button that was pressed
-         */
-        @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            // check if we down-pressed a control
-            mHud.mHudCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-            for (Control c : mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mWorld.mTouchVec.x, mWorld.mTouchVec.y)) {
-                    mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(true, mWorld.mTouchVec);
-                    return true;
-                }
-            }
-            mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-            if (mWorld.mHitActor != null) {
-                if (mWorld.mHitActor.mGestureResponder != null && mWorld.mHitActor.mGestureResponder.toggle(true, mWorld.mTouchVec)) {
-                    mWorld.mHitActor = null;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Handle dragging
-         *
-         * @param screenX X coordinate of the drag
-         * @param screenY Y coordinate of the drag
-         * @param pointer The finger that was used
-         */
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            if (mWorld.mHitActor != null && mWorld.mHitActor.mGestureResponder != null) {
-                mWorld.mGameCam.unproject(mWorld.mTouchVec.set(screenX, screenY, 0));
-                return mWorld.mHitActor.mGestureResponder.onDrag(mWorld.mTouchVec);
-            }
-            for (GestureAction ga : mWorld.mGestureResponders)
-                if (ga.onDrag(mWorld.mTouchVec))
-                    return true;
-            return false;
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Configure the camera bounds for a level
@@ -658,7 +246,6 @@ public class Level {
     public void setLoseCallback(LolCallback callback) {
         mScore.mLoseCallback = callback;
     }
-
 
 
     /**

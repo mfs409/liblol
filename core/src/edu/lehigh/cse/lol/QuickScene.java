@@ -142,7 +142,7 @@ abstract public class QuickScene {
      * Handler to run when the screen is tapped while the scene is being
      * displayed
      */
-    void onTap(float x, float y, Hud hud, Level level) {
+    void onTap(float x, float y, Hud hud, Lol game) {
         // ignore if not visible
         if (!mVisible)
             return;
@@ -160,7 +160,7 @@ abstract public class QuickScene {
         // hide the scene only if it's click-to-clear
         if (mClickToClear) {
             dismiss();
-            level.liftAllButtons(mTmpVec);
+            game.liftAllButtons(mTmpVec);
         }
     }
 

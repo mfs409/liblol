@@ -634,6 +634,22 @@ class PhysicsWorld {
         mGameCam.position.set(x, y, 0);
     }
 
+    boolean onTap(float x, float y, int count, int button) {
+        // check if we tapped an actor
+        mHitActor = null;
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        if (mHitActor != null && mHitActor.onTap(mTouchVec))
+            return true;
+
+        // is this a raw screen tap?
+        for (GestureAction ga : mGestureResponders)
+            if (ga.onTap(mTouchVec))
+                return true;
+        return false;
+    }
+
     /**
      * Tilt provides a mechanism for moving actors on the screen. To use tilt, you
      * must enableTilt it for a level, and also indicate that some actors move via
