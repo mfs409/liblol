@@ -62,22 +62,22 @@ public class Lol implements ApplicationListener {
      * currently active, and the actual level object.
      */
     private class StateMachine {
-        // Modes of the game, for use by the state machine.  We can be showing the main splash screen,
-        // the help screens, the level chooser, the store, or a playable level
+        /// Modes of the game, for use by the state machine.  We can be showing the main splash
+        // screen, the help screens, the level chooser, the store, or a playable level
         static final int SPLASH = 0;
         static final int HELP = 1;
         static final int CHOOSER = 2;
         static final int STORE = 3;
         static final int PLAY = 4;
 
-        // mMode is is for the base state machine.  It tracks the current mode of the program (from
-        // among the above choices)
+        /// mMode is is for the base state machine.  It tracks the current mode of the program (from
+        /// among the above choices)
         private int mMode;
 
-        // mModeStates provides more information about the state of the game.  mMode only lets us know
-        // what state we are in, but mModeStates lets us know which level of that mode is currently
-        // active.  Note that using an array makes it easier for us to use the back button to go from
-        // a level to the chooser, or to move to the next level when we win a level
+        /// mModeStates provides more information about the state of the game.  mMode only lets us
+        // know what state we are in, but mModeStates lets us know which level of that mode is
+        // currently active.  Note that using an array makes it easier for us to use the back button
+        // to go from a level to the chooser, or to move to the next level when we win a level
         private int mModeStates[] = new int[5];
 
         void init() {
@@ -85,13 +85,14 @@ public class Lol implements ApplicationListener {
             for (int i = 0; i < 5; ++i)
                 mModeStates[i] = 1;
         }
+
+        /// mLevel is the Level object that is active, in accordance with the state machine.
+        private Level mLevel;
     }
 
     // mStateMachine is the actual state machine used by the game
     private StateMachine mStateMachine = new StateMachine();
 
-    // mWorld is the Level object that is active, in accordance with the state machine.
-    private Level mLevel;
 
     /**
      * If the level that follows this level has not yet been unlocked, unlock it.
@@ -118,26 +119,27 @@ public class Lol implements ApplicationListener {
      * @param level may be {@code null}
      */
     private void setScreen(Level level) {
-        if (mLevel != null) {
-            mLevel.mWorld.pauseMusic();
+        if (mStateMachine.mLevel != null) {
+            mStateMachine.mLevel.mWorld.pauseMusic();
         }
-        mLevel = level;
+        mStateMachine.mLevel = level;
     }
 
 
 
     void advanceLevel() {
         if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
-            mLevel.doChooser(1);
+            mStateMachine.mLevel.doChooser(1);
         } else {
             mStateMachine.mModeStates[StateMachine.PLAY]++;
-            mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+            mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
         }
     }
 
     void repeatLevel() {
-        mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
+        mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
     }
+
     /**
      * Use this to load the splash screen
      */
@@ -220,7 +222,7 @@ public class Lol implements ApplicationListener {
      * Use this to quit the game
      */
      void doQuit() {
-        mLevel.mWorld.stopMusic();
+         mStateMachine.mLevel.mWorld.stopMusic();
         Gdx.app.exit();
     }
 
@@ -311,11 +313,11 @@ public class Lol implements ApplicationListener {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
-            mLevel.doSplash();
+            mStateMachine.mLevel.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
+            mStateMachine.mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
         }
     }
 
@@ -337,11 +339,11 @@ public class Lol implements ApplicationListener {
         mMedia = new Media(mConfig);
 
         // configure the volume
-        Level l = new Level(mConfig, mMedia, this);
         if (getGameFact(mConfig, "volume", 1) == 1)
             putGameFact(mConfig, "volume", 1);
 
         // show the splash screen
+        Level l = new Level(mConfig, mMedia, this);
         l.doSplash();
     }
 
@@ -351,8 +353,8 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mLevel != null)
-            mLevel.mWorld.pauseMusic();
+        if (mStateMachine.mLevel != null)
+            mStateMachine.mLevel.mWorld.pauseMusic();
 
         // dispose of all fonts, textureregions, etc...
         //
@@ -383,8 +385,8 @@ public class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
         // Draw the current scene
-        if (mLevel != null)
-            mLevel.render(Gdx.graphics.getDeltaTime(), mDebugRender, mSpriteBatch);
+        if (mStateMachine.mLevel != null)
+            mStateMachine.mLevel.render(Gdx.graphics.getDeltaTime(), mDebugRender, mSpriteBatch);
     }
 
     /**

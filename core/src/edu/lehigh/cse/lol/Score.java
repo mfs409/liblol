@@ -26,7 +26,7 @@ class Score {
     /**
      * Count of the goodies that have been collected in this level
      */
-    int[] mGoodiesCollected = new int[]{0, 0, 0, 0};
+    final int[] mGoodiesCollected = new int[]{0, 0, 0, 0};
     /**
      * Count the number of enemies that have been created
      */
@@ -39,7 +39,7 @@ class Score {
      * Track if the level has been lost (true) or the game is still being played
      * (false)
      */
-    boolean mGameOver;
+    boolean mGameOver = false;
     /**
      * In levels that have a lose-on-timer feature, we store the timer here, so
      * that we can extend the time left to complete a game
@@ -69,7 +69,7 @@ class Score {
     /**
      * This is how far the hero has traveled
      */
-    int mDistance;
+    int mDistance = 0;
     /**
      * Track the number of heroes that have been removed/defeated
      */
@@ -86,24 +86,24 @@ class Score {
      * This is the number of heroes who must reach destinations, if we're in
      * DESTINATION mode
      */
-    int mVictoryHeroCount;
+    int mVictoryHeroCount = 0;
     /**
      * This is the number of enemies that must be defeated, if we're in
      * ENEMYCOUNT mode. -1 means "all of them"
      */
-    int mVictoryEnemyCount;
+    int mVictoryEnemyCount = 0;
 
     /**
      * Use this to inform the level that a hero has been defeated
      *
-     * @param e The enemy who defeated the hero
+     * @param enemy The enemy who defeated the hero
      */
-    void defeatHero(Enemy e) {
+    void defeatHero(Enemy enemy) {
         mHeroesDefeated++;
         if (mHeroesDefeated == mHeroesCreated) {
             // possibly change the end-of-level text
-            if (!e.mOnDefeatHeroText.equals(""))
-                mLevel.getLoseScene().setDefaultText(e.mOnDefeatHeroText);
+            if (!enemy.mOnDefeatHeroText.equals(""))
+                mLevel.getLoseScene().setDefaultText(enemy.mOnDefeatHeroText);
             endLevel(false);
         }
     }
@@ -111,12 +111,12 @@ class Score {
     /**
      * Use this to inform the level that a goodie has been collected by a hero
      *
-     * @param g The goodie that was collected
+     * @param goodie The goodie that was collected
      */
-    void onGoodieCollected(Goodie g) {
+    void onGoodieCollected(Goodie goodie) {
         // Update goodie counts
         for (int i = 0; i < 4; ++i)
-            mGoodiesCollected[i] += g.mScore[i];
+            mGoodiesCollected[i] += goodie.mScore[i];
 
         // possibly win the level, but only if we win on goodie count and all
         // four counts are high enough
@@ -159,7 +159,7 @@ class Score {
             endLevel(true);
     }
 
-    Level mLevel;
+    private Level mLevel;
 
     Score(Level level) {
         mLevel = level;

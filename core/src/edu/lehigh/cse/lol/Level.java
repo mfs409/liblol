@@ -95,15 +95,12 @@ public class Level {
 
         mScore = new Score(this);
 
-
         // the background camera is like the hudcam
         mWorld.mBgCam = new ParallaxCamera(camWidth, camHeight);
         mWorld.mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
         mWorld.mBgCam.zoom = 1;
 
-        // When debug mode is on, print the frames per second. This is icky, but
-        // we need the singleton to be set before we call this, so we don't
-        // actually do it in the constructor...
+        // When debug mode is on, print the frames per second
         if (mConfig.mShowDebugBoxes)
             addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
     }

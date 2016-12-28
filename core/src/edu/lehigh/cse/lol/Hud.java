@@ -18,38 +18,32 @@ class Hud {
     /// The debug shape renderer, for putting boxes around Controls and Displays
     private final ShapeRenderer mShapeRender = new ShapeRenderer();
 
-    /**
-     * Input Controls
-     */
-    ArrayList<Control> mControls = new ArrayList<>();
+    /// Input Controls
+    final ArrayList<Control> mControls = new ArrayList<>();
+
+    /// Output Displays
+    final ArrayList<Display> mDisplays = new ArrayList<>();
+
+    /// Controls that have a tap event
+    final ArrayList<Control> mTapControls = new ArrayList<>();
+
+    /// Controls that have a pan event
+    final ArrayList<Control> mPanControls = new ArrayList<>();
+
+    /// Controls that have a pinch zoom event
+    final ArrayList<Control> mZoomControls = new ArrayList<>();
+
+    /// Toggle Controls
+    final ArrayList<Control> mToggleControls = new ArrayList<>();
+
+    /// This camera is for drawing controls that sit above the world
+    OrthographicCamera mHudCam;
 
     /**
-     * Output Displays
+     * Create a new heads-up display by providing the dimensions for its camera
+     * @param width The width, in pixels, of the HUD
+     * @param height The height, in pixels, of the HUD
      */
-    ArrayList<Display> mDisplays = new ArrayList<>();
-
-    /**
-     * Controls that have a tap event
-     */
-    ArrayList<Control> mTapControls = new ArrayList<>();
-    /**
-     * Controls that have a pan event
-     */
-    ArrayList<Control> mPanControls = new ArrayList<>();
-    /**
-     * Controls that have a pinch zoom event
-     */
-    ArrayList<Control> mZoomControls = new ArrayList<>();
-    /**
-     * Toggle Controls
-     */
-    ArrayList<Control> mToggleControls = new ArrayList<>();
-
-    /**
-     * This camera is for drawing controls that sit above the world
-     */
-    public OrthographicCamera mHudCam;
-
     Hud(int width, int height) {
         mHudCam = new OrthographicCamera(width, height);
         mHudCam.position.set(width / 2, height / 2, 0);
