@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -39,38 +39,28 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * show the 0th frame for 300 milliseconds, then the 2nd frame for 100
  * milliseconds, then the 0th frame for 600 milliseconds, then the 4th frame for
  * 100 milliseconds.
- *
+ * <p>
  * There are two ways to make an animation. The more powerful uses to() to chain
  * together frame/duration pairs. The less powerful uses a constructor with more
  * parameters to define the entire animation in equal-duration pieces.
  */
 public class Animation {
+    /// A reference to the media object, so we can find assets easily
     Media mMedia;
-    /**
-     * A set of images, generated via registerAnimatableImage, that can be used
-     * as frames of an animation.
-     */
-    public final TextureRegion[] mCells;
-    /**
-     * Should the animation repeat?
-     */
-    public final boolean mLoop;
 
-    /**
-     * This array holds the durations for which each of the images should be
-     * displayed
-     */
-    public long[] mDurations;
-    /**
-     * The next available position in the frames and durations arrays. Note that
-     * frames and durations should have the same length, and the same number of
-     * entries.
-     */
-    public int mNextCell;
+    /// A set of images, generated via registerAnimatableImage, that can be used as frames of an
+    // animation.
+    final TextureRegion[] mCells;
 
-    /*
-     * PUBLIC INTERFACE
-     */
+    /// Should the animation repeat?
+    final boolean mLoop;
+
+    /// This array holds the durations for which each of the images should be displayed
+    long[] mDurations;
+
+    /// The next available position in the frames and durations arrays. Note that frames and
+    // durations should have the same length, and the same number of entries.
+    int mNextCell;
 
     /**
      * Create an animation. The animation can hold up to sequenceCount steps,

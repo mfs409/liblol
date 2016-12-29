@@ -215,12 +215,11 @@ public class Enemy extends Actor {
      * from the game
      */
     public void setDisappearOnTouch() {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler= new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 100);
                 defeat(true);
-                mGestureResponder = null;
+                mTapHandler = null;
                 return true;
             }
         };

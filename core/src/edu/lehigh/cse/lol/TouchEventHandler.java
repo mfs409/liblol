@@ -17,8 +17,6 @@ public abstract class TouchEventHandler {
 
     /**
      * The go() method encapsulates the code that should be run in response to a touch event.
-     *
-     * @param eventPosition The coordinates of the touch event that caused this handler to run.
      */
-    abstract public void go(Vector3 eventPosition);
+    abstract public void go(float eventPositionX, float eventPositionY);
 }

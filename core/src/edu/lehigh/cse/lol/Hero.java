@@ -438,16 +438,15 @@ public class Hero extends Actor {
      * @param y Velocity in Y dimension
      */
     public void setTouchAndGo(final float x, final float y) {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 mHover = null;
                 // if it was hovering, its body type won't be Dynamic
                 if (mBody.getType() != BodyType.DynamicBody)
                     mBody.setType(BodyType.DynamicBody);
                 setAbsoluteVelocity(x, y, false);
                 // turn off isTouchAndGo, so we can't double-touch
-                mGestureResponder = null;
+                mTapHandler = null;
                 return true;
             }
         };
@@ -476,9 +475,8 @@ public class Hero extends Actor {
      */
 
     public void setTouchToJump() {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 jump();
                 return true;
             }

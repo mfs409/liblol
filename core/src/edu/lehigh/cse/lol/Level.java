@@ -55,6 +55,12 @@ public class Level {
     /// The scene to show when the level is paused (if any)
     QuickScene mPauseScene;
 
+    /// The background layers
+    ParallaxScene mBackground;
+
+    /// The foreground layers
+    ParallaxScene mForeground;
+
     /**
      * Construct a level. This is mostly using defaults, so the main work is in
      * camera setup
@@ -65,26 +71,20 @@ public class Level {
         mConfig = config;
         mMedia = media;
 
+        // Create the eight different scenes and a score object
         mWorld = new PhysicsWorld(config, media, game);
-
-        mWinScene = QuickScene.makeWinScene(mWorld);
-        mLoseScene = QuickScene.makeLoseScene(mWorld);
-
-        // set up the heads-up display camera
-        int camWidth = mConfig.mWidth;
-        int camHeight = mConfig.mHeight;
-        mHud = new Hud(camWidth, camHeight);
-
+        mWinScene = QuickScene.makeWinScene(mWorld, mConfig);
+        mLoseScene = QuickScene.makeLoseScene(mWorld, mConfig);
+        mPreScene = QuickScene.makePreScene(mWorld, mConfig);
+        mPauseScene = QuickScene.makePauseScene(mWorld, mConfig);
+        mHud = new Hud(mConfig);
+        mBackground = new ParallaxScene(mConfig);
+        mForeground = new ParallaxScene(mConfig);
         mScore = new Score(this);
 
-        // the background camera is like the hudcam
-        mWorld.mBgCam = new ParallaxCamera(camWidth, camHeight);
-        mWorld.mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
-        mWorld.mBgCam.zoom = 1;
-
         // When debug mode is on, print the frames per second
-        if (mConfig.mShowDebugBoxes)
-            addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
+        if (config.mShowDebugBoxes)
+            addDisplay(800, 15, config.mDefaultFontFace, config.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
     }
 
     /**
@@ -179,7 +179,7 @@ public class Level {
                                 final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        mWorld.mGestureResponders.add(new GestureAction() {
+        mWorld.mPanHandlers.add(new LolPanAction() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -189,16 +189,8 @@ public class Level {
             /**
              * On a down press, draw a new obstacle if enough time has
              * transpired
-             *
-             * @param touchLoc
-             *            The location of the touch
-             * @param deltaX
-             *            The change in X since last pan
-             * @param deltaY
-             *            The change in Y since last pan
              */
-            @Override
-            public boolean onPan(final Vector3 touchLoc, float deltaX, float deltaY) {
+            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
                 // check if enough milliseconds have passed
                 long now = System.currentTimeMillis();
                 if (now < mLastTime + interval) {
@@ -207,7 +199,7 @@ public class Level {
                 mLastTime = now;
 
                 // make a circular obstacle
-                final Obstacle o = makeObstacleAsCircle(touchLoc.x - width / 2, touchLoc.y - height / 2, width,
+                final Obstacle o = makeObstacleAsCircle(worldX - width / 2, worldY - height / 2, width,
                         height, imgName);
                 if (onCreateCallback != null) {
                     onCreateCallback.mAttachedActor = o;
@@ -226,7 +218,8 @@ public class Level {
      */
     public void setZoom(float zoom) {
         mWorld.mGameCam.zoom = zoom;
-        mWorld.mBgCam.zoom = zoom;
+        mBackground.mBgCam.zoom = zoom;
+        mForeground.mBgCam.zoom = zoom;
     }
 
     /**
@@ -759,11 +752,9 @@ public class Level {
      */
     public Control addTapControl(int x, int y, int width, int height, String imgName, final TouchEventHandler action) {
         Control c = new Control(this, imgName, x, y, width, height);
-        // TODO: can we refactor GestureAction now that we use TouchEventHandlers?
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 vv) {
-                action.go(vv);
+        c.mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
+                action.go(worldX, worldY);
                 return true;
             }
         };
@@ -778,7 +769,7 @@ public class Level {
      */
     public TouchEventHandler PauseAction = new TouchEventHandler() {
         @Override
-        public void go(Vector3 touchLocation) {
+        public void go(float x, float y) {
             getPauseScene().show();
         }
     };
@@ -792,7 +783,7 @@ public class Level {
     public TouchEventHandler JumpAction(final Hero hero) {
         return new TouchEventHandler() {
             @Override
-            public void go(Vector3 touchLocation) {
+            public void go(float x, float y) {
                 hero.jump();
             }
         };
@@ -813,7 +804,7 @@ public class Level {
      */
     public TouchEventHandler ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         return new TouchEventHandler() {
-            public void go(Vector3 touchLocation) {
+            public void go(float x, float y) {
                 mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
             }
         };
@@ -832,9 +823,9 @@ public class Level {
      */
     public TouchEventHandler ThrowDirectionalAction(final Hero hero, final float offsetX, final float offsetY) {
         return new TouchEventHandler() {
-            public void go(Vector3 touchLocation) {
+            public void go(float worldX, float worldY) {
                 mWorld.mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
-                        touchLocation.x, touchLocation.y, hero, offsetX, offsetY);
+                        worldX, worldY, hero, offsetX, offsetY);
             }
         };
     }
@@ -846,11 +837,12 @@ public class Level {
      */
     public TouchEventHandler ZoomOutAction(final float maxZoom) {
         return new TouchEventHandler() {
-            public void go(Vector3 eventPosition) {
+            public void go(float x, float y) {
                 float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     mWorld.mGameCam.zoom *= 2;
-                    mWorld.mBgCam.zoom *= 2;
+                    mBackground.mBgCam.zoom *= 2;
+                    mForeground.mBgCam.zoom *= 2;
                 }
             }
         };
@@ -863,11 +855,12 @@ public class Level {
      */
     public TouchEventHandler ZoomInAction(final float minZoom) {
         return new TouchEventHandler() {
-            public void go(Vector3 eventPosition) {
+            public void go(float x, float y) {
                 float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom > minZoom) {
                     mWorld.mGameCam.zoom /= 2;
-                    mWorld.mBgCam.zoom /= 2;
+                    mBackground.mBgCam.zoom /= 2;
+                    mForeground.mBgCam.zoom /= 2;
                 }
             }
         };
@@ -891,9 +884,8 @@ public class Level {
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
-        c.mGestureAction = new GestureAction() {
-            @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
+        c.mToggleHandler = new LolToggleAction() {
+            public boolean handle(boolean isUp, float x, float y) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)
@@ -1076,27 +1068,29 @@ public class Level {
     public Control addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
                                              final long milliDelay, final float offsetX, final float offsetY) {
         final Control c = new Control(this, imgName, x, y, width, height);
-        final Vector3 v = new Vector3();
-        c.mGestureAction = new GestureAction() {
+        final Vector2 v = new Vector2();
+        final BoxedBool mHolding = new BoxedBool(false);
+        c.mToggleHandler = new LolToggleAction() {
             @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean handle(boolean isUp, float worldX, float worldY) {
                 if (isUp) {
-                    mHolding = false;
+                    mHolding.value = false;
                 } else {
-                    mHolding = true;
-                    v.x = touchVec.x;
-                    v.y = touchVec.y;
-                    v.z = touchVec.z;
+                    mHolding.value = true;
+                    v.x = worldX;
+                    v.y = worldY;
                 }
                 return true;
             }
-
+        };
+        c.mPanHandler = new LolPanAction() {
             @Override
-            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                v.x = touchVec.x;
-                v.y = touchVec.y;
-                v.z = touchVec.z;
-                return true;
+            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
+                if (mHolding.value) {
+                    v.x = worldX;
+                    v.y = worldY;
+                }
+                return mHolding.value;
             }
         };
         mHud.mControls.add(c);
@@ -1109,7 +1103,7 @@ public class Level {
 
             @Override
             public void go() {
-                if (c.mGestureAction.mHolding) {
+                if (mHolding.value) {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
@@ -1135,42 +1129,25 @@ public class Level {
      */
     public Control addPanControl(int x, int y, int width, int height, String imgName) {
         Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            /**
-             * Use this to restore the chase actor when the Pan stops
-             */
-            Actor oldChaseactor;
-
+        final BoxedActor oldChaseactor = new BoxedActor();
+        c.mPanStopHandler = new LolTouchAction() {
             /**
              * Handle a pan stop event by restoring the chase actor, if there
              * was one
-             *
-             * @param touchVec
-             *            The x/y/z coordinates of the touch
              */
             @Override
-            public boolean onPanStop(Vector3 touchVec) {
-                setCameraChase(oldChaseactor);
-                oldChaseactor = null;
+            public boolean handle(float worldX, float worldY) {
+                setCameraChase(oldChaseactor.actor);
+                oldChaseactor.actor = null;
                 return true;
             }
+        };
 
-            /**
-             * Run this when the screen is panned
-             *
-             * @param touchVec
-             *            The x/y/z world coordinates of the touch
-             *
-             * @param deltaX
-             *            the change in X, in screen coordinates
-             *
-             * @param deltaY
-             *            the change in Y, in screen coordinates
-             */
+        c.mPanHandler = new LolPanAction() {
             @Override
-            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
                 if (mWorld.mChaseActor != null) {
-                    oldChaseactor = mWorld.mChaseActor;
+                    oldChaseactor.actor = mWorld.mChaseActor;
                     mWorld.mChaseActor = null;
                 }
                 float x = mWorld.mGameCam.position.x - deltaX * .1f
@@ -1222,34 +1199,22 @@ public class Level {
     public Control addPinchZoomControl(int x, int y, int width, int height, String imgName, final float maxZoom,
                                        final float minZoom) {
         Control c = new Control(this, imgName, x, y, width, height);
-        c.mGestureAction = new GestureAction() {
-            float lastZoom = 1;
-
-            /**
-             * Handle a down press (hopefully to turn it into a hold/release)
-             *
-             * @param touchVec
-             *            The x/y/z coordinates of the touch
-             */
-            public boolean onDown(Vector3 touchVec) {
-                lastZoom = mWorld.mGameCam.zoom;
+        final BoxedFloat lastZoom = new BoxedFloat(1);
+        c.mDownHandler = new LolTouchAction() {
+            @Override
+            public boolean handle(float worldX, float worldY) {
+                lastZoom.value = mWorld.mGameCam.zoom;
                 return true;
             }
-
-            /**
-             * Handle a zoom-via-pinch event
-             *
-             * @param initialDistance
-             *            The distance between fingers when the pinch started
-             * @param distance
-             *            The current distance between fingers
-             */
+        };
+        c.mZoomHandler = new LolTouchAction() {
             @Override
-            public boolean zoom(float initialDistance, float distance) {
+            public boolean handle(float initialDistance, float distance) {
                 float ratio = initialDistance / distance;
-                float newZoom = lastZoom * ratio;
+                float newZoom = lastZoom.value * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
                     mWorld.mGameCam.zoom = newZoom;
+                // TODO: why do we return false?
                 return false;
             }
         };
@@ -1338,12 +1303,11 @@ public class Level {
                 callback.mFloatVal = callback.mFloatVal + (mGrow ? 1 : -1);
             }
         };
-        c.mGestureAction = new GestureAction() {
+        c.mTapHandler = new LolTouchAction() {
             /**
              * This is a touchable control...
              */
-            @Override
-            public boolean onTap(Vector3 v) {
+            public boolean handle(float worldX, float worldY) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
                 callback.onEvent();
@@ -1398,12 +1362,11 @@ public class Level {
                     callback.mFloatVal = 0;
             }
         };
-        c.mGestureAction = new GestureAction() {
+        c.mTapHandler= new LolTouchAction() {
             /**
              * This is a touchable control...
              */
-            @Override
-            public boolean onTap(Vector3 v) {
+            public boolean handle(float worldX, float worldY) {
                 if (!c.mIsActive)
                     return false;
                 callback.onEvent();
@@ -1452,53 +1415,47 @@ public class Level {
         // capture a down-press or up-press that isn't also involved in a move.
         // To overcome this limitation, we'll make this BOTH a pan control and a
         // toggle control
-        c.mGestureAction = new GestureAction() {
-            /**
-             * Toggle action: either call the "up" callback or the "down" callback
-             */
+        final BoxedBool mHolding = new BoxedBool(false);
+        c.mToggleHandler = new LolToggleAction() {
             @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
+            public boolean handle(boolean isUp, float worldX, float worldY) {
                 // up event
                 if (isUp) {
-                    upCB.mUpLocation = touchVec.cpy();
+                    upCB.mUpLocation = new Vector3(worldX, worldY, 0);
                     upCB.onEvent();
-                    mHolding = false;
+                    mHolding.value = false;
                 }
                 // down event
                 else {
-                    mHolding = true;
-                    dnCB.mDownLocation = touchVec.cpy();
+                    mHolding.value = true;
+                    dnCB.mDownLocation = new Vector3(worldX, worldY, 0);
                     dnCB.onEvent();
                 }
                 // toggle state
-                mHolding = !isUp;
+                mHolding.value = !isUp;
                 return true;
             }
-
-            /**
-             * Finger move action: call the "pan" callback
-             */
+        };
+        c.mPanHandler = new LolPanAction() {
             @Override
-            public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
+            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
                 // force a down event, if we didn't get one
-                if (!mHolding) {
-                    toggle(false, touchVec);
+                if (!mHolding.value) {
+                    c.mToggleHandler.handle(false, worldX, worldY);
                     return true;
                 }
                 // pan event
-                mvCB.mMoveLocation = touchVec.cpy();
+                mvCB.mMoveLocation = new Vector3(worldX, worldY, 0);
                 mvCB.onEvent();
                 return true;
             }
-
-            /**
-             * Pan stop doesn't always trigger an up, so force one if necessary
-             */
+        };
+        c.mPanStopHandler = new LolTouchAction() {
             @Override
-            public boolean onPanStop(Vector3 touchVec) {
+            public boolean handle(float worldX, float worldY) {
                 // force an up event?
-                if (mHolding) {
-                    toggle(true, touchVec);
+                if (mHolding.value) {
+                    c.mToggleHandler.handle(true, worldX, worldY);
                     return true;
                 }
                 return false;
@@ -1622,7 +1579,7 @@ public class Level {
      * @param color The color, formated as #RRGGBB
      */
     public void setBackgroundColor(String color) {
-        mWorld.mBackground.mColor = Color.valueOf(color);
+        mBackground.mColor = Color.valueOf(color);
     }
 
     /**
@@ -1646,7 +1603,7 @@ public class Level {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mWorld.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1667,7 +1624,7 @@ public class Level {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mWorld.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1691,7 +1648,7 @@ public class Level {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mWorld.mBackground.mLayers.add(pl);
+        mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1742,7 +1699,7 @@ public class Level {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mWorld.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1763,7 +1720,7 @@ public class Level {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mWorld.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1787,7 +1744,7 @@ public class Level {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mWorld.mForeground.mLayers.add(pl);
+        mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1797,12 +1754,7 @@ public class Level {
      * @return The current LoseScene
      */
     public QuickScene getLoseScene() {
-        QuickScene scene = mLoseScene;
-        if (scene != null)
-            return scene;
-        scene = QuickScene.makeLoseScene(mWorld);
-        mLoseScene = scene;
-        return scene;
+        return mLoseScene;
     }
 
     /**
@@ -1812,17 +1764,9 @@ public class Level {
      * @return The current PreScene
      */
     public QuickScene getPreScene() {
-        QuickScene scene = mPreScene;
-        if (scene != null)
-            return scene;
-        scene = QuickScene.makePreScene(mWorld);
-        // immediately make the scene visible
-        scene.mVisible = true;
-        mPreScene = scene;
-        // NB: disable the timer so the game doesn't start playing in the
-        // background
-        scene.suspendClock();
-        return scene;
+        mPreScene.mVisible = true;
+        mPreScene.suspendClock();
+        return mPreScene;
     }
 
     /**
@@ -1832,12 +1776,7 @@ public class Level {
      * @return The current PauseScene
      */
     public QuickScene getPauseScene() {
-        QuickScene scene = mPauseScene;
-        if (scene != null)
-            return scene;
-        scene = QuickScene.makePauseScene(mWorld);
-        mPauseScene = scene;
-        return scene;
+        return mPauseScene;
     }
 
     /**
@@ -1847,12 +1786,7 @@ public class Level {
      * @return The current WinScene
      */
     public QuickScene getWinScene() {
-        QuickScene scene = mWinScene;
-        if (scene != null)
-            return scene;
-        scene = QuickScene.makeWinScene(mWorld);
-        mWinScene = scene;
-        return scene;
+        return mWinScene;
     }
 
     /**

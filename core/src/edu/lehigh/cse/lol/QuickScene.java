@@ -31,6 +31,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -54,7 +55,7 @@ abstract public class QuickScene {
     }
 
     /// The level to which this QuickScene is attached
-    protected PhysicsWorld mLevel;
+    protected PhysicsWorld mWorld;
 
     /// The text and pictures to display
     private final ArrayList<Renderable> mSprites = new ArrayList<>();
@@ -86,13 +87,21 @@ abstract public class QuickScene {
     /// Some default text that we might want to display
     protected String mText;
 
+    /// This camera is for drawing controls that sit above the world
+    OrthographicCamera mHudCam;
+
     /**
      * Construct a QuickScene by giving it a level
      *
      * @param level
      */
-    QuickScene(PhysicsWorld level) {
-        mLevel = level;
+    QuickScene(PhysicsWorld level, Config config) {
+        mWorld = level;
+        int width = config.mWidth;
+        int height = config.mHeight;
+
+        mHudCam = new OrthographicCamera(width, height);
+        mHudCam.position.set(width / 2, height / 2, 0);
     }
 
     /**
@@ -126,7 +135,7 @@ abstract public class QuickScene {
         sb.end();
 
         // DEBUG: show where the buttons' boxes are
-        if (mLevel.mConfig.mShowDebugBoxes) {
+        if (mWorld.mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(hud.mHudCam.combined);
             mShapeRender.begin(ShapeType.Line);
             mShapeRender.setColor(Color.RED);
@@ -142,18 +151,18 @@ abstract public class QuickScene {
      * Handler to run when the screen is tapped while the scene is being
      * displayed
      */
-    void onTap(float x, float y, Hud hud, Lol game) {
+    boolean onTap(float x, float y, Lol game) {
         // ignore if not visible
         if (!mVisible)
-            return;
+            return false;
 
         // check for taps to the buttons
-        hud.mHudCam.unproject(mTmpVec.set(x, y, 0));
+        mHudCam.unproject(mTmpVec.set(x, y, 0));
         for (QuickSceneButton b : mButtons) {
             if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
                 dismiss();
                 b.mCallback.onEvent();
-                return;
+                return true;
             }
         }
 
@@ -162,6 +171,7 @@ abstract public class QuickScene {
             dismiss();
             game.liftAllButtons(mTmpVec);
         }
+        return true;
     }
 
 
@@ -171,7 +181,7 @@ abstract public class QuickScene {
      * @param soundName Name of the sound file to play
      */
     public void setSound(String soundName) {
-        mSound = mLevel.mMedia.getSound(soundName);
+        mSound = mWorld.mMedia.getSound(soundName);
     }
 
     /**
@@ -182,7 +192,7 @@ abstract public class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, String textColor, String fontName, int size) {
-        mSprites.add(mLevel.makeText(text, textColor, fontName, size));
+        mSprites.add(mWorld.makeText(text, textColor, fontName, size));
     }
 
     /**
@@ -195,7 +205,7 @@ abstract public class QuickScene {
      * @param size     The size of the text
      */
     public void addText(String text, int x, int y, String fontColor, String fontName, int size) {
-        mSprites.add(mLevel.makeText(x, y, text, fontColor, fontName, size));
+        mSprites.add(mWorld.makeText(x, y, text, fontColor, fontName, size));
     }
 
     /**
@@ -215,7 +225,7 @@ abstract public class QuickScene {
      * @param height  Height of the image
      */
     public void addImage(String imgName, int x, int y, int width, int height) {
-        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
+        mSprites.add(mWorld.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -235,11 +245,11 @@ abstract public class QuickScene {
             @Override
             public void onEvent() {
                 mVisible = false;
-                mLevel.mGame.handleBack();
+                mWorld.mGame.handleBack();
             }
         };
         mButtons.add(b);
-        mSprites.add(mLevel.makePicture(x, y, width, height, imgName));
+        mSprites.add(mWorld.makePicture(x, y, width, height, imgName));
     }
 
     /**
@@ -330,8 +340,8 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeWinScene(PhysicsWorld mLevel) {
-        QuickScene quickScene = new QuickScene(mLevel) {
+    static QuickScene makeWinScene(PhysicsWorld mLevel, Config config) {
+        QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
                 // if WinScene is disabled for this level, just move to the next level
@@ -346,8 +356,8 @@ abstract public class QuickScene {
                 // The default text to display can change at the last second, so we
                 // don't compute it until right here... also, play music
                 if (mSound != null)
-                    mSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
-                addText(mText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+                    mSound.play(Lol.getGameFact(mWorld.mConfig, "volume", 1));
+                addText(mText, "#FFFFFF", mWorld.mConfig.mDefaultFontFace, mWorld.mConfig.mDefaultFontSize);
             }
 
             @Override
@@ -355,10 +365,10 @@ abstract public class QuickScene {
                 mVisible = false;
 
                 // we turn off music here, so that music plays during the PostScene
-                mLevel.stopMusic();
+                mWorld.stopMusic();
 
                 // go to next level (or chooser)
-                mLevel.mGame.advanceLevel();
+                mWorld.mGame.advanceLevel();
             }
         };
         quickScene.mText = mLevel.mConfig.mDefaultWinText;
@@ -371,15 +381,15 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePauseScene(PhysicsWorld mLevel) {
-        QuickScene quickScene = new QuickScene(mLevel) {
+    static QuickScene makePauseScene(PhysicsWorld mLevel, Config config) {
+        QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
                 Timer.instance().stop();
                 mVisible = true;
                 mDisplayTime = System.currentTimeMillis();
                 if (mSound != null)
-                    mSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+                    mSound.play(Lol.getGameFact(mWorld.mConfig, "volume", 1));
             }
 
             /// TODO: this should be in the super method, and then we should add more behaviors.  win and lose scene timers won't work right now.
@@ -404,8 +414,8 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeLoseScene(PhysicsWorld mLevel) {
-        QuickScene quickScene = new QuickScene(mLevel) {
+    static QuickScene makeLoseScene(PhysicsWorld mLevel, Config config) {
+        QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
                 // if LoseScene is disabled for this level, just restart the level
@@ -420,14 +430,14 @@ abstract public class QuickScene {
                 // The default text to display can change at the last second, so we
                 // don't compute it until right here... also, play music
                 if (mSound != null)
-                    mSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
-                addText(mText, "#FFFFFF", mLevel.mConfig.mDefaultFontFace, mLevel.mConfig.mDefaultFontSize);
+                    mSound.play(Lol.getGameFact(mWorld.mConfig, "volume", 1));
+                addText(mText, "#FFFFFF", mWorld.mConfig.mDefaultFontFace, mWorld.mConfig.mDefaultFontSize);
             }
 
             @Override
             public void dismiss() {
                 mVisible = false;
-                mLevel.mGame.repeatLevel();
+                mWorld.mGame.repeatLevel();
             }
         };
         quickScene.mText = mLevel.mConfig.mDefaultLoseText;
@@ -440,8 +450,8 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePreScene(PhysicsWorld mLevel) {
-        QuickScene quickScene = new QuickScene(mLevel) {
+    static QuickScene makePreScene(PhysicsWorld mLevel, Config config) {
+        QuickScene quickScene = new QuickScene(mLevel, config) {
             /**
              * Show is a no-op, because the default behavior is good enough
              */

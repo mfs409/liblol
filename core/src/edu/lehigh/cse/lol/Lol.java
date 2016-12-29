@@ -55,51 +55,101 @@ import java.util.TreeMap;
  */
 public class Lol implements ApplicationListener {
     /// mConfig stores the configuration state of the game.
-    ///
-    /// NB: ideally, we wouldn't even bother storing it here, but we construct a Lol object much
-    /// earlier than we call 'create' on it, and it's not until we call 'create' that we can use
-    /// mConfig to load the images and sounds.  Hence, we're stuck having a copy here, even though
-    /// we rarely use it.
     private Config mConfig;
 
-    /**
-     * StateMachine tracks the current state of the game.  The state consists of the type of level
-     * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
-     * currently active, and the actual level object.
-     */
-    private class StateMachine {
-        /// Modes of the game, for use by the state machine.  We can be showing the main splash
-        /// screen, the help screens, the level chooser, the store, or a playable level
-        static final int SPLASH = 0;
-        static final int HELP = 1;
-        static final int CHOOSER = 2;
-        static final int STORE = 3;
-        static final int PLAY = 4;
+    /// Store all the images, sounds, and fonts for the game
+    private Media mMedia;
 
-        /// mMode is is for the base state machine.  It tracks the current mode of the program (from
-        /// among the above choices)
-        private int mMode;
-
-        /// mModeStates provides more information about the state of the game.  mMode only lets us
-        /// know what state we are in, but mModeStates lets us know which level of that mode is
-        /// currently active.  Note that using an array makes it easier for us to use the back
-        // button to go from a level to the chooser, or to move to the next level when we win a
-        // level
-        private int mModeStates[] = new int[5];
-
-        void init() {
-            // set current mode states
-            for (int i = 0; i < 5; ++i)
-                mModeStates[i] = 1;
-        }
-
-        /// mLevel is the Level object that is active, in accordance with the state machine.
-        private Level mLevel;
-    }
-
-    /// mStateMachine is the actual state machine used by the game
+    /// mStateMachine governs which screen is showing (Chooser, etc) and how to move among them
     private StateMachine mStateMachine = new StateMachine();
 
+    /// Store string/integer pairs that get reset whenever we restart the program
+    final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
+
+    /// The debug renderer, for printing circles and boxes for each actor
+    private Box2DDebugRenderer mDebugRender;
+
+    /// The SpriteBatch for drawing all texture regions and fonts
+    private SpriteBatch mSpriteBatch;
+
+    /// This variable lets us track whether the user pressed 'back' on an android, or 'escape' on
+    // the desktop. We are using polling, so we swallow presses that aren't preceded by a release.
+    // In that manner, holding 'back' can't exit all the way out... you must press 'back'
+    // repeatedly, once for each screen to revert.
+    private boolean mKeyDown;
+
+    /**
+     * Look up a fact that was stored for the current game session. If no such
+     * fact exists, defaultVal will be returned.
+     *
+     * @param factName   The name used to store the fact
+     * @param defaultVal The value to return if the fact does not exist
+     * @return The integer value corresponding to the last value stored
+     */
+    static int getGameFact(Config config, String factName, int defaultVal) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        return prefs.getInteger(factName, defaultVal);
+    }
+
+    /**
+     * Save a fact about the current game session. If the factName has already
+     * been used for this game session, the new value will overwrite the old.
+     *
+     * @param factName  The name for the fact being saved
+     * @param factValue The integer value that is the fact being saved
+     */
+    static void putGameFact(Config config, String factName, int factValue) {
+        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
+        prefs.putInteger(factName, factValue);
+        prefs.flush();
+    }
+
+    /**
+     * Vibrate the phone for a fixed amount of time. Note that this only
+     * vibrates the phone if the configuration says that vibration should be
+     * permitted.
+     *
+     * @param millis The amount of time to vibrate
+     */
+    static void vibrate(Config config, int millis) {
+        if (config.mEnableVibration)
+            Gdx.input.vibrate(millis);
+    }
+
+    /**
+     * Instead of using Gdx.app.log directly, and potentially writing a lot of
+     * debug info in a production setting, we use this to only dump to the log
+     * when debug mode is on
+     *
+     * @param tag  The message tag
+     * @param text The message text
+     */
+    static void message(Config config, String tag, String text) {
+        if (config.mShowDebugBoxes)
+            Gdx.app.log(tag, text);
+    }
+
+    /**
+     * The constructor just creates a media object and calls configureGravity, so that
+     * all of our globals will be set. Doing it this early lets us access the
+     * configuration from within the LWJGL (Desktop) main class. That, in turn,
+     * lets us get the screen size correct (see the desktop project's Java file).
+     */
+    public Lol(Config config) {
+        mConfig = config;
+    }
+
+
+    /**
+     * A hack for stopping events when a pause screen is opened
+     *
+     * @param touchVec The location of the touch that interacted with the pause
+     *                 screen.
+     */
+    void liftAllButtons(Vector3 touchVec) {
+        mStateMachine.mLevel.mHud.liftAllButtons(touchVec);
+        mStateMachine.mLevel.mWorld.liftAllButtons();
+    }
 
     /**
      * If the level that follows this level has not yet been unlocked, unlock it.
@@ -111,21 +161,6 @@ public class Lol implements ApplicationListener {
         if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
             putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
     }
-
-
-    /**
-     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
-     * screen, if any.
-     *
-     * @param level may be {@code null}
-     */
-    private void setScreen(Level level) {
-        if (mStateMachine.mLevel != null) {
-            mStateMachine.mLevel.mWorld.pauseMusic();
-        }
-        mStateMachine.mLevel = level;
-    }
-
 
     void advanceLevel() {
         if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
@@ -150,7 +185,7 @@ public class Lol implements ApplicationListener {
         mStateMachine.mMode = StateMachine.SPLASH;
         Level l = new Level(mConfig, mMedia, this);
         mConfig.mSplash.display(1, l);
-        setScreen(l);
+        mStateMachine.setScreen(l);
     }
 
     /**
@@ -176,7 +211,7 @@ public class Lol implements ApplicationListener {
         mStateMachine.mModeStates[StateMachine.CHOOSER] = whichChooser;
         Level l = new Level(mConfig, mMedia, this);
         mConfig.mChooser.display(whichChooser, l);
-        setScreen(l);
+        mStateMachine.setScreen(l);
     }
 
     /**
@@ -189,7 +224,7 @@ public class Lol implements ApplicationListener {
         mStateMachine.mMode = StateMachine.PLAY;
         Level l = new Level(mConfig, mMedia, this);
         mConfig.mLevels.display(which, l);
-        setScreen(l);
+        mStateMachine.setScreen(l);
     }
 
     /**
@@ -202,7 +237,7 @@ public class Lol implements ApplicationListener {
         mStateMachine.mMode = StateMachine.HELP;
         Level l = new Level(mConfig, mMedia, this);
         mConfig.mHelp.display(which, l);
-        setScreen(l);
+        mStateMachine.setScreen(l);
     }
 
     /**
@@ -215,7 +250,7 @@ public class Lol implements ApplicationListener {
         mStateMachine.mMode = StateMachine.STORE;
         Level l = new Level(mConfig, mMedia, this);
         mConfig.mStore.display(which, l);
-        setScreen(l);
+        mStateMachine.setScreen(l);
     }
 
     /**
@@ -224,47 +259,6 @@ public class Lol implements ApplicationListener {
     void doQuit() {
         mStateMachine.mLevel.mWorld.stopMusic();
         Gdx.app.exit();
-    }
-
-
-    // Store string/integer pairs that get reset whenever we restart the program
-    final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
-
-
-    /**
-     * This variable lets us track whether the user pressed 'back' on an
-     * android, or 'escape' on the desktop. We are using polling, so we swallow
-     * presses that aren't preceded by a release. In that manner, holding 'back'
-     * can't exit all the way out... you must press 'back' repeatedly, once for
-     * each screen to revert.
-     */
-    private boolean mKeyDown;
-
-    /**
-     * Store all the images, sounds, and fonts for the game
-     */
-    private Media mMedia;
-
-    /**
-     * The constructor just creates a media object and calls configureGravity, so that
-     * all of our globals will be set. Doing it this early lets us access the
-     * configuration from within the LWJGL (Desktop) main class. That, in turn,
-     * lets us get the screen size correct (see the desktop project's Java file).
-     */
-    public Lol(Config config) {
-        mConfig = config;
-    }
-
-    /**
-     * Vibrate the phone for a fixed amount of time. Note that this only
-     * vibrates the phone if the configuration says that vibration should be
-     * permitted.
-     *
-     * @param millis The amount of time to vibrate
-     */
-    static void vibrate(Config config, int millis) {
-        if (config.mEnableVibration)
-            Gdx.input.vibrate(millis);
     }
 
     /**
@@ -315,7 +309,7 @@ public class Lol implements ApplicationListener {
     class LolGestureManager extends GestureDetector.GestureAdapter {
         /**
          * When the screen is tapped, this code forwards the tap to the
-         * appropriate GestureAction
+         * appropriate handler
          *
          * @param x      X coordinate of the tap
          * @param y      Y coordinate of the tap
@@ -325,28 +319,20 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean tap(float x, float y, int count, int button) {
             Level level = mStateMachine.mLevel;
-            // if any pop-up scene is showing, forward the tap to the scene and
-            // return true, so that the event doesn't get passed to the Scene
-            if (level.mWinScene != null && level.mWinScene.mVisible) {
-                level.mWinScene.onTap(x, y, level.mHud, Lol.this);
+            // Give each pop-up scene a chance to handle the tap
+            if (level.mWinScene.onTap(x, y, Lol.this))
                 return true;
-            } else if (level.mLoseScene != null && level.mLoseScene.mVisible) {
-                level.mLoseScene.onTap(x, y, level.mHud, Lol.this);
+            if (level.mLoseScene.onTap(x, y, Lol.this))
                 return true;
-            } else if (level.mPreScene != null && level.mPreScene.mVisible) {
-                level.mPreScene.onTap(x, y, level.mHud, Lol.this);
+            if (level.mPreScene.onTap(x, y, Lol.this))
                 return true;
-            } else if (level.mPauseScene != null && level.mPauseScene.mVisible) {
-                level.mPauseScene.onTap(x, y, level.mHud, Lol.this);
+            if (level.mPauseScene.onTap(x, y, Lol.this))
                 return true;
-            }
-
-            // check if we tapped a control
-            if (level.mHud.checkTap(level.mWorld.mTouchVec, x, y, level.mWorld.mGameCam))
+            // Let the hud handle the tap
+            if (level.mHud.handleTap(x, y, level.mWorld))
                 return true;
-
+            // leave it up to the world
             return level.mWorld.onTap(x, y, count, button);
-
         }
 
         /**
@@ -358,14 +344,7 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
-            Level level = mStateMachine.mLevel;
-            // we only fling at the whole-level layer
-            level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(velocityX, velocityY, 0));
-            for (GestureAction ga : level.mWorld.mGestureResponders) {
-                if (ga.onFling(level.mWorld.mTouchVec))
-                    return true;
-            }
-            return false;
+            return mStateMachine.mLevel.mWorld.handleFling(velocityX, velocityY);
         }
 
         /**
@@ -378,25 +357,12 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
-            Level level = mStateMachine.mLevel;
             // check if we panned a control
-            level.mHud.mHudCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-            for (Control c : level.mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(level.mWorld.mTouchVec.x, level.mWorld.mTouchVec.y)) {
-                    level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPan(level.mWorld.mTouchVec, deltaX, deltaY);
-                    return true;
-                }
-            }
+            if (mStateMachine.mLevel.mHud.handlePan(x, y, deltaX, deltaY, mStateMachine.mLevel.mWorld))
+                return true;
 
             // did we pan the level?
-            level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-            for (GestureAction ga : level.mWorld.mGestureResponders) {
-                if (ga.onPan(level.mWorld.mTouchVec, deltaX, deltaY))
-                    return true;
-            }
-            return false;
-
+            return mStateMachine.mLevel.mWorld.handlePan(x, y, deltaX, deltaY);
         }
 
         /**
@@ -409,24 +375,10 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
-            Level level = mStateMachine.mLevel;
             // check if we panStopped a control
-            level.mHud.mHudCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-            for (Control c : level.mHud.mPanControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(level.mWorld.mTouchVec.x, level.mWorld.mTouchVec.y)) {
-                    level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-                    c.mGestureAction.onPanStop(level.mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // handle panstop on level
-            level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(x, y, 0));
-            for (GestureAction ga : level.mWorld.mGestureResponders)
-                if (ga.onPanStop(level.mWorld.mTouchVec))
-                    return true;
-            return false;
-
+            if (mStateMachine.mLevel.mHud.handlePanStop(x, y, mStateMachine.mLevel.mWorld))
+                return true;
+            return mStateMachine.mLevel.mWorld.handlePanStop(x, y);
         }
 
         /**
@@ -437,14 +389,7 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            Level level = mStateMachine.mLevel;
-            for (Control c : level.mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive) {
-                    c.mGestureAction.zoom(initialDistance, distance);
-                    return true;
-                }
-            }
-            return false;
+            return mStateMachine.mLevel.mHud.handleZoom(initialDistance, distance);
         }
     }
 
@@ -465,45 +410,9 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             Level level = mStateMachine.mLevel;
-            // check if we down-pressed a control
-            level.mHud.mHudCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-            for (Control c : level.mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(level.mWorld.mTouchVec.x, level.mWorld.mTouchVec.y)) {
-                    level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(false, level.mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // pass to pinch-zoom?
-            for (Control c : level.mHud.mZoomControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(level.mWorld.mTouchVec.x, level.mWorld.mTouchVec.y)) {
-                    level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.onDown(level.mWorld.mTouchVec);
-                    return true;
-                }
-            }
-
-            // check for actor touch, by looking at gameCam coordinates... on
-            // touch, hitActor will change
-            level.mWorld.mHitActor = null;
-            level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-            level.mWorld.mWorld.QueryAABB(level.mWorld.mTouchCallback, level.mWorld.mTouchVec.x - 0.1f, level.mWorld.mTouchVec.y - 0.1f, level.mWorld.mTouchVec.x + 0.1f,
-                    level.mWorld.mTouchVec.y + 0.1f);
-
-            // actors don't respond to DOWN... if it's a down on a
-            // actor, we are supposed to remember the most recently
-            // touched actor, and that's it
-            if (level.mWorld.mHitActor != null) {
-                if (level.mWorld.mHitActor.mGestureResponder != null && level.mWorld.mHitActor.mGestureResponder.toggle(false, level.mWorld.mTouchVec))
-                    return true;
-            }
-
-            // forward to the level's handler
-            for (GestureAction ga : level.mWorld.mGestureResponders)
-                if (ga.onDown(level.mWorld.mTouchVec))
-                    return true;
-            return false;
+            if (level.mHud.handleDown(screenX, screenY, level.mWorld))
+                return true;
+            return level.mWorld.handleDown(screenX, screenY);
         }
 
         /**
@@ -518,22 +427,10 @@ public class Lol implements ApplicationListener {
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             Level level = mStateMachine.mLevel;
             // check if we down-pressed a control
-            level.mHud.mHudCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-            for (Control c : level.mHud.mToggleControls) {
-                if (c.mIsTouchable && c.mIsActive && c.mRange.contains(level.mWorld.mTouchVec.x, level.mWorld.mTouchVec.y)) {
-                    level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-                    c.mGestureAction.toggle(true, level.mWorld.mTouchVec);
-                    return true;
-                }
-            }
-            level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-            if (level.mWorld.mHitActor != null) {
-                if (level.mWorld.mHitActor.mGestureResponder != null && level.mWorld.mHitActor.mGestureResponder.toggle(true, level.mWorld.mTouchVec)) {
-                    level.mWorld.mHitActor = null;
-                    return true;
-                }
-            }
-            return false;
+            if (level.mHud.handleUp(screenX, screenY, level.mWorld))
+                return true;
+
+            return level.mWorld.handleUp(screenX, screenY);
         }
 
         /**
@@ -546,14 +443,7 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
             Level level = mStateMachine.mLevel;
-            if (level.mWorld.mHitActor != null && level.mWorld.mHitActor.mGestureResponder != null) {
-                level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(screenX, screenY, 0));
-                return level.mWorld.mHitActor.mGestureResponder.onDrag(level.mWorld.mTouchVec);
-            }
-            for (GestureAction ga : level.mWorld.mGestureResponders)
-                if (ga.onDrag(level.mWorld.mTouchVec))
-                    return true;
-            return false;
+            return level.mWorld.handleDrag(screenX, screenY);
         }
     }
 
@@ -610,16 +500,6 @@ public class Lol implements ApplicationListener {
         // might be hanging around
         mMedia.onDispose();
     }
-
-    /**
-     * The debug renderer, for printing circles and boxes for each actor
-     */
-    private Box2DDebugRenderer mDebugRender;
-
-    /**
-     * The SpriteBatch for drawing all texture regions and fonts
-     */
-    private SpriteBatch mSpriteBatch;
 
     /**
      * This code is called every 1/45th of a second to update the game state and
@@ -720,11 +600,11 @@ public class Lol implements ApplicationListener {
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(level.mWorld.mBackground.mColor.r, level.mWorld.mBackground.mColor.g, level.mWorld.mBackground.mColor.b, 1);
+        Gdx.gl.glClearColor(level.mBackground.mColor.r, level.mBackground.mColor.g, level.mBackground.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // draw parallax backgrounds
-        level.mWorld.mBackground.renderLayers(level.mWorld, mSpriteBatch, delta);
+        level.mBackground.renderLayers(level.mWorld, mSpriteBatch, delta);
 
         // Render the actors in order from z=-2 through z=2
         mSpriteBatch.setProjectionMatrix(level.mWorld.mGameCam.combined);
@@ -735,8 +615,7 @@ public class Lol implements ApplicationListener {
         mSpriteBatch.end();
 
         // draw parallax foregrounds
-        level.mWorld.mForeground.renderLayers(level.mWorld, mSpriteBatch, delta);
-
+        level.mForeground.renderLayers(level.mWorld, mSpriteBatch, delta);
 
         // DEBUG: draw outlines of physics actors
         if (mConfig.mShowDebugBoxes)
@@ -744,59 +623,6 @@ public class Lol implements ApplicationListener {
 
         // draw Controls
         level.mHud.render(mConfig, mSpriteBatch);
-    }
-
-    /**
-     * A hack for stopping events when a pause screen is opened
-     *
-     * @param touchVec The location of the touch that interacted with the pause
-     *                 screen.
-     */
-    void liftAllButtons(Vector3 touchVec) {
-        mStateMachine.mLevel.mHud.liftAllButtons(touchVec);
-        for (GestureAction ga : mStateMachine.mLevel.mWorld.mGestureResponders) {
-            ga.onPanStop(mStateMachine.mLevel.mWorld.mTouchVec);
-            ga.onUp(mStateMachine.mLevel.mWorld.mTouchVec);
-        }
-    }
-
-    /**
-     * Look up a fact that was stored for the current game session. If no such
-     * fact exists, defaultVal will be returned.
-     *
-     * @param factName   The name used to store the fact
-     * @param defaultVal The value to return if the fact does not exist
-     * @return The integer value corresponding to the last value stored
-     */
-    static int getGameFact(Config config, String factName, int defaultVal) {
-        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
-        return prefs.getInteger(factName, defaultVal);
-    }
-
-    /**
-     * Save a fact about the current game session. If the factName has already
-     * been used for this game session, the new value will overwrite the old.
-     *
-     * @param factName  The name for the fact being saved
-     * @param factValue The integer value that is the fact being saved
-     */
-    static void putGameFact(Config config, String factName, int factValue) {
-        Preferences prefs = Gdx.app.getPreferences(config.mStorageKey);
-        prefs.putInteger(factName, factValue);
-        prefs.flush();
-    }
-
-    /**
-     * Instead of using Gdx.app.log directly, and potentially writing a lot of
-     * debug info in a production setting, we use this to only dump to the log
-     * when debug mode is on
-     *
-     * @param tag  The message tag
-     * @param text The message text
-     */
-    static void message(Config config, String tag, String text) {
-        if (config.mShowDebugBoxes)
-            Gdx.app.log(tag, text);
     }
 
     @Override
@@ -809,5 +635,84 @@ public class Lol implements ApplicationListener {
 
     @Override
     public void resize(int width, int height) {
+    }
+}
+
+/**
+ * StateMachine tracks the current state of the game.  The state consists of the type of level
+ * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
+ * currently active, and the actual level object.
+ */
+class StateMachine {
+    /// Modes of the game, for use by the state machine.  We can be showing the main splash
+    /// screen, the help screens, the level chooser, the store, or a playable level
+    static final int SPLASH = 0;
+    static final int HELP = 1;
+    static final int CHOOSER = 2;
+    static final int STORE = 3;
+    static final int PLAY = 4;
+
+    /// mMode is is for the base state machine.  It tracks the current mode of the program (from
+    /// among the above choices)
+    int mMode;
+
+    /// mModeStates provides more information about the state of the game.  mMode only lets us
+    /// know what state we are in, but mModeStates lets us know which level of that mode is
+    /// currently active.  Note that using an array makes it easier for us to use the back
+    // button to go from a level to the chooser, or to move to the next level when we win a
+    // level
+    int mModeStates[] = new int[5];
+
+    void init() {
+        // set current mode states
+        for (int i = 0; i < 5; ++i)
+            mModeStates[i] = 1;
+    }
+
+    /// mWorld is the Level object that is active, in accordance with the state machine.
+    Level mLevel;
+
+    /**
+     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
+     * screen, if any.
+     *
+     * @param level may be {@code null}
+     */
+    void setScreen(Level level) {
+        if (mLevel != null) {
+            mLevel.mWorld.pauseMusic();
+        }
+        mLevel = level;
+    }
+}
+
+interface LolTouchAction {
+    boolean handle(float worldX, float worldY);
+}
+
+interface LolToggleAction {
+    boolean handle(boolean isUp, float worldX, float worldY);
+}
+
+interface LolPanAction {
+    boolean handle(float worldX, float worldY, float deltaX, float deltaY);
+}
+
+class BoxedBool {
+    boolean value;
+
+    BoxedBool(boolean val) {
+        value = val;
+    }
+}
+
+class BoxedActor {
+    Actor actor;
+}
+
+class BoxedFloat {
+    float value;
+    BoxedFloat(float val) {
+        value = val;
     }
 }

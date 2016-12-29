@@ -96,7 +96,10 @@ public abstract class Actor implements Renderable {
      * Some actors run custom code when they are touched. This is a reference to
      * the code to run.
      */
-    GestureAction mGestureResponder;
+    LolTouchAction mTapHandler;
+    LolTouchAction mDragHandler;
+    LolToggleAction mToggleHandler;
+
     /**
      * When the camera follows the actor without centering on it, this gives us
      * the difference between the actor and camera
@@ -270,8 +273,8 @@ public abstract class Actor implements Renderable {
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
             mTouchSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
-        if (mGestureResponder != null) {
-            return mGestureResponder.onTap(touchVec);
+        if (mTapHandler != null) {
+            return mTapHandler.handle(touchVec.x, touchVec.y);
         }
         return false;
     }
@@ -738,9 +741,8 @@ public abstract class Actor implements Renderable {
         final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
         // set the code to run on touch
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
@@ -759,9 +761,8 @@ public abstract class Actor implements Renderable {
 
     // TODO: create a test for this
     public void setTapCallback(final LolAction action) {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 action.go();
                 return true;
             }
@@ -773,9 +774,8 @@ public abstract class Actor implements Renderable {
         whileDownAction.mIsActive = false;
 
         // set up the toggle behavior
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean toggle(boolean isUp, Vector3 touchVec) {
+        mToggleHandler = new LolToggleAction() {
+            public boolean handle(boolean isUp, float worldX, float worldY) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)
@@ -872,10 +872,9 @@ public abstract class Actor implements Renderable {
             mBody.setType(BodyType.KinematicBody);
         else
             mBody.setType(BodyType.DynamicBody);
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onDrag(Vector3 touchVec) {
-                mBody.setTransform(touchVec.x, touchVec.y, mBody.getAngle());
+        mDragHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
+                mBody.setTransform(worldX, worldY, mBody.getAngle());
                 return true;
             }
         };
@@ -904,12 +903,11 @@ public abstract class Actor implements Renderable {
         // convert threshold to nanoseconds
         final long deleteThreshold = deleteThresholdMillis;
         // set the code to run on touch
-        mGestureResponder = new GestureAction() {
+        mTapHandler = new LolTouchAction() {
             long mLastPokeTime;
             boolean mEnabled = true;
 
-            @Override
-            public boolean onTap(Vector3 tapLocation) {
+            public boolean handle(float worldX, float worldY) {
                 if (!mEnabled)
                     return false;
                 Lol.vibrate(mLevel.mConfig, 100);
@@ -927,16 +925,14 @@ public abstract class Actor implements Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the actor
-                mLevel.mGestureResponders.add(new GestureAction() {
+                mLevel.mTapHandlers.add(new LolTouchAction() {
                     boolean mEnabled = true;
-
-                    @Override
-                    public boolean onTap(Vector3 tapLocation) {
+                    public boolean handle(float worldX, float worldY) {
                         if (!mEnabled || !mVisible)
                             return false;
                         Lol.vibrate(mLevel.mConfig, 100);
                         // move the object
-                        mBody.setTransform(tapLocation.x, tapLocation.y, mBody.getAngle());
+                        mBody.setTransform(worldX, worldY, mBody.getAngle());
                         // clear the Level responder
                         mEnabled = false;
                         return true;
@@ -959,13 +955,12 @@ public abstract class Actor implements Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        mLevel.mGestureResponders.add(new GestureAction() {
-            @Override
-            public boolean onFling(Vector3 touchVec) {
+        mLevel.mFlingHandlers.add(new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 // note: may need to disable hovering
                 if (mLevel.mHitActor == Actor.this) {
                     mHover = null;
-                    updateVelocity((touchVec.x) * dampFactor, (touchVec.y) * dampFactor);
+                    updateVelocity(worldX * dampFactor, worldY * dampFactor);
                 }
                 return true;
             }
@@ -986,19 +981,17 @@ public abstract class Actor implements Renderable {
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 5);
-                mLevel.mGestureResponders.add(new GestureAction() {
+                mLevel.mTapHandlers.add(new LolTouchAction() {
                     boolean mEnabled = true;
 
-                    @Override
-                    public boolean onTap(Vector3 touchVec) {
+                    public boolean handle(float worldX, float worldY) {
                         if (!mEnabled)
                             return false;
-                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
-                                touchVec.y - mSize.y / 2);
+                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
+                                worldY - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
                         if (oncePerTouch)
@@ -1026,47 +1019,42 @@ public abstract class Actor implements Renderable {
     public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 5);
-                mLevel.mGestureResponders.add(new GestureAction() {
-                    boolean mEnabled = true;
 
-                    @Override
-                    public boolean onDown(Vector3 touchVec) {
-                        if (!mEnabled)
+                // track if the chase is still active
+                final BoxedBool mEnabled = new BoxedBool(true);
+                // on a down (or, indirectly, a pan), do this
+                final LolTouchAction down = new LolTouchAction() {
+                    public boolean handle(float worldX, float worldY) {
+                        if (!mEnabled.value)
                             return false;
-                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(touchVec.x - mSize.x / 2,
-                                touchVec.y - mSize.y / 2);
+                        Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
+                                worldY - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
                         return true;
                     }
-
-                    @Override
-                    public boolean onUp(Vector3 touchVec) {
-                        if (!mEnabled)
+                };
+                // on an up (or a panstop), do this
+                LolTouchAction up = new LolTouchAction() {
+                    public boolean handle(float worldX, float worldY) {
+                        if (!mEnabled.value)
                             return false;
                         if (stopOnUp && mRoute != null)
                             mRoute.haltRoute();
                         if (oncePerTouch)
-                            mEnabled = false;
+                            mEnabled.value = false;
                         return true;
                     }
-
-                    @Override
-                    public boolean onPan(Vector3 touchVec, float deltaX, float deltaY) {
-                        if (!mEnabled)
-                            return false;
-                        return onDown(touchVec);
-                    }
-
-                    @Override
-                    public boolean onPanStop(Vector3 touchVec) {
-                        if (!mEnabled)
-                            return false;
-                        return onUp(touchVec);
+                };
+                mLevel.mUpHandlers.add(up);
+                mLevel.mPanStopHandlers.add(up);
+                mLevel.mDownHandlers.add(down);
+                mLevel.mPanHandlers.add(new LolPanAction() {
+                    public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
+                        return down.handle(worldX, worldY);
                     }
                 });
                 return true;
@@ -1317,9 +1305,8 @@ public abstract class Actor implements Renderable {
      */
     public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
                                 final float velocityY) {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new LolTouchAction() {
+            public boolean handle(float worldX, float worldY) {
                 mLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }

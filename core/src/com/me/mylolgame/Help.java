@@ -27,11 +27,7 @@
 
 package com.me.mylolgame;
 
-import com.badlogic.gdx.math.Vector3;
-
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.Lol;
-import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.TouchEventHandler;
 
@@ -76,7 +72,7 @@ public class Help implements ScreenManager {
 
             // set up a control to go to the next level on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.doHelp(2);
                 }
             });
@@ -93,7 +89,7 @@ public class Help implements ScreenManager {
 
             // set up a control to go to the splash screen on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.doSplash();
                 }
             });

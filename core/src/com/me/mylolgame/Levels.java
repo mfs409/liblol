@@ -28,7 +28,6 @@
 package com.me.mylolgame;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
@@ -3128,7 +3127,7 @@ public class Levels implements ScreenManager {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             level.addTapControl(40, 40, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.getPauseScene().reset();
                     level.getPauseScene().addText("Current score " + level.getGoodiesCollected1(), "#FFFFFF",
                             "arial.ttf", 20);
@@ -3141,17 +3140,17 @@ public class Levels implements ScreenManager {
             level.addDisplay(240, 80, "arial.ttf", "#000000", 12, "-", ".", level.DisplaySessionFact("session test"));
             level.addDisplay(240, 120, "arial.ttf", "#000000", 12, "-", ".", level.DisplayGameFact("game test"));
             level.addTapControl(40, 90, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.putLevelFact("level test", 1 + level.getLevelFact("level test", -1));
                 }
             });
             level.addTapControl(40, 140, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.putSessionFact("session test", 1 + level.getSessionFact("session test", -1));
                 }
             });
             level.addTapControl(40, 190, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     level.putGameFact("game test", 1 + level.getGameFact("game test", -1));
                 }
             });
@@ -3313,7 +3312,7 @@ public class Levels implements ScreenManager {
 
             // add a one-time callback control
             level.addTapControl(40, 40, 40, 40, "blueball.png", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     if (!mIsActive)
                         return;
                     mIsActive = false;
@@ -3494,7 +3493,7 @@ public class Levels implements ScreenManager {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(Vector3 touchLocation) {
+                public void go(float x, float y) {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = level.getLevelActor("" + i);
                         if (p != null) {

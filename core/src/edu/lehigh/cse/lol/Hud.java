@@ -39,12 +39,16 @@ class Hud {
     /// This camera is for drawing controls that sit above the world
     OrthographicCamera mHudCam;
 
+    /// We use this to avoid garbage collection when converting screen touches to camera coordinates
+    private final Vector3 mTouchVec = new Vector3();
+
     /**
      * Create a new heads-up display by providing the dimensions for its camera
-     * @param width The width, in pixels, of the HUD
-     * @param height The height, in pixels, of the HUD
      */
-    Hud(int width, int height) {
+    Hud(Config config) {
+        int width = config.mWidth;
+        int height = config.mHeight;
+
         mHudCam = new OrthographicCamera(width, height);
         mHudCam.position.set(width / 2, height / 2, 0);
     }
@@ -80,7 +84,7 @@ class Hud {
     void liftAllButtons(Vector3 touchVec) {
         for (Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
-                c.mGestureAction.toggle(true, touchVec);
+                c.mToggleHandler.handle(true, touchVec.x, touchVec.y);
             }
         }
     }
@@ -90,12 +94,81 @@ class Hud {
         mDisplays.clear();
     }
 
-    boolean checkTap(Vector3 touchVec, float x, float y, OrthographicCamera gameCam) {
-        mHudCam.unproject(touchVec.set(x, y, 0));
+    boolean handleTap(float x, float y, PhysicsWorld world) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mTapControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(touchVec.x, touchVec.y)) {
-                gameCam.unproject(touchVec.set(x, y, 0));
-                c.mGestureAction.onTap(touchVec);
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                c.mTapHandler.handle(mTouchVec.x, mTouchVec.y);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean handlePan(float x, float y, float deltaX, float deltaY, PhysicsWorld world) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
+        for (Control c : mPanControls) {
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                c.mPanHandler.handle(mTouchVec.x, mTouchVec.y, deltaX, deltaY);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean handlePanStop(float x, float y, PhysicsWorld world) {
+        mHudCam.unproject(mTouchVec.set(x, y, 0));
+        for (Control c : mPanControls) {
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                c.mPanStopHandler.handle(mTouchVec.x, mTouchVec.y);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean handleZoom(float initialDistance, float distance) {
+        for (Control c : mZoomControls) {
+            if (c.mIsTouchable && c.mIsActive) {
+                c.mZoomHandler.handle(initialDistance, distance);
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    boolean handleDown(float screenX, float screenY, PhysicsWorld world) {
+        // check if we down-pressed a control
+        mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        for (Control c : mToggleControls) {
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                c.mToggleHandler.handle(false, mTouchVec.x, mTouchVec.y);
+                return true;
+            }
+        }
+
+        // pass to pinch-zoom?
+        for (Control c : mZoomControls) {
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                c.mDownHandler.handle(mTouchVec.x, mTouchVec.y);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean handleUp(float screenX, float screenY, PhysicsWorld world) {
+        mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        for (Control c : mToggleControls) {
+            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
+                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                c.mToggleHandler.handle(true, mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }

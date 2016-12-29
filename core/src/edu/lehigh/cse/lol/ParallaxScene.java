@@ -1,49 +1,35 @@
-/**
- * This is free and unencumbered software released into the public domain.
- *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <http://unlicense.org>
- */
-
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 
 /**
- * The Foreground class provides a way to declare images that go in the
- * foreground of the game, and which automatically pan and repeat. Note that if
- * you wish to have a foreground image that does not pan and repeat, you should
- * use Util.drawPicture.
- *
- * TODO: merge this with Background... they're much simpler now...
+ * Created by spear on 12/28/2016.
  */
-public class Foreground {
-    /**
-     * All the background layers to show for the current level
-     */
+
+class ParallaxScene {
+    /// All the layers to show as part of this scene
     final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
+
+    /// An optional background color to show behind everything
+    Color mColor = new Color(1, 1, 1, 1);
+
+    /// This camera is for drawing parallax backgrounds that go in front of or behind the world
+    ///
+    /// TODO: make private
+    ParallaxCamera mBgCam;
+
+    ParallaxScene(Config config) {
+        int camWidth = config.mWidth;
+        int camHeight = config.mHeight;
+
+        // the background camera is like the hudcam
+        mBgCam = new ParallaxCamera(camWidth, camHeight);
+        mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mBgCam.zoom = 1;
+    }
 
     /**
      * This method, called from the render loop, is responsible for drawing all
@@ -56,14 +42,13 @@ public class Foreground {
         // center camera on mGameCam's camera
         float x = level.mGameCam.position.x;
         float y = level.mGameCam.position.y;
-        level.mBgCam.position.set(x, y, 0);
-        level.mBgCam.update();
+        mBgCam.position.set(x, y, 0);
+        mBgCam.update();
 
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
-            sb.setProjectionMatrix(level.mBgCam
-                    .calculateParallaxMatrix(pl.mXSpeed
+            sb.setProjectionMatrix(mBgCam.calculateParallaxMatrix(pl.mXSpeed
                             * level.mConfig.PIXEL_METER_RATIO, pl.mYSpeed
                             * level.mConfig.PIXEL_METER_RATIO));
             sb.begin();
@@ -71,7 +56,7 @@ public class Foreground {
             if (pl.mAutoX) {
                 // hack for changing the projection matrix
                 sb.end();
-                sb.setProjectionMatrix(level.mBgCam
+                sb.setProjectionMatrix(mBgCam
                         .calculateParallaxMatrix(0, 0));
                 sb.begin();
                 // update position, based on elapsed time
@@ -100,7 +85,7 @@ public class Foreground {
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
-                screensBefore += level.mBgCam.zoom;
+                screensBefore += mBgCam.zoom;
                 startX -= (screensBefore * level.mConfig.mWidth);
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
@@ -108,7 +93,7 @@ public class Foreground {
                 // draw picture repeatedly until we've drawn enough to cover the
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
-                float limit = 2 + 2 * level.mBgCam.zoom;
+                float limit = 2 + 2 * mBgCam.zoom;
                 while (currX < startX + limit * level.mConfig.mWidth) {
                     sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
@@ -120,13 +105,13 @@ public class Foreground {
                 // getLoseScene the camera center, translate, and scale
                 float startY = y * level.mConfig.PIXEL_METER_RATIO * pl.mYSpeed;
                 // subtract enough screens, as above
-                startY -= (1.5f + level.mBgCam.zoom)
+                startY -= (1.5f + mBgCam.zoom)
                         * level.mConfig.mHeight;
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
-                float limit = 2 + 2 * level.mBgCam.zoom;
+                float limit = 2 + 2 * mBgCam.zoom;
                 while (currY < startY + limit * level.mConfig.mHeight) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();

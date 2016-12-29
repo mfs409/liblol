@@ -82,24 +82,16 @@ class PhysicsWorld {
     /// TODO: make private
     Tilt mTilt = new Tilt();
 
-    /// The set of Parallax backgrounds
-    protected final Background mBackground = new Background();
-
-    /// The set of Parallax foregrounds
-    protected final Foreground mForeground = new Foreground();
-
-    /// This camera is for drawing parallax backgrounds that go in front of or behind the world
-    ///
-    /// TODO: make private
-    ParallaxCamera mBgCam;
-
     /// This is the Actor that the camera chases
     protected Actor mChaseActor;
 
-    /// Actors may need to set callbacks to run on a screen touch. If so, they can use this.
-    ///
-    /// TODO: make private
-    ArrayList<GestureAction> mGestureResponders = new ArrayList<>();
+    /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
+    ArrayList<LolTouchAction> mDownHandlers = new ArrayList<>();
+    ArrayList<LolTouchAction> mUpHandlers = new ArrayList<>();
+    ArrayList<LolTouchAction> mTapHandlers = new ArrayList<>();
+    ArrayList<LolTouchAction> mFlingHandlers = new ArrayList<>();
+    ArrayList<LolTouchAction> mPanStopHandlers = new ArrayList<>();
+    ArrayList<LolPanAction> mPanHandlers = new ArrayList<>();
 
     /// In levels with a projectile pool, the pool is accessed from here
     ///
@@ -388,8 +380,6 @@ class PhysicsWorld {
         };
     }
 
-
-
     /**
      * When a hero collides with a "sticky" obstacle, this is the code we run to
      * figure out what to do
@@ -644,10 +634,89 @@ class PhysicsWorld {
             return true;
 
         // is this a raw screen tap?
-        for (GestureAction ga : mGestureResponders)
-            if (ga.onTap(mTouchVec))
+        for (LolTouchAction ga : mTapHandlers)
+            if (ga.handle(mTouchVec.x, mTouchVec.y))
                 return true;
         return false;
+    }
+
+    boolean handleFling(float velocityX, float velocityY) {
+        // we only fling at the whole-level layer
+        mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
+        for (LolTouchAction ga : mFlingHandlers) {
+            if (ga.handle(mTouchVec.x, mTouchVec.y))
+                return true;
+        }
+        return false;
+    }
+
+    boolean handlePan(float x, float y, float deltaX, float deltaY) {
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        for (LolPanAction ga : mPanHandlers) {
+            if (ga.handle(mTouchVec.x, mTouchVec.y, deltaX, deltaY))
+                return true;
+        }
+        return false;
+    }
+
+    boolean handlePanStop(float x, float y) {
+        // handle panstop on level
+        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        for (LolTouchAction ga : mPanStopHandlers)
+            if (ga.handle(mTouchVec.x, mTouchVec.y))
+                return true;
+        return false;
+    }
+
+    boolean handleDown(float screenX, float screenY) {
+        // check for actor touch, by looking at gameCam coordinates... on
+        // touch, hitActor will change
+        mHitActor = null;
+        mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+
+        // actors don't respond to DOWN... if it's a down on a
+        // actor, we are supposed to remember the most recently
+        // touched actor, and that's it
+        if (mHitActor != null) {
+            if (mHitActor.mToggleHandler != null && mHitActor.mToggleHandler.handle(false, mTouchVec.x, mTouchVec.y))
+                return true;
+        }
+
+        // forward to the level's handler
+        for (LolTouchAction ga : mDownHandlers)
+            if (ga.handle(mTouchVec.x, mTouchVec.y))
+                return true;
+        return false;
+    }
+
+    boolean handleUp(float screenX, float screenY) {
+        mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        if (mHitActor != null) {
+            if (mHitActor.mToggleHandler != null && mHitActor.mToggleHandler.handle(true, mTouchVec.x, mTouchVec.y)) {
+                mHitActor = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean handleDrag(float screenX, float screenY) {
+        if (mHitActor != null && mHitActor.mDragHandler != null) {
+            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            return mHitActor.mDragHandler.handle(mTouchVec.x, mTouchVec.y);
+        }
+        return false;
+    }
+
+    void liftAllButtons() {
+        for (LolTouchAction ga : mPanStopHandlers) {
+            ga.handle(mTouchVec.x, mTouchVec.y);
+        }
+        for (LolTouchAction ga : mUpHandlers) {
+            ga.handle(mTouchVec.x, mTouchVec.y);
+        }
     }
 
     /**
@@ -659,6 +728,8 @@ class PhysicsWorld {
      * phones' accelerometers vary in terms of sensitivity. It is possible to set
      * multipliers and/or caps on the effect of Tilt, but these may not suffice to
      * make your game playable and enjoyable.
+     * <p>
+     * TODO: Tilt is an input mechanism... should it move into Lol?
      */
     class Tilt {
         /**
