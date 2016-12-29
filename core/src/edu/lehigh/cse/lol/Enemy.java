@@ -90,7 +90,7 @@ public class Enemy extends Actor {
     /**
      * Collision behavior of enemies. Based on our Actor numbering scheme, the
      * only concerns are to ensure that when a projectile hits this enemy, we
-     * remove the enemy and hide the projectile, and to handle collisions with
+     * remove the enemy and hide the projectile, and to go collisions with
      * certain obstacles
      *
      * @param other   The other actor involved in the collision
@@ -117,7 +117,7 @@ public class Enemy extends Actor {
      * @param contact The contact information for the collision
      */
     private void onCollideWithObstacle(final Obstacle o, Contact contact) {
-        // handle any callbacks the obstacle has
+        // go any callbacks the obstacle has
         if (o.mEnemyCollision != null)
             o.mEnemyCollision.go(this, contact);
     }
@@ -181,7 +181,7 @@ public class Enemy extends Actor {
         if (increaseScore)
             mScore.onDefeatEnemy();
 
-        // handle defeat callbacks
+        // go defeat callbacks
         if (mDefeatCallback != null)
             mDefeatCallback.go(this, null);
     }
@@ -215,8 +215,8 @@ public class Enemy extends Actor {
      * from the game
      */
     public void setDisappearOnTouch() {
-        mTapHandler= new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler= new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 100);
                 defeat(true);
                 mTapHandler = null;

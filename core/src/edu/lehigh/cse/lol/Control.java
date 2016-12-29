@@ -49,12 +49,12 @@ public class Control {
     boolean mIsTouchable;
 
     /// Code to run when this Control is touched
-    LolTouchAction mTapHandler;
-    LolToggleAction mToggleHandler;
-    LolPanAction mPanHandler;
-    LolTouchAction mPanStopHandler;
-    LolTouchAction mZoomHandler;
-    LolTouchAction mDownHandler;
+    TouchEventHandler mTapHandler;
+    TouchEventHandler mToggleHandler;
+    TouchEventHandler mPanHandler;
+    TouchEventHandler mPanStopHandler;
+    TouchEventHandler mZoomHandler;
+    TouchEventHandler mDownHandler;
 
     /**
      * The rectangle on the screen that is touchable

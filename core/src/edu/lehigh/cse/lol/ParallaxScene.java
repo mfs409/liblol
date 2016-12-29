@@ -52,7 +52,7 @@ class ParallaxScene {
                             * level.mConfig.PIXEL_METER_RATIO, pl.mYSpeed
                             * level.mConfig.PIXEL_METER_RATIO));
             sb.begin();
-            // handle auto layers
+            // go auto layers
             if (pl.mAutoX) {
                 // hack for changing the projection matrix
                 sb.end();

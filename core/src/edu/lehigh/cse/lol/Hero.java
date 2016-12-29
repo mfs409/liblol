@@ -30,7 +30,6 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
@@ -311,7 +310,7 @@ public class Hero extends Actor {
                 mScore.endLevel(false);
             return;
         }
-        // handle hero invincibility
+        // go hero invincibility
         if (mInvincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
             if (e.mImmuneToInvincibility)
@@ -438,8 +437,8 @@ public class Hero extends Actor {
      * @param y Velocity in Y dimension
      */
     public void setTouchAndGo(final float x, final float y) {
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 mHover = null;
                 // if it was hovering, its body type won't be Dynamic
                 if (mBody.getType() != BodyType.DynamicBody)
@@ -475,8 +474,8 @@ public class Hero extends Actor {
      */
 
     public void setTouchToJump() {
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 jump();
                 return true;
             }

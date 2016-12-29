@@ -63,23 +63,26 @@ public class Splash implements ScreenManager {
         // field you should change if you don't want the 'back' button to go
         // from that level to the chooser.
         level.addTapControl(384, 182, 186, 104, "", new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 level.doChooser(1);
+                return true;
             }
         });
 
         // This is the Help button... it switches to the first screen of the
         // help system
         level.addTapControl(96, 186, 160, 80, "", new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 level.doHelp(1);
+                return true;
             }
         });
 
         // This is the Quit button
         level.addTapControl(726, 186, 138, 78, "", new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 level.doQuit();
+                return true;
             }
         });
 

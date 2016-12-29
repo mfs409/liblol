@@ -84,7 +84,8 @@ class Hud {
     void liftAllButtons(Vector3 touchVec) {
         for (Control c : mToggleControls) {
             if (c.mIsActive && c.mIsTouchable) {
-                c.mToggleHandler.handle(true, touchVec.x, touchVec.y);
+                c.mToggleHandler.isUp = true;
+                c.mToggleHandler.go(touchVec.x, touchVec.y);
             }
         }
     }
@@ -99,7 +100,7 @@ class Hud {
         for (Control c : mTapControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(x, y, 0));
-                c.mTapHandler.handle(mTouchVec.x, mTouchVec.y);
+                c.mTapHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }
@@ -111,7 +112,9 @@ class Hud {
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(x, y, 0));
-                c.mPanHandler.handle(mTouchVec.x, mTouchVec.y, deltaX, deltaY);
+                c.mPanHandler.deltaX = deltaX;
+                c.mPanHandler.deltaY = deltaY;
+                c.mPanHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }
@@ -123,7 +126,7 @@ class Hud {
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(x, y, 0));
-                c.mPanStopHandler.handle(mTouchVec.x, mTouchVec.y);
+                c.mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }
@@ -133,7 +136,7 @@ class Hud {
     boolean handleZoom(float initialDistance, float distance) {
         for (Control c : mZoomControls) {
             if (c.mIsTouchable && c.mIsActive) {
-                c.mZoomHandler.handle(initialDistance, distance);
+                c.mZoomHandler.go(initialDistance, distance);
                 return true;
             }
         }
@@ -147,7 +150,8 @@ class Hud {
         for (Control c : mToggleControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mToggleHandler.handle(false, mTouchVec.x, mTouchVec.y);
+                c.mToggleHandler.isUp = false;
+                c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }
@@ -156,7 +160,7 @@ class Hud {
         for (Control c : mZoomControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mDownHandler.handle(mTouchVec.x, mTouchVec.y);
+                c.mDownHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }
@@ -168,7 +172,8 @@ class Hud {
         for (Control c : mToggleControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mToggleHandler.handle(true, mTouchVec.x, mTouchVec.y);
+                c.mToggleHandler.isUp = true;
+                c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
         }

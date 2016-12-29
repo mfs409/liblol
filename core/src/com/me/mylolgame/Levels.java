@@ -3127,12 +3127,13 @@ public class Levels implements ScreenManager {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             level.addTapControl(40, 40, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.getPauseScene().reset();
                     level.getPauseScene().addText("Current score " + level.getGoodiesCollected1(), "#FFFFFF",
                             "arial.ttf", 20);
                     level.getPauseScene().show();
                     level.incrementGoodiesCollected1();
+                    return true;
                 }
             });
 
@@ -3140,18 +3141,21 @@ public class Levels implements ScreenManager {
             level.addDisplay(240, 80, "arial.ttf", "#000000", 12, "-", ".", level.DisplaySessionFact("session test"));
             level.addDisplay(240, 120, "arial.ttf", "#000000", 12, "-", ".", level.DisplayGameFact("game test"));
             level.addTapControl(40, 90, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.putLevelFact("level test", 1 + level.getLevelFact("level test", -1));
+                    return true;
                 }
             });
             level.addTapControl(40, 140, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.putSessionFact("session test", 1 + level.getSessionFact("session test", -1));
+                    return true;
                 }
             });
             level.addTapControl(40, 190, 40, 40, "red.png", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.putGameFact("game test", 1 + level.getGameFact("game test", -1));
+                    return true;
                 }
             });
         }
@@ -3312,13 +3316,14 @@ public class Levels implements ScreenManager {
 
             // add a one-time callback control
             level.addTapControl(40, 40, 40, 40, "blueball.png", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     if (!mIsActive)
-                        return;
+                        return false;
                     mIsActive = false;
                     level.getPauseScene().addText("you can only pause once...", "#FFFFFF", "arial.ttf", 20);
                     level.getPauseScene().show();
                     this.mAttachedControl.setImage("greenball.png");
+                    return true;
                 }
             });
         }
@@ -3493,13 +3498,14 @@ public class Levels implements ScreenManager {
             // control is pressed. This is something of a catch-all for any sort
             // of behavior we might want. See onControlPressCallback().
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     for (int i = 0; i < 10; ++i) {
                         Actor p = level.getLevelActor("" + i);
                         if (p != null) {
                             p.setAbsoluteVelocity(5 - level.getRandom(10), 10, false);
                         }
                     }
+                    return true;
                 }
             });
         }

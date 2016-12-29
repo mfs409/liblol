@@ -86,12 +86,12 @@ class PhysicsWorld {
     protected Actor mChaseActor;
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
-    ArrayList<LolTouchAction> mDownHandlers = new ArrayList<>();
-    ArrayList<LolTouchAction> mUpHandlers = new ArrayList<>();
-    ArrayList<LolTouchAction> mTapHandlers = new ArrayList<>();
-    ArrayList<LolTouchAction> mFlingHandlers = new ArrayList<>();
-    ArrayList<LolTouchAction> mPanStopHandlers = new ArrayList<>();
-    ArrayList<LolPanAction> mPanHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mDownHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mUpHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mTapHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mFlingHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mPanStopHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mPanHandlers = new ArrayList<>();
 
     /// In levels with a projectile pool, the pool is accessed from here
     ///
@@ -395,7 +395,7 @@ class PhysicsWorld {
         // don't create a joint if we're supposed to wait
         if (System.currentTimeMillis() < other.mStickyDelay)
             return;
-        // handle sticky obstacles... only do something if we're hitting the
+        // go sticky obstacles... only do something if we're hitting the
         // obstacle from the correct direction
         if ((sticky.mIsSticky[0] && other.getYPosition() >= sticky.getYPosition() + sticky.mSize.y)
                 || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
@@ -506,7 +506,7 @@ class PhysicsWorld {
                 Actor gfoA = (Actor) a;
                 Actor gfoB = (Actor) b;
 
-                // handle sticky obstacles... only do something if at least one
+                // go sticky obstacles... only do something if at least one
                 // actor is a sticky actor
                 if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
                     handleSticky(gfoA, gfoB, contact);
@@ -595,7 +595,7 @@ class PhysicsWorld {
     }
 
     /**
-     * If the camera is supposed to follow an actor, this code will handle
+     * If the camera is supposed to follow an actor, this code will go
      * updating the camera position
      */
     protected void adjustCamera() {
@@ -634,8 +634,8 @@ class PhysicsWorld {
             return true;
 
         // is this a raw screen tap?
-        for (LolTouchAction ga : mTapHandlers)
-            if (ga.handle(mTouchVec.x, mTouchVec.y))
+        for (TouchEventHandler ga : mTapHandlers)
+            if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
         return false;
     }
@@ -643,8 +643,8 @@ class PhysicsWorld {
     boolean handleFling(float velocityX, float velocityY) {
         // we only fling at the whole-level layer
         mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
-        for (LolTouchAction ga : mFlingHandlers) {
-            if (ga.handle(mTouchVec.x, mTouchVec.y))
+        for (TouchEventHandler ga : mFlingHandlers) {
+            if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
         }
         return false;
@@ -652,18 +652,20 @@ class PhysicsWorld {
 
     boolean handlePan(float x, float y, float deltaX, float deltaY) {
         mGameCam.unproject(mTouchVec.set(x, y, 0));
-        for (LolPanAction ga : mPanHandlers) {
-            if (ga.handle(mTouchVec.x, mTouchVec.y, deltaX, deltaY))
+        for (TouchEventHandler ga : mPanHandlers) {
+            ga.deltaX = deltaX;
+            ga.deltaY = deltaY;
+            if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
         }
         return false;
     }
 
     boolean handlePanStop(float x, float y) {
-        // handle panstop on level
+        // go panstop on level
         mGameCam.unproject(mTouchVec.set(x, y, 0));
-        for (LolTouchAction ga : mPanStopHandlers)
-            if (ga.handle(mTouchVec.x, mTouchVec.y))
+        for (TouchEventHandler ga : mPanStopHandlers)
+            if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
         return false;
     }
@@ -680,13 +682,16 @@ class PhysicsWorld {
         // actor, we are supposed to remember the most recently
         // touched actor, and that's it
         if (mHitActor != null) {
-            if (mHitActor.mToggleHandler != null && mHitActor.mToggleHandler.handle(false, mTouchVec.x, mTouchVec.y))
-                return true;
+            if (mHitActor.mToggleHandler != null) {
+                mHitActor.mToggleHandler.isUp = false;
+                if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y))
+                    return true;
+            }
         }
 
         // forward to the level's handler
-        for (LolTouchAction ga : mDownHandlers)
-            if (ga.handle(mTouchVec.x, mTouchVec.y))
+        for (TouchEventHandler ga : mDownHandlers)
+            if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
         return false;
     }
@@ -694,9 +699,12 @@ class PhysicsWorld {
     boolean handleUp(float screenX, float screenY) {
         mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null) {
-            if (mHitActor.mToggleHandler != null && mHitActor.mToggleHandler.handle(true, mTouchVec.x, mTouchVec.y)) {
-                mHitActor = null;
-                return true;
+            if (mHitActor.mToggleHandler != null) {
+                mHitActor.mToggleHandler.isUp = true;
+                if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y)) {
+                    mHitActor = null;
+                    return true;
+                }
             }
         }
         return false;
@@ -705,17 +713,17 @@ class PhysicsWorld {
     boolean handleDrag(float screenX, float screenY) {
         if (mHitActor != null && mHitActor.mDragHandler != null) {
             mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
-            return mHitActor.mDragHandler.handle(mTouchVec.x, mTouchVec.y);
+            return mHitActor.mDragHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }
 
     void liftAllButtons() {
-        for (LolTouchAction ga : mPanStopHandlers) {
-            ga.handle(mTouchVec.x, mTouchVec.y);
+        for (TouchEventHandler ga : mPanStopHandlers) {
+            ga.go(mTouchVec.x, mTouchVec.y);
         }
-        for (LolTouchAction ga : mUpHandlers) {
-            ga.handle(mTouchVec.x, mTouchVec.y);
+        for (TouchEventHandler ga : mUpHandlers) {
+            ga.go(mTouchVec.x, mTouchVec.y);
         }
     }
 

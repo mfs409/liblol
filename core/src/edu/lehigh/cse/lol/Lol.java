@@ -303,7 +303,7 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * To properly handle gestures, we need to provide the code to run on each
+     * To properly go gestures, we need to provide the code to run on each
      * type of gesture we care about.
      */
     class LolGestureManager extends GestureDetector.GestureAdapter {
@@ -319,7 +319,7 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean tap(float x, float y, int count, int button) {
             Level level = mStateMachine.mLevel;
-            // Give each pop-up scene a chance to handle the tap
+            // Give each pop-up scene a chance to go the tap
             if (level.mWinScene.onTap(x, y, Lol.this))
                 return true;
             if (level.mLoseScene.onTap(x, y, Lol.this))
@@ -328,7 +328,7 @@ public class Lol implements ApplicationListener {
                 return true;
             if (level.mPauseScene.onTap(x, y, Lol.this))
                 return true;
-            // Let the hud handle the tap
+            // Let the hud go the tap
             if (level.mHud.handleTap(x, y, level.mWorld))
                 return true;
             // leave it up to the world
@@ -532,7 +532,7 @@ public class Lol implements ApplicationListener {
 
         // Handle pauses due to pre, pause, or post scenes...
         //
-        // Note that these handle their own screen touches...
+        // Note that these go their own screen touches...
         //
         // Note that win and lose scenes should come first.
         if (level.mWinScene != null && level.mWinScene.render(mSpriteBatch, level.mHud))
@@ -544,7 +544,7 @@ public class Lol implements ApplicationListener {
         if (level.mPauseScene != null && level.mPauseScene.render(mSpriteBatch, level.mHud))
             return;
 
-        // handle accelerometer stuff... note that accelerometer is effectively
+        // go accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
         level.mWorld.handleTilt();
@@ -576,13 +576,13 @@ public class Lol implements ApplicationListener {
         // seems like we should be using /delta/ instead of 1/45f
         level.mWorld.mWorld.step(1 / 45f, 8, 3);
 
-        // now handle any events that occurred on account of the world movement
+        // now go any events that occurred on account of the world movement
         // or screen touches
         for (LolAction pe : level.mWorld.mOneTimeEvents)
             pe.go();
         level.mWorld.mOneTimeEvents.clear();
 
-        // handle repeat events
+        // go repeat events
         for (LolAction pe : level.mWorld.mRepeatEvents) {
             if (pe.mIsActive)
                 pe.go();
@@ -683,36 +683,5 @@ class StateMachine {
             mLevel.mWorld.pauseMusic();
         }
         mLevel = level;
-    }
-}
-
-interface LolTouchAction {
-    boolean handle(float worldX, float worldY);
-}
-
-interface LolToggleAction {
-    boolean handle(boolean isUp, float worldX, float worldY);
-}
-
-interface LolPanAction {
-    boolean handle(float worldX, float worldY, float deltaX, float deltaY);
-}
-
-class BoxedBool {
-    boolean value;
-
-    BoxedBool(boolean val) {
-        value = val;
-    }
-}
-
-class BoxedActor {
-    Actor actor;
-}
-
-class BoxedFloat {
-    float value;
-    BoxedFloat(float val) {
-        value = val;
     }
 }

@@ -179,7 +179,7 @@ public class Level {
                                 final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        mWorld.mPanHandlers.add(new LolPanAction() {
+        mWorld.mPanHandlers.add(new TouchEventHandler() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -190,7 +190,7 @@ public class Level {
              * On a down press, draw a new obstacle if enough time has
              * transpired
              */
-            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
+            public boolean go(float worldX, float worldY) {
                 // check if enough milliseconds have passed
                 long now = System.currentTimeMillis();
                 if (now < mLastTime + interval) {
@@ -752,12 +752,7 @@ public class Level {
      */
     public Control addTapControl(int x, int y, int width, int height, String imgName, final TouchEventHandler action) {
         Control c = new Control(this, imgName, x, y, width, height);
-        c.mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
-                action.go(worldX, worldY);
-                return true;
-            }
-        };
+        c.mTapHandler = action;
         action.mAttachedControl = c;
         mHud.mControls.add(c);
         mHud.mTapControls.add(c);
@@ -769,8 +764,9 @@ public class Level {
      */
     public TouchEventHandler PauseAction = new TouchEventHandler() {
         @Override
-        public void go(float x, float y) {
+        public boolean go(float x, float y) {
             getPauseScene().show();
+            return true;
         }
     };
 
@@ -783,8 +779,9 @@ public class Level {
     public TouchEventHandler JumpAction(final Hero hero) {
         return new TouchEventHandler() {
             @Override
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 hero.jump();
+                return true;
             }
         };
     }
@@ -804,8 +801,9 @@ public class Level {
      */
     public TouchEventHandler ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         return new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+                return true;
             }
         };
     }
@@ -823,9 +821,10 @@ public class Level {
      */
     public TouchEventHandler ThrowDirectionalAction(final Hero hero, final float offsetX, final float offsetY) {
         return new TouchEventHandler() {
-            public void go(float worldX, float worldY) {
+            public boolean go(float worldX, float worldY) {
                 mWorld.mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
                         worldX, worldY, hero, offsetX, offsetY);
+                return true;
             }
         };
     }
@@ -837,13 +836,14 @@ public class Level {
      */
     public TouchEventHandler ZoomOutAction(final float maxZoom) {
         return new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom < maxZoom) {
                     mWorld.mGameCam.zoom *= 2;
                     mBackground.mBgCam.zoom *= 2;
                     mForeground.mBgCam.zoom *= 2;
                 }
+                return true;
             }
         };
     }
@@ -855,13 +855,14 @@ public class Level {
      */
     public TouchEventHandler ZoomInAction(final float minZoom) {
         return new TouchEventHandler() {
-            public void go(float x, float y) {
+            public boolean go(float x, float y) {
                 float curzoom = mWorld.mGameCam.zoom;
                 if (curzoom > minZoom) {
                     mWorld.mGameCam.zoom /= 2;
                     mBackground.mBgCam.zoom /= 2;
                     mForeground.mBgCam.zoom /= 2;
                 }
+                return true;
             }
         };
     }
@@ -884,8 +885,8 @@ public class Level {
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
-        c.mToggleHandler = new LolToggleAction() {
-            public boolean handle(boolean isUp, float x, float y) {
+        c.mToggleHandler = new TouchEventHandler() {
+            public boolean go(float x, float y) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)
@@ -1069,28 +1070,25 @@ public class Level {
                                              final long milliDelay, final float offsetX, final float offsetY) {
         final Control c = new Control(this, imgName, x, y, width, height);
         final Vector2 v = new Vector2();
-        final BoxedBool mHolding = new BoxedBool(false);
-        c.mToggleHandler = new LolToggleAction() {
-            @Override
-            public boolean handle(boolean isUp, float worldX, float worldY) {
+        c.mToggleHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 if (isUp) {
-                    mHolding.value = false;
+                    isHolding = false;
                 } else {
-                    mHolding.value = true;
+                    isHolding = true;
                     v.x = worldX;
                     v.y = worldY;
                 }
                 return true;
             }
         };
-        c.mPanHandler = new LolPanAction() {
-            @Override
-            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
-                if (mHolding.value) {
+        c.mPanHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
+                if (c.mToggleHandler.isHolding) {
                     v.x = worldX;
                     v.y = worldY;
                 }
-                return mHolding.value;
+                return c.mToggleHandler.isHolding;
             }
         };
         mHud.mControls.add(c);
@@ -1103,7 +1101,7 @@ public class Level {
 
             @Override
             public void go() {
-                if (mHolding.value) {
+                if (c.mToggleHandler.isHolding) {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
@@ -1128,26 +1126,23 @@ public class Level {
      *                button
      */
     public Control addPanControl(int x, int y, int width, int height, String imgName) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        final BoxedActor oldChaseactor = new BoxedActor();
-        c.mPanStopHandler = new LolTouchAction() {
+        final Control c = new Control(this, imgName, x, y, width, height);
+        c.mPanStopHandler = new TouchEventHandler() {
             /**
              * Handle a pan stop event by restoring the chase actor, if there
              * was one
              */
-            @Override
-            public boolean handle(float worldX, float worldY) {
-                setCameraChase(oldChaseactor.actor);
-                oldChaseactor.actor = null;
+            public boolean go(float worldX, float worldY) {
+                setCameraChase(mAttachedActor);
+                mAttachedActor = null;
                 return true;
             }
         };
 
-        c.mPanHandler = new LolPanAction() {
-            @Override
-            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
+        c.mPanHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 if (mWorld.mChaseActor != null) {
-                    oldChaseactor.actor = mWorld.mChaseActor;
+                    c.mPanStopHandler.mAttachedActor = mWorld.mChaseActor;
                     mWorld.mChaseActor = null;
                 }
                 float x = mWorld.mGameCam.position.x - deltaX * .1f
@@ -1198,20 +1193,19 @@ public class Level {
      */
     public Control addPinchZoomControl(int x, int y, int width, int height, String imgName, final float maxZoom,
                                        final float minZoom) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        final BoxedFloat lastZoom = new BoxedFloat(1);
-        c.mDownHandler = new LolTouchAction() {
-            @Override
-            public boolean handle(float worldX, float worldY) {
-                lastZoom.value = mWorld.mGameCam.zoom;
+        final Control c = new Control(this, imgName, x, y, width, height);
+        c.mDownHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
+                // this handler is being used for up/down, so we can safely use the deltaX as a way
+                // of storing the last zoom value
+                deltaX = mWorld.mGameCam.zoom;
                 return true;
             }
         };
-        c.mZoomHandler = new LolTouchAction() {
-            @Override
-            public boolean handle(float initialDistance, float distance) {
+        c.mZoomHandler = new TouchEventHandler() {
+            public boolean go(float initialDistance, float distance) {
                 float ratio = initialDistance / distance;
-                float newZoom = lastZoom.value * ratio;
+                float newZoom = c.mDownHandler.deltaX * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
                     mWorld.mGameCam.zoom = newZoom;
                 // TODO: why do we return false?
@@ -1303,11 +1297,11 @@ public class Level {
                 callback.mFloatVal = callback.mFloatVal + (mGrow ? 1 : -1);
             }
         };
-        c.mTapHandler = new LolTouchAction() {
+        c.mTapHandler = new TouchEventHandler() {
             /**
              * This is a touchable control...
              */
-            public boolean handle(float worldX, float worldY) {
+            public boolean go(float worldX, float worldY) {
                 if (!c.mIsActive || !c.mIsTouchable)
                     return false;
                 callback.onEvent();
@@ -1362,11 +1356,11 @@ public class Level {
                     callback.mFloatVal = 0;
             }
         };
-        c.mTapHandler= new LolTouchAction() {
+        c.mTapHandler = new TouchEventHandler() {
             /**
              * This is a touchable control...
              */
-            public boolean handle(float worldX, float worldY) {
+            public boolean go(float worldX, float worldY) {
                 if (!c.mIsActive)
                     return false;
                 callback.onEvent();
@@ -1415,33 +1409,31 @@ public class Level {
         // capture a down-press or up-press that isn't also involved in a move.
         // To overcome this limitation, we'll make this BOTH a pan control and a
         // toggle control
-        final BoxedBool mHolding = new BoxedBool(false);
-        c.mToggleHandler = new LolToggleAction() {
-            @Override
-            public boolean handle(boolean isUp, float worldX, float worldY) {
+        c.mToggleHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 // up event
                 if (isUp) {
                     upCB.mUpLocation = new Vector3(worldX, worldY, 0);
                     upCB.onEvent();
-                    mHolding.value = false;
+                    isHolding = false;
                 }
                 // down event
                 else {
-                    mHolding.value = true;
+                    isHolding = true;
                     dnCB.mDownLocation = new Vector3(worldX, worldY, 0);
                     dnCB.onEvent();
                 }
                 // toggle state
-                mHolding.value = !isUp;
+                isHolding  = !isUp;
                 return true;
             }
         };
-        c.mPanHandler = new LolPanAction() {
-            @Override
-            public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
+        c.mPanHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 // force a down event, if we didn't get one
-                if (!mHolding.value) {
-                    c.mToggleHandler.handle(false, worldX, worldY);
+                if (!c.mToggleHandler.isHolding) {
+                    c.mToggleHandler.isUp = false;
+                    c.mToggleHandler.go(worldX, worldY);
                     return true;
                 }
                 // pan event
@@ -1450,12 +1442,12 @@ public class Level {
                 return true;
             }
         };
-        c.mPanStopHandler = new LolTouchAction() {
-            @Override
-            public boolean handle(float worldX, float worldY) {
+        c.mPanStopHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 // force an up event?
-                if (mHolding.value) {
-                    c.mToggleHandler.handle(true, worldX, worldY);
+                if (c.mToggleHandler.isHolding) {
+                    c.mToggleHandler.isUp = true;
+                    c.mToggleHandler.go(worldX, worldY);
                     return true;
                 }
                 return false;

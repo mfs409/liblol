@@ -72,8 +72,9 @@ public class Help implements ScreenManager {
 
             // set up a control to go to the next level on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.doHelp(2);
+                    return true;
                 }
             });
         }
@@ -89,8 +90,9 @@ public class Help implements ScreenManager {
 
             // set up a control to go to the splash screen on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
-                public void go(float x, float y) {
+                public boolean go(float x, float y) {
                     level.doSplash();
+                    return true;
                 }
             });
         }

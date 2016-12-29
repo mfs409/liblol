@@ -96,9 +96,9 @@ public abstract class Actor implements Renderable {
      * Some actors run custom code when they are touched. This is a reference to
      * the code to run.
      */
-    LolTouchAction mTapHandler;
-    LolTouchAction mDragHandler;
-    LolToggleAction mToggleHandler;
+    TouchEventHandler mTapHandler;
+    TouchEventHandler mDragHandler;
+    TouchEventHandler mToggleHandler;
 
     /**
      * When the camera follows the actor without centering on it, this gives us
@@ -241,7 +241,7 @@ public abstract class Actor implements Renderable {
     abstract void onCollide(Actor other, Contact contact);
 
     /**
-     * Internal method for updating an actor's velocity, so that we can handle
+     * Internal method for updating an actor's velocity, so that we can go
      * its direction correctly
      *
      * @param x The new x velocity
@@ -274,7 +274,7 @@ public abstract class Actor implements Renderable {
         if (mTouchSound != null)
             mTouchSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         if (mTapHandler != null) {
-            return mTapHandler.handle(touchVec.x, touchVec.y);
+            return mTapHandler.go(touchVec.x, touchVec.y);
         }
         return false;
     }
@@ -741,8 +741,8 @@ public abstract class Actor implements Renderable {
         final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
         // set the code to run on touch
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
@@ -761,8 +761,8 @@ public abstract class Actor implements Renderable {
 
     // TODO: create a test for this
     public void setTapCallback(final LolAction action) {
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 action.go();
                 return true;
             }
@@ -774,8 +774,8 @@ public abstract class Actor implements Renderable {
         whileDownAction.mIsActive = false;
 
         // set up the toggle behavior
-        mToggleHandler = new LolToggleAction() {
-            public boolean handle(boolean isUp, float worldX, float worldY) {
+        mToggleHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)
@@ -872,8 +872,8 @@ public abstract class Actor implements Renderable {
             mBody.setType(BodyType.KinematicBody);
         else
             mBody.setType(BodyType.DynamicBody);
-        mDragHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mDragHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 mBody.setTransform(worldX, worldY, mBody.getAngle());
                 return true;
             }
@@ -903,11 +903,11 @@ public abstract class Actor implements Renderable {
         // convert threshold to nanoseconds
         final long deleteThreshold = deleteThresholdMillis;
         // set the code to run on touch
-        mTapHandler = new LolTouchAction() {
+        mTapHandler = new TouchEventHandler() {
             long mLastPokeTime;
             boolean mEnabled = true;
 
-            public boolean handle(float worldX, float worldY) {
+            public boolean go(float worldX, float worldY) {
                 if (!mEnabled)
                     return false;
                 Lol.vibrate(mLevel.mConfig, 100);
@@ -925,9 +925,9 @@ public abstract class Actor implements Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the actor
-                mLevel.mTapHandlers.add(new LolTouchAction() {
+                mLevel.mTapHandlers.add(new TouchEventHandler() {
                     boolean mEnabled = true;
-                    public boolean handle(float worldX, float worldY) {
+                    public boolean go(float worldX, float worldY) {
                         if (!mEnabled || !mVisible)
                             return false;
                         Lol.vibrate(mLevel.mConfig, 100);
@@ -955,8 +955,8 @@ public abstract class Actor implements Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        mLevel.mFlingHandlers.add(new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mLevel.mFlingHandlers.add(new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 // note: may need to disable hovering
                 if (mLevel.mHitActor == Actor.this) {
                     mHover = null;
@@ -981,13 +981,13 @@ public abstract class Actor implements Renderable {
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 5);
-                mLevel.mTapHandlers.add(new LolTouchAction() {
+                mLevel.mTapHandlers.add(new TouchEventHandler() {
                     boolean mEnabled = true;
 
-                    public boolean handle(float worldX, float worldY) {
+                    public boolean go(float worldX, float worldY) {
                         if (!mEnabled)
                             return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
@@ -1019,16 +1019,14 @@ public abstract class Actor implements Renderable {
     public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 Lol.vibrate(mLevel.mConfig, 5);
 
-                // track if the chase is still active
-                final BoxedBool mEnabled = new BoxedBool(true);
                 // on a down (or, indirectly, a pan), do this
-                final LolTouchAction down = new LolTouchAction() {
-                    public boolean handle(float worldX, float worldY) {
-                        if (!mEnabled.value)
+                final TouchEventHandler down = new TouchEventHandler() {
+                    public boolean go(float worldX, float worldY) {
+                        if (!mTapHandler.mIsActive)
                             return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
                                 worldY - mSize.y / 2);
@@ -1038,25 +1036,21 @@ public abstract class Actor implements Renderable {
                     }
                 };
                 // on an up (or a panstop), do this
-                LolTouchAction up = new LolTouchAction() {
-                    public boolean handle(float worldX, float worldY) {
-                        if (!mEnabled.value)
+                TouchEventHandler up = new TouchEventHandler() {
+                    public boolean go(float worldX, float worldY) {
+                        if (!mTapHandler.mIsActive)
                             return false;
                         if (stopOnUp && mRoute != null)
                             mRoute.haltRoute();
                         if (oncePerTouch)
-                            mEnabled.value = false;
+                            mTapHandler.mIsActive = false;
                         return true;
                     }
                 };
                 mLevel.mUpHandlers.add(up);
                 mLevel.mPanStopHandlers.add(up);
                 mLevel.mDownHandlers.add(down);
-                mLevel.mPanHandlers.add(new LolPanAction() {
-                    public boolean handle(float worldX, float worldY, float deltaX, float deltaY) {
-                        return down.handle(worldX, worldY);
-                    }
-                });
+                mLevel.mPanHandlers.add(down);
                 return true;
             }
         };
@@ -1305,8 +1299,8 @@ public abstract class Actor implements Renderable {
      */
     public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
                                 final float velocityY) {
-        mTapHandler = new LolTouchAction() {
-            public boolean handle(float worldX, float worldY) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 mLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
@@ -1441,7 +1435,7 @@ public abstract class Actor implements Renderable {
         mLevel.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
-                // handle rotating the hero based on the direction it faces
+                // go rotating the hero based on the direction it faces
                 if (mVisible) {
                     float x = mBody.getLinearVelocity().x;
                     float y = mBody.getLinearVelocity().y;

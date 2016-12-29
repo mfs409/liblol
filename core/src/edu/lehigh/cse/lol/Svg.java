@@ -89,7 +89,7 @@ public class Svg {
     private int mState = 0;
 
     /**
-     * Our parser can't handle curves. When we encounter a curve, we use this
+     * Our parser can't go curves. When we encounter a curve, we use this
      * field to swallow a fixed number of values, so that the curve definition
      * becomes a line definition
      */
@@ -128,7 +128,7 @@ public class Svg {
 
     /**
      * When we encounter a "transform" attribute, we use this code to parse it,
-     * in case it has a "translate" directive that we should handle
+     * in case it has a "translate" directive that we should go
      *
      * @param attribute The attribute being processed... we hope it's a valid
      *                  translate directive
