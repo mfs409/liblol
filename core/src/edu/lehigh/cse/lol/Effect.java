@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * that do not have a physics aspect, but which otherwise fit into the
  * physics world
  */
-public class Effect implements Renderable {
+public class Effect extends Renderable {
     /**
      * If this effect is a Particle System, then mParticleEffect is the object
      * that describes the effect

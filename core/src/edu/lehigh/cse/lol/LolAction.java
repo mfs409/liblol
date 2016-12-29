@@ -30,6 +30,8 @@ package edu.lehigh.cse.lol;
 /**
  * Wrapper for actions that we generate and then want handled during the render
  * loop
+ *
+ * TODO: make this package scope, and use something else in Levels.java
  */
 abstract public class LolAction {
     // TODO: remove this?

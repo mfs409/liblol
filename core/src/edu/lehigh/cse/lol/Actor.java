@@ -59,7 +59,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * A game should rarely deal with Actor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
-public abstract class Actor implements Renderable {
+public abstract class Actor extends Renderable {
     /// The level in which this Actor exists
     final PhysicsWorld mLevel;
 
@@ -68,29 +68,29 @@ public abstract class Actor implements Renderable {
 
     /// Animation support: the offset for placing the disappearance animation relative to the
     // disappearing actor
-    final Vector2 mDisappearAnimateOffset = new Vector2();
+    private final Vector2 mDisappearAnimateOffset = new Vector2();
 
     /// Physics body for this Actor
-    public Body mBody;
+    Body mBody;
 
     /// The dimensions of the Actor... x is width, y is height
-    public Vector2 mSize = new Vector2();
+    Vector2 mSize = new Vector2();
 
     /// Sound to play when the actor disappears
-    protected Sound mDisappearSound;
+    Sound mDisappearSound;
 
     /// Track if the actor is currently being rendered. This is a proxy for "is important to the
     // rest of the game" and when it is false, we don't run any updates on the actor
     boolean mVisible = true;
 
     /// The z index of this actor. Valid range is [-2, 2]
-    int mZIndex = 0;
+    private int mZIndex = 0;
 
     /// Text that game designer can modify to hold additional information about the actor
-    String mInfoText = "";
+    private String mInfoText = "";
 
     /// Integer that the game designer can modify to hold additional information about the actor
-    int mInfoInt;
+    private int mInfoInt;
 
     /**
      * Some actors run custom code when they are touched. This is a reference to
@@ -105,38 +105,45 @@ public abstract class Actor implements Renderable {
      * the difference between the actor and camera
      */
     Vector2 mCameraOffset = new Vector2(0, 0);
+
     /**
      * Sometimes an actor collides with another actor, and should stick to it.
      * In that case, we create a pair of joints to connect the two actors. This
      * is the Distance joint that connects them
      */
     DistanceJoint mDJoint;
+
     /**
      * Sometimes an actor collides with another actor, and should stick to it.
      * In that case, we create a pair of joints to connect the two actors. This
      * is the Weld joint that connects them
      */
     WeldJoint mWJoint;
+
     /**
      * We allow the programmer to manually weld objects together. For it to
      * work, we need a local WeldJoint
      */
-    WeldJoint mExplicitWeldJoint;
+    private WeldJoint mExplicitWeldJoint;
+
     /**
      * When we have actors stuck together, we might want to set a brief delay
      * before they can re-join. This field represents that delay time, in
      * milliseconds.
      */
     long mStickyDelay;
+
     /**
      * a sound to play when this actor is touched
      */
-    Sound mTouchSound;
+    private Sound mTouchSound;
+
     /**
      * Animation support: this tracks the current state of the active animation
      * (if any)
      */
     AnimationDriver mAnimator;
+
     /**
      * Animation support: the cells of the default animation
      */
@@ -145,19 +152,19 @@ public abstract class Actor implements Renderable {
      * Animation support: the cells of the animation to use when moving
      * backwards
      */
-    Animation mDefaultReverseAnimation;
+    private Animation mDefaultReverseAnimation;
     /**
      * Animation support: the cells of the disappearance animation
      */
-    Animation mDisappearAnimation;
+    private Animation mDisappearAnimation;
     /**
      * Animation support: the dimensions of the disappearance animation
      */
-    Vector2 mDisappearAnimateSize = new Vector2();
+    private Vector2 mDisappearAnimateSize;
     /**
      * A vector for computing hover placement
      */
-    Vector3 mHover = new Vector3();
+    protected Vector3 mHover = new Vector3();
     /**
      * Track if Heros stick to this Actor. The array has 4 positions,
      * corresponding to top, right, bottom, left
@@ -230,6 +237,7 @@ public abstract class Actor implements Renderable {
         mAnimator = new AnimationDriver(mLevel, imgName);
         mSize.x = width;
         mSize.y = height;
+        mDisappearAnimateSize = new Vector2();
     }
 
     /**
@@ -413,16 +421,12 @@ public abstract class Actor implements Renderable {
         mIsPolygonBody = false;
     }
 
-    /*
-     * OVERRIDES FROM LOL.RENDERABLE
-     */
-
     /**
      * Every time the world advances by a timestep, we call this code. It
      * updates the Actor and draws it. User code should never call this.
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    void render(SpriteBatch sb, float delta) {
         // skip all rendering and updates if not visible
         if (mVisible) {
             // possibly run a route update
@@ -452,10 +456,6 @@ public abstract class Actor implements Renderable {
             }
         }
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
 
     /**
      * Retrieve any additional information for this actor

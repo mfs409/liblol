@@ -35,24 +35,25 @@ public class Route {
     /**
      * The X coordinates of the points in the route
      */
-    public float[] mXIndices;
+     float[] mXIndices;
 
     /**
      * The Y coordinates of the points in the route
      */
-    public float[] mYIndices;
+     float[] mYIndices;
     /**
      * The current number of points that have been set
      */
-    public int mPoints;
+     int mPoints;
     /**
      * The speed at which the actor should move along the route
      */
     float mVelocity;
+
     /**
      * The maximum number of points in this route
      */
-    int mSize;
+    private int mSize;
 
     /**
      * Define a new path, by specifying the number of points in the path. Note

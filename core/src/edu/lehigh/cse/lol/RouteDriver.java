@@ -29,9 +29,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.math.Vector2;
 
-import edu.lehigh.cse.lol.Actor;
-import edu.lehigh.cse.lol.Route;
-
 /**
  * RouteDriver is an internal class, used by LOL to determine placement for an
  * Actor whose motion is controlled by a Route.
@@ -81,7 +78,7 @@ class RouteDriver {
      * @param loop     Should the route repeat when it completes?
      * @param actor    The actor to which the route should be applied
      */
-    public RouteDriver(Route route, float velocity, boolean loop, Actor actor) {
+     RouteDriver(Route route, float velocity, boolean loop, Actor actor) {
         mRoute = route;
         mRouteVelocity = velocity;
         mRouteLoop = loop;
@@ -94,10 +91,10 @@ class RouteDriver {
     /**
      * Stop a route
      */
-    public void haltRoute() {
+     void haltRoute() {
         mRouteDone = true;
         // NB: third parameter doesn't matter, because the actor isn't a
-        // static body, so its bodytype won't change.
+        // static body, so its BodyType won't change.
         mActor.setAbsoluteVelocity(0, 0, false);
     }
 
@@ -121,7 +118,7 @@ class RouteDriver {
      * Internal method for figuring out where we need to go next when driving a
      * route
      */
-    public void drive() {
+     void drive() {
         // quit if we're done and we don't loop
         if (mRouteDone)
             return;

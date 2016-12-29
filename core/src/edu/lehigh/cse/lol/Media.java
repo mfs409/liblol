@@ -39,30 +39,26 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import java.util.TreeMap;
 
 /**
- * The MediaFactory provides a mechanism for registering all of our images,
- * sounds, and fonts Strictly speaking, we can re-create fonts on the fly
- * whenever we need to. Caching them here is an optimization.
+ * Media provides a mechanism for registering all of our images, sounds, and fonts
+ *
+ * Strictly speaking, we can re-create fonts on the fly whenever we need to. Caching them here is an
+ * optimization, and it helps if we ever want to build to HTML5, which doesn't support FreeType.
  */
 class Media {
-    /**
-     * Store the fonts used by this game
-     */
+     /// Store the fonts used by this game
     private final TreeMap<String, BitmapFont> mFonts = new TreeMap<>();
 
-    /**
-     * Store the sounds used by this game
-     */
+     /// Store the sounds used by this game
     private final TreeMap<String, Sound> mSounds = new TreeMap<>();
 
-    /**
-     * Store the music used by this game
-     */
+     /// Store the music used by this game
     private final TreeMap<String, Music> mTunes = new TreeMap<>();
 
-    /**
-     * Store the images used by this game
-     */
+     /// Store the images used by this game
     private final TreeMap<String, TextureRegion> mImages = new TreeMap<>();
+
+    /// A copy of the game-wide configuration object
+    private Config mConfig;
 
     /**
      * When a game is disposed of, the images are managed by libGDX. Fonts are
@@ -211,7 +207,6 @@ class Media {
         mSounds.put(soundName, s);
     }
 
-    Config mConfig;
 
     Media(Config cfg) {
         mConfig = cfg;

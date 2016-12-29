@@ -34,12 +34,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * how they ought to be displayed. This allows us, for example, to let a text
  * item describe how its display value should change over time.
  */
-interface Renderable {
+abstract class Renderable {
     /**
      * Render something to the screen
      *
      * @param sb      The SpriteBatch to use for rendering
      * @param elapsed The time since the last render
      */
-    void render(SpriteBatch sb, float elapsed);
+    abstract void render(SpriteBatch sb, float elapsed);
 }
