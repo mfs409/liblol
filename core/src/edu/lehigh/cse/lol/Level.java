@@ -35,10 +35,10 @@ public class Level {
     protected final Media mMedia;
 
     /// The physics world in which all actors exist
-    PhysicsWorld mWorld;
+    MainScene mWorld;
 
     /// A heads-up display, for writing Display and Control objects
-    Hud mHud;
+    HudScene mHud;
 
     /// A reference to the score object, for tracking winning and losing
     final Score mScore;
@@ -72,12 +72,12 @@ public class Level {
         mMedia = media;
 
         // Create the eight different scenes and a score object
-        mWorld = new PhysicsWorld(config, media, game);
+        mWorld = new MainScene(config, media, game);
         mWinScene = QuickScene.makeWinScene(mWorld, mConfig);
         mLoseScene = QuickScene.makeLoseScene(mWorld, mConfig);
         mPreScene = QuickScene.makePreScene(mWorld, mConfig);
         mPauseScene = QuickScene.makePauseScene(mWorld, mConfig);
-        mHud = new Hud(mConfig);
+        mHud = new HudScene(mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
         mScore = new Score(this);

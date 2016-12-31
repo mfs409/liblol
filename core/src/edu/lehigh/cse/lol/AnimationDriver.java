@@ -56,7 +56,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    AnimationDriver(PhysicsWorld level, String imgName) {
+    AnimationDriver(MainScene level, String imgName) {
         updateImage(level, imgName);
     }
 
@@ -76,7 +76,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    void updateImage(PhysicsWorld level, String imgName) {
+    void updateImage(MainScene level, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
         mImages[0] = level.mMedia.getImage(imgName);
@@ -86,7 +86,7 @@ class AnimationDriver {
     /**
      * Request a random index from the mImageNames array to pick an image to display
      */
-    void pickRandomIndex(PhysicsWorld level) {
+    void pickRandomIndex(MainScene level) {
         mImageIndex = level.mGenerator.nextInt(mImages.length);
     }
 

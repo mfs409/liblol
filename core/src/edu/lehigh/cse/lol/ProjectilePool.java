@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -34,64 +34,44 @@ import com.badlogic.gdx.audio.Sound;
  * can't make individual projectiles, but can set a pool of projectiles
  * that can then be thrown by a hero.
  */
- class ProjectilePool {
-    /**
-     * The level in which this pool exists
-     */
-    PhysicsWorld mLevel;
+class ProjectilePool {
+    /// The level in which this pool exists
+    MainScene mLevel;
 
-    /**
-     * A collection of all the available projectiles
-     */
+    /// A collection of all the available projectiles
     final Projectile mPool[];
-    /**
-     * The number of projectiles in the pool
-     */
+
+    /// The number of projectiles in the pool
     private final int mPoolSize;
-    /**
-     * For limiting the number of projectiles that can be thrown
-     */
+
+    /// For limiting the number of projectiles that can be thrown
     int mProjectilesRemaining;
-    /**
-     * A dampening factor to apply to projectiles thrown via "directional"
-     * mechanism
-     */
+
+    /// A dampening factor to apply to projectiles thrown via "directional" mechanism
     float mDirectionalDamp;
-    /**
-     * Indicates that projectiles should be sensors
-     */
+
+    /// Indicates that projectiles should be sensors
     boolean mSensorProjectiles;
-    /**
-     * Indicates that vector projectiles should have a fixed velocity
-     */
+
+    /// Indicates that vector projectiles should have a fixed velocity
     boolean mEnableFixedVectorVelocity;
-    /**
-     * The magnitude of the velocity for vector projectiles thrown with a fixed
-     * velocity
-     */
+
+    /// The magnitude of the velocity for vector projectiles thrown with a fixed velocity
     float mFixedVectorVelocity;
-    /**
-     * Indicate that projectiles should face in the direction they are initially
-     * thrown
-     */
+
+    /// Indicate that projectiles should face in the direction they are initially thrown
     boolean mRotateVectorThrow;
-    /**
-     * Index of next available projectile in the pool
-     */
+
+    /// Index of next available projectile in the pool
     private int mNextIndex;
-    /**
-     * For choosing random images for the projectiles
-     */
+
+    /// For choosing random images for the projectiles
     boolean mRandomizeImages;
 
-    /**
-     * Sound to play when projectiles are thrown
-     */
+    /// Sound to play when projectiles are thrown
     Sound mThrowSound;
 
-    /**
-     * The sound to play when a projectile disappears
-     */
+    /// The sound to play when a projectile disappears
     Sound mProjectileDisappearSound;
 
     /**
@@ -107,7 +87,7 @@ import com.badlogic.gdx.audio.Sound;
      * @param zIndex   The z plane on which the projectiles should be drawn
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(PhysicsWorld level, Score score, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(MainScene level, Score score, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         mLevel = level;
         // set up the pool
         mPool = new Projectile[size];

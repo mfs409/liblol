@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -38,27 +38,19 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * Projectiles should be controlled via ProjectilePool.
  */
 class Projectile extends Actor {
-    /**
-     * This is the initial point of the throw
-     */
-    final Vector2 mRangeFrom = new Vector2();
+    /// This is the initial point of the throw
+    final Vector2 mRangeFrom;
 
-    /**
-     * We have to be careful in side-scrollers, or else projectiles can continue
-     * traveling off-screen forever. This field lets us cap the distance away
-     * from the hero that a projectile can travel before we make it disappear.
-     */
-    float mRange = 1000;
+    /// We have to be careful in side-scrollers, or else projectiles can continue traveling
+    // off-screen forever. This field lets us cap the distance away from the hero that a projectile
+    // can travel before we make it disappear.
+    float mRange;
 
-    /**
-     * When projectiles collide, and they are not sensors, one will disappear.
-     * We can keep both on screen by setting this false
-     */
-    boolean mDisappearOnCollide = true;
+    /// When projectiles collide, and they are not sensors, one will disappear. We can keep both on
+    // screen by setting this false
+    boolean mDisappearOnCollide;
 
-    /**
-     * How much damage does this projectile do?
-     */
+    /// How much damage does this projectile do?
     int mDamage;
 
     /**
@@ -73,7 +65,7 @@ class Projectile extends Actor {
      * @param zIndex   The z plane of the projectile
      * @param isCircle True if it is a circle, false if it is a box
      */
-    Projectile(PhysicsWorld level, Score score, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
+    Projectile(MainScene level, Score score, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
         super(level, score, imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
@@ -84,7 +76,10 @@ class Projectile extends Actor {
         mBody.setGravityScale(0);
         setCollisionsEnabled(false);
         disableRotation();
-        mLevel.addActor(this, zIndex);
+        mScene.addActor(this, zIndex);
+        mDisappearOnCollide = true;
+        mRangeFrom = new Vector2();
+        mRange = 1000;
     }
 
     /**

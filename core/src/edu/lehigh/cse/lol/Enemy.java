@@ -27,7 +27,6 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
@@ -74,7 +73,7 @@ public class Enemy extends Actor {
     /**
      * A callback to run when the enemy is defeated
      */
-    private CollisionCallback mDefeatCallback;
+    private Lol.CollisionCallback mDefeatCallback;
 
     /**
      * Create an Enemy. This should never be called directly.
@@ -83,7 +82,7 @@ public class Enemy extends Actor {
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(PhysicsWorld level, Score score, float width, float height, String imgName) {
+    protected Enemy(MainScene level, Score score, float width, float height, String imgName) {
         super(level, score, imgName, width, height);
     }
 
@@ -217,7 +216,7 @@ public class Enemy extends Actor {
     public void setDisappearOnTouch() {
         mTapHandler= new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                Lol.vibrate(mLevel.mConfig, 100);
+                Lol.vibrate(mScene.mConfig, 100);
                 defeat(true);
                 mTapHandler = null;
                 return true;
@@ -232,7 +231,7 @@ public class Enemy extends Actor {
      * @param callback The callback to run when the enemy is defeated
      */
     public void setDefeatCallback(final LolCallback callback) {
-        mDefeatCallback = new CollisionCallback() {
+        mDefeatCallback = new Lol.CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 callback.mAttachedActor = Enemy.this;

@@ -45,17 +45,17 @@ public class Obstacle extends Actor {
      * way to run custom code. This callback defines what code to run when a
      * hero collides with this obstacle.
      */
-    CollisionCallback mHeroCollision;
+    Lol.CollisionCallback mHeroCollision;
 
     /**
      * This callback is for when an enemy collides with an obstacle
      */
-    CollisionCallback mEnemyCollision;
+    Lol.CollisionCallback mEnemyCollision;
 
     /**
      * This callback is for when a projectile collides with an obstacle
      */
-    CollisionCallback mProjectileCollision;
+    Lol.CollisionCallback mProjectileCollision;
 
     /**
      * Indicate that this obstacle does not re-enableTilt jumping for the hero
@@ -86,7 +86,7 @@ public class Obstacle extends Actor {
      * @param height  height of this Obstacle
      * @param imgName Name of the image file to use
      */
-    protected Obstacle(PhysicsWorld level, Score score, float width, float height, String imgName) {
+    protected Obstacle(MainScene level, Score score, float width, float height, String imgName) {
         super(level, score, imgName, width, height);
     }
 
@@ -103,7 +103,7 @@ public class Obstacle extends Actor {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+        mCollideSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
     }
 
     /**
@@ -135,7 +135,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to multiply the hero's speed by factor
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Lol.CollisionCallback() {
             @Override
             public void go(Actor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
@@ -158,7 +158,7 @@ public class Obstacle extends Actor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to change the hero's speed
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Lol.CollisionCallback() {
             @Override
             public void go(final Actor h, Contact c) {
                 // boost the speed
@@ -216,7 +216,7 @@ public class Obstacle extends Actor {
         setCollisionsEnabled(false);
 
         // register a callback
-        mHeroCollision = new CollisionCallback() {
+        mHeroCollision = new Lol.CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 // Make sure the contact is active (it's not if this is a
@@ -272,7 +272,7 @@ public class Obstacle extends Actor {
         final int[] enemyCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
 
-        mEnemyCollision = new CollisionCallback() {
+        mEnemyCollision = new Lol.CollisionCallback() {
             @Override
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
@@ -318,7 +318,7 @@ public class Obstacle extends Actor {
         final int[] projectileCallbackActivation = new int[]{activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4};
 
-        mProjectileCollision = new CollisionCallback() {
+        mProjectileCollision = new Lol.CollisionCallback() {
             @Override
             public void go(Actor ps, Contact c) {
                 boolean match = true;
@@ -342,7 +342,7 @@ public class Obstacle extends Actor {
      *              milliseconds
      */
     public void setCollideSound(String sound, long delay) {
-        mCollideSound = mLevel.mMedia.getSound(sound);
+        mCollideSound = mScene.mMedia.getSound(sound);
         mCollideSoundDelay = delay * 1000000;
     }
 }

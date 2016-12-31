@@ -39,6 +39,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
@@ -614,52 +615,68 @@ public class Lol implements ApplicationListener {
     @Override
     public void resize(int width, int height) {
     }
-}
-
-/**
- * StateMachine tracks the current state of the game.  The state consists of the type of level
- * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
- * currently active, and the actual level object.
- */
-class StateMachine {
-    /// Modes of the game, for use by the state machine.  We can be showing the main splash
-    /// screen, the help screens, the level chooser, the store, or a playable level
-    static final int SPLASH = 0;
-    static final int HELP = 1;
-    static final int CHOOSER = 2;
-    static final int STORE = 3;
-    static final int PLAY = 4;
-
-    /// mMode is is for the base state machine.  It tracks the current mode of the program (from
-    /// among the above choices)
-    int mMode;
-
-    /// mModeStates provides more information about the state of the game.  mMode only lets us
-    /// know what state we are in, but mModeStates lets us know which level of that mode is
-    /// currently active.  Note that using an array makes it easier for us to use the back
-    // button to go from a level to the chooser, or to move to the next level when we win a
-    // level
-    int mModeStates[] = new int[5];
-
-    void init() {
-        // set current mode states
-        for (int i = 0; i < 5; ++i)
-            mModeStates[i] = 1;
-    }
-
-    /// mWorld is the Level object that is active, in accordance with the state machine.
-    Level mLevel;
 
     /**
-     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
-     * screen, if any.
-     *
-     * @param level may be {@code null}
+     * StateMachine tracks the current state of the game.  The state consists of the type of level
+     * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
+     * currently active, and the actual level object.
      */
-    void setScreen(Level level) {
-        if (mLevel != null) {
-            mLevel.mWorld.pauseMusic();
+    static class StateMachine {
+        /// Modes of the game, for use by the state machine.  We can be showing the main splash
+        /// screen, the help screens, the level chooser, the store, or a playable level
+        static final int SPLASH = 0;
+        static final int HELP = 1;
+        static final int CHOOSER = 2;
+        static final int STORE = 3;
+        static final int PLAY = 4;
+
+        /// mMode is is for the base state machine.  It tracks the current mode of the program (from
+        /// among the above choices)
+        int mMode;
+
+        /// mModeStates provides more information about the state of the game.  mMode only lets us
+        /// know what state we are in, but mModeStates lets us know which level of that mode is
+        /// currently active.  Note that using an array makes it easier for us to use the back
+        // button to go from a level to the chooser, or to move to the next level when we win a
+        // level
+        int mModeStates[] = new int[5];
+
+        void init() {
+            // set current mode states
+            for (int i = 0; i < 5; ++i)
+                mModeStates[i] = 1;
         }
-        mLevel = level;
+
+        /// mWorld is the Level object that is active, in accordance with the state machine.
+        Level mLevel;
+
+        /**
+         * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
+         * screen, if any.
+         *
+         * @param level may be {@code null}
+         */
+        void setScreen(Level level) {
+            if (mLevel != null) {
+                mLevel.mWorld.pauseMusic();
+            }
+            mLevel = level;
+        }
+    }
+
+    /**
+     * When an Actor collides with another Actor, and that collision is intended to
+     * cause some custom code to run, we use this interface
+     */
+    static interface CollisionCallback {
+        /**
+         * Respond to a collision with a actor. Note that one of the collision
+         * actors is not named; it should be clear from the context in which this
+         * was constructed.
+         *
+         * @param actor   The actor involved in the collision
+         * @param contact A description of the contact, in case it is useful
+         */
+        void go(final Actor actor, Contact contact);
     }
 }

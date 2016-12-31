@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Hud is a heads-up display.  It provides a means for putting things on the "Phone Screen" instead
  * of "in the world".
  */
-class Hud {
+class HudScene {
     /// The physics world in which Hud actors exist
     protected final World mWorld;
 
@@ -55,7 +55,7 @@ class Hud {
     /**
      * Create a new heads-up display by providing the dimensions for its camera
      */
-    Hud(Config config) {
+    HudScene(Config config) {
         int width = config.mWidth;
         int height = config.mHeight;
         mConfig = config;
@@ -142,7 +142,7 @@ class Hud {
         mDisplays.clear();
     }
 
-    boolean handleTap(float x, float y, PhysicsWorld world) {
+    boolean handleTap(float x, float y, MainScene world) {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mTapControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
@@ -154,7 +154,7 @@ class Hud {
         return false;
     }
 
-    boolean handlePan(float x, float y, float deltaX, float deltaY, PhysicsWorld world) {
+    boolean handlePan(float x, float y, float deltaX, float deltaY, MainScene world) {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
@@ -168,7 +168,7 @@ class Hud {
         return false;
     }
 
-    boolean handlePanStop(float x, float y, PhysicsWorld world) {
+    boolean handlePanStop(float x, float y, MainScene world) {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
@@ -191,7 +191,7 @@ class Hud {
 
     }
 
-    boolean handleDown(float screenX, float screenY, PhysicsWorld world) {
+    boolean handleDown(float screenX, float screenY, MainScene world) {
         // check if we down-pressed a control
         mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
         for (Control c : mToggleControls) {
@@ -214,7 +214,7 @@ class Hud {
         return false;
     }
 
-    boolean handleUp(float screenX, float screenY, PhysicsWorld world) {
+    boolean handleUp(float screenX, float screenY, MainScene world) {
         mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
         for (Control c : mToggleControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {

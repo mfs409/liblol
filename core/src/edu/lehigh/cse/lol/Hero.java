@@ -138,7 +138,7 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    Hero(PhysicsWorld level, Score score, float width, float height, String imgName) {
+    Hero(MainScene level, Score score, float width, float height, String imgName) {
         super(level, score, imgName, width, height);
     }
 
@@ -189,7 +189,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+            mJumpSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -290,7 +290,7 @@ public class Hero extends Actor {
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+                d.mArrivalSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
             mScore.onDestinationArrive();
         }
     }
@@ -498,7 +498,7 @@ public class Hero extends Actor {
      * @param soundName The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
-        mJumpSound = mLevel.mMedia.getSound(soundName);
+        mJumpSound = mScene.mMedia.getSound(soundName);
     }
 
     /**

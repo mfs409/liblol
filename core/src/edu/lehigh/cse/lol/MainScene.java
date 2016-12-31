@@ -34,7 +34,7 @@ import java.util.TreeMap;
  * PhysicsWorld stores the functionality that is common across all of the different renderable,
  * updatable containers that store actors in a physical world.
  */
-class PhysicsWorld {
+class MainScene {
     /// A timer, so that we can stop using the static timer instance
     ///
     /// TODO: start using this
@@ -124,7 +124,7 @@ class PhysicsWorld {
      * @param media  References to all image and sound assets
      * @param game   The game that is being played
      */
-    PhysicsWorld(Config config, Media media, Lol game) {
+    MainScene(Config config, Media media, Lol game) {
         // clear any timers
         Timer.instance().clear();
 

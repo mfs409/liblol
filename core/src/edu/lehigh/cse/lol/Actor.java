@@ -61,7 +61,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  */
 public abstract class Actor extends Renderable {
     /// The level in which this Actor exists
-    final PhysicsWorld mLevel;
+    final MainScene mScene;
 
     /// The score object for the level in which this Actor exists
     final Score mScore;
@@ -231,10 +231,10 @@ public abstract class Actor extends Renderable {
      * @param width   The width
      * @param height  The height
      */
-    Actor(PhysicsWorld level, Score score, String imgName, float width, float height) {
-        mLevel = level;
+    Actor(MainScene scene, Score score, String imgName, float width, float height) {
+        mScene = scene;
         mScore = score;
-        mAnimator = new AnimationDriver(mLevel, imgName);
+        mAnimator = new AnimationDriver(mScene, imgName);
         mSize.x = width;
         mSize.y = height;
         mDisappearAnimateSize = new Vector2();
@@ -263,9 +263,9 @@ public abstract class Actor extends Renderable {
             mBody.setType(BodyType.KinematicBody);
         // Clobber any joints, or this won't be able to move
         if (mDJoint != null) {
-            mLevel.mWorld.destroyJoint(mDJoint);
+            mScene.mWorld.destroyJoint(mDJoint);
             mDJoint = null;
-            mLevel.mWorld.destroyJoint(mWJoint);
+            mScene.mWorld.destroyJoint(mWJoint);
             mWJoint = null;
         }
         mBody.setLinearVelocity(x, y);
@@ -280,7 +280,7 @@ public abstract class Actor extends Renderable {
      */
     boolean onTap(Vector3 touchVec) {
         if (mTouchSound != null)
-            mTouchSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+            mTouchSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
         if (mTapHandler != null) {
             return mTapHandler.go(touchVec.x, touchVec.y);
         }
@@ -306,7 +306,7 @@ public abstract class Actor extends Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = mLevel.mWorld.createBody(boxBodyDef);
+        mBody = mScene.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -351,13 +351,13 @@ public abstract class Actor extends Renderable {
             verts[i / 2] = new Vector2(vertices[i], vertices[i + 1]);
         // print some debug info, since vertices are tricky
         for (Vector2 vert : verts)
-            Lol.message(mLevel.mConfig, "vert", "at " + vert.x + "," + vert.y);
+            Lol.message(mScene.mConfig, "vert", "at " + vert.x + "," + vert.y);
         shape.set(verts);
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = mLevel.mWorld.createBody(boxBodyDef);
+        mBody = mScene.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -399,7 +399,7 @@ public abstract class Actor extends Renderable {
         boxBodyDef.type = type;
         boxBodyDef.position.x = x + mSize.x / 2;
         boxBodyDef.position.y = y + mSize.y / 2;
-        mBody = mLevel.mWorld.createBody(boxBodyDef);
+        mBody = mScene.mWorld.createBody(boxBodyDef);
 
         FixtureDef fd = new FixtureDef();
         fd.density = density;
@@ -585,13 +585,13 @@ public abstract class Actor extends Renderable {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (mLevel.mTilt.mAccelActors.contains(this))
+        if (mScene.mTilt.mAccelActors.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        mLevel.mTilt.mAccelActors.add(this);
+        mScene.mTilt.mAccelActors.add(this);
         // turn off sensor behavior, so this collides with stuff...
         setCollisionsEnabled(true);
     }
@@ -638,7 +638,7 @@ public abstract class Actor extends Renderable {
 
         // play a sound when we remove this actor?
         if (mDisappearSound != null && !quiet)
-            mDisappearSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
+            mDisappearSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
 
         // This is a bit of a hack... to do a disappear animation after we've
         // removed the actor, we draw an obstacle, so that we have a clean hook
@@ -646,9 +646,9 @@ public abstract class Actor extends Renderable {
         if (mDisappearAnimation != null) {
             float x = getXPosition() + mDisappearAnimateOffset.x;
             float y = getYPosition() + mDisappearAnimateOffset.y;
-            Obstacle o = new Obstacle(mLevel, mScore, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
+            Obstacle o = new Obstacle(mScene, mScore, mDisappearAnimateSize.x, mDisappearAnimateSize.y, "");
             o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-            mLevel.addActor(o, 0);
+            mScene.addActor(o, 0);
 
             o.mBody.setActive(false);
             o.setDefaultAnimation(mDisappearAnimation);
@@ -786,7 +786,7 @@ public abstract class Actor extends Renderable {
                 return true;
             }
         };
-        mLevel.mRepeatEvents.add(whileDownAction);
+        mScene.mRepeatEvents.add(whileDownAction);
     }
 
     /**
@@ -795,7 +795,7 @@ public abstract class Actor extends Renderable {
      * @param callback The callback to run when the actor stops
      */
     public void setStopCallback(final LolCallback callback) {
-        mLevel.mRepeatEvents.add(new LolAction() {
+        mScene.mRepeatEvents.add(new LolAction() {
             boolean moving = false;
 
             @Override
@@ -887,7 +887,7 @@ public abstract class Actor extends Renderable {
      * @param sound The name of the sound file to play
      */
     public void setTouchSound(String sound) {
-        mTouchSound = mLevel.mMedia.getSound(sound);
+        mTouchSound = mScene.mMedia.getSound(sound);
     }
 
     /**
@@ -910,7 +910,7 @@ public abstract class Actor extends Renderable {
             public boolean go(float worldX, float worldY) {
                 if (!mEnabled)
                     return false;
-                Lol.vibrate(mLevel.mConfig, 100);
+                Lol.vibrate(mScene.mConfig, 100);
                 long time = System.currentTimeMillis();
                 // double touch
                 if ((time - mLastPokeTime) < deleteThreshold) {
@@ -925,12 +925,12 @@ public abstract class Actor extends Renderable {
                     mLastPokeTime = time;
                 }
                 // set a screen handler to detect when/where to move the actor
-                mLevel.mTapHandlers.add(new TouchEventHandler() {
+                mScene.mTapHandlers.add(new TouchEventHandler() {
                     boolean mEnabled = true;
                     public boolean go(float worldX, float worldY) {
                         if (!mEnabled || !mVisible)
                             return false;
-                        Lol.vibrate(mLevel.mConfig, 100);
+                        Lol.vibrate(mScene.mConfig, 100);
                         // move the object
                         mBody.setTransform(worldX, worldY, mBody.getAngle());
                         // clear the Level responder
@@ -955,10 +955,10 @@ public abstract class Actor extends Renderable {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        mLevel.mFlingHandlers.add(new TouchEventHandler() {
+        mScene.mFlingHandlers.add(new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // note: may need to disable hovering
-                if (mLevel.mHitActor == Actor.this) {
+                if (mScene.mHitActor == Actor.this) {
                     mHover = null;
                     updateVelocity(worldX * dampFactor, worldY * dampFactor);
                 }
@@ -983,8 +983,8 @@ public abstract class Actor extends Renderable {
             mBody.setType(BodyType.KinematicBody);
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                Lol.vibrate(mLevel.mConfig, 5);
-                mLevel.mTapHandlers.add(new TouchEventHandler() {
+                Lol.vibrate(mScene.mConfig, 5);
+                mScene.mTapHandlers.add(new TouchEventHandler() {
                     boolean mEnabled = true;
 
                     public boolean go(float worldX, float worldY) {
@@ -1021,7 +1021,7 @@ public abstract class Actor extends Renderable {
             mBody.setType(BodyType.KinematicBody);
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                Lol.vibrate(mLevel.mConfig, 5);
+                Lol.vibrate(mScene.mConfig, 5);
 
                 // on a down (or, indirectly, a pan), do this
                 final TouchEventHandler down = new TouchEventHandler() {
@@ -1047,10 +1047,10 @@ public abstract class Actor extends Renderable {
                         return true;
                     }
                 };
-                mLevel.mUpHandlers.add(up);
-                mLevel.mPanStopHandlers.add(up);
-                mLevel.mDownHandlers.add(down);
-                mLevel.mPanHandlers.add(down);
+                mScene.mUpHandlers.add(up);
+                mScene.mPanStopHandlers.add(up);
+                mScene.mDownHandlers.add(down);
+                mScene.mPanHandlers.add(down);
                 return true;
             }
         };
@@ -1136,7 +1136,7 @@ public abstract class Actor extends Renderable {
      * @param imgName The name of the new image file to use
      */
     public void setImage(String imgName) {
-        mAnimator.updateImage(mLevel, imgName);
+        mAnimator.updateImage(mScene, imgName);
     }
 
     /**
@@ -1242,7 +1242,7 @@ public abstract class Actor extends Renderable {
      */
     public void setHover(final int x, final int y) {
         mHover = new Vector3();
-        mLevel.mRepeatEvents.add(new LolAction() {
+        mScene.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 if (mHover == null)
@@ -1250,7 +1250,7 @@ public abstract class Actor extends Renderable {
                 mHover.x = x;
                 mHover.y = y;
                 mHover.z = 0;
-                mLevel.mGameCam.unproject(mHover);
+                mScene.mGameCam.unproject(mHover);
                 mBody.setTransform(mHover.x, mHover.y, mBody.getAngle());
             }
         });
@@ -1281,7 +1281,7 @@ public abstract class Actor extends Renderable {
      * @param soundName Name of the sound file
      */
     public void setDisappearSound(String soundName) {
-        mDisappearSound = mLevel.mMedia.getSound(soundName);
+        mDisappearSound = mScene.mMedia.getSound(soundName);
     }
 
     /**
@@ -1301,7 +1301,7 @@ public abstract class Actor extends Renderable {
                                 final float velocityY) {
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                mLevel.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                mScene.mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
@@ -1348,7 +1348,7 @@ public abstract class Actor extends Renderable {
     public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        mLevel.mRepeatEvents.add(new LolAction() {
+        mScene.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1398,7 +1398,7 @@ public abstract class Actor extends Renderable {
                                        final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
-        mLevel.mRepeatEvents.add(new LolAction() {
+        mScene.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // don't chase something that isn't visible
@@ -1432,7 +1432,7 @@ public abstract class Actor extends Renderable {
      * in which it is traveling
      */
     public void setRotationByDirection() {
-        mLevel.mRepeatEvents.add(new LolAction() {
+        mScene.mRepeatEvents.add(new LolAction() {
             @Override
             public void go() {
                 // go rotating the hero based on the direction it faces
@@ -1454,9 +1454,9 @@ public abstract class Actor extends Renderable {
     public void setZIndex(int zIndex) {
         assert (zIndex <= 2);
         assert (zIndex >= -2);
-        mLevel.removeActor(this, mZIndex);
+        mScene.removeActor(this, mZIndex);
         mZIndex = zIndex;
-        mLevel.addActor(this, mZIndex);
+        mScene.addActor(this, mZIndex);
     }
 
     /**
@@ -1487,7 +1487,7 @@ public abstract class Actor extends Renderable {
         mRevJointDef.collideConnected = false;
         mRevJointDef.referenceAngle = 0;
         mRevJointDef.enableLimit = false;
-        mRevJoint = mLevel.mWorld.createJoint(mRevJointDef);
+        mRevJoint = mScene.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1500,11 +1500,11 @@ public abstract class Actor extends Renderable {
     public void setRevoluteJointMotor(float motorSpeed, float motorTorque) {
         // destroy the previously created joint, change the definition,
         // re-create the joint
-        mLevel.mWorld.destroyJoint(mRevJoint);
+        mScene.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.enableMotor = true;
         mRevJointDef.motorSpeed = motorSpeed;
         mRevJointDef.maxMotorTorque = motorTorque;
-        mRevJoint = mLevel.mWorld.createJoint(mRevJointDef);
+        mRevJoint = mScene.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1516,11 +1516,11 @@ public abstract class Actor extends Renderable {
     public void setRevoluteJointLimits(float upper, float lower) {
         // destroy the previously created joint, change the definition,
         // re-create the joint
-        mLevel.mWorld.destroyJoint(mRevJoint);
+        mScene.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.upperAngle = upper;
         mRevJointDef.lowerAngle = lower;
         mRevJointDef.enableLimit = true;
-        mRevJoint = mLevel.mWorld.createJoint(mRevJointDef);
+        mRevJoint = mScene.mWorld.createJoint(mRevJointDef);
     }
 
     /**
@@ -1546,7 +1546,7 @@ public abstract class Actor extends Renderable {
         w.localAnchorB.set(otherX, otherY);
         w.referenceAngle = angle;
         w.collideConnected = false;
-        mExplicitWeldJoint = (WeldJoint) mLevel.mWorld.createJoint(w);
+        mExplicitWeldJoint = (WeldJoint) mScene.mWorld.createJoint(w);
     }
 
     /**
@@ -1576,7 +1576,7 @@ public abstract class Actor extends Renderable {
         mDistJointDef.dampingRatio = 0.1f;
         mDistJointDef.frequencyHz = 2;
 
-        mDistJoint = mLevel.mWorld.createJoint(mDistJointDef);
+        mDistJoint = mScene.mWorld.createJoint(mDistJointDef);
     }
 
     /**

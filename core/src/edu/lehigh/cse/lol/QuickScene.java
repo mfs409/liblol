@@ -55,7 +55,7 @@ abstract public class QuickScene {
     }
 
     /// The level to which this QuickScene is attached
-    protected PhysicsWorld mWorld;
+    protected MainScene mWorld;
 
     /// The text and pictures to display
     private final ArrayList<Renderable> mSprites = new ArrayList<>();
@@ -95,7 +95,7 @@ abstract public class QuickScene {
      *
      * @param level
      */
-    QuickScene(PhysicsWorld level, Config config) {
+    QuickScene(MainScene level, Config config) {
         mWorld = level;
         int width = config.mWidth;
         int height = config.mHeight;
@@ -119,7 +119,7 @@ abstract public class QuickScene {
      * @param sb The SpriteBatch used to draw the text and pictures
      * @return true if the PauseScene was drawn, false otherwise
      */
-    boolean render(SpriteBatch sb, Hud hud) {
+    boolean render(SpriteBatch sb, HudScene hud) {
         // if the scene is not visible, do nothing
         if (!mVisible)
             return false;
@@ -340,7 +340,7 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeWinScene(PhysicsWorld mLevel, Config config) {
+    static QuickScene makeWinScene(MainScene mLevel, Config config) {
         QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
@@ -381,7 +381,7 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePauseScene(PhysicsWorld mLevel, Config config) {
+    static QuickScene makePauseScene(MainScene mLevel, Config config) {
         QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
@@ -414,7 +414,7 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeLoseScene(PhysicsWorld mLevel, Config config) {
+    static QuickScene makeLoseScene(MainScene mLevel, Config config) {
         QuickScene quickScene = new QuickScene(mLevel, config) {
             @Override
             public void show() {
@@ -451,7 +451,7 @@ abstract public class QuickScene {
      * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePreScene(PhysicsWorld mLevel, Config config) {
+    static QuickScene makePreScene(MainScene mLevel, Config config) {
         QuickScene quickScene = new QuickScene(mLevel, config) {
             /**
              * Show is a no-op, because the default behavior is good enough

@@ -64,7 +64,7 @@ public class Destination extends Actor {
      * @param height  Height of this destination
      * @param imgName Name of the image to display
      */
-    protected Destination(PhysicsWorld level, Score score, float width, float height, String imgName) {
+    protected Destination(MainScene level, Score score, float width, float height, String imgName) {
         super(level, score, imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
@@ -114,6 +114,6 @@ public class Destination extends Actor {
      * @param soundName The name of the sound file that should play
      */
     public void setArrivalSound(String soundName) {
-        mArrivalSound = mLevel.mMedia.getSound(soundName);
+        mArrivalSound = mScene.mMedia.getSound(soundName);
     }
 }
