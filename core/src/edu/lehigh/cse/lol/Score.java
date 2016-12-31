@@ -1,5 +1,6 @@
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Timer;
 
 /**
@@ -224,6 +225,29 @@ class Score {
      */
     enum VictoryType {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
+    }
+
+    void onRender(Level level) {
+        // Check the countdown timers
+        if (mLoseCountDownRemaining != -100) {
+            mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
+            if (mLoseCountDownRemaining < 0) {
+                if (mLoseCountDownText != "")
+                    level.getLoseScene().setDefaultText(mLoseCountDownText);
+                endLevel(false);
+            }
+        }
+        if (mWinCountRemaining != -100) {
+            mWinCountRemaining -= Gdx.graphics.getDeltaTime();
+            if (mWinCountRemaining < 0) {
+                if (mWinCountText != "")
+                    level.getWinScene().setDefaultText(mWinCountText);
+                endLevel(true);
+            }
+        }
+        if (mStopWatchProgress != -100) {
+            mStopWatchProgress += Gdx.graphics.getDeltaTime();
+        }
     }
 }
 

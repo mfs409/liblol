@@ -35,6 +35,11 @@ import java.util.TreeMap;
  * updatable containers that store actors in a physical world.
  */
 class PhysicsWorld {
+    /// A timer, so that we can stop using the static timer instance
+    ///
+    /// TODO: start using this
+    Timer mTimer = new Timer();
+
     /// A reference to the game object, so we can access session facts and the state machine
     protected final Lol mGame;
 
@@ -45,7 +50,7 @@ class PhysicsWorld {
     protected final Media mMedia;
 
     /// The maximum x and y values of the camera
-    protected final Vector2 mCamBound = new Vector2();
+    protected final Vector2 mCamBound;
 
     /// This camera is for drawing actors that exist in the physics world
     protected final OrthographicCamera mGameCam;
@@ -66,7 +71,7 @@ class PhysicsWorld {
     protected final QueryCallback mTouchCallback;
 
     /// We use this to avoid garbage collection when converting screen touches to camera coordinates
-    protected final Vector3 mTouchVec = new Vector3();
+    protected final Vector3 mTouchVec;
 
     /// When there is a touch of an actor in the physics world, this is how we find it
     protected Actor mHitActor = null;
@@ -80,18 +85,18 @@ class PhysicsWorld {
     /// A reference to the tilt object, for managing how tilts are handled
     ///
     /// TODO: make private
-    Tilt mTilt = new Tilt();
+    final Tilt mTilt = new Tilt();
 
     /// This is the Actor that the camera chases
     protected Actor mChaseActor;
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
-    ArrayList<TouchEventHandler> mDownHandlers = new ArrayList<>();
-    ArrayList<TouchEventHandler> mUpHandlers = new ArrayList<>();
-    ArrayList<TouchEventHandler> mTapHandlers = new ArrayList<>();
-    ArrayList<TouchEventHandler> mFlingHandlers = new ArrayList<>();
-    ArrayList<TouchEventHandler> mPanStopHandlers = new ArrayList<>();
-    ArrayList<TouchEventHandler> mPanHandlers = new ArrayList<>();
+    ArrayList<TouchEventHandler> mDownHandlers;
+    ArrayList<TouchEventHandler> mUpHandlers;
+    ArrayList<TouchEventHandler> mTapHandlers;
+    ArrayList<TouchEventHandler> mFlingHandlers;
+    ArrayList<TouchEventHandler> mPanStopHandlers;
+    ArrayList<TouchEventHandler> mPanHandlers;
 
     /// In levels with a projectile pool, the pool is accessed from here
     ///
@@ -106,10 +111,10 @@ class PhysicsWorld {
 
     /// A random number generator... We provide this so that new game developers don't create lots
     /// of Random()s throughout their code
-    final Random mGenerator = new Random();
+    final Random mGenerator;
 
     /// Use this for determining bounds of text boxes
-    final GlyphLayout mGlyphLayout = new GlyphLayout();
+    final GlyphLayout mGlyphLayout;
 
     /**
      * Construct a basic level.  A level has a camera and a phyics world, actors who live in that
@@ -145,6 +150,7 @@ class PhysicsWorld {
         mGameCam.zoom = 1;
 
         // set default camera bounds
+        mCamBound = new Vector2();
         mCamBound.set(w, h);
 
         // create a world with no default gravitational forces
@@ -154,6 +160,7 @@ class PhysicsWorld {
 
         // set up the callback for finding out who in the physics world was
         // touched
+        mTouchVec = new Vector3();
         mTouchCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
@@ -173,6 +180,16 @@ class PhysicsWorld {
         // reset the per-level object store
         mLevelFacts = new TreeMap<>();
         mLevelActors = new TreeMap<>();
+
+        // Construct other members
+        mDownHandlers = new ArrayList<>();
+        mTapHandlers = new ArrayList<>();
+        mUpHandlers = new ArrayList<>();
+        mFlingHandlers = new ArrayList<>();
+        mPanStopHandlers = new ArrayList<>();
+        mPanHandlers = new ArrayList<>();
+        mGenerator = new Random();
+        mGlyphLayout = new GlyphLayout();
     }
 
     /**
@@ -388,7 +405,7 @@ class PhysicsWorld {
      * @param other   The other actor... it should always be a hero for now
      * @param contact A description of the contact event
      */
-    protected void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+    private void handleSticky(final Actor sticky, final Actor other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -426,7 +443,7 @@ class PhysicsWorld {
     /**
      * Configure physics for the current level
      */
-    protected void configureCollisionHandlers() {
+    private void configureCollisionHandlers() {
 
         // set up the collision handlers
         mWorld.setContactListener(new ContactListener() {
@@ -725,6 +742,18 @@ class PhysicsWorld {
         for (TouchEventHandler ga : mUpHandlers) {
             ga.go(mTouchVec.x, mTouchVec.y);
         }
+    }
+
+    void render(SpriteBatch sb, float delta) {
+        // Render the actors in order from z=-2 through z=2
+        sb.setProjectionMatrix(mGameCam.combined);
+        sb.begin();
+        for (ArrayList<Renderable> a : mRenderables) {
+            for (Renderable r : a) {
+                r.render(sb, delta);
+            }
+        }
+        sb.end();
     }
 
     /**

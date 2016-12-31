@@ -429,8 +429,9 @@ abstract public class QuickScene {
 
                 // The default text to display can change at the last second, so we
                 // don't compute it until right here... also, play music
-                if (mSound != null)
+                if (mSound != null) {
                     mSound.play(Lol.getGameFact(mWorld.mConfig, "volume", 1));
+                }
                 addText(mText, "#FFFFFF", mWorld.mConfig.mDefaultFontFace, mWorld.mConfig.mDefaultFontSize);
             }
 

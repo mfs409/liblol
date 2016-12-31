@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.ArrayList;
 
@@ -14,33 +16,41 @@ import java.util.ArrayList;
  * of "in the world".
  */
 class Hud {
+    /// The physics world in which Hud actors exist
+    protected final World mWorld;
+
+    /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
+    protected final ArrayList<Renderable> mRenderables;
 
     /// The debug shape renderer, for putting boxes around Controls and Displays
-    private final ShapeRenderer mShapeRender = new ShapeRenderer();
+    private final ShapeRenderer mShapeRender;
 
     /// Input Controls
-    final ArrayList<Control> mControls = new ArrayList<>();
+    final ArrayList<Control> mControls;
 
     /// Output Displays
-    final ArrayList<Display> mDisplays = new ArrayList<>();
+    final ArrayList<Display> mDisplays;
 
     /// Controls that have a tap event
-    final ArrayList<Control> mTapControls = new ArrayList<>();
+    final ArrayList<Control> mTapControls;
 
     /// Controls that have a pan event
-    final ArrayList<Control> mPanControls = new ArrayList<>();
+    final ArrayList<Control> mPanControls;
 
     /// Controls that have a pinch zoom event
-    final ArrayList<Control> mZoomControls = new ArrayList<>();
+    final ArrayList<Control> mZoomControls;
 
     /// Toggle Controls
-    final ArrayList<Control> mToggleControls = new ArrayList<>();
+    final ArrayList<Control> mToggleControls;
 
     /// This camera is for drawing controls that sit above the world
-    OrthographicCamera mHudCam;
+    final OrthographicCamera mHudCam;
 
     /// We use this to avoid garbage collection when converting screen touches to camera coordinates
-    private final Vector3 mTouchVec = new Vector3();
+    private final Vector3 mTouchVec;
+
+    /// A copy of the config object
+    private final Config mConfig;
 
     /**
      * Create a new heads-up display by providing the dimensions for its camera
@@ -48,9 +58,26 @@ class Hud {
     Hud(Config config) {
         int width = config.mWidth;
         int height = config.mHeight;
+        mConfig = config;
+
+        // create a world with no default gravitational forces
+        mWorld = new World(new Vector2(0, 0), true);
+
+        // set up the renderables
+        mRenderables = new ArrayList<>();
+//        float w = mConfig.mWidth / mConfig.PIXEL_METER_RATIO;
+//        float h = mConfig.mHeight / mConfig.PIXEL_METER_RATIO;
 
         mHudCam = new OrthographicCamera(width, height);
         mHudCam.position.set(width / 2, height / 2, 0);
+        mTouchVec = new Vector3();
+        mControls = new ArrayList<>();
+        mDisplays = new ArrayList<>();
+        mTapControls = new ArrayList<>();
+        mShapeRender = new ShapeRenderer();
+        mPanControls = new ArrayList<>();
+        mZoomControls = new ArrayList<>();
+        mToggleControls = new ArrayList<>();
     }
 
     void reportTouch(Vector3 touchVec, Config config) {
@@ -58,19 +85,39 @@ class Hud {
         Lol.message(config, "Screen Coordinates", touchVec.x + ", " + touchVec.y);
     }
 
-    void render(Config config, SpriteBatch sb) {
+    /**
+     *
+     * @param sb
+     * @param delta
+     *
+     * TODO: switch the Timer so that we can use /delta/
+     */
+    void render(SpriteBatch sb, float delta) {
         mHudCam.update();
+
+        // Advance the physics world by 1/45 of a second.
+        //
+        // NB: in Box2d, This is the recommended rate for phones, though it
+        // seems like we should be using /delta/ instead of 1/45f
+        mWorld.step(1 / 45f, 8, 3);
+
         sb.setProjectionMatrix(mHudCam.combined);
         sb.begin();
         for (Control c : mControls)
             if (c.mIsActive)
                 c.render(sb);
         for (Display d : mDisplays)
-            d.render(sb);
+            d.render(sb, delta);
+
+        for (Renderable r : mRenderables) {
+                r.render(sb, delta);
+        }
+
+
         sb.end();
 
         // DEBUG: render Controls' outlines
-        if (config.mShowDebugBoxes) {
+        if (mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mHudCam.combined);
             mShapeRender.begin(ShapeRenderer.ShapeType.Line);
             mShapeRender.setColor(Color.RED);

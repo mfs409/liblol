@@ -692,15 +692,15 @@ public class Level {
      * @return The display, so that it can be controlled further if needed
      */
     public Display addDisplay(final int x, final int y, String fontName, final String fontColor, int size, final String prefix, final String suffix, final TextProducer tp) {
-        Display d = new Display(mWorld, fontColor, fontName, size) {
+        Display d = new Display(mMedia, fontColor, fontName, size) {
             @Override
-            void render(SpriteBatch sb) {
+            void render(SpriteBatch sb, float delta) {
                 mFont.setColor(mColor);
                 String txt = prefix + tp.makeText() + suffix;
-                mLevel.drawTextTransposed(x, y, txt, mFont, sb);
+                mWorld.drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
-        mHud.mDisplays.add(d);
+        mHud.mRenderables.add(d);
         return d;
     }
 

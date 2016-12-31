@@ -27,7 +27,6 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * LOL Games have a heads-up display (hud). The hud is a place for displaying
@@ -35,20 +34,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * level, the buttons and text can remain at the same place on the screen. This
  * class encapsulates all of the displayable text.
  */
-public class Display {
-    /**
-     * The level in which this display is to be drawn
-     */
-    PhysicsWorld mLevel;
-
-    /**
-     * What color should we use to draw text
-     */
+abstract class Display extends Renderable {
+    /// What color should we use to draw text
     Color mColor = new Color(0, 0, 0, 1);
 
-    /**
-     * The font object to use
-     */
+    /// The font object to use
     BitmapFont mFont;
 
     /**
@@ -57,18 +47,8 @@ public class Display {
      * @param fontName The name of the .ttf font file to use
      * @param fontSize The point size of the font
      */
-    Display(PhysicsWorld level, String fontColor, String fontName, int fontSize) {
-        mLevel = level;
+    Display(Media media, String fontColor, String fontName, int fontSize) {
         mColor = Color.valueOf(fontColor);
-        mFont = level.mMedia.getFont(fontName, fontSize);
-    }
-
-    /**
-     * Render the text. Since each control needs to getLoseScene its text at the time it
-     * is rendered, we don't provide a default implementation.
-     *
-     * @param sb The SpriteBatch to use to draw the image
-     */
-    void render(SpriteBatch sb) {
+        mFont = media.getFont(fontName, fontSize);
     }
 }

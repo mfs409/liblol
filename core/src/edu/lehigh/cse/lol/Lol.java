@@ -41,7 +41,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
@@ -509,12 +508,17 @@ public class Lol implements ApplicationListener {
     public void render() {
         // Check for back press
         handleKeyDown();
+
         // Draw the current scene
         if (mStateMachine.mLevel == null)
             return;
 
         float delta = Gdx.graphics.getDeltaTime();
         Level level = mStateMachine.mLevel;
+
+        // Make sure the music is playing... Note that we start music before the
+        // PreScene shows
+        level.mWorld.playMusic();
 
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
@@ -526,49 +530,28 @@ public class Lol implements ApplicationListener {
             }
         }
 
-        // Make sure the music is playing... Note that we start music before the
-        // PreScene shows
-        level.mWorld.playMusic();
-
         // Handle pauses due to pre, pause, or post scenes...
         //
-        // Note that these go their own screen touches...
+        // Note that these handle their own screen touches...
         //
         // Note that win and lose scenes should come first.
-        if (level.mWinScene != null && level.mWinScene.render(mSpriteBatch, level.mHud))
+        if (level.mWinScene.render(mSpriteBatch, level.mHud))
             return;
-        if (level.mLoseScene != null && level.mLoseScene.render(mSpriteBatch, level.mHud))
+        if (level.mLoseScene.render(mSpriteBatch, level.mHud))
             return;
-        if (level.mPreScene != null && level.mPreScene.render(mSpriteBatch, level.mHud))
+        if (level.mPreScene.render(mSpriteBatch, level.mHud))
             return;
-        if (level.mPauseScene != null && level.mPauseScene.render(mSpriteBatch, level.mHud))
+        if (level.mPauseScene.render(mSpriteBatch, level.mHud))
             return;
 
-        // go accelerometer stuff... note that accelerometer is effectively
+        // Let the score object know that we are rendering, so that we can handle any win/lose
+        // timers
+        level.mScore.onRender(level);
+
+        // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
         level.mWorld.handleTilt();
-
-        // Check the countdown timers
-        if (level.mScore.mLoseCountDownRemaining != -100) {
-            level.mScore.mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
-            if (level.mScore.mLoseCountDownRemaining < 0) {
-                if (level.mScore.mLoseCountDownText != "")
-                    level.getLoseScene().setDefaultText(level.mScore.mLoseCountDownText);
-                level.mScore.endLevel(false);
-            }
-        }
-        if (level.mScore.mWinCountRemaining != -100) {
-            level.mScore.mWinCountRemaining -= Gdx.graphics.getDeltaTime();
-            if (level.mScore.mWinCountRemaining < 0) {
-                if (level.mScore.mWinCountText != "")
-                    level.getWinScene().setDefaultText(level.mScore.mWinCountText);
-                level.mScore.endLevel(true);
-            }
-        }
-        if (level.mScore.mStopWatchProgress != -100) {
-            level.mScore.mStopWatchProgress += Gdx.graphics.getDeltaTime();
-        }
 
         // Advance the physics world by 1/45 of a second.
         //
@@ -576,26 +559,26 @@ public class Lol implements ApplicationListener {
         // seems like we should be using /delta/ instead of 1/45f
         level.mWorld.mWorld.step(1 / 45f, 8, 3);
 
-        // now go any events that occurred on account of the world movement
+        // now handle any events that occurred on account of the world movement
         // or screen touches
         for (LolAction pe : level.mWorld.mOneTimeEvents)
             pe.go();
         level.mWorld.mOneTimeEvents.clear();
 
-        // go repeat events
+        // handle repeat events
         for (LolAction pe : level.mWorld.mRepeatEvents) {
             if (pe.mIsActive)
                 pe.go();
         }
 
+        // check for end of game
+        if (level.mScore.mEndGameEvent != null)
+            level.mScore.mEndGameEvent.go();
+
         // prepare the main camera... we do it here, so that the parallax code
         // knows where to draw...
         level.mWorld.adjustCamera();
         level.mWorld.mGameCam.update();
-
-        // check for end of game
-        if (level.mScore.mEndGameEvent != null)
-            level.mScore.mEndGameEvent.go();
 
         // The world is now static for this time step... we can display it!
 
@@ -606,13 +589,8 @@ public class Lol implements ApplicationListener {
         // draw parallax backgrounds
         level.mBackground.renderLayers(level.mWorld, mSpriteBatch, delta);
 
-        // Render the actors in order from z=-2 through z=2
-        mSpriteBatch.setProjectionMatrix(level.mWorld.mGameCam.combined);
-        mSpriteBatch.begin();
-        for (ArrayList<Renderable> a : level.mWorld.mRenderables)
-            for (Renderable r : a)
-                r.render(mSpriteBatch, delta);
-        mSpriteBatch.end();
+        // render the actors
+        level.mWorld.render(mSpriteBatch, delta);
 
         // draw parallax foregrounds
         level.mForeground.renderLayers(level.mWorld, mSpriteBatch, delta);
@@ -622,7 +600,7 @@ public class Lol implements ApplicationListener {
             mDebugRender.render(level.mWorld.mWorld, level.mWorld.mGameCam.combined);
 
         // draw Controls
-        level.mHud.render(mConfig, mSpriteBatch);
+        level.mHud.render(mSpriteBatch, delta);
     }
 
     @Override
