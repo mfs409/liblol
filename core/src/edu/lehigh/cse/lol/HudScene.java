@@ -146,7 +146,7 @@ class HudScene {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mTapControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                world.mCamera.unproject(mTouchVec.set(x, y, 0));
                 c.mTapHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
@@ -158,7 +158,7 @@ class HudScene {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                world.mCamera.unproject(mTouchVec.set(x, y, 0));
                 c.mPanHandler.deltaX = deltaX;
                 c.mPanHandler.deltaY = deltaY;
                 c.mPanHandler.go(mTouchVec.x, mTouchVec.y);
@@ -172,7 +172,7 @@ class HudScene {
         mHudCam.unproject(mTouchVec.set(x, y, 0));
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(x, y, 0));
+                world.mCamera.unproject(mTouchVec.set(x, y, 0));
                 c.mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
@@ -196,7 +196,7 @@ class HudScene {
         mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
         for (Control c : mToggleControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
                 c.mToggleHandler.isUp = false;
                 c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
@@ -206,7 +206,7 @@ class HudScene {
         // pass to pinch-zoom?
         for (Control c : mZoomControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
                 c.mDownHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
@@ -218,7 +218,7 @@ class HudScene {
         mHudCam.unproject(mTouchVec.set(screenX, screenY, 0));
         for (Control c : mToggleControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
                 c.mToggleHandler.isUp = true;
                 c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;

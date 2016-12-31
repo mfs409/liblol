@@ -526,7 +526,7 @@ public class Lol implements ApplicationListener {
         if (mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
                 level.mHud.reportTouch(level.mWorld.mTouchVec, mConfig);
-                level.mWorld.mGameCam.unproject(level.mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                level.mWorld.mCamera.unproject(level.mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
                 Lol.message(mConfig, "World Coordinates", level.mWorld.mTouchVec.x + ", " + level.mWorld.mTouchVec.y);
             }
         }
@@ -579,7 +579,7 @@ public class Lol implements ApplicationListener {
         // prepare the main camera... we do it here, so that the parallax code
         // knows where to draw...
         level.mWorld.adjustCamera();
-        level.mWorld.mGameCam.update();
+        level.mWorld.mCamera.update();
 
         // The world is now static for this time step... we can display it!
 
@@ -598,7 +598,7 @@ public class Lol implements ApplicationListener {
 
         // DEBUG: draw outlines of physics actors
         if (mConfig.mShowDebugBoxes)
-            mDebugRender.render(level.mWorld.mWorld, level.mWorld.mGameCam.combined);
+            mDebugRender.render(level.mWorld.mWorld, level.mWorld.mCamera.combined);
 
         // draw Controls
         level.mHud.render(mSpriteBatch, delta);

@@ -217,7 +217,7 @@ public class Level {
      * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
     public void setZoom(float zoom) {
-        mWorld.mGameCam.zoom = zoom;
+        mWorld.mCamera.zoom = zoom;
         mBackground.mBgCam.zoom = zoom;
         mForeground.mBgCam.zoom = zoom;
     }
@@ -837,9 +837,9 @@ public class Level {
     public TouchEventHandler ZoomOutAction(final float maxZoom) {
         return new TouchEventHandler() {
             public boolean go(float x, float y) {
-                float curzoom = mWorld.mGameCam.zoom;
+                float curzoom = mWorld.mCamera.zoom;
                 if (curzoom < maxZoom) {
-                    mWorld.mGameCam.zoom *= 2;
+                    mWorld.mCamera.zoom *= 2;
                     mBackground.mBgCam.zoom *= 2;
                     mForeground.mBgCam.zoom *= 2;
                 }
@@ -856,9 +856,9 @@ public class Level {
     public TouchEventHandler ZoomInAction(final float minZoom) {
         return new TouchEventHandler() {
             public boolean go(float x, float y) {
-                float curzoom = mWorld.mGameCam.zoom;
+                float curzoom = mWorld.mCamera.zoom;
                 if (curzoom > minZoom) {
-                    mWorld.mGameCam.zoom /= 2;
+                    mWorld.mCamera.zoom /= 2;
                     mBackground.mBgCam.zoom /= 2;
                     mForeground.mBgCam.zoom /= 2;
                 }
@@ -1145,19 +1145,19 @@ public class Level {
                     c.mPanStopHandler.mAttachedActor = mWorld.mChaseActor;
                     mWorld.mChaseActor = null;
                 }
-                float x = mWorld.mGameCam.position.x - deltaX * .1f
-                        * mWorld.mGameCam.zoom;
-                float y = mWorld.mGameCam.position.y + deltaY * .1f
-                        * mWorld.mGameCam.zoom;
+                float x = mWorld.mCamera.position.x - deltaX * .1f
+                        * mWorld.mCamera.zoom;
+                float y = mWorld.mCamera.position.y + deltaY * .1f
+                        * mWorld.mCamera.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > mWorld.mCamBound.x - mConfig.mWidth * mWorld.mGameCam.zoom
+                if (x > mWorld.mCamBound.x - mConfig.mWidth * mWorld.mCamera.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mWorld.mCamBound.x - mConfig.mWidth * mWorld.mGameCam.zoom
+                    x = mWorld.mCamBound.x - mConfig.mWidth * mWorld.mCamera.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
-                if (y > mWorld.mCamBound.y - mConfig.mHeight * mWorld.mGameCam.zoom
+                if (y > mWorld.mCamBound.y - mConfig.mHeight * mWorld.mCamera.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mWorld.mCamBound.y - mConfig.mHeight * mWorld.mGameCam.zoom
+                    y = mWorld.mCamBound.y - mConfig.mHeight * mWorld.mCamera.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1165,13 +1165,13 @@ public class Level {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < mConfig.mWidth * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mConfig.mWidth * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
-                if (y < mConfig.mHeight * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mConfig.mHeight * mWorld.mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (x < mConfig.mWidth * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    x = mConfig.mWidth * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (y < mConfig.mHeight * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    y = mConfig.mHeight * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
-                mWorld.mGameCam.position.set(x, y, 0);
+                mWorld.mCamera.position.set(x, y, 0);
                 return true;
             }
         };
@@ -1198,7 +1198,7 @@ public class Level {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
                 // of storing the last zoom value
-                deltaX = mWorld.mGameCam.zoom;
+                deltaX = mWorld.mCamera.zoom;
                 return true;
             }
         };
@@ -1207,7 +1207,7 @@ public class Level {
                 float ratio = initialDistance / distance;
                 float newZoom = c.mDownHandler.deltaX * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
-                    mWorld.mGameCam.zoom = newZoom;
+                    mWorld.mCamera.zoom = newZoom;
                 // TODO: why do we return false?
                 return false;
             }

@@ -56,7 +56,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    AnimationDriver(MainScene level, String imgName) {
+    AnimationDriver(LolScene level, String imgName) {
         updateImage(level, imgName);
     }
 
@@ -76,7 +76,7 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    void updateImage(MainScene level, String imgName) {
+    void updateImage(LolScene level, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
         mImages[0] = level.mMedia.getImage(imgName);

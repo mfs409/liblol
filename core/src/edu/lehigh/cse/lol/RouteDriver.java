@@ -43,7 +43,7 @@ class RouteDriver {
     /**
      * The actor to which the route is being applied
      */
-    private final Actor mActor;
+    private final BaseActor mActor;
 
     /**
      * The speed at which the actor moves along the route
@@ -78,7 +78,7 @@ class RouteDriver {
      * @param loop     Should the route repeat when it completes?
      * @param actor    The actor to which the route should be applied
      */
-     RouteDriver(Route route, float velocity, boolean loop, Actor actor) {
+     RouteDriver(Route route, float velocity, boolean loop, BaseActor actor) {
         mRoute = route;
         mRouteVelocity = velocity;
         mRouteLoop = loop;

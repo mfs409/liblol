@@ -18,7 +18,6 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
@@ -34,7 +33,7 @@ import java.util.TreeMap;
  * PhysicsWorld stores the functionality that is common across all of the different renderable,
  * updatable containers that store actors in a physical world.
  */
-class MainScene {
+class MainScene extends LolScene {
     /// A timer, so that we can stop using the static timer instance
     ///
     /// TODO: start using this
@@ -42,39 +41,6 @@ class MainScene {
 
     /// A reference to the game object, so we can access session facts and the state machine
     protected final Lol mGame;
-
-    /// A reference to the game-wide configuration variables
-    protected final Config mConfig;
-
-    /// A reference to the object that stores all of the sounds and images we use in the game
-    protected final Media mMedia;
-
-    /// The maximum x and y values of the camera
-    protected final Vector2 mCamBound;
-
-    /// This camera is for drawing actors that exist in the physics world
-    protected final OrthographicCamera mGameCam;
-
-    /// The physics world in which all actors interact
-    protected final World mWorld;
-
-    /// Events that get processed on the next render, then discarded
-    protected final ArrayList<LolAction> mOneTimeEvents;
-
-    /// Events that get processed on every render
-    protected final ArrayList<LolAction> mRepeatEvents;
-
-    /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
-    protected final ArrayList<ArrayList<Renderable>> mRenderables;
-
-    /// This callback is used to get a touched actor from the physics world
-    protected final QueryCallback mTouchCallback;
-
-    /// We use this to avoid garbage collection when converting screen touches to camera coordinates
-    protected final Vector3 mTouchVec;
-
-    /// When there is a touch of an actor in the physics world, this is how we find it
-    protected Actor mHitActor = null;
 
     /// A map for storing the level facts for the current level
     protected final TreeMap<String, Integer> mLevelFacts;
@@ -91,20 +57,17 @@ class MainScene {
     protected Actor mChaseActor;
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
-    ArrayList<TouchEventHandler> mDownHandlers;
-    ArrayList<TouchEventHandler> mUpHandlers;
-    ArrayList<TouchEventHandler> mTapHandlers;
-    ArrayList<TouchEventHandler> mFlingHandlers;
-    ArrayList<TouchEventHandler> mPanStopHandlers;
-    ArrayList<TouchEventHandler> mPanHandlers;
+    final ArrayList<TouchEventHandler> mDownHandlers;
+    final ArrayList<TouchEventHandler> mUpHandlers;
+    final ArrayList<TouchEventHandler> mFlingHandlers;
+    final ArrayList<TouchEventHandler> mPanStopHandlers;
+    final ArrayList<TouchEventHandler> mPanHandlers;
 
     /// In levels with a projectile pool, the pool is accessed from here
-    ///
-    /// TODO: make private
     ProjectilePool mProjectilePool;
 
     /// The music, if any
-    protected Music mMusic;
+    Music mMusic;
 
     /// Whether the music is playing or not
     private boolean mMusicPlaying;
@@ -112,9 +75,6 @@ class MainScene {
     /// A random number generator... We provide this so that new game developers don't create lots
     /// of Random()s throughout their code
     final Random mGenerator;
-
-    /// Use this for determining bounds of text boxes
-    final GlyphLayout mGlyphLayout;
 
     /**
      * Construct a basic level.  A level has a camera and a phyics world, actors who live in that
@@ -125,57 +85,18 @@ class MainScene {
      * @param game   The game that is being played
      */
     MainScene(Config config, Media media, Lol game) {
+        // MainScene operates in meters, not pixels, so we configure the world and camera (in the
+        // constructor) using meter dimensions
+        super(config.mWidth / config.PIXEL_METER_RATIO, config.mHeight / config.PIXEL_METER_RATIO, media, config);
+
         // clear any timers
         Timer.instance().clear();
 
         // save game configuration information
         mGame = game;
-        mConfig = config;
-        mMedia = media;
 
-        // set up the event lists
-        mOneTimeEvents = new ArrayList<>();
-        mRepeatEvents = new ArrayList<>();
-
-        // set up the renderables
-        mRenderables = new ArrayList<>(5);
-        for (int i = 0; i < 5; ++i)
-            mRenderables.add(new ArrayList<Renderable>());
-
-        // set up the game camera, with (0, 0) in the bottom left
-        float w = mConfig.mWidth / mConfig.PIXEL_METER_RATIO;
-        float h = mConfig.mHeight / mConfig.PIXEL_METER_RATIO;
-        mGameCam = new OrthographicCamera(w, h);
-        mGameCam.position.set(w / 2, h / 2, 0);
-        mGameCam.zoom = 1;
-
-        // set default camera bounds
-        mCamBound = new Vector2();
-        mCamBound.set(w, h);
-
-        // create a world with no default gravitational forces
-        mWorld = new World(new Vector2(0, 0), true);
         // Set up collision handlers
         configureCollisionHandlers();
-
-        // set up the callback for finding out who in the physics world was
-        // touched
-        mTouchVec = new Vector3();
-        mTouchCallback = new QueryCallback() {
-            @Override
-            public boolean reportFixture(Fixture fixture) {
-                // if the hit point is inside the fixture of the body we report
-                // it
-                if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    Actor hs = (Actor) fixture.getBody().getUserData();
-                    if (hs.mVisible) {
-                        mHitActor = hs;
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
 
         // reset the per-level object store
         mLevelFacts = new TreeMap<>();
@@ -183,38 +104,11 @@ class MainScene {
 
         // Construct other members
         mDownHandlers = new ArrayList<>();
-        mTapHandlers = new ArrayList<>();
         mUpHandlers = new ArrayList<>();
         mFlingHandlers = new ArrayList<>();
         mPanStopHandlers = new ArrayList<>();
         mPanHandlers = new ArrayList<>();
         mGenerator = new Random();
-        mGlyphLayout = new GlyphLayout();
-    }
-
-    /**
-     * Add an actor to the level, putting it into the appropriate z plane
-     *
-     * @param actor  The actor to add
-     * @param zIndex The z plane. valid values are -2, -1, 0, 1, and 2. 0 is the
-     *               default.
-     */
-    void addActor(Renderable actor, int zIndex) {
-        assert zIndex >= -2;
-        assert zIndex <= 2;
-        mRenderables.get(zIndex + 2).add(actor);
-    }
-
-    /**
-     * Remove an actor from its z plane
-     *
-     * @param actor  The actor to remove
-     * @param zIndex The z plane where it is expected to be
-     */
-    void removeActor(Renderable actor, int zIndex) {
-        assert zIndex >= -2;
-        assert zIndex <= 2;
-        mRenderables.get(zIndex + 2).remove(actor);
     }
 
     /**
@@ -307,94 +201,6 @@ class MainScene {
                 if (gfo.mBody.isActive())
                     gfo.mBody.applyForceToCenter(xGravity, yGravity, true);
         }
-    }
-
-    /**
-     * Create a Renderable that consists of some text to draw
-     *
-     * @param x        The X coordinate of the bottom left corner, in pixels
-     * @param y        The Y coordinate of the bottom left corner, in pixels
-     * @param message  The text to display... note that it can't change on the fly
-     * @param fontName The font to use
-     * @param size     The font size
-     * @return A Renderable of the text
-     */
-    Renderable makeText(final int x, final int y, final String message, final String fontColor, String fontName, int size) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
-        return new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(Color.valueOf(fontColor));
-                mGlyphLayout.setText(bf, message);
-                bf.draw(sb, message, x, y + mGlyphLayout.height);
-            }
-        };
-    }
-
-    /**
-     * Create a Renderable that consists of some text to draw. The text will be
-     * centered vertically and horizontally on the screen
-     *
-     * @param message  The text to display... note that it can't change on the fly
-     * @param fontName The font to use
-     * @param size     The font size
-     * @return A Renderable of the text
-     */
-    Renderable makeText(final String message, final String fontColor,
-                        String fontName, int size) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
-        mGlyphLayout.setText(bf, message);
-        final float x = mConfig.mWidth / 2 - mGlyphLayout.width / 2;
-        final float y = mConfig.mHeight / 2 + mGlyphLayout.height / 2;
-        return new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(Color.valueOf(fontColor));
-                bf.draw(sb, message, x, y);
-            }
-        };
-    }
-
-
-    /**
-     * A helper method to draw text nicely. In GDX, we draw everything by giving
-     * the bottom left corner, except text, which takes the top left corner.
-     * This function handles the conversion, so that we can use bottom-left.
-     *
-     * @param x       The X coordinate of the bottom left corner (in pixels)
-     * @param y       The Y coordinate of the bottom left corner (in pixels)
-     * @param message The text to display
-     * @param bf      The BitmapFont object to use for the text's font
-     * @param sb      The SpriteBatch used to render the text
-     */
-    void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
-        mGlyphLayout.setText(bf, message);
-        bf.draw(sb, message, x, y + mGlyphLayout.height);
-    }
-
-    /**
-     * Create a Renderable that consists of an image
-     *
-     * @param x       The X coordinate of the bottom left corner, in pixels
-     * @param y       The Y coordinate of the bottom left corner, in pixels
-     * @param width   The image width, in pixels
-     * @param height  The image height, in pixels
-     * @param imgName The file name for the image, or ""
-     * @return A Renderable of the image
-     */
-    Renderable makePicture(final float x, final float y, final float width, final float height,
-                           String imgName) {
-        // set up the image to display
-        //
-        // NB: this will fail gracefully (no crash) for invalid file names
-        final TextureRegion tr = mMedia.getImage(imgName);
-        return new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                if (tr != null)
-                    sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
-            }
-        };
     }
 
     /**
@@ -612,7 +418,7 @@ class MainScene {
     }
 
     /**
-     * If the camera is supposed to follow an actor, this code will go
+     * If the camera is supposed to follow an actor, this code will handle
      * updating the camera position
      */
     protected void adjustCamera() {
@@ -623,43 +429,27 @@ class MainScene {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBound.x - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            x = mCamBound.x - mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
-        if (y > mCamBound.y - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            y = mCamBound.y - mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (x > mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            x = mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (y > mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            y = mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            x = mConfig.mWidth * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
-        if (y < mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            y = mConfig.mHeight * mGameCam.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (x < mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            x = mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (y < mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+            y = mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
         // update the camera position
-        mGameCam.position.set(x, y, 0);
-    }
-
-    boolean onTap(float x, float y, int count, int button) {
-        // check if we tapped an actor
-        mHitActor = null;
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
-        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
-                mTouchVec.y + 0.1f);
-        if (mHitActor != null && mHitActor.onTap(mTouchVec))
-            return true;
-
-        // is this a raw screen tap?
-        for (TouchEventHandler ga : mTapHandlers)
-            if (ga.go(mTouchVec.x, mTouchVec.y))
-                return true;
-        return false;
+        mCamera.position.set(x, y, 0);
     }
 
     boolean handleFling(float velocityX, float velocityY) {
         // we only fling at the whole-level layer
-        mGameCam.unproject(mTouchVec.set(velocityX, velocityY, 0));
+        mCamera.unproject(mTouchVec.set(velocityX, velocityY, 0));
         for (TouchEventHandler ga : mFlingHandlers) {
             if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
@@ -668,7 +458,7 @@ class MainScene {
     }
 
     boolean handlePan(float x, float y, float deltaX, float deltaY) {
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        mCamera.unproject(mTouchVec.set(x, y, 0));
         for (TouchEventHandler ga : mPanHandlers) {
             ga.deltaX = deltaX;
             ga.deltaY = deltaY;
@@ -680,7 +470,7 @@ class MainScene {
 
     boolean handlePanStop(float x, float y) {
         // go panstop on level
-        mGameCam.unproject(mTouchVec.set(x, y, 0));
+        mCamera.unproject(mTouchVec.set(x, y, 0));
         for (TouchEventHandler ga : mPanStopHandlers)
             if (ga.go(mTouchVec.x, mTouchVec.y))
                 return true;
@@ -691,7 +481,7 @@ class MainScene {
         // check for actor touch, by looking at gameCam coordinates... on
         // touch, hitActor will change
         mHitActor = null;
-        mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
 
@@ -714,7 +504,7 @@ class MainScene {
     }
 
     boolean handleUp(float screenX, float screenY) {
-        mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+        mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null) {
             if (mHitActor.mToggleHandler != null) {
                 mHitActor.mToggleHandler.isUp = true;
@@ -729,7 +519,7 @@ class MainScene {
 
     boolean handleDrag(float screenX, float screenY) {
         if (mHitActor != null && mHitActor.mDragHandler != null) {
-            mGameCam.unproject(mTouchVec.set(screenX, screenY, 0));
+            mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
             return mHitActor.mDragHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
@@ -746,7 +536,7 @@ class MainScene {
 
     void render(SpriteBatch sb, float delta) {
         // Render the actors in order from z=-2 through z=2
-        sb.setProjectionMatrix(mGameCam.combined);
+        sb.setProjectionMatrix(mCamera.combined);
         sb.begin();
         for (ArrayList<Renderable> a : mRenderables) {
             for (Renderable r : a) {

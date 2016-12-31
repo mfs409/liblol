@@ -1906,9 +1906,6 @@ public class Levels implements ScreenManager {
          * animate the hero while it throws a projectile
          */
         else if (whichLevel == 52) {
-            // set up a basic level
-
-
             level.enableTilt(10, 10);
             level.getPreScene().addText("Press the hero\nto make it\nthrow a ball", "#FFFFFF", "arial.ttf", 32);
             level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
