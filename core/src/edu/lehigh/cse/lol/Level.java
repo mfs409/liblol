@@ -73,11 +73,11 @@ public class Level {
 
         // Create the eight different scenes and a score object
         mWorld = new MainScene(config, media, game);
-        mWinScene = QuickScene.makeWinScene(mWorld, mConfig);
-        mLoseScene = QuickScene.makeLoseScene(mWorld, mConfig);
-        mPreScene = QuickScene.makePreScene(mWorld, mConfig);
-        mPauseScene = QuickScene.makePauseScene(mWorld, mConfig);
-        mHud = new HudScene(mConfig);
+        mWinScene = QuickScene.makeWinScene(mWorld, media, mConfig);
+        mLoseScene = QuickScene.makeLoseScene(mWorld, media, mConfig);
+        mPreScene = QuickScene.makePreScene(mWorld, media, mConfig);
+        mPauseScene = QuickScene.makePauseScene(mWorld, media, mConfig);
+        mHud = new HudScene(media, mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
         mScore = new Score(this);
@@ -700,7 +700,7 @@ public class Level {
                 mWorld.drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
-        mHud.mRenderables.add(d);
+        mHud.addActor(d, 0);
         return d;
     }
 
@@ -1267,7 +1267,7 @@ public class Level {
              *            The SpriteBatch to use to draw the image
              */
             @Override
-            void render(SpriteBatch sb) {
+            void render(SpriteBatch sb, float delta) {
                 // one-time configuration
                 if (!mConfigured) {
                     mTrueHeight = mImage.getRegionHeight();
@@ -1339,7 +1339,7 @@ public class Level {
              *            The SpriteBatch to use to draw the image
              */
             @Override
-            void render(SpriteBatch sb) {
+            void render(SpriteBatch sb, float delta) {
                 if (!mIsActive)
                     return;
                 // draw it

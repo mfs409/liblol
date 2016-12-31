@@ -534,7 +534,7 @@ class MainScene extends LolScene {
         }
     }
 
-    void render(SpriteBatch sb, float delta) {
+    boolean render(SpriteBatch sb, float delta) {
         // Render the actors in order from z=-2 through z=2
         sb.setProjectionMatrix(mCamera.combined);
         sb.begin();
@@ -544,6 +544,7 @@ class MainScene extends LolScene {
             }
         }
         sb.end();
+        return true;
     }
 
     /**

@@ -536,13 +536,13 @@ public class Lol implements ApplicationListener {
         // Note that these handle their own screen touches...
         //
         // Note that win and lose scenes should come first.
-        if (level.mWinScene.render(mSpriteBatch, level.mHud))
+        if (level.mWinScene.render(mSpriteBatch, delta))
             return;
-        if (level.mLoseScene.render(mSpriteBatch, level.mHud))
+        if (level.mLoseScene.render(mSpriteBatch, delta))
             return;
-        if (level.mPreScene.render(mSpriteBatch, level.mHud))
+        if (level.mPreScene.render(mSpriteBatch, delta))
             return;
-        if (level.mPauseScene.render(mSpriteBatch, level.mHud))
+        if (level.mPauseScene.render(mSpriteBatch, delta))
             return;
 
         // Let the score object know that we are rendering, so that we can handle any win/lose

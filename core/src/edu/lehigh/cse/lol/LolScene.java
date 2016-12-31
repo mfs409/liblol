@@ -24,17 +24,11 @@ import java.util.ArrayList;
  * not need any scene functionality that is not present in LolScene.
  */
 abstract class LolScene {
-    /// We use this to avoid garbage collection when converting screen touches to camera coordinates
-    final Vector3 mTouchVec;
+    /// A reference to the object that stores all of the sounds and images we use in the game
+    protected final Media mMedia;
 
-    /// This callback is used to get a touched actor from the physics world
-    final QueryCallback mTouchCallback;
-
-    /// When there is a touch of an actor in the physics world, this is how we find it
-    Actor mHitActor = null;
-
-    /// Use this for determining bounds of text boxes
-    final GlyphLayout mGlyphLayout;
+    /// A reference to the game-wide configuration variables
+    protected final Config mConfig;
 
     /// The physics world in which all actors interact
     final World mWorld;
@@ -48,14 +42,20 @@ abstract class LolScene {
     /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
     final ArrayList<ArrayList<Renderable>> mRenderables;
 
+    /// We use this to avoid garbage collection when converting screen touches to camera coordinates
+    final Vector3 mTouchVec;
+
+    /// This callback is used to get a touched actor from the physics world
+    final QueryCallback mTouchCallback;
+
+    /// When there is a touch of an actor in the physics world, this is how we find it
+    Actor mHitActor = null;
+
+    /// Use this for determining bounds of text boxes
+    final GlyphLayout mGlyphLayout;
+
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
     final ArrayList<TouchEventHandler> mTapHandlers;
-
-    /// A reference to the object that stores all of the sounds and images we use in the game
-    protected final Media mMedia;
-
-    /// A reference to the game-wide configuration variables
-    protected final Config mConfig;
 
     /// Events that get processed on the next render, then discarded
     protected final ArrayList<LolAction> mOneTimeEvents;
@@ -250,5 +250,5 @@ abstract class LolScene {
         };
     }
 
-    abstract void render(SpriteBatch sb, float delta);
+    abstract boolean render(SpriteBatch sb, float delta);
 }

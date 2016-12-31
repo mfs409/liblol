@@ -37,7 +37,7 @@ import com.badlogic.gdx.math.Rectangle;
  * level, the buttons and text can remain at the same place on the screen. This
  * class encapsulates all of the touchable buttons.
  */
-public class Control {
+public class Control extends Renderable {
     /**
      * The level where this control is drawn
      */
@@ -107,7 +107,7 @@ public class Control {
      *
      * @param sb The SpriteBatch to use to draw the image
      */
-    void render(SpriteBatch sb) {
+    void render(SpriteBatch sb, float delta) {
         if (mIsActive && mImage != null)
             sb.draw(mImage, mRange.x, mRange.y, 0, 0, mRange.width, mRange.height, 1, 1, 0);
     }
