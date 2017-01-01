@@ -339,13 +339,13 @@ class MainScene extends LolScene {
                 }
 
                 // is either one-sided? If not, we're done
-                Actor onesided = null;
+                Actor oneSided = null;
                 Actor other;
                 if (gfoA.mIsOneSided > -1) {
-                    onesided = gfoA;
+                    oneSided = gfoA;
                     other = gfoB;
                 } else if (gfoB.mIsOneSided > -1) {
-                    onesided = gfoB;
+                    oneSided = gfoB;
                     other = gfoA;
                 } else {
                     return;
@@ -359,13 +359,13 @@ class MainScene extends LolScene {
                     Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
                     // disable based on the value of isOneSided and the vector
                     // between the actors
-                    if (onesided.mIsOneSided == 0 && vector2.y < 0)
+                    if (oneSided.mIsOneSided == 0 && vector2.y < 0)
                         contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 2 && vector2.y > 0)
+                    else if (oneSided.mIsOneSided == 2 && vector2.y > 0)
                         contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 1 && vector2.x > 0)
+                    else if (oneSided.mIsOneSided == 1 && vector2.x > 0)
                         contact.setEnabled(false);
-                    else if (onesided.mIsOneSided == 3 && vector2.x < 0)
+                    else if (oneSided.mIsOneSided == 3 && vector2.x < 0)
                         contact.setEnabled(false);
                 }
             }
@@ -413,7 +413,7 @@ class MainScene extends LolScene {
      * If the camera is supposed to follow an actor, this code will handle
      * updating the camera position
      */
-    protected void adjustCamera() {
+    void adjustCamera() {
         if (mChaseActor == null)
             return;
         // figure out the actor's position
@@ -517,6 +517,12 @@ class MainScene extends LolScene {
         return false;
     }
 
+    // TODO: move to parent
+    void reportTouch(float x, float y) {
+        mCamera.unproject(mTouchVec.set(x, y, 0));
+        Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
+    }
+
     void liftAllButtons() {
         for (TouchEventHandler ga : mPanStopHandlers) {
             ga.go(mTouchVec.x, mTouchVec.y);
@@ -548,8 +554,6 @@ class MainScene extends LolScene {
      * phones' accelerometers vary in terms of sensitivity. It is possible to set
      * multipliers and/or caps on the effect of Tilt, but these may not suffice to
      * make your game playable and enjoyable.
-     * <p>
-     * TODO: Tilt is an input mechanism... should it move into Lol?
      */
     class Tilt {
         /**

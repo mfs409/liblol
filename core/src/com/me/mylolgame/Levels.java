@@ -2882,8 +2882,8 @@ public class Levels implements ScreenManager {
             o2.setPhysics(100, 0, 1f);
 
             // draw some buttons for moving the hero
-            level.addToggleButton(0, 100, 100, 440, "", level.makeXMotionAction(h, -5), level.makeXMotionAction(h, 0));
-            level.addToggleButton(860, 100, 100, 440, "", level.makeXMotionAction(h, 5), level.makeXMotionAction(h, 0));
+            level.addToggleButton(0, 5, 5, 22, "", level.makeXMotionAction(h, -5), level.makeXMotionAction(h, 0));
+            level.addToggleButton(43, 5, 5, 22, "", level.makeXMotionAction(h, 5), level.makeXMotionAction(h, 0));
         }
 
         /*

@@ -843,9 +843,9 @@ public class Level {
      * @param onUpAction      The action to execute once any time the button is released
      * @return The control, so we can do more with it as needed.
      */
-    public Control addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
-        // make the control
-        final Control c = new Control(this, imgName, x, y, width, height);
+    public BaseActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
+        BaseActor c = new BaseActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
@@ -862,8 +862,9 @@ public class Level {
             }
         };
         // Put the control and events in the appropriate lists
-        mGame.mManager.mHud.mControls.add(c);
-        mGame.mManager.mHud.mToggleControls.add(c);
+        c.mToggleHandler.mSource = c;
+        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.mToggleControls2.add(c);
         mGame.mManager.mWorld.mRepeatEvents.add(whileDownAction);
         return c;
     }

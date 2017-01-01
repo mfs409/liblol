@@ -1,6 +1,5 @@
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -37,6 +36,7 @@ class HudScene extends LolScene {
 
     /// Toggle Controls
     final ArrayList<Control> mToggleControls;
+    final ArrayList<BaseActor> mToggleControls2;
 
     /**
      * Create a new heads-up display by providing the dimensions for its camera
@@ -54,16 +54,18 @@ class HudScene extends LolScene {
 
         mControls2 = new ArrayList<>();
         mTapControls2 = new ArrayList<>();
+        mToggleControls2 = new ArrayList<>();
     }
 
-    void reportTouch(Vector3 touchVec, Config config) {
-        mCamera.unproject(touchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Lol.message(config, "Screen Coordinates", touchVec.x + ", " + touchVec.y);
+    void reportTouch(float x, float y) {
+        mCamera.unproject(mTouchVec.set(x, y, 0));
+        Lol.message(mConfig, "Screen Coordinates", mTouchVec.x + ", " + mTouchVec.y);
     }
 
     /**
-     * @param sb
-     * @param delta TODO: switch the Timer so that we can use /delta/
+     * @param delta
+     *
+     * TODO: switch the Timer so that we can use /delta/
      */
     boolean render(SpriteBatch sb, float delta) {
         mCamera.update();
@@ -127,12 +129,10 @@ class HudScene extends LolScene {
             }
         }
         mHitActor = null;
-        mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
-        if (mHitActor != null && mHitActor.mTapHandler != null)
-            return mHitActor.mTapHandler.go(x, y);
-        return false;
+        world.mCamera.unproject(mTouchVec.set(x, y, 0));
+        return mHitActor != null && mHitActor.mTapHandler != null && mHitActor.mTapHandler.go(mTouchVec.x, mTouchVec.y);
     }
 
     boolean handlePan(float x, float y, float deltaX, float deltaY, MainScene world) {
@@ -154,8 +154,9 @@ class HudScene extends LolScene {
         for (Control c : mPanControls) {
             if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
                 world.mCamera.unproject(mTouchVec.set(x, y, 0));
-                c.mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
+                if (c.mPanStopHandler != null) {
+                    return c.mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
+                }
             }
         }
         return false;
@@ -192,6 +193,15 @@ class HudScene extends LolScene {
                 return true;
             }
         }
+
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
+        if (mHitActor != null && mHitActor.mToggleHandler != null) {
+            mHitActor.mToggleHandler.isUp = false;
+            return mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
+        }
         return false;
     }
 
@@ -204,6 +214,14 @@ class HudScene extends LolScene {
                 c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
                 return true;
             }
+        }
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
+        if (mHitActor != null && mHitActor.mToggleHandler != null) {
+            mHitActor.mToggleHandler.isUp = true;
+            return mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }

@@ -201,7 +201,6 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            Level level = mLevel;
             // Give each pop-up scene a chance to go the tap
             if (mManager.mWinScene.onTap(x, y, Lol.this))
                 return true;
@@ -290,7 +289,6 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            Level level = mLevel;
             return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleDown(screenX, screenY);
         }
 
@@ -304,7 +302,6 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            Level level = mLevel;
             // check if we down-pressed a control
             return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleUp(screenX, screenY);
 
@@ -319,7 +316,6 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
-            Level level = mLevel;
             return mManager.mWorld.handleDrag(screenX, screenY);
         }
     }
@@ -393,14 +389,14 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void render() {
-        // Check for back press
-        handleKeyDown();
-
         // Draw the current scene
-        if (mLevel == null)
+        if (mManager == null)
             return;
 
         float delta = Gdx.graphics.getDeltaTime();
+
+        // Check for back press
+        handleKeyDown();
 
         // Make sure the music is playing... Note that we start music before the
         // PreScene shows
@@ -410,9 +406,10 @@ public class Lol implements ApplicationListener {
         // this is very useful when trying to adjust screen coordinates
         if (mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
-                mManager.mHud.reportTouch(mManager.mWorld.mTouchVec, mConfig);
-                mManager.mWorld.mCamera.unproject(mManager.mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Lol.message(mConfig, "World Coordinates", mManager.mWorld.mTouchVec.x + ", " + mManager.mWorld.mTouchVec.y);
+                float x = Gdx.input.getX();
+                float y = Gdx.input.getY();
+                mManager.mHud.reportTouch(x, y);
+                mManager.mWorld.reportTouch(x, y);
             }
         }
 
