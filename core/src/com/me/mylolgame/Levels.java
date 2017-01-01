@@ -123,7 +123,7 @@ public class Levels implements ScreenManager {
             // white). We'll write our text in the Arial font, with a size of 32
             // pt. The "\n" in the middle of the text causes a line break. Note
             // that "arial.ttf" must be in your android game's assets folder.
-            level.getPreScene().addText("Reach the destination\nto win this level.", 50, 50, "#FFFFFF", "arial.ttf", 32);
+            level.getPreScene().addText("Reach the destination\nto win this level.", 50/20f, 50/20f, "#FFFFFF", "arial.ttf", 32);
         }
 
         /*
@@ -189,7 +189,7 @@ public class Levels implements ScreenManager {
             // Let's show msg1.png instead of text. Note that we had to
             // register it in registerMedia(), and that we're stretching it
             // slightly, since its dimensions are 460x320
-            level.getPreScene().addImage("msg1.png", 0, 0, 960, 640);
+            level.getPreScene().addImage("msg1.png", 0, 0, 960/20f, 640/20f);
         }
 
         /*
@@ -287,7 +287,7 @@ public class Levels implements ScreenManager {
             level.getPreScene().addText("Avoid the enemy and\nreach the destination", "#FFFFFF", "arial.ttf", 20);
 
             // put some extra text on the level.getLoseScene()
-            level.getPreScene().addText("(the enemy is red)", 5, 5, "#32C87A", "arial.ttf", 10);
+            level.getPreScene().addText("(the enemy is red)", 5/20f, 5/20f, "#32C87A", "arial.ttf", 10);
 
             // draw an enemy
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -317,7 +317,7 @@ public class Levels implements ScreenManager {
             level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             level.setVictoryDestination(1);
             level.getPreScene()
-                    .addText("Avoid the enemy and\nreach the destination", 50, 50, "#FFFFFF", "arial.ttf", 20);
+                    .addText("Avoid the enemy and\nreach the destination", 50/20f, 50/20f, "#FFFFFF", "arial.ttf", 20);
 
             // draw an enemy that can move
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -1937,7 +1937,7 @@ public class Levels implements ScreenManager {
 
 
             level.enableTilt(10, 10);
-            level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50, 50, "#FFFFFF",
+            level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50/20f, 50/20f, "#FFFFFF",
                     "arial.ttf", 32);
             level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 

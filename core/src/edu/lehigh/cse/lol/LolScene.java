@@ -172,14 +172,16 @@ abstract class LolScene {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    Renderable makeText(final int x, final int y, final String message, final String fontColor, String fontName, int size) {
+    Renderable makeText(final float x, final float y, final String message, final String fontColor, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
+                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
                 bf.setColor(Color.valueOf(fontColor));
                 mGlyphLayout.setText(bf, message);
                 bf.draw(sb, message, x, y + mGlyphLayout.height);
+                bf.getData().setScale(1);
             }
         };
     }
@@ -193,23 +195,23 @@ abstract class LolScene {
      * @param size     The font size
      * @return A Renderable of the text
      */
-    // TODO: this is broken: if we have a non-1 pixel-to-meter ratio, then we aren't centering well
-    //       we should center on a provided x/y coordinate, and we need to decide how to handle
-    //       pixel ratios
     Renderable makeTextCentered(float centerX, float centerY, final String message, final String fontColor, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
+        bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
         mGlyphLayout.setText(bf, message);
+        bf.getData().setScale(1);
         final float x = centerX / 2 - mGlyphLayout.width / 2;
         final float y = centerY / 2 + mGlyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
+                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
                 bf.setColor(Color.valueOf(fontColor));
                 bf.draw(sb, message, x, y);
+                bf.getData().setScale(1);
             }
         };
     }
-
 
     /**
      * A helper method to draw text nicely. In GDX, we draw everything by giving
@@ -223,8 +225,10 @@ abstract class LolScene {
      * @param sb      The SpriteBatch used to render the text
      */
     void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+        bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
         mGlyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + mGlyphLayout.height);
+        bf.getData().setScale(1);
     }
 
     /**

@@ -27,7 +27,6 @@ class HudScene extends LolScene {
     final ArrayList<Control> mTapControls;
     final ArrayList<BaseActor> mTapControls2;
 
-
     /// Controls that have a pan event
     final ArrayList<Control> mPanControls;
 

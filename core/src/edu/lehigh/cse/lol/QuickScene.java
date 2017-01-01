@@ -199,7 +199,7 @@ abstract public class QuickScene extends LolScene {
      * @param fontName The font file to use
      * @param size     The size of the text
      */
-    public void addText(String text, int x, int y, String fontColor, String fontName, int size) {
+    public void addText(String text, float x, float y, String fontColor, String fontName, int size) {
         mSprites.add(makeText(x, y, text, fontColor, fontName, size));
     }
 
@@ -219,7 +219,7 @@ abstract public class QuickScene extends LolScene {
      * @param width   Width of the image
      * @param height  Height of the image
      */
-    public void addImage(String imgName, int x, int y, int width, int height) {
+    public void addImage(String imgName, float x, float y, float width, float height) {
         mSprites.add(makePicture(x, y, width, height, imgName));
     }
 
