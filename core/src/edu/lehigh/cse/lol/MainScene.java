@@ -4,20 +4,12 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
@@ -87,7 +79,7 @@ class MainScene extends LolScene {
     MainScene(Config config, Media media, Lol game) {
         // MainScene operates in meters, not pixels, so we configure the world and camera (in the
         // constructor) using meter dimensions
-        super(config.mWidth / config.PIXEL_METER_RATIO, config.mHeight / config.PIXEL_METER_RATIO, media, config);
+        super(media, config);
 
         // clear any timers
         Timer.instance().clear();
@@ -518,9 +510,9 @@ class MainScene extends LolScene {
     }
 
     boolean handleDrag(float screenX, float screenY) {
-        if (mHitActor != null && mHitActor.mDragHandler != null) {
+        if (mHitActor != null && ((Actor)mHitActor).mDragHandler != null) {
             mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-            return mHitActor.mDragHandler.go(mTouchVec.x, mTouchVec.y);
+            return ((Actor)mHitActor).mDragHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }

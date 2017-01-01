@@ -74,7 +74,7 @@ public class BaseActor extends Renderable {
     private Animation mDisappearAnimation;
 
     /// Animation support: the dimensions of the disappearance animation
-    Vector2 mDisappearAnimateSize;
+    private Vector2 mDisappearAnimateSize;
 
     /// A temporary vertex that we use when resizing
     private Vector2 mTmpVert = new Vector2();

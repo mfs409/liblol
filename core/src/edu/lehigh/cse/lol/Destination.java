@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -31,29 +31,18 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Destinations are actors that the hero should try to reach. When a hero
- * reaches a destination, the hero disappears, and the score updates.
+ * Destinations are Actors that the Hero should try to reach. When a Hero reaches a destination, the
+ * Hero disappears, and the score updates.
  */
 public class Destination extends Actor {
-    /**
-     * number of heroes who can fit at /this/ destination
-     */
+    /// the number of heroes who can fit at /this/ destination
     int mCapacity;
-
-    /**
-     * number of heroes already in /this/ destination
-     */
+    /// the number of heroes already in /this/ destination
     int mHolding;
-
-    /**
-     * number of type each type of goodies that must be collected before this
-     * destination accepts any heroes
-     */
-    int[] mActivation = new int[4];
-
-    /**
-     * Sound to play when a hero arrives at this destination
-     */
+    /// the number of type each type of Goodie that must be collected before this Destination
+    /// accepts any heroes
+    int[] mActivation;
+    /// Sound to play when a hero arrives at this destination
     Sound mArrivalSound;
 
     /**
@@ -64,15 +53,18 @@ public class Destination extends Actor {
      * @param height  Height of this destination
      * @param imgName Name of the image to display
      */
-    protected Destination(MainScene level, Score score, float width, float height, String imgName) {
-        super(level, score, imgName, width, height);
+    Destination(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
+        mActivation = new int[4];
     }
 
     /**
-     * Destinations are the last collision detection actor, so their collision
-     * detection code does nothing.
+     * Code to run when an Destination collides with an Actor.
+     *
+     * NB: Destinations are at the end of the collision hierarchy, so we don't do anything when
+     *     they are in a collision that hasn't already been handled by a higher-ranked Actor.
      *
      * @param other   Other object involved in this collision
      * @param contact A description of the collision between this destination and

@@ -27,25 +27,16 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 /**
  * Actor is the base class upon which every game actor is built. Every actor has
@@ -57,28 +48,18 @@ import com.badlogic.gdx.utils.Timer.Task;
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class Actor extends BaseActor {
-    /// The score object for the level in which this Actor exists
-    final Score mScore;
+    /// A reference to the top-level Lol object
+    final Lol mGame;
 
-
-
-    /**
-     * Some actors run custom code when they are touched. This is a reference to
-     * the code to run.
-     */
+    /// Some actors run custom code when they are touched. This is a reference to the code to run.
     TouchEventHandler mDragHandler;
 
-    /**
-     * When the camera follows the actor without centering on it, this gives us
-     * the difference between the actor and camera
-     */
+    /// When the camera follows the actor without centering on it, this gives us the difference
+    /// between the actor and camera
     Vector2 mCameraOffset = new Vector2(0, 0);
 
-    /**
-     * Sometimes an actor collides with another actor, and should stick to it.
-     * In that case, we create a pair of joints to connect the two actors. This
-     * is the Distance joint that connects them
-     */
+    /// Sometimes an actor collides with another actor, and should stick to it. In that case, we
+    /// create a pair of joints to connect the two actors. This is the Distance joint that connects them
     DistanceJoint mDJoint;
 
     /**
@@ -105,6 +86,7 @@ public abstract class Actor extends BaseActor {
      * A vector for computing hover placement
      */
     protected Vector3 mHover = new Vector3();
+
     /**
      * Track if Heros stick to this Actor. The array has 4 positions,
      * corresponding to top, right, bottom, left
@@ -150,9 +132,9 @@ public abstract class Actor extends BaseActor {
      * @param width   The width
      * @param height  The height
      */
-    Actor(MainScene scene, Score score, String imgName, float width, float height) {
+    Actor(Lol game, MainScene scene, String imgName, float width, float height) {
         super(scene, imgName, width, height);
-        mScore = score;
+        mGame = game;
     }
 
     /**
@@ -205,13 +187,13 @@ public abstract class Actor extends BaseActor {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (((MainScene)mScene).mTilt.mAccelActors.contains(this))
+        if (((MainScene) mScene).mTilt.mAccelActors.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        ((MainScene)mScene).mTilt.mAccelActors.add(this);
+        ((MainScene) mScene).mTilt.mAccelActors.add(this);
         // turn off sensor behavior, so this collides with stuff...
         setCollisionsEnabled(true);
     }
@@ -232,8 +214,7 @@ public abstract class Actor extends BaseActor {
      * @param callback           The callback to run when the actor is touched
      */
     public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                 int activationGoodies4, final boolean disappear, final Level level,
-                                 final LolCallback callback) {
+                                 int activationGoodies4, final boolean disappear, final LolCallback callback) {
         final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
         // set the code to run on touch
@@ -242,7 +223,7 @@ public abstract class Actor extends BaseActor {
                 // check if we've got enough goodies
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= touchCallbackActivation[i] <= level.mScore.mGoodiesCollected[i];
+                    match &= touchCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
                 // if so, run the callback
                 if (match) {
                     if (disappear)
@@ -254,8 +235,6 @@ public abstract class Actor extends BaseActor {
             }
         };
     }
-
-
 
 
     /**
@@ -316,6 +295,7 @@ public abstract class Actor extends BaseActor {
                 // set a screen handler to detect when/where to move the actor
                 mScene.mTapHandlers.add(new TouchEventHandler() {
                     boolean mEnabled = true;
+
                     public boolean go(float worldX, float worldY) {
                         if (!mEnabled || !mVisible)
                             return false;
@@ -344,7 +324,7 @@ public abstract class Actor extends BaseActor {
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
 
-        ((MainScene)mScene).mFlingHandlers.add(new TouchEventHandler() {
+        ((MainScene) mScene).mFlingHandlers.add(new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // note: may need to disable hovering
                 if (mScene.mHitActor == Actor.this) {
@@ -436,10 +416,10 @@ public abstract class Actor extends BaseActor {
                         return true;
                     }
                 };
-                ((MainScene)mScene).mUpHandlers.add(up);
-                ((MainScene)mScene).mPanStopHandlers.add(up);
-                ((MainScene)mScene).mDownHandlers.add(down);
-                ((MainScene)mScene).mPanHandlers.add(down);
+                ((MainScene) mScene).mUpHandlers.add(up);
+                ((MainScene) mScene).mPanStopHandlers.add(up);
+                ((MainScene) mScene).mDownHandlers.add(down);
+                ((MainScene) mScene).mPanHandlers.add(down);
                 return true;
             }
         };
@@ -504,7 +484,7 @@ public abstract class Actor extends BaseActor {
                                 final float velocityY) {
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                ((MainScene)mScene).mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
+                ((MainScene) mScene).mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };

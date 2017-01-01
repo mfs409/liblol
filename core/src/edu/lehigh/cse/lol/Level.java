@@ -11,18 +11,23 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * A Level is an interactive portion of the game. Levels can be infinite, or
- * they can have an end goal. Level has two components. One is the part that is
- * visible to the game designer, which involves some limited control over the
- * camera and music, and the ability to request that custom code run after a
- * fixed amount of time. These timers can also be attached to a specific enemy,
- * if desired. Internally, Level is responsible for managing a set of cameras
- * used to display everything that appears on the screen. It is also responsible
- * for keeping track of everything on the screen (Actors, Controls, and
- * Displays), so we can draw the game correctly.
+ * Level provides a broad, public, declarative interface to the core functionality of LibLOL.
  * <p>
- * Note that everything in Lol is a level... the splash screen, the choosers,
- * the help, and the game levels themselves.
+ * Game designers will spend most of their time in the <code>display</code> function of the various
+ * <code>ScreenManager</code> objects that comprise the game (i.e., Chooser, Help, Levels, Splash,
+ * Store).  Within that function, a <code>Level</code> object is available.  It corresponds to a
+ * pre-configured, blank, interactive portion of the game.  By calling functions on the level, a
+ * programmer can realize their game.
+ * <p>
+ * Conceptually, a Level consists of many screens:
+ * <ul>
+ *  <li>MainScreen: This is where the Actors of the game are drawn</li>
+ * - <li>Hud: A heads-up display onto which text and input controls can be drawn</li>
+ * - <li>PreScene: A quick scene to display before the level starts</li>
+ * - <li>PostScene (WinScene or LoseScene): Two quick scenes to display at the end of the level</li>
+ * - <li>PauseScene: A scene to show when the game is paused</li>
+ * </ul>
+ * <p>
  */
 public class Level {
     /// A reference to the game object, so we can access session facts and the state machine
@@ -34,57 +39,15 @@ public class Level {
     /// A reference to the object that stores all of the sounds and images we use in the game
     protected final Media mMedia;
 
-    /// The physics world in which all actors exist
-    final MainScene mWorld;
-
-    /// A heads-up display, for writing Display and Control objects
-    final HudScene mHud;
-
-    /// A reference to the score object, for tracking winning and losing
-    final Score mScore;
-
-    /// The scene to show when the level is created (if any)
-    final QuickScene mPreScene;
-
-    /// The scene to show when the level is won
-    final QuickScene mWinScene;
-
-    /// The scene to show when the level is lost
-    final QuickScene mLoseScene;
-
-    /// The scene to show when the level is paused (if any)
-    final QuickScene mPauseScene;
-
-    /// The background layers
-    final ParallaxScene mBackground;
-
-    /// The foreground layers
-    final ParallaxScene mForeground;
-
     /**
-     * Construct a level. This is mostly using defaults, so the main work is in
-     * camera setup
+     * Construct a level.  Since Level is merely a facade, this method need only store references
+     * to the actual game objects.
      */
     Level(Config config, Media media, Lol game) {
         // save game configuration information
         mGame = game;
         mConfig = config;
         mMedia = media;
-
-        // Create the eight different scenes and a score object
-        mWorld = new MainScene(config, media, game);
-        mWinScene = QuickScene.makeWinScene(mWorld, media, mConfig);
-        mLoseScene = QuickScene.makeLoseScene(mWorld, media, mConfig);
-        mPreScene = QuickScene.makePreScene(mWorld, media, mConfig);
-        mPauseScene = QuickScene.makePauseScene(mWorld, media, mConfig);
-        mHud = new HudScene(media, mConfig);
-        mBackground = new ParallaxScene(mConfig);
-        mForeground = new ParallaxScene(mConfig);
-        mScore = new Score(this);
-
-        // When debug mode is on, print the frames per second
-        if (config.mShowDebugBoxes)
-            addDisplay(800, 15, config.mDefaultFontFace, config.mDefaultFontColor, 12, "fps: ", "", DisplayFPS);
     }
 
     /**
@@ -96,7 +59,7 @@ public class Level {
      * @param height height of the camera
      */
     public void setCameraBounds(float width, float height) {
-        mWorld.mCamBound.set(width, height);
+        mGame.mManager.mWorld.mCamBound.set(width, height);
 
         // warn on strange dimensions
         if (width < mConfig.mWidth / mConfig.PIXEL_METER_RATIO)
@@ -112,7 +75,7 @@ public class Level {
      * @param actor The actor the camera should chase
      */
     public void setCameraChase(Actor actor) {
-        mWorld.mChaseActor = actor;
+        mGame.mManager.mWorld.mChaseActor = actor;
     }
 
     /**
@@ -121,7 +84,7 @@ public class Level {
      * @param musicName Name of the Music file to play
      */
     public void setMusic(String musicName) {
-        mWorld.mMusic = mMedia.getMusic(musicName);
+        mGame.mManager.mWorld.mMusic = mMedia.getMusic(musicName);
     }
 
     /**
@@ -135,7 +98,7 @@ public class Level {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                if (!mScore.mGameOver)
+                if (!mGame.mManager.mGameOver)
                     callback.onEvent();
             }
         }, howLong);
@@ -152,7 +115,7 @@ public class Level {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                if (!mScore.mGameOver)
+                if (!mGame.mManager.mGameOver)
                     callback.onEvent();
             }
         }, howLong, interval);
@@ -179,7 +142,7 @@ public class Level {
                                 final float height, final int interval, final LolCallback onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        mWorld.mPanHandlers.add(new TouchEventHandler() {
+        mGame.mManager.mWorld.mPanHandlers.add(new TouchEventHandler() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -217,9 +180,9 @@ public class Level {
      * @param zoom The amount of zoom (1 is no zoom, &gt;1 zooms out)
      */
     public void setZoom(float zoom) {
-        mWorld.mCamera.zoom = zoom;
-        mBackground.mBgCam.zoom = zoom;
-        mForeground.mBgCam.zoom = zoom;
+        mGame.mManager.mWorld.mCamera.zoom = zoom;
+        mGame.mManager.mBackground.mBgCam.zoom = zoom;
+        mGame.mManager.mForeground.mBgCam.zoom = zoom;
     }
 
     /**
@@ -228,7 +191,7 @@ public class Level {
      * @param callback The code to run
      */
     public void setWinCallback(LolCallback callback) {
-        mScore.mWinCallback = callback;
+        mGame.mManager.mWinCallback = callback;
     }
 
     /**
@@ -237,7 +200,7 @@ public class Level {
      * @param callback The code to run
      */
     public void setLoseCallback(LolCallback callback) {
-        mScore.mLoseCallback = callback;
+        mGame.mManager.mLoseCallback = callback;
     }
 
 
@@ -246,7 +209,7 @@ public class Level {
      * collected.
      */
     public void incrementGoodiesCollected1() {
-        mScore.mGoodiesCollected[0]++;
+        mGame.mManager.mGoodiesCollected[0]++;
     }
 
     /**
@@ -254,7 +217,7 @@ public class Level {
      * collected.
      */
     public void incrementGoodiesCollected2() {
-        mScore.mGoodiesCollected[1]++;
+        mGame.mManager.mGoodiesCollected[1]++;
     }
 
     /**
@@ -262,7 +225,7 @@ public class Level {
      * collected.
      */
     public void incrementGoodiesCollected3() {
-        mScore.mGoodiesCollected[2]++;
+        mGame.mManager.mGoodiesCollected[2]++;
     }
 
     /**
@@ -270,7 +233,7 @@ public class Level {
      * collected.
      */
     public void incrementGoodiesCollected4() {
-        mScore.mGoodiesCollected[3]++;
+        mGame.mManager.mGoodiesCollected[3]++;
     }
 
     /**
@@ -279,7 +242,7 @@ public class Level {
      * @return The number of goodies collected.
      */
     public int getGoodiesCollected1() {
-        return mScore.mGoodiesCollected[0];
+        return mGame.mManager.mGoodiesCollected[0];
     }
 
     /**
@@ -288,7 +251,7 @@ public class Level {
      * @param value The new value
      */
     public void setGoodiesCollected1(int value) {
-        mScore.mGoodiesCollected[0] = value;
+        mGame.mManager.mGoodiesCollected[0] = value;
     }
 
     /**
@@ -297,7 +260,7 @@ public class Level {
      * @return The number of goodies collected.
      */
     public int getGoodiesCollected2() {
-        return mScore.mGoodiesCollected[1];
+        return mGame.mManager.mGoodiesCollected[1];
     }
 
     /**
@@ -306,7 +269,7 @@ public class Level {
      * @param value The new value
      */
     public void setGoodiesCollected2(int value) {
-        mScore.mGoodiesCollected[1] = value;
+        mGame.mManager.mGoodiesCollected[1] = value;
     }
 
     /**
@@ -315,7 +278,7 @@ public class Level {
      * @return The number of goodies collected.
      */
     public int getGoodiesCollected3() {
-        return mScore.mGoodiesCollected[2];
+        return mGame.mManager.mGoodiesCollected[2];
     }
 
     /**
@@ -324,7 +287,7 @@ public class Level {
      * @param value The new value
      */
     public void setGoodiesCollected3(int value) {
-        mScore.mGoodiesCollected[2] = value;
+        mGame.mManager.mGoodiesCollected[2] = value;
     }
 
     /**
@@ -333,7 +296,7 @@ public class Level {
      * @return The number of goodies collected.
      */
     public int getGoodiesCollected4() {
-        return mScore.mGoodiesCollected[3];
+        return mGame.mManager.mGoodiesCollected[3];
     }
 
     /**
@@ -342,7 +305,7 @@ public class Level {
      * @param value The new value
      */
     public void setGoodiesCollected4(int value) {
-        mScore.mGoodiesCollected[3] = value;
+        mGame.mManager.mGoodiesCollected[3] = value;
     }
 
     /**
@@ -351,8 +314,8 @@ public class Level {
      * defeat all enemies before more are are created.
      */
     public void setVictoryEnemyCount() {
-        mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
-        mScore.mVictoryEnemyCount = -1;
+        mGame.mManager.mVictoryType = LolManager.VictoryType.ENEMYCOUNT;
+        mGame.mManager.mVictoryEnemyCount = -1;
     }
 
     /**
@@ -361,8 +324,8 @@ public class Level {
      * @param howMany The number of enemies that must be defeated to win the level
      */
     public void setVictoryEnemyCount(int howMany) {
-        mScore.mVictoryType = Score.VictoryType.ENEMYCOUNT;
-        mScore.mVictoryEnemyCount = howMany;
+        mGame.mManager.mVictoryType = LolManager.VictoryType.ENEMYCOUNT;
+        mGame.mManager.mVictoryEnemyCount = howMany;
     }
 
     /**
@@ -378,11 +341,11 @@ public class Level {
      *           level
      */
     public void setVictoryGoodies(int v1, int v2, int v3, int v4) {
-        mScore.mVictoryType = Score.VictoryType.GOODIECOUNT;
-        mScore.mVictoryGoodieCount[0] = v1;
-        mScore.mVictoryGoodieCount[1] = v2;
-        mScore.mVictoryGoodieCount[2] = v3;
-        mScore.mVictoryGoodieCount[3] = v4;
+        mGame.mManager.mVictoryType = LolManager.VictoryType.GOODIECOUNT;
+        mGame.mManager.mVictoryGoodieCount[0] = v1;
+        mGame.mManager.mVictoryGoodieCount[1] = v2;
+        mGame.mManager.mVictoryGoodieCount[2] = v3;
+        mGame.mManager.mVictoryGoodieCount[3] = v4;
     }
 
     /**
@@ -392,8 +355,8 @@ public class Level {
      * @param howMany Number of heroes that must reach destinations
      */
     public void setVictoryDestination(int howMany) {
-        mScore.mVictoryType = Score.VictoryType.DESTINATION;
-        mScore.mVictoryHeroCount = howMany;
+        mGame.mManager.mVictoryType = LolManager.VictoryType.DESTINATION;
+        mGame.mManager.mVictoryHeroCount = howMany;
     }
 
     /**
@@ -402,14 +365,14 @@ public class Level {
      * @param delta The amount of time to add before the timer expires
      */
     public void updateTimerExpiration(float delta) {
-        mScore.mLoseCountDownRemaining += delta;
+        mGame.mManager.mLoseCountDownRemaining += delta;
     }
 
     /**
      * Report the total distance the hero has traveled
      */
     public int getDistance() {
-        return mScore.mDistance;
+        return mGame.mManager.mDistance;
     }
 
     /**
@@ -417,16 +380,16 @@ public class Level {
      */
     public int getStopwatch() {
         // Inactive stopwatch should return 0
-        if (mScore.mStopWatchProgress == -100)
+        if (mGame.mManager.mStopWatchProgress == -100)
             return 0;
-        return (int) mScore.mStopWatchProgress;
+        return (int) mGame.mManager.mStopWatchProgress;
     }
 
     /**
      * Report the number of enemies that have been defeated
      */
     public int getEnemiesDefeated() {
-        return mScore.mEnemiesDefeated;
+        return mGame.mManager.mEnemiesDefeated;
     }
 
     /**
@@ -436,7 +399,7 @@ public class Level {
      * game
      */
     public void winLevel() {
-        mScore.endLevel(true);
+        mGame.mManager.endLevel(true);
     }
 
     /**
@@ -446,7 +409,7 @@ public class Level {
      * game
      */
     public void loseLevel() {
-        mScore.endLevel(false);
+        mGame.mManager.endLevel(false);
     }
 
     /**
@@ -456,7 +419,7 @@ public class Level {
      * @param newYGravity The new Y gravity
      */
     public void resetGravity(float newXGravity, float newYGravity) {
-        mWorld.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
+        mGame.mManager.mWorld.mWorld.setGravity(new Vector2(newXGravity, newYGravity));
     }
 
     /**
@@ -467,7 +430,7 @@ public class Level {
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
     public void enableTilt(float xGravityMax, float yGravityMax) {
-        mWorld.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+        mGame.mManager.mWorld.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
@@ -475,7 +438,7 @@ public class Level {
      * level
      */
     public void disableTilt() {
-        mWorld.mTilt.mGravityMax = null;
+        mGame.mManager.mWorld.mTilt.mGravityMax = null;
     }
 
     /**
@@ -488,7 +451,7 @@ public class Level {
      *               of the phone directly sets velocities
      */
     public void setTiltAsVelocity(boolean toggle) {
-        mWorld.mTilt.mTiltVelocityOverride = toggle;
+        mGame.mManager.mWorld.mTilt.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -500,7 +463,7 @@ public class Level {
      *                   accelerometer less sensitive
      */
     public void setGravityMultiplier(float multiplier) {
-        mWorld.mTilt.mMultiplier = multiplier;
+        mGame.mManager.mWorld.mTilt.mMultiplier = multiplier;
     }
 
     /**
@@ -519,7 +482,7 @@ public class Level {
     public final TextProducer DisplayGoodies1 = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mScore.mGoodiesCollected[0];
+            return "" + mGame.mManager.mGoodiesCollected[0];
         }
     };
 
@@ -529,7 +492,7 @@ public class Level {
     public final TextProducer DisplayGoodies2 = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mScore.mGoodiesCollected[1];
+            return "" + mGame.mManager.mGoodiesCollected[1];
         }
     };
 
@@ -539,7 +502,7 @@ public class Level {
     public final TextProducer DisplayGoodies3 = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mScore.mGoodiesCollected[2];
+            return "" + mGame.mManager.mGoodiesCollected[2];
         }
     };
 
@@ -549,7 +512,7 @@ public class Level {
     public final TextProducer DisplayGoodies4 = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mScore.mGoodiesCollected[3];
+            return "" + mGame.mManager.mGoodiesCollected[3];
         }
     };
 
@@ -559,7 +522,7 @@ public class Level {
     public final TextProducer DisplayLoseCountdown = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + (int) mScore.mLoseCountDownRemaining;
+            return "" + (int) mGame.mManager.mLoseCountDownRemaining;
         }
     };
 
@@ -569,7 +532,7 @@ public class Level {
     public final TextProducer DisplayWinCountdown = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + (int) mScore.mWinCountRemaining;
+            return "" + (int) mGame.mManager.mWinCountRemaining;
         }
     };
 
@@ -579,7 +542,7 @@ public class Level {
     public final TextProducer DisplayEnemiesDefeated = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mScore.mEnemiesDefeated;
+            return "" + mGame.mManager.mEnemiesDefeated;
         }
     };
 
@@ -589,7 +552,7 @@ public class Level {
     public final TextProducer DisplayStopwatch = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + (int) mScore.mStopWatchProgress;
+            return "" + (int) mGame.mManager.mStopWatchProgress;
         }
     };
 
@@ -599,7 +562,7 @@ public class Level {
     public final TextProducer DisplayRemainingProjectiles = new TextProducer() {
         @Override
         public String makeText() {
-            return "" + mWorld.mProjectilePool.mProjectilesRemaining;
+            return "" + mGame.mManager.mWorld.mProjectilePool.mProjectilesRemaining;
         }
     };
 
@@ -675,8 +638,8 @@ public class Level {
         return new TextProducer() {
             @Override
             public String makeText() {
-                mScore.mDistance = (int) actor.getXPosition();
-                return "" + mScore.mDistance;
+                mGame.mManager.mDistance = (int) actor.getXPosition();
+                return "" + mGame.mManager.mDistance;
             }
         };
     }
@@ -697,10 +660,10 @@ public class Level {
             void render(SpriteBatch sb, float delta) {
                 mFont.setColor(mColor);
                 String txt = prefix + tp.makeText() + suffix;
-                mWorld.drawTextTransposed(x, y, txt, mFont, sb);
+                mGame.mManager.mWorld.drawTextTransposed(x, y, txt, mFont, sb);
             }
         };
-        mHud.addActor(d, 0);
+        mGame.mManager.mHud.addActor(d, 0);
         return d;
     }
 
@@ -713,8 +676,8 @@ public class Level {
      */
     public void setLoseCountdown(float timeout, String text) {
         // Once the Lose CountDown is not -100, it will start counting down
-        this.mScore.mLoseCountDownRemaining = timeout;
-        this.mScore.mLoseCountDownText = text;
+        this.mGame.mManager.mLoseCountDownRemaining = timeout;
+        this.mGame.mManager.mLoseCountDownText = text;
     }
 
     /**
@@ -725,8 +688,8 @@ public class Level {
      */
     public void setWinCountdown(float timeout, String text) {
         // Once the Win CountDown is not -100, it will start counting down
-        this.mScore.mWinCountRemaining = timeout;
-        this.mScore.mWinCountText = text;
+        this.mGame.mManager.mWinCountRemaining = timeout;
+        this.mGame.mManager.mWinCountText = text;
     }
 
     /**
@@ -735,7 +698,7 @@ public class Level {
      * @param newVal
      */
     public void setStopwatch(float newVal) {
-        this.mScore.mStopWatchProgress = newVal;
+        this.mGame.mManager.mStopWatchProgress = newVal;
     }
 
     /**
@@ -750,12 +713,13 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public Control addTapControl(int x, int y, int width, int height, String imgName, final TouchEventHandler action) {
-        Control c = new Control(this, imgName, x, y, width, height);
+    public BaseActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
+        BaseActor c = new BaseActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mTapHandler = action;
-        action.mAttachedControl = c;
-        mHud.mControls.add(c);
-        mHud.mTapControls.add(c);
+        action.mSource = c;
+        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.mTapControls2.add(c);
         return c;
     }
 
@@ -802,7 +766,7 @@ public class Level {
     public TouchEventHandler ThrowFixedAction(final Hero hero, final float offsetX, final float offsetY, final float velocityX, final float velocityY) {
         return new TouchEventHandler() {
             public boolean go(float x, float y) {
-                mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+                mGame.mManager.mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
                 return true;
             }
         };
@@ -822,7 +786,7 @@ public class Level {
     public TouchEventHandler ThrowDirectionalAction(final Hero hero, final float offsetX, final float offsetY) {
         return new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                mWorld.mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
+                mGame.mManager.mWorld.mProjectilePool.throwAt(hero.mBody.getPosition().x, hero.mBody.getPosition().y,
                         worldX, worldY, hero, offsetX, offsetY);
                 return true;
             }
@@ -837,11 +801,11 @@ public class Level {
     public TouchEventHandler ZoomOutAction(final float maxZoom) {
         return new TouchEventHandler() {
             public boolean go(float x, float y) {
-                float curzoom = mWorld.mCamera.zoom;
+                float curzoom = mGame.mManager.mWorld.mCamera.zoom;
                 if (curzoom < maxZoom) {
-                    mWorld.mCamera.zoom *= 2;
-                    mBackground.mBgCam.zoom *= 2;
-                    mForeground.mBgCam.zoom *= 2;
+                    mGame.mManager.mWorld.mCamera.zoom *= 2;
+                    mGame.mManager.mBackground.mBgCam.zoom *= 2;
+                    mGame.mManager.mForeground.mBgCam.zoom *= 2;
                 }
                 return true;
             }
@@ -856,11 +820,11 @@ public class Level {
     public TouchEventHandler ZoomInAction(final float minZoom) {
         return new TouchEventHandler() {
             public boolean go(float x, float y) {
-                float curzoom = mWorld.mCamera.zoom;
+                float curzoom = mGame.mManager.mWorld.mCamera.zoom;
                 if (curzoom > minZoom) {
-                    mWorld.mCamera.zoom /= 2;
-                    mBackground.mBgCam.zoom /= 2;
-                    mForeground.mBgCam.zoom /= 2;
+                    mGame.mManager.mWorld.mCamera.zoom /= 2;
+                    mGame.mManager.mBackground.mBgCam.zoom /= 2;
+                    mGame.mManager.mForeground.mBgCam.zoom /= 2;
                 }
                 return true;
             }
@@ -898,9 +862,9 @@ public class Level {
             }
         };
         // Put the control and events in the appropriate lists
-        mHud.mControls.add(c);
-        mHud.mToggleControls.add(c);
-        mWorld.mRepeatEvents.add(whileDownAction);
+        mGame.mManager.mHud.mControls.add(c);
+        mGame.mManager.mHud.mToggleControls.add(c);
+        mGame.mManager.mWorld.mRepeatEvents.add(whileDownAction);
         return c;
     }
 
@@ -1036,7 +1000,7 @@ public class Level {
                 long now = System.currentTimeMillis();
                 if (mLastThrow + milliDelay < now) {
                     mLastThrow = now;
-                    mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
+                    mGame.mManager.mWorld.mProjectilePool.throwFixed(hero, offsetX, offsetY, velocityX, velocityY);
                 }
             }
         };
@@ -1091,12 +1055,12 @@ public class Level {
                 return c.mToggleHandler.isHolding;
             }
         };
-        mHud.mControls.add(c);
+        mGame.mManager.mHud.mControls.add(c);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        mHud.mToggleControls.add(c);
-        mHud.mPanControls.add(c);
-        mWorld.mRepeatEvents.add(new LolAction() {
+        mGame.mManager.mHud.mToggleControls.add(c);
+        mGame.mManager.mHud.mPanControls.add(c);
+        mGame.mManager.mWorld.mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
             @Override
@@ -1105,7 +1069,7 @@ public class Level {
                     long now = System.currentTimeMillis();
                     if (mLastThrow + milliDelay < now) {
                         mLastThrow = now;
-                        mWorld.mProjectilePool.throwAt(h.mBody.getPosition().x,
+                        mGame.mManager.mWorld.mProjectilePool.throwAt(h.mBody.getPosition().x,
                                 h.mBody.getPosition().y, v.x, v.y, h, offsetX, offsetY);
                     }
                 }
@@ -1141,23 +1105,23 @@ public class Level {
 
         c.mPanHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
-                if (mWorld.mChaseActor != null) {
-                    c.mPanStopHandler.mAttachedActor = mWorld.mChaseActor;
-                    mWorld.mChaseActor = null;
+                if (mGame.mManager.mWorld.mChaseActor != null) {
+                    c.mPanStopHandler.mAttachedActor = mGame.mManager.mWorld.mChaseActor;
+                    mGame.mManager.mWorld.mChaseActor = null;
                 }
-                float x = mWorld.mCamera.position.x - deltaX * .1f
-                        * mWorld.mCamera.zoom;
-                float y = mWorld.mCamera.position.y + deltaY * .1f
-                        * mWorld.mCamera.zoom;
+                float x = mGame.mManager.mWorld.mCamera.position.x - deltaX * .1f
+                        * mGame.mManager.mWorld.mCamera.zoom;
+                float y = mGame.mManager.mWorld.mCamera.position.y + deltaY * .1f
+                        * mGame.mManager.mWorld.mCamera.zoom;
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
-                if (x > mWorld.mCamBound.x - mConfig.mWidth * mWorld.mCamera.zoom
+                if (x > mGame.mManager.mWorld.mCamBound.x - mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mWorld.mCamBound.x - mConfig.mWidth * mWorld.mCamera.zoom
+                    x = mGame.mManager.mWorld.mCamBound.x - mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
-                if (y > mWorld.mCamBound.y - mConfig.mHeight * mWorld.mCamera.zoom
+                if (y > mGame.mManager.mWorld.mCamBound.y - mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom
                         / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mWorld.mCamBound.y - mConfig.mHeight * mWorld.mCamera.zoom
+                    y = mGame.mManager.mWorld.mCamBound.y - mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom
                             / mConfig.PIXEL_METER_RATIO / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
@@ -1165,17 +1129,17 @@ public class Level {
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < mConfig.mWidth * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mConfig.mWidth * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
-                if (y < mConfig.mHeight * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mConfig.mHeight * mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (x < mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    x = mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (y < mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
+                    y = mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
 
                 // update the camera position
-                mWorld.mCamera.position.set(x, y, 0);
+                mGame.mManager.mWorld.mCamera.position.set(x, y, 0);
                 return true;
             }
         };
-        mHud.mPanControls.add(c);
+        mGame.mManager.mHud.mPanControls.add(c);
         return c;
     }
 
@@ -1198,7 +1162,7 @@ public class Level {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
                 // of storing the last zoom value
-                deltaX = mWorld.mCamera.zoom;
+                deltaX = mGame.mManager.mWorld.mCamera.zoom;
                 return true;
             }
         };
@@ -1207,12 +1171,12 @@ public class Level {
                 float ratio = initialDistance / distance;
                 float newZoom = c.mDownHandler.deltaX * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
-                    mWorld.mCamera.zoom = newZoom;
+                    mGame.mManager.mWorld.mCamera.zoom = newZoom;
                 // TODO: why do we return false?
                 return false;
             }
         };
-        mHud.mZoomControls.add(c);
+        mGame.mManager.mHud.mZoomControls.add(c);
         return c;
     }
 
@@ -1309,8 +1273,8 @@ public class Level {
             }
         };
         // add to hud
-        mHud.mControls.add(c);
-        mHud.mTapControls.add(c);
+        mGame.mManager.mHud.mControls.add(c);
+        mGame.mManager.mHud.mTapControls.add(c);
         return c;
     }
 
@@ -1367,8 +1331,8 @@ public class Level {
                 return true;
             }
         };
-        mHud.mControls.add(c);
-        mHud.mTapControls.add(c);
+        mGame.mManager.mHud.mControls.add(c);
+        mGame.mManager.mHud.mTapControls.add(c);
         return c;
     }
 
@@ -1385,7 +1349,7 @@ public class Level {
     public Control addImage(int x, int y, int width, int height, String imgName) {
         Control c = new Control(this, imgName, x, y, width, height);
         c.mIsTouchable = false;
-        mHud.mControls.add(c);
+        mGame.mManager.mHud.mControls.add(c);
         return c;
     }
 
@@ -1424,7 +1388,7 @@ public class Level {
                     dnCB.onEvent();
                 }
                 // toggle state
-                isHolding  = !isUp;
+                isHolding = !isUp;
                 return true;
             }
         };
@@ -1453,9 +1417,9 @@ public class Level {
                 return false;
             }
         };
-        mHud.mControls.add(c);
-        mHud.mPanControls.add(c);
-        mHud.mToggleControls.add(c);
+        mGame.mManager.mHud.mControls.add(c);
+        mGame.mManager.mHud.mPanControls.add(c);
+        mGame.mManager.mHud.mToggleControls.add(c);
         return c;
     }
 
@@ -1468,7 +1432,7 @@ public class Level {
      * @return The integer value corresponding to the last value stored
      */
     public int getLevelFact(String factName, int defaultVal) {
-        Integer i = mWorld.mLevelFacts.get(factName);
+        Integer i = mGame.mManager.mWorld.mLevelFacts.get(factName);
         if (i == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -1484,7 +1448,7 @@ public class Level {
      * @param factValue The integer value that is the fact being saved
      */
     public void putLevelFact(String factName, int factValue) {
-        mWorld.mLevelFacts.put(factName, factValue);
+        mGame.mManager.mWorld.mLevelFacts.put(factName, factValue);
     }
 
     /**
@@ -1496,7 +1460,7 @@ public class Level {
      * @return The integer value corresponding to the last value stored
      */
     public int getSessionFact(String factName, int defaultVal) {
-        Integer i = mGame.mSessionFacts.get(factName);
+        Integer i = mGame.mManager.mSessionFacts.get(factName);
         if (i == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + factName + "'");
             return defaultVal;
@@ -1512,7 +1476,7 @@ public class Level {
      * @param factValue The integer value that is the fact being saved
      */
     public void putSessionFact(String factName, int factValue) {
-        mGame.mSessionFacts.put(factName, factValue);
+        mGame.mManager.mSessionFacts.put(factName, factValue);
     }
 
     /**
@@ -1546,7 +1510,7 @@ public class Level {
      * @return The last Actor stored with this name
      */
     public Actor getLevelActor(String actorName) {
-        Actor actor = mWorld.mLevelActors.get(actorName);
+        Actor actor = mGame.mManager.mWorld.mLevelActors.get(actorName);
         if (actor == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -1562,7 +1526,7 @@ public class Level {
      * @param actor     The Actor that is the fact being saved
      */
     public void putLevelActor(String actorName, Actor actor) {
-        mWorld.mLevelActors.put(actorName, actor);
+        mGame.mManager.mWorld.mLevelActors.put(actorName, actor);
     }
 
     /**
@@ -1571,7 +1535,7 @@ public class Level {
      * @param color The color, formated as #RRGGBB
      */
     public void setBackgroundColor(String color) {
-        mBackground.mColor = Color.valueOf(color);
+        mGame.mManager.mBackground.mColor = Color.valueOf(color);
     }
 
     /**
@@ -1595,7 +1559,7 @@ public class Level {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mBackground.mLayers.add(pl);
+        mGame.mManager.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1616,7 +1580,7 @@ public class Level {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mBackground.mLayers.add(pl);
+        mGame.mManager.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1640,7 +1604,7 @@ public class Level {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mBackground.mLayers.add(pl);
+        mGame.mManager.mBackground.mLayers.add(pl);
     }
 
     /**
@@ -1663,7 +1627,7 @@ public class Level {
         pe.getEmitters().first().setPosition(x, y);
 
         // NB: we pretend effects are Actors, so that we can have them in front of or behind Actors
-        mWorld.addActor(e, zIndex);
+        mGame.mManager.mWorld.addActor(e, zIndex);
 
         // start emitting particles
         pe.start();
@@ -1691,7 +1655,7 @@ public class Level {
                 mMedia.getImage(imgName), 0, yOffset
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mXRepeat = xSpeed != 0;
-        mForeground.mLayers.add(pl);
+        mGame.mManager.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1712,7 +1676,7 @@ public class Level {
                 * mConfig.PIXEL_METER_RATIO, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
-        mForeground.mLayers.add(pl);
+        mGame.mManager.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1736,7 +1700,7 @@ public class Level {
                 mMedia.getImage(imgName),
                 xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
-        mForeground.mLayers.add(pl);
+        mGame.mManager.mForeground.mLayers.add(pl);
     }
 
     /**
@@ -1746,7 +1710,7 @@ public class Level {
      * @return The current LoseScene
      */
     public QuickScene getLoseScene() {
-        return mLoseScene;
+        return mGame.mManager.mLoseScene;
     }
 
     /**
@@ -1756,9 +1720,9 @@ public class Level {
      * @return The current PreScene
      */
     public QuickScene getPreScene() {
-        mPreScene.mVisible = true;
-        mPreScene.suspendClock();
-        return mPreScene;
+        mGame.mManager.mPreScene.mVisible = true;
+        mGame.mManager.mPreScene.suspendClock();
+        return mGame.mManager.mPreScene;
     }
 
     /**
@@ -1768,7 +1732,7 @@ public class Level {
      * @return The current PauseScene
      */
     public QuickScene getPauseScene() {
-        return mPauseScene;
+        return mGame.mManager.mPauseScene;
     }
 
     /**
@@ -1778,7 +1742,7 @@ public class Level {
      * @return The current WinScene
      */
     public QuickScene getWinScene() {
-        return mWinScene;
+        return mGame.mManager.mWinScene;
     }
 
     /**
@@ -1792,10 +1756,10 @@ public class Level {
      * @return The enemy, so that it can be modified further
      */
     public Enemy makeEnemyAsBox(float x, float y, float width, float height, String imgName) {
-        Enemy e = new Enemy(mWorld, mScore, width, height, imgName);
-        mScore.mEnemiesCreated++;
+        Enemy e = new Enemy(mGame, mGame.mManager.mWorld, width, height, imgName);
+        mGame.mManager.mEnemiesCreated++;
         e.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        mWorld.addActor(e, 0);
+        mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
 
@@ -1812,10 +1776,10 @@ public class Level {
      * @return The enemy, so that it can be further modified
      */
     public Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Enemy e = new Enemy(mWorld, mScore, width, height, imgName);
-        mScore.mEnemiesCreated++;
+        Enemy e = new Enemy(mGame, mGame.mManager.mWorld, width, height, imgName);
+        mGame.mManager.mEnemiesCreated++;
         e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        mWorld.addActor(e, 0);
+        mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
 
@@ -1831,10 +1795,10 @@ public class Level {
      */
     public Enemy makeEnemyAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Enemy e = new Enemy(mWorld, mScore, radius, radius, imgName);
-        mScore.mEnemiesCreated++;
+        Enemy e = new Enemy(mGame, mGame.mManager.mWorld, radius, radius, imgName);
+        mGame.mManager.mEnemiesCreated++;
         e.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        mWorld.addActor(e, 0);
+        mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
 
@@ -1849,10 +1813,10 @@ public class Level {
      * @return The destination, so that it can be modified further
      */
     public Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
-        Destination d = new Destination(mWorld, mScore, width, height, imgName);
+        Destination d = new Destination(mGame, mGame.mManager.mWorld, width, height, imgName);
         d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         d.setCollisionsEnabled(false);
-        mWorld.addActor(d, 0);
+        mGame.mManager.mWorld.addActor(d, 0);
         return d;
     }
 
@@ -1869,10 +1833,10 @@ public class Level {
      * @return The destination, so that it can be further modified
      */
     public Destination makeDestinationAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Destination d = new Destination(mWorld, mScore, width, height, imgName);
+        Destination d = new Destination(mGame, mGame.mManager.mWorld, width, height, imgName);
         d.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         d.setCollisionsEnabled(false);
-        mWorld.addActor(d, 0);
+        mGame.mManager.mWorld.addActor(d, 0);
         return d;
     }
 
@@ -1888,10 +1852,10 @@ public class Level {
      */
     public Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Destination d = new Destination(mWorld, mScore, radius, radius, imgName);
+        Destination d = new Destination(mGame, mGame.mManager.mWorld, radius, radius, imgName);
         d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         d.setCollisionsEnabled(false);
-        mWorld.addActor(d, 0);
+        mGame.mManager.mWorld.addActor(d, 0);
         return d;
     }
 
@@ -1906,9 +1870,9 @@ public class Level {
      * @return The obstacle, so that it can be further modified
      */
     public Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
-        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
+        Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
         o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        mWorld.addActor(o, 0);
+        mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
 
@@ -1925,9 +1889,9 @@ public class Level {
      * @return The obstacle, so that it can be further modified
      */
     public Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
+        Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
         o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        mWorld.addActor(o, 0);
+        mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
 
@@ -1943,9 +1907,9 @@ public class Level {
      */
     public Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Obstacle o = new Obstacle(mWorld, mScore, width, height, imgName);
+        Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
         o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
-        mWorld.addActor(o, 0);
+        mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
 
@@ -1961,10 +1925,10 @@ public class Level {
      * @return The goodie, so that it can be further modified
      */
     public Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
-        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
+        Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
         g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         g.setCollisionsEnabled(false);
-        mWorld.addActor(g, 0);
+        mGame.mManager.mWorld.addActor(g, 0);
         return g;
     }
 
@@ -1981,10 +1945,10 @@ public class Level {
      */
     public Goodie makeGoodieAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
+        Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
         g.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
         g.setCollisionsEnabled(false);
-        mWorld.addActor(g, 0);
+        mGame.mManager.mWorld.addActor(g, 0);
         return g;
     }
 
@@ -2001,10 +1965,10 @@ public class Level {
      * @return The goodie, so that it can be further modified
      */
     public Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Goodie g = new Goodie(mWorld, mScore, width, height, imgName);
+        Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
         g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
         g.setCollisionsEnabled(false);
-        mWorld.addActor(g, 0);
+        mGame.mManager.mWorld.addActor(g, 0);
         return g;
     }
 
@@ -2019,10 +1983,10 @@ public class Level {
      * @return The hero that was created
      */
     public Hero makeHeroAsBox(float x, float y, float width, float height, String imgName) {
-        Hero h = new Hero(mWorld, mScore, width, height, imgName);
-        mScore.mHeroesCreated++;
+        Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
+        mGame.mManager.mHeroesCreated++;
         h.setBoxPhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y);
-        mWorld.addActor(h, 0);
+        mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2038,10 +2002,10 @@ public class Level {
      */
     public Hero makeHeroAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
-        Hero h = new Hero(mWorld, mScore, width, height, imgName);
-        mScore.mHeroesCreated++;
+        Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
+        mGame.mManager.mHeroesCreated++;
         h.setCirclePhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y, radius / 2);
-        mWorld.addActor(h, 0);
+        mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2058,10 +2022,10 @@ public class Level {
      * @return The hero, so that it can be further modified
      */
     public Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
-        Hero h = new Hero(mWorld, mScore, width, height, imgName);
-        mScore.mHeroesCreated++;
+        Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
+        mGame.mManager.mHeroesCreated++;
         h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
-        mWorld.addActor(h, 0);
+        mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }
 
@@ -2072,7 +2036,7 @@ public class Level {
      * @param distance Maximum distance from the hero that a projectile can travel
      */
     public void setProjectileRange(float distance) {
-        for (Projectile p : mWorld.mProjectilePool.mPool)
+        for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
             p.mRange = distance;
     }
 
@@ -2081,7 +2045,7 @@ public class Level {
      * they will be (more or less) immune to gravitational forces.
      */
     public void setProjectileGravityOn() {
-        for (Projectile p : mWorld.mProjectilePool.mPool)
+        for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
             p.mBody.setGravityScale(1);
     }
 
@@ -2093,9 +2057,9 @@ public class Level {
      *                TODO: this is broken now that we removed Animatable images
      */
     public void setProjectileImageSource(String imgName) {
-        for (Projectile p : mWorld.mProjectilePool.mPool)
-            p.mAnimator.updateImage(mWorld, imgName);
-        mWorld.mProjectilePool.mRandomizeImages = true;
+        for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
+            p.mAnimator.updateImage(mGame.mManager.mWorld, imgName);
+        mGame.mManager.mWorld.mProjectilePool.mRandomizeImages = true;
     }
 
     /**
@@ -2105,7 +2069,7 @@ public class Level {
      * @param factor The value to multiply against the projectile speed.
      */
     public void setProjectileVectorDampeningFactor(float factor) {
-        mWorld.mProjectilePool.mDirectionalDamp = factor;
+        mGame.mManager.mWorld.mProjectilePool.mDirectionalDamp = factor;
     }
 
     /**
@@ -2113,7 +2077,7 @@ public class Level {
      * than disappearing when they collide with other actors
      */
     public void enableCollisionsForProjectiles() {
-        mWorld.mProjectilePool.mSensorProjectiles = false;
+        mGame.mManager.mWorld.mProjectilePool.mSensorProjectiles = false;
     }
 
     /**
@@ -2123,8 +2087,8 @@ public class Level {
      * @param velocity The magnitude of the velocity for projectiles
      */
     public void setFixedVectorThrowVelocityForProjectiles(float velocity) {
-        mWorld.mProjectilePool.mEnableFixedVectorVelocity = true;
-        mWorld.mProjectilePool.mFixedVectorVelocity = velocity;
+        mGame.mManager.mWorld.mProjectilePool.mEnableFixedVectorVelocity = true;
+        mGame.mManager.mWorld.mProjectilePool.mFixedVectorVelocity = velocity;
     }
 
     /**
@@ -2132,7 +2096,7 @@ public class Level {
      * be rotated to face in their direction or movement
      */
     public void setRotateVectorThrowForProjectiles() {
-        mWorld.mProjectilePool.mRotateVectorThrow = true;
+        mGame.mManager.mWorld.mProjectilePool.mRotateVectorThrow = true;
     }
 
     /**
@@ -2140,7 +2104,7 @@ public class Level {
      * screen
      */
     public void setCollisionOkForProjectiles() {
-        for (Projectile p : mWorld.mProjectilePool.mPool)
+        for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
             p.mDisappearOnCollide = false;
     }
 
@@ -2159,8 +2123,8 @@ public class Level {
      */
     public void configureProjectiles(int size, float width, float height, String imgName, int strength, int zIndex,
                                      boolean isCircle) {
-        mWorld.mProjectilePool = new ProjectilePool(mWorld, mScore, size, width, height, imgName, strength, zIndex,
-                isCircle);
+        mGame.mManager.mWorld.mProjectilePool = new ProjectilePool(mGame, mGame.mManager.mWorld,
+                size, width, height, imgName, strength, zIndex, isCircle);
     }
 
     /**
@@ -2169,7 +2133,7 @@ public class Level {
      * @param number How many projectiles are available
      */
     public void setNumberOfProjectiles(int number) {
-        mWorld.mProjectilePool.mProjectilesRemaining = number;
+        mGame.mManager.mWorld.mProjectilePool.mProjectilesRemaining = number;
     }
 
     /**
@@ -2178,7 +2142,7 @@ public class Level {
      * @param soundName Name of the sound file to play
      */
     public void setThrowSound(String soundName) {
-        mWorld.mProjectilePool.mThrowSound = mMedia.getSound(soundName);
+        mGame.mManager.mWorld.mProjectilePool.mThrowSound = mMedia.getSound(soundName);
     }
 
     /**
@@ -2187,7 +2151,7 @@ public class Level {
      * @param soundName the name of the sound file to play
      */
     public void setProjectileDisappearSound(String soundName) {
-        mWorld.mProjectilePool.mProjectileDisappearSound = mMedia.getSound(soundName);
+        mGame.mManager.mWorld.mProjectilePool.mProjectileDisappearSound = mMedia.getSound(soundName);
     }
 
     /**
@@ -2196,7 +2160,7 @@ public class Level {
      * @param a The animation object to use for each projectile that is thrown
      */
     public void setProjectileAnimation(Animation a) {
-        for (Projectile p : mWorld.mProjectilePool.mPool)
+        for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
             p.setDefaultAnimation(a);
     }
 
@@ -2292,7 +2256,7 @@ public class Level {
      */
     public void drawPicture(final float x, final float y, final float width, final float height,
                             final String imgName, int zIndex) {
-        mWorld.addActor(mWorld.makePicture(x, y, width, height, imgName), zIndex);
+        mGame.mManager.mWorld.addActor(mGame.mManager.mWorld.makePicture(x, y, width, height, imgName), zIndex);
     }
 
     /**
@@ -2316,12 +2280,12 @@ public class Level {
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
                 bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-                mWorld.mGlyphLayout.setText(bf, text);
-                bf.draw(sb, text, x, y + mWorld.mGlyphLayout.height);
+                mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
+                bf.draw(sb, text, x, y + mGame.mManager.mWorld.mGlyphLayout.height);
                 bf.getData().setScale(1);
             }
         };
-        mWorld.addActor(r, zIndex);
+        mGame.mManager.mWorld.addActor(r, zIndex);
     }
 
     /**
@@ -2343,9 +2307,9 @@ public class Level {
 
         // figure out the image dimensions
         bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
-        mWorld.mGlyphLayout.setText(bf, text);
-        final float w = mWorld.mGlyphLayout.width;
-        final float h = mWorld.mGlyphLayout.height;
+        mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
+        final float w = mGame.mManager.mWorld.mGlyphLayout.width;
+        final float h = mGame.mManager.mWorld.mGlyphLayout.height;
         bf.getData().setScale(1);
 
         // describe how to render it
@@ -2358,7 +2322,7 @@ public class Level {
                 bf.getData().setScale(1);
             }
         };
-        mWorld.addActor(r, zIndex);
+        mGame.mManager.mWorld.addActor(r, zIndex);
     }
 
     /**
@@ -2368,7 +2332,7 @@ public class Level {
      * @return a random integer
      */
     public int getRandom(int max) {
-        return mWorld.mGenerator.nextInt(max);
+        return mGame.mManager.mWorld.mGenerator.nextInt(max);
     }
 
     /**
@@ -2384,7 +2348,7 @@ public class Level {
      * Use this to load the splash screen
      */
     public void doSplash() {
-        mGame.doSplash();
+        mGame.mManager.doSplash();
     }
 
     /**
@@ -2394,7 +2358,7 @@ public class Level {
      * @param whichChooser The chooser screen to create
      */
     public void doChooser(int whichChooser) {
-        mGame.doChooser(whichChooser);
+        mGame.mManager.doChooser(whichChooser);
     }
 
     /**
@@ -2403,7 +2367,7 @@ public class Level {
      * @param which The index of the level to load
      */
     public void doLevel(int which) {
-        mGame.doLevel(which);
+        mGame.mManager.doPlay(which);
     }
 
     /**
@@ -2412,7 +2376,7 @@ public class Level {
      * @param which The index of the help level to load
      */
     public void doHelp(int which) {
-        mGame.doHelp(which);
+        mGame.mManager.doHelp(which);
     }
 
     /**
@@ -2421,14 +2385,14 @@ public class Level {
      * @param which The index of the help level to load
      */
     public void doStore(int which) {
-        mGame.doStore(which);
+        mGame.mManager.doStore(which);
     }
 
     /**
      * Use this to quit the game
      */
     public void doQuit() {
-        mGame.doQuit();
+        mGame.mManager.doQuit();
     }
 
     public Animation makeAnimation(int sequenceCount, boolean repeat) {

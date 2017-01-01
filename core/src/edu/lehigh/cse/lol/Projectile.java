@@ -65,8 +65,8 @@ class Projectile extends Actor {
      * @param zIndex   The z plane of the projectile
      * @param isCircle True if it is a circle, false if it is a box
      */
-    Projectile(MainScene level, Score score, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
-        super(level, score, imgName, width, height);
+    Projectile(Lol game, MainScene level, float width, float height, String imgName, float x, float y, int zIndex, boolean isCircle) {
+        super(game, level, imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
             setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);

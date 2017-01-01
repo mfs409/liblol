@@ -36,7 +36,7 @@ import com.badlogic.gdx.audio.Sound;
  */
 class ProjectilePool {
     /// The level in which this pool exists
-    MainScene mLevel;
+    private MainScene mLevel;
 
     /// A collection of all the available projectiles
     final Projectile mPool[];
@@ -87,13 +87,13 @@ class ProjectilePool {
      * @param zIndex   The z plane on which the projectiles should be drawn
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(MainScene level, Score score, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(Lol game, MainScene level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         mLevel = level;
         // set up the pool
         mPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            mPool[i] = new Projectile(level, score, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
+            mPool[i] = new Projectile(game, level, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
             mPool[i].mVisible = false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);

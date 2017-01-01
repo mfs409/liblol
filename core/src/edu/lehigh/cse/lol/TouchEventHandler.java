@@ -15,6 +15,8 @@ public abstract class TouchEventHandler {
     /// The control to which this handler is attached, if any
     public Control mAttachedControl = null;
 
+    public BaseActor mSource = null;
+
     /// An actor associated with this handler, if any
     public Actor mAttachedActor = null;
 

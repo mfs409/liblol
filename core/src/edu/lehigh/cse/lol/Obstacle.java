@@ -86,8 +86,8 @@ public class Obstacle extends Actor {
      * @param height  height of this Obstacle
      * @param imgName Name of the image file to use
      */
-    protected Obstacle(MainScene level, Score score, float width, float height, String imgName) {
-        super(level, score, imgName, width, height);
+    protected Obstacle(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
     }
 
     /**
@@ -225,7 +225,7 @@ public class Obstacle extends Actor {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= mScore.mGoodiesCollected[i];
+                        match &= counts[i] <= mGame.mManager.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
@@ -277,7 +277,7 @@ public class Obstacle extends Actor {
             public void go(final Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= mScore.mGoodiesCollected[i];
+                    match &= enemyCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
@@ -323,7 +323,7 @@ public class Obstacle extends Actor {
             public void go(Actor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= mScore.mGoodiesCollected[i];
+                    match &= projectileCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
                 if (match) {
                     callback.mAttachedActor = Obstacle.this;
                     callback.mCollideActor = ps;

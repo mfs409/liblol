@@ -82,7 +82,7 @@ public class Control extends Renderable {
      * @param width   The width of the Control
      * @param height  The height of the Control
      */
-    Control(Level level, String imgName, int x, int y, int width, int height) {
+    Control(Level level, String imgName, float x, float y, float width, float height) {
         mLevel = level;
         // set up the image to display
         //

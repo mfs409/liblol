@@ -138,8 +138,8 @@ public class Hero extends Actor {
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    Hero(MainScene level, Score score, float width, float height, String imgName) {
-        super(level, score, imgName, width, height);
+    Hero(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
     }
 
     /**
@@ -284,14 +284,14 @@ public class Hero extends Actor {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= mScore.mGoodiesCollected[i] >= d.mActivation[i];
+            match &= mGame.mManager.mGoodiesCollected[i] >= d.mActivation[i];
         if (match && (d.mHolding < d.mCapacity) && mVisible) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
                 d.mArrivalSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
-            mScore.onDestinationArrive();
+            mGame.mManager.onDestinationArrive();
         }
     }
 
@@ -305,9 +305,9 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            mScore.defeatHero(e);
+            mGame.mManager.defeatHero(e);
             if (mMustSurvive)
-                mScore.endLevel(false);
+                mGame.mManager.endLevel(false);
             return;
         }
         // go hero invincibility
@@ -329,9 +329,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            mScore.defeatHero(e);
+            mGame.mManager.defeatHero(e);
             if (mMustSurvive)
-                mScore.endLevel(false);
+                mGame.mManager.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -393,7 +393,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        mScore.onGoodieCollected(g);
+        mGame.mManager.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);

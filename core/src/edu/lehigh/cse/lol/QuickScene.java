@@ -31,7 +31,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -90,7 +89,7 @@ abstract public class QuickScene extends LolScene {
      * Construct a QuickScene by giving it a level
      */
     private QuickScene(MainScene level, Media media, Config config) {
-        super(config.mWidth, config.mHeight, media, config);
+        super(media, config);
         mLevel = level;
     }
 
@@ -187,7 +186,8 @@ abstract public class QuickScene extends LolScene {
      * @param size     The size of the text
      */
     public void addText(String text, String textColor, String fontName, int size) {
-        mSprites.add(makeText(text, textColor, fontName, size));
+        mSprites.add(makeTextCentered(mConfig.mWidth / mConfig.PIXEL_METER_RATIO / 2,
+                mConfig.mHeight / mConfig.PIXEL_METER_RATIO / 2, text, textColor, fontName, size));
     }
 
     /**
@@ -363,7 +363,7 @@ abstract public class QuickScene extends LolScene {
                 mLevel.stopMusic();
 
                 // go to next level (or chooser)
-                mLevel.mGame.advanceLevel();
+                mLevel.mGame.mManager.advanceLevel();
             }
         };
         quickScene.mText = config.mDefaultWinText;
@@ -433,7 +433,7 @@ abstract public class QuickScene extends LolScene {
             @Override
             public void dismiss() {
                 mVisible = false;
-                mLevel.mGame.repeatLevel();
+                mLevel.mGame.mManager.repeatLevel();
             }
         };
         quickScene.mText = mLevel.mConfig.mDefaultLoseText;

@@ -62,8 +62,8 @@ public class Goodie extends Actor {
      * @param height  height of this Obstacle
      * @param imgName image to use for this Obstacle
      */
-    protected Goodie(MainScene level, Score score, float width, float height, String imgName) {
-        super(level, score, imgName, width, height);
+    Goodie(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
         mScore[0] = 1;
         mScore[1] = 0;
         mScore[2] = 0;
@@ -119,7 +119,8 @@ public class Goodie extends Actor {
      *                 to the hero's remaining invincibility time
      */
     public void setInvincibilityDuration(float duration) {
-        assert (duration >= 0);
+        if (duration < 0)
+            duration = 0;
         mInvincibilityDuration = duration;
     }
 }

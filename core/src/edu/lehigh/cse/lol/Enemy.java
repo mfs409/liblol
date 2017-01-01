@@ -82,8 +82,8 @@ public class Enemy extends Actor {
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(MainScene level, Score score, float width, float height, String imgName) {
-        super(level, score, imgName, width, height);
+    Enemy(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
     }
 
     /**
@@ -178,7 +178,7 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            mScore.onDefeatEnemy();
+            mGame.mManager.onDefeatEnemy();
 
         // go defeat callbacks
         if (mDefeatCallback != null)

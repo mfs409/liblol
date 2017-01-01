@@ -114,8 +114,7 @@ public class Svg {
      *                   occurs after stretching
      * @param ac         The callback to run whenever a line is created
      */
-    Svg(float stretchX, float stretchY, float xposeX,
-                float xposeY, ActorCallback ac) {
+    Svg(float stretchX, float stretchY, float xposeX, float xposeY, ActorCallback ac) {
         // specify transpose and stretch information
         mUserStretch.x = stretchX;
         mUserStretch.y = stretchY;

@@ -49,7 +49,7 @@ abstract class LolScene {
     final QueryCallback mTouchCallback;
 
     /// When there is a touch of an actor in the physics world, this is how we find it
-    Actor mHitActor = null;
+    BaseActor mHitActor = null;
 
     /// Use this for determining bounds of text boxes
     final GlyphLayout mGlyphLayout;
@@ -58,17 +58,19 @@ abstract class LolScene {
     final ArrayList<TouchEventHandler> mTapHandlers;
 
     /// Events that get processed on the next render, then discarded
-    protected final ArrayList<LolAction> mOneTimeEvents;
+     final ArrayList<LolAction> mOneTimeEvents;
 
     /// Events that get processed on every render
-    protected final ArrayList<LolAction> mRepeatEvents;
+     final ArrayList<LolAction> mRepeatEvents;
 
-    LolScene(float width, float height, Media media, Config config) {
+    LolScene(Media media, Config config) {
+        float w = config.mWidth / config.PIXEL_METER_RATIO;
+        float h = config.mHeight / config.PIXEL_METER_RATIO;
         mMedia = media;
         mConfig = config;
         // set up the game camera, with (0, 0) in the bottom left
-        mCamera = new OrthographicCamera(width, height);
-        mCamera.position.set(width / 2, height / 2, 0);
+        mCamera = new OrthographicCamera(w, h);
+        mCamera.position.set(w / 2, h / 2, 0);
         mCamera.zoom = 1;
 
         // set up the event lists
@@ -77,7 +79,7 @@ abstract class LolScene {
 
         // set default camera bounds
         mCamBound = new Vector2();
-        mCamBound.set(width, height);
+        mCamBound.set(w, h);
 
         // create a world with no default gravitational forces
         mWorld = new World(new Vector2(0, 0), true);
@@ -97,7 +99,7 @@ abstract class LolScene {
                 // if the hit point is inside the fixture of the body we report
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
-                    Actor hs = (Actor) fixture.getBody().getUserData();
+                    BaseActor hs = (BaseActor) fixture.getBody().getUserData();
                     if (hs.mVisible) {
                         mHitActor = hs;
                         return false;
@@ -144,7 +146,7 @@ abstract class LolScene {
         mRenderables.get(zIndex + 2).remove(actor);
     }
 
-    boolean onTap(float x, float y, int count, int button) {
+    boolean onTap(float x, float y) {
         // check if we tapped an actor
         mHitActor = null;
         mCamera.unproject(mTouchVec.set(x, y, 0));
@@ -192,13 +194,13 @@ abstract class LolScene {
      * @return A Renderable of the text
      */
     // TODO: this is broken: if we have a non-1 pixel-to-meter ratio, then we aren't centering well
-    //       we should center on a provied x/y coordinate, and we need to decide how to handle
+    //       we should center on a provided x/y coordinate, and we need to decide how to handle
     //       pixel ratios
-    Renderable makeText(final String message, final String fontColor, String fontName, int size) {
+    Renderable makeTextCentered(float centerX, float centerY, final String message, final String fontColor, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         mGlyphLayout.setText(bf, message);
-        final float x = mConfig.mWidth / 2 - mGlyphLayout.width / 2;
-        final float y = mConfig.mHeight / 2 + mGlyphLayout.height / 2;
+        final float x = centerX / 2 - mGlyphLayout.width / 2;
+        final float y = centerY / 2 + mGlyphLayout.height / 2;
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {

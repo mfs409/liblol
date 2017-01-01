@@ -19,11 +19,15 @@ class HudScene extends LolScene {
     /// Input Controls
     final ArrayList<Control> mControls;
 
+    final ArrayList<BaseActor> mControls2;
+
     /// Output Displays
     private final ArrayList<Display> mDisplays;
 
     /// Controls that have a tap event
     final ArrayList<Control> mTapControls;
+    final ArrayList<BaseActor> mTapControls2;
+
 
     /// Controls that have a pan event
     final ArrayList<Control> mPanControls;
@@ -38,7 +42,7 @@ class HudScene extends LolScene {
      * Create a new heads-up display by providing the dimensions for its camera
      */
     HudScene(Media media, Config config) {
-        super(config.mWidth, config.mHeight, media, config);
+        super(media, config);
 
         mControls = new ArrayList<>();
         mDisplays = new ArrayList<>();
@@ -47,6 +51,9 @@ class HudScene extends LolScene {
         mPanControls = new ArrayList<>();
         mZoomControls = new ArrayList<>();
         mToggleControls = new ArrayList<>();
+
+        mControls2 = new ArrayList<>();
+        mTapControls2 = new ArrayList<>();
     }
 
     void reportTouch(Vector3 touchVec, Config config) {
@@ -71,6 +78,8 @@ class HudScene extends LolScene {
         sb.begin();
         for (Control c : mControls)
             c.render(sb, delta);
+        for (BaseActor b : mControls2)
+            b.render(sb, delta);
         for (Display d : mDisplays)
             d.render(sb, delta);
         for (ArrayList<Renderable> a : mRenderables) {
@@ -81,6 +90,7 @@ class HudScene extends LolScene {
         sb.end();
 
         // DEBUG: render Controls' outlines
+        // TODO: box2d shape renderer for controls2
         if (mConfig.mShowDebugBoxes) {
             mShapeRender.setProjectionMatrix(mCamera.combined);
             mShapeRender.begin(ShapeRenderer.ShapeType.Line);
@@ -116,6 +126,12 @@ class HudScene extends LolScene {
                 return true;
             }
         }
+        mHitActor = null;
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        if (mHitActor != null && mHitActor.mTapHandler != null)
+            return mHitActor.mTapHandler.go(x, y);
         return false;
     }
 

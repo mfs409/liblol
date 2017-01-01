@@ -62,7 +62,7 @@ public class Chooser implements ScreenManager {
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
         if (whichLevel <= unlocked || level.getUnlockMode()) {
-            tile.setTouchCallback(0, 0, 0, 0, false, level, new LolCallback() {
+            tile.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
                 public void onEvent() {
                     level.doLevel(whichLevel);
                 }
@@ -86,7 +86,7 @@ public class Chooser implements ScreenManager {
      */
     void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "leftarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, level, new LolCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 level.doChooser(chooserLevel);
             }
@@ -104,7 +104,7 @@ public class Chooser implements ScreenManager {
      */
     void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "rightarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, level, new LolCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 level.doChooser(chooserLevel);
             }
@@ -121,7 +121,7 @@ public class Chooser implements ScreenManager {
      */
     void drawSplashButton(final Level level, float x, float y, float width, float height) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "backarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, level, new LolCallback() {
+        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
                 level.doSplash();
             }

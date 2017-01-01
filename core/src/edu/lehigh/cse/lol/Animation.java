@@ -48,8 +48,7 @@ public class Animation {
     /// A reference to the media object, so we can find assets easily
     Media mMedia;
 
-    /// A set of images, generated via registerAnimatableImage, that can be used as frames of an
-    // animation.
+    /// A set of images that can be used as frames of an animation.
     final TextureRegion[] mCells;
 
     /// Should the animation repeat?
@@ -59,7 +58,7 @@ public class Animation {
     long[] mDurations;
 
     /// The next available position in the frames and durations arrays. Note that frames and
-    // durations should have the same length, and the same number of entries.
+    /// durations should have the same length, and the same number of entries.
     int mNextCell;
 
     /**

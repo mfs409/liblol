@@ -33,7 +33,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
@@ -42,33 +41,28 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.TreeMap;
-
 /**
  * The Lol object is the outermost container for all of the functionality of the
  * game. It implements ApplicationListener, which provides hooks for rendering the
  * game, stopping it, resuming it, etc.
  * <p/>
  * Apart from ApplicationListener duties, the Lol object is responsible for providing an abstracted
- * interface to some of the hardware (e.g., the back button), loading resources, and managing a
- * state machine that monitors which type of level is currently being displayed.
+ * interface to some of the hardware (e.g., the back button and persistent storage), loading
+ * resources, and forwarding key/touch inputs to the appropriate handlers.
  */
 public class Lol implements ApplicationListener {
     /// mConfig stores the configuration state of the game.
-    private Config mConfig;
-
+    final Config mConfig;
     /// Store all the images, sounds, and fonts for the game
     private Media mMedia;
 
-    /// mStateMachine governs which screen is showing (Chooser, etc) and how to move among them
-    private StateMachine mStateMachine = new StateMachine();
-
-    /// Store string/integer pairs that get reset whenever we restart the program
-    final TreeMap<String, Integer> mSessionFacts = new TreeMap<>();
+    /// mLevel is the Level object that is active, in accordance with the state machine.
+    Level mLevel;
+    /// The Manager object handles scores, screen management, and transitions among screens
+    LolManager mManager;
 
     /// The debug renderer, for printing circles and boxes for each actor
     private Box2DDebugRenderer mDebugRender;
-
     /// The SpriteBatch for drawing all texture regions and fonts
     private SpriteBatch mSpriteBatch;
 
@@ -139,7 +133,6 @@ public class Lol implements ApplicationListener {
         mConfig = config;
     }
 
-
     /**
      * A hack for stopping events when a pause screen is opened
      *
@@ -147,118 +140,8 @@ public class Lol implements ApplicationListener {
      *                 screen.
      */
     void liftAllButtons(Vector3 touchVec) {
-        mStateMachine.mLevel.mHud.liftAllButtons(touchVec);
-        mStateMachine.mLevel.mWorld.liftAllButtons();
-    }
-
-    /**
-     * If the level that follows this level has not yet been unlocked, unlock it.
-     * <p>
-     * NB: we only track one value for locking/unlocking, so this actually unlocks all levels up to
-     * and including the level after the current level.
-     */
-    void unlockNext() {
-        if (getGameFact(mConfig, "unlocked", 1) <= mStateMachine.mModeStates[StateMachine.PLAY])
-            putGameFact(mConfig, "unlocked", mStateMachine.mModeStates[StateMachine.PLAY] + 1);
-    }
-
-    void advanceLevel() {
-        if (mStateMachine.mModeStates[StateMachine.PLAY] == mConfig.mNumLevels) {
-            mStateMachine.mLevel.doChooser(1);
-        } else {
-            mStateMachine.mModeStates[StateMachine.PLAY]++;
-            mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
-        }
-    }
-
-    void repeatLevel() {
-        mStateMachine.mLevel.doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
-    }
-
-    /**
-     * Use this to load the splash screen
-     */
-    void doSplash() {
-        // reset state of all screens
-        for (int i = 0; i < 5; ++i)
-            mStateMachine.mModeStates[i] = 1;
-        mStateMachine.mMode = StateMachine.SPLASH;
-        Level l = new Level(mConfig, mMedia, this);
-        mConfig.mSplash.display(1, l);
-        mStateMachine.setScreen(l);
-    }
-
-    /**
-     * Use this to load the level-chooser screen. Note that when the chooser is
-     * disabled, we jump straight to level 1.
-     *
-     * @param whichChooser The chooser screen to create
-     */
-    void doChooser(int whichChooser) {
-        // if chooser disabled, then we either called this from splash, or from
-        // a game level
-        if (!mConfig.mEnableChooser) {
-            if (mStateMachine.mMode == StateMachine.PLAY) {
-                doSplash();
-            } else {
-                doLevel(mStateMachine.mModeStates[StateMachine.PLAY]);
-            }
-            return;
-        }
-        // the chooser is not disabled... save the choice of level, configureGravity
-        // it, and show it.
-        mStateMachine.mMode = StateMachine.CHOOSER;
-        mStateMachine.mModeStates[StateMachine.CHOOSER] = whichChooser;
-        Level l = new Level(mConfig, mMedia, this);
-        mConfig.mChooser.display(whichChooser, l);
-        mStateMachine.setScreen(l);
-    }
-
-    /**
-     * Use this to load a playable level.
-     *
-     * @param which The index of the level to load
-     */
-    void doLevel(int which) {
-        mStateMachine.mModeStates[StateMachine.PLAY] = which;
-        mStateMachine.mMode = StateMachine.PLAY;
-        Level l = new Level(mConfig, mMedia, this);
-        mConfig.mLevels.display(which, l);
-        mStateMachine.setScreen(l);
-    }
-
-    /**
-     * Use this to load a help level.
-     *
-     * @param which The index of the help level to load
-     */
-    void doHelp(int which) {
-        mStateMachine.mModeStates[StateMachine.HELP] = which;
-        mStateMachine.mMode = StateMachine.HELP;
-        Level l = new Level(mConfig, mMedia, this);
-        mConfig.mHelp.display(which, l);
-        mStateMachine.setScreen(l);
-    }
-
-    /**
-     * Use this to load a screen of the store.
-     *
-     * @param which The index of the help level to load
-     */
-    void doStore(int which) {
-        mStateMachine.mModeStates[StateMachine.STORE] = which;
-        mStateMachine.mMode = StateMachine.STORE;
-        Level l = new Level(mConfig, mMedia, this);
-        mConfig.mStore.display(which, l);
-        mStateMachine.setScreen(l);
-    }
-
-    /**
-     * Use this to quit the game
-     */
-    void doQuit() {
-        mStateMachine.mLevel.mWorld.stopMusic();
-        Gdx.app.exit();
+        mManager.mHud.liftAllButtons(touchVec);
+        mManager.mWorld.liftAllButtons();
     }
 
     /**
@@ -287,18 +170,18 @@ public class Lol implements ApplicationListener {
         // clear all timers, just in case...
         Timer.instance().clear();
         // if we're looking at main menu, then exit
-        if (mStateMachine.mMode == StateMachine.SPLASH) {
+        if (mManager.mMode == LolManager.SPLASH) {
             dispose();
             Gdx.app.exit();
         }
         // if we're looking at the chooser or help, switch to the splash
         // screen
-        else if (mStateMachine.mMode == StateMachine.CHOOSER || mStateMachine.mMode == StateMachine.HELP || mStateMachine.mMode == StateMachine.STORE) {
-            mStateMachine.mLevel.doSplash();
+        else if (mManager.mMode == LolManager.CHOOSER || mManager.mMode == LolManager.HELP || mManager.mMode == LolManager.STORE) {
+            mLevel.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            mStateMachine.mLevel.doChooser(mStateMachine.mModeStates[StateMachine.CHOOSER]);
+            mLevel.doChooser(mManager.mModeStates[LolManager.CHOOSER]);
         }
     }
 
@@ -306,7 +189,7 @@ public class Lol implements ApplicationListener {
      * To properly go gestures, we need to provide the code to run on each
      * type of gesture we care about.
      */
-    class LolGestureManager extends GestureDetector.GestureAdapter {
+    private class LolGestureManager extends GestureDetector.GestureAdapter {
         /**
          * When the screen is tapped, this code forwards the tap to the
          * appropriate handler
@@ -318,21 +201,21 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            Level level = mStateMachine.mLevel;
+            Level level = mLevel;
             // Give each pop-up scene a chance to go the tap
-            if (level.mWinScene.onTap(x, y, Lol.this))
+            if (mManager.mWinScene.onTap(x, y, Lol.this))
                 return true;
-            if (level.mLoseScene.onTap(x, y, Lol.this))
+            if (mManager.mLoseScene.onTap(x, y, Lol.this))
                 return true;
-            if (level.mPreScene.onTap(x, y, Lol.this))
+            if (mManager.mPreScene.onTap(x, y, Lol.this))
                 return true;
-            if (level.mPauseScene.onTap(x, y, Lol.this))
+            if (mManager.mPauseScene.onTap(x, y, Lol.this))
                 return true;
             // Let the hud go the tap
-            if (level.mHud.handleTap(x, y, level.mWorld))
+            if (mManager.mHud.handleTap(x, y, mManager.mWorld))
                 return true;
             // leave it up to the world
-            return level.mWorld.onTap(x, y, count, button);
+            return mManager.mWorld.onTap(x, y);
         }
 
         /**
@@ -344,7 +227,7 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean fling(float velocityX, float velocityY, int button) {
-            return mStateMachine.mLevel.mWorld.handleFling(velocityX, velocityY);
+            return mManager.mWorld.handleFling(velocityX, velocityY);
         }
 
         /**
@@ -358,11 +241,11 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
-            if (mStateMachine.mLevel.mHud.handlePan(x, y, deltaX, deltaY, mStateMachine.mLevel.mWorld))
+            if (mManager.mHud.handlePan(x, y, deltaX, deltaY, mManager.mWorld))
                 return true;
 
             // did we pan the level?
-            return mStateMachine.mLevel.mWorld.handlePan(x, y, deltaX, deltaY);
+            return mManager.mWorld.handlePan(x, y, deltaX, deltaY);
         }
 
         /**
@@ -376,9 +259,7 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
             // check if we panStopped a control
-            if (mStateMachine.mLevel.mHud.handlePanStop(x, y, mStateMachine.mLevel.mWorld))
-                return true;
-            return mStateMachine.mLevel.mWorld.handlePanStop(x, y);
+            return mManager.mHud.handlePanStop(x, y, mManager.mWorld) || mManager.mWorld.handlePanStop(x, y);
         }
 
         /**
@@ -389,16 +270,16 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            return mStateMachine.mLevel.mHud.handleZoom(initialDistance, distance);
+            return mManager.mHud.handleZoom(initialDistance, distance);
         }
     }
 
     /**
      * Gestures can't cover everything we care about (specifically 'hold this
-     * button' sorts of things, for which longpress is not responsive enough),
+     * button' sorts of things, for which long-press is not responsive enough),
      * so we need a low-level input adapter, too.
      */
-    class LolInputManager extends InputAdapter {
+    private class LolInputManager extends InputAdapter {
         /**
          * Handle when a downward touch happens
          *
@@ -409,10 +290,8 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            Level level = mStateMachine.mLevel;
-            if (level.mHud.handleDown(screenX, screenY, level.mWorld))
-                return true;
-            return level.mWorld.handleDown(screenX, screenY);
+            Level level = mLevel;
+            return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleDown(screenX, screenY);
         }
 
         /**
@@ -425,12 +304,10 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            Level level = mStateMachine.mLevel;
+            Level level = mLevel;
             // check if we down-pressed a control
-            if (level.mHud.handleUp(screenX, screenY, level.mWorld))
-                return true;
+            return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleUp(screenX, screenY);
 
-            return level.mWorld.handleUp(screenX, screenY);
         }
 
         /**
@@ -442,44 +319,53 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDragged(int screenX, int screenY, int pointer) {
-            Level level = mStateMachine.mLevel;
-            return level.mWorld.handleDrag(screenX, screenY);
+            Level level = mLevel;
+            return mManager.mWorld.handleDrag(screenX, screenY);
         }
     }
 
     /**
-     * This is an internal method for initializing a game. User code should
-     * never call this.
+     * App creation lifecycle event.
+     *
+     * The lifecycle of LibGDX games splits app startup into two parts.  First, an
+     * <code>ApplicationListener</code> is constructed.  However, it is constructed *very* early,
+     * and can't even do all of the things one might expect.  For example, it doesn't have an
+     * OpenGL context yet, so it can't load its assets from disk.  In the second stage, the
+     * <code>create</code> method, we can finish constructing the application, knowing that it has
+     * access to the full resources of the device.
+     *
+     * NB: This is an internal method for initializing a game. User code should never call this.
      */
     @Override
     public void create() {
-        mStateMachine.init();
+        // We want to intercept 'back' button presses, so that we can poll for them in
+        // <code>render</code> and react accordingly
+        Gdx.input.setCatchBackKey(true);
 
+        // The config object has already been set, so we can load all assets
+        mMedia = new Media(mConfig);
+
+        // Configure the objects we need in order to render
         mDebugRender = new Box2DDebugRenderer();
         mSpriteBatch = new SpriteBatch();
 
-        // for handling back presses
-        Gdx.input.setCatchBackKey(true);
-
-        // Set up listeners for touch events. Gestures are processed before
-        // non-gesture touches, and non-gesture touches are only processed when
-        // a gesture is not detected.
+        // Configure the input handlers.  We process gestures first, and if no gesture occurs, then
+        // we look for a non-gesture touch event
         InputMultiplexer mux = new InputMultiplexer();
         mux.addProcessor(new GestureDetector(new LolGestureManager()));
         mux.addProcessor(new LolInputManager());
         Gdx.input.setInputProcessor(mux);
 
-
-        // Load Resources
-        mMedia = new Media(mConfig);
-
         // configure the volume
         if (getGameFact(mConfig, "volume", 1) == 1)
             putGameFact(mConfig, "volume", 1);
 
-        // show the splash screen
-        Level l = new Level(mConfig, mMedia, this);
-        l.doSplash();
+        // Set up the API, so that any user code we call is able to reach this object
+        mLevel = new Level(mConfig, mMedia, this);
+
+        // Create the level manager, and instruct it to transition to the Splash screen
+        mManager = new LolManager(mConfig, mMedia, this);
+        mManager.doSplash();
     }
 
     /**
@@ -488,10 +374,10 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mStateMachine.mLevel != null)
-            mStateMachine.mLevel.mWorld.pauseMusic();
+        if (mLevel != null)
+            mManager.mWorld.pauseMusic();
 
-        // dispose of all fonts, textureregions, etc...
+        // dispose of all fonts, TextureRegions, etc...
         //
         // It appears that GDX manages all textures for images and fonts, as
         // well as all sounds and music files. That
@@ -511,23 +397,22 @@ public class Lol implements ApplicationListener {
         handleKeyDown();
 
         // Draw the current scene
-        if (mStateMachine.mLevel == null)
+        if (mLevel == null)
             return;
 
         float delta = Gdx.graphics.getDeltaTime();
-        Level level = mStateMachine.mLevel;
 
         // Make sure the music is playing... Note that we start music before the
         // PreScene shows
-        level.mWorld.playMusic();
+        mManager.mWorld.playMusic();
 
         // in debug mode, any click will report the coordinates of the click...
         // this is very useful when trying to adjust screen coordinates
         if (mConfig.mShowDebugBoxes) {
             if (Gdx.input.justTouched()) {
-                level.mHud.reportTouch(level.mWorld.mTouchVec, mConfig);
-                level.mWorld.mCamera.unproject(level.mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-                Lol.message(mConfig, "World Coordinates", level.mWorld.mTouchVec.x + ", " + level.mWorld.mTouchVec.y);
+                mManager.mHud.reportTouch(mManager.mWorld.mTouchVec, mConfig);
+                mManager.mWorld.mCamera.unproject(mManager.mWorld.mTouchVec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+                Lol.message(mConfig, "World Coordinates", mManager.mWorld.mTouchVec.x + ", " + mManager.mWorld.mTouchVec.y);
             }
         }
 
@@ -536,74 +421,76 @@ public class Lol implements ApplicationListener {
         // Note that these handle their own screen touches...
         //
         // Note that win and lose scenes should come first.
-        if (level.mWinScene.render(mSpriteBatch, delta))
+        if (mManager.mWinScene.render(mSpriteBatch, delta))
             return;
-        if (level.mLoseScene.render(mSpriteBatch, delta))
+        if (mManager.mLoseScene.render(mSpriteBatch, delta))
             return;
-        if (level.mPreScene.render(mSpriteBatch, delta))
+        if (mManager.mPreScene.render(mSpriteBatch, delta))
             return;
-        if (level.mPauseScene.render(mSpriteBatch, delta))
+        if (mManager.mPauseScene.render(mSpriteBatch, delta))
             return;
 
         // Let the score object know that we are rendering, so that we can handle any win/lose
         // timers
-        level.mScore.onRender(level);
+        mManager.onRender(mLevel);
 
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
         // top, but that's probably not going to produce logical behavior
-        level.mWorld.handleTilt();
+        mManager.mWorld.handleTilt();
 
         // Advance the physics world by 1/45 of a second.
         //
         // NB: in Box2d, This is the recommended rate for phones, though it
         // seems like we should be using /delta/ instead of 1/45f
-        level.mWorld.mWorld.step(1 / 45f, 8, 3);
+        mManager.mWorld.mWorld.step(1 / 45f, 8, 3);
 
         // now handle any events that occurred on account of the world movement
         // or screen touches
-        for (LolAction pe : level.mWorld.mOneTimeEvents)
+        for (LolAction pe : mManager.mWorld.mOneTimeEvents)
             pe.go();
-        level.mWorld.mOneTimeEvents.clear();
+        mManager.mWorld.mOneTimeEvents.clear();
 
         // handle repeat events
-        for (LolAction pe : level.mWorld.mRepeatEvents) {
+        for (LolAction pe : mManager.mWorld.mRepeatEvents) {
             if (pe.mIsActive)
                 pe.go();
         }
 
         // check for end of game
-        if (level.mScore.mEndGameEvent != null)
-            level.mScore.mEndGameEvent.go();
+        if (mManager.mEndGameEvent != null)
+            mManager.mEndGameEvent.go();
 
         // prepare the main camera... we do it here, so that the parallax code
         // knows where to draw...
-        level.mWorld.adjustCamera();
-        level.mWorld.mCamera.update();
+        mManager.mWorld.adjustCamera();
+        mManager.mWorld.mCamera.update();
 
         // The world is now static for this time step... we can display it!
 
         // clear the screen
-        Gdx.gl.glClearColor(level.mBackground.mColor.r, level.mBackground.mColor.g, level.mBackground.mColor.b, 1);
+        Gdx.gl.glClearColor(mManager.mBackground.mColor.r, mManager.mBackground.mColor.g, mManager.mBackground.mColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // draw parallax backgrounds
-        level.mBackground.renderLayers(level.mWorld, mSpriteBatch, delta);
+        mManager.mBackground.renderLayers(mManager.mWorld, mSpriteBatch, delta);
 
         // render the actors
-        level.mWorld.render(mSpriteBatch, delta);
+        mManager.mWorld.render(mSpriteBatch, delta);
 
         // draw parallax foregrounds
-        level.mForeground.renderLayers(level.mWorld, mSpriteBatch, delta);
+        mManager.mForeground.renderLayers(mManager.mWorld, mSpriteBatch, delta);
 
         // DEBUG: draw outlines of physics actors
         //
         // TODO: pass the debug renderer to the Scenes?
         if (mConfig.mShowDebugBoxes)
-            mDebugRender.render(level.mWorld.mWorld, level.mWorld.mCamera.combined);
+            mDebugRender.render(mManager.mWorld.mWorld, mManager.mWorld.mCamera.combined);
 
         // draw Controls
-        level.mHud.render(mSpriteBatch, delta);
+        mManager.mHud.render(mSpriteBatch, delta);
+        if (mConfig.mShowDebugBoxes)
+            mDebugRender.render(mManager.mHud.mWorld, mManager.mHud.mCamera.combined);
     }
 
     @Override
@@ -619,58 +506,10 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * StateMachine tracks the current state of the game.  The state consists of the type of level
-     * being displayed (Splash, Help, Chooser, Store, or Playable Level), which level number is
-     * currently active, and the actual level object.
-     */
-    static class StateMachine {
-        /// Modes of the game, for use by the state machine.  We can be showing the main splash
-        /// screen, the help screens, the level chooser, the store, or a playable level
-        static final int SPLASH = 0;
-        static final int HELP = 1;
-        static final int CHOOSER = 2;
-        static final int STORE = 3;
-        static final int PLAY = 4;
-
-        /// mMode is is for the base state machine.  It tracks the current mode of the program (from
-        /// among the above choices)
-        int mMode;
-
-        /// mModeStates provides more information about the state of the game.  mMode only lets us
-        /// know what state we are in, but mModeStates lets us know which level of that mode is
-        /// currently active.  Note that using an array makes it easier for us to use the back
-        // button to go from a level to the chooser, or to move to the next level when we win a
-        // level
-        int mModeStates[] = new int[5];
-
-        void init() {
-            // set current mode states
-            for (int i = 0; i < 5; ++i)
-                mModeStates[i] = 1;
-        }
-
-        /// mWorld is the Level object that is active, in accordance with the state machine.
-        Level mLevel;
-
-        /**
-         * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
-         * screen, if any.
-         *
-         * @param level may be {@code null}
-         */
-        void setScreen(Level level) {
-            if (mLevel != null) {
-                mLevel.mWorld.pauseMusic();
-            }
-            mLevel = level;
-        }
-    }
-
-    /**
      * When an Actor collides with another Actor, and that collision is intended to
      * cause some custom code to run, we use this interface
      */
-    static interface CollisionCallback {
+    interface CollisionCallback {
         /**
          * Respond to a collision with a actor. Note that one of the collision
          * actors is not named; it should be clear from the context in which this
