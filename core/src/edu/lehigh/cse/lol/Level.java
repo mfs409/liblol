@@ -35,31 +35,31 @@ public class Level {
     protected final Media mMedia;
 
     /// The physics world in which all actors exist
-    MainScene mWorld;
+    final MainScene mWorld;
 
     /// A heads-up display, for writing Display and Control objects
-    HudScene mHud;
+    final HudScene mHud;
 
     /// A reference to the score object, for tracking winning and losing
     final Score mScore;
 
     /// The scene to show when the level is created (if any)
-    QuickScene mPreScene;
+    final QuickScene mPreScene;
 
     /// The scene to show when the level is won
-    QuickScene mWinScene;
+    final QuickScene mWinScene;
 
     /// The scene to show when the level is lost
-    QuickScene mLoseScene;
+    final QuickScene mLoseScene;
 
     /// The scene to show when the level is paused (if any)
-    QuickScene mPauseScene;
+    final QuickScene mPauseScene;
 
     /// The background layers
-    ParallaxScene mBackground;
+    final ParallaxScene mBackground;
 
     /// The foreground layers
-    ParallaxScene mForeground;
+    final ParallaxScene mForeground;
 
     /**
      * Construct a level. This is mostly using defaults, so the main work is in

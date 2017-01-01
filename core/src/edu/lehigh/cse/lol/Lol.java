@@ -597,6 +597,8 @@ public class Lol implements ApplicationListener {
         level.mForeground.renderLayers(level.mWorld, mSpriteBatch, delta);
 
         // DEBUG: draw outlines of physics actors
+        //
+        // TODO: pass the debug renderer to the Scenes?
         if (mConfig.mShowDebugBoxes)
             mDebugRender.render(level.mWorld.mWorld, level.mWorld.mCamera.combined);
 

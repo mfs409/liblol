@@ -15,15 +15,12 @@ import com.badlogic.gdx.utils.Timer;
  * collecting goodies, reaching a destination, etc).
  */
 class Score {
-    /**
-     * This is the number of goodies that must be collected, if we're in
-     * GOODIECOUNT mode
-     */
+    /// This is the number of goodies that must be collected, if we're in GOODIECOUNT mode
     final int[] mVictoryGoodieCount = new int[4];
-    /**
-     * Track the number of heroes that have been created
-     */
+
+    /// Track the number of heroes that have been created
     int mHeroesCreated = 0;
+
     /**
      * Count of the goodies that have been collected in this level
      */
