@@ -15,18 +15,8 @@ class HudScene extends LolScene {
     /// The debug shape renderer, for putting boxes around Controls and Displays
     private final ShapeRenderer mShapeRender;
 
-    final ArrayList<HudActor> mControls2;
-
-    /// Output Displays
-    private final ArrayList<Display> mDisplays;
-
-    /// Controls that have a tap event
-    final ArrayList<HudActor> mTapControls2;
-
     /// Toggle Controls
-    final ArrayList<HudActor> mToggleControls2;
-    final ArrayList<HudActor> mPanControls2;
-    final ArrayList<HudActor> mZoomControls2;
+    final ArrayList<HudActor> mToggleControls;
 
     /**
      * Create a new heads-up display by providing the dimensions for its camera
@@ -34,14 +24,9 @@ class HudScene extends LolScene {
     HudScene(Media media, Config config) {
         super(media, config);
 
-        mDisplays = new ArrayList<>();
         mShapeRender = new ShapeRenderer();
 
-        mControls2 = new ArrayList<>();
-        mTapControls2 = new ArrayList<>();
-        mToggleControls2 = new ArrayList<>();
-        mPanControls2 = new ArrayList<>();
-        mZoomControls2 = new ArrayList<>();
+        mToggleControls = new ArrayList<>();
     }
 
     void reportTouch(float x, float y) {
@@ -65,10 +50,6 @@ class HudScene extends LolScene {
 
         sb.setProjectionMatrix(mCamera.combined);
         sb.begin();
-        for (HudActor b : mControls2)
-            b.render(sb, delta);
-        for (Display d : mDisplays)
-            d.render(sb, delta);
         for (ArrayList<Renderable> a : mRenderables) {
             for (Renderable r : a) {
                 r.render(sb, delta);
@@ -88,7 +69,7 @@ class HudScene extends LolScene {
     }
 
     void liftAllButtons(Vector3 touchVec) {
-        for (HudActor c : mToggleControls2) {
+        for (HudActor c : mToggleControls) {
             if (c.mIsTouchable) {
                 c.mToggleHandler.isUp = true;
                 c.mToggleHandler.go(touchVec.x, touchVec.y);
@@ -97,7 +78,8 @@ class HudScene extends LolScene {
     }
 
     void reset() {
-        mDisplays.clear();
+        mToggleControls.clear();
+        super.reset();
     }
 
     boolean handleTap(float x, float y, MainScene world) {

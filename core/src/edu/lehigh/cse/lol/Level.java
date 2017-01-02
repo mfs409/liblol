@@ -718,8 +718,7 @@ public class Level {
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mTapHandler = action;
         action.mSource = c;
-        mGame.mManager.mHud.mControls2.add(c);
-        mGame.mManager.mHud.mTapControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
         return c;
     }
 
@@ -863,8 +862,8 @@ public class Level {
         };
         // Put the control and events in the appropriate lists
         c.mToggleHandler.mSource = c;
-        mGame.mManager.mHud.mControls2.add(c);
-        mGame.mManager.mHud.mToggleControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
+        mGame.mManager.mHud.mToggleControls.add(c);
         mGame.mManager.mWorld.mRepeatEvents.add(whileDownAction);
         return c;
     }
@@ -1057,11 +1056,10 @@ public class Level {
                 return c.mToggleHandler.isHolding;
             }
         };
-        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        mGame.mManager.mHud.mToggleControls2.add(c);
-        mGame.mManager.mHud.mPanControls2.add(c);
+        mGame.mManager.mHud.mToggleControls.add(c);
 
         c.mToggleHandler.mSource = c;
         c.mPanHandler.mSource = c;
@@ -1147,8 +1145,7 @@ public class Level {
         };
         c.mPanHandler.mSource = c;
         c.mPanStopHandler.mSource = c;
-        mGame.mManager.mHud.mControls2.add(c);
-        mGame.mManager.mHud.mPanControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
         return c;
     }
 
@@ -1185,8 +1182,7 @@ public class Level {
                 return true;
             }
         };
-        mGame.mManager.mHud.mControls2.add(c);
-        mGame.mManager.mHud.mZoomControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
         return c;
     }
 
@@ -1203,7 +1199,7 @@ public class Level {
     public HudActor addImage(int x, int y, int width, int height, String imgName) {
         final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
-        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
         return c;
     }
 
@@ -1276,9 +1272,8 @@ public class Level {
         c.mPanHandler.mSource = c;
         c.mPanStopHandler.mSource = c;
         c.mToggleHandler.mSource = c;
-        mGame.mManager.mHud.mControls2.add(c);
-        mGame.mManager.mHud.mPanControls2.add(c);
-        mGame.mManager.mHud.mToggleControls2.add(c);
+        mGame.mManager.mHud.addActor(c, 0);
+        mGame.mManager.mHud.mToggleControls.add(c);
         return c;
     }
 

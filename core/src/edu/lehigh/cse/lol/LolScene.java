@@ -58,10 +58,18 @@ abstract class LolScene {
     final ArrayList<TouchEventHandler> mTapHandlers;
 
     /// Events that get processed on the next render, then discarded
-     final ArrayList<LolAction> mOneTimeEvents;
+    final ArrayList<LolAction> mOneTimeEvents;
 
     /// Events that get processed on every render
-     final ArrayList<LolAction> mRepeatEvents;
+    final ArrayList<LolAction> mRepeatEvents;
+
+    void reset() {
+        mTapHandlers.clear();
+        mOneTimeEvents.clear();
+        mRepeatEvents.clear();
+        for (ArrayList<Renderable> a : mRenderables)
+            a.clear();
+    }
 
     LolScene(Media media, Config config) {
         float w = config.mWidth / config.PIXEL_METER_RATIO;
