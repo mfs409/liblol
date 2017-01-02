@@ -31,7 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 
 /**
  * RouteDriver is an internal class, used by LOL to determine placement for an
- * Actor whose motion is controlled by a Route.
+ * WorldActor whose motion is controlled by a Route.
  */
 class RouteDriver {
 

@@ -52,12 +52,12 @@ public abstract class LolCallback {
      * For collision events or actor press events, this is the actor to which
      * the callback is attached
      */
-    public Actor mAttachedActor;
+    public WorldActor mAttachedActor;
 
     /**
      * For collision events, this is the other actor involved in the collision
      */
-    public Actor mCollideActor;
+    public WorldActor mCollideActor;
 
     /**
      * When a callback runs in response to a screen touch, we may need to know the world coordinates of the down-press

@@ -35,7 +35,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * score changing, it can lead to the hero's strength changing, and it can lead
  * to the hero becoming invincible for some time.
  */
-public class Goodie extends Actor {
+public class Goodie extends WorldActor {
     /**
      * The "score" of this goodie... it is the amount that will be added to the
      * score when this goodie is collected. This is different than a hero's
@@ -78,7 +78,7 @@ public class Goodie extends Actor {
      * @param contact A description of the contact that caused this collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
     }
 
     /**

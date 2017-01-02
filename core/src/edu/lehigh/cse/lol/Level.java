@@ -31,7 +31,7 @@ import com.badlogic.gdx.utils.Timer;
  */
 public class Level {
     /// A reference to the game object, so we can access session facts and the state machine
-    protected final Lol mGame;
+    private final Lol mGame;
 
     /// A reference to the game-wide configuration variables
     protected final Config mConfig;
@@ -74,7 +74,7 @@ public class Level {
      *
      * @param actor The actor the camera should chase
      */
-    public void setCameraChase(Actor actor) {
+    public void setCameraChase(WorldActor actor) {
         mGame.mManager.mWorld.mChaseActor = actor;
     }
 
@@ -430,7 +430,7 @@ public class Level {
      * @param yGravityMax Max Y force that the accelerometer can produce
      */
     public void enableTilt(float xGravityMax, float yGravityMax) {
-        mGame.mManager.mWorld.mTilt.mGravityMax = new Vector2(xGravityMax, yGravityMax);
+        mGame.mManager.mWorld.mTiltMax = new Vector2(xGravityMax, yGravityMax);
     }
 
     /**
@@ -438,7 +438,7 @@ public class Level {
      * level
      */
     public void disableTilt() {
-        mGame.mManager.mWorld.mTilt.mGravityMax = null;
+        mGame.mManager.mWorld.mTiltMax = null;
     }
 
     /**
@@ -451,7 +451,7 @@ public class Level {
      *               of the phone directly sets velocities
      */
     public void setTiltAsVelocity(boolean toggle) {
-        mGame.mManager.mWorld.mTilt.mTiltVelocityOverride = toggle;
+        mGame.mManager.mWorld.mTiltVelocityOverride = toggle;
     }
 
     /**
@@ -463,7 +463,7 @@ public class Level {
      *                   accelerometer less sensitive
      */
     public void setGravityMultiplier(float multiplier) {
-        mGame.mManager.mWorld.mTilt.mMultiplier = multiplier;
+        mGame.mManager.mWorld.mTiltMultiplier = multiplier;
     }
 
     /**
@@ -634,7 +634,7 @@ public class Level {
      * @param actor The actor whose distance is being monitored
      * @return A TextProducer, which can be passed to addDisplay
      */
-    public TextProducer DisplayDistance(final Actor actor) {
+    public TextProducer DisplayDistance(final WorldActor actor) {
         return new TextProducer() {
             @Override
             public String makeText() {
@@ -713,8 +713,8 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public HudActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
-        HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
+        SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mTapHandler = action;
         action.mSource = c;
@@ -842,8 +842,8 @@ public class Level {
      * @param onUpAction      The action to execute once any time the button is released
      * @return The control, so we can do more with it as needed.
      */
-    public HudActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
-        HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
+        SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         // initially the down action is not active
         whileDownAction.mIsActive = false;
@@ -875,7 +875,7 @@ public class Level {
      * @param xRate The rate at which the actor should move in the X direction (negative values are allowed)
      * @return The action
      */
-    public LolAction makeXMotionAction(final Actor actor, final float xRate) {
+    public LolAction makeXMotionAction(final WorldActor actor, final float xRate) {
         return new LolAction() {
             @Override
             public void go() {
@@ -893,7 +893,7 @@ public class Level {
      * @param yRate The rate at which the actor should move in the Y direction (negative values are allowed)
      * @return The action
      */
-    public LolAction makeYMotionAction(final Actor actor, final float yRate) {
+    public LolAction makeYMotionAction(final WorldActor actor, final float yRate) {
         return new LolAction() {
             @Override
             public void go() {
@@ -912,7 +912,7 @@ public class Level {
      * @param yRate The rate at which the actor should move in the Y direction (negative values are allowed)
      * @return The action
      */
-    public LolAction makeXYMotionAction(final Actor actor, final float xRate, final float yRate) {
+    public LolAction makeXYMotionAction(final WorldActor actor, final float xRate, final float yRate) {
         return new LolAction() {
             @Override
             public void go() {
@@ -931,7 +931,7 @@ public class Level {
      * @param dampening The dampening factor
      * @return The action
      */
-    public LolAction makeXYDampenedMotionAction(final Actor actor, final float xRate, final float yRate, final float dampening) {
+    public LolAction makeXYDampenedMotionAction(final WorldActor actor, final float xRate, final float yRate, final float dampening) {
         return new LolAction() {
             @Override
             public void go() {
@@ -1030,9 +1030,9 @@ public class Level {
      *                   projectile and the bottom left of the hero throwing the
      *                   projectile
      */
-    public HudActor addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
-                                              final long milliDelay, final float offsetX, final float offsetY) {
-        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+                                                final long milliDelay, final float offsetX, final float offsetY) {
+        final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         final Vector2 v = new Vector2();
         c.mToggleHandler = new TouchEventHandler() {
@@ -1093,8 +1093,8 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public HudActor addPanControl(int x, int y, int width, int height, String imgName) {
-        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addPanControl(int x, int y, int width, int height, String imgName) {
+        final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mPanStopHandler = new TouchEventHandler() {
             /**
@@ -1161,9 +1161,9 @@ public class Level {
      * @param maxZoom The maximum zoom (out) factor. 8 is usually a good choice.
      * @param minZoom The minimum zoom (int) factor. .25f is usually a good choice.
      */
-    public HudActor addPinchZoomControl(float x, float y, float width, float height, String imgName, final float maxZoom,
-                                        final float minZoom) {
-        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addPinchZoomControl(float x, float y, float width, float height, String imgName, final float maxZoom,
+                                          final float minZoom) {
+        final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mDownHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -1196,8 +1196,8 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public HudActor addImage(int x, int y, int width, int height, String imgName) {
-        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addImage(int x, int y, int width, int height, String imgName) {
+        final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         mGame.mManager.mHud.addActor(c, 0);
         return c;
@@ -1218,8 +1218,8 @@ public class Level {
      *                Control
      */
     // TODO: we never test this code!
-    public HudActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
-        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+    public SceneActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
+        final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         // Pan only consists of pan-stop and pan events. That means we can't
         // capture a down-press or up-press that isn't also involved in a move.
@@ -1357,14 +1357,14 @@ public class Level {
     }
 
     /**
-     * Look up an Actor that was stored for the current level. If no such Actor
+     * Look up an WorldActor that was stored for the current level. If no such WorldActor
      * exists, null will be returned.
      *
-     * @param actorName The name used to store the Actor
-     * @return The last Actor stored with this name
+     * @param actorName The name used to store the WorldActor
+     * @return The last WorldActor stored with this name
      */
-    public Actor getLevelActor(String actorName) {
-        Actor actor = mGame.mManager.mWorld.mLevelActors.get(actorName);
+    public WorldActor getLevelActor(String actorName) {
+        WorldActor actor = mGame.mManager.mWorld.mLevelActors.get(actorName);
         if (actor == null) {
             Lol.message(mConfig, "ERROR", "Error retreiving level fact '" + actorName + "'");
             return null;
@@ -1373,13 +1373,13 @@ public class Level {
     }
 
     /**
-     * Save a Actor from the current level. If the actorName has already been
+     * Save a WorldActor from the current level. If the actorName has already been
      * used for this level, the new value will overwrite the old.
      *
-     * @param actorName The name for the Actor being saved
-     * @param actor     The Actor that is the fact being saved
+     * @param actorName The name for the WorldActor being saved
+     * @param actor     The WorldActor that is the fact being saved
      */
-    public void putLevelActor(String actorName, Actor actor) {
+    public void putLevelActor(String actorName, WorldActor actor) {
         mGame.mManager.mWorld.mLevelActors.put(actorName, actor);
     }
 
@@ -2066,8 +2066,8 @@ public class Level {
                                   float xposeX, float xposeY, Svg.ActorCallback ac) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
-        Svg s = new Svg(stretchX, stretchY, xposeX, xposeY, ac);
-        s.parse(this, svgName);
+        Svg s = new Svg(this, stretchX, stretchY, xposeX, xposeY, ac);
+        s.parse(svgName);
     }
 
     /**

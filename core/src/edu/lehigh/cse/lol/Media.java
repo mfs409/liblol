@@ -40,33 +40,55 @@ import java.util.TreeMap;
 
 /**
  * Media provides a mechanism for registering all of our images, sounds, and fonts
- *
+ * <p>
  * Strictly speaking, we can re-create fonts on the fly whenever we need to. Caching them here is an
  * optimization, and it helps if we ever want to build to HTML5, which doesn't support FreeType.
  */
 class Media {
-     /// Store the fonts used by this game
+    /// Store the fonts used by this game
     private final TreeMap<String, BitmapFont> mFonts = new TreeMap<>();
-
-     /// Store the sounds used by this game
+    /// Store the sounds used by this game
     private final TreeMap<String, Sound> mSounds = new TreeMap<>();
-
-     /// Store the music used by this game
+    /// Store the music used by this game
     private final TreeMap<String, Music> mTunes = new TreeMap<>();
-
-     /// Store the images used by this game
+    /// Store the images used by this game
     private final TreeMap<String, TextureRegion> mImages = new TreeMap<>();
-
     /// A copy of the game-wide configuration object
     private Config mConfig;
 
     /**
-     * When a game is disposed of, the images are managed by libGDX. Fonts are
-     * too, except that references to old fonts don't resurrect nicely. Clearing
-     * the collection when the game disposes is satisfactory to avoid visual
-     * glitches when the game comes back to the foreground.
+     * Construct a Media object by loading all images and sounds
+     *
+     * @param config The game-wide configuration object, which contains lists of images and sounds
      */
-     void onDispose() {
+    Media(Config config) {
+        mConfig = config;
+        for (String imgName : config.mImageNames) {
+            TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
+            mImages.put(imgName, tr);
+        }
+        for (String soundName : config.mSoundNames) {
+            Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
+            mSounds.put(soundName, s);
+        }
+        int volume = Lol.getGameFact(mConfig, "volume", 1);
+        for (String musicName : config.mMusicNames) {
+            Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
+            m.setLooping(true);
+            m.setVolume(volume);
+            mTunes.put(musicName, m);
+        }
+    }
+
+    /**
+     * Clear out all assets when a game is disposed.
+     * <p>
+     * Dispose doesn't always mean "the game is closed forever", and the app might resurrect.  When
+     * it does, LibGDX restores any sound/music/image assets.  However, it does not restore fonts.
+     * Since we use FreeType to create BitmapFonts on the fly, we can just drop the font collection
+     * when the app disposes, and then we'll recreate fonts on the fly when the app restarts.
+     */
+    void onDispose() {
         mFonts.clear();
     }
 
@@ -74,11 +96,11 @@ class Media {
      * Get the font described by the file name and font size
      *
      * @param fontFileName The filename for the font. This should be in the android
-     *                     project's assets, and should end in .ttf
-     * @param fontSize     The size to display
+     *                     project's assets folder, and should end in .ttf
+     * @param fontSize     The font size to use for the BitmapFont we create
      * @return A font object that can be used to render text
      */
-    public  BitmapFont getFont(String fontFileName, int fontSize) {
+    BitmapFont getFont(String fontFileName, int fontSize) {
         // we store fonts as their filename appended with their size
         String key = fontFileName + "--" + fontSize;
 
@@ -93,131 +115,72 @@ class Media {
 
         // Generate the font, save it, and return it
         //
-        // NB: if this crashes, the user will getLoseScene a reasonably good error
-        // message
+        // NB: if this crashes, the user will get a reasonably good error message
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
         parameter.size = fontSize;
-        generator.scaleForPixelHeight(fontSize);
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
-
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontFileName));
+        generator.scaleForPixelHeight(fontSize);
         f = generator.generateFont(parameter);
-        f.setUseIntegerPositions(false); // when we switch to HTML builds, this helps
+        f.setUseIntegerPositions(false); // NB: when we switch to HTML builds, this helps
         generator.dispose();
         mFonts.put(key, f);
         return f;
     }
 
     /**
-     * Internal method to retrieve a sound by name
+     * Get a previously loaded Sound object
      *
      * @param soundName Name of the sound file to retrieve
      * @return a Sound object that can be used for sound effects
      */
-    public  Sound getSound(String soundName) {
+    Sound getSound(String soundName) {
         Sound ret = mSounds.get(soundName);
-        if (ret == null)
+        if (ret == null) {
             Lol.message(mConfig, "ERROR", "Error retrieving sound '" + soundName + "'");
+        }
         return ret;
     }
 
     /**
-     * Internal method to retrieve a music object by name
+     * Get a previously loaded Music object
      *
      * @param musicName Name of the music file to retrieve
      * @return a Music object that can be used to play background music
      */
-     Music getMusic(String musicName) {
+    Music getMusic(String musicName) {
         Music ret = mTunes.get(musicName);
-        if (ret == null)
+        if (ret == null) {
             Lol.message(mConfig, "ERROR", "Error retrieving music '" + musicName + "'");
+        }
         return ret;
     }
 
     /**
-     * Internal method to retrieve an image by name. User code should not call
-     * this.
+     * Get a previously loaded image
      *
      * @param imgName Name of the image file to retrieve
      * @return a TextureRegion object that can be used to create Actors
      */
-    public  TextureRegion getImage(String imgName) {
+    TextureRegion getImage(String imgName) {
+        // don't give an error for "", since it's probably intentional
+        if (imgName.equals("")) {
+            return null;
+        }
         TextureRegion ret = mImages.get(imgName);
-        if (ret == null)
+        if (ret == null) {
             Lol.message(mConfig, "ERROR", "Error retrieving image '" + imgName + "'");
+        }
         return ret;
     }
 
     /**
-     * On a volume change event, this will change the volume of all music
-     * objects
+     * On a volume change event, make sure all Music objects are updated
      */
-     void resetMusicVolume() {
+    void resetMusicVolume() {
         for (Music m : mTunes.values()) {
             m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
-        }
-    }
-
-    /**
-     * Register an image file, so that it can be used later. Images should be
-     * .png files. Note that images with internal animations (i.e., GIFs) do not
-     * work correctly. You should use cell-based animation instead.
-     *
-     * @param imgName the name of the image file (assumed to be in the "assets"
-     *                folder). This should be of the form "image.png", and should be
-     *                of type "png". "jpeg" images work too, but usually look bad in
-     *                games
-     */
-     public void registerImage(String imgName) {
-        // Create an array with one entry
-        TextureRegion tr = new TextureRegion(new Texture(Gdx.files.internal(imgName)));
-        mImages.put(imgName, tr);
-    }
-
-    /**
-     * Register a music file, so that it can be used later. Music should be in
-     * .ogg format. You can use Audacity to convert music as needed. mp3 files
-     * should work too, but may have licensing restrictions in some countries.
-     *
-     * @param musicName the name of the music file (assumed to be in the "assets"
-     *                  folder). This should be of the form "song.ogg", and should be
-     *                  of type "ogg".
-     * @param loop      either true or false, to indicate whether the song should
-     *                  repeat when it reaches the end
-     */
-     public void registerMusic(String musicName, boolean loop) {
-        Music m = Gdx.audio.newMusic(Gdx.files.internal(musicName));
-        m.setLooping(loop);
-        m.setVolume(Lol.getGameFact(mConfig, "volume", 1));
-        mTunes.put(musicName, m);
-    }
-
-    /**
-     * Register a sound file, so that it can be used later. Sounds should be
-     * .ogg files. You can use Audacity to convert sounds as needed. mp3 files
-     * should work too
-     *
-     * @param soundName the name of the sound file (assumed to be in the "assets"
-     *                  folder). This should be of the form "sound.ogg", and should be
-     *                  of type "ogg".
-     */
-    public void registerSound(String soundName) {
-        Sound s = Gdx.audio.newSound(Gdx.files.internal(soundName));
-        mSounds.put(soundName, s);
-    }
-
-
-    Media(Config cfg) {
-        mConfig = cfg;
-        for (String name : cfg.mImageNames) {
-            registerImage(name);
-        }
-        for (String name : cfg.mSoundNames) {
-            registerSound(name);
-        }
-        for (String name : cfg.mMusicNames) {
-            registerMusic(name, true);
         }
     }
 }

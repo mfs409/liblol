@@ -1,7 +1,5 @@
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.math.Vector3;
-
 /**
  * TouchEventHandler is a wrapper for code that ought to run in response to a touch event.
  *
@@ -16,7 +14,7 @@ public abstract class TouchEventHandler {
     public BaseActor mSource = null;
 
     /// An actor associated with this handler, if any
-    public Actor mAttachedActor = null;
+    public WorldActor mAttachedActor = null;
 
     /// A flag to track if the event is being held
     public boolean isHolding = false;

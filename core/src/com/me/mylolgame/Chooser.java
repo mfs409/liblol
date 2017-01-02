@@ -132,13 +132,13 @@ public class Chooser implements ScreenManager {
      * Describe how to draw each level of the chooser. Our chooser will have 15
      * levels per screen, so we need 7 screens.
      */
-    public void display(int which, Level level) {
+    public void display(int index, Level level) {
         // screen 1: show 1-->15
         //
         // NB: in this screen, we assume you haven't done much programming, so
         // we draw each button with its own line of code, and we don't use any
         // variables.
-        if (which == 1) {
+        if (index == 1) {
 
 
             // set up background and music
@@ -178,7 +178,7 @@ public class Chooser implements ScreenManager {
         // using some variables in the loops, we getLoseScene the same effect as the
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
-        else if (which == 2) {
+        else if (index == 2) {
 
 
             // set up background and music
@@ -218,7 +218,7 @@ public class Chooser implements ScreenManager {
         //
         // NB: now we use a nested pair of loops, and we can do three rows in
         // just a few more lines than one row.
-        else if (which == 3) {
+        else if (index == 3) {
 
 
             // set up background and music
@@ -249,7 +249,7 @@ public class Chooser implements ScreenManager {
         // screen 4: show levels 46-->60
         // screen 5: show levels 61-->75
         // screen 6: show levels 75-->90
-        else if (which < 7) {
+        else if (index < 7) {
             // set-up
 
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -257,7 +257,7 @@ public class Chooser implements ScreenManager {
 
             // levels
             float y = 16;
-            int l = (which - 1) * 15 + 1;
+            int l = (index - 1) * 15 + 1;
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
@@ -269,14 +269,14 @@ public class Chooser implements ScreenManager {
             }
 
             // navigation buttons
-            drawPrevButton(level, 0, 9.5f, 5, 5, which - 1);
-            drawNextButton(level, 43, 9.5f, 5, 5, which + 1);
+            drawPrevButton(level, 0, 9.5f, 5, 5, index - 1);
+            drawNextButton(level, 43, 9.5f, 5, 5, index + 1);
             drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // The final case is the 7th screen, which just shows levels 91 and 92.
         // We'll just do it by hand.
-        else if (which == 7) {
+        else if (index == 7) {
 
 
             // set up background and music

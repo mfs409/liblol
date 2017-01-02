@@ -42,29 +42,28 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * The Lol object is the outermost container for all of the functionality of the
- * game. It implements ApplicationListener, which provides hooks for rendering the
- * game, stopping it, resuming it, etc.
+ * The Lol object is the outermost container for all of the functionality of the game.
+ * <p>
+ * The Lol object implements ApplicationListener, which provides hooks for rendering the game,
+ * stopping it, resuming it, and handling any Android lifecycle events.
  * <p/>
- * Apart from ApplicationListener duties, the Lol object is responsible for providing an abstracted
- * interface to some of the hardware (e.g., the back button and persistent storage), loading
- * resources, and forwarding key/touch inputs to the appropriate handlers.
+ * In addition to ApplicationListener duties, the Lol object is responsible for providing an
+ * abstracted interface to some of the hardware (e.g., the back button and persistent storage),
+ * loading resources, and forwarding key/touch inputs to the appropriate handlers.
  */
 public class Lol implements ApplicationListener {
     /// mConfig stores the configuration state of the game.
     final Config mConfig;
-    /// Store all the images, sounds, and fonts for the game
+    /// mMedia stores all the images, sounds, and fonts for the game
     private Media mMedia;
 
-    /// mLevel is the Level object that is active, in accordance with the state machine.
-    Level mLevel;
     /// The Manager object handles scores, screen management, and transitions among screens
     LolManager mManager;
 
-    /// The debug renderer, for printing circles and boxes for each actor
-    private Box2DDebugRenderer mDebugRender;
     /// The SpriteBatch for drawing all texture regions and fonts
     private SpriteBatch mSpriteBatch;
+    /// The debug renderer, for printing circles and boxes for each actor
+    private Box2DDebugRenderer mDebugRender;
 
     /// This variable lets us track whether the user pressed 'back' on an android, or 'escape' on
     // the desktop. We are using polling, so we swallow presses that aren't preceded by a release.
@@ -141,7 +140,7 @@ public class Lol implements ApplicationListener {
      */
     void liftAllButtons(Vector3 touchVec) {
         mManager.mHud.liftAllButtons(touchVec);
-        mManager.mWorld.liftAllButtons();
+        mManager.mWorld.liftAllButtons(touchVec);
     }
 
     /**
@@ -177,11 +176,11 @@ public class Lol implements ApplicationListener {
         // if we're looking at the chooser or help, switch to the splash
         // screen
         else if (mManager.mMode == LolManager.CHOOSER || mManager.mMode == LolManager.HELP || mManager.mMode == LolManager.STORE) {
-            mLevel.doSplash();
+            mManager.doSplash();
         }
         // ok, we're looking at a game scene... switch to chooser
         else {
-            mLevel.doChooser(mManager.mModeStates[LolManager.CHOOSER]);
+            mManager.doChooser(mManager.mModeStates[LolManager.CHOOSER]);
         }
     }
 
@@ -322,14 +321,14 @@ public class Lol implements ApplicationListener {
 
     /**
      * App creation lifecycle event.
-     *
+     * <p>
      * The lifecycle of LibGDX games splits app startup into two parts.  First, an
      * <code>ApplicationListener</code> is constructed.  However, it is constructed *very* early,
      * and can't even do all of the things one might expect.  For example, it doesn't have an
      * OpenGL context yet, so it can't load its assets from disk.  In the second stage, the
      * <code>create</code> method, we can finish constructing the application, knowing that it has
      * access to the full resources of the device.
-     *
+     * <p>
      * NB: This is an internal method for initializing a game. User code should never call this.
      */
     @Override
@@ -356,8 +355,6 @@ public class Lol implements ApplicationListener {
         if (getGameFact(mConfig, "volume", 1) == 1)
             putGameFact(mConfig, "volume", 1);
 
-        // Set up the API, so that any user code we call is able to reach this object
-        mLevel = new Level(mConfig, mMedia, this);
 
         // Create the level manager, and instruct it to transition to the Splash screen
         mManager = new LolManager(mConfig, mMedia, this);
@@ -370,7 +367,7 @@ public class Lol implements ApplicationListener {
      */
     @Override
     public void dispose() {
-        if (mLevel != null)
+        if (mManager != null)
             mManager.mWorld.pauseMusic();
 
         // dispose of all fonts, TextureRegions, etc...
@@ -429,7 +426,7 @@ public class Lol implements ApplicationListener {
 
         // Let the score object know that we are rendering, so that we can handle any win/lose
         // timers
-        mManager.onRender(mLevel);
+        mManager.onRender();
 
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
@@ -503,7 +500,7 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * When an Actor collides with another Actor, and that collision is intended to
+     * When an WorldActor collides with another WorldActor, and that collision is intended to
      * cause some custom code to run, we use this interface
      */
     interface CollisionCallback {
@@ -515,6 +512,6 @@ public class Lol implements ApplicationListener {
          * @param actor   The actor involved in the collision
          * @param contact A description of the contact, in case it is useful
          */
-        void go(final Actor actor, Contact contact);
+        void go(final WorldActor actor, Contact contact);
     }
 }

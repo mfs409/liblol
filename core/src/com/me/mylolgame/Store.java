@@ -44,9 +44,9 @@ public class Store implements ScreenManager {
     /**
      * This function draws the different screens of our store
      *
-     * @param which The store screen to draw.
+     * @param index The store screen to draw.
      */
-    public void display(int which, Level level) {
+    public void display(int index, Level level) {
         // If the store has multiple screens, use Lol.doStore(int) as the
         // callback on buttons for navigating among store screens
     }

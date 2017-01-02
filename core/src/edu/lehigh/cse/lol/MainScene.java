@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -22,8 +23,8 @@ import java.util.Random;
 import java.util.TreeMap;
 
 /**
- * PhysicsWorld stores the functionality that is common across all of the different renderable,
- * updatable containers that store actors in a physical world.
+ * MainScene manages everything related to the core gameplay of a level.  It has all of the
+ * interesting types of actors that Lol supports, tilt, a fact interface, and music.
  */
 class MainScene extends LolScene {
     /// A timer, so that we can stop using the static timer instance
@@ -32,35 +33,42 @@ class MainScene extends LolScene {
     Timer mTimer = new Timer();
 
     /// A reference to the game object, so we can access session facts and the state machine
-    protected final Lol mGame;
+    final Lol mGame;
 
     /// A map for storing the level facts for the current level
-    protected final TreeMap<String, Integer> mLevelFacts;
-
+    final TreeMap<String, Integer> mLevelFacts;
     /// A map for storing the actors in the current level
-    protected final TreeMap<String, Actor> mLevelActors;
+    final TreeMap<String, WorldActor> mLevelActors;
 
-    /// A reference to the tilt object, for managing how tilts are handled
-    ///
-    /// TODO: make private
-    final Tilt mTilt = new Tilt();
+    /// All actors whose behavior should change due to tilt
+    final ArrayList<WorldActor> mTiltActors;
+    /// Magnitude of the maximum gravity the accelerometer can create
+    Vector2 mTiltMax;
+    /// Track if we have an override for gravity to be translated into velocity
+    boolean mTiltVelocityOverride;
+    /// A multiplier to make gravity change faster or slower than the accelerometer default
+    float mTiltMultiplier = 1;
 
-    /// This is the Actor that the camera chases
-    protected Actor mChaseActor;
+    /// This is the WorldActor that the camera chases, if any
+    WorldActor mChaseActor;
 
-    /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
+    /// A handler to run in respond to a screen Down event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mDownHandlers;
+    /// A handler to run in respond to a screen Up event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mUpHandlers;
+    /// A handler to run in respond to a screen Fling event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mFlingHandlers;
+    /// A handler to run in respond to a screen PanStop event.  An actor will install this,
+    /// if needed
     final ArrayList<TouchEventHandler> mPanStopHandlers;
+    /// A handler to run in respond to a screen Pan event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mPanHandlers;
 
-    /// In levels with a projectile pool, the pool is accessed from here
+    /// A pool of projectiles for use by the hero
     ProjectilePool mProjectilePool;
 
     /// The music, if any
     Music mMusic;
-
     /// Whether the music is playing or not
     private boolean mMusicPlaying;
 
@@ -101,6 +109,7 @@ class MainScene extends LolScene {
         mPanStopHandlers = new ArrayList<>();
         mPanHandlers = new ArrayList<>();
         mGenerator = new Random();
+        mTiltActors = new ArrayList<>();
     }
 
     /**
@@ -108,7 +117,7 @@ class MainScene extends LolScene {
      * phone tilt
      */
     void handleTilt() {
-        if (mTilt.mGravityMax == null)
+        if (mTiltMax == null)
             return;
 
         // these temps are for storing the accelerometer forces we measure
@@ -147,41 +156,41 @@ class MainScene extends LolScene {
         }
 
         // Apply the gravity multiplier
-        xGravity *= mTilt.mMultiplier;
-        yGravity *= mTilt.mMultiplier;
+        xGravity *= mTiltMultiplier;
+        yGravity *= mTiltMultiplier;
 
         // ensure x is within the -GravityMax.x : GravityMax.x range
-        xGravity = (xGravity > mConfig.PIXEL_METER_RATIO * mTilt.mGravityMax.x) ? mConfig.PIXEL_METER_RATIO * mTilt.mGravityMax.x
+        xGravity = (xGravity > mConfig.PIXEL_METER_RATIO * mTiltMax.x) ? mConfig.PIXEL_METER_RATIO * mTiltMax.x
                 : xGravity;
-        xGravity = (xGravity < mConfig.PIXEL_METER_RATIO * -mTilt.mGravityMax.x) ? mConfig.PIXEL_METER_RATIO * -mTilt.mGravityMax.x
+        xGravity = (xGravity < mConfig.PIXEL_METER_RATIO * -mTiltMax.x) ? mConfig.PIXEL_METER_RATIO * -mTiltMax.x
                 : xGravity;
 
         // ensure y is within the -GravityMax.y : GravityMax.y range
-        yGravity = (yGravity > mConfig.PIXEL_METER_RATIO * mTilt.mGravityMax.y) ? mConfig.PIXEL_METER_RATIO * mTilt.mGravityMax.y
+        yGravity = (yGravity > mConfig.PIXEL_METER_RATIO * mTiltMax.y) ? mConfig.PIXEL_METER_RATIO * mTiltMax.y
                 : yGravity;
-        yGravity = (yGravity < mConfig.PIXEL_METER_RATIO * -mTilt.mGravityMax.y) ? mConfig.PIXEL_METER_RATIO * -mTilt.mGravityMax.y
+        yGravity = (yGravity < mConfig.PIXEL_METER_RATIO * -mTiltMax.y) ? mConfig.PIXEL_METER_RATIO * -mTiltMax.y
                 : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
         // actor as a fixed velocity
-        if (mTilt.mTiltVelocityOverride) {
+        if (mTiltVelocityOverride) {
             // if X is clipped to zero, set each actor's Y velocity, leave X
             // unchanged
-            if (mTilt.mGravityMax.x == 0) {
-                for (Actor gfo : mTilt.mAccelActors)
+            if (mTiltMax.x == 0) {
+                for (WorldActor gfo : mTiltActors)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(gfo.mBody.getLinearVelocity().x, yGravity);
             }
             // if Y is clipped to zero, set each actor's X velocity, leave Y
             // unchanged
-            else if (mTilt.mGravityMax.y == 0) {
-                for (Actor gfo : mTilt.mAccelActors)
+            else if (mTiltMax.y == 0) {
+                for (WorldActor gfo : mTiltActors)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(xGravity, gfo.mBody.getLinearVelocity().y);
             }
             // otherwise we set X and Y velocity
             else {
-                for (Actor gfo : mTilt.mAccelActors)
+                for (WorldActor gfo : mTiltActors)
                     if (gfo.mBody.isActive())
                         gfo.updateVelocity(xGravity, yGravity);
             }
@@ -189,7 +198,7 @@ class MainScene extends LolScene {
         // when not in velocity mode, apply the accelerometer reading to each
         // actor as a force
         else {
-            for (Actor gfo : mTilt.mAccelActors)
+            for (WorldActor gfo : mTiltActors)
                 if (gfo.mBody.isActive())
                     gfo.mBody.applyForceToCenter(xGravity, yGravity, true);
         }
@@ -203,7 +212,7 @@ class MainScene extends LolScene {
      * @param other   The other actor... it should always be a hero for now
      * @param contact A description of the contact event
      */
-    private void handleSticky(final Actor sticky, final Actor other, Contact contact) {
+    private void handleSticky(final WorldActor sticky, final WorldActor other, Contact contact) {
         // don't create a joint if we've already got one
         if (other.mDJoint != null)
             return;
@@ -254,33 +263,33 @@ class MainScene extends LolScene {
                 // Get the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
+                if (!(a instanceof WorldActor) || !(b instanceof WorldActor))
                     return;
 
                 // the order is Hero, Enemy, Goodie, Projectile, Obstacle, Destination
                 //
                 // Of those, Hero, Enemy, and Projectile are the only ones with
                 // a non-empty onCollide
-                final Actor c0;
-                final Actor c1;
+                final WorldActor c0;
+                final WorldActor c1;
                 if (a instanceof Hero) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
+                    c0 = (WorldActor) a;
+                    c1 = (WorldActor) b;
                 } else if (b instanceof Hero) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
+                    c0 = (WorldActor) b;
+                    c1 = (WorldActor) a;
                 } else if (a instanceof Enemy) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
+                    c0 = (WorldActor) a;
+                    c1 = (WorldActor) b;
                 } else if (b instanceof Enemy) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
+                    c0 = (WorldActor) b;
+                    c1 = (WorldActor) a;
                 } else if (a instanceof Projectile) {
-                    c0 = (Actor) a;
-                    c1 = (Actor) b;
+                    c0 = (WorldActor) a;
+                    c1 = (WorldActor) b;
                 } else if (b instanceof Projectile) {
-                    c0 = (Actor) b;
-                    c1 = (Actor) a;
+                    c0 = (WorldActor) b;
+                    c1 = (WorldActor) a;
                 } else {
                     return;
                 }
@@ -316,10 +325,10 @@ class MainScene extends LolScene {
                 // get the bodies, make sure both are actors
                 Object a = contact.getFixtureA().getBody().getUserData();
                 Object b = contact.getFixtureB().getBody().getUserData();
-                if (!(a instanceof Actor) || !(b instanceof Actor))
+                if (!(a instanceof WorldActor) || !(b instanceof WorldActor))
                     return;
-                Actor gfoA = (Actor) a;
-                Actor gfoB = (Actor) b;
+                WorldActor gfoA = (WorldActor) a;
+                WorldActor gfoB = (WorldActor) b;
 
                 // go sticky obstacles... only do something if at least one
                 // actor is a sticky actor
@@ -339,8 +348,8 @@ class MainScene extends LolScene {
                 }
 
                 // is either one-sided? If not, we're done
-                Actor oneSided = null;
-                Actor other;
+                WorldActor oneSided = null;
+                WorldActor other;
                 if (gfoA.mIsOneSided > -1) {
                     oneSided = gfoA;
                     other = gfoB;
@@ -510,9 +519,9 @@ class MainScene extends LolScene {
     }
 
     boolean handleDrag(float screenX, float screenY) {
-        if (mHitActor != null && ((Actor)mHitActor).mDragHandler != null) {
+        if (mHitActor != null && ((WorldActor) mHitActor).mDragHandler != null) {
             mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-            return ((Actor)mHitActor).mDragHandler.go(mTouchVec.x, mTouchVec.y);
+            return ((WorldActor) mHitActor).mDragHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }
@@ -523,12 +532,12 @@ class MainScene extends LolScene {
         Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
     }
 
-    void liftAllButtons() {
+    void liftAllButtons(Vector3 touchVec) {
         for (TouchEventHandler ga : mPanStopHandlers) {
-            ga.go(mTouchVec.x, mTouchVec.y);
+            ga.go(touchVec.x, touchVec.y);
         }
         for (TouchEventHandler ga : mUpHandlers) {
-            ga.go(mTouchVec.x, mTouchVec.y);
+            ga.go(touchVec.x, touchVec.y);
         }
     }
 
@@ -543,35 +552,5 @@ class MainScene extends LolScene {
         }
         sb.end();
         return true;
-    }
-
-    /**
-     * Tilt provides a mechanism for moving actors on the screen. To use tilt, you
-     * must enableTilt it for a level, and also indicate that some actors move via
-     * tilting. Tilt has two flavors: tilt can cause gravitational effects, where a
-     * sustained tilt causes acceleration (this is the default), or it can cause
-     * actors to move with a fixed velocity. Be careful when using tilt. Different
-     * phones' accelerometers vary in terms of sensitivity. It is possible to set
-     * multipliers and/or caps on the effect of Tilt, but these may not suffice to
-     * make your game playable and enjoyable.
-     */
-    class Tilt {
-        /**
-         * List of actors that change behavior based on tilt
-         */
-        ArrayList<Actor> mAccelActors = new ArrayList<>();
-        /**
-         * Magnitude of the maximum gravity the accelerometer can create
-         */
-        Vector2 mGravityMax;
-        /**
-         * Track if we have an override for gravity to be translated into velocity
-         */
-        boolean mTiltVelocityOverride;
-        /**
-         * A multiplier to make gravity change faster or slower than the
-         * accelerometer default
-         */
-        float mMultiplier = 1;
     }
 }

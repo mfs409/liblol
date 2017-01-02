@@ -37,7 +37,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * can require all enemies to be defeated before the level can be won. Note that
  * Enemies can move in a variety of ways
  */
-public class Enemy extends Actor {
+public class Enemy extends WorldActor {
     /**
      * Amount of damage this enemy does to a hero on a collision. The default is
      * 2, so that an enemy will defeat a hero and not disappear.
@@ -87,7 +87,7 @@ public class Enemy extends Actor {
     }
 
     /**
-     * Collision behavior of enemies. Based on our Actor numbering scheme, the
+     * Collision behavior of enemies. Based on our WorldActor numbering scheme, the
      * only concerns are to ensure that when a projectile hits this enemy, we
      * remove the enemy and hide the projectile, and to go collisions with
      * certain obstacles
@@ -96,7 +96,7 @@ public class Enemy extends Actor {
      * @param contact The contact information for the collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
         // collision with obstacles
         if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle) other, contact);
@@ -233,7 +233,7 @@ public class Enemy extends Actor {
     public void setDefeatCallback(final LolCallback callback) {
         mDefeatCallback = new Lol.CollisionCallback() {
             @Override
-            public void go(Actor ps, Contact c) {
+            public void go(WorldActor ps, Contact c) {
                 callback.mAttachedActor = Enemy.this;
                 callback.onEvent();
             }

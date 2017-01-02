@@ -39,15 +39,15 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 /**
- * Actor is the base class upon which every game actor is built. Every actor has
+ * WorldActor is the base class upon which every game actor is built. Every actor has
  * a physics representation (rectangle, circle, or convex polygon). Actors
  * typically have an image associated with them, too, so that they have a visual
  * appearance during gameplay.
  * <p>
- * A game should rarely deal with Actor objects directly, instead using Hero,
+ * A game should rarely deal with WorldActor objects directly, instead using Hero,
  * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
  */
-public abstract class Actor extends BaseActor {
+public abstract class WorldActor extends BaseActor {
     /// A reference to the top-level Lol object
     final Lol mGame;
 
@@ -88,7 +88,7 @@ public abstract class Actor extends BaseActor {
     protected Vector3 mHover = new Vector3();
 
     /**
-     * Track if Heros stick to this Actor. The array has 4 positions,
+     * Track if Heros stick to this WorldActor. The array has 4 positions,
      * corresponding to top, right, bottom, left
      */
     boolean[] mIsSticky = new boolean[4];
@@ -122,7 +122,7 @@ public abstract class Actor extends BaseActor {
      * If this actor is chasing another actor, we track who is being chased via
      * this field
      */
-    Actor mChaseTarget;
+    WorldActor mChaseTarget;
 
     /**
      * Create a new actor that does not yet have physics, but that has a
@@ -132,7 +132,7 @@ public abstract class Actor extends BaseActor {
      * @param width   The width
      * @param height  The height
      */
-    Actor(Lol game, MainScene scene, String imgName, float width, float height) {
+    WorldActor(Lol game, MainScene scene, String imgName, float width, float height) {
         super(scene, imgName, width, height);
         mGame = game;
     }
@@ -152,7 +152,7 @@ public abstract class Actor extends BaseActor {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    callback.mAttachedActor = Actor.this;
+                    callback.mAttachedActor = WorldActor.this;
                     callback.onEvent();
                     moving = false;
                 }
@@ -166,7 +166,7 @@ public abstract class Actor extends BaseActor {
      *
      * @param other The other actor involved in the collision
      */
-    abstract void onCollide(Actor other, Contact contact);
+    abstract void onCollide(WorldActor other, Contact contact);
 
     /**
      * Make the camera follow the actor, but without centering the actor on the
@@ -187,13 +187,13 @@ public abstract class Actor extends BaseActor {
     public void setMoveByTilting() {
         // If we've already added this to the set of tiltable objects, don't do
         // it again
-        if (((MainScene) mScene).mTilt.mAccelActors.contains(this))
+        if (((MainScene) mScene).mTiltActors.contains(this))
             return;
 
         // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
-        ((MainScene) mScene).mTilt.mAccelActors.add(this);
+        ((MainScene) mScene).mTiltActors.add(this);
         // turn off sensor behavior, so this collides with stuff...
         setCollisionsEnabled(true);
     }
@@ -228,7 +228,7 @@ public abstract class Actor extends BaseActor {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    callback.mAttachedActor = Actor.this;
+                    callback.mAttachedActor = WorldActor.this;
                     callback.onEvent();
                 }
                 return true;
@@ -327,7 +327,7 @@ public abstract class Actor extends BaseActor {
         ((MainScene) mScene).mFlingHandlers.add(new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // note: may need to disable hovering
-                if (mScene.mHitActor == Actor.this) {
+                if (mScene.mHitActor == WorldActor.this) {
                     mHover = null;
                     updateVelocity(worldX * dampFactor, worldY * dampFactor);
                 }
@@ -519,7 +519,7 @@ public abstract class Actor extends BaseActor {
      * @param chaseInX Should the actor change its x velocity?
      * @param chaseInY Should the actor change its y velocity?
      */
-    public void setChaseSpeed(final float speed, final Actor target, final boolean chaseInX, final boolean chaseInY) {
+    public void setChaseSpeed(final float speed, final WorldActor target, final boolean chaseInX, final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
         mScene.mRepeatEvents.add(new LolAction() {
@@ -568,7 +568,7 @@ public abstract class Actor extends BaseActor {
      * @param ignoreY    False if we should apply yMagnitude, true if we should keep
      *                   the hero's existing Y velocity
      */
-    public void setChaseFixedMagnitude(final Actor target, final float xMagnitude, final float yMagnitude,
+    public void setChaseFixedMagnitude(final WorldActor target, final float xMagnitude, final float yMagnitude,
                                        final boolean ignoreX, final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
@@ -597,7 +597,7 @@ public abstract class Actor extends BaseActor {
      *
      * @return The actor being chased
      */
-    public Actor getChaseactor() {
+    public WorldActor getChaseactor() {
         return mChaseTarget;
     }
 
@@ -617,7 +617,7 @@ public abstract class Actor extends BaseActor {
      * @param localAnchorY The Y coordinate (relative to the center of the actor) where
      *                     the joint fuses to this actor
      */
-    public void setRevoluteJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
+    public void setRevoluteJoint(WorldActor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
         // create joint, connect anchors
@@ -681,7 +681,7 @@ public abstract class Actor extends BaseActor {
      *               the joint fuses to this actor
      * @param angle  The angle between the actors
      */
-    public void setWeldJoint(Actor other, float otherX, float otherY, float localX, float localY, float angle) {
+    public void setWeldJoint(WorldActor other, float otherX, float otherY, float localX, float localY, float angle) {
         WeldJointDef w = new WeldJointDef();
         w.bodyA = mBody;
         w.bodyB = other.mBody;
@@ -705,7 +705,7 @@ public abstract class Actor extends BaseActor {
      * @param localAnchorY The Y coordinate (relative to the center of the actor) where
      *                     the joint fuses to this actor
      */
-    public void setDistanceJoint(Actor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
+    public void setDistanceJoint(WorldActor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
 

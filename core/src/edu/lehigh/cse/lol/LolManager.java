@@ -24,6 +24,8 @@ class LolManager {
     private final Config mConfig;
     /// The set of loaded assets
     private final Media mMedia;
+    /// TODO
+    private final Level mLevel;
 
     /// The physics world in which all actors exist
     MainScene mWorld;
@@ -62,6 +64,9 @@ class LolManager {
         mGame = game;
         mConfig = config;
         mMedia = media;
+        // Set up the API, so that any user code we call is able to reach this object
+        mLevel = new Level(mConfig, mMedia, mGame);
+
         createScenes();
         mSessionFacts = new TreeMap<>();
 
@@ -117,7 +122,7 @@ class LolManager {
 
         // When debug mode is on, print the frames per second
         if (mConfig.mShowDebugBoxes)
-            mGame.mLevel.addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", mGame.mLevel.DisplayFPS);
+            mLevel.addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", mLevel.DisplayFPS);
     }
 
     /**
@@ -153,7 +158,7 @@ class LolManager {
             mModeStates[i] = 1;
         mMode = LolManager.SPLASH;
         setScreen();
-        mConfig.mSplash.display(1, mGame.mLevel);
+        mConfig.mSplash.display(1, mLevel);
     }
 
     /**
@@ -178,7 +183,7 @@ class LolManager {
         mMode = LolManager.CHOOSER;
         mModeStates[LolManager.CHOOSER] = whichChooser;
         setScreen();
-        mConfig.mChooser.display(whichChooser, mGame.mLevel);
+        mConfig.mChooser.display(whichChooser, mLevel);
     }
 
     /**
@@ -191,7 +196,7 @@ class LolManager {
         mMode = LolManager.PLAY;
         setScreen();
         resetScores();
-        mConfig.mLevels.display(which, mGame.mLevel);
+        mConfig.mLevels.display(which, mLevel);
     }
 
     /**
@@ -203,7 +208,7 @@ class LolManager {
         mModeStates[LolManager.HELP] = which;
         mMode = LolManager.HELP;
         setScreen();
-        mConfig.mHelp.display(which, mGame.mLevel);
+        mConfig.mHelp.display(which, mLevel);
     }
 
     /**
@@ -215,7 +220,7 @@ class LolManager {
         mModeStates[LolManager.STORE] = which;
         mMode = LolManager.STORE;
         setScreen();
-        mConfig.mStore.display(which, mGame.mLevel);
+        mConfig.mStore.display(which, mLevel);
     }
 
     /**
@@ -321,7 +326,7 @@ class LolManager {
         if (mHeroesDefeated == mHeroesCreated) {
             // possibly change the end-of-level text
             if (!enemy.mOnDefeatHeroText.equals(""))
-                mGame.mLevel.getLoseScene().setDefaultText(enemy.mOnDefeatHeroText);
+                mLoseScene.setDefaultText(enemy.mOnDefeatHeroText);
             endLevel(false);
         }
     }
@@ -430,13 +435,13 @@ class LolManager {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     }
 
-    void onRender(Level level) {
+    void onRender() {
         // Check the countdown timers
         if (mLoseCountDownRemaining != -100) {
             mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
             if (mLoseCountDownRemaining < 0) {
                 if (mLoseCountDownText != "")
-                    level.getLoseScene().setDefaultText(mLoseCountDownText);
+                    mLoseScene.setDefaultText(mLoseCountDownText);
                 endLevel(false);
             }
         }
@@ -444,7 +449,7 @@ class LolManager {
             mWinCountRemaining -= Gdx.graphics.getDeltaTime();
             if (mWinCountRemaining < 0) {
                 if (mWinCountText != "")
-                    level.getWinScene().setDefaultText(mWinCountText);
+                    mWinScene.setDefaultText(mWinCountText);
                 endLevel(true);
             }
         }

@@ -26,28 +26,23 @@ import java.util.ArrayList;
 abstract class LolScene {
     /// A reference to the object that stores all of the sounds and images we use in the game
     protected final Media mMedia;
-
     /// A reference to the game-wide configuration variables
     protected final Config mConfig;
 
     /// The physics world in which all actors interact
     final World mWorld;
-
-    /// This camera is for drawing actors that exist in the physics world
-    final OrthographicCamera mCamera;
-
-    /// The maximum x and y values of the camera
-    final Vector2 mCamBound;
-
     /// Anything in the world that can be rendered, in 5 planes [-2, -1, 0, 1, 2]
     final ArrayList<ArrayList<Renderable>> mRenderables;
 
+    /// This camera is for drawing actors that exist in the physics world
+    final OrthographicCamera mCamera;
+    /// The maximum x and y values of the camera
+    final Vector2 mCamBound;
+
     /// We use this to avoid garbage collection when converting screen touches to camera coordinates
     final Vector3 mTouchVec;
-
     /// This callback is used to get a touched actor from the physics world
     final QueryCallback mTouchCallback;
-
     /// When there is a touch of an actor in the physics world, this is how we find it
     BaseActor mHitActor = null;
 
@@ -56,20 +51,11 @@ abstract class LolScene {
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
     final ArrayList<TouchEventHandler> mTapHandlers;
-
     /// Events that get processed on the next render, then discarded
     final ArrayList<LolAction> mOneTimeEvents;
-
     /// Events that get processed on every render
     final ArrayList<LolAction> mRepeatEvents;
 
-    void reset() {
-        mTapHandlers.clear();
-        mOneTimeEvents.clear();
-        mRepeatEvents.clear();
-        for (ArrayList<Renderable> a : mRenderables)
-            a.clear();
-    }
 
     LolScene(Media media, Config config) {
         float w = config.mWidth / config.PIXEL_METER_RATIO;
@@ -237,6 +223,14 @@ abstract class LolScene {
         mGlyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + mGlyphLayout.height);
         bf.getData().setScale(1);
+    }
+
+    void reset() {
+        mTapHandlers.clear();
+        mOneTimeEvents.clear();
+        mRepeatEvents.clear();
+        for (ArrayList<Renderable> a : mRenderables)
+            a.clear();
     }
 
     /**

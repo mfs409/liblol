@@ -42,10 +42,10 @@ class Splash implements ScreenManager {
      * There is usually only one splash screen. However, the ScreenManager interface requires
      * display() to take a parameter for which screen to display.  We ignore it.
      *
-     * @param which Which splash screen should be displayed (typically you can ignore this)
+     * @param index Which splash screen should be displayed (typically you can ignore this)
      * @param level The physics-based world that comprises the splash screen
      */
-    public void display(int which, final Level level) {
+    public void display(int index, final Level level) {
         // set up a simple level. We could make interesting things happen, since
         // we've got a physics world, but we won't.
 

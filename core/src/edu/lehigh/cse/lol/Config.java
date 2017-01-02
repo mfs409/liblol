@@ -25,7 +25,7 @@ public class Config {
     public int mHeight;
 
     /**
-     * This is a debug feature, to help see the physics behind every Actor
+     * This is a debug feature, to help see the physics behind every WorldActor
      */
     public boolean mShowDebugBoxes;
 

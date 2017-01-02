@@ -39,7 +39,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * that collide with them. It's best to think of them as being both "a wall" and
  * "a catch-all for any behavior that we don't have anywhere else".
  */
-public class Obstacle extends Actor {
+public class Obstacle extends WorldActor {
     /**
      * One of the main uses of obstacles is to use hero/obstacle collisions as a
      * way to run custom code. This callback defines what code to run when a
@@ -116,7 +116,7 @@ public class Obstacle extends Actor {
      * @param contact A description of the collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
     }
 
     /**
@@ -137,7 +137,7 @@ public class Obstacle extends Actor {
         // register a callback to multiply the hero's speed by factor
         mHeroCollision = new Lol.CollisionCallback() {
             @Override
-            public void go(Actor h, Contact c) {
+            public void go(WorldActor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.scl(factor);
                 h.updateVelocity(v.x, v.y);
@@ -160,7 +160,7 @@ public class Obstacle extends Actor {
         // register a callback to change the hero's speed
         mHeroCollision = new Lol.CollisionCallback() {
             @Override
-            public void go(final Actor h, Contact c) {
+            public void go(final WorldActor h, Contact c) {
                 // boost the speed
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.x += boostAmountX;
@@ -218,7 +218,7 @@ public class Obstacle extends Actor {
         // register a callback
         mHeroCollision = new Lol.CollisionCallback() {
             @Override
-            public void go(final Actor ps, Contact c) {
+            public void go(final WorldActor ps, Contact c) {
                 // Make sure the contact is active (it's not if this is a
                 // pass-through event)
                 if (c.isEnabled()) {
@@ -274,7 +274,7 @@ public class Obstacle extends Actor {
 
         mEnemyCollision = new Lol.CollisionCallback() {
             @Override
-            public void go(final Actor ps, Contact c) {
+            public void go(final WorldActor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= enemyCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
@@ -320,7 +320,7 @@ public class Obstacle extends Actor {
 
         mProjectileCollision = new Lol.CollisionCallback() {
             @Override
-            public void go(Actor ps, Contact c) {
+            public void go(WorldActor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= projectileCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];

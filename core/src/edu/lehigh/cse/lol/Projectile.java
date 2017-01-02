@@ -37,7 +37,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * to remove enemies. Note that there is no public interface to this file.
  * Projectiles should be controlled via ProjectilePool.
  */
-class Projectile extends Actor {
+class Projectile extends WorldActor {
     /// This is the initial point of the throw
     final Vector2 mRangeFrom;
 
@@ -92,7 +92,7 @@ class Projectile extends Actor {
      * @param contact A description of the contact
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
         // if this is an obstacle, check if it is a projectile callback, and if
         // so, do the callback
         if (other instanceof Obstacle) {

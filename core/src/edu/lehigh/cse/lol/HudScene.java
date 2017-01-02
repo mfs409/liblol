@@ -16,7 +16,7 @@ class HudScene extends LolScene {
     private final ShapeRenderer mShapeRender;
 
     /// Toggle Controls
-    final ArrayList<HudActor> mToggleControls;
+    final ArrayList<SceneActor> mToggleControls;
 
     /**
      * Create a new heads-up display by providing the dimensions for its camera
@@ -69,7 +69,7 @@ class HudScene extends LolScene {
     }
 
     void liftAllButtons(Vector3 touchVec) {
-        for (HudActor c : mToggleControls) {
+        for (SceneActor c : mToggleControls) {
             if (c.mIsTouchable) {
                 c.mToggleHandler.isUp = true;
                 c.mToggleHandler.go(touchVec.x, touchVec.y);
@@ -97,10 +97,10 @@ class HudScene extends LolScene {
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
         world.mCamera.unproject(mTouchVec.set(x, y, 0));
-        if (mHitActor != null && ((HudActor)mHitActor).mPanHandler != null) {
-            ((HudActor)mHitActor).mPanHandler.deltaX = deltaX;
-            ((HudActor)mHitActor).mPanHandler.deltaY = deltaY;
-            return ((HudActor) mHitActor).mPanHandler.go(mTouchVec.x, mTouchVec.y);
+        if (mHitActor != null && ((SceneActor)mHitActor).mPanHandler != null) {
+            ((SceneActor)mHitActor).mPanHandler.deltaX = deltaX;
+            ((SceneActor)mHitActor).mPanHandler.deltaY = deltaY;
+            return ((SceneActor) mHitActor).mPanHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }
@@ -111,14 +111,14 @@ class HudScene extends LolScene {
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
         world.mCamera.unproject(mTouchVec.set(x, y, 0));
-        return mHitActor != null && ((HudActor)mHitActor).mPanStopHandler != null && ((HudActor)mHitActor).mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
+        return mHitActor != null && ((SceneActor)mHitActor).mPanStopHandler != null && ((SceneActor)mHitActor).mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
     }
 
     boolean handleZoom(float initialDistance, float distance) {
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
-        return mHitActor != null && ((HudActor)mHitActor).mZoomHandler != null && ((HudActor)mHitActor).mZoomHandler.go(initialDistance, distance);
+        return mHitActor != null && ((SceneActor)mHitActor).mZoomHandler != null && ((SceneActor)mHitActor).mZoomHandler.go(initialDistance, distance);
     }
 
     boolean handleDown(float screenX, float screenY, MainScene world) {
@@ -134,8 +134,8 @@ class HudScene extends LolScene {
             if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y))
                 return true;
         }
-        return mHitActor != null && ((HudActor) mHitActor).mDownHandler != null &&
-                ((HudActor) mHitActor).mDownHandler.go(mTouchVec.x, mTouchVec.y);
+        return mHitActor != null && ((SceneActor) mHitActor).mDownHandler != null &&
+                ((SceneActor) mHitActor).mDownHandler.go(mTouchVec.x, mTouchVec.y);
     }
 
     boolean handleUp(float screenX, float screenY, MainScene world) {

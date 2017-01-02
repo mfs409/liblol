@@ -15,14 +15,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * BaseActor is the parent of all Actor types.
+ * BaseActor is the parent of all WorldActor types.
  * <p>
- * We use BaseActor as parent of both Actor (MainScene) and SimpleActor (all other scenes), so that
+ * We use BaseActor as parent of both WorldActor (MainScene) and SimpleActor (all other scenes), so that
  * core functionality (physics, animation) can be in one place, even though many of the features of
- * an Actor (MainScene) require a Score object, and are thus incompatible with non-Main scenes.
+ * an WorldActor (MainScene) require a Score object, and are thus incompatible with non-Main scenes.
  */
 public class BaseActor extends Renderable {
-    /// The level in which this Actor exists
+    /// The level in which this WorldActor exists
     final LolScene mScene;
 
     /// Animation support: the offset for placing the disappearance animation relative to the
@@ -33,7 +33,7 @@ public class BaseActor extends Renderable {
     /// rest of the game" and when it is false, we don't run any updates on the actor
     boolean mVisible = true;
 
-    /// Does this Actor follow a route? If so, the RouteDriver will be used to advance the actor
+    /// Does this WorldActor follow a route? If so, the RouteDriver will be used to advance the actor
     /// along its route.
     RouteDriver mRoute;
 
@@ -43,7 +43,7 @@ public class BaseActor extends Renderable {
     /// Animation support: this tracks the current state of the active animation (if any)
     AnimationDriver mAnimator;
 
-    /// Physics body for this Actor
+    /// Physics body for this WorldActor
     Body mBody;
 
     /// Animation support: the cells of the default animation
@@ -52,7 +52,7 @@ public class BaseActor extends Renderable {
     /// Animation support: the cells of the animation to use when moving backwards
     private Animation mDefaultReverseAnimation;
 
-    /// The dimensions of the Actor... x is width, y is height
+    /// The dimensions of the WorldActor... x is width, y is height
     Vector2 mSize = new Vector2();
 
     /// The z index of this actor. Valid range is [-2, 2]
@@ -104,7 +104,7 @@ public class BaseActor extends Renderable {
 
     /**
      * Every time the world advances by a timestep, we call this code. It
-     * updates the Actor and draws it. User code should never call this.
+     * updates the WorldActor and draws it. User code should never call this.
      */
     @Override
     void render(SpriteBatch sb, float delta) {
@@ -192,7 +192,7 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Whenever any class derived from Actor is touched, we want to play the
+     * Whenever any class derived from WorldActor is touched, we want to play the
      * touchsound before we run the gesture responder.
      *
      * @param touchVec The x/y/z coordinates of the touch
@@ -205,7 +205,7 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Specify that this Actor should have a rectangular physics shape
+     * Specify that this WorldActor should have a rectangular physics shape
      *
      * @param density      Density of the actor
      * @param elasticity   Elasticity of the actor
@@ -246,7 +246,7 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Specify that this Actor should have a polygon physics shape. You must
+     * Specify that this WorldActor should have a polygon physics shape. You must
      * take extreme care when using this method. Polygon vertices must be given
      * in counter-clockwise order, and they must describe a convex shape.
      *
@@ -297,7 +297,7 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Specify that this Actor should have a circular physics shape
+     * Specify that this WorldActor should have a circular physics shape
      *
      * @param density      Density of the actor
      * @param elasticity   Elasticity of the actor
@@ -421,7 +421,7 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Change the position of an Actor
+     * Change the position of an WorldActor
      *
      * @param x The new X position
      * @param y The new Y position

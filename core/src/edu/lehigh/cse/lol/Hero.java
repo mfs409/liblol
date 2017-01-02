@@ -40,7 +40,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * game has one hero who moves around on the screen, possibly jumping and
  * crawling.
  */
-public class Hero extends Actor {
+public class Hero extends WorldActor {
     /**
      * Strength of the hero. This determines how many collisions with enemies
      * the hero can sustain before it is defeated. The default is 1, and the
@@ -130,7 +130,7 @@ public class Hero extends Actor {
     private LolCallback mStrengthChangeCallback;
 
     /**
-     * Construct a Hero by creating an Actor and incrementing the number of
+     * Construct a Hero by creating an WorldActor and incrementing the number of
      * heroes created. This code should never be called directly by the game
      * designer.
      *
@@ -143,7 +143,7 @@ public class Hero extends Actor {
     }
 
     /**
-     * We can't just use the basic Actor renderer, because we might need to
+     * We can't just use the basic WorldActor renderer, because we might need to
      * adjust a one-off animation (invincibility or throw) first
      *
      * @param sb    The SpriteBatch to use for drawing this hero
@@ -262,7 +262,7 @@ public class Hero extends Actor {
      * @param contact A description of the contact that caused this collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
         // NB: we currently ignore Projectile and Hero
         if (other instanceof Enemy)
             onCollideWithEnemy((Enemy) other);

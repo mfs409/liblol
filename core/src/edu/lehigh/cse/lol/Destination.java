@@ -34,7 +34,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * Destinations are Actors that the Hero should try to reach. When a Hero reaches a destination, the
  * Hero disappears, and the score updates.
  */
-public class Destination extends Actor {
+public class Destination extends WorldActor {
     /// the number of heroes who can fit at /this/ destination
     int mCapacity;
     /// the number of heroes already in /this/ destination
@@ -61,17 +61,17 @@ public class Destination extends Actor {
     }
 
     /**
-     * Code to run when an Destination collides with an Actor.
+     * Code to run when an Destination collides with an WorldActor.
      *
      * NB: Destinations are at the end of the collision hierarchy, so we don't do anything when
-     *     they are in a collision that hasn't already been handled by a higher-ranked Actor.
+     *     they are in a collision that hasn't already been handled by a higher-ranked WorldActor.
      *
      * @param other   Other object involved in this collision
      * @param contact A description of the collision between this destination and
      *                the other actor
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
     }
 
     /**
