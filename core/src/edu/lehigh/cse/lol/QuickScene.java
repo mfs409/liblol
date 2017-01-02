@@ -240,7 +240,7 @@ abstract public class QuickScene extends LolScene {
             @Override
             public void onEvent() {
                 mVisible = false;
-                mLevel.mGame.handleBack();
+                mLevel.mGame.mManager.handleBack();
             }
         };
         mButtons.add(b);

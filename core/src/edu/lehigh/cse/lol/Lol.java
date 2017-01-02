@@ -39,7 +39,6 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * The Lol object is the outermost container for all of the functionality of the game.
@@ -158,31 +157,9 @@ public class Lol implements ApplicationListener {
             return;
         // recognize a new back press as being a 'down' press
         mKeyDown = true;
-        handleBack();
+        mManager.handleBack();
     }
 
-    /**
-     * When the back key is pressed, or when we are simulating the back key
-     * being pressed (e.g., a back button), this code runs.
-     */
-    void handleBack() {
-        // clear all timers, just in case...
-        Timer.instance().clear();
-        // if we're looking at main menu, then exit
-        if (mManager.mMode == LolManager.SPLASH) {
-            dispose();
-            Gdx.app.exit();
-        }
-        // if we're looking at the chooser or help, switch to the splash
-        // screen
-        else if (mManager.mMode == LolManager.CHOOSER || mManager.mMode == LolManager.HELP || mManager.mMode == LolManager.STORE) {
-            mManager.doSplash();
-        }
-        // ok, we're looking at a game scene... switch to chooser
-        else {
-            mManager.doChooser(mManager.mModeStates[LolManager.CHOOSER]);
-        }
-    }
 
     /**
      * To properly go gestures, we need to provide the code to run on each

@@ -49,15 +49,15 @@ class LolManager {
 
     /// Modes of the game, for use by the state machine.  We can be showing the main splash
     /// screen, the help screens, the level chooser, the store, or a playable level
-    static final int SPLASH = 0;
-    static final int HELP = 1;
-    static final int CHOOSER = 2;
-    static final int STORE = 3;
-    static final int PLAY = 4;
+    final private int SPLASH = 0;
+    final private int HELP = 1;
+    final private int CHOOSER = 2;
+    final private int STORE = 3;
+    final private int PLAY = 4;
     /// The current state (e.g., are we showing a STORE)
-    int mMode;
+    private int mMode;
     /// The level within each mode (e.g., we are in PLAY scene 4, and will return to CHOOSER 2)
-    int mModeStates[] = new int[5];
+    private int mModeStates[] = new int[5];
 
 
     LolManager(Config config, Media media, Lol game) {
@@ -132,21 +132,21 @@ class LolManager {
      * and including the level after the current level.
      */
     void unlockNext() {
-        if (mGame.getGameFact(mConfig, "unlocked", 1) <= mModeStates[LolManager.PLAY])
-            mGame.putGameFact(mConfig, "unlocked", mModeStates[LolManager.PLAY] + 1);
+        if (mGame.getGameFact(mConfig, "unlocked", 1) <= mModeStates[PLAY])
+            mGame.putGameFact(mConfig, "unlocked", mModeStates[PLAY] + 1);
     }
 
     void advanceLevel() {
-        if (mModeStates[LolManager.PLAY] == mConfig.mNumLevels) {
+        if (mModeStates[PLAY] == mConfig.mNumLevels) {
             doChooser(1);
         } else {
-            mModeStates[LolManager.PLAY]++;
-            doPlay(mModeStates[LolManager.PLAY]);
+            mModeStates[PLAY]++;
+            doPlay(mModeStates[PLAY]);
         }
     }
 
     void repeatLevel() {
-        doPlay(mModeStates[LolManager.PLAY]);
+        doPlay(mModeStates[PLAY]);
     }
 
     /**
@@ -156,7 +156,7 @@ class LolManager {
         // reset state of all screens
         for (int i = 0; i < 5; ++i)
             mModeStates[i] = 1;
-        mMode = LolManager.SPLASH;
+        mMode = SPLASH;
         setScreen();
         mConfig.mSplash.display(1, mLevel);
     }
@@ -171,17 +171,17 @@ class LolManager {
         // if chooser disabled, then we either called this from splash, or from
         // a game level
         if (!mConfig.mEnableChooser) {
-            if (mMode == LolManager.PLAY) {
+            if (mMode == PLAY) {
                 doSplash();
             } else {
-                doPlay(mModeStates[LolManager.PLAY]);
+                doPlay(mModeStates[PLAY]);
             }
             return;
         }
         // the chooser is not disabled... save the choice of level, configureGravity
         // it, and show it.
-        mMode = LolManager.CHOOSER;
-        mModeStates[LolManager.CHOOSER] = whichChooser;
+        mMode = CHOOSER;
+        mModeStates[CHOOSER] = whichChooser;
         setScreen();
         mConfig.mChooser.display(whichChooser, mLevel);
     }
@@ -192,8 +192,8 @@ class LolManager {
      * @param which The index of the level to load
      */
     void doPlay(int which) {
-        mModeStates[LolManager.PLAY] = which;
-        mMode = LolManager.PLAY;
+        mModeStates[PLAY] = which;
+        mMode = PLAY;
         setScreen();
         resetScores();
         mConfig.mLevels.display(which, mLevel);
@@ -205,8 +205,8 @@ class LolManager {
      * @param which The index of the help level to load
      */
     void doHelp(int which) {
-        mModeStates[LolManager.HELP] = which;
-        mMode = LolManager.HELP;
+        mModeStates[HELP] = which;
+        mMode = HELP;
         setScreen();
         mConfig.mHelp.display(which, mLevel);
     }
@@ -217,8 +217,8 @@ class LolManager {
      * @param which The index of the help level to load
      */
     void doStore(int which) {
-        mModeStates[LolManager.STORE] = which;
-        mMode = LolManager.STORE;
+        mModeStates[STORE] = which;
+        mMode = STORE;
         setScreen();
         mConfig.mStore.display(which, mLevel);
     }
@@ -455,6 +455,30 @@ class LolManager {
         }
         if (mStopWatchProgress != -100) {
             mStopWatchProgress += Gdx.graphics.getDeltaTime();
+        }
+    }
+
+    /**
+     * When the back key is pressed, or when we are simulating the back key
+     * being pressed (e.g., a back button), this code runs.
+     */
+    void handleBack() {
+        // clear all timers, just in case...
+        Timer.instance().clear();
+        // if we're looking at main menu, then exit
+        if (mMode == SPLASH) {
+            // TODO: return a bool, let game dispose of itself?
+            mGame.dispose();
+            Gdx.app.exit();
+        }
+        // if we're looking at the chooser or help, switch to the splash
+        // screen
+        else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
+            doSplash();
+        }
+        // ok, we're looking at a game scene... switch to chooser
+        else {
+            doChooser(mModeStates[CHOOSER]);
         }
     }
 }
