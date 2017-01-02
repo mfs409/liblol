@@ -1200,10 +1200,10 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public Control addImage(int x, int y, int width, int height, String imgName) {
-        Control c = new Control(this, imgName, x, y, width, height);
-        c.mIsTouchable = false;
-        mGame.mManager.mHud.mControls.add(c);
+    public HudActor addImage(int x, int y, int width, int height, String imgName) {
+        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        mGame.mManager.mHud.mControls2.add(c);
         return c;
     }
 

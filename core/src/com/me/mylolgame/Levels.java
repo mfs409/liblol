@@ -2845,7 +2845,7 @@ public class Levels implements ScreenManager {
             // small image. One way to do it is to make an invisible control,
             // then put a picture on top of it. This next line shows how to draw
             // a picture on the HUD
-            level.addImage(40, 40, 40, 40, "red.png");
+            level.addImage(2, 2, 2, 2, "red.png");
         }
 
         /*
