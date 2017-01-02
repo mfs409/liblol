@@ -43,7 +43,7 @@ public class Effect extends Renderable {
      * NB: User code should never call this.
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    public void onRender(SpriteBatch sb, float delta) {
         // do nothing if the effect is disabled
         if (!mEnabled)
             return;

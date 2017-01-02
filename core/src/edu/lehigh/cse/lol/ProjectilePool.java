@@ -94,7 +94,7 @@ class ProjectilePool {
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
             mPool[i] = new Projectile(game, level, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
-            mPool[i].mVisible = false;
+            mPool[i].mEnabled= false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
             mPool[i].mDamage = strength;
@@ -131,7 +131,7 @@ class ProjectilePool {
             mProjectilesRemaining--;
 
         // is there an available projectile?
-        if (mPool[mNextIndex].mVisible)
+        if (mPool[mNextIndex].mEnabled)
             return;
         // getLoseScene the next projectile, reset sensor, set image
         Projectile b = mPool[mNextIndex];
@@ -149,7 +149,7 @@ class ProjectilePool {
 
         // give the projectile velocity, show it, play sound, animate the hero
         b.updateVelocity(velocityX, velocityY);
-        b.mVisible = true;
+        b.mEnabled = true;
         if (mThrowSound != null)
             mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
@@ -181,7 +181,7 @@ class ProjectilePool {
             mProjectilesRemaining--;
 
         // is there an available projectile?
-        if (mPool[mNextIndex].mVisible)
+        if (mPool[mNextIndex].mEnabled)
             return;
         // getLoseScene the next projectile, set sensor, set image
         Projectile b = mPool[mNextIndex];
@@ -225,7 +225,7 @@ class ProjectilePool {
         }
 
         // show the projectile, play sound, and animate the hero
-        b.mVisible = true;
+        b.mEnabled= true;
         if (mThrowSound != null)
             mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;

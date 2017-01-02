@@ -49,26 +49,26 @@ public class Help implements ScreenManager {
             level.setBackgroundColor("#FFFFFF");
 
             // put some information on the screen
-            level.drawText(5, 26, "The levels of this game\ndemonstrate LOL features", "#000000", "arial.ttf", 40, 0);
+            level.drawText(5, 26, "arial.ttf", "#000000", 40, "", "", level.DisplayFixedText("The levels of this game\ndemonstrate LOL features"), 0);
 
             // draw a legend, using obstacles and text
             level.makeObstacleAsBox(5, 20, 3, 3, "greenball.png");
-            level.drawText(9, 21, "You control the hero", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 21, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("You control the hero"), 0);
 
             level.makeObstacleAsBox(5, 16, 3, 3, "blueball.png");
-            level.drawText(9, 17, "Collect these goodies", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 17, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("Collect these goodies"), 0);
 
             level.makeObstacleAsBox(5, 12, 3, 3, "redball.png");
-            level.drawText(9, 13, "Avoid or defeat enemies", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 13, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("Avoid or defeat enemies"), 0);
 
             level.makeObstacleAsBox(5, 8, 3, 3, "mustardball.png");
-            level.drawText(9, 9, "Reach the destination", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 9, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("Reach the destination"), 0);
 
             level.makeObstacleAsBox(5, 4, 3, 3, "purpleball.png");
-            level.drawText(9, 5, "These are walls", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 5, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("These are walls"), 0);
 
             level.makeObstacleAsBox(5, 0, 3, 3, "greyball.png");
-            level.drawText(9, 1, "Throw projectiles", "#000000", "arial.ttf", 24, 0);
+            level.drawText(9, 1, "arial.ttf", "#000000", 24, "", "", level.DisplayFixedText("Throw projectiles"), 0);
 
             // set up a control to go to the next level on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {
@@ -85,8 +85,7 @@ public class Help implements ScreenManager {
             level.setBackgroundColor("#FFFF00");
 
             // for now, just print a message
-            level.drawText(10, 15, "Be sure to read the code\n" + "while you play, so you can see\n"
-                    + "how everything works", "#376EA5", "arial.ttf", 14, 0);
+            level.drawText(10, 15, "arial.ttf", "#376EA5", 14, "", "", level.DisplayFixedText("Be sure to read the code\nwhile you play, so you can see\nhow everything works"), 0);
 
             // set up a control to go to the splash screen on screen press
             level.addTapControl(0, 0, 960, 640, "", new TouchEventHandler() {

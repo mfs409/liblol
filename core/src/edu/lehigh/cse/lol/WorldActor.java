@@ -273,10 +273,10 @@ public abstract class WorldActor extends BaseActor {
         // set the code to run on touch
         mTapHandler = new TouchEventHandler() {
             long mLastPokeTime;
-            boolean mEnabled = true;
+            boolean mRunning = true;
 
             public boolean go(float worldX, float worldY) {
-                if (!mEnabled)
+                if (!mRunning)
                     return false;
                 Lol.vibrate(mScene.mConfig, 100);
                 long time = System.currentTimeMillis();
@@ -284,8 +284,8 @@ public abstract class WorldActor extends BaseActor {
                 if ((time - mLastPokeTime) < deleteThreshold) {
                     // hide actor, disable physics
                     mBody.setActive(false);
-                    mVisible = false;
                     mEnabled = false;
+                    mRunning = false;
                     return true;
                 }
                 // repeat single-touch
@@ -294,16 +294,16 @@ public abstract class WorldActor extends BaseActor {
                 }
                 // set a screen handler to detect when/where to move the actor
                 mScene.mTapHandlers.add(new TouchEventHandler() {
-                    boolean mEnabled = true;
+                    boolean mIsRunning = true;
 
                     public boolean go(float worldX, float worldY) {
-                        if (!mEnabled || !mVisible)
+                        if (!mIsRunning || !mEnabled)
                             return false;
                         Lol.vibrate(mScene.mConfig, 100);
                         // move the object
                         mBody.setTransform(worldX, worldY, mBody.getAngle());
                         // clear the Level responder
-                        mEnabled = false;
+                        mIsRunning = false;
                         return true;
                     }
                 });
@@ -354,17 +354,17 @@ public abstract class WorldActor extends BaseActor {
             public boolean go(float worldX, float worldY) {
                 Lol.vibrate(mScene.mConfig, 5);
                 mScene.mTapHandlers.add(new TouchEventHandler() {
-                    boolean mEnabled = true;
+                    boolean mRunning = true;
 
                     public boolean go(float worldX, float worldY) {
-                        if (!mEnabled)
+                        if (!mRunning)
                             return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
                                 worldY - mSize.y / 2);
                         setAbsoluteVelocity(0, 0, false);
                         setRoute(r, velocity, false);
                         if (oncePerTouch)
-                            mEnabled = false;
+                            mRunning = false;
                         return true;
                     }
                 });
@@ -526,10 +526,10 @@ public abstract class WorldActor extends BaseActor {
             @Override
             public void go() {
                 // don't chase something that isn't visible
-                if (!target.mVisible)
+                if (!target.mEnabled)
                     return;
                 // don't run if this actor isn't visible
-                if (!mVisible)
+                if (!mEnabled)
                     return;
                 // compute vector between actors, and normalize it
                 float x = target.mBody.getPosition().x - mBody.getPosition().x;
@@ -576,10 +576,10 @@ public abstract class WorldActor extends BaseActor {
             @Override
             public void go() {
                 // don't chase something that isn't visible
-                if (!target.mVisible)
+                if (!target.mEnabled)
                     return;
                 // don't run if this actor isn't visible
-                if (!mVisible)
+                if (!mEnabled)
                     return;
                 // determine directions for X and Y
                 int xDir = (target.getXPosition() > getXPosition()) ? 1 : -1;

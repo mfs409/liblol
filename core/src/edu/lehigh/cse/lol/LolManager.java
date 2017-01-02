@@ -29,7 +29,7 @@ class LolManager {
 
     /// The physics world in which all actors exist
     MainScene mWorld;
-    /// A heads-up display, for writing Display and Control objects
+    /// A heads-up display, for writing LolText and Control objects
     HudScene mHud;
     /// The scene to show when the level is created (if any)
     QuickScene mPreScene;
@@ -122,7 +122,7 @@ class LolManager {
 
         // When debug mode is on, print the frames per second
         if (mConfig.mShowDebugBoxes)
-            mLevel.addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", mLevel.DisplayFPS);
+            mLevel.addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", mLevel.DisplayFPS, 2);
     }
 
     /**

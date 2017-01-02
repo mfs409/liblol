@@ -467,6 +467,18 @@ public class Level {
     }
 
     /**
+     * Generate text that doesn't change
+     */
+    public TextProducer DisplayFixedText(final String text) {
+        return new TextProducer() {
+            @Override
+            public String makeText() {
+                return text;
+            }
+        };
+    }
+
+    /**
      * Generate text indicating the current FPS
      */
     public final TextProducer DisplayFPS = new TextProducer() {
@@ -654,17 +666,8 @@ public class Level {
      * @param tp       The TextProducer
      * @return The display, so that it can be controlled further if needed
      */
-    public Display addDisplay(final int x, final int y, String fontName, final String fontColor, int size, final String prefix, final String suffix, final TextProducer tp) {
-        Display d = new Display(mMedia, fontColor, fontName, size) {
-            @Override
-            void render(SpriteBatch sb, float delta) {
-                mFont.setColor(mColor);
-                String txt = prefix + tp.makeText() + suffix;
-                mGame.mManager.mWorld.drawTextTransposed(x, y, txt, mFont, sb);
-            }
-        };
-        mGame.mManager.mHud.addActor(d, 0);
-        return d;
+    public Renderable addDisplay(final float x, final float y, final String fontName, final String fontColor, final int size, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
+        return mGame.mManager.mHud.addText(x, y, fontName, fontColor, size, prefix, suffix, tp, zIndex);
     }
 
     /**
@@ -695,7 +698,7 @@ public class Level {
     /**
      * Set the current value of the stopwatch.  Use -100 to disable the stopwatch, otherwise it will start counting immediately.
      *
-     * @param newVal
+     * @param newVal The new value of the stopwatch
      */
     public void setStopwatch(float newVal) {
         this.mGame.mManager.mStopWatchProgress = newVal;
@@ -2127,19 +2130,8 @@ public class Level {
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public void drawText(final float x, final float y, final String text, final String fontColor, String fontName, int size, int zIndex) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
-        Renderable r = new Renderable() {
-            @Override
-            public void render(SpriteBatch sb, float elapsed) {
-                bf.setColor(Color.valueOf(fontColor));
-                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
-                mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
-                bf.draw(sb, text, x, y + mGame.mManager.mWorld.mGlyphLayout.height);
-                bf.getData().setScale(1);
-            }
-        };
-        mGame.mManager.mWorld.addActor(r, zIndex);
+    public Renderable drawText(final float x, final float y, final String fontName, final String fontColor, final int size, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
+        return mGame.mManager.mWorld.addText(x, y, fontName, fontColor, size, prefix, suffix, tp, zIndex);
     }
 
     /**
@@ -2169,7 +2161,7 @@ public class Level {
         // describe how to render it
         Renderable r = new Renderable() {
             @Override
-            public void render(SpriteBatch sb, float elapsed) {
+            public void onRender(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
                 bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);

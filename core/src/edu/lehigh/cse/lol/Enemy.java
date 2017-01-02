@@ -128,7 +128,7 @@ public class Enemy extends WorldActor {
      */
     private void onCollideWithProjectile(Projectile p) {
         // only work with active projectiles
-        if (!p.mVisible)
+        if (!p.mEnabled)
             return;
         // compute damage to determine if the enemy is defeated
         mDamage -= p.mDamage;

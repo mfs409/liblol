@@ -94,7 +94,7 @@ abstract class LolScene {
                 // it
                 if (fixture.testPoint(mTouchVec.x, mTouchVec.y)) {
                     BaseActor hs = (BaseActor) fixture.getBody().getUserData();
-                    if (hs.mVisible) {
+                    if (hs.mEnabled) {
                         mHitActor = hs;
                         return false;
                     }
@@ -170,7 +170,7 @@ abstract class LolScene {
         final BitmapFont bf = mMedia.getFont(fontName, size);
         return new Renderable() {
             @Override
-            public void render(SpriteBatch sb, float elapsed) {
+            public void onRender(SpriteBatch sb, float elapsed) {
                 bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.setColor(Color.valueOf(fontColor));
                 mGlyphLayout.setText(bf, message);
@@ -198,7 +198,7 @@ abstract class LolScene {
         final float y = centerY / 2 + mGlyphLayout.height / 2;
         return new Renderable() {
             @Override
-            public void render(SpriteBatch sb, float elapsed) {
+            public void onRender(SpriteBatch sb, float elapsed) {
                 bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.setColor(Color.valueOf(fontColor));
                 bf.draw(sb, message, x, y);
@@ -218,7 +218,7 @@ abstract class LolScene {
      * @param bf      The BitmapFont object to use for the text's font
      * @param sb      The SpriteBatch used to render the text
      */
-    void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
+    void drawTextTransposed(float x, float y, String message, BitmapFont bf, SpriteBatch sb) {
         bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGlyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + mGlyphLayout.height);
@@ -251,7 +251,7 @@ abstract class LolScene {
         final TextureRegion tr = mMedia.getImage(imgName);
         return new Renderable() {
             @Override
-            public void render(SpriteBatch sb, float elapsed) {
+            public void onRender(SpriteBatch sb, float elapsed) {
                 if (tr != null)
                     sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
@@ -259,4 +259,25 @@ abstract class LolScene {
     }
 
     abstract boolean render(SpriteBatch sb, float delta);
+
+    public Renderable addText(final float x, final float y, final String fontName, final String fontColor, final int size, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
+        Renderable d = new Renderable() {
+
+            /// What color should we use to draw text
+            Color mColor = Color.valueOf(fontColor);
+
+            /// The font object to use
+            BitmapFont mFont = mMedia.getFont(fontName, size);
+
+            @Override
+            void onRender(SpriteBatch sb, float delta) {
+                mFont.setColor(mColor);
+                String txt = prefix + tp.makeText() + suffix;
+                drawTextTransposed(x, y, txt, mFont, sb);
+            }
+        };
+        addActor(d, zIndex);
+        return d;
+    }
+
 }

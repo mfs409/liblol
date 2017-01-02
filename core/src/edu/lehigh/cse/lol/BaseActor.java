@@ -29,9 +29,6 @@ public class BaseActor extends Renderable {
     // disappearing actor
     private final Vector2 mDisappearAnimateOffset = new Vector2();
 
-    /// Track if the actor is currently being rendered. This is a proxy for "is important to the
-    /// rest of the game" and when it is false, we don't run any updates on the actor
-    boolean mVisible = true;
 
     /// Does this WorldActor follow a route? If so, the RouteDriver will be used to advance the actor
     /// along its route.
@@ -107,85 +104,77 @@ public class BaseActor extends Renderable {
      * updates the WorldActor and draws it. User code should never call this.
      */
     @Override
-    void render(SpriteBatch sb, float delta) {
-        // skip all rendering and updates if not visible
-        if (mVisible) {
-            // possibly run a route update
-            if (mRoute != null)
-                mRoute.drive();
+    void onRender(SpriteBatch sb, float delta) {
+        // possibly run a route update
+        if (mRoute != null)
+            mRoute.drive();
 
-            // choose the default TextureRegion to show... this is how we
-            // animate
-            TextureRegion tr = mAnimator.getTr(delta);
+        // choose the default TextureRegion to show... this is how we
+        // animate
+        TextureRegion tr = mAnimator.getTr(delta);
 
-            // now draw this actor, flipping the image it if necessary
-            Vector2 pos = mBody.getPosition();
-            if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x < 0) {
-                if (mAnimator.mCurrentAnimation != mDefaultReverseAnimation) {
-                    mAnimator.setCurrentAnimation(mDefaultReverseAnimation);
-                }
-            } else if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x > 0) {
-                if (mAnimator.mCurrentAnimation == mDefaultReverseAnimation) {
-                    if (mDefaultAnimation != null) {
-                        mAnimator.setCurrentAnimation(mDefaultAnimation);
-                    }
+        // now draw this actor, flipping the image it if necessary
+        Vector2 pos = mBody.getPosition();
+        if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x < 0) {
+            if (mAnimator.mCurrentAnimation != mDefaultReverseAnimation) {
+                mAnimator.setCurrentAnimation(mDefaultReverseAnimation);
+            }
+        } else if (mDefaultReverseAnimation != null && mBody.getLinearVelocity().x > 0) {
+            if (mAnimator.mCurrentAnimation == mDefaultReverseAnimation) {
+                if (mDefaultAnimation != null) {
+                    mAnimator.setCurrentAnimation(mDefaultAnimation);
                 }
             }
-            if (tr != null) {
+        }
+        if (tr != null) {
 
-                // Draws a rectangle with the bottom left corner at x,y having the given width and
-                // height in pixels. The rectangle is offset by originX, originY relative to the
-                // origin. Scale specifies the scaling factor by which the rectangle should be
-                // scaled around originX, originY. Rotation specifies the angle of counter clockwise
-                // rotation of the rectangle around originX, originY. The portion of the Texture
-                // given by srcX, srcY and srcWidth, srcHeight is used. These coordinates and sizes
-                // are given in texels. FlipX and flipY specify whether the texture portion should
-                // be flipped horizontally or vertically.
+            // Draws a rectangle with the bottom left corner at x,y having the given width and
+            // height in pixels. The rectangle is offset by originX, originY relative to the
+            // origin. Scale specifies the scaling factor by which the rectangle should be
+            // scaled around originX, originY. Rotation specifies the angle of counter clockwise
+            // rotation of the rectangle around originX, originY. The portion of the Texture
+            // given by srcX, srcY and srcWidth, srcHeight is used. These coordinates and sizes
+            // are given in texels. FlipX and flipY specify whether the texture portion should
+            // be flipped horizontally or vertically.
 
-                if (mClippingWH != null)
-                    // x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY
-                    sb.draw(tr.getTexture(),
-                            // bottom left corner X, Y where we ought to draw
-                            pos.x - mSize.x / 2 + mClippingBL.x * mSize.x,
-                            pos.y - mSize.y / 2 + mClippingBL.y * mSize.y,
-                            // offset the image by this much
-                            0, 0,
-                            // width and height of the image: these are good
-                            mSize.x * (mClippingWH.x - mClippingBL.x),
-                            mSize.y * (mClippingWH.y - mClippingBL.y),
-                            // scaling of the image
-                            1, 1,
-                            // rotation of the image
-                            MathUtils.radiansToDegrees * mBody.getAngle(),
-                            // source x and y positions
-                            (int) (mClippingBL.x * tr.getTexture().getWidth()),
-                            (int) (mClippingBL.y * tr.getTexture().getHeight()),
-                            // source width and height
-                            (int) (tr.getRegionWidth() * (mClippingWH.x - mClippingBL.x)),
-                            (int) (tr.getRegionHeight() * (mClippingWH.y - mClippingBL.y)),
-                            // flip in x or y?
-                            false, true);
+            if (mClippingWH != null)
+                // x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY
+                sb.draw(tr.getTexture(),
+                        // bottom left corner X, Y where we ought to draw
+                        pos.x - mSize.x / 2 + mClippingBL.x * mSize.x,
+                        pos.y - mSize.y / 2 + mClippingBL.y * mSize.y,
+                        // offset the image by this much
+                        0, 0,
+                        // width and height of the image: these are good
+                        mSize.x * (mClippingWH.x - mClippingBL.x),
+                        mSize.y * (mClippingWH.y - mClippingBL.y),
+                        // scaling of the image
+                        1, 1,
+                        // rotation of the image
+                        MathUtils.radiansToDegrees * mBody.getAngle(),
+                        // source x and y positions
+                        (int) (mClippingBL.x * tr.getTexture().getWidth()),
+                        (int) (mClippingBL.y * tr.getTexture().getHeight()),
+                        // source width and height
+                        (int) (tr.getRegionWidth() * (mClippingWH.x - mClippingBL.x)),
+                        (int) (tr.getRegionHeight() * (mClippingWH.y - mClippingBL.y)),
+                        // flip in x or y?
+                        false, true);
 
-                else
-                    // x, y, originX, originY, width, height, scaleX, scaleY, rotation
-                    sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1, MathUtils.radiansToDegrees * mBody.getAngle());
-            }
+            else
+                // x, y, originX, originY, width, height, scaleX, scaleY, rotation
+                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1, MathUtils.radiansToDegrees * mBody.getAngle());
         }
     }
 
     /**
      * It's a total cop-out, but I can't figure out how to do this without also flipping the image
-     * @param x
-     * @param y
-     * @param w
-     * @param h
      */
     public void setFlipAndClipRatio(float x, float y, float w, float h) {
         if (mClippingBL == null) {
             mClippingBL = new Vector2(x, y);
             mClippingWH = new Vector2(w, h);
-        }
-        else {
+        } else {
             mClippingBL.set(x, y);
             mClippingWH.set(w, h);
         }
@@ -467,17 +456,6 @@ public class BaseActor extends Renderable {
     }
 
     /**
-     * Indicate whether the actor is currently visible or not.
-     *
-     * @return true if the actor is visible, false if it is currently in a
-     * hidden state (i.e., because it has been collected, defeated, or
-     * removed)
-     */
-    public boolean getVisible() {
-        return mVisible;
-    }
-
-    /**
      * Make an actor disappear
      *
      * @param quiet True if the disappear sound should not be played
@@ -485,7 +463,7 @@ public class BaseActor extends Renderable {
     public void remove(boolean quiet) {
         // set it invisible immediately, so that future calls know to ignore
         // this actor
-        mVisible = false;
+        mEnabled = false;
         mBody.setActive(false);
 
         // play a sound when we remove this actor?
@@ -734,12 +712,12 @@ public class BaseActor extends Renderable {
      * @param delay How long to wait before displaying the thing
      */
     public void setAppearDelay(float delay) {
-        mVisible = false;
+        mEnabled = false;
         mBody.setActive(false);
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                mVisible = true;
+                mEnabled = true;
                 mBody.setActive(true);
             }
         }, delay);
@@ -835,7 +813,7 @@ public class BaseActor extends Renderable {
         final Timer.Task t = new Timer.Task() {
             @Override
             public void run() {
-                if (mVisible) {
+                if (mEnabled) {
                     float x, y;
                     if (keepCentered) {
                         x = getXPosition() + shrinkX / 20 / 2;
@@ -895,7 +873,7 @@ public class BaseActor extends Renderable {
             @Override
             public void go() {
                 // go rotating the hero based on the direction it faces
-                if (mVisible) {
+                if (mEnabled) {
                     float x = mBody.getLinearVelocity().x;
                     float y = mBody.getLinearVelocity().y;
                     double angle = Math.atan2(y, x) + Math.atan2(-1, 0);

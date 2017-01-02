@@ -285,7 +285,7 @@ public class Hero extends WorldActor {
         boolean match = true;
         for (int i = 0; i < 4; ++i)
             match &= mGame.mManager.mGoodiesCollected[i] >= d.mActivation[i];
-        if (match && (d.mHolding < d.mCapacity) && mVisible) {
+        if (match && (d.mHolding < d.mCapacity) && mEnabled) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
