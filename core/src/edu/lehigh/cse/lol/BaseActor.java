@@ -88,6 +88,12 @@ public class BaseActor extends Renderable {
     /// Track if the underlying body is a polygon
     private boolean mIsPolygonBody;
 
+    /// Percentage of the way from bottom and left that we should clip
+    private Vector2 mClippingBL;
+
+    // Percentage of the way from top and right that we should clip
+    private Vector2 mClippingWH;
+
     BaseActor(LolScene scene, String imgName, float width, float height) {
         mScene = scene;
         mAnimator = new AnimationDriver(mScene, imgName);
@@ -126,9 +132,62 @@ public class BaseActor extends Renderable {
                 }
             }
             if (tr != null) {
-                sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1,
-                        MathUtils.radiansToDegrees * mBody.getAngle());
+
+                // Draws a rectangle with the bottom left corner at x,y having the given width and
+                // height in pixels. The rectangle is offset by originX, originY relative to the
+                // origin. Scale specifies the scaling factor by which the rectangle should be
+                // scaled around originX, originY. Rotation specifies the angle of counter clockwise
+                // rotation of the rectangle around originX, originY. The portion of the Texture
+                // given by srcX, srcY and srcWidth, srcHeight is used. These coordinates and sizes
+                // are given in texels. FlipX and flipY specify whether the texture portion should
+                // be flipped horizontally or vertically.
+
+                if (mClippingWH != null)
+                    // x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY
+                    sb.draw(tr.getTexture(),
+                            // bottom left corner X, Y where we ought to draw
+                            pos.x - mSize.x / 2 + mClippingBL.x * mSize.x,
+                            pos.y - mSize.y / 2 + mClippingBL.y * mSize.y,
+                            // offset the image by this much
+                            0, 0,
+                            // width and height of the image: these are good
+                            mSize.x * (mClippingWH.x - mClippingBL.x),
+                            mSize.y * (mClippingWH.y - mClippingBL.y),
+                            // scaling of the image
+                            1, 1,
+                            // rotation of the image
+                            MathUtils.radiansToDegrees * mBody.getAngle(),
+                            // source x and y positions
+                            (int) (mClippingBL.x * tr.getTexture().getWidth()),
+                            (int) (mClippingBL.y * tr.getTexture().getHeight()),
+                            // source width and height
+                            (int) (tr.getRegionWidth() * (mClippingWH.x - mClippingBL.x)),
+                            (int) (tr.getRegionHeight() * (mClippingWH.y - mClippingBL.y)),
+                            // flip in x or y?
+                            false, true);
+
+                else
+                    // x, y, originX, originY, width, height, scaleX, scaleY, rotation
+                    sb.draw(tr, pos.x - mSize.x / 2, pos.y - mSize.y / 2, mSize.x / 2, mSize.y / 2, mSize.x, mSize.y, 1, 1, MathUtils.radiansToDegrees * mBody.getAngle());
             }
+        }
+    }
+
+    /**
+     * It's a total cop-out, but I can't figure out how to do this without also flipping the image
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
+    public void setFlipAndClipRatio(float x, float y, float w, float h) {
+        if (mClippingBL == null) {
+            mClippingBL = new Vector2(x, y);
+            mClippingWH = new Vector2(w, h);
+        }
+        else {
+            mClippingBL.set(x, y);
+            mClippingWH.set(w, h);
         }
     }
 
@@ -493,7 +552,7 @@ public class BaseActor extends Renderable {
 
     /**
      * No-op in this actor, but we need it for updateVelocity to work correctly
-     *
+     * <p>
      * TODO: consider refactoring so that we don't need this
      */
     void onUpdateVelocity() {

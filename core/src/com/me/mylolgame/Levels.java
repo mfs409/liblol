@@ -37,6 +37,7 @@ import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
+import edu.lehigh.cse.lol.HudActor;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.LolAction;
 import edu.lehigh.cse.lol.LolCallback;
@@ -123,7 +124,7 @@ public class Levels implements ScreenManager {
             // white). We'll write our text in the Arial font, with a size of 32
             // pt. The "\n" in the middle of the text causes a line break. Note
             // that "arial.ttf" must be in your android game's assets folder.
-            level.getPreScene().addText("Reach the destination\nto win this level.", 50/20f, 50/20f, "#FFFFFF", "arial.ttf", 32);
+            level.getPreScene().addText("Reach the destination\nto win this level.", 50 / 20f, 50 / 20f, "#FFFFFF", "arial.ttf", 32);
         }
 
         /*
@@ -189,7 +190,7 @@ public class Levels implements ScreenManager {
             // Let's show msg1.png instead of text. Note that we had to
             // register it in registerMedia(), and that we're stretching it
             // slightly, since its dimensions are 460x320
-            level.getPreScene().addImage("msg1.png", 0, 0, 960/20f, 640/20f);
+            level.getPreScene().addImage("msg1.png", 0, 0, 960 / 20f, 640 / 20f);
         }
 
         /*
@@ -287,7 +288,7 @@ public class Levels implements ScreenManager {
             level.getPreScene().addText("Avoid the enemy and\nreach the destination", "#FFFFFF", "arial.ttf", 20);
 
             // put some extra text on the level.getLoseScene()
-            level.getPreScene().addText("(the enemy is red)", 5/20f, 5/20f, "#32C87A", "arial.ttf", 10);
+            level.getPreScene().addText("(the enemy is red)", 5 / 20f, 5 / 20f, "#32C87A", "arial.ttf", 10);
 
             // draw an enemy
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -317,7 +318,7 @@ public class Levels implements ScreenManager {
             level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
             level.setVictoryDestination(1);
             level.getPreScene()
-                    .addText("Avoid the enemy and\nreach the destination", 50/20f, 50/20f, "#FFFFFF", "arial.ttf", 20);
+                    .addText("Avoid the enemy and\nreach the destination", 50 / 20f, 50 / 20f, "#FFFFFF", "arial.ttf", 20);
 
             // draw an enemy that can move
             Enemy e = level.makeEnemyAsCircle(25, 25, 2, 2, "redball.png");
@@ -1937,7 +1938,7 @@ public class Levels implements ScreenManager {
 
 
             level.enableTilt(10, 10);
-            level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50/20f, 50/20f, "#FFFFFF",
+            level.getPreScene().addText("The blue ball will\nmake you invincible\nfor 15 seconds", 50 / 20f, 50 / 20f, "#FFFFFF",
                     "arial.ttf", 32);
             level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
@@ -3309,7 +3310,7 @@ public class Levels implements ScreenManager {
             level.setCameraChase(h);
 
             // turn on pinch zoomg
-            level.addPinchZoomControl(0, 0, 960/20f, 640/20f, "", 8, .25f);
+            level.addPinchZoomControl(0, 0, 960 / 20f, 640 / 20f, "", 8, .25f);
 
             // add a one-time callback control
             level.addTapControl(40, 40, 40, 40, "blueball.png", new TouchEventHandler() {
@@ -3336,46 +3337,74 @@ public class Levels implements ScreenManager {
             level.setVictoryDestination(1);
 
             // set up a hero who rotates in the direction of movement
-            Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
+            final Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.setPhysics(.1f, 0, 0.6f);
             level.setCameraChase(h);
             h.setDamping(1);
-            h.setAngularDamping(1);
-            // when the hero stops, we'll run code that turns the hero red
-            h.setStopCallback(new LolCallback() {
+            h.setAngularDamping(2);
+
+            // Set up a control that rotates, and when tapped, stops rotating and gives its rotation
+            // to the hero
+            final TouchEventHandler rotatorSC = new TouchEventHandler() {
+                @Override
+                public boolean go(float eventPositionX, float eventPositionY) {
+                    if (this.mIsActive) {
+                        h.setRotation(this.mSource.getRotation() % (2 * (float) Math.PI));
+                        this.mSource.setRotationSpeed(0);
+                        this.mIsActive = false;
+                        return true;
+                    }
+                    return false;
+                }
+            };
+            final HudActor rotator = level.addTapControl(10.75f, 6.75f, 2.5f, 2.5f, "legstar1.png", rotatorSC);
+            rotator.setRotationSpeed(2);
+
+            // Set up a control that gets bigger and smaller, to indicate a value that changes
+            // between 0 and 100
+            TouchEventHandler barSC = new TouchEventHandler() {
+                public boolean go(float eventPositionX, float eventPositionY) {
+                    if (mSource.getInfoInt() == -200)
+                        return false;
+                    this.mIsActive = false;
+                    // get the rotation and the magnitude
+                    float rotation = h.getRotation();
+                    float magnitude = mSource.getInfoInt();
+                    // create a unit vector
+                    Vector2 v = new Vector2(1, 0);
+                    v.rotate(rotation * 180 / (float) Math.PI + 90);
+                    v.scl(magnitude);
+                    h.setAbsoluteVelocity(v.x, v.y, false);
+                    mSource.setInfoInt(-200);
+                    return true;
+                }
+            };
+            final HudActor bar = level.addTapControl(23.5f, 0, .5f, 16f, "greenball.png", barSC);
+            // make the bar change size over time
+            // We will use bar's attached integer to get this to work.  When the absolute value
+            // is in the range 0,100, it indicates the percentage to show.  When it is negative, we
+            // are shrinking.  When it is -200, it is disabled.
+            bar.setInfoInt(0);
+            level.setTimerCallback(.1f, .1f, new LolCallback() {
+                @Override
                 public void onEvent() {
-                    // NB: the setStopCallback call sets the callback's
-                    // attachedSprite to the level.
-                    mAttachedActor.setImage("red.png");
+                    int i = bar.getInfoInt();
+                    if (i == -200)
+                        return;
+                    bar.setFlipAndClipRatio(0, 0, 1, Math.abs(i / 100f));
+                    i = (i == 100) ? -100 : i + 1;
+                    bar.setInfoInt(i);
                 }
             });
 
-            // add some new controls for setting the rotation of the hero and
-            // making the hero move based on a speed
-            LolCallback rotatorSC = new LolCallback() {
+            // when the hero stops, start the controls again
+            h.setStopCallback(new LolCallback() {
                 public void onEvent() {
-                    // rotator... save the rotation and rotate the hero
-                    mAttachedActor.setRotation(mFloatVal * (float) Math.PI / 180);
-                    // multiply float val by 100 to preserve some decimal places
-                    level.putLevelFact("rotation", (int) (100 * mFloatVal));
+                    rotator.setRotationSpeed(2);
+                    rotatorSC.mIsActive = true;
+                    bar.setInfoInt(0);
                 }
-            };
-            rotatorSC.mAttachedActor = h;
-            level.addRotator(215, 135, 50, 50, "legstar1.png", 2, rotatorSC);
-            LolCallback barSC = new LolCallback() {
-                public void onEvent() {
-                    // vertical bar... make the entity move
-                    int rotation = level.getLevelFact("rotation", 0) / 100;
-                    // create a unit vector
-                    Vector2 v = new Vector2(1, 0);
-                    v.scl(mFloatVal);
-                    v.rotate(rotation + 90);
-                    mAttachedActor.setDamping(2f);
-                    mAttachedActor.setAbsoluteVelocity(v.x, v.y, false);
-                }
-            };
-            barSC.mAttachedActor = h;
-            level.addVerticalBar(470, 0, 10, 320, "greenball.png", barSC);
+            });
         }
 
         /*

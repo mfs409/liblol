@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Timer;
  * <p>
  * Conceptually, a Level consists of many screens:
  * <ul>
- *  <li>MainScreen: This is where the Actors of the game are drawn</li>
+ * <li>MainScreen: This is where the Actors of the game are drawn</li>
  * - <li>Hud: A heads-up display onto which text and input controls can be drawn</li>
  * - <li>PreScene: A quick scene to display before the level starts</li>
  * - <li>PostScene (WinScene or LoseScene): Two quick scenes to display at the end of the level</li>
@@ -715,7 +715,7 @@ public class Level {
      */
     public HudActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
         HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mTapHandler = action;
         action.mSource = c;
         mGame.mManager.mHud.mControls2.add(c);
@@ -845,7 +845,7 @@ public class Level {
      */
     public HudActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
         HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
@@ -1032,9 +1032,9 @@ public class Level {
      *                   projectile
      */
     public HudActor addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
-                                             final long milliDelay, final float offsetX, final float offsetY) {
+                                              final long milliDelay, final float offsetX, final float offsetY) {
         final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         final Vector2 v = new Vector2();
         c.mToggleHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -1097,7 +1097,7 @@ public class Level {
      */
     public HudActor addPanControl(int x, int y, int width, int height, String imgName) {
         final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mPanStopHandler = new TouchEventHandler() {
             /**
              * Handle a pan stop event by restoring the chase actor, if there
@@ -1165,15 +1165,14 @@ public class Level {
      * @param minZoom The minimum zoom (int) factor. .25f is usually a good choice.
      */
     public HudActor addPinchZoomControl(float x, float y, float width, float height, String imgName, final float maxZoom,
-                                       final float minZoom) {
+                                        final float minZoom) {
         final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mDownHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
                 // of storing the last zoom value
                 deltaX = mGame.mManager.mWorld.mCamera.zoom;
-                System.out.println("zoom is " + deltaX);
                 return false;
             }
         };
@@ -1183,169 +1182,11 @@ public class Level {
                 float newZoom = c.mDownHandler.deltaX * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
                     mGame.mManager.mWorld.mCamera.zoom = newZoom;
-                // TODO: why do we return false?
-                System.out.println("new zoom is " + newZoom);
                 return true;
             }
         };
         mGame.mManager.mHud.mControls2.add(c);
         mGame.mManager.mHud.mZoomControls2.add(c);
-        return c;
-    }
-
-    /**
-     * Add an image to the heads-up display that changes its clipping rate to
-     * seem to grow vertically, without stretching. Touching the image causes
-     * its scale (0-100) to be sent to a ControlPressactor event
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param width    The width of the image
-     * @param height   The height of the image
-     * @param imgName  The name of the image to display. Use "" for an invisible
-     *                 button
-     * @param callback The code to run when the bar is pressed
-     */
-    public Control addVerticalBar(final int x, final int y, final int width, final int height, String imgName,
-                                  final LolCallback callback) {
-        final Control c = new Control(this, imgName, x, y, width, height) {
-            /**
-             * Track if the bar is growing (true) or shrinking (false)
-             */
-            boolean mGrow = true;
-
-            /**
-             * The raw width of the image
-             */
-            int mTrueWidth;
-
-            /**
-             * The raw height of the image
-             */
-            int mTrueHeight;
-
-            /**
-             * The x position of the image's bottom left corner
-             */
-            int mTrueX;
-
-            /**
-             * This control requires run-time configuration... we track if it's
-             * been done via this flag
-             */
-            boolean mConfigured = false;
-
-            /**
-             * This is the render method when we've got a valid TR. We're going
-             * to play with how we draw, so that we can clip and stretch the
-             * image
-             *
-             * @param sb
-             *            The SpriteBatch to use to draw the image
-             */
-            @Override
-            void render(SpriteBatch sb, float delta) {
-                // one-time configuration
-                if (!mConfigured) {
-                    mTrueHeight = mImage.getRegionHeight();
-                    mTrueWidth = mImage.getRegionWidth();
-                    mTrueX = mImage.getRegionX();
-                    mConfigured = true;
-                }
-
-                if (!mIsActive)
-                    return;
-
-                // draw it
-                sb.draw(mImage.getTexture(), x, y, width / 2, height / 2, width,
-                        (height * (int) callback.mFloatVal) / 100, 1, 1, 0, mTrueX, 0, mTrueWidth,
-                        (mTrueHeight * (int) callback.mFloatVal) / 100, false, true);
-
-                // don't keep showing anything if we've already received a
-                // touch...
-                if (!mIsTouchable)
-                    return;
-
-                // update size
-                if (callback.mFloatVal == 100)
-                    mGrow = false;
-                if (callback.mFloatVal == 0)
-                    mGrow = true;
-                callback.mFloatVal = callback.mFloatVal + (mGrow ? 1 : -1);
-            }
-        };
-        c.mTapHandler = new TouchEventHandler() {
-            /**
-             * This is a touchable control...
-             */
-            public boolean go(float worldX, float worldY) {
-                if (!c.mIsActive || !c.mIsTouchable)
-                    return false;
-                callback.onEvent();
-                return true;
-            }
-        };
-        // add to hud
-        mGame.mManager.mHud.mControls.add(c);
-        mGame.mManager.mHud.mTapControls.add(c);
-        return c;
-    }
-
-    /**
-     * Add a rotating button that generates a ControlPress actor event and passes
-     * the rotation to the handler.
-     *
-     * @param x        The X coordinate of the bottom left corner (in pixels)
-     * @param y        The Y coordinate of the bottom left corner (in pixels)
-     * @param width    The width of the image
-     * @param height   The height of the image
-     * @param imgName  The name of the image to display. Use "" for an invisible
-     *                 button
-     * @param delta    Amount of rotation to add during each fraction of a second
-     * @param callback The code to run when the rotator is pressed
-     */
-    public Control addRotator(final int x, final int y, final int width, final int height, String imgName,
-                              final float delta, final LolCallback callback) {
-        final Control c = new Control(this, imgName, x, y, width, height) {
-            /**
-             * This is the render method when we've got a valid TR. We're going
-             * to play with how we draw, so that we can clip and stretch the
-             * image
-             *
-             * @param sb
-             *            The SpriteBatch to use to draw the image
-             */
-            @Override
-            void render(SpriteBatch sb, float delta) {
-                if (!mIsActive)
-                    return;
-                // draw it
-                sb.draw(mImage, mRange.x, mRange.y, mRange.width / 2, 0, mRange.width, mRange.height, 1, 1,
-                        callback.mFloatVal);
-
-                // don't keep rotating if we've got a touch...
-                if (!mIsTouchable)
-                    return;
-
-                // update rotation
-                callback.mFloatVal += delta;
-                if (callback.mFloatVal == 360)
-                    callback.mFloatVal = 0;
-            }
-        };
-        c.mTapHandler = new TouchEventHandler() {
-            /**
-             * This is a touchable control...
-             */
-            public boolean go(float worldX, float worldY) {
-                if (!c.mIsActive)
-                    return false;
-                callback.onEvent();
-                return true;
-            }
-        };
-        mGame.mManager.mHud.mControls.add(c);
-        mGame.mManager.mHud.mTapControls.add(c);
         return c;
     }
 
