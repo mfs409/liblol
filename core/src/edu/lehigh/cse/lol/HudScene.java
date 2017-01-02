@@ -15,26 +15,15 @@ class HudScene extends LolScene {
     /// The debug shape renderer, for putting boxes around Controls and Displays
     private final ShapeRenderer mShapeRender;
 
-    /// Input Controls
-    final ArrayList<Control> mControls;
-
     final ArrayList<HudActor> mControls2;
 
     /// Output Displays
     private final ArrayList<Display> mDisplays;
 
     /// Controls that have a tap event
-    final ArrayList<Control> mTapControls;
     final ArrayList<HudActor> mTapControls2;
 
-    /// Controls that have a pan event
-    final ArrayList<Control> mPanControls;
-
-    /// Controls that have a pinch zoom event
-    final ArrayList<Control> mZoomControls;
-
     /// Toggle Controls
-    final ArrayList<Control> mToggleControls;
     final ArrayList<HudActor> mToggleControls2;
     final ArrayList<HudActor> mPanControls2;
     final ArrayList<HudActor> mZoomControls2;
@@ -45,13 +34,8 @@ class HudScene extends LolScene {
     HudScene(Media media, Config config) {
         super(media, config);
 
-        mControls = new ArrayList<>();
         mDisplays = new ArrayList<>();
-        mTapControls = new ArrayList<>();
         mShapeRender = new ShapeRenderer();
-        mPanControls = new ArrayList<>();
-        mZoomControls = new ArrayList<>();
-        mToggleControls = new ArrayList<>();
 
         mControls2 = new ArrayList<>();
         mTapControls2 = new ArrayList<>();
@@ -81,8 +65,6 @@ class HudScene extends LolScene {
 
         sb.setProjectionMatrix(mCamera.combined);
         sb.begin();
-        for (Control c : mControls)
-            c.render(sb, delta);
         for (HudActor b : mControls2)
             b.render(sb, delta);
         for (Display d : mDisplays)
@@ -100,17 +82,14 @@ class HudScene extends LolScene {
             mShapeRender.setProjectionMatrix(mCamera.combined);
             mShapeRender.begin(ShapeRenderer.ShapeType.Line);
             mShapeRender.setColor(Color.RED);
-            for (Control pe : mControls)
-                if (pe.mRange != null)
-                    mShapeRender.rect(pe.mRange.x, pe.mRange.y, pe.mRange.width, pe.mRange.height);
             mShapeRender.end();
         }
         return true;
     }
 
     void liftAllButtons(Vector3 touchVec) {
-        for (Control c : mToggleControls) {
-            if (c.mIsActive && c.mIsTouchable) {
+        for (HudActor c : mToggleControls2) {
+            if (c.mIsTouchable) {
                 c.mToggleHandler.isUp = true;
                 c.mToggleHandler.go(touchVec.x, touchVec.y);
             }
@@ -118,19 +97,11 @@ class HudScene extends LolScene {
     }
 
     void reset() {
-        mControls.clear();
         mDisplays.clear();
     }
 
     boolean handleTap(float x, float y, MainScene world) {
         mCamera.unproject(mTouchVec.set(x, y, 0));
-        for (Control c : mTapControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(x, y, 0));
-                c.mTapHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
-            }
-        }
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
@@ -140,15 +111,6 @@ class HudScene extends LolScene {
 
     boolean handlePan(float x, float y, float deltaX, float deltaY, MainScene world) {
         mCamera.unproject(mTouchVec.set(x, y, 0));
-        for (Control c : mPanControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(x, y, 0));
-                c.mPanHandler.deltaX = deltaX;
-                c.mPanHandler.deltaY = deltaY;
-                c.mPanHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
-            }
-        }
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
@@ -163,14 +125,6 @@ class HudScene extends LolScene {
 
     boolean handlePanStop(float x, float y, MainScene world) {
         mCamera.unproject(mTouchVec.set(x, y, 0));
-        for (Control c : mPanControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(x, y, 0));
-                if (c.mPanStopHandler != null) {
-                    return c.mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
-                }
-            }
-        }
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
@@ -179,12 +133,6 @@ class HudScene extends LolScene {
     }
 
     boolean handleZoom(float initialDistance, float distance) {
-        for (Control c : mZoomControls) {
-            if (c.mIsTouchable && c.mIsActive) {
-                c.mZoomHandler.go(initialDistance, distance);
-                return true;
-            }
-        }
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
@@ -194,23 +142,6 @@ class HudScene extends LolScene {
     boolean handleDown(float screenX, float screenY, MainScene world) {
         // check if we down-pressed a control
         mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-        for (Control c : mToggleControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mToggleHandler.isUp = false;
-                c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
-            }
-        }
-
-        // pass to pinch-zoom?
-        for (Control c : mZoomControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mDownHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
-            }
-        }
 
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
@@ -218,24 +149,15 @@ class HudScene extends LolScene {
         world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null && mHitActor.mToggleHandler != null) {
             mHitActor.mToggleHandler.isUp = false;
-            return mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
+            if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y))
+                return true;
         }
-        if (mHitActor != null && ((HudActor)mHitActor).mDownHandler != null) {
-            return ((HudActor)mHitActor).mDownHandler.go(mTouchVec.x, mTouchVec.y);
-        }
-        return false;
+        return mHitActor != null && ((HudActor) mHitActor).mDownHandler != null &&
+                ((HudActor) mHitActor).mDownHandler.go(mTouchVec.x, mTouchVec.y);
     }
 
     boolean handleUp(float screenX, float screenY, MainScene world) {
         mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-        for (Control c : mToggleControls) {
-            if (c.mIsTouchable && c.mIsActive && c.mRange.contains(mTouchVec.x, mTouchVec.y)) {
-                world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
-                c.mToggleHandler.isUp = true;
-                c.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
-                return true;
-            }
-        }
         mHitActor = null;
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);

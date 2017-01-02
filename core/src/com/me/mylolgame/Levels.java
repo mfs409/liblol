@@ -3313,14 +3313,14 @@ public class Levels implements ScreenManager {
             level.addPinchZoomControl(0, 0, 960 / 20f, 640 / 20f, "", 8, .25f);
 
             // add a one-time callback control
-            level.addTapControl(40, 40, 40, 40, "blueball.png", new TouchEventHandler() {
+            level.addTapControl(2, 2, 2, 2, "blueball.png", new TouchEventHandler() {
                 public boolean go(float x, float y) {
                     if (!mIsActive)
                         return false;
                     mIsActive = false;
                     level.getPauseScene().addText("you can only pause once...", "#FFFFFF", "arial.ttf", 20);
                     level.getPauseScene().show();
-                    this.mAttachedControl.setImage("greenball.png");
+                    this.mSource.setImage("greenball.png");
                     return true;
                 }
             });

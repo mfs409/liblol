@@ -12,9 +12,7 @@ public abstract class TouchEventHandler {
     /// A flag to control whether the event is allowed to execute or not
     public boolean mIsActive = true;
 
-    /// The control to which this handler is attached, if any
-    public Control mAttachedControl = null;
-
+    /// The actor who generated this touch event
     public BaseActor mSource = null;
 
     /// An actor associated with this handler, if any

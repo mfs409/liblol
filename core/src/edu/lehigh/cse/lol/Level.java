@@ -1221,8 +1221,10 @@ public class Level {
      * @param mvCB    The callback to run when there is a finger move (pan) on the
      *                Control
      */
-    public Control addPanCallbackControl(int x, int y, int width, int height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
-        final Control c = new Control(this, imgName, x, y, width, height);
+    // TODO: we never test this code!
+    public HudActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
+        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         // Pan only consists of pan-stop and pan events. That means we can't
         // capture a down-press or up-press that isn't also involved in a move.
         // To overcome this limitation, we'll make this BOTH a pan control and a
@@ -1271,9 +1273,12 @@ public class Level {
                 return false;
             }
         };
-        mGame.mManager.mHud.mControls.add(c);
-        mGame.mManager.mHud.mPanControls.add(c);
-        mGame.mManager.mHud.mToggleControls.add(c);
+        c.mPanHandler.mSource = c;
+        c.mPanStopHandler.mSource = c;
+        c.mToggleHandler.mSource = c;
+        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.mPanControls2.add(c);
+        mGame.mManager.mHud.mToggleControls2.add(c);
         return c;
     }
 
