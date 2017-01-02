@@ -18,14 +18,14 @@ class HudScene extends LolScene {
     /// Input Controls
     final ArrayList<Control> mControls;
 
-    final ArrayList<BaseActor> mControls2;
+    final ArrayList<HudActor> mControls2;
 
     /// Output Displays
     private final ArrayList<Display> mDisplays;
 
     /// Controls that have a tap event
     final ArrayList<Control> mTapControls;
-    final ArrayList<BaseActor> mTapControls2;
+    final ArrayList<HudActor> mTapControls2;
 
     /// Controls that have a pan event
     final ArrayList<Control> mPanControls;
@@ -35,7 +35,9 @@ class HudScene extends LolScene {
 
     /// Toggle Controls
     final ArrayList<Control> mToggleControls;
-    final ArrayList<BaseActor> mToggleControls2;
+    final ArrayList<HudActor> mToggleControls2;
+    final ArrayList<HudActor> mPanControls2;
+    final ArrayList<HudActor> mZoomControls2;
 
     /**
      * Create a new heads-up display by providing the dimensions for its camera
@@ -54,6 +56,8 @@ class HudScene extends LolScene {
         mControls2 = new ArrayList<>();
         mTapControls2 = new ArrayList<>();
         mToggleControls2 = new ArrayList<>();
+        mPanControls2 = new ArrayList<>();
+        mZoomControls2 = new ArrayList<>();
     }
 
     void reportTouch(float x, float y) {
@@ -79,7 +83,7 @@ class HudScene extends LolScene {
         sb.begin();
         for (Control c : mControls)
             c.render(sb, delta);
-        for (BaseActor b : mControls2)
+        for (HudActor b : mControls2)
             b.render(sb, delta);
         for (Display d : mDisplays)
             d.render(sb, delta);
@@ -145,6 +149,15 @@ class HudScene extends LolScene {
                 return true;
             }
         }
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        world.mCamera.unproject(mTouchVec.set(x, y, 0));
+        if (mHitActor != null && ((HudActor)mHitActor).mPanHandler != null) {
+            ((HudActor)mHitActor).mPanHandler.deltaX = deltaX;
+            ((HudActor)mHitActor).mPanHandler.deltaY = deltaY;
+            return ((HudActor) mHitActor).mPanHandler.go(mTouchVec.x, mTouchVec.y);
+        }
         return false;
     }
 
@@ -158,7 +171,11 @@ class HudScene extends LolScene {
                 }
             }
         }
-        return false;
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        world.mCamera.unproject(mTouchVec.set(x, y, 0));
+        return mHitActor != null && ((HudActor)mHitActor).mPanStopHandler != null && ((HudActor)mHitActor).mPanStopHandler.go(mTouchVec.x, mTouchVec.y);
     }
 
     boolean handleZoom(float initialDistance, float distance) {
@@ -168,8 +185,10 @@ class HudScene extends LolScene {
                 return true;
             }
         }
-        return false;
-
+        mHitActor = null;
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
+                mTouchVec.y + 0.1f);
+        return mHitActor != null && ((HudActor)mHitActor).mZoomHandler != null && ((HudActor)mHitActor).mZoomHandler.go(initialDistance, distance);
     }
 
     boolean handleDown(float screenX, float screenY, MainScene world) {
@@ -200,6 +219,9 @@ class HudScene extends LolScene {
         if (mHitActor != null && mHitActor.mToggleHandler != null) {
             mHitActor.mToggleHandler.isUp = false;
             return mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
+        }
+        if (mHitActor != null && ((HudActor)mHitActor).mDownHandler != null) {
+            return ((HudActor)mHitActor).mDownHandler.go(mTouchVec.x, mTouchVec.y);
         }
         return false;
     }

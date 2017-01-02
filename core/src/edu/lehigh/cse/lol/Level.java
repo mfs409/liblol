@@ -713,8 +713,8 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public BaseActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
-        BaseActor c = new BaseActor(mGame.mManager.mHud, imgName, width, height);
+    public HudActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
+        HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mTapHandler = action;
         action.mSource = c;
@@ -843,8 +843,8 @@ public class Level {
      * @param onUpAction      The action to execute once any time the button is released
      * @return The control, so we can do more with it as needed.
      */
-    public BaseActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
-        BaseActor c = new BaseActor(mGame.mManager.mHud, imgName, width, height);
+    public HudActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
+        HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         // initially the down action is not active
         whileDownAction.mIsActive = false;
@@ -1031,9 +1031,10 @@ public class Level {
      *                   projectile and the bottom left of the hero throwing the
      *                   projectile
      */
-    public Control addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
+    public HudActor addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
                                              final long milliDelay, final float offsetX, final float offsetY) {
-        final Control c = new Control(this, imgName, x, y, width, height);
+        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         final Vector2 v = new Vector2();
         c.mToggleHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -1056,11 +1057,15 @@ public class Level {
                 return c.mToggleHandler.isHolding;
             }
         };
-        mGame.mManager.mHud.mControls.add(c);
+        mGame.mManager.mHud.mControls2.add(c);
         // on toggle, we start or stop throwing; on pan, we change throw
         // direction
-        mGame.mManager.mHud.mToggleControls.add(c);
-        mGame.mManager.mHud.mPanControls.add(c);
+        mGame.mManager.mHud.mToggleControls2.add(c);
+        mGame.mManager.mHud.mPanControls2.add(c);
+
+        c.mToggleHandler.mSource = c;
+        c.mPanHandler.mSource = c;
+
         mGame.mManager.mWorld.mRepeatEvents.add(new LolAction() {
             long mLastThrow;
 
@@ -1090,8 +1095,9 @@ public class Level {
      * @param imgName The name of the image to display. Use "" for an invisible
      *                button
      */
-    public Control addPanControl(int x, int y, int width, int height, String imgName) {
-        final Control c = new Control(this, imgName, x, y, width, height);
+    public HudActor addPanControl(int x, int y, int width, int height, String imgName) {
+        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mPanStopHandler = new TouchEventHandler() {
             /**
              * Handle a pan stop event by restoring the chase actor, if there
@@ -1103,7 +1109,6 @@ public class Level {
                 return true;
             }
         };
-
         c.mPanHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 if (mGame.mManager.mWorld.mChaseActor != null) {
@@ -1140,7 +1145,10 @@ public class Level {
                 return true;
             }
         };
-        mGame.mManager.mHud.mPanControls.add(c);
+        c.mPanHandler.mSource = c;
+        c.mPanStopHandler.mSource = c;
+        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.mPanControls2.add(c);
         return c;
     }
 
@@ -1156,15 +1164,17 @@ public class Level {
      * @param maxZoom The maximum zoom (out) factor. 8 is usually a good choice.
      * @param minZoom The minimum zoom (int) factor. .25f is usually a good choice.
      */
-    public Control addPinchZoomControl(int x, int y, int width, int height, String imgName, final float maxZoom,
+    public HudActor addPinchZoomControl(float x, float y, float width, float height, String imgName, final float maxZoom,
                                        final float minZoom) {
-        final Control c = new Control(this, imgName, x, y, width, height);
+        final HudActor c = new HudActor(mGame.mManager.mHud, imgName, width, height);
+        c.setBoxPhysics(0,0,0, BodyDef.BodyType.StaticBody, false, x, y);
         c.mDownHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
                 // of storing the last zoom value
                 deltaX = mGame.mManager.mWorld.mCamera.zoom;
-                return true;
+                System.out.println("zoom is " + deltaX);
+                return false;
             }
         };
         c.mZoomHandler = new TouchEventHandler() {
@@ -1174,10 +1184,12 @@ public class Level {
                 if (newZoom > minZoom && newZoom < maxZoom)
                     mGame.mManager.mWorld.mCamera.zoom = newZoom;
                 // TODO: why do we return false?
-                return false;
+                System.out.println("new zoom is " + newZoom);
+                return true;
             }
         };
-        mGame.mManager.mHud.mZoomControls.add(c);
+        mGame.mManager.mHud.mControls2.add(c);
+        mGame.mManager.mHud.mZoomControls2.add(c);
         return c;
     }
 
