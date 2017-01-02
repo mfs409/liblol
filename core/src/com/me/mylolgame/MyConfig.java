@@ -51,10 +51,11 @@ public class MyConfig extends Config {
         // The size of the screen, and some game behavior configuration
         mWidth = 960;
         mHeight = 640;
+        mPixelMeterRatio = 20;
+        mEnableVibration = true;
         mGameTitle = "My Lol Game";
         mDefaultWinText = "Good Job";
         mDefaultLoseText = "Try Again";
-        mEnableVibration = true;
         mShowDebugBoxes = true;
 
         // Chooser configuration

@@ -160,15 +160,15 @@ class MainScene extends LolScene {
         yGravity *= mTiltMultiplier;
 
         // ensure x is within the -GravityMax.x : GravityMax.x range
-        xGravity = (xGravity > mConfig.PIXEL_METER_RATIO * mTiltMax.x) ? mConfig.PIXEL_METER_RATIO * mTiltMax.x
+        xGravity = (xGravity > mConfig.mPixelMeterRatio * mTiltMax.x) ? mConfig.mPixelMeterRatio * mTiltMax.x
                 : xGravity;
-        xGravity = (xGravity < mConfig.PIXEL_METER_RATIO * -mTiltMax.x) ? mConfig.PIXEL_METER_RATIO * -mTiltMax.x
+        xGravity = (xGravity < mConfig.mPixelMeterRatio * -mTiltMax.x) ? mConfig.mPixelMeterRatio * -mTiltMax.x
                 : xGravity;
 
         // ensure y is within the -GravityMax.y : GravityMax.y range
-        yGravity = (yGravity > mConfig.PIXEL_METER_RATIO * mTiltMax.y) ? mConfig.PIXEL_METER_RATIO * mTiltMax.y
+        yGravity = (yGravity > mConfig.mPixelMeterRatio * mTiltMax.y) ? mConfig.mPixelMeterRatio * mTiltMax.y
                 : yGravity;
-        yGravity = (yGravity < mConfig.PIXEL_METER_RATIO * -mTiltMax.y) ? mConfig.PIXEL_METER_RATIO * -mTiltMax.y
+        yGravity = (yGravity < mConfig.mPixelMeterRatio * -mTiltMax.y) ? mConfig.mPixelMeterRatio * -mTiltMax.y
                 : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
@@ -430,19 +430,19 @@ class MainScene extends LolScene {
         float y = mChaseActor.mBody.getWorldCenter().y + mChaseActor.mCameraOffset.y;
 
         // if x or y is too close to MAX,MAX, stick with max acceptable values
-        if (x > mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            x = mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
-        if (y > mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            y = mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (x > mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+            x = mCamBound.x - mConfig.mWidth * mCamera.zoom / mConfig.mPixelMeterRatio / 2;
+        if (y > mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+            y = mCamBound.y - mConfig.mHeight * mCamera.zoom / mConfig.mPixelMeterRatio / 2;
 
         // if x or y is too close to 0,0, stick with minimum acceptable values
         //
         // NB: we do MAX before MIN, so that if we're zoomed out, we show extra
         // space at the top instead of the bottom
-        if (x < mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            x = mConfig.mWidth * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
-        if (y < mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-            y = mConfig.mHeight * mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+        if (x < mConfig.mWidth * mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+            x = mConfig.mWidth * mCamera.zoom / mConfig.mPixelMeterRatio / 2;
+        if (y < mConfig.mHeight * mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+            y = mConfig.mHeight * mCamera.zoom / mConfig.mPixelMeterRatio / 2;
 
         // update the camera position
         mCamera.position.set(x, y, 0);

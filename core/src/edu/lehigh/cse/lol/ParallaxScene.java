@@ -49,8 +49,8 @@ class ParallaxScene {
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(mBgCam.calculateParallaxMatrix(pl.mXSpeed
-                            * level.mConfig.PIXEL_METER_RATIO, pl.mYSpeed
-                            * level.mConfig.PIXEL_METER_RATIO));
+                            * level.mConfig.mPixelMeterRatio, pl.mYSpeed
+                            * level.mConfig.mPixelMeterRatio));
             sb.begin();
             // go auto layers
             if (pl.mAutoX) {
@@ -80,7 +80,7 @@ class ParallaxScene {
             else if (pl.mXRepeat) {
                 // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
-                float startX = x * level.mConfig.PIXEL_METER_RATIO * pl.mXSpeed;
+                float startX = x * level.mConfig.mPixelMeterRatio * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
@@ -103,7 +103,7 @@ class ParallaxScene {
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
                 // getLoseScene the camera center, translate, and scale
-                float startY = y * level.mConfig.PIXEL_METER_RATIO * pl.mYSpeed;
+                float startY = y * level.mConfig.mPixelMeterRatio * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + mBgCam.zoom)
                         * level.mConfig.mHeight;

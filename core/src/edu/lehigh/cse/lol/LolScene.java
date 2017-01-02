@@ -58,8 +58,8 @@ abstract class LolScene {
 
 
     LolScene(Media media, Config config) {
-        float w = config.mWidth / config.PIXEL_METER_RATIO;
-        float h = config.mHeight / config.PIXEL_METER_RATIO;
+        float w = config.mWidth / config.mPixelMeterRatio;
+        float h = config.mHeight / config.mPixelMeterRatio;
         mMedia = media;
         mConfig = config;
         // set up the game camera, with (0, 0) in the bottom left
@@ -171,7 +171,7 @@ abstract class LolScene {
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.setColor(Color.valueOf(fontColor));
                 mGlyphLayout.setText(bf, message);
                 bf.draw(sb, message, x, y + mGlyphLayout.height);
@@ -191,7 +191,7 @@ abstract class LolScene {
      */
     Renderable makeTextCentered(float centerX, float centerY, final String message, final String fontColor, String fontName, int size) {
         final BitmapFont bf = mMedia.getFont(fontName, size);
-        bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGlyphLayout.setText(bf, message);
         bf.getData().setScale(1);
         final float x = centerX / 2 - mGlyphLayout.width / 2;
@@ -199,7 +199,7 @@ abstract class LolScene {
         return new Renderable() {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
-                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.setColor(Color.valueOf(fontColor));
                 bf.draw(sb, message, x, y);
                 bf.getData().setScale(1);
@@ -219,7 +219,7 @@ abstract class LolScene {
      * @param sb      The SpriteBatch used to render the text
      */
     void drawTextTransposed(int x, int y, String message, BitmapFont bf, SpriteBatch sb) {
-        bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGlyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + mGlyphLayout.height);
         bf.getData().setScale(1);

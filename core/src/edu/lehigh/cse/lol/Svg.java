@@ -270,10 +270,10 @@ public class Svg {
         y1 = mFirst.y - y1;
         y2 = mFirst.y - y2;
         // convert the coords to meters
-        x1 /= mLevel.mConfig.PIXEL_METER_RATIO;
-        y1 /= mLevel.mConfig.PIXEL_METER_RATIO;
-        x2 /= mLevel.mConfig.PIXEL_METER_RATIO;
-        y2 /= mLevel.mConfig.PIXEL_METER_RATIO;
+        x1 /= mLevel.mConfig.mPixelMeterRatio;
+        y1 /= mLevel.mConfig.mPixelMeterRatio;
+        x2 /= mLevel.mConfig.mPixelMeterRatio;
+        y2 /= mLevel.mConfig.mPixelMeterRatio;
         // multiply the coords by the stretch
         x1 *= mUserStretch.x;
         y1 *= mUserStretch.y;

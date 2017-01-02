@@ -62,9 +62,9 @@ public class Level {
         mGame.mManager.mWorld.mCamBound.set(width, height);
 
         // warn on strange dimensions
-        if (width < mConfig.mWidth / mConfig.PIXEL_METER_RATIO)
+        if (width < mConfig.mWidth / mConfig.mPixelMeterRatio)
             Lol.message(mConfig, "Warning", "Your game width is less than 1/10 of the screen width");
-        if (height < mConfig.mHeight / mConfig.PIXEL_METER_RATIO)
+        if (height < mConfig.mHeight / mConfig.mPixelMeterRatio)
             Lol.message(mConfig, "Warning", "Your game height is less than 1/10 of the screen height");
     }
 
@@ -1120,23 +1120,23 @@ public class Level {
                 // if x or y is too close to MAX,MAX, stick with max acceptable
                 // values
                 if (x > mGame.mManager.mWorld.mCamBound.x - mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom
-                        / mConfig.PIXEL_METER_RATIO / 2)
+                        / mConfig.mPixelMeterRatio / 2)
                     x = mGame.mManager.mWorld.mCamBound.x - mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom
-                            / mConfig.PIXEL_METER_RATIO / 2;
+                            / mConfig.mPixelMeterRatio / 2;
                 if (y > mGame.mManager.mWorld.mCamBound.y - mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom
-                        / mConfig.PIXEL_METER_RATIO / 2)
+                        / mConfig.mPixelMeterRatio / 2)
                     y = mGame.mManager.mWorld.mCamBound.y - mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom
-                            / mConfig.PIXEL_METER_RATIO / 2;
+                            / mConfig.mPixelMeterRatio / 2;
 
                 // if x or y is too close to 0,0, stick with minimum acceptable
                 // values
                 //
                 // NB: we do MAX before MIN, so that if we're zoomed out, we
                 // show extra space at the top instead of the bottom
-                if (x < mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    x = mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
-                if (y < mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2)
-                    y = mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.PIXEL_METER_RATIO / 2;
+                if (x < mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+                    x = mConfig.mWidth * mGame.mManager.mWorld.mCamera.zoom / mConfig.mPixelMeterRatio / 2;
+                if (y < mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.mPixelMeterRatio / 2)
+                    y = mConfig.mHeight * mGame.mManager.mWorld.mCamera.zoom / mConfig.mPixelMeterRatio / 2;
 
                 // update the camera position
                 mGame.mManager.mWorld.mCamera.position.set(x, y, 0);
@@ -1411,7 +1411,7 @@ public class Level {
                                              String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 mMedia.getImage(imgName), 0, yOffset
-                * mConfig.PIXEL_METER_RATIO, width, height);
+                * mConfig.mPixelMeterRatio, width, height);
         pl.mXRepeat = xSpeed != 0;
         mGame.mManager.mBackground.mLayers.add(pl);
     }
@@ -1431,7 +1431,7 @@ public class Level {
                                                  float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 mMedia.getImage(imgName), 0, yOffset
-                * mConfig.PIXEL_METER_RATIO, width, height);
+                * mConfig.mPixelMeterRatio, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mGame.mManager.mBackground.mLayers.add(pl);
@@ -1456,7 +1456,7 @@ public class Level {
                                            String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 mMedia.getImage(imgName),
-                xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
+                xOffset * mConfig.mPixelMeterRatio, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mGame.mManager.mBackground.mLayers.add(pl);
     }
@@ -1507,7 +1507,7 @@ public class Level {
                                              String imgName, float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 mMedia.getImage(imgName), 0, yOffset
-                * mConfig.PIXEL_METER_RATIO, width, height);
+                * mConfig.mPixelMeterRatio, width, height);
         pl.mXRepeat = xSpeed != 0;
         mGame.mManager.mForeground.mLayers.add(pl);
     }
@@ -1527,7 +1527,7 @@ public class Level {
                                                  float yOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, 0,
                 mMedia.getImage(imgName), 0, yOffset
-                * mConfig.PIXEL_METER_RATIO, width, height);
+                * mConfig.mPixelMeterRatio, width, height);
         pl.mAutoX = true;
         pl.mXRepeat = xSpeed != 0;
         mGame.mManager.mForeground.mLayers.add(pl);
@@ -1552,7 +1552,7 @@ public class Level {
                                            String imgName, float xOffset, float width, float height) {
         ParallaxLayer pl = new ParallaxLayer(xSpeed, ySpeed,
                 mMedia.getImage(imgName),
-                xOffset * mConfig.PIXEL_METER_RATIO, 0, width, height);
+                xOffset * mConfig.mPixelMeterRatio, 0, width, height);
         pl.mYRepeat = ySpeed != 0;
         mGame.mManager.mForeground.mLayers.add(pl);
     }
@@ -1912,7 +1912,7 @@ public class Level {
      */
     public void setProjectileImageSource(String imgName) {
         for (Projectile p : mGame.mManager.mWorld.mProjectilePool.mPool)
-            p.mAnimator.updateImage(mGame.mManager.mWorld, imgName);
+            p.mAnimator.updateImage(mGame.mMedia, imgName);
         mGame.mManager.mWorld.mProjectilePool.mRandomizeImages = true;
     }
 
@@ -2133,7 +2133,7 @@ public class Level {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
-                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
                 bf.draw(sb, text, x, y + mGame.mManager.mWorld.mGlyphLayout.height);
                 bf.getData().setScale(1);
@@ -2160,7 +2160,7 @@ public class Level {
         final BitmapFont bf = mMedia.getFont(fontName, size);
 
         // figure out the image dimensions
-        bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+        bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
         final float w = mGame.mManager.mWorld.mGlyphLayout.width;
         final float h = mGame.mManager.mWorld.mGlyphLayout.height;
@@ -2171,7 +2171,7 @@ public class Level {
             @Override
             public void render(SpriteBatch sb, float elapsed) {
                 bf.setColor(Color.valueOf(fontColor));
-                bf.getData().setScale(1 / mConfig.PIXEL_METER_RATIO);
+                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
                 bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
                 bf.getData().setScale(1);
             }

@@ -7,6 +7,7 @@ package edu.lehigh.cse.lol;
 public interface TextProducer {
     /**
      * Create some text to display
+     *
      * @return The text that should be displayed
      */
     String makeText();

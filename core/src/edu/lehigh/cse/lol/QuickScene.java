@@ -186,8 +186,8 @@ abstract public class QuickScene extends LolScene {
      * @param size     The size of the text
      */
     public void addText(String text, String textColor, String fontName, int size) {
-        mSprites.add(makeTextCentered(mConfig.mWidth / mConfig.PIXEL_METER_RATIO / 2,
-                mConfig.mHeight / mConfig.PIXEL_METER_RATIO / 2, text, textColor, fontName, size));
+        mSprites.add(makeTextCentered(mConfig.mWidth / mConfig.mPixelMeterRatio / 2,
+                mConfig.mHeight / mConfig.mPixelMeterRatio / 2, text, textColor, fontName, size));
     }
 
     /**

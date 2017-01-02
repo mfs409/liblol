@@ -15,14 +15,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * BaseActor is the parent of all WorldActor types.
+ * BaseActor is the parent of all Actor types.
  * <p>
- * We use BaseActor as parent of both WorldActor (MainScene) and SimpleActor (all other scenes), so that
+ * We use BaseActor as parent of both WorldActor (MainScene) and SceneActor (all other scenes), so that
  * core functionality (physics, animation) can be in one place, even though many of the features of
  * an WorldActor (MainScene) require a Score object, and are thus incompatible with non-Main scenes.
  */
 public class BaseActor extends Renderable {
-    /// The level in which this WorldActor exists
+    /// The level in which this Actor exists
     final LolScene mScene;
 
     /// Animation support: the offset for placing the disappearance animation relative to the
@@ -96,7 +96,7 @@ public class BaseActor extends Renderable {
 
     BaseActor(LolScene scene, String imgName, float width, float height) {
         mScene = scene;
-        mAnimator = new AnimationDriver(mScene, imgName);
+        mAnimator = new AnimationDriver(mScene.mMedia, imgName);
         mSize.x = width;
         mSize.y = height;
         mDisappearAnimateSize = new Vector2();
@@ -767,7 +767,7 @@ public class BaseActor extends Renderable {
      * @param imgName The name of the new image file to use
      */
     public void setImage(String imgName) {
-        mAnimator.updateImage(mScene, imgName);
+        mAnimator.updateImage(mScene.mMedia, imgName);
     }
 
     /**

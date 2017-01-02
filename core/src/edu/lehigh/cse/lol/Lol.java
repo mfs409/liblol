@@ -55,7 +55,7 @@ public class Lol implements ApplicationListener {
     /// mConfig stores the configuration state of the game.
     final Config mConfig;
     /// mMedia stores all the images, sounds, and fonts for the game
-    private Media mMedia;
+    Media mMedia;
 
     /// The Manager object handles scores, screen management, and transitions among screens
     LolManager mManager;

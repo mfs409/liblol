@@ -29,46 +29,45 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.Random;
+
 /**
- * AnimationDriver is an internal class that actors can use to figure out which
- * frame of an animation to show next
+ * AnimationDriver is an internal class that actors can use to figure out which frame of an
+ * animation to show next
  */
 class AnimationDriver {
     /// The currently running animation
     Animation mCurrentAnimation;
-
     /// The images that comprise the current animation will be the elements of this array
     private TextureRegion[] mImages;
-
-    /// The index to display from mImageNames for the case where there is no active animation. This
-    // is useful for animateByGoodieCount.
+    /// The index to display from <code>mImages</code>, for the case where there is no active
+    /// animation. This is useful for animateByGoodieCount.
     private int mImageIndex;
-
     /// The frame of the currently running animation that is being displayed
-    private int mCurrentAnimationFrame;
-
+    private int mActiveFrame;
     /// The amount of time for which the current frame has been displayed
-    private float mCurrentAnimationTime;
+    private float mElapsedTime;
 
     /**
-     * Build an AnimationDriver by giving it an imageName. This allows us to use
-     * AnimationDriver for displaying non-animated images
+     * Build an AnimationDriver by giving it an image name. This allows us to use AnimationDriver to
+     * display non-animated images
      *
+     * @param media   The media object, with all of the game's loaded images
      * @param imgName The name of the image file to use
      */
-    AnimationDriver(LolScene level, String imgName) {
-        updateImage(level, imgName);
+    AnimationDriver(Media media, String imgName) {
+        updateImage(media, imgName);
     }
 
     /**
-     * Set the current animation, and reset internal fields
+     * Set the current animation, so that it will start running
      *
-     * @param a The animation to start using
+     * @param animation The animation to start using
      */
-    void setCurrentAnimation(Animation a) {
-        mCurrentAnimation = a;
-        mCurrentAnimationFrame = 0;
-        mCurrentAnimationTime = 0;
+    void setCurrentAnimation(Animation animation) {
+        mCurrentAnimation = animation;
+        mActiveFrame = 0;
+        mElapsedTime = 0;
     }
 
     /**
@@ -76,49 +75,48 @@ class AnimationDriver {
      *
      * @param imgName The name of the image file to use
      */
-    void updateImage(LolScene level, String imgName) {
+    void updateImage(Media media, String imgName) {
         if (mImages == null)
             mImages = new TextureRegion[1];
-        mImages[0] = level.mMedia.getImage(imgName);
+        mImages[0] = media.getImage(imgName);
         mImageIndex = 0;
     }
 
     /**
-     * Request a random index from the mImageNames array to pick an image to display
+     * Request a random index from the mImages array to pick an image to display
+     *
+     * @param generator A random number generator.  We pass in the game's generator, so that we can
+     *                  keep the length of the mImages array private
      */
-    void pickRandomIndex(MainScene level) {
-        mImageIndex = level.mGenerator.nextInt(mImages.length);
+    void updateIndex(Random generator) {
+        mImageIndex = generator.nextInt(mImages.length);
     }
 
     /**
-     * When an actor renders, we use this method to figure out which
-     * textureRegion to display
+     * When an actor renders, we use this method to figure out which image to display
      *
      * @param delta The time since the last render
      * @return The TextureRegion to display
      */
     TextureRegion getTr(float delta) {
+        // If we're in 'show a specific image' mode, then show an image
         if (mCurrentAnimation == null) {
-            if (mImages == null)
-                return null;
-            return mImages[mImageIndex];
+            return (mImages == null) ? null : mImages[mImageIndex];
         }
-        mCurrentAnimationTime += delta;
-        long millis = (long) (1000 * mCurrentAnimationTime);
+        // Advance the time
+        mElapsedTime += delta;
+        long millis = (long) (1000 * mElapsedTime);
         // are we still in this frame?
-        if (millis <= mCurrentAnimation.mDurations[mCurrentAnimationFrame]) {
-            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
+        if (millis <= mCurrentAnimation.mDurations[mActiveFrame]) {
+            return mCurrentAnimation.mCells[mActiveFrame];
         }
-        // are we on the last frame, with no loop? If so, stay where we
-        // are...
-        else if (mCurrentAnimationFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
-            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
+        // are we on the last frame, with no loop? If so, stay where we are
+        else if (mActiveFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
+            return mCurrentAnimation.mCells[mActiveFrame];
         }
-        // else advance, reset, go
-        else {
-            mCurrentAnimationFrame = (mCurrentAnimationFrame + 1) % mCurrentAnimation.mNextCell;
-            mCurrentAnimationTime = 0;
-            return mCurrentAnimation.mCells[mCurrentAnimationFrame];
-        }
+        // advance the animation and start its timer from zero
+        mActiveFrame = (mActiveFrame + 1) % mCurrentAnimation.mNextCell;
+        mElapsedTime = 0;
+        return mCurrentAnimation.mCells[mActiveFrame];
     }
 }
