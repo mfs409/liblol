@@ -1,30 +1,3 @@
-/**
- * This is free and unencumbered software released into the public domain.
- * <p/>
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * <p/>
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * <p/>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * <p/>
- * For more information, please refer to <http://unlicense.org>
- */
-
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -43,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
  * <p>
  * The Lol object implements ApplicationListener, which provides hooks for rendering the game,
  * stopping it, resuming it, and handling any Android lifecycle events.
- * <p/>
+ * <p>
  * In addition to ApplicationListener duties, the Lol object is responsible for providing an
  * abstracted interface to some of the hardware (e.g., the back button and persistent storage),
  * loading resources, and forwarding key/touch inputs to the appropriate handlers.
@@ -182,7 +155,7 @@ public class Lol implements ApplicationListener {
             if (mManager.mPauseScene.onTap(x, y, Lol.this))
                 return true;
             // Let the hud go the tap
-            if (mManager.mHud.handleTap(x, y, mManager.mWorld))
+            if (mManager.mHud.handleTap(x, y, mManager.mWorld.mCamera))
                 return true;
             // leave it up to the world
             return mManager.mWorld.onTap(x, y);
@@ -211,7 +184,7 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
-            if (mManager.mHud.handlePan(x, y, deltaX, deltaY, mManager.mWorld))
+            if (mManager.mHud.handlePan(x, y, deltaX, deltaY, mManager.mWorld.mCamera))
                 return true;
 
             // did we pan the level?
@@ -229,7 +202,8 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
             // check if we panStopped a control
-            return mManager.mHud.handlePanStop(x, y, mManager.mWorld) || mManager.mWorld.handlePanStop(x, y);
+            return mManager.mHud.handlePanStop(x, y, mManager.mWorld.mCamera) ||
+                    mManager.mWorld.handlePanStop(x, y);
         }
 
         /**
@@ -260,7 +234,8 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleDown(screenX, screenY);
+            return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld.mCamera)
+                    || mManager.mWorld.handleDown(screenX, screenY);
         }
 
         /**
@@ -274,7 +249,8 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
-            return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleUp(screenX, screenY);
+            return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld.mCamera) ||
+                    mManager.mWorld.handleUp(screenX, screenY);
 
         }
 
@@ -371,17 +347,6 @@ public class Lol implements ApplicationListener {
         // PreScene shows
         mManager.mWorld.playMusic();
 
-        // in debug mode, any click will report the coordinates of the click...
-        // this is very useful when trying to adjust screen coordinates
-        if (mConfig.mShowDebugBoxes) {
-            if (Gdx.input.justTouched()) {
-                float x = Gdx.input.getX();
-                float y = Gdx.input.getY();
-                mManager.mHud.reportTouch(x, y);
-                mManager.mWorld.reportTouch(x, y);
-            }
-        }
-
         // Handle pauses due to pre, pause, or post scenes...
         //
         // Note that these handle their own screen touches...
@@ -395,6 +360,17 @@ public class Lol implements ApplicationListener {
             return;
         if (mManager.mPauseScene.render(mSpriteBatch, delta))
             return;
+
+        // in debug mode, any click will report the coordinates of the click...
+        // this is very useful when trying to adjust screen coordinates
+        if (mConfig.mShowDebugBoxes) {
+            if (Gdx.input.justTouched()) {
+                float x = Gdx.input.getX();
+                float y = Gdx.input.getY();
+                mManager.mHud.reportTouch(x, y, "Hud ");
+                mManager.mWorld.reportTouch(x, y, "World ");
+            }
+        }
 
         // Let the score object know that we are rendering, so that we can handle any win/lose
         // timers

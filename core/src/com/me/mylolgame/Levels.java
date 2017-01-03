@@ -1417,9 +1417,9 @@ class Levels implements ScreenManager {
             level.setCameraChase(h);
 
             // draw an obstacle from SVG
-            level.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new Svg.ActorCallback() {
+            level.importLineDrawing("shape.svg", 2f, .5f, 25f, 15f, new LolActorEvent() {
                 @Override
-                public void handle(WorldActor line) {
+                public void go(WorldActor line) {
                     // This code is run each time a line of the SVG is drawn.  When we getLoseScene a line,
                     // we'll give it some density and friction.  Remember that the line is
                     // actually a rotated obstacle

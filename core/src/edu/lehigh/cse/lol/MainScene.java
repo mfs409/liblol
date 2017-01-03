@@ -521,12 +521,6 @@ class MainScene extends LolScene {
         return false;
     }
 
-    // TODO: move to parent
-    void reportTouch(float x, float y) {
-        mCamera.unproject(mTouchVec.set(x, y, 0));
-        Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
-    }
-
     void liftAllButtons(float touchX, float touchY) {
         for (TouchEventHandler ga : mPanStopHandlers) {
             ga.go(touchX, touchY);

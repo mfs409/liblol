@@ -2057,7 +2057,7 @@ public class Level {
      * @param ac       A callback for customizing each (obstacle) line segment of the SVG
      */
     public void importLineDrawing(String svgName, float stretchX, float stretchY,
-                                  float xposeX, float xposeY, Svg.ActorCallback ac) {
+                                  float xposeX, float xposeY, LolActorEvent ac) {
         // Create an SVG object to hold all the parameters, then use it to parse
         // the file
         Svg s = new Svg(this, stretchX, stretchY, xposeX, xposeY, ac);
