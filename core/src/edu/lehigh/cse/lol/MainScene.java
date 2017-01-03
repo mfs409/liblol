@@ -532,12 +532,12 @@ class MainScene extends LolScene {
         Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
     }
 
-    void liftAllButtons(Vector3 touchVec) {
+    void liftAllButtons(float touchX, float touchY) {
         for (TouchEventHandler ga : mPanStopHandlers) {
-            ga.go(touchVec.x, touchVec.y);
+            ga.go(touchX, touchY);
         }
         for (TouchEventHandler ga : mUpHandlers) {
-            ga.go(touchVec.x, touchVec.y);
+            ga.go(touchX, touchY);
         }
     }
 

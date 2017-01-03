@@ -1,9 +1,6 @@
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
@@ -12,9 +9,6 @@ import java.util.ArrayList;
  * of "in the world".
  */
 class HudScene extends LolScene {
-    /// The debug shape renderer, for putting boxes around Controls and Displays
-    private final ShapeRenderer mShapeRender;
-
     /// Toggle Controls
     final ArrayList<SceneActor> mToggleControls;
 
@@ -23,9 +17,6 @@ class HudScene extends LolScene {
      */
     HudScene(Media media, Config config) {
         super(media, config);
-
-        mShapeRender = new ShapeRenderer();
-
         mToggleControls = new ArrayList<>();
     }
 
@@ -57,22 +48,17 @@ class HudScene extends LolScene {
         }
         sb.end();
 
-        // DEBUG: render Controls' outlines
         // TODO: box2d shape renderer for controls2
         if (mConfig.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(mCamera.combined);
-            mShapeRender.begin(ShapeRenderer.ShapeType.Line);
-            mShapeRender.setColor(Color.RED);
-            mShapeRender.end();
         }
         return true;
     }
 
-    void liftAllButtons(Vector3 touchVec) {
+    void liftAllButtons(float touchX, float touchY) {
         for (SceneActor c : mToggleControls) {
             if (c.mIsTouchable) {
                 c.mToggleHandler.isUp = true;
-                c.mToggleHandler.go(touchVec.x, touchVec.y);
+                c.mToggleHandler.go(touchX, touchY);
             }
         }
     }

@@ -137,9 +137,9 @@ public class Lol implements ApplicationListener {
      * @param touchVec The location of the touch that interacted with the pause
      *                 screen.
      */
-    void liftAllButtons(Vector3 touchVec) {
-        mManager.mHud.liftAllButtons(touchVec);
-        mManager.mWorld.liftAllButtons(touchVec);
+    void liftAllButtons(float touchX, float touchY) {
+        mManager.mHud.liftAllButtons(touchX, touchY);
+        mManager.mWorld.liftAllButtons(touchX, touchY);
     }
 
     /**

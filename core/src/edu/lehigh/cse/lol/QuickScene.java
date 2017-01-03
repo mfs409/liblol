@@ -39,21 +39,16 @@ import java.util.ArrayList;
 abstract public class QuickScene extends LolScene {
     /// A flag for disabling the scene, so we can keep it from displaying
     boolean mDisable;
-
     /// Track if the Scene is visible. Initially it is not.
     boolean mVisible;
-
     /// Sound to play when the scene is displayed
-     Sound mSound;
-
+    Sound mSound;
     /// Time that the Scene started being shown, so we can update timers
-     long mDisplayTime;
-
+    long mDisplayTime;
     /// True if we must click in order to clear the scene
-     boolean mClickToClear;
-
+    boolean mClickToClear;
     /// Some default text that we might want to display
-     String mText;
+    String mText;
 
     /**
      * Construct a QuickScene by giving it a level
@@ -124,7 +119,7 @@ abstract public class QuickScene extends LolScene {
         // hide the scene only if it's click-to-clear
         if (mClickToClear) {
             dismiss();
-            game.liftAllButtons(mTouchVec);
+            game.liftAllButtons(mTouchVec.x, mTouchVec.y);
         }
         return true;
     }
