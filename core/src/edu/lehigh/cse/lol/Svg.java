@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ * <p>
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * <p>
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * <p>
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
@@ -11,7 +38,7 @@ import java.io.IOException;
 
 /**
  * The Svg infrastructure allows the game designer to load SVG line drawings into a game. SVG line
- * drawings can be made in Inkscape. In LOL, we do not use line drawings to their full potential. We
+ * drawings can be made in InkScape. In LOL, we do not use line drawings to their full potential. We
  * only use them to define a set of invisible lines for a simple, stationary obstacle. You should
  * draw a picture on top of your line drawing, so that the player knows that there is an actor on
  * the screen.
@@ -46,17 +73,18 @@ public class Svg {
 
     /**
      * Configure a parser that we can use to load an SVG file and draw each of
-     * its lines as a Box2d line
+     * its lines as an Obstacle
      *
-     * @param stretchX Stretch the drawing in the X dimension by this percentage
-     * @param stretchY Stretch the drawing in the Y dimension by this percentage
-     * @param xposeX   Shift the drawing in the X dimension. Note that shifting
-     *                 occurs after stretching
-     * @param xposeY   Shift the drawing in the Y dimension. Note that shifting
-     *                 occurs after stretching
-     * @param ac       The callback to run whenever a line is created
+     * @param stretchX   Stretch the drawing in the X dimension by this percentage
+     * @param stretchY   Stretch the drawing in the Y dimension by this percentage
+     * @param transposeX Shift the drawing in the X dimension. Note that shifting
+     *                   occurs after stretching
+     * @param transposeY Shift the drawing in the Y dimension. Note that shifting
+     *                   occurs after stretching
+     * @param callback   The callback to run whenever a line is created
      */
-    Svg(Level level, float stretchX, float stretchY, float xposeX, float xposeY, LolActorEvent ac) {
+    Svg(Level level, float stretchX, float stretchY, float transposeX, float transposeY,
+        LolActorEvent callback) {
         mLevel = level;
 
         // specify transpose and stretch information
@@ -64,11 +92,13 @@ public class Svg {
         mUserStretch.x = stretchX;
         mUserStretch.y = stretchY;
         mUserTransform = new Vector2(0, 0);
-        mUserTransform.x = xposeX;
-        mUserTransform.y = xposeY;
+        mUserTransform.x = transposeX;
+        mUserTransform.y = transposeY;
 
-        // save the WorldActor Callback
-        mActorCallback = ac;
+        // save the callback
+        mActorCallback = callback;
+
+        // initialize other fields
         mSvgTranslate = new Vector2(0, 0);
         mLast = new Vector2(0, 0);
         mFirst = new Vector2(0, 0);
@@ -79,20 +109,18 @@ public class Svg {
     }
 
     /**
-     * When we encounter a "transform" attribute, we use this code to parse it,
-     * in case it has a "translate" directive that we should go
+     * When we encounter a "transform" attribute, we use this code to parse it, in case it has a
+     * "translate" directive that we should go
      *
-     * @param attribute The attribute being processed... we hope it's a valid
-     *                  translate directive
+     * @param attribute The attribute being processed... we hope it's a valid translate directive
      */
     private void processTransform(String attribute) {
-        // if we getLoseScene a valid "translate" attribute, split it into two floats and
-        // save them
+        // if we get a valid "translate" attribute, split it into two floats and save them
         if (attribute.startsWith("translate(")) {
             String x2 = attribute.replace("translate(", "");
             x2 = x2.replace(")", ",");
-            String delims = "[,]+";
-            String[] points = x2.split(delims);
+            String delimiters = "[,]+";
+            String[] points = x2.split(delimiters);
             try {
                 mSvgTranslate.x = Float.valueOf(points[0]);
                 mSvgTranslate.y = Float.valueOf(points[1]);
@@ -103,18 +131,17 @@ public class Svg {
     }
 
     /**
-     * The root of an SVG drawing will have a g element, which will have some
-     * number of path elements. Each path will have a "d=" attribute, which
-     * stores the points and information about how to connect them. The "d" is a
-     * single string, which we parse in this function.
+     * The root of an SVG drawing will have a g element, which will have some number of path
+     * elements. Each path will have a "d=" attribute, which stores the points and information about
+     * how to connect them. The "d" is a single string, which we parse in this function.
      *
      * @param d The string that describes the path
      */
     private void processD(String d) {
         // split the string into characters and floating point values
-        String delims = "[ ,]+";
-        String[] points = d.split(delims);
-        // SVG can give point coords in absolute or relative terms
+        String delimiters = "[ ,]+";
+        String[] points = d.split(delimiters);
+        // SVG can give point coordinates in absolute or relative terms
         boolean absolute = false;
         for (String s0 : points) {
             String s = s0.trim();
@@ -160,7 +187,7 @@ public class Svg {
                     if (mSwallow > 0) {
                         mSwallow--;
                     }
-                    // getLoseScene the next point
+                    // get the next point
                     else {
                         try {
                             // convert next point to float
@@ -171,8 +198,8 @@ public class Svg {
                                 mLast.x = val;
                                 mFirst.x = val;
                             }
-                            // if it's the initial y, save it... can't draw a line
-                            // yet, because we have 1 endpoint
+                            // if it's the initial y, save it... can't draw a line yet, because we
+                            // have one endpoint
                             else if (mState == -1) {
                                 mState = 0;
                                 mLast.y = val;
@@ -197,8 +224,7 @@ public class Svg {
                                 addLine(mLast, mCurr);
                                 mLast.x = mCurr.x;
                                 mLast.y = mCurr.y;
-                                // if we are in curve mode, reinitialize the
-                                // swallower
+                                // if we are in curve mode, reinitialize the swallower
                                 if (mMode == 2)
                                     mSwallow = 4;
                             }
@@ -215,18 +241,16 @@ public class Svg {
     }
 
     /**
-     * This is a convenience method to separate the transformation and stretch
-     * logic from the logic for actually drawing lines
+     * This is a convenience method to separate the transformation and stretch logic from the logic
+     * for actually drawing lines
      * <p>
-     * There are two challenges. The first is that an SVG deals with pixels,
-     * whereas we like to draw actors in meters. This matters because user
-     * translations will be in meters, but SVG points and SVG translations will
-     * be in pixels.
+     * There are two challenges. The first is that an SVG deals with pixels, whereas we like to draw
+     * actors in meters. This matters because user translations will be in meters, but SVG points
+     * and SVG translations will be in pixels.
      * <p>
-     * The second challenge is that SVGs appear to have a "down is plus" Y axis,
-     * whereas our system has a "down is minus" Y axis. To getLoseScene around this, we
-     * reflect every Y coordinate over the horizontal line that intersects with
-     * the first point drawn.
+     * The second challenge is that SVGs appear to have a "down is plus" Y axis, whereas our system
+     * has a "down is minus" Y axis. To getLoseScene around this, we reflect every Y coordinate over
+     * the horizontal line that intersects with the first point drawn.
      *
      * @param start The point from which the line originates
      * @param stop  The point to which the line extends
@@ -242,12 +266,12 @@ public class Svg {
         // reflect through mFirst.y
         y1 = mFirst.y - y1;
         y2 = mFirst.y - y2;
-        // convert the coords to meters
+        // convert the coordinates to meters
         x1 /= mLevel.mConfig.mPixelMeterRatio;
         y1 /= mLevel.mConfig.mPixelMeterRatio;
         x2 /= mLevel.mConfig.mPixelMeterRatio;
         y2 /= mLevel.mConfig.mPixelMeterRatio;
-        // multiply the coords by the stretch
+        // multiply the coordinates by the stretch
         x1 *= mUserStretch.x;
         y1 *= mUserStretch.y;
         x2 *= mUserStretch.x;
@@ -261,8 +285,8 @@ public class Svg {
     }
 
     /**
-     * Internal method used by the SVG parser to draw a line. We actually just draw a really
-     * skinny Obstacle and rotate it
+     * Internal method used by the SVG parser to draw a line. We actually just draw a really skinny
+     * Obstacle and rotate it
      *
      * @param x1 X coordinate of first endpoint
      * @param y1 Y coordinate of first endpoint
@@ -274,7 +298,6 @@ public class Svg {
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
         float len = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-
         // Make an obstacle and rotate it
         Obstacle o = mLevel.makeObstacleAsBox(x1, y1, len, .1f, "red.png");
         o.mBody.setTransform(centerX, centerY, MathUtils.atan2(y2 - y1, x2 - x1));
@@ -283,9 +306,8 @@ public class Svg {
     }
 
     /**
-     * The main parse routine. We slurp the file into an XML DOM object, and
-     * then iterate over it, finding the paths within the g, and processing
-     * their "d" attributes
+     * The main parse routine. We slurp the file into an XML DOM object, and then iterate over it,
+     * finding the paths within the g, and processing their "d" attributes
      *
      * @param svgName The name of the file to parse
      */
@@ -293,14 +315,14 @@ public class Svg {
         XmlReader r = new XmlReader();
         try {
             Element root = r.parse(Gdx.files.internal(svgName));
-            // getLoseScene the <g> tags
+            // get the <g> tags
             Array<Element> gs = root.getChildrenByName("g");
             for (Element g : gs) {
                 // Get the g's transform attribute
-                String xform = g.getAttribute("transform", "");
-                if (!xform.equals(""))
-                    processTransform(xform);
-                // getLoseScene each g's paths
+                String transform = g.getAttribute("transform", "");
+                if (!transform.equals(""))
+                    processTransform(transform);
+                // get each g's paths
                 Array<Element> paths = g.getChildrenByName("path");
                 for (Element p : paths)
                     processD(p.getAttribute("d"));
