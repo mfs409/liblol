@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -62,7 +61,7 @@ class MainScene extends LolScene {
     /// if needed
     final ArrayList<TouchEventHandler> mPanStopHandlers;
     /// A handler to run in respond to a screen Pan event.  An actor will install this, if needed
-    final ArrayList<TouchEventHandler> mPanHandlers;
+    final ArrayList<PanEventHandler> mPanHandlers;
 
     /// A pool of projectiles for use by the hero
     ProjectilePool mProjectilePool;
@@ -460,10 +459,8 @@ class MainScene extends LolScene {
 
     boolean handlePan(float x, float y, float deltaX, float deltaY) {
         mCamera.unproject(mTouchVec.set(x, y, 0));
-        for (TouchEventHandler ga : mPanHandlers) {
-            ga.deltaX = deltaX;
-            ga.deltaY = deltaY;
-            if (ga.go(mTouchVec.x, mTouchVec.y))
+        for (PanEventHandler ga : mPanHandlers) {
+            if (ga.go(mTouchVec.x, mTouchVec.y, deltaX, deltaY))
                 return true;
         }
         return false;
@@ -491,8 +488,7 @@ class MainScene extends LolScene {
         // touched actor, and that's it
         if (mHitActor != null) {
             if (mHitActor.mToggleHandler != null) {
-                mHitActor.mToggleHandler.isUp = false;
-                if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y))
+                if (mHitActor.mToggleHandler.go(false, mTouchVec.x, mTouchVec.y))
                     return true;
             }
         }
@@ -508,8 +504,7 @@ class MainScene extends LolScene {
         mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null) {
             if (mHitActor.mToggleHandler != null) {
-                mHitActor.mToggleHandler.isUp = true;
-                if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y)) {
+                if (mHitActor.mToggleHandler.go(true, mTouchVec.x, mTouchVec.y)) {
                     mHitActor = null;
                     return true;
                 }

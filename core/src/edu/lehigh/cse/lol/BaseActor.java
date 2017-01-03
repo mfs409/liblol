@@ -62,7 +62,7 @@ public class BaseActor extends Renderable {
     private int mInfoInt;
 
     TouchEventHandler mTapHandler;
-    TouchEventHandler mToggleHandler;
+    ToggleEventHandler mToggleHandler;
 
     /// a sound to play when this actor is touched
     private Sound mTouchSound;
@@ -586,8 +586,8 @@ public class BaseActor extends Renderable {
         whileDownAction.mIsActive = false;
 
         // set up the toggle behavior
-        mToggleHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        mToggleHandler = new ToggleEventHandler() {
+            public boolean go(boolean isUp, float worldX, float worldY) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)

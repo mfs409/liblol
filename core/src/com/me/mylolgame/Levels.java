@@ -33,22 +33,21 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import java.util.ArrayList;
 
 import edu.lehigh.cse.lol.CollisionCallback;
-import edu.lehigh.cse.lol.LolActorEvent;
-import edu.lehigh.cse.lol.WorldActor;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Effect;
 import edu.lehigh.cse.lol.Enemy;
 import edu.lehigh.cse.lol.Goodie;
 import edu.lehigh.cse.lol.Hero;
-import edu.lehigh.cse.lol.SceneActor;
 import edu.lehigh.cse.lol.Level;
 import edu.lehigh.cse.lol.LolAction;
-import edu.lehigh.cse.lol.LolCallback;
+import edu.lehigh.cse.lol.LolActorEvent;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Route;
+import edu.lehigh.cse.lol.SceneActor;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.TouchEventHandler;
+import edu.lehigh.cse.lol.WorldActor;
 
 /**
  * Levels is where all of the code goes for describing the different levels of

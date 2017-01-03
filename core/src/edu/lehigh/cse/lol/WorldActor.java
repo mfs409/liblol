@@ -402,6 +402,12 @@ public abstract class WorldActor extends BaseActor {
                         return true;
                     }
                 };
+                final PanEventHandler pan = new PanEventHandler() {
+                    @Override
+                    public boolean go(float eventPositionX, float eventPositionY, float deltaX, float deltaY) {
+                        return down.go(eventPositionX, eventPositionY);
+                    }
+                };
                 // on an up (or a panstop), do this
                 TouchEventHandler up = new TouchEventHandler() {
                     public boolean go(float worldX, float worldY) {
@@ -417,7 +423,7 @@ public abstract class WorldActor extends BaseActor {
                 ((MainScene) mScene).mUpHandlers.add(up);
                 ((MainScene) mScene).mPanStopHandlers.add(up);
                 ((MainScene) mScene).mDownHandlers.add(down);
-                ((MainScene) mScene).mPanHandlers.add(down);
+                ((MainScene) mScene).mPanHandlers.add(pan);
                 return true;
             }
         };

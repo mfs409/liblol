@@ -2,11 +2,8 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Timer;
 
@@ -142,7 +139,7 @@ public class Level {
                                 final float height, final int interval, final LolActorEvent onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
-        mGame.mManager.mWorld.mPanHandlers.add(new TouchEventHandler() {
+        mGame.mManager.mWorld.mPanHandlers.add(new PanEventHandler() {
             /**
              * The time of the last touch event... we use this to prevent high
              * rates of scribble
@@ -153,7 +150,7 @@ public class Level {
              * On a down press, draw a new obstacle if enough time has
              * transpired
              */
-            public boolean go(float worldX, float worldY) {
+            public boolean go(float worldX, float worldY, float deltaX, float deltaY) {
                 // check if enough milliseconds have passed
                 long now = System.currentTimeMillis();
                 if (now < mLastTime + interval) {
@@ -851,8 +848,8 @@ public class Level {
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
-        c.mToggleHandler = new TouchEventHandler() {
-            public boolean go(float x, float y) {
+        c.mToggleHandler = new ToggleEventHandler() {
+            public boolean go(boolean isUp, float x, float y) {
                 if (isUp) {
                     whileDownAction.mIsActive = false;
                     if (onUpAction != null)
@@ -1038,8 +1035,8 @@ public class Level {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         final Vector2 v = new Vector2();
-        c.mToggleHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        c.mToggleHandler = new ToggleEventHandler() {
+            public boolean go(boolean isUp, float worldX, float worldY) {
                 if (isUp) {
                     isHolding = false;
                 } else {
@@ -1050,8 +1047,8 @@ public class Level {
                 return true;
             }
         };
-        c.mPanHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        c.mPanHandler = new PanEventHandler() {
+            public boolean go(float worldX, float worldY, float deltaX, float deltaY) {
                 if (c.mToggleHandler.isHolding) {
                     v.x = worldX;
                     v.y = worldY;
@@ -1060,8 +1057,7 @@ public class Level {
             }
         };
         mGame.mManager.mHud.addActor(c, 0);
-        // on toggle, we start or stop throwing; on pan, we change throw
-        // direction
+        // on toggle, we start or stop throwing; on pan, we change throw direction
         mGame.mManager.mHud.mToggleControls.add(c);
 
         c.mToggleHandler.mSource = c;
@@ -1110,8 +1106,8 @@ public class Level {
                 return true;
             }
         };
-        c.mPanHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        c.mPanHandler = new PanEventHandler() {
+            public boolean go(float worldX, float worldY, float deltaX, float deltaY) {
                 if (mGame.mManager.mWorld.mChaseActor != null) {
                     c.mPanStopHandler.mSource= mGame.mManager.mWorld.mChaseActor;
                     mGame.mManager.mWorld.mChaseActor = null;
@@ -1172,14 +1168,14 @@ public class Level {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
                 // of storing the last zoom value
-                deltaX = mGame.mManager.mWorld.mCamera.zoom;
+                c.setInfoInt((int)(mGame.mManager.mWorld.mCamera.zoom*1000));
                 return false;
             }
         };
         c.mZoomHandler = new TouchEventHandler() {
             public boolean go(float initialDistance, float distance) {
                 float ratio = initialDistance / distance;
-                float newZoom = c.mDownHandler.deltaX * ratio;
+                float newZoom = ((float)c.getInfoInt())/1000 * ratio;
                 if (newZoom > minZoom && newZoom < maxZoom)
                     mGame.mManager.mWorld.mCamera.zoom = newZoom;
                 return true;
@@ -1221,43 +1217,39 @@ public class Level {
      *                Control
      */
     // TODO: we never test this code!
-    public SceneActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final LolCallback upCB, final LolCallback dnCB, final LolCallback mvCB) {
+    public SceneActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final TouchEventHandler upCB, final TouchEventHandler dnCB, final TouchEventHandler mvCB) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
         c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
         // Pan only consists of pan-stop and pan events. That means we can't
         // capture a down-press or up-press that isn't also involved in a move.
         // To overcome this limitation, we'll make this BOTH a pan control and a
         // toggle control
-        c.mToggleHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        c.mToggleHandler = new ToggleEventHandler() {
+            public boolean go(boolean isUp, float worldX, float worldY) {
                 // up event
                 if (isUp) {
-                    upCB.mUpLocation = new Vector3(worldX, worldY, 0);
-                    upCB.onEvent();
+                    upCB.go(worldX, worldY);
                     isHolding = false;
                 }
                 // down event
                 else {
                     isHolding = true;
-                    dnCB.mDownLocation = new Vector3(worldX, worldY, 0);
-                    dnCB.onEvent();
+                    dnCB.go(worldX, worldY);
                 }
                 // toggle state
                 isHolding = !isUp;
                 return true;
             }
         };
-        c.mPanHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
+        c.mPanHandler = new PanEventHandler() {
+            public boolean go(float worldX, float worldY, float deltaX, float deltaY) {
                 // force a down event, if we didn't get one
                 if (!c.mToggleHandler.isHolding) {
-                    c.mToggleHandler.isUp = false;
-                    c.mToggleHandler.go(worldX, worldY);
+                    c.mToggleHandler.go(false, worldX, worldY);
                     return true;
                 }
                 // pan event
-                mvCB.mMoveLocation = new Vector3(worldX, worldY, 0);
-                mvCB.onEvent();
+                mvCB.go(worldX, worldY);
                 return true;
             }
         };
@@ -1265,8 +1257,7 @@ public class Level {
             public boolean go(float worldX, float worldY) {
                 // force an up event?
                 if (c.mToggleHandler.isHolding) {
-                    c.mToggleHandler.isUp = true;
-                    c.mToggleHandler.go(worldX, worldY);
+                    c.mToggleHandler.go(true, worldX, worldY);
                     return true;
                 }
                 return false;

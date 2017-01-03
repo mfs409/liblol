@@ -57,8 +57,7 @@ class HudScene extends LolScene {
     void liftAllButtons(float touchX, float touchY) {
         for (SceneActor c : mToggleControls) {
             if (c.mIsTouchable) {
-                c.mToggleHandler.isUp = true;
-                c.mToggleHandler.go(touchX, touchY);
+                c.mToggleHandler.go(true, touchX, touchY);
             }
         }
     }
@@ -84,9 +83,7 @@ class HudScene extends LolScene {
                 mTouchVec.y + 0.1f);
         world.mCamera.unproject(mTouchVec.set(x, y, 0));
         if (mHitActor != null && ((SceneActor)mHitActor).mPanHandler != null) {
-            ((SceneActor)mHitActor).mPanHandler.deltaX = deltaX;
-            ((SceneActor)mHitActor).mPanHandler.deltaY = deltaY;
-            return ((SceneActor) mHitActor).mPanHandler.go(mTouchVec.x, mTouchVec.y);
+            return ((SceneActor) mHitActor).mPanHandler.go(mTouchVec.x, mTouchVec.y, deltaX, deltaY);
         }
         return false;
     }
@@ -116,8 +113,7 @@ class HudScene extends LolScene {
                 mTouchVec.y + 0.1f);
         world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null && mHitActor.mToggleHandler != null) {
-            mHitActor.mToggleHandler.isUp = false;
-            if (mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y))
+            if (mHitActor.mToggleHandler.go(false, mTouchVec.x, mTouchVec.y))
                 return true;
         }
         return mHitActor != null && ((SceneActor) mHitActor).mDownHandler != null &&
@@ -131,8 +127,7 @@ class HudScene extends LolScene {
                 mTouchVec.y + 0.1f);
         world.mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null && mHitActor.mToggleHandler != null) {
-            mHitActor.mToggleHandler.isUp = true;
-            return mHitActor.mToggleHandler.go(mTouchVec.x, mTouchVec.y);
+            return mHitActor.mToggleHandler.go(true, mTouchVec.x, mTouchVec.y);
         }
         return false;
     }

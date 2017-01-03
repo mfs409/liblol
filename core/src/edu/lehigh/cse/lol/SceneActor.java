@@ -5,7 +5,7 @@ public class SceneActor extends BaseActor {
     boolean mIsTouchable;
 
     /// Code to run when this Control is touched
-    TouchEventHandler mPanHandler;
+    PanEventHandler mPanHandler;
     TouchEventHandler mPanStopHandler;
     TouchEventHandler mZoomHandler;
     TouchEventHandler mDownHandler;
