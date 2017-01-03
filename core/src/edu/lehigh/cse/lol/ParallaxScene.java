@@ -13,18 +13,13 @@ import java.util.ArrayList;
  * actor on whom the camera is centered.
  */
 class ParallaxScene {
-    /// Config object
+    /// The game-wide configuration object
     private final Config mConfig;
-
     /// All the layers to show as part of this scene
     final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
-
     /// An optional background color to show behind everything
     Color mColor = new Color(1, 1, 1, 1);
-
     /// This camera is for drawing parallax backgrounds that go in front of or behind the world
-    ///
-    /// TODO: make private
     ParallaxCamera mBgCam;
 
     ParallaxScene(Config config) {

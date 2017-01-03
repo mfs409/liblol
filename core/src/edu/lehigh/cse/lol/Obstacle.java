@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ * <p>
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * <p>
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * <p>
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.audio.Sound;
@@ -7,53 +34,30 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 /**
- * Obstacles are usually walls, except they can move, and can be used to run all
- * sorts of arbitrary code that changes the game, or the behavior of the things
- * that collide with them. It's best to think of them as being both "a wall" and
- * "a catch-all for any behavior that we don't have anywhere else".
+ * Obstacles are usually walls, except they can move, and can be used to run all sorts of arbitrary
+ * code that changes the game, or the behavior of the things that collide with them. It's best to
+ * think of them as being both "a wall" and "a catch-all for any behavior that we don't have
+ * anywhere else".
  */
 public class Obstacle extends WorldActor {
-    /**
-     * One of the main uses of obstacles is to use hero/obstacle collisions as a
-     * way to run custom code. This callback defines what code to run when a
-     * hero collides with this obstacle.
-     */
+    /// One of the main uses of obstacles is to use hero/obstacle collisions as a way to run custom
+    /// code. This callback defines what code to run when a hero collides with this obstacle.
     CollisionCallback mHeroCollision;
-
-    /**
-     * This callback is for when an enemy collides with an obstacle
-     */
+    /// This callback is for when an enemy collides with an obstacle
     CollisionCallback mEnemyCollision;
-
-    /**
-     * This callback is for when a projectile collides with an obstacle
-     */
+    /// This callback is for when a projectile collides with an obstacle
     CollisionCallback mProjectileCollision;
-
-    /**
-     * Indicate that this obstacle does not re-enableTilt jumping for the hero
-     */
+    /// Indicate that this obstacle does not re-enableTilt jumping for the hero
     boolean mNoJumpReenable;
-
-    /**
-     * a sound to play when the obstacle is hit by a hero
-     */
+    /// a sound to play when the obstacle is hit by a hero
     private Sound mCollideSound;
-
-    /**
-     * how long to delay (in nanoseconds) between attempts to play the collide
-     * sound
-     */
+    /// how long to delay (in nanoseconds) between attempts to play the collide sound
     private long mCollideSoundDelay;
-
-    /**
-     * Time of last collision sound
-     */
+    /// Time of last collision sound
     private long mLastCollideSoundTime;
 
     /**
-     * Internal constructor to build an Obstacle. This should never be invoked
-     * directly. Instead, use the 'addXXX' methods of the Object class.
+     * Build an obstacle, but do not give it any Physics body yet
      *
      * @param width   width of this Obstacle
      * @param height  height of this Obstacle
@@ -64,14 +68,13 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Internal method for playing a sound when a hero collides with this
-     * obstacle
+     * Internal method for playing a sound when a hero collides with this obstacle
      */
     void playCollideSound() {
         if (mCollideSound == null)
             return;
 
-        // Make sure we have waited long enough
+        // Make sure we have waited long enough since the last time we played the sound
         long now = System.currentTimeMillis();
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
@@ -80,29 +83,25 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Called when this Obstacle is the dominant obstacle in a collision
-     * <p>
-     * Note: This Obstacle is /never/ the dominant obstacle in a collision,
-     * since it is #6 or #7
+     * Code to run when an Obstacle collides with a WorldActor.
      *
-     * @param other   The other actor involved in this collision
-     * @param contact A description of the collision
+     * The Obstacle always comes last in the collision hierarchy, so no code is needed here
+     *
+     * @param other   Other object involved in this collision
+     * @param contact A description of the contact that caused this collision
      */
     @Override
     void onCollide(WorldActor other, Contact contact) {
     }
 
     /**
-     * Call this on an Obstacle to make it into a pad that changes the hero's
-     * speed when the hero glides over it.
+     * Make the Obstacle into a pad that changes the hero's speed when the hero glides over it.
      * <p>
-     * These "pads" will multiply the hero's speed by the factor given as a
-     * parameter. Factors can be negative to cause a reverse direction, less
-     * than 1 to cause a slowdown (friction pads), or greater than 1 to serve as
-     * zoom pads.
+     * These "pads" will multiply the hero's speed by the factor given as a parameter. Factors can
+     * be negative to cause a reverse direction, less than 1 to cause a slowdown (friction pads), or
+     * greater than 1 to serve as zoom pads.
      *
-     * @param factor Value to multiply the hero's velocity when it collides with
-     *               this Obstacle
+     * @param factor Value to multiply the hero's velocity when it collides with this Obstacle
      */
     public void setPad(final float factor) {
         // disable collisions on this obstacle
@@ -119,13 +118,12 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Call this on an obstacle to make it behave like a "pad" obstacle, except
-     * with a constant additive (or subtractive) effect on the hero's speed.
+     * Call this on an obstacle to make it behave like a "pad" obstacle, except with a constant
+     * additive (or subtractive) effect on the hero's speed.
      *
      * @param boostAmountX  The amount to add to the hero's X velocity
      * @param boostAmountY  The amount to add to the hero's Y velocity
-     * @param boostDuration How long should the speed boost last (use -1 to indicate
-     *                      "forever")
+     * @param boostDuration How long should the speed boost last (use -1 to indicate "forever")
      */
     public void setSpeedBoost(final float boostAmountX, final float boostAmountY, final float boostDuration) {
         // disable collisions on this obstacle
@@ -157,8 +155,7 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Control whether the hero can jump if it collides with this obstacle while
-     * in the air
+     * Control whether the hero can jump if it collides with this obstacle while in the air
      *
      * @param enable true if the hero can jump again, false otherwise
      */
@@ -167,23 +164,19 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Make the object a callback object, so that custom code will run when a
-     * /hero/ collides with it
+     * Make the object a callback object, so that custom code will run when a hero collides with it
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before this
-     *                           callback works
-     * @param delay              The time between when the collision happens, and when the
-     *                           callback code runs. Use 0 for immediately
+     * @param activationGoodies1 Number of type-1 goodies needed before this callback works
+     * @param activationGoodies2 Number of type-2 goodies needed before this callback works
+     * @param activationGoodies3 Number of type-3 goodies needed before this callback works
+     * @param activationGoodies4 Number of type-4 goodies needed before this callback works
+     * @param delay              The time between when the collision happens, and when the callback
+     *                           code runs. Use 0 for immediately
      * @param callback           The code to run when the collision happens
      */
-    public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                         int activationGoodies4, final float delay, final CollisionCallback callback) {
+    public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2,
+                                         int activationGoodies3, int activationGoodies4,
+                                         final float delay, final CollisionCallback callback) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[]{activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4};
         setCollisionsEnabled(false);
@@ -217,11 +210,10 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Make the object a callback object, so that custom code will run when an
-     * /enemy/ collides with it
+     * Make the object a callback object, so custom code will run when an enemy collides with it
      *
-     * @param delay    The time between when the collision happens, and when the
-     *                 callback code runs. Use 0 for immediately
+     * @param delay    The time between when the collision happens, and when the callback code runs.
+     *                 Use 0 for immediately
      * @param callback The code to run when an enemy collides with this obstacle
      */
     public void setEnemyCollisionCallback(final float delay, final CollisionCallback callback) {
@@ -244,22 +236,19 @@ public class Obstacle extends WorldActor {
     }
 
     /**
-     * Make the object a callback object, so that custom code will run when a
-     * /projectile/ collides with it.
+     * Make the object a callback object, so custom code will run when a projectile collides with it
      *
-     * @param callback           The code to run on a collision
+     * @param callback The code to run on a collision
      */
     public void setProjectileCollisionCallback(final CollisionCallback callback) {
         mProjectileCollision = callback;
     }
 
     /**
-     * Indicate that when the hero collides with this obstacle, we should make a
-     * sound
+     * Indicate that when the hero collides with this obstacle, we should make a sound
      *
      * @param sound The name of the sound file to play
-     * @param delay How long to wait before playing the sound again, in
-     *              milliseconds
+     * @param delay How long to wait before playing the sound again, in milliseconds
      */
     public void setCollideSound(String sound, long delay) {
         mCollideSound = mScene.mMedia.getSound(sound);
