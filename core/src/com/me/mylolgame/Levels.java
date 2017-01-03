@@ -28,9 +28,12 @@
 package com.me.mylolgame;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
 
 import java.util.ArrayList;
 
+import edu.lehigh.cse.lol.CollisionCallback;
+import edu.lehigh.cse.lol.LolActorEvent;
 import edu.lehigh.cse.lol.WorldActor;
 import edu.lehigh.cse.lol.Destination;
 import edu.lehigh.cse.lol.Effect;
@@ -339,7 +342,7 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsCircle(4, 7, 3, 3, "greenball.png");
             h.setPhysics(0.1f, 0, 0.6f);
             h.setMoveByTilting();
-            level.getPreScene().makePicture(0, 0, 960/20f, 640/20f, "msg2.png", 0);
+            level.getPreScene().makePicture(0, 0, 960 / 20f, 640 / 20f, "msg2.png", 0);
 
             // let's make the destination rotate:
             Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
@@ -606,7 +609,7 @@ public class Levels implements ScreenManager {
             // Create a pause scene that has a back button on it, and a button
             // for pausing the level. Note that the background image must come
             // first
-            level.getPauseScene().makePicture( 0, 0, 960/20f, 640/20f, "fade.png", 0);
+            level.getPauseScene().makePicture(0, 0, 960 / 20f, 640 / 20f, "fade.png", 0);
             level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("Game Paused"), 0);
             level.getPauseScene().addTapControl(0, 15, 1, 1, "greyball.png", new TouchEventHandler() {
                 @Override
@@ -1036,15 +1039,15 @@ public class Levels implements ScreenManager {
             // 10 milliseconds."  It also says "when an obstacle is drawn, do some stuff to the
             // obstacle".  If you don't want any of this functionality, you can replace the whole
             // "new LolCallback..." region of code with "null".
-            level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolCallback() {
+            level.setScribbleMode("purpleball.png", 1.5f, 1.5f, 10, new LolActorEvent() {
                 @Override
-                public void onEvent() {
+                public void go(WorldActor actor) {
                     // each time we draw an obstacle, it will be visible to this code as the
                     // callback's "attached WorldActor".  We'll change its elasticity, make it disappear
                     // after 10 seconds, and make it so that the obstacles aren't stationary
-                    mAttachedActor.setPhysics(0, 2, 0);
-                    mAttachedActor.setDisappearDelay(10, true);
-                    mAttachedActor.setCanFall();
+                    actor.setPhysics(0, 2, 0);
+                    actor.setDisappearDelay(10, true);
+                    actor.setCanFall();
                 }
             });
         }
@@ -1144,8 +1147,8 @@ public class Levels implements ScreenManager {
             // score is saved, it is saved permanently on the phone, though
             // every re-execution on the desktop resets the best score. Note
             // that we save the score whether we win or lose.
-            LolCallback sc = new LolCallback() {
-                public void onEvent() {
+            LolAction sc = new LolAction() {
+                public void go() {
                     int oldBest = level.getGameFact("HighScore32", 0);
                     if (oldBest < level.getDistance())
                         level.putGameFact("HighScore32", level.getDistance());
@@ -1683,8 +1686,10 @@ public class Levels implements ScreenManager {
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
             // callback code.
-            o.setProjectileCollisionCallback(0, 0, 0, 0, new LolCallback() {
-                public void onEvent() {
+            o.setProjectileCollisionCallback(0, 0, 0, 0, new CollisionCallback() {
+                @Override
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
+
                 }
             });
         }
@@ -1718,30 +1723,31 @@ public class Levels implements ScreenManager {
             level.setProjectileDisappearSound("slowdown.ogg");
 
             // draw an enemy that makes a sound when it disappears
-            Enemy e = level.makeEnemyAsCircle(23, 20, 2, 2, "redball.png");
+            final Enemy e = level.makeEnemyAsCircle(23, 20, 2, 2, "redball.png");
             e.setDisappearSound("lowpitch.ogg");
 
             // This enemy will create mini-enemies until it is defeated
-            LolCallback sc = new LolCallback() {
-                public void onEvent() {
+            LolAction sc = new LolAction() {
+                public void go() {
+                    int mIntVal = level.getLevelFact("counter", 0);
                     // only reproduce the enemy if it is visible
-                    if (mAttachedActor.getEnabled()) {
+                    if (e.getEnabled()) {
                         // make an enemy to the left and up
-                        Enemy left = level.makeEnemyAsCircle(mAttachedActor.getXPosition() - mIntVal,
-                                mAttachedActor.getYPosition() + mIntVal, 1, 1, "redball.png");
+                        Enemy left = level.makeEnemyAsCircle(e.getXPosition() - mIntVal,
+                                e.getYPosition() + mIntVal, 1, 1, "redball.png");
                         left.setDisappearSound("lowpitch.ogg");
 
                         // make an enemy to the right of and above
                         // attachedSprite
-                        Enemy right = level.makeEnemyAsCircle(mAttachedActor.getXPosition() + mIntVal,
-                                mAttachedActor.getYPosition() + mIntVal, 1, 1, "redball.png");
+                        Enemy right = level.makeEnemyAsCircle(e.getXPosition() + mIntVal,
+                                e.getYPosition() + mIntVal, 1, 1, "redball.png");
                         right.setDisappearSound("lowpitch.ogg");
                         mIntVal++;
+                        level.putLevelFact("counter", mIntVal);
                     }
                 }
             };
-            sc.mAttachedActor = e;
-            sc.mIntVal = 0;
+            level.putLevelFact("counter", 0);
 
             // request that in 2 seconds, if the enemy is still visible,
             // onTimerCallback() will run, with id == 2. Be sure to look at
@@ -1788,8 +1794,8 @@ public class Levels implements ScreenManager {
             // set a timer callback on the level, to repeatedly spawn new enemies.
             // warning: "6" is going to lead to lots of enemies eventually, and there's no
             // way to defeat them in this level!
-            LolCallback sc = new LolCallback() {
-                public void onEvent() {
+            LolAction sc = new LolAction() {
+                public void go() {
                     ArrayList<Enemy> newEnemies = new ArrayList<>();
                     for (Enemy e : enemies) {
                         // Is the enemy visible / alive?
@@ -1927,7 +1933,7 @@ public class Levels implements ScreenManager {
 
 
             level.enableTilt(10, 10);
-            level.getPreScene().addText(50 / 20f, 50 / 20f, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("The blue ball will\nmake you invincible\nfor 15 seconds"),  0);
+            level.getPreScene().addText(50 / 20f, 50 / 20f, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("The blue ball will\nmake you invincible\nfor 15 seconds"), 0);
             level.drawBoundingBox(0, 0, 48, 32, "red.png", 1, .3f, 1);
 
             level.makeDestinationAsCircle(29, 1, 2, 2, "mustardball.png");
@@ -1972,7 +1978,7 @@ public class Levels implements ScreenManager {
 
             // draw a picture when the level is won, and don't print text...
             // this particular picture isn't very useful
-            level.getWinScene().makePicture(0, 0, 960/20f, 640/20f, "fade.png", 0);
+            level.getWinScene().makePicture(0, 0, 960 / 20f, 640 / 20f, "fade.png", 0);
             level.getWinScene().setDefaultText("");
         }
 
@@ -2009,7 +2015,7 @@ public class Levels implements ScreenManager {
             e.setDefeatByCrawl();
 
             // include a picture on the "try again" screen
-            level.getLoseScene().makePicture(0, 0, 960/20f, 640/20f, "fade.png", 0);
+            level.getLoseScene().makePicture(0, 0, 960 / 20f, 640 / 20f, "fade.png", 0);
             level.getLoseScene().setDefaultText("Oh well...");
             level.setCameraChase(h);
         }
@@ -2054,15 +2060,15 @@ public class Levels implements ScreenManager {
             h.setMoveByTilting();
 
             // provide some code to run when the hero's strength changes
-            h.setStrengthChangeCallback(new LolCallback() {
-                public void onEvent() {
-                    // getLoseScene the hero's strength. Since the hero isn't dead, the
+            h.setStrengthChangeCallback(new LolActorEvent() {
+                public void go(WorldActor actor) {
+                    // get the hero's strength. Since the hero isn't dead, the
                     // strength is at least 1. Since there are 7 strength
                     // booster goodies, the strength is at most 8.
-                    int s = ((Hero) mAttachedActor).getStrength();
+                    int s = ((Hero) actor).getStrength();
                     // set the hero's image index to (s-1), i.e., one of the
                     // indices in the range 0..7, depending on strength
-                    mAttachedActor.setImage("colorstar" + s + ".png");
+                    actor.setImage("colorstar" + s + ".png");
 
                 }
             });
@@ -2099,13 +2105,13 @@ public class Levels implements ScreenManager {
             // collides with any enemy, the onEnemyCollideCallback() code will
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
-            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new LolCallback() {
-                public void onEvent() {
+            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // This obstacle can only defeat the big enemy, and it
                     // disappears when it defeats the enemy
-                    if (mCollideActor.getInfoText().equals("big")) {
-                        ((Enemy) mCollideActor).defeat(true);
-                        mAttachedActor.remove(true);
+                    if (collideActor.getInfoText().equals("big")) {
+                        ((Enemy) collideActor).defeat(true);
+                        thisActor.remove(true);
                     }
 
                 }
@@ -2116,9 +2122,9 @@ public class Levels implements ScreenManager {
             Obstacle o2 = level.makeObstacleAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
-                public void onEvent() {
-                    ((Enemy) mCollideActor).defeat(true);
+            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
+                    ((Enemy) collideActor).defeat(true);
                 }
             });
 
@@ -2352,8 +2358,8 @@ public class Levels implements ScreenManager {
             level.setVictoryDestination(1);
 
             // set a timer callback. after three seconds, the callback will run
-            level.setTimerCallback(2, new LolCallback() {
-                public void onEvent() {
+            level.setTimerCallback(2, new LolAction() {
+                public void go() {
                     // put up a pause scene to interrupt gameplay
                     level.getPauseScene().reset();
                     level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFF00", 12, "", "", level.DisplayFixedText("Ooh... a draggable enemy"), 0);
@@ -2367,8 +2373,8 @@ public class Levels implements ScreenManager {
 
             // set another callback that runs after 6 seconds (note: time
             // doesn't count while the PauseScene is showing...)
-            level.setTimerCallback(6, new LolCallback() {
-                public void onEvent() {
+            level.setTimerCallback(6, new LolAction() {
+                public void go() {
                     // clear the pause scene, then put new text on it
                     level.getPauseScene().reset();
                     level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FF00FF", 12, "", "", level.DisplayFixedText("Touch the enemy and it will go away"), 0);
@@ -2383,8 +2389,8 @@ public class Levels implements ScreenManager {
             // set a callback that runs after 9 seconds. Though it's not
             // necessary in this case, we're going to make the callback an
             // explicit object. This can be useful, as we'll see later on.
-            level.setTimerCallback(9, new LolCallback() {
-                public void onEvent() {
+            level.setTimerCallback(9, new LolAction() {
+                public void go() {
                     // draw an enemy, a goodie, and a destination, all with
                     // fixed velocities
                     level.getPauseScene().reset();
@@ -2404,15 +2410,18 @@ public class Levels implements ScreenManager {
 
             // Lastly, we can make a timer callback that runs over and over
             // again. This one starts after 2 seconds, then runs every second.
-            level.setTimerCallback(2, 1, new LolCallback() {
-                public void onEvent() {
+            level.putLevelFact("spawnLoc", 0);
+            level.setTimerCallback(2, 1, new LolAction() {
+                public void go() {
+                    int spawnLoc = level.getLevelFact("spawnLoc", 0);
                     // note that every SimpleCallback has a field called
                     // "intVal" that is initially 0. By using and then modifying
                     // that field inside of the timer code, we can ensure that
                     // each execution of the timer is slightly different, even
                     // if the game state hasn't changed.
-                    level.makeObstacleAsCircle(mIntVal % 48, mIntVal / 48, 1, 1, "purpleball.png");
-                    mIntVal++;
+                    level.makeObstacleAsCircle(spawnLoc % 48, spawnLoc / 48, 1, 1, "purpleball.png");
+                    spawnLoc++;
+                    level.putLevelFact("spawnLoc", spawnLoc);
                 }
             });
         }
@@ -2447,12 +2456,14 @@ public class Levels implements ScreenManager {
             // play a sound if we want...
             Obstacle o = level.makeObstacleAsBox(30, 0, 1, 32, "purpleball.png");
             o.setPhysics(1, 0, 1);
+            // NB: we use a level fact to track how far we've come
+            level.putLevelFact("crossings", 0);
             // the callback id is 0, there is no delay, and no goodies are
             // needed before it works
-            o.setHeroCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
-                public void onEvent() {
+            o.setHeroCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // getLoseScene rid of the obstacle we just collided with
-                    mAttachedActor.remove(false);
+                    thisActor.remove(false);
                     // make a goodie
                     level.makeGoodieAsCircle(45, 1, 2, 2, "blueball.png");
                     // make an obstacle that is a callback, but that doesn't
@@ -2463,35 +2474,35 @@ public class Levels implements ScreenManager {
                     // the best way to do that is to make a single callback that
                     // behaves differently based on the value of the callback's
                     // intVal field.
-                    LolCallback sc2 = new LolCallback() {
-                        public void onEvent() {
+                    CollisionCallback sc2 = new CollisionCallback() {
+                        public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
+                            int crossings = level.getLevelFact("crossings", 0);
                             // The second callback works the same way
-                            if (mIntVal == 0) {
-                                mAttachedActor.remove(false);
+                            if (crossings == 0) {
+                                thisActor.remove(false);
                                 level.makeGoodieAsCircle(75, 21, 2, 2, "blueball.png");
 
                                 Obstacle oo = level.makeObstacleAsBox(90, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(2, 0, 0, 0, 0, this);
-                                mIntVal = 1;
+                                level.putLevelFact("crossings", 1);
                             }
                             // same for the third callback
-                            else if (mIntVal == 1) {
-                                mAttachedActor.remove(false);
+                            else if (crossings == 1) {
+                                thisActor.remove(false);
                                 level.makeGoodieAsCircle(105, 1, 2, 2, "blueball.png");
 
                                 Obstacle oo = level.makeObstacleAsBox(120, 0, 1, 32, "purpleball.png");
                                 oo.setHeroCollisionCallback(3, 0, 0, 0, 0, this);
-                                mIntVal = 2;
+                                level.putLevelFact("crossings", 2);
                             }
                             // The fourth callback draws the destination
-                            else if (mIntVal == 2) {
-                                mAttachedActor.remove(false);
+                            else if (crossings == 2) {
+                                thisActor.remove(false);
                                 // print a message and pause the game, via
                                 // PauseScene
                                 level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("The destination is\nnow available"), 0);
                                 level.makeDestinationAsCircle(120, 20, 2, 2, "mustardball.png");
                             }
-
                         }
                     };
                     oo.setHeroCollisionCallback(1, 0, 0, 0, 0, sc2);
@@ -2527,12 +2538,12 @@ public class Levels implements ScreenManager {
             Obstacle o = level.makeObstacleAsCircle(10, 5, 3, 3, "purpleball.png");
             o.setPhysics(1, 0, 1);
             // we'll give this callback the id "39", just for fun
-            o.setTouchCallback(1, 0, 0, 0, true, new LolCallback() {
-                public void onEvent() {
+            o.setTouchCallback(1, 0, 0, 0, true, new LolActorEvent() {
+                public void go(WorldActor actor) {
                     // note: we could draw a picture of an open chest in the
                     // obstacle's place, or even use a disappear animation whose
                     // final frame looks like an open treasure chest.
-                    mAttachedActor.remove(false);
+                    actor.remove(false);
                     for (int i = 0; i < 3; ++i)
                         level.makeGoodieAsCircle(9 * i, 20 - i, 2, 2, "blueball.png");
                 }
@@ -2578,10 +2589,10 @@ public class Levels implements ScreenManager {
             Obstacle o = level.makeObstacleAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
-                public void onEvent() {
-                    if (mCollideActor.getInfoText().equals("weak")) {
-                        ((Enemy) mCollideActor).defeat(true);
+            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
+                    if (collideActor.getInfoText().equals("weak")) {
+                        ((Enemy) collideActor).defeat(true);
                     }
                 }
             });
@@ -2589,8 +2600,8 @@ public class Levels implements ScreenManager {
             // now draw our enemies... we need enough to be able to test that
             // all four defeat mechanisms work. Note that we attach defeat
             // callback code to each of them.
-            LolCallback sc = new LolCallback() {
-                public void onEvent() {
+            LolActorEvent sc = new LolActorEvent() {
+                public void go(WorldActor actor) {
                     // always reset the pausescene, in case it has something on
                     // it from before...
                     level.getPauseScene().reset();
@@ -2652,19 +2663,19 @@ public class Levels implements ScreenManager {
             // onHeroCollideCallback for details
             Obstacle o = level.makeObstacleAsBox(30, 0, 3, 3, "legstar1.png");
             o.setPhysics(1, 0, 1);
-            o.setHeroCollisionCallback(0, 0, 0, 0, 1, new LolCallback() {
-                public void onEvent() {
+            o.setHeroCollisionCallback(0, 0, 0, 0, 1, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // here's a simple way to increment a goodie count
                     level.incrementGoodiesCollected2();
                     // here's a way to set a goodie count
                     level.setGoodiesCollected3(3);
                     // here's a way to read and write a goodie count
                     level.setGoodiesCollected1(4 + level.getGoodiesCollected1());
-                    // getLoseScene rid of the star, so we know it's been used
-                    mAttachedActor.remove(true);
+                    // get rid of the star, so we know it's been used
+                    thisActor.remove(true);
                     // resize the hero, and change its image
-                    mCollideActor.resize(mCollideActor.getXPosition(), mCollideActor.getYPosition(), 5, 5);
-                    mCollideActor.setImage("legstar1.png");
+                    collideActor.resize(collideActor.getXPosition(), collideActor.getYPosition(), 5, 5);
+                    collideActor.setImage("legstar1.png");
                 }
             });
         }
@@ -2954,11 +2965,11 @@ public class Levels implements ScreenManager {
             // When the hero collides with this obstacle, we'll increase the
             // time remaining. See onHeroCollideCallback()
             Obstacle o = level.makeObstacleAsBox(40, 0, 5, 200, "red.png");
-            o.setHeroCollisionCallback(1, 1, 1, 0, 0, new LolCallback() {
-                public void onEvent() {
+            o.setHeroCollisionCallback(1, 1, 1, 0, 0, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // add 15 seconds to the timer
                     level.updateTimerExpiration(15);
-                    mAttachedActor.remove(true);
+                    thisActor.remove(true);
                 }
             });
         }
@@ -3075,9 +3086,9 @@ public class Levels implements ScreenManager {
             platform.setOneSided(2);
             // Set a callback, then re-enableTilt the platform's collision effect.
             // Be sure to check onHeroCollideCallback
-            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new LolCallback() {
-                public void onEvent() {
-                    mCollideActor.setAbsoluteVelocity(mCollideActor.getXVelocity(), 5, false);
+            platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
+                    collideActor.setAbsoluteVelocity(collideActor.getXVelocity(), 5, false);
                 }
             });
             platform.setCollisionsEnabled(true);
@@ -3368,9 +3379,9 @@ public class Levels implements ScreenManager {
             // is in the range 0,100, it indicates the percentage to show.  When it is negative, we
             // are shrinking.  When it is -200, it is disabled.
             bar.setInfoInt(0);
-            level.setTimerCallback(.1f, .1f, new LolCallback() {
+            level.setTimerCallback(.1f, .1f, new LolAction() {
                 @Override
-                public void onEvent() {
+                public void go() {
                     int i = bar.getInfoInt();
                     if (i == -200)
                         return;
@@ -3381,8 +3392,8 @@ public class Levels implements ScreenManager {
             });
 
             // when the hero stops, start the controls again
-            h.setStopCallback(new LolCallback() {
-                public void onEvent() {
+            h.setStopCallback(new LolActorEvent() {
+                public void go(WorldActor self) {
                     rotator.setRotationSpeed(2);
                     rotatorSC.mIsActive = true;
                     bar.setInfoInt(0);
@@ -3598,22 +3609,22 @@ public class Levels implements ScreenManager {
             level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("test"), 0);
             // this is the code to run when the *second* pausescene is touched.  Making it "final"
             // means that we can refer to it inside of the other callback
-            final LolCallback sc2 = new LolCallback() {
-                public void onEvent() {
+            // TODO: make these into TouchEventHandlers?
+            final LolAction sc2 = new LolAction() {
+                public void go() {
                     level.getPauseScene().dismiss();
                 }
             };
             // this is the code to run when the *first* pausescene is touched
-            final LolCallback sc1 = new LolCallback() {
-                public void onEvent() {
-                    System.out.println("Hi, I'm running");
+            final LolAction sc1 = new LolAction() {
+                public void go() {
                     // clear the pausescene, draw another one
                     level.getPauseScene().reset();
                     level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFFFF", 32, "", "", level.DisplayFixedText("test2"), 0);
-                    level.getPauseScene().addTapControl(0, 0, 960/20f, 640/20f, "", new TouchEventHandler(){
+                    level.getPauseScene().addTapControl(0, 0, 960 / 20f, 640 / 20f, "", new TouchEventHandler() {
                         @Override
                         public boolean go(float eventX, float eventY) {
-                            sc2.onEvent();
+                            sc2.go();
                             return true;
                         }
                     });
@@ -3621,10 +3632,10 @@ public class Levels implements ScreenManager {
                 }
             };
             // set the callback for the first pausescene, and show it
-            level.getPauseScene().addTapControl(0, 0, 960/20f, 640/20f, "", new TouchEventHandler(){
+            level.getPauseScene().addTapControl(0, 0, 960 / 20f, 640 / 20f, "", new TouchEventHandler() {
                 @Override
                 public boolean go(float eventX, float eventY) {
-                    sc1.onEvent();
+                    sc1.go();
                     return true;
                 }
             });
@@ -3667,13 +3678,13 @@ public class Levels implements ScreenManager {
             //
             // Note that the obstacle needs to be final or we can't access it within the callback
             final Obstacle trigger = level.makeObstacleAsBox(30, 0, 1, 32, "");
-            LolCallback lc = new LolCallback() {
+            CollisionCallback lc = new CollisionCallback() {
                 /**
                  * Each time the hero hits the obstacle, we'll run this code to draw a new enemy
                  * and a new obstacle on the screen.  We'll randomize their placement just a bit.
                  * Also move the obstacle forward, so we can hit it again.
                  */
-                public void onEvent() {
+                public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // make a random enemy and a random goodie.  Put them in X coordinates relative to the trigger
                     level.makeEnemyAsCircle(trigger.getXPosition() + 40 + level.getRandom(10), level.getRandom(30), 2, 2, "redball.png");
                     level.makeGoodieAsCircle(trigger.getXPosition() + 50 + level.getRandom(10), level.getRandom(30), 2, 2, "blueball.png");
@@ -3711,10 +3722,11 @@ public class Levels implements ScreenManager {
             });
 
             Obstacle o2 = level.makeObstacleAsBox(20, 20, 3, 3, "red.png");
-            o2.setTapCallback(new LolAction() {
+            o2.setTapCallback(new TouchEventHandler() {
                 @Override
-                public void go() {
+                public boolean go(float eventPositionX, float eventPositionY) {
                     System.out.println("I was tapped.  yes!");
+                    return true;
                 }
             });
         }

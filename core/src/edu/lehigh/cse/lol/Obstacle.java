@@ -45,17 +45,17 @@ public class Obstacle extends WorldActor {
      * way to run custom code. This callback defines what code to run when a
      * hero collides with this obstacle.
      */
-    Lol.CollisionCallback mHeroCollision;
+    CollisionCallback mHeroCollision;
 
     /**
      * This callback is for when an enemy collides with an obstacle
      */
-    Lol.CollisionCallback mEnemyCollision;
+    CollisionCallback mEnemyCollision;
 
     /**
      * This callback is for when a projectile collides with an obstacle
      */
-    Lol.CollisionCallback mProjectileCollision;
+    CollisionCallback mProjectileCollision;
 
     /**
      * Indicate that this obstacle does not re-enableTilt jumping for the hero
@@ -135,9 +135,9 @@ public class Obstacle extends WorldActor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to multiply the hero's speed by factor
-        mHeroCollision = new Lol.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(WorldActor h, Contact c) {
+            public void go(WorldActor self, WorldActor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.scl(factor);
                 h.updateVelocity(v.x, v.y);
@@ -158,9 +158,9 @@ public class Obstacle extends WorldActor {
         // disable collisions on this obstacle
         setCollisionsEnabled(false);
         // register a callback to change the hero's speed
-        mHeroCollision = new Lol.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final WorldActor h, Contact c) {
+            public void go(WorldActor self, final WorldActor h, Contact c) {
                 // boost the speed
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.x += boostAmountX;
@@ -210,17 +210,16 @@ public class Obstacle extends WorldActor {
      * @param callback           The code to run when the collision happens
      */
     public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                         int activationGoodies4, final float delay, final LolCallback callback) {
+                                         int activationGoodies4, final float delay, final CollisionCallback callback) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[]{activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4};
         setCollisionsEnabled(false);
 
         // register a callback
-        mHeroCollision = new Lol.CollisionCallback() {
+        mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final WorldActor ps, Contact c) {
-                // Make sure the contact is active (it's not if this is a
-                // pass-through event)
+            public void go(WorldActor self, final WorldActor ps, final Contact c) {
+                // Make sure the contact is active (it's not if this is a pass-through event)
                 if (c.isEnabled()) {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
@@ -229,16 +228,12 @@ public class Obstacle extends WorldActor {
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            callback.mAttachedActor = Obstacle.this;
-                            callback.mCollideActor = ps;
-                            callback.onEvent();
+                            callback.go(Obstacle.this, ps, c);
                         } else {
                             Timer.schedule(new Task() {
                                 @Override
                                 public void run() {
-                                    callback.mAttachedActor = Obstacle.this;
-                                    callback.mCollideActor = ps;
-                                    callback.onEvent();
+                                    callback.go(Obstacle.this, ps, c);
                                 }
                             }, delay);
                         }
@@ -265,32 +260,28 @@ public class Obstacle extends WorldActor {
      * @param callback           The code to run when an enemy collides with this obstacle
      */
     public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                          int activationGoodies4, final float delay, final LolCallback callback) {
+                                          int activationGoodies4, final float delay, final CollisionCallback callback) {
         /**
          * Enemy callbacks can require certain Goodie counts in order to run
          */
         final int[] enemyCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
 
-        mEnemyCollision = new Lol.CollisionCallback() {
+        mEnemyCollision = new CollisionCallback() {
             @Override
-            public void go(final WorldActor ps, Contact c) {
+            public void go(WorldActor self, final WorldActor ps, final Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= enemyCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
                 if (match) {
                     // run the callback after a delay, or immediately?
                     if (delay <= 0) {
-                        callback.mAttachedActor = Obstacle.this;
-                        callback.mCollideActor = ps;
-                        callback.onEvent();
+                        callback.go(Obstacle.this, ps, c);
                     } else {
                         Timer.schedule(new Task() {
                             @Override
                             public void run() {
-                                callback.mAttachedActor = Obstacle.this;
-                                callback.mCollideActor = ps;
-                                callback.onEvent();
+                                callback.go(Obstacle.this, ps, c);
                             }
                         }, delay);
                     }
@@ -314,20 +305,18 @@ public class Obstacle extends WorldActor {
      * @param callback           The code to run on a collision
      */
     public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                               int activationGoodies4, final LolCallback callback) {
+                                               int activationGoodies4, final CollisionCallback callback) {
         final int[] projectileCallbackActivation = new int[]{activationGoodies1, activationGoodies2,
                 activationGoodies3, activationGoodies4};
 
-        mProjectileCollision = new Lol.CollisionCallback() {
+        mProjectileCollision = new CollisionCallback() {
             @Override
-            public void go(WorldActor ps, Contact c) {
+            public void go(WorldActor self, WorldActor ps, Contact c) {
                 boolean match = true;
                 for (int i = 0; i < 4; ++i)
                     match &= projectileCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
                 if (match) {
-                    callback.mAttachedActor = Obstacle.this;
-                    callback.mCollideActor = ps;
-                    callback.onEvent();
+                    callback.go(Obstacle.this, ps, c);
                 }
             }
         };

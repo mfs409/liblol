@@ -94,12 +94,12 @@ public class Level {
      * @param howLong  How long to wait before the timer code runs
      * @param callback The code to run
      */
-    public void setTimerCallback(float howLong, final LolCallback callback) {
+    public void setTimerCallback(float howLong, final LolAction callback) {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 if (!mGame.mManager.mGameOver)
-                    callback.onEvent();
+                    callback.go();
             }
         }, howLong);
     }
@@ -111,12 +111,12 @@ public class Level {
      * @param interval The time between subsequent executions of the code
      * @param callback The code to run
      */
-    public void setTimerCallback(float howLong, float interval, final LolCallback callback) {
+    public void setTimerCallback(float howLong, float interval, final LolAction callback) {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 if (!mGame.mManager.mGameOver)
-                    callback.onEvent();
+                    callback.go();
             }
         }, howLong, interval);
     }
@@ -139,7 +139,7 @@ public class Level {
      *                         "AttachedActor" of the callback.
      */
     public void setScribbleMode(final String imgName, final float width,
-                                final float height, final int interval, final LolCallback onCreateCallback) {
+                                final float height, final int interval, final LolActorEvent onCreateCallback) {
         // we set a callback on the Level, so that any touch to the level (down,
         // drag, up) will affect our scribbling
         mGame.mManager.mWorld.mPanHandlers.add(new TouchEventHandler() {
@@ -165,8 +165,7 @@ public class Level {
                 final Obstacle o = makeObstacleAsCircle(worldX - width / 2, worldY - height / 2, width,
                         height, imgName);
                 if (onCreateCallback != null) {
-                    onCreateCallback.mAttachedActor = o;
-                    onCreateCallback.onEvent();
+                    onCreateCallback.go(o);
                 }
 
                 return true;
@@ -190,7 +189,7 @@ public class Level {
      *
      * @param callback The code to run
      */
-    public void setWinCallback(LolCallback callback) {
+    public void setWinCallback(LolAction callback) {
         mGame.mManager.mWinCallback = callback;
     }
 
@@ -199,7 +198,7 @@ public class Level {
      *
      * @param callback The code to run
      */
-    public void setLoseCallback(LolCallback callback) {
+    public void setLoseCallback(LolAction callback) {
         mGame.mManager.mLoseCallback = callback;
     }
 
@@ -1106,15 +1105,15 @@ public class Level {
              * was one
              */
             public boolean go(float worldX, float worldY) {
-                setCameraChase(mAttachedActor);
-                mAttachedActor = null;
+                setCameraChase((WorldActor)mSource);
+                mSource = null;
                 return true;
             }
         };
         c.mPanHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 if (mGame.mManager.mWorld.mChaseActor != null) {
-                    c.mPanStopHandler.mAttachedActor = mGame.mManager.mWorld.mChaseActor;
+                    c.mPanStopHandler.mSource= mGame.mManager.mWorld.mChaseActor;
                     mGame.mManager.mWorld.mChaseActor = null;
                 }
                 float x = mGame.mManager.mWorld.mCamera.position.x - deltaX * .1f

@@ -577,13 +577,8 @@ public class BaseActor extends Renderable {
     }
 
     // TODO: create a test for this
-    public void setTapCallback(final LolAction action) {
-        mTapHandler = new TouchEventHandler() {
-            public boolean go(float worldX, float worldY) {
-                action.go();
-                return true;
-            }
-        };
+    public void setTapCallback(TouchEventHandler te) {
+        mTapHandler = te;
     }
 
     // TODO: create a test for this

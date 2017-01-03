@@ -13,9 +13,6 @@ public abstract class TouchEventHandler {
     /// The actor who generated this touch event
     public BaseActor mSource = null;
 
-    /// An actor associated with this handler, if any
-    public WorldActor mAttachedActor = null;
-
     /// A flag to track if the event is being held
     public boolean isHolding = false;
 

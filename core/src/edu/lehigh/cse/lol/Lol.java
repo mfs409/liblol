@@ -475,20 +475,5 @@ public class Lol implements ApplicationListener {
     @Override
     public void resize(int width, int height) {
     }
-
-    /**
-     * When an WorldActor collides with another WorldActor, and that collision is intended to
-     * cause some custom code to run, we use this interface
-     */
-    interface CollisionCallback {
-        /**
-         * Respond to a collision with a actor. Note that one of the collision
-         * actors is not named; it should be clear from the context in which this
-         * was constructed.
-         *
-         * @param actor   The actor involved in the collision
-         * @param contact A description of the contact, in case it is useful
-         */
-        void go(final WorldActor actor, Contact contact);
-    }
 }
+

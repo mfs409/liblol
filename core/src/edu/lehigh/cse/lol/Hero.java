@@ -127,7 +127,7 @@ public class Hero extends WorldActor {
     /**
      * Code to run when the hero's strength changes
      */
-    private LolCallback mStrengthChangeCallback;
+    private LolActorEvent mStrengthChangeCallback;
 
     /**
      * Construct a Hero by creating an WorldActor and incrementing the number of
@@ -349,8 +349,7 @@ public class Hero extends WorldActor {
     private void addStrength(int amount) {
         mStrength += amount;
         if (mStrengthChangeCallback != null) {
-            mStrengthChangeCallback.mAttachedActor = this;
-            mStrengthChangeCallback.onEvent();
+            mStrengthChangeCallback.go(this);
         }
     }
 
@@ -370,7 +369,7 @@ public class Hero extends WorldActor {
         // if there is code attached to the obstacle for modifying the hero's
         // behavior, run it
         if (o.mHeroCollision != null)
-            o.mHeroCollision.go(this, contact);
+            o.mHeroCollision.go(o, this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enableTilt
@@ -549,7 +548,7 @@ public class Hero extends WorldActor {
      *
      * @param callback The code to run.
      */
-    public void setStrengthChangeCallback(LolCallback callback) {
+    public void setStrengthChangeCallback(LolActorEvent callback) {
         mStrengthChangeCallback = callback;
     }
 }

@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
+
 /**
  * Wrapper for actions that we generate and then want handled during the render
  * loop
@@ -41,3 +43,4 @@ abstract public class LolAction {
      */
     abstract public void go();
 }
+

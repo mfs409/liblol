@@ -28,9 +28,9 @@
 package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
  * Chooser draws the level chooser screens. Our chooser code is pretty
@@ -38,7 +38,7 @@ import edu.lehigh.cse.lol.ScreenManager;
  * to show how we can write more effective code once we are comfortable with
  * loops and basic geometry.
  */
-public class Chooser implements ScreenManager {
+class Chooser implements ScreenManager {
 
     /**
      * This is a helper function for drawing a level button. If the level is
@@ -62,9 +62,11 @@ public class Chooser implements ScreenManager {
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
         if (whichLevel <= unlocked || level.getUnlockMode()) {
-            tile.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-                public void onEvent() {
+            tile.setTapCallback(new TouchEventHandler() {
+                @Override
+                public boolean go(float eventPositionX, float eventPositionY) {
                     level.doLevel(whichLevel);
+                    return true;
                 }
             });
             level.addTextCentered(x+width/2, y+width/2, "arial.ttf", "#FFFFFF", 56, "", "", level.DisplayFixedText(""+whichLevel), 0);
@@ -86,9 +88,11 @@ public class Chooser implements ScreenManager {
      */
     private void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "leftarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doChooser(chooserLevel);
+                return true;
             }
         });
     }
@@ -104,9 +108,11 @@ public class Chooser implements ScreenManager {
      */
     private void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "rightarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doChooser(chooserLevel);
+                return true;
             }
         });
     }
@@ -121,9 +127,11 @@ public class Chooser implements ScreenManager {
      */
     private void drawSplashButton(final Level level, float x, float y, float width, float height) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "backarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doSplash();
+                return true;
             }
         });
     }

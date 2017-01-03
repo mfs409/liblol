@@ -28,7 +28,6 @@
 package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
 import edu.lehigh.cse.lol.TouchEventHandler;
@@ -86,7 +85,7 @@ class Splash implements ScreenManager {
         });
 
         // Mute button is a tad tricky... we'll do it as an obstacle
-        Obstacle o = level.makeObstacleAsBox(45, 0, 2.5f, 2.5f, "");
+        final Obstacle o = level.makeObstacleAsBox(45, 0, 2.5f, 2.5f, "");
         // figure out which image to use for the obstacle based on the current
         // volume state
         if (level.getVolume()) {
@@ -96,14 +95,16 @@ class Splash implements ScreenManager {
         }
         // when the obstacle is touched, change the mute and then update the
         // picture for the obstacle
-        o.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        o.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.toggleMute();
                 if (level.getVolume()) {
-                    mAttachedActor.setImage("audio_off.png");
+                    o.setImage("audio_off.png");
                 } else {
-                    mAttachedActor.setImage("audio_on.png");
+                    o.setImage("audio_on.png");
                 }
+                return true;
             }
         });
     }

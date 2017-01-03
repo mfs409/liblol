@@ -98,7 +98,7 @@ class Projectile extends WorldActor {
         if (other instanceof Obstacle) {
             Obstacle o = (Obstacle) other;
             if (o.mProjectileCollision != null) {
-                o.mProjectileCollision.go(this, contact);
+                o.mProjectileCollision.go(o, this, contact);
                 // return... don't remove the projectile
                 return;
             }

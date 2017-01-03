@@ -311,10 +311,10 @@ class LolManager {
     LolAction mEndGameEvent;
 
     /// Code to run when a level is won
-    LolCallback mWinCallback;
+    LolAction mWinCallback;
 
     /// Code to run when a level is lost
-    LolCallback mLoseCallback;
+    LolAction mLoseCallback;
 
     /**
      * Use this to inform the level that a hero has been defeated
@@ -401,9 +401,9 @@ class LolManager {
 
                     // Run the level-complete callback
                     if (win && mWinCallback != null)
-                        mWinCallback.onEvent();
+                        mWinCallback.go();
                     else if (!win && mLoseCallback != null)
-                        mLoseCallback.onEvent();
+                        mLoseCallback.go();
 
                     // if we won, unlock the next level
                     if (win)

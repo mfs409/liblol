@@ -35,8 +35,9 @@ import com.badlogic.gdx.math.Vector3;
  * actors.
  *
  * In the interest of simplicity, we use some public fields instead of getters
- * and setters. This also lets us getLoseScene away with using the default constructor.
+ * and setters. This also lets us get away with using the default constructor.
  */
+@Deprecated
 public abstract class LolCallback {
     /**
      * An integer that may be of use during the callback
@@ -44,20 +45,10 @@ public abstract class LolCallback {
     public int mIntVal;
 
     /**
-     * A float that may be of use during the callback
-     */
-    public float mFloatVal;
-
-    /**
      * For collision events or actor press events, this is the actor to which
      * the callback is attached
      */
     public WorldActor mAttachedActor;
-
-    /**
-     * For collision events, this is the other actor involved in the collision
-     */
-    public WorldActor mCollideActor;
 
     /**
      * When a callback runs in response to a screen touch, we may need to know the world coordinates of the down-press

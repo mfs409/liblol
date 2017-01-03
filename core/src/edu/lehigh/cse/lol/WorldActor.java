@@ -142,7 +142,7 @@ public abstract class WorldActor extends BaseActor {
      *
      * @param callback The callback to run when the actor stops
      */
-    public void setStopCallback(final LolCallback callback) {
+    public void setStopCallback(final LolActorEvent callback) {
         mScene.mRepeatEvents.add(new LolAction() {
             boolean moving = false;
 
@@ -152,8 +152,7 @@ public abstract class WorldActor extends BaseActor {
                 if (!moving && (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0))
                     moving = true;
                 else if (moving && speed.x == 0 && speed.y == 0) {
-                    callback.mAttachedActor = WorldActor.this;
-                    callback.onEvent();
+                    callback.go(WorldActor.this);
                     moving = false;
                 }
             }
@@ -214,7 +213,7 @@ public abstract class WorldActor extends BaseActor {
      * @param callback           The callback to run when the actor is touched
      */
     public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                 int activationGoodies4, final boolean disappear, final LolCallback callback) {
+                                 int activationGoodies4, final boolean disappear, final LolActorEvent callback) {
         final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
                 activationGoodies4};
         // set the code to run on touch
@@ -228,8 +227,7 @@ public abstract class WorldActor extends BaseActor {
                 if (match) {
                     if (disappear)
                         remove(false);
-                    callback.mAttachedActor = WorldActor.this;
-                    callback.onEvent();
+                    callback.go(WorldActor.this);
                 }
                 return true;
             }

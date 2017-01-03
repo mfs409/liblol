@@ -73,7 +73,7 @@ public class Enemy extends WorldActor {
     /**
      * A callback to run when the enemy is defeated
      */
-    private Lol.CollisionCallback mDefeatCallback;
+    private LolActorEvent mDefeatCallback;
 
     /**
      * Create an Enemy. This should never be called directly.
@@ -118,7 +118,7 @@ public class Enemy extends WorldActor {
     private void onCollideWithObstacle(final Obstacle o, Contact contact) {
         // go any callbacks the obstacle has
         if (o.mEnemyCollision != null)
-            o.mEnemyCollision.go(this, contact);
+            o.mEnemyCollision.go(o, this, contact);
     }
 
     /**
@@ -182,7 +182,7 @@ public class Enemy extends WorldActor {
 
         // go defeat callbacks
         if (mDefeatCallback != null)
-            mDefeatCallback.go(this, null);
+            mDefeatCallback.go(this);
     }
 
     /**
@@ -230,14 +230,8 @@ public class Enemy extends WorldActor {
      *
      * @param callback The callback to run when the enemy is defeated
      */
-    public void setDefeatCallback(final LolCallback callback) {
-        mDefeatCallback = new Lol.CollisionCallback() {
-            @Override
-            public void go(WorldActor ps, Contact c) {
-                callback.mAttachedActor = Enemy.this;
-                callback.onEvent();
-            }
-        };
+    public void setDefeatCallback(final LolActorEvent callback) {
+        mDefeatCallback = callback;
     }
 
     /**
