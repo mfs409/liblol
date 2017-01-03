@@ -33,8 +33,7 @@ import java.util.Random;
 
 /**
  * Animation is a way of describing a set of images that can be used to do flip-book animation on
- * any BaseActor.  Animations consist of the names of images, and the time that each should be
- * shown.
+ * any actor.  Animations consist of the names of images, and the time that each should be shown.
  * <p>
  * There are two ways to make an animation. The more powerful uses to() to chain
  * together frame/duration pairs. The less powerful uses a constructor with more
@@ -42,16 +41,16 @@ import java.util.Random;
  */
 public class Animation {
     /// A reference to the media object, so we can find images easily
-    Media mMedia;
+    private Media mMedia;
     /// A set of images that can be used as frames of an animation.
-    final TextureRegion[] mCells;
+    private final TextureRegion[] mCells;
     /// Should the animation repeat?
-    final boolean mLoop;
+    private final boolean mLoop;
     /// This array holds the durations for which each of the images should be displayed
-    long[] mDurations;
+    private long[] mDurations;
     /// The next available position in the frames and durations arrays. Note that frames and
     /// durations should have the same length, and the same number of entries.
-    int mNextCell;
+    private int mNextCell;
 
     /**
      * Create the shell of a complex animation. The animation can hold up to sequenceCount steps,
@@ -89,6 +88,17 @@ public class Animation {
             mDurations[i] = timePerFrame;
             mCells[i] = mMedia.getImage(imgNames[i]);
         }
+    }
+
+    /**
+     * Get the duration of the entire animation sequence
+     * @return The duration, in milliseconds
+     */
+    long getDuration() {
+        long result = 0;
+        for (long l : mDurations)
+            result += l;
+        return result;
     }
 
     /**

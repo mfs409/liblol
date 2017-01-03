@@ -36,9 +36,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
  * The Lol object is the outermost container for all of the functionality of the game.
@@ -133,9 +131,6 @@ public class Lol implements ApplicationListener {
 
     /**
      * A hack for stopping events when a pause screen is opened
-     *
-     * @param touchVec The location of the touch that interacted with the pause
-     *                 screen.
      */
     void liftAllButtons(float touchX, float touchY) {
         mManager.mHud.liftAllButtons(touchX, touchY);
@@ -444,13 +439,15 @@ public class Lol implements ApplicationListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // draw parallax backgrounds
-        mManager.mBackground.renderLayers(mManager.mWorld, mSpriteBatch, delta);
+        mManager.mBackground.renderLayers(mManager.mWorld.mCamera.position.x,
+                mManager.mWorld.mCamera.position.y, mSpriteBatch, delta);
 
         // render the actors
         mManager.mWorld.render(mSpriteBatch, delta);
 
         // draw parallax foregrounds
-        mManager.mForeground.renderLayers(mManager.mWorld, mSpriteBatch, delta);
+        mManager.mForeground.renderLayers(mManager.mWorld.mCamera.position.x,
+                mManager.mWorld.mCamera.position.y, mSpriteBatch, delta);
 
         // DEBUG: draw outlines of physics actors
         //

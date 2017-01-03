@@ -9,10 +9,13 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
 
 /**
- * Created by spear on 12/28/2016.
+ * ParallaxScenes present a set of images that seem to scroll relative to the position of the
+ * actor on whom the camera is centered.
  */
-
 class ParallaxScene {
+    /// Config object
+    private final Config mConfig;
+
     /// All the layers to show as part of this scene
     final ArrayList<ParallaxLayer> mLayers = new ArrayList<>();
 
@@ -25,12 +28,10 @@ class ParallaxScene {
     ParallaxCamera mBgCam;
 
     ParallaxScene(Config config) {
-        int camWidth = config.mWidth;
-        int camHeight = config.mHeight;
-
+        mConfig = config;
         // the background camera is like the hudcam
-        mBgCam = new ParallaxCamera(camWidth, camHeight);
-        mBgCam.position.set(camWidth / 2, camHeight / 2, 0);
+        mBgCam = new ParallaxCamera(mConfig.mWidth, mConfig.mHeight);
+        mBgCam.position.set(mConfig.mWidth / 2, mConfig.mHeight / 2, 0);
         mBgCam.zoom = 1;
     }
 
@@ -40,19 +41,17 @@ class ParallaxScene {
      *
      * @param sb The SpriteBatch that is being used to do the drawing.
      */
-    void renderLayers(MainScene level, SpriteBatch sb, float elapsed) {
+    void renderLayers(float worldCenterX, float worldCenterY, SpriteBatch sb, float elapsed) {
         // center camera on mCamera's camera
-        float x = level.mCamera.position.x;
-        float y = level.mCamera.position.y;
-        mBgCam.position.set(x, y, 0);
+        mBgCam.position.set(worldCenterX, worldCenterY, 0);
         mBgCam.update();
 
         // draw the layers
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(mBgCam.calculateParallaxMatrix(pl.mXSpeed
-                    * level.mConfig.mPixelMeterRatio, pl.mYSpeed
-                    * level.mConfig.mPixelMeterRatio));
+                    * mConfig.mPixelMeterRatio, pl.mYSpeed
+                    * mConfig.mPixelMeterRatio));
             sb.begin();
             // go auto layers
             if (pl.mAutoX) {
@@ -63,16 +62,16 @@ class ParallaxScene {
                 sb.begin();
                 // update position, based on elapsed time
                 pl.mLastX += pl.mXSpeed * elapsed;
-                if (pl.mLastX > level.mConfig.mWidth)
+                if (pl.mLastX > mConfig.mWidth)
                     pl.mLastX = 0;
-                if (pl.mLastX < -level.mConfig.mWidth)
+                if (pl.mLastX < -mConfig.mWidth)
                     pl.mLastX = 0;
                 // figure out the starting point for drawing
                 float startPoint = pl.mLastX;
-                while (startPoint > -level.mConfig.mWidth)
+                while (startPoint > -mConfig.mWidth)
                     startPoint -= pl.mWidth;
                 // start drawing
-                while (startPoint < level.mConfig.mWidth) {
+                while (startPoint < mConfig.mWidth) {
                     sb.draw(pl.mImage, startPoint, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
                     startPoint += pl.mWidth;
@@ -82,13 +81,13 @@ class ParallaxScene {
             else if (pl.mXRepeat) {
                 // getLoseScene the camera center, translate to pixels, and scale by
                 // speed
-                float startX = x * level.mConfig.mPixelMeterRatio * pl.mXSpeed;
+                float startX = worldCenterX * mConfig.mPixelMeterRatio * pl.mXSpeed;
                 // subtract one and a half screens worth of repeated pictures
                 float screensBefore = 2.5f;
                 // adjust by zoom... for every level of zoom, we need that much
                 // more beforehand
                 screensBefore += mBgCam.zoom;
-                startX -= (screensBefore * level.mConfig.mWidth);
+                startX -= (screensBefore * mConfig.mWidth);
                 // round down to nearest screen width
                 startX = startX - startX % pl.mImage.getRegionWidth();
                 float currX = startX;
@@ -96,7 +95,7 @@ class ParallaxScene {
                 // screen. "enough" can be approximated as 2 screens plus twice
                 // the zoom factor
                 float limit = 2 + 2 * mBgCam.zoom;
-                while (currX < startX + limit * level.mConfig.mWidth) {
+                while (currX < startX + limit * mConfig.mWidth) {
                     sb.draw(pl.mImage, currX, pl.mYOffset, pl.mWidth,
                             pl.mHeight);
                     currX += pl.mImage.getRegionWidth();
@@ -105,16 +104,16 @@ class ParallaxScene {
             // Figure out what to draw for layers that repeat in the y dimension
             else if (pl.mYRepeat) {
                 // getLoseScene the camera center, translate, and scale
-                float startY = y * level.mConfig.mPixelMeterRatio * pl.mYSpeed;
+                float startY = worldCenterY * mConfig.mPixelMeterRatio * pl.mYSpeed;
                 // subtract enough screens, as above
                 startY -= (1.5f + mBgCam.zoom)
-                        * level.mConfig.mHeight;
+                        * mConfig.mHeight;
                 // round
                 startY = startY - startY % pl.mImage.getRegionHeight();
                 float currY = startY;
                 // draw a bunch of repeated images
                 float limit = 2 + 2 * mBgCam.zoom;
-                while (currY < startY + limit * level.mConfig.mHeight) {
+                while (currY < startY + limit * mConfig.mHeight) {
                     sb.draw(pl.mImage, pl.mXOffset, currY);
                     currY += pl.mImage.getRegionHeight();
                 }
