@@ -1,7 +1,10 @@
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
@@ -35,8 +38,7 @@ class ParallaxScene {
      * This method, called from the render loop, is responsible for drawing all
      * of the layers
      *
-     * @param sb
-     *            The SpriteBatch that is being used to do the drawing.
+     * @param sb The SpriteBatch that is being used to do the drawing.
      */
     void renderLayers(MainScene level, SpriteBatch sb, float elapsed) {
         // center camera on mCamera's camera
@@ -49,8 +51,8 @@ class ParallaxScene {
         for (ParallaxLayer pl : mLayers) {
             // each layer has a different projection, based on its speed
             sb.setProjectionMatrix(mBgCam.calculateParallaxMatrix(pl.mXSpeed
-                            * level.mConfig.mPixelMeterRatio, pl.mYSpeed
-                            * level.mConfig.mPixelMeterRatio));
+                    * level.mConfig.mPixelMeterRatio, pl.mYSpeed
+                    * level.mConfig.mPixelMeterRatio));
             sb.begin();
             // go auto layers
             if (pl.mAutoX) {
@@ -130,6 +132,57 @@ class ParallaxScene {
                         / 2 + pl.mYOffset);
             }
             sb.end();
+        }
+    }
+
+    /**
+     * A custom camera that can supports parallax... this code is based on code
+     * taken from the GDX tests
+     */
+    class ParallaxCamera extends OrthographicCamera {
+        /**
+         * This matrix helps us compute the view
+         */
+        private final Matrix4 parallaxView = new Matrix4();
+
+        /**
+         * This matrix helps us compute the camera.combined
+         */
+        private final Matrix4 parallaxCombined = new Matrix4();
+
+        /**
+         * A temporary vector for doing the calculations
+         */
+        private final Vector3 tmp = new Vector3();
+
+        /**
+         * Another temporary vector for doing the calculations
+         */
+        private final Vector3 tmp2 = new Vector3();
+
+        /**
+         * The constructor simply forwards to the OrthographicCamera constructor
+         *
+         * @param viewportWidth  Width of the camera
+         * @param viewportHeight Height of the camera
+         */
+        ParallaxCamera(float viewportWidth, float viewportHeight) {
+            super(viewportWidth, viewportHeight);
+        }
+
+        /**
+         * This is how we calculate the position of a parallax camera
+         */
+        Matrix4 calculateParallaxMatrix(float parallaxX, float parallaxY) {
+            update();
+            tmp.set(position);
+            tmp.x *= parallaxX;
+            tmp.y *= parallaxY;
+
+            parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+            parallaxCombined.set(projection);
+            Matrix4.mul(parallaxCombined.val, parallaxView.val);
+            return parallaxCombined;
         }
     }
 }
