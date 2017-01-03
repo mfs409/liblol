@@ -55,7 +55,7 @@ import edu.lehigh.cse.lol.WorldActor;
  * the big "if" statement in this code simply call to your classes and methods.
  * Otherwise, put your code directly into the parts of the "if" statement.
  */
-public class Levels implements ScreenManager {
+class Levels implements ScreenManager {
 
     /**
      * We currently have 94 levels, each of which is described in part of the
@@ -1218,7 +1218,7 @@ public class Levels implements ScreenManager {
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
             // give the hero a fixed velocity
-            h.addVelocity(25, 0, false);
+            h.addVelocity(25, 0);
             // center the camera a little ahead of the hero, so he is not
             // centered
             h.setCameraOffset(15, 0);
@@ -1255,7 +1255,7 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsBox(2, 0, 3, 7, "greenball.png");
             h.disableRotation();
             h.setPhysics(1, 0, 0);
-            h.addVelocity(5, 0, false);
+            h.addVelocity(5, 0);
             level.setCameraChase(h);
             h.setCameraOffset(15, 0);
             // the hero now has multijump, with small jumps:
@@ -1326,7 +1326,7 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
-            h.addVelocity(10, 0, false);
+            h.addVelocity(10, 0);
 
             level.setCameraChase(h);
 
@@ -1353,7 +1353,7 @@ public class Levels implements ScreenManager {
             level.setVictoryDestination(1);
             Hero h = level.makeHeroAsBox(2, 1, 3, 7, "greenball.png");
             h.setPhysics(.1f, 0, 0);
-            h.addVelocity(5, 0, false);
+            h.addVelocity(5, 0);
             level.setCameraChase(h);
             // to enableTilt crawling, we just draw a crawl button on the screen
             level.addToggleButton(0, 0, 960, 640, "", level.makeCrawlToggle(h, true), level.makeCrawlToggle(h, false));
@@ -1446,7 +1446,7 @@ public class Levels implements ScreenManager {
             Hero h = level.makeHeroAsCircle(2, 0, 3, 3, "greenball.png");
             h.disableRotation();
             h.setPhysics(.1f, 0, 0.6f);
-            h.addVelocity(10, 0, false);
+            h.addVelocity(10, 0);
             level.setCameraChase(h);
 
             level.makeDestinationAsCircle(450, 1, 2, 2, "mustardball.png");
@@ -1998,7 +1998,7 @@ public class Levels implements ScreenManager {
             // animations
             Hero h = level.makeHeroAsBox(2, 1, 3, 7, "legstar1.png");
             h.setPhysics(1, 0, 0);
-            h.addVelocity(15, 0, false);
+            h.addVelocity(15, 0);
             h.setCrawlAnimation(level.makeAnimation(4, true).to("legstar1.png", 100).to("legstar2.png", 300).to("legstar3.png", 300).to("legstar4.png", 100));
             h.setJumpAnimation(level.makeAnimation(4, true).to("legstar5.png", 200).to("legstar6.png", 200).to("legstar7.png", 200).to("legstar8.png", 200));
 
@@ -2292,7 +2292,7 @@ public class Levels implements ScreenManager {
             // anywhere, and the hero is elastic... it won't ever stop...
             Hero h = level.makeHeroAsCircle(4, 4, 3, 3, "greenball.png");
             h.setPhysics(0, 1, .1f);
-            h.addVelocity(0, 10, false);
+            h.addVelocity(0, 10);
 
             // make an obstacle and then connect it to some controls
             Obstacle o = level.makeObstacleAsBox(2, 30.9f, 4, 1, "red.png");
@@ -2396,14 +2396,14 @@ public class Levels implements ScreenManager {
                     level.getPauseScene().addTextCentered(24, 16, "arial.ttf", "#FFFF00", 12, "", "", level.DisplayFixedText("Now you can see the rest of the level"), 0);
                     level.getPauseScene().show();
                     Destination d = level.makeDestinationAsCircle(29, 6, 2, 2, "mustardball.png");
-                    d.addVelocity(-.5f, -1, false);
+                    d.addVelocity(-.5f, -1);
 
                     Enemy e5 = level.makeEnemyAsCircle(35, 15, 2, 2, "redball.png");
                     e5.setPhysics(1.0f, 0.3f, 0.6f);
-                    e5.addVelocity(4, 4, false);
+                    e5.addVelocity(4, 4);
 
                     Goodie gg = level.makeGoodieAsCircle(10, 10, 2, 2, "blueball.png");
-                    gg.addVelocity(5, 5, false);
+                    gg.addVelocity(5, 5);
                 }
             });
 
@@ -3018,7 +3018,7 @@ public class Levels implements ScreenManager {
             h.disableRotation();
             h.setPhysics(1, 0, 0);
             // give the hero a fixed velocity
-            h.addVelocity(4, 0, false);
+            h.addVelocity(4, 0);
             // center the camera a little ahead of the hero
             h.setCameraOffset(15, 0);
             level.setCameraChase(h);
@@ -3087,7 +3087,7 @@ public class Levels implements ScreenManager {
             // Be sure to check onHeroCollideCallback
             platform.setHeroCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
                 public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
-                    collideActor.setAbsoluteVelocity(collideActor.getXVelocity(), 5, false);
+                    collideActor.setAbsoluteVelocity(collideActor.getXVelocity(), 5);
                 }
             });
             platform.setCollisionsEnabled(true);
@@ -3173,7 +3173,7 @@ public class Levels implements ScreenManager {
             // note: it must not be immune to physics (third parameter true), or
             // it will pass through the bounding box, but we do want it to move
             // and not fall downward
-            d.setAbsoluteVelocity(-2, 0, false);
+            d.setAbsoluteVelocity(-2, 0);
             d.setGravityDefy();
             level.setVictoryDestination(1);
         }
@@ -3367,7 +3367,7 @@ public class Levels implements ScreenManager {
                     Vector2 v = new Vector2(1, 0);
                     v.rotate(rotation * 180 / (float) Math.PI + 90);
                     v.scl(magnitude);
-                    h.setAbsoluteVelocity(v.x, v.y, false);
+                    h.setAbsoluteVelocity(v.x, v.y);
                     mSource.setInfoInt(-200);
                     return true;
                 }
@@ -3439,7 +3439,7 @@ public class Levels implements ScreenManager {
             // Demonstrate the ability to chase while keeping existing velocity
             // in one direction
             Obstacle o = level.makeObstacleAsCircle(15, 15, 2, 2, "purpleball.png");
-            o.setAbsoluteVelocity(5, 1, false);
+            o.setAbsoluteVelocity(5, 1);
             o.setChaseFixedMagnitude(h, 3, 0, false, true);
 
             // Create a pause scene that has a back button on it, and a button
@@ -3495,7 +3495,8 @@ public class Levels implements ScreenManager {
             h2.setPassThrough(1);
 
             Enemy e1 = level.makeEnemyAsCircle(29, 29, 1, 1, "redball.png");
-            e1.setAbsoluteVelocity(0, -1, true);
+            e1.setKinematic();
+            e1.setAbsoluteVelocity(0, -1);
 
             // notice that now we will make two destinations, each of which
             // defaults to only holding ONE hero, but we still need to getLoseScene two
@@ -3530,7 +3531,7 @@ public class Levels implements ScreenManager {
                     for (int i = 0; i < 10; ++i) {
                         WorldActor p = level.getLevelActor("" + i);
                         if (p != null) {
-                            p.setAbsoluteVelocity(5 - level.getRandom(10), 10, false);
+                            p.setAbsoluteVelocity(5 - level.getRandom(10), 10);
                         }
                     }
                     return true;
@@ -3656,7 +3657,7 @@ public class Levels implements ScreenManager {
             // make a hero
             Hero h = level.makeHeroAsCircle(2, 2, 3, 3, "greenball.png");
             level.setCameraChase(h);
-            h.setAbsoluteVelocity(10, 0, false);
+            h.setAbsoluteVelocity(10, 0);
             h.disableRotation();
             h.setPhysics(.1f, 0, 0);
 

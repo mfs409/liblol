@@ -69,10 +69,11 @@ class Projectile extends WorldActor {
         super(game, level, imgName, width, height);
         if (isCircle) {
             float radius = Math.max(width, height);
-            setCirclePhysics(0, 0, 0, BodyType.DynamicBody, true, x, y, radius / 2);
+            setCirclePhysics(BodyType.DynamicBody, x, y, radius / 2);
         } else {
-            setBoxPhysics(0, 0, 0, BodyType.DynamicBody, true, x, y);
+            setBoxPhysics(BodyType.DynamicBody, x, y);
         }
+        setFastMoving(true);
         mBody.setGravityScale(0);
         setCollisionsEnabled(false);
         disableRotation();

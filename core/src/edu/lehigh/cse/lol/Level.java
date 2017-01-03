@@ -715,7 +715,7 @@ public class Level {
      */
     public SceneActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
         SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         c.mTapHandler = action;
         action.mSource = c;
         mGame.mManager.mHud.addActor(c, 0);
@@ -844,7 +844,7 @@ public class Level {
      */
     public SceneActor addToggleButton(int x, int y, int width, int height, String imgName, final LolAction whileDownAction, final LolAction onUpAction) {
         SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         // initially the down action is not active
         whileDownAction.mIsActive = false;
         // set up the toggle behavior
@@ -1033,7 +1033,7 @@ public class Level {
     public SceneActor addDirectionalThrowButton(int x, int y, int width, int height, String imgName, final Hero h,
                                                 final long milliDelay, final float offsetX, final float offsetY) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         final Vector2 v = new Vector2();
         c.mToggleHandler = new ToggleEventHandler() {
             public boolean go(boolean isUp, float worldX, float worldY) {
@@ -1094,7 +1094,7 @@ public class Level {
      */
     public SceneActor addPanControl(int x, int y, int width, int height, String imgName) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         c.mPanStopHandler = new TouchEventHandler() {
             /**
              * Handle a pan stop event by restoring the chase actor, if there
@@ -1163,7 +1163,7 @@ public class Level {
     public SceneActor addPinchZoomControl(float x, float y, float width, float height, String imgName, final float maxZoom,
                                           final float minZoom) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         c.mDownHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 // this handler is being used for up/down, so we can safely use the deltaX as a way
@@ -1197,7 +1197,7 @@ public class Level {
      */
     public SceneActor addImage(int x, int y, int width, int height, String imgName) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         mGame.mManager.mHud.addActor(c, 0);
         return c;
     }
@@ -1219,7 +1219,7 @@ public class Level {
     // TODO: we never test this code!
     public SceneActor addPanCallbackControl(float x, float y, float width, float height, String imgName, final TouchEventHandler upCB, final TouchEventHandler dnCB, final TouchEventHandler mvCB) {
         final SceneActor c = new SceneActor(mGame.mManager.mHud, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         // Pan only consists of pan-stop and pan events. That means we can't
         // capture a down-press or up-press that isn't also involved in a move.
         // To overcome this limitation, we'll make this BOTH a pan control and a
@@ -1606,7 +1606,7 @@ public class Level {
     public Enemy makeEnemyAsBox(float x, float y, float width, float height, String imgName) {
         Enemy e = new Enemy(mGame, mGame.mManager.mWorld, width, height, imgName);
         mGame.mManager.mEnemiesCreated++;
-        e.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        e.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
@@ -1626,7 +1626,7 @@ public class Level {
     public Enemy makeEnemyAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Enemy e = new Enemy(mGame, mGame.mManager.mWorld, width, height, imgName);
         mGame.mManager.mEnemiesCreated++;
-        e.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        e.setPolygonPhysics(BodyDef.BodyType.StaticBody, x, y, verts);
         mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
@@ -1645,7 +1645,7 @@ public class Level {
         float radius = Math.max(width, height);
         Enemy e = new Enemy(mGame, mGame.mManager.mWorld, radius, radius, imgName);
         mGame.mManager.mEnemiesCreated++;
-        e.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        e.setCirclePhysics(BodyDef.BodyType.StaticBody, x, y, radius / 2);
         mGame.mManager.mWorld.addActor(e, 0);
         return e;
     }
@@ -1662,7 +1662,7 @@ public class Level {
      */
     public Destination makeDestinationAsBox(float x, float y, float width, float height, String imgName) {
         Destination d = new Destination(mGame, mGame.mManager.mWorld, width, height, imgName);
-        d.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        d.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         d.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(d, 0);
         return d;
@@ -1682,7 +1682,7 @@ public class Level {
      */
     public Destination makeDestinationAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Destination d = new Destination(mGame, mGame.mManager.mWorld, width, height, imgName);
-        d.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        d.setPolygonPhysics(BodyDef.BodyType.StaticBody, x, y, verts);
         d.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(d, 0);
         return d;
@@ -1701,7 +1701,7 @@ public class Level {
     public Destination makeDestinationAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Destination d = new Destination(mGame, mGame.mManager.mWorld, radius, radius, imgName);
-        d.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        d.setCirclePhysics(BodyDef.BodyType.StaticBody, x, y, radius / 2);
         d.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(d, 0);
         return d;
@@ -1719,7 +1719,7 @@ public class Level {
      */
     public Obstacle makeObstacleAsBox(float x, float y, float width, float height, String imgName) {
         Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
-        o.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        o.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
@@ -1738,7 +1738,7 @@ public class Level {
      */
     public Obstacle makeObstacleAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
-        o.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        o.setPolygonPhysics(BodyDef.BodyType.StaticBody, x, y, verts);
         mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
@@ -1756,7 +1756,7 @@ public class Level {
     public Obstacle makeObstacleAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Obstacle o = new Obstacle(mGame, mGame.mManager.mWorld, width, height, imgName);
-        o.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        o.setCirclePhysics(BodyDef.BodyType.StaticBody, x, y, radius / 2);
         mGame.mManager.mWorld.addActor(o, 0);
         return o;
     }
@@ -1774,7 +1774,7 @@ public class Level {
      */
     public Goodie makeGoodieAsBox(float x, float y, float width, float height, String imgName) {
         Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
-        g.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        g.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         g.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(g, 0);
         return g;
@@ -1794,7 +1794,7 @@ public class Level {
     public Goodie makeGoodieAsCircle(float x, float y, float width, float height, String imgName) {
         float radius = Math.max(width, height);
         Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
-        g.setCirclePhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, radius / 2);
+        g.setCirclePhysics(BodyDef.BodyType.StaticBody, x, y, radius / 2);
         g.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(g, 0);
         return g;
@@ -1814,7 +1814,7 @@ public class Level {
      */
     public Goodie makeGoodieAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Goodie g = new Goodie(mGame, mGame.mManager.mWorld, width, height, imgName);
-        g.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        g.setPolygonPhysics(BodyDef.BodyType.StaticBody, x, y, verts);
         g.setCollisionsEnabled(false);
         mGame.mManager.mWorld.addActor(g, 0);
         return g;
@@ -1833,7 +1833,7 @@ public class Level {
     public Hero makeHeroAsBox(float x, float y, float width, float height, String imgName) {
         Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
         mGame.mManager.mHeroesCreated++;
-        h.setBoxPhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y);
+        h.setBoxPhysics(BodyDef.BodyType.DynamicBody, x, y);
         mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }
@@ -1852,7 +1852,7 @@ public class Level {
         float radius = Math.max(width, height);
         Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
         mGame.mManager.mHeroesCreated++;
-        h.setCirclePhysics(0, 0, 0, BodyDef.BodyType.DynamicBody, false, x, y, radius / 2);
+        h.setCirclePhysics(BodyDef.BodyType.DynamicBody, x, y, radius / 2);
         mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }
@@ -1872,7 +1872,7 @@ public class Level {
     public Hero makeHeroAsPolygon(float x, float y, float width, float height, String imgName, float... verts) {
         Hero h = new Hero(mGame, mGame.mManager.mWorld, width, height, imgName);
         mGame.mManager.mHeroesCreated++;
-        h.setPolygonPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y, verts);
+        h.setPolygonPhysics(BodyDef.BodyType.StaticBody, x, y, verts);
         mGame.mManager.mWorld.addActor(h, 0);
         return h;
     }

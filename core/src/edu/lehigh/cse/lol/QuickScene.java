@@ -154,7 +154,7 @@ abstract public class QuickScene extends LolScene {
      */
     public SceneActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
         SceneActor c = new SceneActor(this, imgName, width, height);
-        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
         c.mTapHandler = action;
         action.mSource = c;
         addActor(c, 0);

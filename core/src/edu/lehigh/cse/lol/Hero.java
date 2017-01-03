@@ -442,7 +442,7 @@ public class Hero extends WorldActor {
                 // if it was hovering, its body type won't be Dynamic
                 if (mBody.getType() != BodyType.DynamicBody)
                     mBody.setType(BodyType.DynamicBody);
-                setAbsoluteVelocity(x, y, false);
+                setAbsoluteVelocity(x, y);
                 // turn off isTouchAndGo, so we can't double-touch
                 mTapHandler = null;
                 return true;

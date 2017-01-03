@@ -359,7 +359,7 @@ public abstract class WorldActor extends BaseActor {
                             return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
                                 worldY - mSize.y / 2);
-                        setAbsoluteVelocity(0, 0, false);
+                        setAbsoluteVelocity(0, 0);
                         setRoute(r, velocity, false);
                         if (oncePerTouch)
                             mRunning = false;
@@ -397,7 +397,7 @@ public abstract class WorldActor extends BaseActor {
                             return false;
                         Route r = new Route(2).to(getXPosition(), getYPosition()).to(worldX - mSize.x / 2,
                                 worldY - mSize.y / 2);
-                        setAbsoluteVelocity(0, 0, false);
+                        setAbsoluteVelocity(0, 0);
                         setRoute(r, velocity, false);
                         return true;
                     }
@@ -737,7 +737,7 @@ public abstract class WorldActor extends BaseActor {
     }
 
     @Override
-    void onUpdateVelocity() {
+    void breakJoints() {
         // Clobber any joints, or this won't be able to move
         if (mDJoint != null) {
             mScene.mWorld.destroyJoint(mDJoint);

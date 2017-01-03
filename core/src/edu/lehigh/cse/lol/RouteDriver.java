@@ -95,7 +95,7 @@ class RouteDriver {
         mRouteDone = true;
         // NB: third parameter doesn't matter, because the actor isn't a
         // static body, so its BodyType won't change.
-        mActor.setAbsoluteVelocity(0, 0, false);
+        mActor.setAbsoluteVelocity(0, 0);
     }
 
     /**

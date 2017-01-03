@@ -29,6 +29,8 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.Random;
+
 /**
  * Animation is a way of describing a set of images that can be used to do flip-book animation on
  * any BaseActor.  Animations consist of the names of images, and the time that each should be
@@ -101,5 +103,96 @@ public class Animation {
         mDurations[mNextCell] = duration;
         mNextCell++;
         return this;
+    }
+
+    /**
+     * AnimationDriver is an internal class that actors can use to figure out which frame of an
+     * animation to show next
+     */
+    static class AnimationDriver {
+        /// The currently running animation
+        Animation mCurrentAnimation;
+        /// The images that comprise the current animation will be the elements of this array
+        private TextureRegion[] mImages;
+        /// The index to display from <code>mImages</code>, for the case where there is no active
+        /// animation. This is useful for animateByGoodieCount.
+        private int mImageIndex;
+        /// The frame of the currently running animation that is being displayed
+        private int mActiveFrame;
+        /// The amount of time for which the current frame has been displayed
+        private float mElapsedTime;
+
+        /**
+         * Build an AnimationDriver by giving it an image name. This allows us to use AnimationDriver to
+         * display non-animated images
+         *
+         * @param media   The media object, with all of the game's loaded images
+         * @param imgName The name of the image file to use
+         */
+        AnimationDriver(Media media, String imgName) {
+            updateImage(media, imgName);
+        }
+
+        /**
+         * Set the current animation, so that it will start running
+         *
+         * @param animation The animation to start using
+         */
+        void setCurrentAnimation(Animation animation) {
+            mCurrentAnimation = animation;
+            mActiveFrame = 0;
+            mElapsedTime = 0;
+        }
+
+        /**
+         * Change the source for the default image to display
+         *
+         * @param media   The media object, with all of the game's loaded images
+         * @param imgName The name of the image file to use
+         */
+        void updateImage(Media media, String imgName) {
+            if (mImages == null)
+                mImages = new TextureRegion[1];
+            mImages[0] = media.getImage(imgName);
+            mImageIndex = 0;
+        }
+
+        /**
+         * Request a random index from the mImages array to pick an image to display
+         *
+         * @param generator A random number generator.  We pass in the game's generator, so that we
+         *                  can keep the length of the mImages array private
+         */
+        void updateIndex(Random generator) {
+            mImageIndex = generator.nextInt(mImages.length);
+        }
+
+        /**
+         * When an actor renders, we use this method to figure out which image to display
+         *
+         * @param delta The time since the last render
+         * @return The TextureRegion to display
+         */
+        TextureRegion getTr(float delta) {
+            // If we're in 'show a specific image' mode, then show an image
+            if (mCurrentAnimation == null) {
+                return (mImages == null) ? null : mImages[mImageIndex];
+            }
+            // Advance the time
+            mElapsedTime += delta;
+            long millis = (long) (1000 * mElapsedTime);
+            // are we still in this frame?
+            if (millis <= mCurrentAnimation.mDurations[mActiveFrame]) {
+                return mCurrentAnimation.mCells[mActiveFrame];
+            }
+            // are we on the last frame, with no loop? If so, stay where we are
+            else if (mActiveFrame == mCurrentAnimation.mNextCell - 1 && !mCurrentAnimation.mLoop) {
+                return mCurrentAnimation.mCells[mActiveFrame];
+            }
+            // advance the animation and start its timer from zero
+            mActiveFrame = (mActiveFrame + 1) % mCurrentAnimation.mNextCell;
+            mElapsedTime = 0;
+            return mCurrentAnimation.mCells[mActiveFrame];
+        }
     }
 }
