@@ -1,9 +1,6 @@
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
 
 /**
  * This object holds the configuration information for a Parallax layer.

@@ -19,10 +19,10 @@ import com.badlogic.gdx.utils.Timer;
  * Conceptually, a Level consists of many screens:
  * <ul>
  * <li>MainScreen: This is where the Actors of the game are drawn</li>
- * - <li>Hud: A heads-up display onto which text and input controls can be drawn</li>
- * - <li>PreScene: A quick scene to display before the level starts</li>
- * - <li>PostScene (WinScene or LoseScene): Two quick scenes to display at the end of the level</li>
- * - <li>PauseScene: A scene to show when the game is paused</li>
+ * <li>Hud: A heads-up display onto which text and input controls can be drawn</li>
+ * <li>PreScene: A quick scene to display before the level starts</li>
+ * <li>PostScene (WinScene or LoseScene): Two quick scenes to display at the end of the level</li>
+ * <li>PauseScene: A scene to show when the game is paused</li>
  * </ul>
  * <p>
  */

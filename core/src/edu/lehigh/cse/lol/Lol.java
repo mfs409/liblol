@@ -372,9 +372,8 @@ public class Lol implements ApplicationListener {
             }
         }
 
-        // Let the score object know that we are rendering, so that we can handle any win/lose
-        // timers
-        mManager.onRender();
+        // Update the win/lose timers
+        mManager.updateTimeCounts();
 
         // handle accelerometer stuff... note that accelerometer is effectively
         // disabled during a popup... we could change that by moving this to the
