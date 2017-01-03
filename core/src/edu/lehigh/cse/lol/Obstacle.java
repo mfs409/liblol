@@ -247,44 +247,24 @@ public class Obstacle extends WorldActor {
      * Make the object a callback object, so that custom code will run when an
      * /enemy/ collides with it
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before this
-     *                           callback works
-     * @param delay              The time between when the collision happens, and when the
-     *                           callback code runs. Use 0 for immediately
-     * @param callback           The code to run when an enemy collides with this obstacle
+     * @param delay    The time between when the collision happens, and when the
+     *                 callback code runs. Use 0 for immediately
+     * @param callback The code to run when an enemy collides with this obstacle
      */
-    public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                          int activationGoodies4, final float delay, final CollisionCallback callback) {
-        /**
-         * Enemy callbacks can require certain Goodie counts in order to run
-         */
-        final int[] enemyCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
-                activationGoodies4};
-
+    public void setEnemyCollisionCallback(final float delay, final CollisionCallback callback) {
         mEnemyCollision = new CollisionCallback() {
             @Override
             public void go(WorldActor self, final WorldActor ps, final Contact c) {
-                boolean match = true;
-                for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
-                if (match) {
-                    // run the callback after a delay, or immediately?
-                    if (delay <= 0) {
-                        callback.go(Obstacle.this, ps, c);
-                    } else {
-                        Timer.schedule(new Task() {
-                            @Override
-                            public void run() {
-                                callback.go(Obstacle.this, ps, c);
-                            }
-                        }, delay);
-                    }
+                // run the callback after a delay, or immediately?
+                if (delay <= 0) {
+                    callback.go(Obstacle.this, ps, c);
+                } else {
+                    Timer.schedule(new Task() {
+                        @Override
+                        public void run() {
+                            callback.go(Obstacle.this, ps, c);
+                        }
+                    }, delay);
                 }
             }
         };
@@ -294,32 +274,10 @@ public class Obstacle extends WorldActor {
      * Make the object a callback object, so that custom code will run when a
      * /projectile/ collides with it.
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before this
-     *                           callback works
      * @param callback           The code to run on a collision
      */
-    public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                               int activationGoodies4, final CollisionCallback callback) {
-        final int[] projectileCallbackActivation = new int[]{activationGoodies1, activationGoodies2,
-                activationGoodies3, activationGoodies4};
-
-        mProjectileCollision = new CollisionCallback() {
-            @Override
-            public void go(WorldActor self, WorldActor ps, Contact c) {
-                boolean match = true;
-                for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= mGame.mManager.mGoodiesCollected[i];
-                if (match) {
-                    callback.go(Obstacle.this, ps, c);
-                }
-            }
-        };
+    public void setProjectileCollisionCallback(final CollisionCallback callback) {
+        mProjectileCollision = callback;
     }
 
     /**

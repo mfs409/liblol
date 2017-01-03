@@ -77,7 +77,7 @@ class LolManager {
         resetScores();
     }
 
-    void resetScores() {
+    private void resetScores() {
         mVictoryGoodieCount = new int[4];
         mHeroesCreated = 0;
         mGoodiesCollected = new int[]{0, 0, 0, 0};
@@ -100,7 +100,7 @@ class LolManager {
         mLoseCallback = null;
     }
 
-    void createScenes() {
+    private void createScenes() {
         // Create the eight different scenes and a score object
         mWorld = new MainScene(mConfig, mMedia, mGame);
         mWinScene = QuickScene.makeWinScene(mWorld, mMedia, mConfig);
@@ -131,9 +131,9 @@ class LolManager {
      * NB: we only track one value for locking/unlocking, so this actually unlocks all levels up to
      * and including the level after the current level.
      */
-    void unlockNext() {
-        if (mGame.getGameFact(mConfig, "unlocked", 1) <= mModeStates[PLAY])
-            mGame.putGameFact(mConfig, "unlocked", mModeStates[PLAY] + 1);
+    private void unlockNext() {
+        if (Lol.getGameFact(mConfig, "unlocked", 1) <= mModeStates[PLAY])
+            Lol.putGameFact(mConfig, "unlocked", mModeStates[PLAY] + 1);
     }
 
     void advanceLevel() {
@@ -287,11 +287,11 @@ class LolManager {
     /**
      * Track the number of heroes that have been removed/defeated
      */
-    int mHeroesDefeated;
+    private int mHeroesDefeated;
     /**
      * Number of heroes who have arrived at any destination yet
      */
-    int mDestinationArrivals;
+    private int mDestinationArrivals;
     /**
      * Describes how a level is won.
      */
@@ -440,7 +440,7 @@ class LolManager {
         if (mLoseCountDownRemaining != -100) {
             mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
             if (mLoseCountDownRemaining < 0) {
-                if (mLoseCountDownText != "")
+                if (!mLoseCountDownText.equals(""))
                     mLoseScene.setDefaultText(mLoseCountDownText);
                 endLevel(false);
             }
@@ -448,7 +448,7 @@ class LolManager {
         if (mWinCountRemaining != -100) {
             mWinCountRemaining -= Gdx.graphics.getDeltaTime();
             if (mWinCountRemaining < 0) {
-                if (mWinCountText != "")
+                if (!mWinCountText.equals(""))
                     mWinScene.setDefaultText(mWinCountText);
                 endLevel(true);
             }

@@ -5,5 +5,10 @@ package edu.lehigh.cse.lol;
  * to handle the event is the specific WorldActor who was involved in the event.
  */
 public interface LolActorEvent {
+    /**
+     * The go() method encapsulates the code that should be run
+     *
+     * @param actor The actor involved in this event
+     */
     void go(WorldActor actor);
 }

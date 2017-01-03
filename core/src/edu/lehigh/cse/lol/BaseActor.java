@@ -37,7 +37,7 @@ public class BaseActor extends Renderable {
     Vector2 mSize;
 
     /// Animation support: this tracks the current state of the active animation (if any)
-    Animation.AnimationDriver mAnimator;
+    Animation.Driver mAnimator;
     /// Animation support: the cells of the default animation
     Animation mDefaultAnimation;
     /// Animation support: the cells of the animation to use when moving backwards
@@ -45,9 +45,9 @@ public class BaseActor extends Renderable {
     /// The z index of this actor. Valid range is [-2, 2]
     private int mZIndex;
 
-    /// Does this WorldActor follow a route? If so, the RouteDriver will be used to advance the
+    /// Does this WorldActor follow a route? If so, the Driver will be used to advance the
     /// actor along its route.
-    RouteDriver mRoute;
+    Route.Driver mRoute;
 
     /// Animation support: the cells of the disappearance animation
     private Animation mDisappearAnimation;
@@ -90,7 +90,7 @@ public class BaseActor extends Renderable {
      */
     BaseActor(LolScene scene, String imgName, float width, float height) {
         mScene = scene;
-        mAnimator = new Animation.AnimationDriver(mScene.mMedia, imgName);
+        mAnimator = new Animation.Driver(mScene.mMedia, imgName);
         mSize = new Vector2();
         mSize.x = width;
         mSize.y = height;
@@ -677,8 +677,8 @@ public class BaseActor extends Renderable {
         if (mBody.getType() == BodyDef.BodyType.StaticBody)
             mBody.setType(BodyDef.BodyType.KinematicBody);
 
-        // Create a RouteDriver to advance the actor's position according to the route
-        mRoute = new RouteDriver(route, velocity, loop, this);
+        // Create a Driver to advance the actor's position according to the route
+        mRoute = new Route.Driver(route, velocity, loop, this);
     }
 
     /**

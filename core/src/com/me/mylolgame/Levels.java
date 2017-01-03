@@ -1685,10 +1685,9 @@ class Levels implements ScreenManager {
             // this line says when a projectile and obstacle collide, if the
             // goodie counts are at least 0,0,0,0, then run the
             // callback code.
-            o.setProjectileCollisionCallback(0, 0, 0, 0, new CollisionCallback() {
+            o.setProjectileCollisionCallback(new CollisionCallback() {
                 @Override
                 public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
-
                 }
             });
         }
@@ -2104,7 +2103,7 @@ class Levels implements ScreenManager {
             // collides with any enemy, the onEnemyCollideCallback() code will
             // run, with id == 14. Notice, too, that there will be a half second
             // delay before the code runs.
-            o.setEnemyCollisionCallback(0, 0, 0, 0, .5f, new CollisionCallback() {
+            o.setEnemyCollisionCallback(.5f, new CollisionCallback() {
                 public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     // This obstacle can only defeat the big enemy, and it
                     // disappears when it defeats the enemy
@@ -2121,7 +2120,7 @@ class Levels implements ScreenManager {
             Obstacle o2 = level.makeObstacleAsCircle(.5f, .5f, 2, 2, "blueball.png");
             o2.setPhysics(1, 0, 0.6f);
             o2.setMoveByTilting();
-            o2.setEnemyCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+            o2.setEnemyCollisionCallback(0, new CollisionCallback() {
                 public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     ((Enemy) collideActor).defeat(true);
                 }
@@ -2588,7 +2587,7 @@ class Levels implements ScreenManager {
             Obstacle o = level.makeObstacleAsCircle(30, 10, 5, 5, "blueball.png");
             o.setPhysics(1000, 0, 0);
             o.setCanDrag(false);
-            o.setEnemyCollisionCallback(0, 0, 0, 0, 0, new CollisionCallback() {
+            o.setEnemyCollisionCallback(0, new CollisionCallback() {
                 public void go(WorldActor thisActor, WorldActor collideActor, Contact contact) {
                     if (collideActor.getInfoText().equals("weak")) {
                         ((Enemy) collideActor).defeat(true);

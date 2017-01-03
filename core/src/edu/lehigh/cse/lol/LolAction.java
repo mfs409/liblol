@@ -27,17 +27,15 @@
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
-
 /**
  * Wrapper for actions that we generate and then want handled during the render
  * loop
- *
- * TODO: make this package scope, and use something else in Levels.java
  */
 abstract public class LolAction {
-    // TODO: remove this?
+    /// A flag to disable and re-enable actions.  This is especially useful when a LolAction is on
+    /// a repeating timer.
     public boolean mIsActive = true;
+
     /**
      * The go() method encapsulates the code that should be run
      */

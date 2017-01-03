@@ -106,10 +106,10 @@ public class Animation {
     }
 
     /**
-     * AnimationDriver is an internal class that actors can use to figure out which frame of an
+     * Driver is an internal class that actors can use to figure out which frame of an
      * animation to show next
      */
-    static class AnimationDriver {
+    static class Driver {
         /// The currently running animation
         Animation mCurrentAnimation;
         /// The images that comprise the current animation will be the elements of this array
@@ -123,13 +123,13 @@ public class Animation {
         private float mElapsedTime;
 
         /**
-         * Build an AnimationDriver by giving it an image name. This allows us to use AnimationDriver to
+         * Build a Driver by giving it an image name. This allows us to use Driver to
          * display non-animated images
          *
          * @param media   The media object, with all of the game's loaded images
          * @param imgName The name of the image file to use
          */
-        AnimationDriver(Media media, String imgName) {
+        Driver(Media media, String imgName) {
             updateImage(media, imgName);
         }
 

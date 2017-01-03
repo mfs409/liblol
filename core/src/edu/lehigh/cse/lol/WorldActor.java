@@ -128,6 +128,8 @@ public abstract class WorldActor extends BaseActor {
      * Create a new actor that does not yet have physics, but that has a
      * renderable picture
      *
+     * @param game    The currently active game
+     * @param scene   The scene into which the actor is being placed
      * @param imgName The image to display
      * @param width   The width
      * @param height  The height

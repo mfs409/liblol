@@ -476,4 +476,3 @@ public class Lol implements ApplicationListener {
     public void resize(int width, int height) {
     }
 }
-

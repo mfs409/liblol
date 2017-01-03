@@ -31,7 +31,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Destinations are Actors that the Hero should try to reach. When a Hero reaches a destination, the
+ * Destinations are actors that the Hero should try to reach. When a Hero reaches a destination, the
  * Hero disappears, and the score updates.
  */
 public class Destination extends WorldActor {
@@ -46,37 +46,37 @@ public class Destination extends WorldActor {
     Sound mArrivalSound;
 
     /**
-     * Create a destination. This is an internal method, the game designer
-     * should not use this.
+     * Create a basic Destination.  The destination won't yet have any physics attached to it.
      *
+     * @param game    The currently active game
+     * @param scene   The scene into which the destination is being placed
      * @param width   Width of this destination
      * @param height  Height of this destination
      * @param imgName Name of the image to display
      */
-    Destination(Lol game, MainScene level, float width, float height, String imgName) {
-        super(game, level, imgName, width, height);
+    Destination(Lol game, MainScene scene, float width, float height, String imgName) {
+        super(game, scene, imgName, width, height);
         mCapacity = 1;
         mHolding = 0;
         mActivation = new int[4];
     }
 
     /**
-     * Code to run when an Destination collides with an WorldActor.
-     *
+     * Code to run when a Destination collides with a WorldActor.
+     * <p>
      * NB: Destinations are at the end of the collision hierarchy, so we don't do anything when
-     *     they are in a collision that hasn't already been handled by a higher-ranked WorldActor.
+     * they are in a collision that hasn't already been handled by a higher-ranked WorldActor.
      *
-     * @param other   Other object involved in this collision
-     * @param contact A description of the collision between this destination and
-     *                the other actor
+     * @param other   Other actor involved in this collision
+     * @param contact A description of the collision
      */
     @Override
     void onCollide(WorldActor other, Contact contact) {
     }
 
     /**
-     * Change the number of goodies that must be collected before the
-     * destination accepts any heroes (the default is 0,0,0,0)
+     * Change the number of goodies that must be collected before the destination accepts any heroes
+     * (the default is 0,0,0,0)
      *
      * @param score1 The number of type-1 goodies that must be collected.
      * @param score2 The number of type-2 goodies that must be collected.
@@ -91,8 +91,7 @@ public class Destination extends WorldActor {
     }
 
     /**
-     * Change the number of heroes that can be accepted by this destination (the
-     * default is 1)
+     * Change the number of heroes that can be accepted by this destination (the default is 1)
      *
      * @param heroes The number of heroes that can be accepted
      */

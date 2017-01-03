@@ -34,11 +34,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * The Hero is the focal point of a game. While it is technically possible to
- * have many heroes, or invisible heroes that exist just so that the player has
- * to keep bad things from happening to the hero, it is usually the case that a
- * game has one hero who moves around on the screen, possibly jumping and
- * crawling.
+ * The Hero is the focal point of a game. While it is technically possible to have many heroes, or
+ * invisible heroes that exist just so that the player has to keep bad things from happening to the
+ * hero, it is usually the case that a game has one hero who moves around on the screen, possibly
+ * jumping and crawling.
  */
 public class Hero extends WorldActor {
     /**
@@ -48,7 +47,7 @@ public class Hero extends WorldActor {
      * hero to be defeated on any collision with an enemy, with the enemy *not*
      * disappearing
      */
-    private int mStrength = 1;
+    private int mStrength;
 
     /**
      * Time until the hero's invincibility runs out
@@ -134,12 +133,15 @@ public class Hero extends WorldActor {
      * heroes created. This code should never be called directly by the game
      * designer.
      *
+     * @param game    The currently active game
+     * @param scene   The scene into which the destination is being placed
      * @param width   The width of the hero
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    Hero(Lol game, MainScene level, float width, float height, String imgName) {
-        super(game, level, imgName, width, height);
+    Hero(Lol game, MainScene scene, float width, float height, String imgName) {
+        super(game, scene, imgName, width, height);
+        mStrength = 1;
     }
 
     /**
@@ -150,7 +152,7 @@ public class Hero extends WorldActor {
      * @param delta The time since the last render
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    void onRender(SpriteBatch sb, float delta) {
         // determine when to turn off throw animations
         if (mThrowAnimationTimeRemaining > 0) {
             mThrowAnimationTimeRemaining -= delta;
@@ -171,7 +173,7 @@ public class Hero extends WorldActor {
             }
         }
 
-        super.render(sb, delta);
+        super.onRender(sb, delta);
     }
 
     /**
