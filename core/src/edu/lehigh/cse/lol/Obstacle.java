@@ -39,7 +39,7 @@ import com.badlogic.gdx.utils.Timer.Task;
  * that collide with them. It's best to think of them as being both "a wall" and
  * "a catch-all for any behavior that we don't have anywhere else".
  */
-public class Obstacle extends Actor {
+public class Obstacle extends WorldActor {
     /**
      * One of the main uses of obstacles is to use hero/obstacle collisions as a
      * way to run custom code. This callback defines what code to run when a
@@ -86,8 +86,8 @@ public class Obstacle extends Actor {
      * @param height  height of this Obstacle
      * @param imgName Name of the image file to use
      */
-    protected Obstacle(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
+    protected Obstacle(Lol game, MainScene level, float width, float height, String imgName) {
+        super(game, level, imgName, width, height);
     }
 
     /**
@@ -103,7 +103,7 @@ public class Obstacle extends Actor {
         if (now < mLastCollideSoundTime + mCollideSoundDelay)
             return;
         mLastCollideSoundTime = now;
-        mCollideSound.play(mLevel.getGameFact("volume", 1));
+        mCollideSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
     }
 
     /**
@@ -116,7 +116,7 @@ public class Obstacle extends Actor {
      * @param contact A description of the collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
     }
 
     /**
@@ -137,7 +137,7 @@ public class Obstacle extends Actor {
         // register a callback to multiply the hero's speed by factor
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(Actor h, Contact c) {
+            public void go(WorldActor self, WorldActor h, Contact c) {
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.scl(factor);
                 h.updateVelocity(v.x, v.y);
@@ -160,7 +160,7 @@ public class Obstacle extends Actor {
         // register a callback to change the hero's speed
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final Actor h, Contact c) {
+            public void go(WorldActor self, final WorldActor h, Contact c) {
                 // boost the speed
                 Vector2 v = h.mBody.getLinearVelocity();
                 v.x += boostAmountX;
@@ -210,7 +210,7 @@ public class Obstacle extends Actor {
      * @param callback           The code to run when the collision happens
      */
     public void setHeroCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                         int activationGoodies4, final float delay, final LolCallback callback) {
+                                         int activationGoodies4, final float delay, final CollisionCallback callback) {
         // save the required goodie counts, turn off collisions
         final int[] counts = new int[]{activationGoodies1, activationGoodies2, activationGoodies3, activationGoodies4};
         setCollisionsEnabled(false);
@@ -218,27 +218,22 @@ public class Obstacle extends Actor {
         // register a callback
         mHeroCollision = new CollisionCallback() {
             @Override
-            public void go(final Actor ps, Contact c) {
-                // Make sure the contact is active (it's not if this is a
-                // pass-through event)
+            public void go(WorldActor self, final WorldActor ps, final Contact c) {
+                // Make sure the contact is active (it's not if this is a pass-through event)
                 if (c.isEnabled()) {
                     // check if callback is activated, if so run Callback code
                     boolean match = true;
                     for (int i = 0; i < 4; ++i)
-                        match &= counts[i] <= mLevel.mScore.mGoodiesCollected[i];
+                        match &= counts[i] <= mGame.mManager.mGoodiesCollected[i];
                     if (match) {
                         // run now, or delay?
                         if (delay <= 0) {
-                            callback.mAttachedActor = Obstacle.this;
-                            callback.mCollideActor = ps;
-                            callback.onEvent();
+                            callback.go(Obstacle.this, ps, c);
                         } else {
                             Timer.schedule(new Task() {
                                 @Override
                                 public void run() {
-                                    callback.mAttachedActor = Obstacle.this;
-                                    callback.mCollideActor = ps;
-                                    callback.onEvent();
+                                    callback.go(Obstacle.this, ps, c);
                                 }
                             }, delay);
                         }
@@ -252,48 +247,24 @@ public class Obstacle extends Actor {
      * Make the object a callback object, so that custom code will run when an
      * /enemy/ collides with it
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before this
-     *                           callback works
-     * @param delay              The time between when the collision happens, and when the
-     *                           callback code runs. Use 0 for immediately
-     * @param callback           The code to run when an enemy collides with this obstacle
+     * @param delay    The time between when the collision happens, and when the
+     *                 callback code runs. Use 0 for immediately
+     * @param callback The code to run when an enemy collides with this obstacle
      */
-    public void setEnemyCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                          int activationGoodies4, final float delay, final LolCallback callback) {
-        /**
-         * Enemy callbacks can require certain Goodie counts in order to run
-         */
-        final int[] enemyCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
-                activationGoodies4};
-
+    public void setEnemyCollisionCallback(final float delay, final CollisionCallback callback) {
         mEnemyCollision = new CollisionCallback() {
             @Override
-            public void go(final Actor ps, Contact c) {
-                boolean match = true;
-                for (int i = 0; i < 4; ++i)
-                    match &= enemyCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
-                if (match) {
-                    // run the callback after a delay, or immediately?
-                    if (delay <= 0) {
-                        callback.mAttachedActor = Obstacle.this;
-                        callback.mCollideActor = ps;
-                        callback.onEvent();
-                    } else {
-                        Timer.schedule(new Task() {
-                            @Override
-                            public void run() {
-                                callback.mAttachedActor = Obstacle.this;
-                                callback.mCollideActor = ps;
-                                callback.onEvent();
-                            }
-                        }, delay);
-                    }
+            public void go(WorldActor self, final WorldActor ps, final Contact c) {
+                // run the callback after a delay, or immediately?
+                if (delay <= 0) {
+                    callback.go(Obstacle.this, ps, c);
+                } else {
+                    Timer.schedule(new Task() {
+                        @Override
+                        public void run() {
+                            callback.go(Obstacle.this, ps, c);
+                        }
+                    }, delay);
                 }
             }
         };
@@ -303,34 +274,10 @@ public class Obstacle extends Actor {
      * Make the object a callback object, so that custom code will run when a
      * /projectile/ collides with it.
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before this
-     *                           callback works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before this
-     *                           callback works
      * @param callback           The code to run on a collision
      */
-    public void setProjectileCollisionCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                               int activationGoodies4, final LolCallback callback) {
-        final int[] projectileCallbackActivation = new int[]{activationGoodies1, activationGoodies2,
-                activationGoodies3, activationGoodies4};
-
-        mProjectileCollision = new CollisionCallback() {
-            @Override
-            public void go(Actor ps, Contact c) {
-                boolean match = true;
-                for (int i = 0; i < 4; ++i)
-                    match &= projectileCallbackActivation[i] <= mLevel.mScore.mGoodiesCollected[i];
-                if (match) {
-                    callback.mAttachedActor = Obstacle.this;
-                    callback.mCollideActor = ps;
-                    callback.onEvent();
-                }
-            }
-        };
+    public void setProjectileCollisionCallback(final CollisionCallback callback) {
+        mProjectileCollision = callback;
     }
 
     /**
@@ -342,7 +289,7 @@ public class Obstacle extends Actor {
      *              milliseconds
      */
     public void setCollideSound(String sound, long delay) {
-        mCollideSound = mLevel.mMedia.getSound(sound);
+        mCollideSound = mScene.mMedia.getSound(sound);
         mCollideSoundDelay = delay * 1000000;
     }
 }

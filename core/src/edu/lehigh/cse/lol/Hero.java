@@ -30,18 +30,16 @@ package edu.lehigh.cse.lol;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * The Hero is the focal point of a game. While it is technically possible to
- * have many heroes, or invisible heroes that exist just so that the player has
- * to keep bad things from happening to the hero, it is usually the case that a
- * game has one hero who moves around on the screen, possibly jumping and
- * crawling.
+ * The Hero is the focal point of a game. While it is technically possible to have many heroes, or
+ * invisible heroes that exist just so that the player has to keep bad things from happening to the
+ * hero, it is usually the case that a game has one hero who moves around on the screen, possibly
+ * jumping and crawling.
  */
-public class Hero extends Actor {
+public class Hero extends WorldActor {
     /**
      * Strength of the hero. This determines how many collisions with enemies
      * the hero can sustain before it is defeated. The default is 1, and the
@@ -49,7 +47,7 @@ public class Hero extends Actor {
      * hero to be defeated on any collision with an enemy, with the enemy *not*
      * disappearing
      */
-    private int mStrength = 1;
+    private int mStrength;
 
     /**
      * Time until the hero's invincibility runs out
@@ -128,31 +126,33 @@ public class Hero extends Actor {
     /**
      * Code to run when the hero's strength changes
      */
-    private LolCallback mStrengthChangeCallback;
+    private LolActorEvent mStrengthChangeCallback;
 
     /**
-     * Construct a Hero by creating an Actor and incrementing the number of
+     * Construct a Hero by creating an WorldActor and incrementing the number of
      * heroes created. This code should never be called directly by the game
      * designer.
      *
+     * @param game    The currently active game
+     * @param scene   The scene into which the destination is being placed
      * @param width   The width of the hero
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
      */
-    protected Hero(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
-        mLevel.mScore.mHeroesCreated++;
+    Hero(Lol game, MainScene scene, float width, float height, String imgName) {
+        super(game, scene, imgName, width, height);
+        mStrength = 1;
     }
 
     /**
-     * We can't just use the basic Actor renderer, because we might need to
+     * We can't just use the basic WorldActor renderer, because we might need to
      * adjust a one-off animation (invincibility or throw) first
      *
      * @param sb    The SpriteBatch to use for drawing this hero
      * @param delta The time since the last render
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    void onRender(SpriteBatch sb, float delta) {
         // determine when to turn off throw animations
         if (mThrowAnimationTimeRemaining > 0) {
             mThrowAnimationTimeRemaining -= delta;
@@ -173,14 +173,14 @@ public class Hero extends Actor {
             }
         }
 
-        super.render(sb, delta);
+        super.onRender(sb, delta);
     }
 
     /**
-     * Make the hero jump, unless it is in the air and not multijump
+     * Make the hero jump, unless it is in the air and not multi-jump
      */
     void jump() {
-        // nb: multijump prevents us from ever setting mInAir, so this is safe:
+        // nb: multi-jump prevents us from ever setting mInAir, so this is safe:
         if (mInAir)
             return;
         Vector2 v = mBody.getLinearVelocity();
@@ -191,7 +191,7 @@ public class Hero extends Actor {
         if (mJumpAnimation != null)
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
-            mJumpSound.play(mLevel.getGameFact("volume", 1));
+            mJumpSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
         // break any sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
@@ -264,7 +264,7 @@ public class Hero extends Actor {
      * @param contact A description of the contact that caused this collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
         // NB: we currently ignore Projectile and Hero
         if (other instanceof Enemy)
             onCollideWithEnemy((Enemy) other);
@@ -286,14 +286,14 @@ public class Hero extends Actor {
         // there's room in the destination
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= mLevel.mScore.mGoodiesCollected[i] >= d.mActivation[i];
-        if (match && (d.mHolding < d.mCapacity) && mVisible) {
+            match &= mGame.mManager.mGoodiesCollected[i] >= d.mActivation[i];
+        if (match && (d.mHolding < d.mCapacity) && mEnabled) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
             d.mHolding++;
             if (d.mArrivalSound != null)
-                d.mArrivalSound.play(mLevel.getGameFact("volume", 1));
-            mLevel.mScore.onDestinationArrive();
+                d.mArrivalSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
+            mGame.mManager.onDestinationArrive();
         }
     }
 
@@ -307,12 +307,12 @@ public class Hero extends Actor {
         // hero
         if (e.mAlwaysDoesDamage) {
             remove(false);
-            mLevel.mScore.defeatHero(e);
+            mGame.mManager.defeatHero(e);
             if (mMustSurvive)
-                mLevel.mScore.endLevel(false);
+                mGame.mManager.endLevel(false);
             return;
         }
-        // handle hero invincibility
+        // go hero invincibility
         if (mInvincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
             if (e.mImmuneToInvincibility)
@@ -331,9 +331,9 @@ public class Hero extends Actor {
         // when we can't defeat it by losing strength, remove the hero
         else if (e.mDamage >= mStrength) {
             remove(false);
-            mLevel.mScore.defeatHero(e);
+            mGame.mManager.defeatHero(e);
             if (mMustSurvive)
-                mLevel.mScore.endLevel(false);
+                mGame.mManager.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
@@ -351,8 +351,7 @@ public class Hero extends Actor {
     private void addStrength(int amount) {
         mStrength += amount;
         if (mStrengthChangeCallback != null) {
-            mStrengthChangeCallback.mAttachedActor = this;
-            mStrengthChangeCallback.onEvent();
+            mStrengthChangeCallback.go(this);
         }
     }
 
@@ -372,7 +371,7 @@ public class Hero extends Actor {
         // if there is code attached to the obstacle for modifying the hero's
         // behavior, run it
         if (o.mHeroCollision != null)
-            o.mHeroCollision.go(this, contact);
+            o.mHeroCollision.go(o, this, contact);
 
         // If this is a wall, then mark us not in the air so we can do more
         // jumps. Note that sensors should not enableTilt
@@ -395,7 +394,7 @@ public class Hero extends Actor {
         g.remove(false);
 
         // count this goodie
-        mLevel.mScore.onGoodieCollected(g);
+        mGame.mManager.onGoodieCollected(g);
 
         // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);
@@ -439,16 +438,15 @@ public class Hero extends Actor {
      * @param y Velocity in Y dimension
      */
     public void setTouchAndGo(final float x, final float y) {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 mHover = null;
                 // if it was hovering, its body type won't be Dynamic
                 if (mBody.getType() != BodyType.DynamicBody)
                     mBody.setType(BodyType.DynamicBody);
-                setAbsoluteVelocity(x, y, false);
+                setAbsoluteVelocity(x, y);
                 // turn off isTouchAndGo, so we can't double-touch
-                mGestureResponder = null;
+                mTapHandler = null;
                 return true;
             }
         };
@@ -477,9 +475,8 @@ public class Hero extends Actor {
      */
 
     public void setTouchToJump() {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
                 jump();
                 return true;
             }
@@ -502,7 +499,7 @@ public class Hero extends Actor {
      * @param soundName The name of the sound file to use
      */
     public void setJumpSound(String soundName) {
-        mJumpSound = mLevel.mMedia.getSound(soundName);
+        mJumpSound = mScene.mMedia.getSound(soundName);
     }
 
     /**
@@ -513,12 +510,9 @@ public class Hero extends Actor {
      */
     public void setThrowAnimation(Animation a) {
         mThrowAnimation = a;
-        // compute the length of the throw sequence, so that we can getLoseScene our
+        // compute the length of the throw sequence, so that we can get our
         // timer right for restoring the default animation
-        mThrowAnimateTotalLength = 0;
-        for (long l : a.mDurations)
-            mThrowAnimateTotalLength += l;
-        mThrowAnimateTotalLength /= 1000; // convert to seconds
+        mThrowAnimateTotalLength = a.getDuration() / 1000;
     }
 
     /**
@@ -553,7 +547,7 @@ public class Hero extends Actor {
      *
      * @param callback The code to run.
      */
-    public void setStrengthChangeCallback(LolCallback callback) {
+    public void setStrengthChangeCallback(LolActorEvent callback) {
         mStrengthChangeCallback = callback;
     }
 }

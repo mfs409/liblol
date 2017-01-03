@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -31,73 +31,52 @@ import com.badlogic.gdx.audio.Sound;
 
 /**
  * The ProjectilePool is the public interface to Projectiles. The programmer
- * can't make individual projectiles, but can configureCamera a pool of projectiles
+ * can't make individual projectiles, but can set a pool of projectiles
  * that can then be thrown by a hero.
  */
- class ProjectilePool {
-    /**
-     * The level in which this pool exists
-     */
-    Level mLevel;
+class ProjectilePool {
+    /// The level in which this pool exists
+    private MainScene mLevel;
 
-    /**
-     * A collection of all the available projectiles
-     */
+    /// A collection of all the available projectiles
     final Projectile mPool[];
-    /**
-     * The number of projectiles in the pool
-     */
+
+    /// The number of projectiles in the pool
     private final int mPoolSize;
-    /**
-     * For limiting the number of projectiles that can be thrown
-     */
+
+    /// For limiting the number of projectiles that can be thrown
     int mProjectilesRemaining;
-    /**
-     * A dampening factor to apply to projectiles thrown via "directional"
-     * mechanism
-     */
+
+    /// A dampening factor to apply to projectiles thrown via "directional" mechanism
     float mDirectionalDamp;
-    /**
-     * Indicates that projectiles should be sensors
-     */
+
+    /// Indicates that projectiles should be sensors
     boolean mSensorProjectiles;
-    /**
-     * Indicates that vector projectiles should have a fixed velocity
-     */
+
+    /// Indicates that vector projectiles should have a fixed velocity
     boolean mEnableFixedVectorVelocity;
-    /**
-     * The magnitude of the velocity for vector projectiles thrown with a fixed
-     * velocity
-     */
+
+    /// The magnitude of the velocity for vector projectiles thrown with a fixed velocity
     float mFixedVectorVelocity;
-    /**
-     * Indicate that projectiles should face in the direction they are initially
-     * thrown
-     */
+
+    /// Indicate that projectiles should face in the direction they are initially thrown
     boolean mRotateVectorThrow;
-    /**
-     * Index of next available projectile in the pool
-     */
+
+    /// Index of next available projectile in the pool
     private int mNextIndex;
-    /**
-     * For choosing random images for the projectiles
-     */
+
+    /// For choosing random images for the projectiles
     boolean mRandomizeImages;
 
-    /**
-     * Sound to play when projectiles are thrown
-     */
+    /// Sound to play when projectiles are thrown
     Sound mThrowSound;
 
-    /**
-     * The sound to play when a projectile disappears
-     */
+    /// The sound to play when a projectile disappears
     Sound mProjectileDisappearSound;
 
     /**
-     * Create a pool of projectiles, and configureCamera the way they are thrown. Note
-     * that this is private... in LOL the programmer calls
-     * ProjectilePool.configureCamera, which forwards to this.
+     * Create a pool of projectiles, and set the way they are thrown. Note that this is private...
+     * in LOL the programmer calls ProjectilePool.setCameraBounds, which forwards to this.
      *
      * @param size     number of projectiles that can be thrown at once
      * @param width    width of a projectile
@@ -108,14 +87,14 @@ import com.badlogic.gdx.audio.Sound;
      * @param zIndex   The z plane on which the projectiles should be drawn
      * @param isCircle Should projectiles have an underlying circle or box shape?
      */
-    ProjectilePool(Level level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
+    ProjectilePool(Lol game, MainScene level, int size, float width, float height, String imgName, int strength, int zIndex, boolean isCircle) {
         mLevel = level;
         // set up the pool
         mPool = new Projectile[size];
         // don't draw all projectiles in same place...
         for (int i = 0; i < size; ++i) {
-            mPool[i] = new Projectile(level, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
-            mPool[i].mVisible = false;
+            mPool[i] = new Projectile(game, level, width, height, imgName, -100 - i * width, -100 - i * height, zIndex, isCircle);
+            mPool[i].mEnabled= false;
             mPool[i].mBody.setBullet(true);
             mPool[i].mBody.setActive(false);
             mPool[i].mDamage = strength;
@@ -152,14 +131,14 @@ import com.badlogic.gdx.audio.Sound;
             mProjectilesRemaining--;
 
         // is there an available projectile?
-        if (mPool[mNextIndex].mVisible)
+        if (mPool[mNextIndex].mEnabled)
             return;
         // getLoseScene the next projectile, reset sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
-            b.mAnimator.pickRandomIndex(mLevel);
+            b.mAnimator.updateIndex(mLevel.mGenerator);
 
         // calculate offset for starting position of projectile, put it on
         // screen
@@ -170,9 +149,9 @@ import com.badlogic.gdx.audio.Sound;
 
         // give the projectile velocity, show it, play sound, animate the hero
         b.updateVelocity(velocityX, velocityY);
-        b.mVisible = true;
+        b.mEnabled = true;
         if (mThrowSound != null)
-            mThrowSound.play(mLevel.getGameFact("volume", 1));
+            mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }
@@ -202,14 +181,14 @@ import com.badlogic.gdx.audio.Sound;
             mProjectilesRemaining--;
 
         // is there an available projectile?
-        if (mPool[mNextIndex].mVisible)
+        if (mPool[mNextIndex].mEnabled)
             return;
         // getLoseScene the next projectile, set sensor, set image
         Projectile b = mPool[mNextIndex];
         mNextIndex = (mNextIndex + 1) % mPoolSize;
         b.setCollisionsEnabled(!mSensorProjectiles);
         if (mRandomizeImages)
-            b.mAnimator.pickRandomIndex(mLevel);
+            b.mAnimator.updateIndex(mLevel.mGenerator);
 
         // calculate offset for starting position of projectile, put it on
         // screen
@@ -246,9 +225,9 @@ import com.badlogic.gdx.audio.Sound;
         }
 
         // show the projectile, play sound, and animate the hero
-        b.mVisible = true;
+        b.mEnabled= true;
         if (mThrowSound != null)
-            mThrowSound.play(mLevel.getGameFact("volume", 1));
+            mThrowSound.play(Lol.getGameFact(mLevel.mConfig, "volume", 1));
         b.mDisappearSound = mProjectileDisappearSound;
         h.doThrowAnimation();
     }

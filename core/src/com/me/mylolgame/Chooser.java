@@ -28,9 +28,9 @@
 package com.me.mylolgame;
 
 import edu.lehigh.cse.lol.Level;
-import edu.lehigh.cse.lol.LolCallback;
 import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.ScreenManager;
+import edu.lehigh.cse.lol.TouchEventHandler;
 
 /**
  * Chooser draws the level chooser screens. Our chooser code is pretty
@@ -38,7 +38,7 @@ import edu.lehigh.cse.lol.ScreenManager;
  * to show how we can write more effective code once we are comfortable with
  * loops and basic geometry.
  */
-public class Chooser implements ScreenManager {
+class Chooser implements ScreenManager {
 
     /**
      * This is a helper function for drawing a level button. If the level is
@@ -51,7 +51,7 @@ public class Chooser implements ScreenManager {
      * @param height height of the button
      * @param whichLevel  which level to play when the button is tapped
      */
-    void drawLevelButton(final Level level, float x, float y, float width, float height, final int whichLevel) {
+    private void drawLevelButton(final Level level, float x, float y, float width, float height, final int whichLevel) {
         // figure out the last unlocked level
         int unlocked = level.getGameFact("unlocked", 1);
 
@@ -62,16 +62,18 @@ public class Chooser implements ScreenManager {
         // a callback and print the level number with a touchCallback, and then
         // put text on top of it
         if (whichLevel <= unlocked || level.getUnlockMode()) {
-            tile.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-                public void onEvent() {
+            tile.setTapCallback(new TouchEventHandler() {
+                @Override
+                public boolean go(float eventPositionX, float eventPositionY) {
                     level.doLevel(whichLevel);
+                    return true;
                 }
             });
-            level.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, "#FFFFFF", "arial.ttf", 56, 0);
+            level.addTextCentered(x+width/2, y+width/2, "arial.ttf", "#FFFFFF", 56, "", "", level.DisplayFixedText(""+whichLevel), 0);
         }
         // otherwise, just print an X
         else {
-            level.drawTextCentered(x + width / 2, y + height / 2, "X", "#FFFFFF", "arial.ttf", 56, 0);
+            level.addTextCentered(x+width/2, y+width/2, "arial.ttf", "#FFFFFF", 56, "", "", level.DisplayFixedText("X"), 0);
         }
     }
 
@@ -84,11 +86,13 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
+    private void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "leftarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doChooser(chooserLevel);
+                return true;
             }
         });
     }
@@ -102,11 +106,13 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
+    private void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "rightarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doChooser(chooserLevel);
+                return true;
             }
         });
     }
@@ -119,11 +125,13 @@ public class Chooser implements ScreenManager {
      * @param width  width of the button
      * @param height height of the button
      */
-    void drawSplashButton(final Level level, float x, float y, float width, float height) {
+    private void drawSplashButton(final Level level, float x, float y, float width, float height) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "backarrow.png");
-        prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
-            public void onEvent() {
+        prev.setTapCallback(new TouchEventHandler() {
+            @Override
+            public boolean go(float eventPositionX, float eventPositionY) {
                 level.doSplash();
+                return true;
             }
         });
     }
@@ -132,15 +140,14 @@ public class Chooser implements ScreenManager {
      * Describe how to draw each level of the chooser. Our chooser will have 15
      * levels per screen, so we need 7 screens.
      */
-    public void display(int which, Level level) {
+    public void display(int index, Level level) {
         // screen 1: show 1-->15
         //
         // NB: in this screen, we assume you haven't done much programming, so
         // we draw each button with its own line of code, and we don't use any
         // variables.
-        if (which == 1) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+        if (index == 1) {
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -179,9 +186,8 @@ public class Chooser implements ScreenManager {
         // using some variables in the loops, we getLoseScene the same effect as the
         // previous screen. The code isn't simpler yet, but it's still pretty
         // easy to understand.
-        else if (which == 2) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+        else if (index == 2) {
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -220,9 +226,8 @@ public class Chooser implements ScreenManager {
         //
         // NB: now we use a nested pair of loops, and we can do three rows in
         // just a few more lines than one row.
-        else if (which == 3) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+        else if (index == 3) {
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
@@ -252,16 +257,15 @@ public class Chooser implements ScreenManager {
         // screen 4: show levels 46-->60
         // screen 5: show levels 61-->75
         // screen 6: show levels 75-->90
-        else if (which < 7) {
+        else if (index < 7) {
             // set-up
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             level.setMusic("tune.ogg");
 
             // levels
             float y = 16;
-            int l = (which - 1) * 15 + 1;
+            int l = (index - 1) * 15 + 1;
             for (int r = 0; r < 3; ++r) {
                 float x = 8.5f;
                 for (int i = 0; i < 5; ++i) {
@@ -273,25 +277,25 @@ public class Chooser implements ScreenManager {
             }
 
             // navigation buttons
-            drawPrevButton(level, 0, 9.5f, 5, 5, which - 1);
-            drawNextButton(level, 43, 9.5f, 5, 5, which + 1);
+            drawPrevButton(level, 0, 9.5f, 5, 5, index - 1);
+            drawNextButton(level, 43, 9.5f, 5, 5, index + 1);
             drawSplashButton(level, 0, 0, 5, 5);
         }
 
         // The final case is the 7th screen, which just shows levels 91 and 92.
         // We'll just do it by hand.
-        else if (which == 7) {
-            level.configureCamera(48, 32);
-            level.configureGravity(0, 0);
+        else if (index == 7) {
+
 
             // set up background and music
             level.drawPicture(0, 0, 48, 32, "chooser.png", 0);
             level.setMusic("tune.ogg");
 
-            // we have 92 levels, so just draw a few buttons for now...
+            // we have 94 levels, so just draw a few buttons for now...
             drawLevelButton(level, 8.5f, 16, 5, 5, 91);
             drawLevelButton(level, 15f, 16, 5, 5, 92);
             drawLevelButton(level, 21.5f, 16, 5, 5, 93);
+            drawLevelButton(level, 28f, 16, 5, 5, 94);
 
             // draw the navigation buttons
             drawPrevButton(level, 0, 9.5f, 5, 5, 6);

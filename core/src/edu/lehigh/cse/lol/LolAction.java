@@ -31,11 +31,14 @@ package edu.lehigh.cse.lol;
  * Wrapper for actions that we generate and then want handled during the render
  * loop
  */
-abstract class LolAction {
-    // TODO: remove this?
+abstract public class LolAction {
+    /// A flag to disable and re-enable actions.  This is especially useful when a LolAction is on
+    /// a repeating timer.
     public boolean mIsActive = true;
+
     /**
      * The go() method encapsulates the code that should be run
      */
-    abstract void go();
+    abstract public void go();
 }
+

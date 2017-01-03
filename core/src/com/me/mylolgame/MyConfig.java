@@ -51,14 +51,15 @@ public class MyConfig extends Config {
         // The size of the screen, and some game behavior configuration
         mWidth = 960;
         mHeight = 640;
+        mPixelMeterRatio = 20;
+        mEnableVibration = true;
         mGameTitle = "My Lol Game";
         mDefaultWinText = "Good Job";
         mDefaultLoseText = "Try Again";
-        mEnableVibration = true;
         mShowDebugBoxes = true;
 
         // Chooser configuration
-        mNumLevels = 93;
+        mNumLevels = 94;
         mEnableChooser = true;
         mUnlockAllLevels = true;
 
@@ -68,7 +69,7 @@ public class MyConfig extends Config {
         // Font configuration
         mDefaultFontFace = "arial.ttf";
         mDefaultFontSize = 32;
-        mDefaultFontColor = "#000000";
+        mDefaultFontColor = "#FFFFFF";
 
         // list the images that the game will use
         mImageNames = new String[]{

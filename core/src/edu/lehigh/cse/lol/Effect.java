@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * that do not have a physics aspect, but which otherwise fit into the
  * physics world
  */
-public class Effect implements Renderable {
+public class Effect extends Renderable {
     /**
      * If this effect is a Particle System, then mParticleEffect is the object
      * that describes the effect
@@ -43,7 +43,7 @@ public class Effect implements Renderable {
      * NB: User code should never call this.
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    public void onRender(SpriteBatch sb, float delta) {
         // do nothing if the effect is disabled
         if (!mEnabled)
             return;

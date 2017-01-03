@@ -27,6 +27,8 @@
 
 package edu.lehigh.cse.lol;
 
+import com.badlogic.gdx.math.Vector2;
+
 /**
  * A Route specifies a set of points that an actor will move between at a fixed
  * speed.
@@ -35,24 +37,25 @@ public class Route {
     /**
      * The X coordinates of the points in the route
      */
-    public float[] mXIndices;
+     float[] mXIndices;
 
     /**
      * The Y coordinates of the points in the route
      */
-    public float[] mYIndices;
+     float[] mYIndices;
     /**
      * The current number of points that have been set
      */
-    public int mPoints;
+     int mPoints;
     /**
      * The speed at which the actor should move along the route
      */
     float mVelocity;
+
     /**
      * The maximum number of points in this route
      */
-    int mSize;
+    private int mSize;
 
     /**
      * Define a new path, by specifying the number of points in the path. Note
@@ -82,4 +85,128 @@ public class Route {
         mPoints++;
         return this;
     }
-}
+
+    /**
+     * Driver is an internal class, used by LOL to determine placement for an
+     * WorldActor whose motion is controlled by a Route.
+     */
+    static class Driver {
+
+        /**
+         * The route that is being applied
+         */
+        private final Route mRoute;
+
+        /**
+         * The actor to which the route is being applied
+         */
+        private final BaseActor mActor;
+
+        /**
+         * The speed at which the actor moves along the route
+         */
+        private final float mRouteVelocity;
+
+        /**
+         * When the actor reaches the end of the route, should it start again?
+         */
+        private final boolean mRouteLoop;
+
+        /**
+         * A temp for computing position
+         */
+        private final Vector2 mRouteVec = new Vector2();
+
+        /**
+         * Is the route still running?
+         */
+        private boolean mRouteDone;
+
+        /**
+         * Index of the next point in the route
+         */
+        private int mNextRouteGoal;
+
+        /**
+         * The constructor actually gets the route motion started
+         *
+         * @param route    The route to apply
+         * @param velocity The speed at which the actor moves
+         * @param loop     Should the route repeat when it completes?
+         * @param actor    The actor to which the route should be applied
+         */
+        Driver(Route route, float velocity, boolean loop, BaseActor actor) {
+            mRoute = route;
+            mRouteVelocity = velocity;
+            mRouteLoop = loop;
+            mActor = actor;
+            // kick off the route, indicate that we aren't all done yet
+            startRoute();
+            mRouteDone = false;
+        }
+
+        /**
+         * Stop a route
+         */
+        void haltRoute() {
+            mRouteDone = true;
+            // NB: third parameter doesn't matter, because the actor isn't a
+            // static body, so its BodyType won't change.
+            mActor.setAbsoluteVelocity(0, 0);
+        }
+
+        /**
+         * Begin running a route
+         */
+        private void startRoute() {
+            // move to the starting point
+            mActor.mBody
+                    .setTransform(mRoute.mXIndices[0] + mActor.mSize.x / 2, mRoute.mYIndices[0] + mActor.mSize.y / 2, 0);
+            // set up our next goal, start moving toward it
+            mNextRouteGoal = 1;
+            mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mActor.getXPosition();
+            mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mActor.getYPosition();
+            mRouteVec.nor();
+            mRouteVec.scl(mRouteVelocity);
+            mActor.mBody.setLinearVelocity(mRouteVec);
+        }
+
+        /**
+         * Internal method for figuring out where we need to go next when driving a
+         * route
+         */
+        void drive() {
+            // quit if we're done and we don't loop
+            if (mRouteDone)
+                return;
+            // if we haven't passed the goal, keep going. we tell if we've passed
+            // the goal by comparing the magnitudes of the vectors from source (s)
+            // to here and from goal (g) to here
+            float sx = mRoute.mXIndices[mNextRouteGoal - 1] - mActor.getXPosition();
+            float sy = mRoute.mYIndices[mNextRouteGoal - 1] - mActor.getYPosition();
+            float gx = mRoute.mXIndices[mNextRouteGoal] - mActor.getXPosition();
+            float gy = mRoute.mYIndices[mNextRouteGoal] - mActor.getYPosition();
+            boolean sameXSign = (gx >= 0 && sx >= 0) || (gx <= 0 && sx <= 0);
+            boolean sameYSign = (gy >= 0 && sy >= 0) || (gy <= 0 && sy <= 0);
+            if (((gx == gy) && (gx == 0)) || (sameXSign && sameYSign)) {
+                mNextRouteGoal++;
+                if (mNextRouteGoal == mRoute.mPoints) {
+                    // reset if it's a loop, else terminate Route
+                    if (mRouteLoop) {
+                        startRoute();
+                    } else {
+                        mRouteDone = true;
+                        mActor.mBody.setLinearVelocity(0, 0);
+                    }
+                } else {
+                    // advance to next point
+                    mRouteVec.x = mRoute.mXIndices[mNextRouteGoal] - mActor.getXPosition();
+                    mRouteVec.y = mRoute.mYIndices[mNextRouteGoal] - mActor.getYPosition();
+                    mRouteVec.nor();
+                    mRouteVec.scl(mRouteVelocity);
+                    mActor.mBody.setLinearVelocity(mRouteVec);
+                }
+            }
+            // NB: 'else keep going at current velocity'
+        }
+    }}

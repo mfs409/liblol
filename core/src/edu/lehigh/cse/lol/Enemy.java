@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,84 +21,61 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
 package edu.lehigh.cse.lol;
 
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Enemies are things to be avoided or defeated by the hero. Every enemy can be
- * defeated via projectiles. They can also be defeated by colliding with
- * invincible heroes, or by colliding with a hero whose strength is &gt;= the
- * enemy's damage, though that case results in the hero losing strength. A level
- * can require all enemies to be defeated before the level can be won. Note that
- * Enemies can move in a variety of ways
+ * Enemies are things to be avoided or defeated by the Hero. Enemies do damage to heroes when they
+ * collide with heroes, and enemies can be defeated by heroes, in a variety of ways.
  */
-public class Enemy extends Actor {
-    /**
-     * Amount of damage this enemy does to a hero on a collision. The default is
-     * 2, so that an enemy will defeat a hero and not disappear.
-     */
-    int mDamage = 2;
-
-    /**
-     * Message to display when this enemy defeats the last hero
-     */
-    String mOnDefeatHeroText = "";
-
-    /**
-     * Does a crawling hero avoid being damaged by this enemy?
-     */
+public class Enemy extends WorldActor {
+    /// Amount of damage this enemy does to a hero on a collision. The default is 2, so that an
+    /// enemy will defeat a hero and not disappear.
+    int mDamage;
+    /// Message to display when this enemy defeats the last hero
+    String mOnDefeatHeroText;
+    /// Does a crawling hero automatically defeat this enemy?
     boolean mDefeatByCrawl;
-
-    /**
-     * Does an in-air hero avoid being damaged by this enemy?
-     */
+    /// Does an in-air hero automatically defeat this enemy
     boolean mDefeatByJump;
-
-    /**
-     * Is this enemy immune to invincibility? That means it won't hurt the
-     * enemy, but it won't disappear
-     */
+    /// When the enemy collides with an invincible hero, does the enemy stay alive?
     boolean mImmuneToInvincibility;
-
-    /**
-     * Does the enemy do damage even to an invincible hero?
-     */
+    /// When the enemy collides with an invincible hero, does it stay alive and damage the hero?
     boolean mAlwaysDoesDamage;
+    /// A callback to run when the enemy is defeated
+    private LolActorEvent mDefeatCallback;
 
     /**
-     * A callback to run when the enemy is defeated
-     */
-    private CollisionCallback mDefeatCallback;
-
-    /**
-     * Create an Enemy. This should never be called directly.
+     * Create a basic Enemy.  The enemy won't yet have any physics attached to it.
      *
+     * @param game    The currently active game
+     * @param scene   The scene into which the destination is being placed
      * @param width   Width of this enemy
      * @param height  Height of this enemy
      * @param imgName Image to display
      */
-    protected Enemy(Level level, float width, float height, String imgName) {
-        super(level, imgName, width, height);
-        mLevel.mScore.mEnemiesCreated++;
+    Enemy(Lol game, MainScene scene, float width, float height, String imgName) {
+        super(game, scene, imgName, width, height);
+        mDamage = 2;
+        mOnDefeatHeroText = "";
     }
 
     /**
-     * Collision behavior of enemies. Based on our Actor numbering scheme, the
-     * only concerns are to ensure that when a projectile hits this enemy, we
-     * remove the enemy and hide the projectile, and to handle collisions with
-     * certain obstacles
+     * Code to run when an Enemy collides with a WorldActor.
+     * <p>
+     * Based on our WorldActor numbering scheme, the only concerns are collisions with Obstacles
+     * and Projectiles
      *
-     * @param other   The other actor involved in the collision
-     * @param contact The contact information for the collision
+     * @param other   Other actor involved in this collision
+     * @param contact A description of the collision
      */
     @Override
-    void onCollide(Actor other, Contact contact) {
+    void onCollide(WorldActor other, Contact contact) {
         // collision with obstacles
         if (other instanceof Obstacle)
             onCollideWithObstacle((Obstacle) other, contact);
@@ -107,59 +84,53 @@ public class Enemy extends Actor {
             onCollideWithProjectile((Projectile) other);
     }
 
-    /*
-     * PUBLIC INTERFACE
-     */
-
     /**
      * Dispatch method for handling Enemy collisions with Obstacles
      *
-     * @param o       The obstacle with which this Enemy collided
-     * @param contact The contact information for the collision
+     * @param obstacle The obstacle with which this Enemy collided
+     * @param contact A description of the collision
      */
-    private void onCollideWithObstacle(final Obstacle o, Contact contact) {
+    private void onCollideWithObstacle(final Obstacle obstacle, Contact contact) {
         // handle any callbacks the obstacle has
-        if (o.mEnemyCollision != null)
-            o.mEnemyCollision.go(this, contact);
+        if (obstacle.mEnemyCollision != null)
+            obstacle.mEnemyCollision.go(obstacle, this, contact);
     }
 
     /**
-     * Dispatch method for handling Enemy collisions with projectiles
+     * Dispatch method for handling Enemy collisions with Projectiles
      *
-     * @param p The projectile with which this enemy collided
+     * @param projectile The projectile with which this Enemy collided
      */
-    private void onCollideWithProjectile(Projectile p) {
-        // only work with active projectiles
-        if (!p.mVisible)
+    private void onCollideWithProjectile(Projectile projectile) {
+        // ignore inactive projectiles
+        if (!projectile.mEnabled)
             return;
         // compute damage to determine if the enemy is defeated
-        mDamage -= p.mDamage;
+        mDamage -= projectile.mDamage;
         if (mDamage <= 0) {
             // hide the projectile quietly, so that the sound of the enemy can
             // be heard
-            p.remove(true);
+            projectile.remove(true);
             // remove this enemy
             defeat(true);
         } else {
             // hide the projectile
-            p.remove(false);
+            projectile.remove(false);
         }
     }
 
     /**
      * Set the amount of damage that this enemy does to a hero
      *
-     * @param amount Amount of damage. Default is 2, since heroes have a default
-     *               strength of 1, so that the enemy defeats the hero but does not
-     *               disappear.
+     * @param amount Amount of damage. The default is 2, since heroes have a default strength of 1,
+     *               so that the enemy defeats the hero but does not disappear.
      */
     public void setDamage(int amount) {
         mDamage = amount;
     }
 
     /**
-     * If this enemy defeats the last hero of the board, this is the message
-     * that will be displayed
+     * If this enemy defeats the last hero of the board, this is the message that will be displayed
      *
      * @param message The message to display
      */
@@ -168,11 +139,9 @@ public class Enemy extends Actor {
     }
 
     /**
-     * When an enemy is defeated, this is the code sequence we run to figure out
-     * how gameplay should change.
+     * When an enemy is defeated, this this code figures out how gameplay should change.
      *
-     * @param increaseScore Indicate if we should increase the score when this enemy is
-     *                      defeated
+     * @param increaseScore Indicate if we should increase the score when this enemy is defeated
      */
     public void defeat(boolean increaseScore) {
         // remove the enemy from the screen
@@ -180,11 +149,11 @@ public class Enemy extends Actor {
 
         // possibly update score
         if (increaseScore)
-            mLevel.mScore.onDefeatEnemy();
+            mGame.mManager.onDefeatEnemy();
 
-        // handle defeat callbacks
+        // run any defeat callbacks
         if (mDefeatCallback != null)
-            mDefeatCallback.go(this, null);
+            mDefeatCallback.go(this);
     }
 
     /**
@@ -192,9 +161,15 @@ public class Enemy extends Actor {
      */
     public void setDefeatByCrawl() {
         mDefeatByCrawl = true;
-        // make sure heroes don't ricochet off of this enemy when defeating it
-        // via crawling
+        // make sure heroes don't ricochet off of this enemy when defeating it via crawling
         setCollisionsEnabled(false);
+    }
+
+    /**
+     * Mark this enemy as one that can be defeated by jumping
+     */
+    public void setDefeatByJump() {
+        mDefeatByJump = true;
     }
 
     /**
@@ -212,48 +187,26 @@ public class Enemy extends Actor {
     }
 
     /**
-     * Indicate that if the player touches this enemy, the enemy will be removed
-     * from the game
+     * Indicate that if the player touches this enemy, the enemy will be removed from the game
      */
     public void setDisappearOnTouch() {
-        mGestureResponder = new GestureAction() {
-            @Override
-            public boolean onTap(Vector3 touchVec) {
-                Lol.vibrate(mLevel.mConfig, 100);
+        mTapHandler = new TouchEventHandler() {
+            public boolean go(float worldX, float worldY) {
+                Lol.vibrate(mScene.mConfig, 100);
                 defeat(true);
-                mGestureResponder = null;
+                mTapHandler = null;
                 return true;
             }
         };
     }
 
     /**
-     * Make the enemy a "defeat callback" enemy, so that custom code will run
-     * when this enemy is defeated
+     * Provide code to run when this Enemy is defeated
      *
-     * @param callback The callback to run when the enemy is defeated
+     * @param callback The callback to run when the enemy is defeated.  Note that a value of
+     *                 <code>null</code> will remove a previously-set callback
      */
-    public void setDefeatCallback(final LolCallback callback) {
-        mDefeatCallback = new CollisionCallback() {
-            @Override
-            public void go(Actor ps, Contact c) {
-                callback.mAttachedActor = Enemy.this;
-                callback.onEvent();
-            }
-        };
-    }
-
-    /**
-     * Mark this enemy as no longer being a defeat callback enemy
-     */
-    public void clearDefeatCallback() {
-        mDefeatCallback = null;
-    }
-
-    /**
-     * Mark this enemy as one that can be defeated by jumping
-     */
-    public void setDefeatByJump() {
-        mDefeatByJump = true;
+    public void setDefeatCallback(LolActorEvent callback) {
+        mDefeatCallback = callback;
     }
 }
