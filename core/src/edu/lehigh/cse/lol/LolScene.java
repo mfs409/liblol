@@ -47,7 +47,7 @@ abstract class LolScene {
     BaseActor mHitActor = null;
 
     /// Use this for determining bounds of text boxes
-    final GlyphLayout mGlyphLayout;
+    private final GlyphLayout mGlyphLayout;
 
     /// Actors may need to set callbacks to run on a screen touch. If so, they can use these
     final ArrayList<TouchEventHandler> mTapHandlers;
@@ -55,7 +55,6 @@ abstract class LolScene {
     final ArrayList<LolAction> mOneTimeEvents;
     /// Events that get processed on every render
     final ArrayList<LolAction> mRepeatEvents;
-
 
     LolScene(Media media, Config config) {
         float w = config.mWidth / config.mPixelMeterRatio;
@@ -157,54 +156,16 @@ abstract class LolScene {
     }
 
     /**
-     * Create a Renderable that consists of some text to draw
-     *
-     * @param x        The X coordinate of the bottom left corner, in pixels
-     * @param y        The Y coordinate of the bottom left corner, in pixels
-     * @param message  The text to display... note that it can't change on the fly
-     * @param fontName The font to use
-     * @param size     The font size
-     * @return A Renderable of the text
-     */
-    Renderable makeText(final float x, final float y, final String message, final String fontColor, String fontName, int size) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
-        return new Renderable() {
-            @Override
-            public void onRender(SpriteBatch sb, float elapsed) {
-                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
-                bf.setColor(Color.valueOf(fontColor));
-                mGlyphLayout.setText(bf, message);
-                bf.draw(sb, message, x, y + mGlyphLayout.height);
-                bf.getData().setScale(1);
-            }
-        };
-    }
-
-    /**
      * Create a Renderable that consists of some text to draw. The text will be
      * centered vertically and horizontally on the screen
-     *
-     * @param message  The text to display... note that it can't change on the fly
-     * @param fontName The font to use
-     * @param size     The font size
-     * @return A Renderable of the text
      */
-    Renderable makeTextCentered(float centerX, float centerY, final String message, final String fontColor, String fontName, int size) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
+    void renderTextCentered(float centerX, float centerY, String message, BitmapFont bf, SpriteBatch sb) {
         bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGlyphLayout.setText(bf, message);
+        final float x = centerX - mGlyphLayout.width / 2;
+        final float y = centerY + mGlyphLayout.height / 2;
+        bf.draw(sb, message, x, y);
         bf.getData().setScale(1);
-        final float x = centerX / 2 - mGlyphLayout.width / 2;
-        final float y = centerY / 2 + mGlyphLayout.height / 2;
-        return new Renderable() {
-            @Override
-            public void onRender(SpriteBatch sb, float elapsed) {
-                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
-                bf.setColor(Color.valueOf(fontColor));
-                bf.draw(sb, message, x, y);
-                bf.getData().setScale(1);
-            }
-        };
     }
 
     /**
@@ -218,7 +179,7 @@ abstract class LolScene {
      * @param bf      The BitmapFont object to use for the text's font
      * @param sb      The SpriteBatch used to render the text
      */
-    void drawTextTransposed(float x, float y, String message, BitmapFont bf, SpriteBatch sb) {
+    void renderText(float x, float y, String message, BitmapFont bf, SpriteBatch sb) {
         bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
         mGlyphLayout.setText(bf, message);
         bf.draw(sb, message, x, y + mGlyphLayout.height);
@@ -243,19 +204,21 @@ abstract class LolScene {
      * @param imgName The file name for the image, or ""
      * @return A Renderable of the image
      */
-    Renderable makePicture(final float x, final float y, final float width, final float height,
-                           String imgName) {
+    public Renderable makePicture(final float x, final float y, final float width, final float height,
+                           String imgName, int zIndex) {
         // set up the image to display
         //
         // NB: this will fail gracefully (no crash) for invalid file names
         final TextureRegion tr = mMedia.getImage(imgName);
-        return new Renderable() {
+        Renderable r = new Renderable() {
             @Override
             public void onRender(SpriteBatch sb, float elapsed) {
                 if (tr != null)
                     sb.draw(tr, x, y, 0, 0, width, height, 1, 1, 0);
             }
         };
+        addActor(r, zIndex);
+        return r;
     }
 
     abstract boolean render(SpriteBatch sb, float delta);
@@ -273,11 +236,30 @@ abstract class LolScene {
             void onRender(SpriteBatch sb, float delta) {
                 mFont.setColor(mColor);
                 String txt = prefix + tp.makeText() + suffix;
-                drawTextTransposed(x, y, txt, mFont, sb);
+                renderText(x, y, txt, mFont, sb);
             }
         };
         addActor(d, zIndex);
         return d;
     }
 
+    public Renderable addTextCentered(final float centerX, final float centerY, final String fontName, final String fontColor, final int size, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
+        Renderable d = new Renderable() {
+
+            /// What color should we use to draw text
+            Color mColor = Color.valueOf(fontColor);
+
+            /// The font object to use
+            BitmapFont mFont = mMedia.getFont(fontName, size);
+
+            @Override
+            void onRender(SpriteBatch sb, float delta) {
+                mFont.setColor(mColor);
+                String txt = prefix + tp.makeText() + suffix;
+                renderTextCentered(centerX, centerY, txt, mFont, sb);
+            }
+        };
+        addActor(d, zIndex);
+        return d;
+    }
 }

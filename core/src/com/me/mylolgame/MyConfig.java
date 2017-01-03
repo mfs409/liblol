@@ -69,7 +69,7 @@ public class MyConfig extends Config {
         // Font configuration
         mDefaultFontFace = "arial.ttf";
         mDefaultFontSize = 32;
-        mDefaultFontColor = "#000000";
+        mDefaultFontColor = "#FFFFFF";
 
         // list the images that the game will use
         mImageNames = new String[]{

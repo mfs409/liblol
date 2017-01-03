@@ -29,68 +29,39 @@ package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
 abstract public class QuickScene extends LolScene {
-    /**
-     * When we draw clickable buttons on a QuickScene, this is how we know where
-     * the buttons are and what to do when they are clicked
-     */
-    private class QuickSceneButton {
-        /// The region that can be clicked
-        Rectangle mRect;
-
-        /// The callback to run when this button is pressed
-        LolCallback mCallback;
-    }
-
-    /// The text and pictures to display
-    private final ArrayList<Renderable> mSprites = new ArrayList<>();
-
-    /// All buttons on the scene are stored here
-    private final ArrayList<QuickSceneButton> mButtons = new ArrayList<>();
-
-    /// A local vector for handling touches
-    private final Vector3 mTmpVec = new Vector3();
-
-    /// A debug renderer, for drawing outlines of shapes
-    private final ShapeRenderer mShapeRender = new ShapeRenderer();
-
     /// A flag for disabling the scene, so we can keep it from displaying
-    protected boolean mDisable;
+    boolean mDisable;
 
     /// Track if the Scene is visible. Initially it is not.
     boolean mVisible;
 
     /// Sound to play when the scene is displayed
-    protected Sound mSound;
+     Sound mSound;
 
     /// Time that the Scene started being shown, so we can update timers
-    protected long mDisplayTime;
+     long mDisplayTime;
 
     /// True if we must click in order to clear the scene
-    protected boolean mClickToClear = true;
+     boolean mClickToClear;
 
     /// Some default text that we might want to display
-    protected String mText;
-
-    private final MainScene mLevel;
+     String mText;
 
     /**
      * Construct a QuickScene by giving it a level
      */
-    private QuickScene(MainScene level, Media media, Config config) {
+    private QuickScene(Media media, Config config) {
         super(media, config);
-        mLevel = level;
+        mClickToClear = true;
+        mText = "";
     }
 
     /**
@@ -124,19 +95,9 @@ abstract public class QuickScene extends LolScene {
                 r.render(sb, delta);
             }
         }
-        for (Renderable r : mSprites)
-            r.render(sb, 0);
         sb.end();
 
-        // DEBUG: show where the buttons' boxes are
-        if (mConfig.mShowDebugBoxes) {
-            mShapeRender.setProjectionMatrix(mCamera.combined);
-            mShapeRender.begin(ShapeType.Line);
-            mShapeRender.setColor(Color.RED);
-            for (QuickSceneButton b : mButtons)
-                mShapeRender.rect(b.mRect.x, b.mRect.y, b.mRect.width, b.mRect.height);
-            mShapeRender.end();
-        }
+        // TODO: debug rendering?
 
         return true;
     }
@@ -151,23 +112,22 @@ abstract public class QuickScene extends LolScene {
             return false;
 
         // check for taps to the buttons
-        mCamera.unproject(mTmpVec.set(x, y, 0));
-        for (QuickSceneButton b : mButtons) {
-            if (b.mRect.contains(mTmpVec.x, mTmpVec.y)) {
-                dismiss();
-                b.mCallback.onEvent();
-                return true;
-            }
+        mHitActor = null;
+        mCamera.unproject(mTouchVec.set(x, y, 0));
+        mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f, mTouchVec.y + 0.1f);
+        if (mHitActor != null && mHitActor.mTapHandler != null) {
+            dismiss(); // TODO: make this the responsibility of the programmer?
+            mHitActor.onTap(mTouchVec);
+            return true;
         }
 
         // hide the scene only if it's click-to-clear
         if (mClickToClear) {
             dismiss();
-            game.liftAllButtons(mTmpVec);
+            game.liftAllButtons(mTouchVec);
         }
         return true;
     }
-
 
     /**
      * Set the sound to play when the screen is displayed
@@ -179,31 +139,6 @@ abstract public class QuickScene extends LolScene {
     }
 
     /**
-     * Add some text to the scene, and center it vertically and horizontally
-     *
-     * @param text     The text to display
-     * @param fontName The font file to use
-     * @param size     The size of the text
-     */
-    public void addText(String text, String textColor, String fontName, int size) {
-        mSprites.add(makeTextCentered(mConfig.mWidth / mConfig.mPixelMeterRatio / 2,
-                mConfig.mHeight / mConfig.mPixelMeterRatio / 2, text, textColor, fontName, size));
-    }
-
-    /**
-     * Add some text to the scene, at an exact location
-     *
-     * @param text     The text to display
-     * @param x        X coordinate of the text
-     * @param y        Y coordinate of the text
-     * @param fontName The font file to use
-     * @param size     The size of the text
-     */
-    public void addText(String text, float x, float y, String fontColor, String fontName, int size) {
-        mSprites.add(makeText(x, y, text, fontColor, fontName, size));
-    }
-
-    /**
      * Indicate that this scene should not be displayed
      */
     public void disable() {
@@ -211,57 +146,24 @@ abstract public class QuickScene extends LolScene {
     }
 
     /**
-     * Add an image to the scene
+     * Add a button that pauses the game (via a single tap) by causing a
+     * PauseScene to be displayed. Note that you must configure a PauseScene, or
+     * pressing this button will cause your game to crash.
      *
-     * @param imgName The file name for the image to display
-     * @param x       X coordinate of the bottom left corner
-     * @param y       Y coordinate of the bottom left corner
-     * @param width   Width of the image
-     * @param height  Height of the image
-     */
-    public void addImage(String imgName, float x, float y, float width, float height) {
-        mSprites.add(makePicture(x, y, width, height, imgName));
-    }
-
-    /**
-     * Draw a picture on the scene, but indicate that touching the picture will
-     * cause the level to stop playing, and control to return to the chooser.
-     *
-     * @param imgName The name of the image file that should be displayed
-     * @param x       The X coordinate of the bottom left corner
-     * @param y       The Y coordinate of the bottom left corner
+     * @param x       The X coordinate of the bottom left corner (in pixels)
+     * @param y       The Y coordinate of the bottom left corner (in pixels)
      * @param width   The width of the image
      * @param height  The height of the image
+     * @param imgName The name of the image to display. Use "" for an invisible
+     *                button
      */
-    public void addBackButton(String imgName, int x, int y, int width, int height) {
-        QuickSceneButton b = new QuickSceneButton();
-        b.mRect = new Rectangle(x, y, width, height);
-        b.mCallback = new LolCallback() {
-            @Override
-            public void onEvent() {
-                mVisible = false;
-                mLevel.mGame.mManager.handleBack();
-            }
-        };
-        mButtons.add(b);
-        mSprites.add(makePicture(x, y, width, height, imgName));
-    }
-
-    /**
-     * Place a new touchable button on the scene. When the button is pressed,
-     * the scene will be closed, and the callback will run
-     *
-     * @param x        The X coordinate of the bottom left corner
-     * @param y        The Y coordinate of the bottom left corner
-     * @param width    The width of the image
-     * @param height   The height of the image
-     * @param callback The code to run when the button is pressed
-     */
-    public void addCallbackButton(int x, int y, int width, int height, LolCallback callback) {
-        QuickSceneButton b = new QuickSceneButton();
-        b.mRect = new Rectangle(x, y, width, height);
-        b.mCallback = callback;
-        mButtons.add(b);
+    public SceneActor addTapControl(float x, float y, float width, float height, String imgName, final TouchEventHandler action) {
+        SceneActor c = new SceneActor(this, imgName, width, height);
+        c.setBoxPhysics(0, 0, 0, BodyDef.BodyType.StaticBody, false, x, y);
+        c.mTapHandler = action;
+        action.mSource = c;
+        addActor(c, 0);
+        return c;
     }
 
     /**
@@ -307,14 +209,13 @@ abstract public class QuickScene extends LolScene {
      * pausing the game.
      */
     public void reset() {
-        mSprites.clear();
-        mButtons.clear();
         mDisable = false;
         mVisible = false;
         mSound = null;
         mDisplayTime = 0;
         mClickToClear = true;
         mText = "";
+        super.reset();
     }
 
     /**
@@ -332,11 +233,10 @@ abstract public class QuickScene extends LolScene {
      * Create a QuickScene that has the appropriate behaviors for when we are at the end of a
      * level that has been won
      *
-     * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeWinScene(final MainScene mLevel, Media media, Config config) {
-        QuickScene quickScene = new QuickScene(mLevel, media, config) {
+    static QuickScene makeWinScene(final MainScene level, Media media, final Config config) {
+        QuickScene quickScene = new QuickScene(media, config) {
             @Override
             public void show() {
                 // if WinScene is disabled for this level, just move to the next level
@@ -352,7 +252,12 @@ abstract public class QuickScene extends LolScene {
                 // don't compute it until right here... also, play music
                 if (mSound != null)
                     mSound.play(Lol.getGameFact(mConfig, "volume", 1));
-                addText(mText, "#FFFFFF", mConfig.mDefaultFontFace, mConfig.mDefaultFontSize);
+                addTextCentered(config.mWidth / config.mPixelMeterRatio / 2, config.mHeight / config.mPixelMeterRatio / 2, config.mDefaultFontFace, config.mDefaultFontColor, config.mDefaultFontSize, "", "", new TextProducer() {
+                    @Override
+                    public String makeText() {
+                        return mText;
+                    }
+                }, 0);
             }
 
             @Override
@@ -360,10 +265,10 @@ abstract public class QuickScene extends LolScene {
                 mVisible = false;
 
                 // we turn off music here, so that music plays during the PostScene
-                mLevel.stopMusic();
+                level.stopMusic();
 
                 // go to next level (or chooser)
-                mLevel.mGame.mManager.advanceLevel();
+                level.mGame.mManager.advanceLevel();
             }
         };
         quickScene.mText = config.mDefaultWinText;
@@ -373,11 +278,10 @@ abstract public class QuickScene extends LolScene {
     /**
      * Create a QuickScene that has the appropriate behaviors for when we are pausing a level
      *
-     * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePauseScene(MainScene mLevel, Media media, Config config) {
-        QuickScene quickScene = new QuickScene(mLevel, media, config) {
+    static QuickScene makePauseScene(Media media, Config config) {
+        return new QuickScene(media, config) {
             @Override
             public void show() {
                 Timer.instance().stop();
@@ -399,18 +303,16 @@ abstract public class QuickScene extends LolScene {
                 }
             }
         };
-        return quickScene;
     }
 
     /**
      * Create a QuickScene that has the appropriate behaviors for when we are at the end of a
      * level that has been lost
      *
-     * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makeLoseScene(final MainScene mLevel, Media media, Config config) {
-        QuickScene quickScene = new QuickScene(mLevel, media, config) {
+    static QuickScene makeLoseScene(final MainScene level, Media media, final Config config) {
+        QuickScene quickScene = new QuickScene(media, config) {
             @Override
             public void show() {
                 // if LoseScene is disabled for this level, just restart the level
@@ -427,27 +329,31 @@ abstract public class QuickScene extends LolScene {
                 if (mSound != null) {
                     mSound.play(Lol.getGameFact(mConfig, "volume", 1));
                 }
-                addText(mText, "#FFFFFF", mConfig.mDefaultFontFace, mConfig.mDefaultFontSize);
+                addTextCentered(config.mWidth / config.mPixelMeterRatio / 2, config.mHeight / config.mPixelMeterRatio / 2, config.mDefaultFontFace, config.mDefaultFontColor, config.mDefaultFontSize, "", "", new TextProducer() {
+                    @Override
+                    public String makeText() {
+                        return mText;
+                    }
+                }, 0);
             }
 
             @Override
             public void dismiss() {
                 mVisible = false;
-                mLevel.mGame.mManager.repeatLevel();
+                level.mGame.mManager.repeatLevel();
             }
         };
-        quickScene.mText = mLevel.mConfig.mDefaultLoseText;
+        quickScene.mText = config.mDefaultLoseText;
         return quickScene;
     }
 
     /**
      * Create a QuickScene that has the appropriate behaviors for when we are about to start a level
      *
-     * @param mLevel The current level
      * @return a QuickScene
      */
-    static QuickScene makePreScene(MainScene mLevel, Media media, Config config) {
-        return new QuickScene(mLevel, media, config) {
+    static QuickScene makePreScene(Media media, Config config) {
+        return new QuickScene(media, config) {
             /**
              * Show is a no-op, because the default behavior is good enough
              */

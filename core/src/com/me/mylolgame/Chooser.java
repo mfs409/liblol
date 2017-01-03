@@ -51,7 +51,7 @@ public class Chooser implements ScreenManager {
      * @param height height of the button
      * @param whichLevel  which level to play when the button is tapped
      */
-    void drawLevelButton(final Level level, float x, float y, float width, float height, final int whichLevel) {
+    private void drawLevelButton(final Level level, float x, float y, float width, float height, final int whichLevel) {
         // figure out the last unlocked level
         int unlocked = level.getGameFact("unlocked", 1);
 
@@ -67,11 +67,11 @@ public class Chooser implements ScreenManager {
                     level.doLevel(whichLevel);
                 }
             });
-            level.drawTextCentered(x + width / 2, y + height / 2, "" + whichLevel, "#FFFFFF", "arial.ttf", 56, 0);
+            level.addTextCentered(x+width/2, y+width/2, "arial.ttf", "#FFFFFF", 56, "", "", level.DisplayFixedText(""+whichLevel), 0);
         }
         // otherwise, just print an X
         else {
-            level.drawTextCentered(x + width / 2, y + height / 2, "X", "#FFFFFF", "arial.ttf", 56, 0);
+            level.addTextCentered(x+width/2, y+width/2, "arial.ttf", "#FFFFFF", 56, "", "", level.DisplayFixedText("X"), 0);
         }
     }
 
@@ -84,7 +84,7 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
+    private void drawPrevButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "leftarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
@@ -102,7 +102,7 @@ public class Chooser implements ScreenManager {
      * @param height       height of the button
      * @param chooserLevel The chooser screen to create
      */
-    void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
+    private void drawNextButton(final Level level, float x, float y, float width, float height, final int chooserLevel) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "rightarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {
@@ -119,7 +119,7 @@ public class Chooser implements ScreenManager {
      * @param width  width of the button
      * @param height height of the button
      */
-    void drawSplashButton(final Level level, float x, float y, float width, float height) {
+    private void drawSplashButton(final Level level, float x, float y, float width, float height) {
         Obstacle prev = level.makeObstacleAsBox(x, y, width, height, "backarrow.png");
         prev.setTouchCallback(0, 0, 0, 0, false, new LolCallback() {
             public void onEvent() {

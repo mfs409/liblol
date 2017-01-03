@@ -105,8 +105,8 @@ class LolManager {
         mWorld = new MainScene(mConfig, mMedia, mGame);
         mWinScene = QuickScene.makeWinScene(mWorld, mMedia, mConfig);
         mLoseScene = QuickScene.makeLoseScene(mWorld, mMedia, mConfig);
-        mPreScene = QuickScene.makePreScene(mWorld, mMedia, mConfig);
-        mPauseScene = QuickScene.makePauseScene(mWorld, mMedia, mConfig);
+        mPreScene = QuickScene.makePreScene(mMedia, mConfig);
+        mPauseScene = QuickScene.makePauseScene(mMedia, mConfig);
         mHud = new HudScene(mMedia, mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
@@ -116,7 +116,7 @@ class LolManager {
      * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
      * screen, if any.
      */
-    void setScreen() {
+    private void setScreen() {
         mWorld.pauseMusic();
         createScenes();
 

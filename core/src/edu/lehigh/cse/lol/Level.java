@@ -2114,7 +2114,7 @@ public class Level {
      */
     public void drawPicture(final float x, final float y, final float width, final float height,
                             final String imgName, int zIndex) {
-        mGame.mManager.mWorld.addActor(mGame.mManager.mWorld.makePicture(x, y, width, height, imgName), zIndex);
+        mGame.mManager.mWorld.makePicture(x, y, width, height, imgName, zIndex);
     }
 
     /**
@@ -2125,14 +2125,12 @@ public class Level {
      *
      * @param x        X coordinate of bottom left corner of the text
      * @param y        Y coordinate of bottom left corner of the text
-     * @param text     The text to display
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public Renderable drawText(final float x, final float y, final String fontName, final String fontColor, final int size, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
-        return mGame.mManager.mWorld.addText(x, y, fontName, fontColor, size, prefix, suffix, tp, zIndex);
+    public Renderable addText(float x, float y, String fontName, String fontColor, int fontSize,
+                              String prefix, String suffix, TextProducer tp, int zIndex) {
+        return mGame.mManager.mWorld.addText(x, y, fontName, fontColor, fontSize, prefix, suffix, tp, zIndex);
     }
 
     /**
@@ -2143,33 +2141,11 @@ public class Level {
      *
      * @param centerX  X coordinate of center of the text
      * @param centerY  Y coordinate of center of the text
-     * @param text     The text to display
-     * @param fontName The name of the font file to use
-     * @param size     The font size to use
      * @param zIndex   The z index of the image. There are 5 planes: -2, -2, 0, 1,
      *                 and 2. By default, everything goes to plane 0
      */
-    public void drawTextCentered(final float centerX, final float centerY, final String text, final String fontColor, String fontName, int size, int zIndex) {
-        final BitmapFont bf = mMedia.getFont(fontName, size);
-
-        // figure out the image dimensions
-        bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
-        mGame.mManager.mWorld.mGlyphLayout.setText(bf, text);
-        final float w = mGame.mManager.mWorld.mGlyphLayout.width;
-        final float h = mGame.mManager.mWorld.mGlyphLayout.height;
-        bf.getData().setScale(1);
-
-        // describe how to render it
-        Renderable r = new Renderable() {
-            @Override
-            public void onRender(SpriteBatch sb, float elapsed) {
-                bf.setColor(Color.valueOf(fontColor));
-                bf.getData().setScale(1 / mConfig.mPixelMeterRatio);
-                bf.draw(sb, text, centerX - w / 2, centerY + h / 2);
-                bf.getData().setScale(1);
-            }
-        };
-        mGame.mManager.mWorld.addActor(r, zIndex);
+    public Renderable addTextCentered(final float centerX, final float centerY, final String fontName, final String fontColor, final int fontSize, final String prefix, final String suffix, final TextProducer tp, int zIndex) {
+        return mGame.mManager.mWorld.addTextCentered(centerX, centerY, fontName, fontColor, fontSize, prefix, suffix, tp, zIndex);
     }
 
     /**
@@ -2189,7 +2165,6 @@ public class Level {
     public boolean getUnlockMode() {
         return mConfig.mUnlockAllLevels;
     }
-
 
     /**
      * Use this to load the splash screen
@@ -2240,6 +2215,13 @@ public class Level {
      */
     public void doQuit() {
         mGame.mManager.doQuit();
+    }
+
+    /**
+     * Use this to simulate pressing the back button (e.g., to go to the chooser)
+     */
+    public void doBack() {
+        mGame.mManager.handleBack();
     }
 
     public Animation makeAnimation(int sequenceCount, boolean repeat) {
