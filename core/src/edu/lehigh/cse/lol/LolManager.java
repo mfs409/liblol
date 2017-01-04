@@ -182,7 +182,7 @@ class LolManager {
      */
     private void createScenes() {
         // Create the easy scenes
-        mWorld = new MainScene(mConfig, mMedia, mGame);
+        mWorld = new MainScene(mConfig, mMedia);
         mHud = new HudScene(mMedia, mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
