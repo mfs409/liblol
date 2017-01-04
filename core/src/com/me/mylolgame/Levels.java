@@ -45,7 +45,6 @@ import edu.lehigh.cse.lol.Obstacle;
 import edu.lehigh.cse.lol.Route;
 import edu.lehigh.cse.lol.SceneActor;
 import edu.lehigh.cse.lol.ScreenManager;
-import edu.lehigh.cse.lol.Svg;
 import edu.lehigh.cse.lol.TouchEventHandler;
 import edu.lehigh.cse.lol.WorldActor;
 
@@ -616,7 +615,7 @@ class Levels implements ScreenManager {
                     level.doBack();
                     return true;
                 }
-            });
+            }, 0);
             level.addTapControl(0, 15, 1, 1, "red.png", level.PauseAction);
 
             // now draw three obstacles. Note that they have different dampening
@@ -3450,7 +3449,7 @@ class Levels implements ScreenManager {
                     level.doBack();
                     return true;
                 }
-            });
+            }, 0);
 
             level.getPauseScene().addTapControl(1, 1, 1, 1, "red.png", new TouchEventHandler() {
                 @Override
@@ -3458,14 +3457,14 @@ class Levels implements ScreenManager {
                     level.winLevel();
                     return true;
                 }
-            });
+            }, 0);
             level.getPauseScene().addTapControl(9.5f, 9.5f, 1, 1, "red.png", new TouchEventHandler() {
                 @Override
                 public boolean go(float eventPositionX, float eventPositionY) {
                     level.loseLevel();
                     return true;
                 }
-            });
+            }, 0);
             level.getPauseScene().suppressClearClick();
             level.addTapControl(0, 15, 1, 1, "red.png", level.PauseAction);
         }
@@ -3626,7 +3625,7 @@ class Levels implements ScreenManager {
                             sc2.go();
                             return true;
                         }
-                    });
+                    }, 0);
                     level.getPauseScene().show();
                 }
             };
@@ -3637,7 +3636,7 @@ class Levels implements ScreenManager {
                     sc1.go();
                     return true;
                 }
-            });
+            }, 0);
             level.getPauseScene().show();
 
             level.addTapControl(0, 0, 480, 640, "", level.ZoomOutAction(8));

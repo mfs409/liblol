@@ -31,8 +31,7 @@ class ParallaxScene {
     }
 
     /**
-     * This method, called from the render loop, is responsible for drawing all
-     * of the layers
+     * This method, called from the render loop, is responsible for drawing all of the layers
      *
      * @param sb The SpriteBatch that is being used to do the drawing.
      */

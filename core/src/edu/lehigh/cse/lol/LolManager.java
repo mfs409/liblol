@@ -181,15 +181,30 @@ class LolManager {
      * Create all scenes for a playable level.
      */
     private void createScenes() {
-        // Create the eight different scenes and a score object
+        // Create the easy scenes
         mWorld = new MainScene(mConfig, mMedia, mGame);
-        mWinScene = QuickScene.makeWinScene(mWorld, mMedia, mConfig);
-        mLoseScene = QuickScene.makeLoseScene(mWorld, mMedia, mConfig);
-        mPreScene = QuickScene.makePreScene(mMedia, mConfig);
-        mPauseScene = QuickScene.makePauseScene(mMedia, mConfig);
         mHud = new HudScene(mMedia, mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
+        // the win/lose/pre/pause scenes are a little bit complicated
+        mWinScene = new QuickScene(mMedia, mConfig, mConfig.mDefaultWinText);
+        mWinScene.setDismissAction(new LolAction() {
+            @Override
+            public void go() {
+                advanceLevel();
+            }
+        });
+        mLoseScene = new QuickScene(mMedia, mConfig, mConfig.mDefaultLoseText);
+        mLoseScene.setDismissAction(new LolAction() {
+            @Override
+            public void go() {
+                repeatLevel();
+            }
+        });
+        mPreScene = new QuickScene(mMedia, mConfig, "");
+        mPreScene.setShowAction(null);
+        mPauseScene = new QuickScene(mMedia, mConfig, "");
+        mPauseScene.setAsPauseScene();
     }
 
     /**
@@ -219,6 +234,8 @@ class LolManager {
      * Move forward to the next level, if there is one, and otherwise go back to the chooser.
      */
     void advanceLevel() {
+        // Make sure to stop the music!
+        mWorld.stopMusic();
         if (mModeStates[PLAY] == mConfig.mNumLevels) {
             doChooser(1);
         } else {

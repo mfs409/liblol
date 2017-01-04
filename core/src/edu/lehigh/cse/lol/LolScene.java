@@ -35,6 +35,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
@@ -360,5 +361,27 @@ abstract class LolScene {
         };
         addActor(d, zIndex);
         return d;
+    }
+
+    /**
+     * Add a button to the Scene, and provide code to run when the button is tapped
+     *
+     * @param x       The X coordinate of the bottom left corner
+     * @param y       The Y coordinate of the bottom left corner
+     * @param width   The width of the button
+     * @param height  The height of the button
+     * @param imgName The name of the image to display. Use "" for an invisible button
+     * @param action  The action to run in response to a tap
+     * @param zIndex  The z index for where this button will be drawn
+     * @return The button that was created
+     */
+    public SceneActor addTapControl(float x, float y, float width, float height, String imgName,
+                                    final TouchEventHandler action, int zIndex) {
+        SceneActor c = new SceneActor(this, imgName, width, height);
+        c.setBoxPhysics(BodyDef.BodyType.StaticBody, x, y);
+        c.mTapHandler = action;
+        action.mSource = c;
+        addActor(c, zIndex);
+        return c;
     }
 }
