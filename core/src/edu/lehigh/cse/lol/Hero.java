@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- *
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -40,101 +40,53 @@ import com.badlogic.gdx.physics.box2d.Contact;
  * jumping and crawling.
  */
 public class Hero extends WorldActor {
-    /**
-     * Strength of the hero. This determines how many collisions with enemies
-     * the hero can sustain before it is defeated. The default is 1, and the
-     * default enemy damage amount is 2, so that the default behavior is for the
-     * hero to be defeated on any collision with an enemy, with the enemy *not*
-     * disappearing
-     */
+    /// Strength of the hero. This determines how many collisions with enemies the hero can sustain
+    /// before it is defeated. The default is 1, and the default enemy damage amount is 2, so that
+    /// the default behavior is for the hero to be defeated on any collision with an enemy, with the
+    /// enemy *not* disappearing
     private int mStrength;
+    /// For tracking if the game should end immediately when this hero is defeated
+    private boolean mMustSurvive;
+    /// Code to run when the hero's strength changes
+    private LolActorEvent mStrengthChangeCallback;
 
-    /**
-     * Time until the hero's invincibility runs out
-     */
+    /// Time until the hero's invincibility runs out
     private float mInvincibleRemaining;
-
-    /**
-     * Animation support: cells involved in animation for invincibility
-     */
+    /// cells involved in animation for invincibility
     private Animation mInvincibleAnimation;
 
-    /**
-     * Is the hero currently in crawl mode?
-     */
-    private boolean mCrawling;
-
-    /**
-     * Animation support: cells involved in animation for crawling
-     */
-    private Animation mCrawlAnimation;
-
-    /**
-     * Animation support: cells involved in animation for throwing
-     */
+    /// cells involved in animation for throwing
     private Animation mThrowAnimation;
-
-    /**
-     * Animation support: seconds that constitute a throw action
-     */
+    /// seconds that constitute a throw action
     private float mThrowAnimateTotalLength;
-
-    /**
-     * Animation support: how long until we stop showing the throw animation
-     */
+    /// how long until we stop showing the throw animation
     private float mThrowAnimationTimeRemaining;
 
-    /**
-     * Track if the hero is in the air, so that it can't jump when it isn't
-     * touching anything. This does not quite work as desired, but is good
-     * enough for LOL
-     */
+    /// Track if the hero is in the air, so that it can't jump when it isn't touching anything. This
+    /// does not quite work as desired, but is good enough for LOL
     private boolean mInAir;
-
-    /**
-     * When the hero jumps, this specifies the amount of velocity to add to
-     * simulate a jump
-     */
+    /// When the hero jumps, this specifies the amount of velocity to add to simulate a jump
     private Vector2 mJumpImpulses;
-
-    /**
-     * Indicate that the hero can jump while in the air
-     */
+    /// Indicate that the hero can jump while in the air
     private boolean mAllowMultiJump;
-
-    /**
-     * Animation support: cells involved in animation for jumping
-     */
+    /// Sound to play when a jump occurs
+    private Sound mJumpSound;
+    /// cells involved in animation for jumping
     private Animation mJumpAnimation;
 
-    /**
-     * Sound to play when a jump occurs
-     */
-    private Sound mJumpSound;
+    /// Is the hero currently in crawl mode?
+    private boolean mCrawling;
+    /// cells involved in animation for crawling
+    private Animation mCrawlAnimation;
 
-    /**
-     * For tracking the current amount of rotation of the hero
-     */
+    /// For tracking the current amount of rotation of the hero
     private float mCurrentRotation;
 
     /**
-     * For tracking if the game should end immediately when this hero is
-     * defeated
-     */
-    private boolean mMustSurvive;
-
-    /**
-     * Code to run when the hero's strength changes
-     */
-    private LolActorEvent mStrengthChangeCallback;
-
-    /**
-     * Construct a Hero by creating an WorldActor and incrementing the number of
-     * heroes created. This code should never be called directly by the game
-     * designer.
+     * Construct a Hero, but don't give it any physics yet
      *
      * @param game    The currently active game
-     * @param scene   The scene into which the destination is being placed
+     * @param scene   The scene into which the Hero is being placed
      * @param width   The width of the hero
      * @param height  The height of the hero
      * @param imgName The name of the file that has the default image for this hero
@@ -145,8 +97,10 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * We can't just use the basic WorldActor renderer, because we might need to
-     * adjust a one-off animation (invincibility or throw) first
+     * Code to run when rendering the Hero.
+     *
+     * NB:  We can't just use the basic renderer, because we might need to adjust a one-off
+     *      animation (invincibility or throw) first
      *
      * @param sb    The SpriteBatch to use for drawing this hero
      * @param delta The time since the last render
@@ -162,8 +116,7 @@ public class Hero extends WorldActor {
             }
         }
 
-        // determine when to turn off invincibility. When we turn it off, if we
-        // had an invincibility animation, turn it off too
+        // determine when to turn off invincibility and cease invincibility animation
         if (mInvincibleRemaining > 0) {
             mInvincibleRemaining -= delta;
             if (mInvincibleRemaining <= 0) {
@@ -172,7 +125,6 @@ public class Hero extends WorldActor {
                     mAnimator.setCurrentAnimation(mDefaultAnimation);
             }
         }
-
         super.onRender(sb, delta);
     }
 
@@ -180,7 +132,7 @@ public class Hero extends WorldActor {
      * Make the hero jump, unless it is in the air and not multi-jump
      */
     void jump() {
-        // nb: multi-jump prevents us from ever setting mInAir, so this is safe:
+        // NB: multi-jump prevents us from ever setting mInAir, so this is safe:
         if (mInAir)
             return;
         Vector2 v = mBody.getLinearVelocity();
@@ -192,7 +144,7 @@ public class Hero extends WorldActor {
             mAnimator.setCurrentAnimation(mJumpAnimation);
         if (mJumpSound != null)
             mJumpSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
-        // break any sticky joints, so the hero can actually move
+        // suspend creation of sticky joints, so the hero can actually move
         mStickyDelay = System.currentTimeMillis() + 10;
     }
 
@@ -207,8 +159,7 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Internal method to make the hero's throw animation play while it is
-     * throwing a projectile
+     * Make the hero's throw animation play while it is throwing a projectile
      */
     void doThrowAnimation() {
         if (mThrowAnimation != null) {
@@ -218,8 +169,7 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Put the hero in crawl mode. Note that we make the hero rotate when it is
-     * crawling
+     * Put the hero in crawl mode. Note that we make the hero rotate when it is crawling
      */
     void crawlOn() {
         if (mCrawling) {
@@ -257,8 +207,10 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * The Hero is the dominant participant in all collisions. Whenever the hero
-     * collides with something, we need to figure out what to do
+     * Code to run when a Hero collides with a WorldActor.
+     *
+     * The Hero is the dominant participant in all collisions. Whenever the hero collides with
+     * something, we need to figure out what to do
      *
      * @param other   Other object involved in this collision
      * @param contact A description of the contact that caused this collision
@@ -279,20 +231,19 @@ public class Hero extends WorldActor {
     /**
      * Dispatch method for handling Hero collisions with Destinations
      *
-     * @param d The destination with which this hero collided
+     * @param destination The destination with which this hero collided
      */
-    private void onCollideWithDestination(Destination d) {
-        // only do something if the hero has enough goodies of each type and
-        // there's room in the destination
+    private void onCollideWithDestination(Destination destination) {
+        // The hero must have enough goodies, and the destination must have room
         boolean match = true;
         for (int i = 0; i < 4; ++i)
-            match &= mGame.mManager.mGoodiesCollected[i] >= d.mActivation[i];
-        if (match && (d.mHolding < d.mCapacity) && mEnabled) {
+            match &= mGame.mManager.mGoodiesCollected[i] >= destination.mActivation[i];
+        if (match && (destination.mHolding < destination.mCapacity) && mEnabled) {
             // hide the hero quietly, since the destination might make a sound
             remove(true);
-            d.mHolding++;
-            if (d.mArrivalSound != null)
-                d.mArrivalSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
+            destination.mHolding++;
+            if (destination.mArrivalSound != null)
+                destination.mArrivalSound.play(Lol.getGameFact(mScene.mConfig, "volume", 1));
             mGame.mManager.onDestinationArrive();
         }
     }
@@ -300,51 +251,49 @@ public class Hero extends WorldActor {
     /**
      * Dispatch method for handling Hero collisions with Enemies
      *
-     * @param e The enemy with which this hero collided
+     * @param enemy The enemy with which this hero collided
      */
-    private void onCollideWithEnemy(Enemy e) {
-        // if the enemy always defeats the hero, no matter what, then defeat the
-        // hero
-        if (e.mAlwaysDoesDamage) {
+    private void onCollideWithEnemy(Enemy enemy) {
+        // if the enemy always defeats the hero, no matter what, then defeat the hero
+        if (enemy.mAlwaysDoesDamage) {
             remove(false);
-            mGame.mManager.defeatHero(e);
+            mGame.mManager.defeatHero(enemy);
             if (mMustSurvive)
                 mGame.mManager.endLevel(false);
             return;
         }
-        // go hero invincibility
+        // handle hero invincibility
         if (mInvincibleRemaining > 0) {
             // if the enemy is immune to invincibility, do nothing
-            if (e.mImmuneToInvincibility)
+            if (enemy.mImmuneToInvincibility)
                 return;
-            e.defeat(true);
+            enemy.defeat(true);
         }
         // defeat by crawling?
-        else if (mCrawling && e.mDefeatByCrawl) {
-            e.defeat(true);
+        else if (mCrawling && enemy.mDefeatByCrawl) {
+            enemy.defeat(true);
         }
-        // defeat by jumping only if the hero's bottom is above the enemy's
-        // mid-section
-        else if (mInAir && e.mDefeatByJump && getYPosition() > e.getYPosition() + e.mSize.y / 2) {
-            e.defeat(true);
+        // defeat by jumping only if the hero's bottom is above the enemy's mid-section
+        else if (mInAir && enemy.mDefeatByJump &&
+                getYPosition() > enemy.getYPosition() + enemy.mSize.y / 2) {
+            enemy.defeat(true);
         }
         // when we can't defeat it by losing strength, remove the hero
-        else if (e.mDamage >= mStrength) {
+        else if (enemy.mDamage >= mStrength) {
             remove(false);
-            mGame.mManager.defeatHero(e);
+            mGame.mManager.defeatHero(enemy);
             if (mMustSurvive)
                 mGame.mManager.endLevel(false);
         }
         // when we can defeat it by losing strength
         else {
-            addStrength(-e.mDamage);
-            e.defeat(true);
+            addStrength(-enemy.mDamage);
+            enemy.defeat(true);
         }
     }
 
     /**
-     * Update the hero's strength, and then run any strength change callback
-     * that has been registered
+     * Update the hero's strength, and then run the strength change callback (if any)
      *
      * @param amount The amount to add (use a negative value to subtract)
      */
@@ -368,21 +317,17 @@ public class Hero extends WorldActor {
         if ((mCurrentRotation != 0) && !o.mBody.getFixtureList().get(0).isSensor())
             increaseRotation(-mCurrentRotation);
 
-        // if there is code attached to the obstacle for modifying the hero's
-        // behavior, run it
+        // if there is code attached to the obstacle for modifying the hero's behavior, run it
         if (o.mHeroCollision != null)
             o.mHeroCollision.go(o, this, contact);
 
-        // If this is a wall, then mark us not in the air so we can do more
-        // jumps. Note that sensors should not enableTilt
-        // jumps for the hero.
-        if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor() && !o.mNoJumpReenable)
+        // If this is a wall, then mark us not in the air so we can do more jumps. Note that sensors
+        // should not enable jumps for the hero.
+        if ((mInAir || mAllowMultiJump) && !o.mBody.getFixtureList().get(0).isSensor() &&
+            !o.mNoJumpReenable) {
             stopJump();
+        }
     }
-
-    /*
-     * PUBLIC INTERFACE
-     */
 
     /**
      * Dispatch method for handling Hero collisions with Goodies
@@ -390,27 +335,21 @@ public class Hero extends WorldActor {
      * @param g The goodie with which this hero collided
      */
     private void onCollideWithGoodie(Goodie g) {
-        // hide the goodie
+        // hide the goodie, count it, and update strength
         g.remove(false);
-
-        // count this goodie
         mGame.mManager.onGoodieCollected(g);
-
-        // update strength if the goodie is a strength booster
         addStrength(g.mStrengthBoost);
 
-        // deal with invincibility
+        // deal with invincibility by updating invincible time and running an animation
         if (g.mInvincibilityDuration > 0) {
-            // update the time to end invincibility
             mInvincibleRemaining += g.mInvincibilityDuration;
-            // invincible animation
             if (mInvincibleAnimation != null)
                 mAnimator.setCurrentAnimation(mInvincibleAnimation);
         }
     }
 
     /**
-     * Return the hero's strength, in case it is useful to callback code
+     * Return the hero's strength
      *
      * @return The strength of the hero
      */
@@ -419,10 +358,10 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Give the hero more strength than the default, so it can survive more
-     * collisions with enemies. Note that calling this will not run any strength
-     * change callbacks... they only run in conjunction with collisions with
-     * goodies or enemies.
+     * Change the hero's strength.
+     *
+     * NB: calling this will not run any strength change callbacks... they only run in conjunction
+     *     with collisions with goodies or enemies.
      *
      * @param amount The new strength of the hero
      */
@@ -431,8 +370,7 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Indicate that upon a touch, this hero should begin moving with a specific
-     * velocity
+     * Indicate that upon a touch, this hero should begin moving with a specific velocity
      *
      * @param x Velocity in X dimension
      * @param y Velocity in Y dimension
@@ -453,8 +391,7 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Specify the X and Y velocity to give to the hero whenever it is
-     * instructed to jump
+     * Specify the X and Y velocity to give to the hero whenever it is instructed to jump
      *
      * @param x Velocity in X direction
      * @param y Velocity in Y direction
@@ -473,7 +410,6 @@ public class Hero extends WorldActor {
     /**
      * Indicate that touching this hero should make it jump
      */
-
     public void setTouchToJump() {
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -484,13 +420,12 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Register an animation sequence, so that this hero can have a custom
-     * animation while jumping
+     * Register an animation sequence for when the hero is jumping
      *
-     * @param a The animation to display
+     * @param animation The animation to display
      */
-    public void setJumpAnimation(Animation a) {
-        mJumpAnimation = a;
+    public void setJumpAnimation(Animation animation) {
+        mJumpAnimation = animation;
     }
 
     /**
@@ -503,31 +438,28 @@ public class Hero extends WorldActor {
     }
 
     /**
-     * Register an animation sequence, so that this hero can have a custom
-     * animation while throwing
+     * Register an animation sequence for when the hero is throwing a projectile
      *
-     * @param a The animation to display
+     * @param animation The animation to display
      */
-    public void setThrowAnimation(Animation a) {
-        mThrowAnimation = a;
+    public void setThrowAnimation(Animation animation) {
+        mThrowAnimation = animation;
         // compute the length of the throw sequence, so that we can get our
         // timer right for restoring the default animation
-        mThrowAnimateTotalLength = a.getDuration() / 1000;
+        mThrowAnimateTotalLength = animation.getDuration() / 1000;
     }
 
     /**
-     * Register an animation sequence, so that this hero can have a custom
-     * animation while crawling
+     * Register an animation sequence for when the hero is crawling
      *
-     * @param a The animation to display
+     * @param animation The animation to display
      */
-    public void setCrawlAnimation(Animation a) {
-        mCrawlAnimation = a;
+    public void setCrawlAnimation(Animation animation) {
+        mCrawlAnimation = animation;
     }
 
     /**
-     * Register an animation sequence, so that this hero can have a custom
-     * animation while invincible
+     * Register an animation sequence for when the hero is invincible
      *
      * @param a The animation to display
      */

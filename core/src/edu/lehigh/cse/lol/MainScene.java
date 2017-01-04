@@ -1,3 +1,30 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ * <p>
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * <p>
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * <p>
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Application;
@@ -26,14 +53,6 @@ import java.util.TreeMap;
  * interesting types of actors that Lol supports, tilt, a fact interface, and music.
  */
 class MainScene extends LolScene {
-    /// A timer, so that we can stop using the static timer instance
-    ///
-    /// TODO: start using this
-    Timer mTimer = new Timer();
-
-    /// A reference to the game object, so we can access session facts and the state machine
-    final Lol mGame;
-
     /// A map for storing the level facts for the current level
     final TreeMap<String, Integer> mLevelFacts;
     /// A map for storing the actors in the current level
@@ -51,16 +70,15 @@ class MainScene extends LolScene {
     /// This is the WorldActor that the camera chases, if any
     WorldActor mChaseActor;
 
-    /// A handler to run in respond to a screen Down event.  An actor will install this, if needed
+    /// A handler to run in response to a screen Down event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mDownHandlers;
-    /// A handler to run in respond to a screen Up event.  An actor will install this, if needed
+    /// A handler to run in response to a screen Up event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mUpHandlers;
-    /// A handler to run in respond to a screen Fling event.  An actor will install this, if needed
+    /// A handler to run in response to a screen Fling event.  An actor will install this, if needed
     final ArrayList<TouchEventHandler> mFlingHandlers;
-    /// A handler to run in respond to a screen PanStop event.  An actor will install this,
-    /// if needed
+    /// A handler to run in response to a screen PanStop event.  An actor will install it, if needed
     final ArrayList<TouchEventHandler> mPanStopHandlers;
-    /// A handler to run in respond to a screen Pan event.  An actor will install this, if needed
+    /// A handler to run in response to a screen Pan event.  An actor will install this, if needed
     final ArrayList<PanEventHandler> mPanHandlers;
 
     /// A pool of projectiles for use by the hero
@@ -81,18 +99,14 @@ class MainScene extends LolScene {
      *
      * @param config The configuration object describing this game
      * @param media  References to all image and sound assets
-     * @param game   The game that is being played
      */
-    MainScene(Config config, Media media, Lol game) {
+    MainScene(Config config, Media media) {
         // MainScene operates in meters, not pixels, so we configure the world and camera (in the
         // constructor) using meter dimensions
         super(media, config);
 
         // clear any timers
         Timer.instance().clear();
-
-        // save game configuration information
-        mGame = game;
 
         // Set up collision handlers
         configureCollisionHandlers();
@@ -112,8 +126,7 @@ class MainScene extends LolScene {
     }
 
     /**
-     * The main render loop calls this to determine what to do when there is a
-     * phone tilt
+     * The main render loop calls this to determine what to do when there is a phone tilt
      */
     void handleTilt() {
         if (mTiltMax == null)
@@ -123,8 +136,8 @@ class MainScene extends LolScene {
         float xGravity = 0;
         float yGravity = 0;
 
-        // if we're on a phone, read from the accelerometer device, taking into
-        // account the rotation of the device
+        // if we're on a phone, read from the accelerometer device, taking into account the rotation
+        // of the device
         Application.ApplicationType appType = Gdx.app.getType();
         if (appType == Application.ApplicationType.Android || appType == Application.ApplicationType.iOS) {
             float rot = Gdx.input.getRotation();
@@ -159,16 +172,16 @@ class MainScene extends LolScene {
         yGravity *= mTiltMultiplier;
 
         // ensure x is within the -GravityMax.x : GravityMax.x range
-        xGravity = (xGravity > mConfig.mPixelMeterRatio * mTiltMax.x) ? mConfig.mPixelMeterRatio * mTiltMax.x
-                : xGravity;
-        xGravity = (xGravity < mConfig.mPixelMeterRatio * -mTiltMax.x) ? mConfig.mPixelMeterRatio * -mTiltMax.x
-                : xGravity;
+        xGravity = (xGravity > mConfig.mPixelMeterRatio * mTiltMax.x) ?
+                mConfig.mPixelMeterRatio * mTiltMax.x : xGravity;
+        xGravity = (xGravity < mConfig.mPixelMeterRatio * -mTiltMax.x) ?
+                mConfig.mPixelMeterRatio * -mTiltMax.x : xGravity;
 
         // ensure y is within the -GravityMax.y : GravityMax.y range
-        yGravity = (yGravity > mConfig.mPixelMeterRatio * mTiltMax.y) ? mConfig.mPixelMeterRatio * mTiltMax.y
-                : yGravity;
-        yGravity = (yGravity < mConfig.mPixelMeterRatio * -mTiltMax.y) ? mConfig.mPixelMeterRatio * -mTiltMax.y
-                : yGravity;
+        yGravity = (yGravity > mConfig.mPixelMeterRatio * mTiltMax.y) ?
+                mConfig.mPixelMeterRatio * mTiltMax.y : yGravity;
+        yGravity = (yGravity < mConfig.mPixelMeterRatio * -mTiltMax.y) ?
+                mConfig.mPixelMeterRatio * -mTiltMax.y : yGravity;
 
         // If we're in 'velocity' mode, apply the accelerometer reading to each
         // actor as a fixed velocity
@@ -204,8 +217,7 @@ class MainScene extends LolScene {
     }
 
     /**
-     * When a hero collides with a "sticky" obstacle, this is the code we run to
-     * figure out what to do
+     * When a hero collides with a "sticky" obstacle, this figures out what to do
      *
      * @param sticky  The sticky actor... it should always be an obstacle for now
      * @param other   The other actor... it should always be a hero for now
@@ -224,10 +236,9 @@ class MainScene extends LolScene {
                 || (sticky.mIsSticky[1] && other.getXPosition() + other.mSize.x <= sticky.getXPosition())
                 || (sticky.mIsSticky[3] && other.getXPosition() >= sticky.getXPosition() + sticky.mSize.x)
                 || (sticky.mIsSticky[2] && other.getYPosition() + other.mSize.y <= sticky.getYPosition())) {
-            // create distance and weld joints... somehow, the combination is
-            // needed to get this to work. Note that this function runs during
-            // the box2d step, so we need to make the joint in a callback that
-            // runs later
+            // create distance and weld joints... somehow, the combination is needed to get this to
+            // work. Note that this function runs during the box2d step, so we need to make the
+            // joint in a callback that runs later
             final Vector2 v = contact.getWorldManifold().getPoints()[0];
             mOneTimeEvents.add(new LolAction() {
                 @Override
@@ -250,12 +261,12 @@ class MainScene extends LolScene {
      * Configure physics for the current level
      */
     private void configureCollisionHandlers() {
-
         // set up the collision handlers
         mWorld.setContactListener(new ContactListener() {
             /**
-             * When two bodies start to collide, we can use this to forward to
-             * our onCollide methods
+             * When two bodies start to collide, we can use this to forward to our onCollide methods
+             *
+             * @param contact A description of the contact event
              */
             @Override
             public void beginContact(final Contact contact) {
@@ -293,13 +304,11 @@ class MainScene extends LolScene {
                     return;
                 }
 
-                // Schedule an event to run as soon as the physics world
-                // finishes its step.
+                // Schedule an event to run as soon as the physics world finishes its step.
                 //
-                // NB: this is called from render, while world is updating...
-                // you can't modify the world or its actors until the update
-                // finishes, so we have to schedule collision-based updates to
-                // run after the world update.
+                // NB: this is called from render, while world is updating.  We can't modify the
+                // world or its actors until the update finishes, so we have to schedule
+                // collision-based updates to run after the world update.
                 mOneTimeEvents.add(new LolAction() {
                     @Override
                     public void go() {
@@ -310,6 +319,8 @@ class MainScene extends LolScene {
 
             /**
              * We ignore endcontact
+             *
+             * @param contact A description of the contact event
              */
             @Override
             public void endContact(Contact contact) {
@@ -318,6 +329,9 @@ class MainScene extends LolScene {
             /**
              * Presolve is a hook for disabling certain collisions. We use it
              * for collision immunity, sticky obstacles, and one-way walls
+             *
+             * @param contact A description of the contact event
+             * @param oldManifold The manifold from the previous world step
              */
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
@@ -329,8 +343,7 @@ class MainScene extends LolScene {
                 WorldActor gfoA = (WorldActor) a;
                 WorldActor gfoB = (WorldActor) b;
 
-                // go sticky obstacles... only do something if at least one
-                // actor is a sticky actor
+                // go sticky obstacles... only do something if at least one actor is a sticky actor
                 if (gfoA.mIsSticky[0] || gfoA.mIsSticky[1] || gfoA.mIsSticky[2] || gfoA.mIsSticky[3]) {
                     handleSticky(gfoA, gfoB, contact);
                     return;
@@ -339,8 +352,8 @@ class MainScene extends LolScene {
                     return;
                 }
 
-                // if the actors have the same passthrough ID, and it's
-                // not zero, then disable the contact
+                // if the actors have the same passthrough ID, and it's  not zero, then disable the
+                // contact
                 if (gfoA.mPassThroughId != 0 && gfoA.mPassThroughId == gfoB.mPassThroughId) {
                     contact.setEnabled(false);
                     return;
@@ -359,14 +372,12 @@ class MainScene extends LolScene {
                     return;
                 }
 
-                // if we're here, see if we should be disabling a one-sided
-                // obstacle collision
+                // if we're here, see if we should be disabling a one-sided obstacle collision
                 WorldManifold worldManiFold = contact.getWorldManifold();
                 int numPoints = worldManiFold.getNumberOfContactPoints();
                 for (int i = 0; i < numPoints; i++) {
                     Vector2 vector2 = other.mBody.getLinearVelocityFromWorldPoint(worldManiFold.getPoints()[i]);
-                    // disable based on the value of isOneSided and the vector
-                    // between the actors
+                    // disable based on the value of isOneSided and the vector between the actors
                     if (oneSided.mIsOneSided == 0 && vector2.y < 0)
                         contact.setEnabled(false);
                     else if (oneSided.mIsOneSided == 2 && vector2.y > 0)
@@ -380,6 +391,9 @@ class MainScene extends LolScene {
 
             /**
              * We ignore postsolve
+             *
+             * @param contact A description of the contact event
+             * @param impulse The impulse of the contact
              */
             @Override
             public void postSolve(Contact contact, ContactImpulse impulse) {
@@ -418,8 +432,8 @@ class MainScene extends LolScene {
     }
 
     /**
-     * If the camera is supposed to follow an actor, this code will handle
-     * updating the camera position
+     * If the camera is supposed to follow an actor, this code will handle updating the camera
+     * position
      */
     void adjustCamera() {
         if (mChaseActor == null)
@@ -447,6 +461,13 @@ class MainScene extends LolScene {
         mCamera.position.set(x, y, 0);
     }
 
+    /**
+     * Respond to a fling gesture
+     *
+     * @param velocityX The X velocity of the fling
+     * @param velocityY The Y velocity of the fling
+     * @return True if the gesture was handled
+     */
     boolean handleFling(float velocityX, float velocityY) {
         // we only fling at the whole-level layer
         mCamera.unproject(mTouchVec.set(velocityX, velocityY, 0));
@@ -457,6 +478,15 @@ class MainScene extends LolScene {
         return false;
     }
 
+    /**
+     * Respond to a Pan gesture
+     *
+     * @param x      The screen X of the pan
+     * @param y      The screen Y of the pan
+     * @param deltaX The change in X since last pan
+     * @param deltaY The change in Y since last pan
+     * @return True if the pan was handled, false otherwise
+     */
     boolean handlePan(float x, float y, float deltaX, float deltaY) {
         mCamera.unproject(mTouchVec.set(x, y, 0));
         for (PanEventHandler ga : mPanHandlers) {
@@ -466,6 +496,13 @@ class MainScene extends LolScene {
         return false;
     }
 
+    /**
+     * Respond to a pan stop event
+     *
+     * @param x The screen X of the pan stop event
+     * @param y The screen Y of the pan stop event
+     * @return True if the pan stop was handled, false otherwise
+     */
     boolean handlePanStop(float x, float y) {
         // go panstop on level
         mCamera.unproject(mTouchVec.set(x, y, 0));
@@ -475,17 +512,22 @@ class MainScene extends LolScene {
         return false;
     }
 
+    /**
+     * Respond to a Down screenpress
+     *
+     * @param screenX The screen X coordinate of the Down
+     * @param screenY The screen Y coordinate of the Down
+     * @return True if the Down was handled, false otherwise
+     */
     boolean handleDown(float screenX, float screenY) {
-        // check for actor touch, by looking at gameCam coordinates... on
-        // touch, hitActor will change
+        // check for actor touch by looking at gameCam coordinates... on touch, hitActor will change
         mHitActor = null;
         mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         mWorld.QueryAABB(mTouchCallback, mTouchVec.x - 0.1f, mTouchVec.y - 0.1f, mTouchVec.x + 0.1f,
                 mTouchVec.y + 0.1f);
 
-        // actors don't respond to DOWN... if it's a down on a
-        // actor, we are supposed to remember the most recently
-        // touched actor, and that's it
+        // actors don't respond to DOWN... if it's a down on an actor, we are supposed to remember
+        // the most recently touched actor, and that's it
         if (mHitActor != null) {
             if (mHitActor.mToggleHandler != null) {
                 if (mHitActor.mToggleHandler.go(false, mTouchVec.x, mTouchVec.y))
@@ -500,6 +542,13 @@ class MainScene extends LolScene {
         return false;
     }
 
+    /**
+     * Respond to a Up screen event
+     *
+     * @param screenX The screen X coordinate of the Up
+     * @param screenY The screen Y coordinate of the Up
+     * @return True if the Up was handled, false otherwise
+     */
     boolean handleUp(float screenX, float screenY) {
         mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
         if (mHitActor != null) {
@@ -513,6 +562,13 @@ class MainScene extends LolScene {
         return false;
     }
 
+    /**
+     * Respond to a Drag screen event
+     *
+     * @param screenX The screen X coordinate of the Drag
+     * @param screenY The screen Y coordinate of the Drag
+     * @return True if the Drag was handled, false otherwise
+     */
     boolean handleDrag(float screenX, float screenY) {
         if (mHitActor != null && ((WorldActor) mHitActor).mDragHandler != null) {
             mCamera.unproject(mTouchVec.set(screenX, screenY, 0));
@@ -521,12 +577,12 @@ class MainScene extends LolScene {
         return false;
     }
 
-    // TODO: move to parent
-    void reportTouch(float x, float y) {
-        mCamera.unproject(mTouchVec.set(x, y, 0));
-        Lol.message(mConfig, "World Coordinates", mTouchVec.x + ", " + mTouchVec.y);
-    }
-
+    /**
+     * A hack for stopping events when a pause screen is opened
+     *
+     * @param touchX The x coordinate of the touch that is being lifted
+     * @param touchY The y coordinate of the touch that is being lifted
+     */
     void liftAllButtons(float touchX, float touchY) {
         for (TouchEventHandler ga : mPanStopHandlers) {
             ga.go(touchX, touchY);
@@ -536,6 +592,12 @@ class MainScene extends LolScene {
         }
     }
 
+    /**
+     * Draw the actors in this world
+     *
+     * @param sb    The spritebatch to use when drawing
+     * @param delta The time since the last render
+     */
     boolean render(SpriteBatch sb, float delta) {
         // Render the actors in order from z=-2 through z=2
         sb.setProjectionMatrix(mCamera.combined);

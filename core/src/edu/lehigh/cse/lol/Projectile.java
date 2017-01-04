@@ -33,29 +33,23 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 
 /**
- * Projectiles are actors that can be thrown from the hero's location in order
- * to remove enemies. Note that there is no public interface to this file.
- * Projectiles should be controlled via ProjectilePool.
+ * Projectiles are actors that can be thrown from the hero's location in order to remove enemies.
  */
 class Projectile extends WorldActor {
     /// This is the initial point of the throw
     final Vector2 mRangeFrom;
-
-    /// We have to be careful in side-scrollers, or else projectiles can continue traveling
+    /// We have to be careful in side-scrolling games, or else projectiles can continue traveling
     // off-screen forever. This field lets us cap the distance away from the hero that a projectile
     // can travel before we make it disappear.
     float mRange;
-
     /// When projectiles collide, and they are not sensors, one will disappear. We can keep both on
     // screen by setting this false
     boolean mDisappearOnCollide;
-
     /// How much damage does this projectile do?
     int mDamage;
 
     /**
-     * Internal method to create a projectile. Projectiles have an underlying
-     * circle as their physics body
+     * Create a projectile, and give it a physics body
      *
      * @param width    width of the projectile
      * @param height   height of the projectile
@@ -84,18 +78,17 @@ class Projectile extends WorldActor {
     }
 
     /**
-     * Standard collision detection routine. This only causes a callback on
-     * hitting an obstacle, which makes the projectile disappear, or on hitting
-     * a projectile, which is a bit funny because one of the two projectiles
-     * will live.
+     * Code to run when a Projectile collides with a WorldActor.
      *
-     * @param other   The other actor involved in the collision
-     * @param contact A description of the contact
+     * The only collision where Projectile is dominant is a collision with an Obstacle or another
+     * Projectile.  On most collisions, a projectile will disappear.
+     *
+     * @param other   Other object involved in this collision
+     * @param contact A description of the contact that caused this collision
      */
     @Override
     void onCollide(WorldActor other, Contact contact) {
-        // if this is an obstacle, check if it is a projectile callback, and if
-        // so, do the callback
+        // if this is an obstacle, check if it is a projectile callback, and if so, do the callback
         if (other instanceof Obstacle) {
             Obstacle o = (Obstacle) other;
             if (o.mProjectileCollision != null) {
@@ -115,11 +108,14 @@ class Projectile extends WorldActor {
     }
 
     /**
-     * When drawing a projectile, we first check if it is too far from its
-     * starting point. We only draw it if it is not.
+     * When drawing a projectile, we first check if it is too far from its starting point. We only
+     * draw it if it is not.
+     *
+     * @param sb    The SpriteBatch to use for drawing this hero
+     * @param delta The time since the last render
      */
     @Override
-    public void render(SpriteBatch sb, float delta) {
+    public void onRender(SpriteBatch sb, float delta) {
         // eliminate the projectile quietly if it has traveled too far
         float dx = Math.abs(mBody.getPosition().x - mRangeFrom.x);
         float dy = Math.abs(mBody.getPosition().y - mRangeFrom.y);
@@ -128,6 +124,6 @@ class Projectile extends WorldActor {
             mBody.setActive(false);
             return;
         }
-        super.render(sb, delta);
+        super.onRender(sb, delta);
     }
 }

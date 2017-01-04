@@ -1,11 +1,11 @@
 /**
  * This is free and unencumbered software released into the public domain.
- * <p/>
+ * <p>
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * <p/>
+ * <p>
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * <p/>
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- * <p/>
+ * <p>
  * For more information, please refer to <http://unlicense.org>
  */
 
@@ -43,7 +43,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
  * <p>
  * The Lol object implements ApplicationListener, which provides hooks for rendering the game,
  * stopping it, resuming it, and handling any Android lifecycle events.
- * <p/>
+ * <p>
  * In addition to ApplicationListener duties, the Lol object is responsible for providing an
  * abstracted interface to some of the hardware (e.g., the back button and persistent storage),
  * loading resources, and forwarding key/touch inputs to the appropriate handlers.
@@ -63,15 +63,16 @@ public class Lol implements ApplicationListener {
     private Box2DDebugRenderer mDebugRender;
 
     /// This variable lets us track whether the user pressed 'back' on an android, or 'escape' on
-    // the desktop. We are using polling, so we swallow presses that aren't preceded by a release.
-    // In that manner, holding 'back' can't exit all the way out... you must press 'back'
-    // repeatedly, once for each screen to revert.
+    /// the desktop. We are using polling, so we swallow presses that aren't preceded by a release.
+    /// In that manner, holding 'back' can't exit all the way out... you must press 'back'
+    /// repeatedly, once for each screen to revert.
     private boolean mKeyDown;
 
     /**
-     * Look up a fact that was stored for the current game session. If no such
-     * fact exists, defaultVal will be returned.
+     * Look up a fact that was stored for the current game session. If no such fact exists,
+     * defaultVal will be returned.
      *
+     * @param config     The game-wide configuration
      * @param factName   The name used to store the fact
      * @param defaultVal The value to return if the fact does not exist
      * @return The integer value corresponding to the last value stored
@@ -82,9 +83,10 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * Save a fact about the current game session. If the factName has already
-     * been used for this game session, the new value will overwrite the old.
+     * Save a fact about the current game session. If the factName has already been used for this
+     * game session, the new value will overwrite the old.
      *
+     * @param config    The game-wide configuration
      * @param factName  The name for the fact being saved
      * @param factValue The integer value that is the fact being saved
      */
@@ -95,10 +97,10 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * Vibrate the phone for a fixed amount of time. Note that this only
-     * vibrates the phone if the configuration says that vibration should be
-     * permitted.
+     * Vibrate the phone for a fixed amount of time. Note that this only vibrates the phone if the
+     * configuration says that vibration should be permitted.
      *
+     * @param config The game-wide configuration
      * @param millis The amount of time to vibrate
      */
     static void vibrate(Config config, int millis) {
@@ -107,12 +109,12 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * Instead of using Gdx.app.log directly, and potentially writing a lot of
-     * debug info in a production setting, we use this to only dump to the log
-     * when debug mode is on
+     * Instead of using Gdx.app.log directly, and potentially writing a lot of debug info in a
+     * production setting, we use this to only dump to the log when debug mode is on
      *
-     * @param tag  The message tag
-     * @param text The message text
+     * @param config The game-wide configuration
+     * @param tag    The message tag
+     * @param text   The message text
      */
     static void message(Config config, String tag, String text) {
         if (config.mShowDebugBoxes)
@@ -120,10 +122,12 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * The constructor just creates a media object and calls configureGravity, so that
-     * all of our globals will be set. Doing it this early lets us access the
-     * configuration from within the LWJGL (Desktop) main class. That, in turn,
-     * lets us get the screen size correct (see the desktop project's Java file).
+     * The constructor just creates a media object and calls configureGravity, so that all of our
+     * globals will be set. Doing it this early lets us access the configuration from within the
+     * LWJGL (Desktop) main class. That, in turn, lets us get the screen size correct (see the
+     * desktop project's Java file).
+     *
+     * @param config The game-wide configuration
      */
     public Lol(Config config) {
         mConfig = config;
@@ -131,6 +135,9 @@ public class Lol implements ApplicationListener {
 
     /**
      * A hack for stopping events when a pause screen is opened
+     *
+     * @param touchX The x coordinate of the touch that is being lifted
+     * @param touchY The y coordinate of the touch that is being lifted
      */
     void liftAllButtons(float touchX, float touchY) {
         mManager.mHud.liftAllButtons(touchX, touchY);
@@ -141,8 +148,7 @@ public class Lol implements ApplicationListener {
      * We can call this method from the render loop to poll for back presses
      */
     private void handleKeyDown() {
-        // if neither BACK nor ESCAPE is being pressed, do nothing, but
-        // recognize future presses
+        // if neither BACK nor ESCAPE is being pressed, do nothing, but recognize future presses
         if (!Gdx.input.isKeyPressed(Keys.BACK) && !Gdx.input.isKeyPressed(Keys.ESCAPE)) {
             mKeyDown = false;
             return;
@@ -155,15 +161,13 @@ public class Lol implements ApplicationListener {
         mManager.handleBack();
     }
 
-
     /**
-     * To properly go gestures, we need to provide the code to run on each
-     * type of gesture we care about.
+     * To properly go gestures, we need to provide the code to run on each type of gesture we care
+     * about.
      */
     private class LolGestureManager extends GestureDetector.GestureAdapter {
         /**
-         * When the screen is tapped, this code forwards the tap to the
-         * appropriate handler
+         * When the screen is tapped, this code forwards the tap to the appropriate handler
          *
          * @param x      X coordinate of the tap
          * @param y      Y coordinate of the tap
@@ -182,7 +186,7 @@ public class Lol implements ApplicationListener {
             if (mManager.mPauseScene.onTap(x, y, Lol.this))
                 return true;
             // Let the hud go the tap
-            if (mManager.mHud.handleTap(x, y, mManager.mWorld))
+            if (mManager.mHud.handleTap(x, y, mManager.mWorld.mCamera))
                 return true;
             // leave it up to the world
             return mManager.mWorld.onTap(x, y);
@@ -211,7 +215,7 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
             // check if we panned a control
-            if (mManager.mHud.handlePan(x, y, deltaX, deltaY, mManager.mWorld))
+            if (mManager.mHud.handlePan(x, y, deltaX, deltaY, mManager.mWorld.mCamera))
                 return true;
 
             // did we pan the level?
@@ -229,7 +233,8 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
             // check if we panStopped a control
-            return mManager.mHud.handlePanStop(x, y, mManager.mWorld) || mManager.mWorld.handlePanStop(x, y);
+            return mManager.mHud.handlePanStop(x, y, mManager.mWorld.mCamera) ||
+                    mManager.mWorld.handlePanStop(x, y);
         }
 
         /**
@@ -245,9 +250,8 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * Gestures can't cover everything we care about (specifically 'hold this
-     * button' sorts of things, for which long-press is not responsive enough),
-     * so we need a low-level input adapter, too.
+     * Gestures can't cover everything we care about (specifically 'hold this button', for which
+     * long-press is not responsive enough), so we need a low-level input adapter, too.
      */
     private class LolInputManager extends InputAdapter {
         /**
@@ -260,7 +264,8 @@ public class Lol implements ApplicationListener {
          */
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleDown(screenX, screenY);
+            return mManager.mHud.handleDown(screenX, screenY, mManager.mWorld.mCamera)
+                    || mManager.mWorld.handleDown(screenX, screenY);
         }
 
         /**
@@ -274,7 +279,8 @@ public class Lol implements ApplicationListener {
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             // check if we down-pressed a control
-            return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld) || mManager.mWorld.handleUp(screenX, screenY);
+            return mManager.mHud.handleUp(screenX, screenY, mManager.mWorld.mCamera) ||
+                    mManager.mWorld.handleUp(screenX, screenY);
 
         }
 
@@ -296,8 +302,8 @@ public class Lol implements ApplicationListener {
      * <p>
      * The lifecycle of LibGDX games splits app startup into two parts.  First, an
      * <code>ApplicationListener</code> is constructed.  However, it is constructed *very* early,
-     * and can't even do all of the things one might expect.  For example, it doesn't have an
-     * OpenGL context yet, so it can't load its assets from disk.  In the second stage, the
+     * and can't even do all of the things one might expect.  For example, it doesn't have an OpenGL
+     * context yet, so it can't load its assets from disk.  In the second stage, the
      * <code>create</code> method, we can finish constructing the application, knowing that it has
      * access to the full resources of the device.
      * <p>
@@ -334,8 +340,12 @@ public class Lol implements ApplicationListener {
     }
 
     /**
-     * This is an internal method for quitting a game. User code should never
-     * call this.
+     * App dispose lifecycle event
+     * <p>
+     * When the app is disposed (on terminate or suspend to background), this lets us turn off music
+     * and release any resources that won't survive.
+     * <p>
+     * NB: This is an internal method. User code should never call this.
      */
     @Override
     public void dispose() {
@@ -344,17 +354,16 @@ public class Lol implements ApplicationListener {
 
         // dispose of all fonts, TextureRegions, etc...
         //
-        // It appears that GDX manages all textures for images and fonts, as
-        // well as all sounds and music files. That
-        // being the case, the only thing we need to be careful about is that we
-        // getLoseScene rid of any references to fonts that
-        // might be hanging around
+        // It appears that GDX manages all textures for images and fonts, as well as all sounds and
+        // music files. That being the case, the only thing we need to be careful about is that we
+        // getLoseScene rid of any references to fonts that might be hanging around
         mMedia.onDispose();
     }
 
     /**
-     * This code is called every 1/45th of a second to update the game state and
-     * re-draw the screen
+     * This code is called every 1/45th of a second to update the game state and re-draw the screen
+     * <p>
+     * NB: This is an internal method. User code should never call this.
      */
     @Override
     public void render() {
@@ -367,26 +376,11 @@ public class Lol implements ApplicationListener {
         // Check for back press
         handleKeyDown();
 
-        // Make sure the music is playing... Note that we start music before the
-        // PreScene shows
+        // Make sure the music is playing... Note that we start music before the PreScene shows
         mManager.mWorld.playMusic();
 
-        // in debug mode, any click will report the coordinates of the click...
-        // this is very useful when trying to adjust screen coordinates
-        if (mConfig.mShowDebugBoxes) {
-            if (Gdx.input.justTouched()) {
-                float x = Gdx.input.getX();
-                float y = Gdx.input.getY();
-                mManager.mHud.reportTouch(x, y);
-                mManager.mWorld.reportTouch(x, y);
-            }
-        }
-
-        // Handle pauses due to pre, pause, or post scenes...
-        //
-        // Note that these handle their own screen touches...
-        //
-        // Note that win and lose scenes should come first.
+        // Handle pauses due to pre, pause, or post scenes.  Note that these handle their own screen
+        // touches, and that win and lose scenes should come first.
         if (mManager.mWinScene.render(mSpriteBatch, delta))
             return;
         if (mManager.mLoseScene.render(mSpriteBatch, delta))
@@ -396,23 +390,32 @@ public class Lol implements ApplicationListener {
         if (mManager.mPauseScene.render(mSpriteBatch, delta))
             return;
 
-        // Let the score object know that we are rendering, so that we can handle any win/lose
-        // timers
-        mManager.onRender();
+        // in debug mode, any click will report the coordinates of the click.  this is very useful
+        // when trying to adjust screen coordinates
+        if (mConfig.mShowDebugBoxes) {
+            if (Gdx.input.justTouched()) {
+                float x = Gdx.input.getX();
+                float y = Gdx.input.getY();
+                mManager.mHud.reportTouch(x, y, "Hud ");
+                mManager.mWorld.reportTouch(x, y, "World ");
+            }
+        }
 
-        // handle accelerometer stuff... note that accelerometer is effectively
-        // disabled during a popup... we could change that by moving this to the
-        // top, but that's probably not going to produce logical behavior
+        // Update the win/lose timers
+        mManager.updateTimeCounts();
+
+        // handle accelerometer stuff... note that accelerometer is effectively disabled during a
+        // popup... we could change that by moving this to the top, but that's probably not going to
+        // produce logical behavior
         mManager.mWorld.handleTilt();
 
         // Advance the physics world by 1/45 of a second.
         //
-        // NB: in Box2d, This is the recommended rate for phones, though it
-        // seems like we should be using /delta/ instead of 1/45f
+        // NB: in Box2d, This is the recommended rate for phones, though it seems like we should be
+        //     using /delta/ instead of 1/45f
         mManager.mWorld.mWorld.step(1 / 45f, 8, 3);
 
-        // now handle any events that occurred on account of the world movement
-        // or screen touches
+        // now handle any events that occurred on account of the world movement or screen touches
         for (LolAction pe : mManager.mWorld.mOneTimeEvents)
             pe.go();
         mManager.mWorld.mOneTimeEvents.clear();
@@ -427,8 +430,8 @@ public class Lol implements ApplicationListener {
         if (mManager.mEndGameEvent != null)
             mManager.mEndGameEvent.go();
 
-        // prepare the main camera... we do it here, so that the parallax code
-        // knows where to draw...
+        // prepare the main camera... we do it here, so that the parallax code knows where to
+        // draw...
         mManager.mWorld.adjustCamera();
         mManager.mWorld.mCamera.update();
 
@@ -461,14 +464,29 @@ public class Lol implements ApplicationListener {
             mDebugRender.render(mManager.mHud.mWorld, mManager.mHud.mCamera.combined);
     }
 
+    /**
+     * App lifecycle Pause event.  Note that we don't have to do anything special on a pause
+     *
+     * NB: This is an internal method. User code should never call this.
+     */
     @Override
     public void pause() {
     }
 
+    /**
+     * App lifecycle Resume event.  Note that we don't have to do anything special on a resume
+     *
+     * NB: This is an internal method. User code should never call this.
+     */
     @Override
     public void resume() {
     }
 
+    /**
+     * App lifecycle Resize event.  Note that we don't have to do anything special on a resize
+     *
+     * NB: This is an internal method. User code should never call this.
+     */
     @Override
     public void resize(int width, int height) {
     }

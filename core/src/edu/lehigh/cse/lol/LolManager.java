@@ -1,7 +1,33 @@
+/**
+ * This is free and unencumbered software released into the public domain.
+ * <p>
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * <p>
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * <p>
+ * For more information, please refer to <http://unlicense.org>
+ */
+
 package edu.lehigh.cse.lol;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.TreeMap;
@@ -9,13 +35,12 @@ import java.util.TreeMap;
 /**
  * LolManager encapsulates the states and transitions of the game.  To do so, we must track several
  * things:
- * - The state of the active level (Chooser, Help, Splash, Store, Play)
- * - The 'which' of active and inactive levels (e.g., are we on Store screen #4)
- * - The score of that level (if it is a Play level)
- * - The currently configured scenes for the active level
- * <p>
- * The Manager object handles scores, screen management, and transitions among screens
- * <p>
+ * <ul>
+ * <li>The state of the active level (Chooser, Help, Splash, Store, Play)</li>
+ * <li>The 'which' of active and inactive levels (e.g., are we on Store screen #4)</li>
+ * <li> The score of that level (if it is a Play level)</li>
+ * <li>The currently configured scenes for the active level</li>
+ * </ul>
  */
 class LolManager {
     /// A reference to the top-level game object
@@ -24,12 +49,12 @@ class LolManager {
     private final Config mConfig;
     /// The set of loaded assets
     private final Media mMedia;
-    /// TODO
+    /// The object that comprises the public API
     private final Level mLevel;
 
     /// The physics world in which all actors exist
     MainScene mWorld;
-    /// A heads-up display, for writing LolText and Control objects
+    /// A heads-up display
     HudScene mHud;
     /// The scene to show when the level is created (if any)
     QuickScene mPreScene;
@@ -44,7 +69,8 @@ class LolManager {
     /// The foreground layers
     ParallaxScene mForeground;
 
-    /// Store string/integer pairs that get reset whenever we restart the program
+    /// Store string/integer pairs that get reset whenever we restart the program, but which persist
+    /// across levels
     final TreeMap<String, Integer> mSessionFacts;
 
     /// Modes of the game, for use by the state machine.  We can be showing the main splash
@@ -59,24 +85,75 @@ class LolManager {
     /// The level within each mode (e.g., we are in PLAY scene 4, and will return to CHOOSER 2)
     private int mModeStates[] = new int[5];
 
+    /// This is the number of goodies that must be collected, if we're in GOODIECOUNT mode
+    int[] mVictoryGoodieCount;
+    /// Track the number of heroes that have been created
+    int mHeroesCreated;
+    /// Count of the goodies that have been collected in this level
+    int[] mGoodiesCollected;
+    /// Count the number of enemies that have been created
+    int mEnemiesCreated;
+    /// Count the enemies that have been defeated
+    int mEnemiesDefeated;
+    /// Track if the level has been lost (true) or the game is still being played (false)
+    boolean mGameOver;
+    /// In levels that have a lose-on-timer feature, we store the timer here, so that we can extend
+    /// the time left to complete a game
+    ///
+    /// NB: -1 indicates the timer is not active
+    float mLoseCountDownRemaining;
+    /// Text to display when a Lose Countdown completes
+    String mLoseCountDownText;
+    /// Time that must pass before the level ends in victory
+    float mWinCountRemaining;
+    ///  Text to display when a Win Countdown completes
+    String mWinCountText;
+    /// This is a stopwatch, for levels where we count how long the game has been running
+    float mStopWatchProgress;
+    /// This is how far the hero has traveled
+    int mDistance;
+    /// Track the number of heroes that have been removed/defeated
+    private int mHeroesDefeated;
+    /// Number of heroes who have arrived at any destination yet
+    private int mDestinationArrivals;
+    /// Describes how a level is won.
+    VictoryType mVictoryType;
+    /// This is the number of heroes who must reach destinations, if we're in DESTINATION mode
+    int mVictoryHeroCount;
+    /// The number of enemies that must be defeated, if we're in ENEMYCOUNT mode. -1 means "all"
+    int mVictoryEnemyCount;
+    /// When the level is won or lost, this is where we store the event that needs to run
+    LolAction mEndGameEvent;
+    /// Code to run when a level is won
+    LolAction mWinCallback;
+    /// Code to run when a level is lost
+    LolAction mLoseCallback;
 
+    /**
+     * Construct the LolManager, build the scenes, set up the state machine, and clear the scores.
+     *
+     * @param config The game-wide configuration
+     * @param media  All image and sound assets for the game
+     * @param game   A reference to the top-level game object
+     */
     LolManager(Config config, Media media, Lol game) {
         mGame = game;
         mConfig = config;
         mMedia = media;
         // Set up the API, so that any user code we call is able to reach this object
         mLevel = new Level(mConfig, mMedia, mGame);
-
+        // build scenes and facts
         createScenes();
         mSessionFacts = new TreeMap<>();
-
-        // set current mode states
+        // set current mode states, and reset the scores
         for (int i = 0; i < 5; ++i)
             mModeStates[i] = 1;
-
         resetScores();
     }
 
+    /**
+     * Reset all scores.  This should be called at the beginning of every level.
+     */
     private void resetScores() {
         mVictoryGoodieCount = new int[4];
         mHeroesCreated = 0;
@@ -100,26 +177,43 @@ class LolManager {
         mLoseCallback = null;
     }
 
+    /**
+     * Create all scenes for a playable level.
+     */
     private void createScenes() {
-        // Create the eight different scenes and a score object
-        mWorld = new MainScene(mConfig, mMedia, mGame);
-        mWinScene = QuickScene.makeWinScene(mWorld, mMedia, mConfig);
-        mLoseScene = QuickScene.makeLoseScene(mWorld, mMedia, mConfig);
-        mPreScene = QuickScene.makePreScene(mMedia, mConfig);
-        mPauseScene = QuickScene.makePauseScene(mMedia, mConfig);
+        // Create the easy scenes
+        mWorld = new MainScene(mConfig, mMedia);
         mHud = new HudScene(mMedia, mConfig);
         mBackground = new ParallaxScene(mConfig);
         mForeground = new ParallaxScene(mConfig);
+        // the win/lose/pre/pause scenes are a little bit complicated
+        mWinScene = new QuickScene(mMedia, mConfig, mConfig.mDefaultWinText);
+        mWinScene.setDismissAction(new LolAction() {
+            @Override
+            public void go() {
+                advanceLevel();
+            }
+        });
+        mLoseScene = new QuickScene(mMedia, mConfig, mConfig.mDefaultLoseText);
+        mLoseScene.setDismissAction(new LolAction() {
+            @Override
+            public void go() {
+                repeatLevel();
+            }
+        });
+        mPreScene = new QuickScene(mMedia, mConfig, "");
+        mPreScene.setShowAction(null);
+        mPauseScene = new QuickScene(mMedia, mConfig, "");
+        mPauseScene.setAsPauseScene();
     }
 
     /**
-     * Sets the current screen. {@link Screen#hide()} is called on any old screen, and {@link Screen#show()} is called on the new
-     * screen, if any.
+     * Before we call programmer code to load a new scene, we call this to ensure that everything is
+     * in a clean state.
      */
-    private void setScreen() {
+    private void onScreenChange() {
         mWorld.pauseMusic();
         createScenes();
-
         // When debug mode is on, print the frames per second
         if (mConfig.mShowDebugBoxes)
             mLevel.addDisplay(800, 15, mConfig.mDefaultFontFace, mConfig.mDefaultFontColor, 12, "fps: ", "", mLevel.DisplayFPS, 2);
@@ -136,7 +230,12 @@ class LolManager {
             Lol.putGameFact(mConfig, "unlocked", mModeStates[PLAY] + 1);
     }
 
+    /**
+     * Move forward to the next level, if there is one, and otherwise go back to the chooser.
+     */
     void advanceLevel() {
+        // Make sure to stop the music!
+        mWorld.stopMusic();
         if (mModeStates[PLAY] == mConfig.mNumLevels) {
             doChooser(1);
         } else {
@@ -145,31 +244,31 @@ class LolManager {
         }
     }
 
+    /**
+     * Start a level over again.
+     */
     void repeatLevel() {
         doPlay(mModeStates[PLAY]);
     }
 
     /**
-     * Use this to load the splash screen
+     * Load the splash screen
      */
     void doSplash() {
-        // reset state of all screens
         for (int i = 0; i < 5; ++i)
             mModeStates[i] = 1;
         mMode = SPLASH;
-        setScreen();
+        onScreenChange();
         mConfig.mSplash.display(1, mLevel);
     }
 
     /**
-     * Use this to load the level-chooser screen. Note that when the chooser is
-     * disabled, we jump straight to level 1.
+     * Load the level-chooser screen. If the chooser is disabled, jump straight to level 1.
      *
-     * @param whichChooser The chooser screen to create
+     * @param index The chooser screen to create
      */
-    void doChooser(int whichChooser) {
-        // if chooser disabled, then we either called this from splash, or from
-        // a game level
+    void doChooser(int index) {
+        // if chooser disabled, then we either called this from splash, or from a game level
         if (!mConfig.mEnableChooser) {
             if (mMode == PLAY) {
                 doSplash();
@@ -178,146 +277,61 @@ class LolManager {
             }
             return;
         }
-        // the chooser is not disabled... save the choice of level, configureGravity
-        // it, and show it.
+        // the chooser is not disabled... save the choice of level, configure it, and show it.
         mMode = CHOOSER;
-        mModeStates[CHOOSER] = whichChooser;
-        setScreen();
-        mConfig.mChooser.display(whichChooser, mLevel);
+        mModeStates[CHOOSER] = index;
+        onScreenChange();
+        mConfig.mChooser.display(index, mLevel);
     }
 
     /**
-     * Use this to load a playable level.
+     * Load a playable level
      *
-     * @param which The index of the level to load
+     * @param index The index of the level to load
      */
-    void doPlay(int which) {
-        mModeStates[PLAY] = which;
+    void doPlay(int index) {
+        mModeStates[PLAY] = index;
         mMode = PLAY;
-        setScreen();
+        onScreenChange();
         resetScores();
-        mConfig.mLevels.display(which, mLevel);
+        mConfig.mLevels.display(index, mLevel);
     }
 
     /**
-     * Use this to load a help level.
+     * Load a help level
      *
-     * @param which The index of the help level to load
+     * @param index The index of the help level to load
      */
-    void doHelp(int which) {
-        mModeStates[HELP] = which;
+    void doHelp(int index) {
+        mModeStates[HELP] = index;
         mMode = HELP;
-        setScreen();
-        mConfig.mHelp.display(which, mLevel);
+        onScreenChange();
+        mConfig.mHelp.display(index, mLevel);
     }
 
     /**
-     * Use this to load a screen of the store.
+     * Load a screen of the store.
      *
-     * @param which The index of the help level to load
+     * @param index The index of the help level to load
      */
-    void doStore(int which) {
-        mModeStates[STORE] = which;
+    void doStore(int index) {
+        mModeStates[STORE] = index;
         mMode = STORE;
-        setScreen();
-        mConfig.mStore.display(which, mLevel);
+        onScreenChange();
+        mConfig.mStore.display(index, mLevel);
     }
 
     /**
-     * Use this to quit the game
+     * Quit the game
      */
     void doQuit() {
         mWorld.stopMusic();
         Gdx.app.exit();
     }
 
-    /// This is the number of goodies that must be collected, if we're in GOODIECOUNT mode
-    int[] mVictoryGoodieCount;
-
-    /// Track the number of heroes that have been created
-    int mHeroesCreated;
 
     /**
-     * Count of the goodies that have been collected in this level
-     */
-    int[] mGoodiesCollected;
-    /**
-     * Count the number of enemies that have been created
-     */
-    int mEnemiesCreated;
-    /**
-     * Count the enemies that have been defeated
-     */
-    int mEnemiesDefeated;
-    /**
-     * Track if the level has been lost (true) or the game is still being played
-     * (false)
-     */
-    boolean mGameOver;
-    /**
-     * In levels that have a lose-on-timer feature, we store the timer here, so
-     * that we can extend the time left to complete a game
-     * <p>
-     * NB: -1 indicates the timer is not active
-     */
-    float mLoseCountDownRemaining;
-
-    /**
-     * Text to display when a Lose Countdown completes
-     */
-    String mLoseCountDownText;
-    /**
-     * This is the same as CountDownRemaining, but for levels where the hero
-     * wins by lasting until time runs out.
-     */
-    float mWinCountRemaining;
-    /**
-     * Text to ddisplay when a Win Countdown completes
-     */
-    String mWinCountText;
-    /**
-     * This is a stopwatch, for levels where we count how long the game has been
-     * running
-     */
-    float mStopWatchProgress;
-    /**
-     * This is how far the hero has traveled
-     */
-    int mDistance;
-    /**
-     * Track the number of heroes that have been removed/defeated
-     */
-    private int mHeroesDefeated;
-    /**
-     * Number of heroes who have arrived at any destination yet
-     */
-    private int mDestinationArrivals;
-    /**
-     * Describes how a level is won.
-     */
-    VictoryType mVictoryType;
-    /**
-     * This is the number of heroes who must reach destinations, if we're in
-     * DESTINATION mode
-     */
-    int mVictoryHeroCount;
-    /**
-     * This is the number of enemies that must be defeated, if we're in
-     * ENEMYCOUNT mode. -1 means "all of them"
-     */
-    int mVictoryEnemyCount;
-
-    /// When the level is won or lost, this is where we store the event that needs to run
-    LolAction mEndGameEvent;
-
-    /// Code to run when a level is won
-    LolAction mWinCallback;
-
-    /// Code to run when a level is lost
-    LolAction mLoseCallback;
-
-    /**
-     * Use this to inform the level that a hero has been defeated
+     * Indicate that a hero has been defeated
      *
      * @param enemy The enemy who defeated the hero
      */
@@ -332,7 +346,7 @@ class LolManager {
     }
 
     /**
-     * Use this to inform the level that a goodie has been collected by a hero
+     * Indicate that a goodie has been collected
      *
      * @param goodie The goodie that was collected
      */
@@ -340,7 +354,6 @@ class LolManager {
         // Update goodie counts
         for (int i = 0; i < 4; ++i)
             mGoodiesCollected[i] += goodie.mScore[i];
-
         // possibly win the level, but only if we win on goodie count and all
         // four counts are high enough
         if (mVictoryType != VictoryType.GOODIECOUNT)
@@ -353,7 +366,7 @@ class LolManager {
     }
 
     /**
-     * Use this to inform the level that a hero has reached a destination
+     * Indicate that a hero has reached a destination
      */
     void onDestinationArrive() {
         // check if the level is complete
@@ -363,12 +376,11 @@ class LolManager {
     }
 
     /**
-     * Internal method for handling whenever an enemy is defeated
+     * Indicate that an enemy has been defeated
      */
     void onDefeatEnemy() {
         // update the count of defeated enemies
         mEnemiesDefeated++;
-
         // if we win by defeating enemies, see if we've defeated enough of them:
         boolean win = false;
         if (mVictoryType == VictoryType.ENEMYCOUNT) {
@@ -381,7 +393,6 @@ class LolManager {
         if (win)
             endLevel(true);
     }
-
 
     /**
      * When a level ends, we run this code to shut it down, print a message, and
@@ -415,8 +426,7 @@ class LolManager {
                     // clear any pending timers
                     Timer.instance().clear();
 
-                    // display the PostScene, which provides a pause before we
-                    // retry/start the next level
+                    // display the PostScene before we retry/start the next level
                     if (win)
                         mGame.mManager.mWinScene.show();
                     else
@@ -426,16 +436,19 @@ class LolManager {
     }
 
     /**
-     * These are the ways you can complete a level: you can reach the
-     * destination, you can collect enough stuff, or you can reach a certain
-     * number of enemies defeated Technically, there's also 'survive for x
-     * seconds', but that doesn't need special support
+     * These are the ways you can complete a level: you can reach the destination, you can collect
+     * enough stuff, or you can reach a certain number of enemies defeated.
+     * <p>
+     * Technically, there's also 'survive for x seconds', but that doesn't need special support
      */
     enum VictoryType {
         DESTINATION, GOODIECOUNT, ENEMYCOUNT
     }
 
-    void onRender() {
+    /**
+     * Update all timer counters associated with the current level
+     */
+    void updateTimeCounts() {
         // Check the countdown timers
         if (mLoseCountDownRemaining != -100) {
             mLoseCountDownRemaining -= Gdx.graphics.getDeltaTime();
@@ -459,8 +472,7 @@ class LolManager {
     }
 
     /**
-     * When the back key is pressed, or when we are simulating the back key
-     * being pressed (e.g., a back button), this code runs.
+     * Code to run when the back key is pressed, or when we are simulating a back key pressed
      */
     void handleBack() {
         // clear all timers, just in case...
@@ -471,8 +483,7 @@ class LolManager {
             mGame.dispose();
             Gdx.app.exit();
         }
-        // if we're looking at the chooser or help, switch to the splash
-        // screen
+        // if we're looking at the chooser or help, switch to the splash screen
         else if (mMode == CHOOSER || mMode == HELP || mMode == STORE) {
             doSplash();
         }

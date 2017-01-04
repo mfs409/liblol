@@ -39,94 +39,56 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 /**
- * WorldActor is the base class upon which every game actor is built. Every actor has
- * a physics representation (rectangle, circle, or convex polygon). Actors
- * typically have an image associated with them, too, so that they have a visual
- * appearance during gameplay.
+ * WorldActor is the base class upon which every actor in the main game is built. Every actor has a
+ * physics representation (rectangle, circle, or convex polygon). Actors typically have an image
+ * associated with them, too, so that they have a visual appearance during gameplay.
  * <p>
- * A game should rarely deal with WorldActor objects directly, instead using Hero,
- * Goodie, Destination, Enemy, Obstacle, and Projectile objects.
+ * A game should rarely deal with WorldActor objects directly, instead using Hero, Goodie,
+ * Destination, Enemy, Obstacle, and Projectile objects.
  */
 public abstract class WorldActor extends BaseActor {
     /// A reference to the top-level Lol object
     final Lol mGame;
-
     /// Some actors run custom code when they are touched. This is a reference to the code to run.
     TouchEventHandler mDragHandler;
-
     /// When the camera follows the actor without centering on it, this gives us the difference
     /// between the actor and camera
     Vector2 mCameraOffset = new Vector2(0, 0);
-
     /// Sometimes an actor collides with another actor, and should stick to it. In that case, we
-    /// create a pair of joints to connect the two actors. This is the Distance joint that connects them
+    /// create two joints to connect the two actors. This is the Distance joint that connects them
     DistanceJoint mDJoint;
-
-    /**
-     * Sometimes an actor collides with another actor, and should stick to it.
-     * In that case, we create a pair of joints to connect the two actors. This
-     * is the Weld joint that connects them
-     */
+    /// Sometimes an actor collides with another actor, and should stick to it.  In that case, we
+    /// create two joints to connect the two actors. This is the Weld joint that connects them
     WeldJoint mWJoint;
-
-    /**
-     * We allow the programmer to manually weld objects together. For it to
-     * work, we need a local WeldJoint
-     */
+    /// We allow the programmer to manually weld objects together. For it to work, we need a local
+    /// WeldJoint
     private WeldJoint mExplicitWeldJoint;
-
-    /**
-     * When we have actors stuck together, we might want to set a brief delay
-     * before they can re-join. This field represents that delay time, in
-     * milliseconds.
-     */
+    /// When we have actors stuck together, we might want to set a brief delay before they can
+    /// re-join. This field represents that delay time, in milliseconds.
     long mStickyDelay;
-
-    /**
-     * A vector for computing hover placement
-     */
-    protected Vector3 mHover = new Vector3();
-
-    /**
-     * Track if Heros stick to this WorldActor. The array has 4 positions,
-     * corresponding to top, right, bottom, left
-     */
+    /// A vector for computing hover placement
+    Vector3 mHover = new Vector3();
+    /// Track if Heros stick to this WorldActor. The array has 4 positions, corresponding to top,
+    /// right, bottom, left
     boolean[] mIsSticky = new boolean[4];
-    /**
-     * Disable 3 of 4 sides of a Actors, to allow walking through walls. The
-     * value reflects the side that remains active. 0 is top, 1 is right, 2 is
-     * bottom, 3 is left
-     */
+    /// Disable 3 of 4 sides of a Actors, to allow walking through walls. The value reflects the
+    /// side that remains active. 0 is top, 1 is right, 2 is bottom, 3 is left
     int mIsOneSided = -1;
-    /**
-     * Actors with a matching nonzero Id don't collide with each other
-     */
+    /// Actors with a matching nonzero Id don't collide with each other
     int mPassThroughId = 0;
-    /**
-     * A definition for when we attach a revolute joint to this actor
-     */
-    RevoluteJointDef mRevJointDef;
-    /**
-     * A joint that allows this actor to revolve around another
-     */
-    Joint mRevJoint;
-    /**
-     * A definition for when we attach a distance joint to this actor
-     */
-    DistanceJointDef mDistJointDef;
-    /**
-     * A joint that allows this actor to stay within a fixed distance of another
-     */
-    Joint mDistJoint;
-    /**
-     * If this actor is chasing another actor, we track who is being chased via
-     * this field
-     */
-    WorldActor mChaseTarget;
+    /// A definition for when we attach a revolute joint to this actor
+    private RevoluteJointDef mRevJointDef;
+    /// A joint that allows this actor to revolve around another
+    private Joint mRevJoint;
+    /// A definition for when we attach a distance joint to this actor
+    private DistanceJointDef mDistJointDef;
+    /// A joint that allows this actor to stay within a fixed distance of another
+    private Joint mDistJoint;
+    /// If this actor is chasing another actor, we track who is being chased via this field
+    private WorldActor mChaseTarget;
 
     /**
-     * Create a new actor that does not yet have physics, but that has a
-     * renderable picture
+     * Create a new actor that does not yet have physics, but that has a renderable picture
      *
      * @param game    The currently active game
      * @param scene   The scene into which the actor is being placed
@@ -147,7 +109,6 @@ public abstract class WorldActor extends BaseActor {
     public void setStopCallback(final LolActorEvent callback) {
         mScene.mRepeatEvents.add(new LolAction() {
             boolean moving = false;
-
             @Override
             public void go() {
                 Vector2 speed = mBody.getLinearVelocity();
@@ -162,16 +123,16 @@ public abstract class WorldActor extends BaseActor {
     }
 
     /**
-     * Each descendant defines this to address any custom logic that we need to
-     * deal with on a collision
+     * Each descendant defines this to address any custom logic that we need to deal with on a
+     * collision
      *
-     * @param other The other actor involved in the collision
+     * @param other   Other object involved in this collision
+     * @param contact A description of the contact that caused this collision
      */
     abstract void onCollide(WorldActor other, Contact contact);
 
     /**
-     * Make the camera follow the actor, but without centering the actor on the
-     * screen
+     * Make the camera follow the actor, but without centering the actor on the screen
      *
      * @param x Amount of x distance between actor and center
      * @param y Amount of y distance between actor and center
@@ -181,16 +142,13 @@ public abstract class WorldActor extends BaseActor {
         mCameraOffset.y = y;
     }
 
-
     /**
      * Indicate that the actor should move with the tilt of the phone
      */
     public void setMoveByTilting() {
-        // If we've already added this to the set of tiltable objects, don't do
-        // it again
+        // If we've already added this to the set of tiltable objects, don't do it again
         if (((MainScene) mScene).mTiltActors.contains(this))
             return;
-
         // make sure it is moveable, add it to the list of tilt actors
         if (mBody.getType() != BodyType.DynamicBody)
             mBody.setType(BodyType.DynamicBody);
@@ -199,25 +157,21 @@ public abstract class WorldActor extends BaseActor {
         setCollisionsEnabled(true);
     }
 
-
     /**
      * Indicate that touching this object will cause some special code to run
      *
-     * @param activationGoodies1 Number of type-1 goodies that must be collected before it
-     *                           works
-     * @param activationGoodies2 Number of type-2 goodies that must be collected before it
-     *                           works
-     * @param activationGoodies3 Number of type-3 goodies that must be collected before it
-     *                           works
-     * @param activationGoodies4 Number of type-4 goodies that must be collected before it
-     *                           works
+     * @param activationGoodies1 Number of type-1 goodies that must be collected before it works
+     * @param activationGoodies2 Number of type-2 goodies that must be collected before it works
+     * @param activationGoodies3 Number of type-3 goodies that must be collected before it works
+     * @param activationGoodies4 Number of type-4 goodies that must be collected before it works
      * @param disappear          True if the actor should disappear when the callback runs
      * @param callback           The callback to run when the actor is touched
      */
-    public void setTouchCallback(int activationGoodies1, int activationGoodies2, int activationGoodies3,
-                                 int activationGoodies4, final boolean disappear, final LolActorEvent callback) {
-        final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2, activationGoodies3,
-                activationGoodies4};
+    public void setTouchCallback(int activationGoodies1, int activationGoodies2,
+                                 int activationGoodies3, int activationGoodies4,
+                                 final boolean disappear, final LolActorEvent callback) {
+        final int[] touchCallbackActivation = new int[]{activationGoodies1, activationGoodies2,
+                activationGoodies3, activationGoodies4};
         // set the code to run on touch
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -236,13 +190,12 @@ public abstract class WorldActor extends BaseActor {
         };
     }
 
-
     /**
-     * Call this on an actor to make it draggable. Be careful when dragging
-     * things. If they are small, they will be hard to touch.
+     * Call this on an actor to make it draggable. Be careful when dragging things. If they are
+     * small, they will be hard to touch.
      *
-     * @param immuneToPhysics Indicate whether the actor should pass through other objects
-     *                        or collide with them
+     * @param immuneToPhysics Indicate whether the actor should pass through other objects or
+     *                        collide with them
      */
     public void setCanDrag(boolean immuneToPhysics) {
         if (immuneToPhysics)
@@ -257,15 +210,14 @@ public abstract class WorldActor extends BaseActor {
         };
     }
 
-
     /**
-     * Call this on an actor to make it pokeable. Poke the actor, then poke the
-     * screen, and the actor will move to the location that was pressed. Poke
-     * the actor twice in rapid succession to delete it.
+     * Call this on an actor to make it pokeable. Poke the actor, then poke the screen, and the
+     * actor will move to the location that was pressed. Poke the actor twice in rapid succession to
+     * delete it.
      *
      * @param deleteThresholdMillis If two touches happen within this many milliseconds, the actor
-     *                              will be deleted. Use 0 to disable this
-     *                              "delete by double-touch" feature.
+     *                              will be deleted. Use 0 to disable this "delete by double-touch"
+     *                              feature.
      */
     public void setPokeToPlace(long deleteThresholdMillis) {
         // convert threshold to nanoseconds
@@ -315,14 +267,11 @@ public abstract class WorldActor extends BaseActor {
     /**
      * Indicate that this actor can be flicked on the screen
      *
-     * @param dampFactor A value that is multiplied by the vector for the flick, to
-     *                   affect speed
+     * @param dampFactor A value that is multiplied by the vector for the flick, to affect speed
      */
     public void setFlickable(final float dampFactor) {
-        // make sure the body is a dynamic body, because it really doesn't make
-        // sense to flick it otherwise
-        if (mBody.getType() != BodyType.DynamicBody)
-            mBody.setType(BodyType.DynamicBody);
+        // make sure the body is a dynamic body
+        setCanFall();
 
         ((MainScene) mScene).mFlingHandlers.add(new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
@@ -337,15 +286,14 @@ public abstract class WorldActor extends BaseActor {
     }
 
     /**
-     * Configure an actor so that touching an arbitrary point on the screen
-     * makes the actor move toward that point. The behavior is similar to
-     * pokeToPlace, in that one touches the actor, then where she wants the
-     * actor to go. However, this involves moving with velocity, instead of
+     * Configure an actor so that touching an arbitrary point on the screen makes the actor move
+     * toward that point. The behavior is similar to pokeToPlace, in that one touches the actor,
+     * then where she wants the actor to go. However, this involves moving with velocity, instead of
      * teleporting
      *
      * @param velocity     The constant velocity for poke movement
-     * @param oncePerTouch After starting a path, does the player need to re-select
-     *                     (re-touch) the actor before giving it a new destinaion point?
+     * @param oncePerTouch After starting a path, does the player need to re-select (re-touch) the
+     *                     actor before giving it a new destinaion point?
      */
     public void setPokePath(final float velocity, final boolean oncePerTouch) {
         if (mBody.getType() == BodyType.StaticBody)
@@ -374,18 +322,18 @@ public abstract class WorldActor extends BaseActor {
     }
 
     /**
-     * Configure an actor so that touching an arbitrary point on the screen
-     * makes the actor move toward that point. The behavior is similar to
-     * pokePath, except that as the finger moves, the actor keeps changing its
-     * destination accordingly.
+     * Configure an actor so that touching an arbitrary point on the screen makes the actor move
+     * toward that point. The behavior is similar to pokePath, except that as the finger moves, the
+     * actor keeps changing its destination accordingly.
      *
      * @param velocity     The constant velocity for poke movement
-     * @param oncePerTouch After starting a path, does the player need to re-select
-     *                     (re-touch) the actor before giving it a new destinaion point?
-     * @param stopOnUp     When the touch is released, should the actor stop moving, or
-     *                     continue in the same direction?
+     * @param oncePerTouch After starting a path, does the player need to re-select (re-touch) the
+     *                     actor before giving it a new destinaion point?
+     * @param stopOnUp     When the touch is released, should the actor stop moving, or continue in
+     *                     the same direction?
      */
-    public void setFingerChase(final float velocity, final boolean oncePerTouch, final boolean stopOnUp) {
+    public void setFingerChase(final float velocity, final boolean oncePerTouch,
+                               final boolean stopOnUp) {
         if (mBody.getType() == BodyType.StaticBody)
             mBody.setType(BodyType.KinematicBody);
         mTapHandler = new TouchEventHandler() {
@@ -431,14 +379,12 @@ public abstract class WorldActor extends BaseActor {
         };
     }
 
-
     /**
-     * Indicate that this actor should hover at a specific location on the
-     * screen, rather than being placed at some point on the level itself. Note
-     * that the coordinates to this command are the center position of the
-     * hovering actor. Also, be careful about using hover with zoom... hover is
-     * relative to screen coordinates (pixels), not world coordinates, so it's
-     * going to look funny to use this with zoom
+     * Indicate that this actor should hover at a specific location on the screen, rather than being
+     * placed at some point on the level itself. Note that the coordinates to this command are the
+     * center position of the hovering actor. Also, be careful about using hover with zoom... hover
+     * is relative to screen coordinates (pixels), not world coordinates, so it's going to look
+     * funny to use this with zoom
      *
      * @param x the X coordinate (in pixels) where the actor should appear
      * @param y the Y coordinate (in pixels) where the actor should appear
@@ -459,7 +405,6 @@ public abstract class WorldActor extends BaseActor {
         });
     }
 
-
     /**
      * Make this actor sticky, so that another actor will stick to it
      *
@@ -472,22 +417,19 @@ public abstract class WorldActor extends BaseActor {
         mIsSticky = new boolean[]{top, right, bottom, left};
     }
 
-
     /**
      * Indicate that touching this actor should make a hero throw a projectile
      *
      * @param h         The hero who should throw a projectile when this is touched
-     * @param offsetX   specifies the x distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
-     * @param offsetY   specifies the y distance between the bottom left of the
-     *                  projectile and the bottom left of the hero throwing the
-     *                  projectile
+     * @param offsetX   specifies the x distance between the bottom left of the projectile and the
+     *                  bottom left of the hero throwing the projectile
+     * @param offsetY   specifies the y distance between the bottom left of the projectile and the
+     *                  bottom left of the hero throwing the projectile
      * @param velocityX The X velocity of the projectile when it is thrown
      * @param velocityY The Y velocity of the projectile when it is thrown
      */
-    public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY, final float velocityX,
-                                final float velocityY) {
+    public void setTouchToThrow(final Hero h, final float offsetX, final float offsetY,
+                                final float velocityX, final float velocityY) {
         mTapHandler = new TouchEventHandler() {
             public boolean go(float worldX, float worldY) {
                 ((MainScene) mScene).mProjectilePool.throwFixed(h, offsetX, offsetY, velocityX, velocityY);
@@ -499,23 +441,21 @@ public abstract class WorldActor extends BaseActor {
     /**
      * Indicate that this obstacle only registers collisions on one side.
      *
-     * @param side The side that registers collisions. 0 is top, 1 is right, 2 is
-     *             bottom, 3 is left, -1 means "none"
+     * @param side The side that registers collisions. 0 is top, 1 is right, 2 is bottom, 3 is left,
+     *             -1 means "none"
      */
     public void setOneSided(int side) {
         mIsOneSided = side;
     }
 
     /**
-     * Indicate that this actor should not have collisions with any other actor
-     * that has the same ID
+     * Indicate that this actor should not have collisions with any other actor that has the same ID
      *
      * @param id The number for this class of non-interacting actors
      */
     public void setPassThrough(int id) {
         mPassThroughId = id;
     }
-
 
     /**
      * Specify that this actor is supposed to chase another actor
@@ -525,7 +465,8 @@ public abstract class WorldActor extends BaseActor {
      * @param chaseInX Should the actor change its x velocity?
      * @param chaseInY Should the actor change its y velocity?
      */
-    public void setChaseSpeed(final float speed, final WorldActor target, final boolean chaseInX, final boolean chaseInY) {
+    public void setChaseSpeed(final float speed, final WorldActor target, final boolean chaseInX,
+                              final boolean chaseInY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
         mScene.mRepeatEvents.add(new LolAction() {
@@ -563,19 +504,19 @@ public abstract class WorldActor extends BaseActor {
     }
 
     /**
-     * Specify that this actor is supposed to chase another actor, but using
-     * fixed X and Y velocities
+     * Specify that this actor is supposed to chase another actor, but using fixed X/Y velocities
      *
      * @param target     The actor to chase
      * @param xMagnitude The magnitude in the x direction, if ignoreX is false
      * @param yMagnitude The magnitude in the y direction, if ignoreY is false
-     * @param ignoreX    False if we should apply xMagnitude, true if we should keep
-     *                   the hero's existing X velocity
-     * @param ignoreY    False if we should apply yMagnitude, true if we should keep
-     *                   the hero's existing Y velocity
+     * @param ignoreX    False if we should apply xMagnitude, true if we should keep the hero's
+     *                   existing X velocity
+     * @param ignoreY    False if we should apply yMagnitude, true if we should keep the hero's
+     *                   existing Y velocity
      */
-    public void setChaseFixedMagnitude(final WorldActor target, final float xMagnitude, final float yMagnitude,
-                                       final boolean ignoreX, final boolean ignoreY) {
+    public void setChaseFixedMagnitude(final WorldActor target, final float xMagnitude,
+                                       final float yMagnitude, final boolean ignoreX,
+                                       final boolean ignoreY) {
         mChaseTarget = target;
         mBody.setType(BodyType.DynamicBody);
         mScene.mRepeatEvents.add(new LolAction() {
@@ -607,23 +548,18 @@ public abstract class WorldActor extends BaseActor {
         return mChaseTarget;
     }
 
-
     /**
-     * Create a revolute joint between this actor and some other actor. Note
-     * that both actors need to have some mass (density &gt; 0) or else this won't
-     * work.
+     * Create a revolute joint between this actor and some other actor. Note that both actors need
+     * to have some mass (density can't be 0) or else this won't work.
      *
      * @param anchor       The actor around which this actor will rotate
-     * @param anchorX      The X coordinate (relative to the center of the actor) where
-     *                     the joint fuses to the anchor
-     * @param anchorY      The Y coordinate (relative to the center of the actor) where
-     *                     the joint fuses to the anchor
-     * @param localAnchorX The X coordinate (relative to the center of the actor) where
-     *                     the joint fuses to this actor
-     * @param localAnchorY The Y coordinate (relative to the center of the actor) where
-     *                     the joint fuses to this actor
+     * @param anchorX      The X coordinate (relative to center) where joint fuses to the anchor
+     * @param anchorY      The Y coordinate (relative to center) where joint fuses to the anchor
+     * @param localAnchorX The X coordinate (relative to center) where joint fuses to this actor
+     * @param localAnchorY The Y coordinate (relative to center) where joint fuses to this actor
      */
-    public void setRevoluteJoint(WorldActor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
+    public void setRevoluteJoint(WorldActor anchor, float anchorX, float anchorY,
+                                 float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
         // create joint, connect anchors
@@ -643,12 +579,10 @@ public abstract class WorldActor extends BaseActor {
      * Attach a motor to make a joint turn
      *
      * @param motorSpeed  Speed in radians per second
-     * @param motorTorque torque of the motor... when in doubt, go with
-     *                    Float.POSITIVE_INFINITY
+     * @param motorTorque torque of the motor... when in doubt, go with Float.POSITIVE_INFINITY
      */
     public void setRevoluteJointMotor(float motorSpeed, float motorTorque) {
-        // destroy the previously created joint, change the definition,
-        // re-create the joint
+        // destroy the previously created joint, change the definition, re-create the joint
         mScene.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.enableMotor = true;
         mRevJointDef.motorSpeed = motorSpeed;
@@ -663,8 +597,7 @@ public abstract class WorldActor extends BaseActor {
      * @param lower The lower bound in radians
      */
     public void setRevoluteJointLimits(float upper, float lower) {
-        // destroy the previously created joint, change the definition,
-        // re-create the joint
+        // destroy the previously created joint, change the definition, re-create the joint
         mScene.mWorld.destroyJoint(mRevJoint);
         mRevJointDef.upperAngle = upper;
         mRevJointDef.lowerAngle = lower;
@@ -673,21 +606,18 @@ public abstract class WorldActor extends BaseActor {
     }
 
     /**
-     * Create a weld joint between this actor and some other actor, to force the
-     * actors to stick together.
+     * Create a weld joint between this actor and some other actor, to force the actors to stick
+     * together.
      *
      * @param other  The actor that will be fused to this actor
-     * @param otherX The X coordinate (relative to the center of the actor) where
-     *               the joint fuses to the other actor
-     * @param otherY The Y coordinate (relative to the center of the actor) where
-     *               the joint fuses to the other actor
-     * @param localX The X coordinate (relative to the center of the actor) where
-     *               the joint fuses to this actor
-     * @param localY The Y coordinate (relative to the center of the actor) where
-     *               the joint fuses to this actor
+     * @param otherX The X coordinate (relative to center) where joint fuses to the other actor
+     * @param otherY The Y coordinate (relative to center) where joint fuses to the other actor
+     * @param localX The X coordinate (relative to center) where joint fuses to this actor
+     * @param localY The Y coordinate (relative to center) where joint fuses to this actor
      * @param angle  The angle between the actors
      */
-    public void setWeldJoint(WorldActor other, float otherX, float otherY, float localX, float localY, float angle) {
+    public void setWeldJoint(WorldActor other, float otherX, float otherY, float localX,
+                             float localY, float angle) {
         WeldJointDef w = new WeldJointDef();
         w.bodyA = mBody;
         w.bodyB = other.mBody;
@@ -702,16 +632,13 @@ public abstract class WorldActor extends BaseActor {
      * Create a distance joint between this actor and some other actor
      *
      * @param anchor       The actor to which this actor is connected
-     * @param anchorX      The X coordinate (relative to the center of the actor) where
-     *                     the joint fuses to the anchor
-     * @param anchorY      The Y coordinate (relative to the center of the actor) where
-     *                     the joint fuses to the anchor
-     * @param localAnchorX The X coordinate (relative to the center of the actor) where
-     *                     the joint fuses to this actor
-     * @param localAnchorY The Y coordinate (relative to the center of the actor) where
-     *                     the joint fuses to this actor
+     * @param anchorX      The X coordinate (relative to center) where joint fuses to the anchor
+     * @param anchorY      The Y coordinate (relative to center) where joint fuses to the anchor
+     * @param localAnchorX The X coordinate (relative to center) where joint fuses to this actor
+     * @param localAnchorY The Y coordinate (relative to center) where joint fuses to this actor
      */
-    public void setDistanceJoint(WorldActor anchor, float anchorX, float anchorY, float localAnchorX, float localAnchorY) {
+    public void setDistanceJoint(WorldActor anchor, float anchorX, float anchorY,
+                                 float localAnchorX, float localAnchorY) {
         // make the body dynamic
         setCanFall();
 
@@ -738,6 +665,9 @@ public abstract class WorldActor extends BaseActor {
         dj.setLength(newDist);
     }
 
+    /**
+     * Break any joints connecting this actor
+     */
     @Override
     void breakJoints() {
         // Clobber any joints, or this won't be able to move
